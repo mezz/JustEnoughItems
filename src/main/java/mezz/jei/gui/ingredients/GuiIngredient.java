@@ -1,30 +1,7 @@
 package mezz.jei.gui.ingredients;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
 import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagCollection;
-import net.minecraft.tags.Tag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IGuiIngredient;
@@ -32,15 +9,34 @@ import mezz.jei.api.gui.ingredient.ITooltipCallback;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagCollection;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public class GuiIngredient<T> extends GuiComponent implements IGuiIngredient<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -221,8 +217,6 @@ public class GuiIngredient<T> extends GuiComponent implements IGuiIngredient<T> 
 				tooltipCallback.onTooltip(slotIndex, input, value, tooltip);
 			}
 
-			Minecraft minecraft = Minecraft.getInstance();
-			Font fontRenderer = ingredientRenderer.getFontRenderer(minecraft, value);
 			if (value instanceof ItemStack) {
 				//noinspection unchecked
 				Collection<ItemStack> itemStacks = (Collection<ItemStack>) this.allIngredients;
@@ -232,7 +226,7 @@ public class GuiIngredient<T> extends GuiComponent implements IGuiIngredient<T> 
 					tooltip.add(acceptsAny.withStyle(ChatFormatting.GRAY));
 				}
 			}
-			TooltipRenderer.drawHoveringText(poseStack, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer, value);
+			TooltipRenderer.drawHoveringText(poseStack, tooltip, xOffset + mouseX, yOffset + mouseY, value, ingredientRenderer);
 
 			RenderSystem.enableDepthTest();
 		} catch (RuntimeException e) {

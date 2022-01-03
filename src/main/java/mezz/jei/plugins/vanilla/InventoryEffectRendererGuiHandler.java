@@ -25,9 +25,6 @@ class InventoryEffectRendererGuiHandler<T extends AbstractContainerMenu> impleme
 	@Override
 	public List<Rect2i> getGuiExtraAreas(EffectRenderingInventoryScreen<T> containerScreen) {
 		Minecraft minecraft = containerScreen.getMinecraft();
-		if (minecraft == null) {
-			return Collections.emptyList();
-		}
 		LocalPlayer player = minecraft.player;
 		if (player == null) {
 			return Collections.emptyList();

@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Shapeless Recipe",
   "jei.tooltip.cheat.mode.button.enabled": "Cheat Mode enabled",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Press \"%s\" to toggle it.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s-click here to toggle it.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s here to toggle it.",
   "jei.tooltip.recipe.by": "Recipe By: %s",
   "jei.tooltip.recipe.id": "Recipe ID: %s",
   "jei.tooltip.not.enough.space": "There is not enough space to display the JEI ingredient list overlay here.",
@@ -45,7 +45,6 @@
   "jei.key.category.overlays": "JEI (Overlays)",
   "key.jei.toggleOverlay": "Show/Hide JEI Overlays",
   "key.jei.focusSearch": "Select Search Bar",
-  "key.jei.toggleEditMode": "Toggle Hide Ingredients Mode",
   "key.jei.previousPage": "Show Previous Page",
   "key.jei.nextPage": "Show Next Page",
   "key.jei.toggleBookmarkOverlay": "Show/Hide Bookmarked Ingredients",
@@ -59,10 +58,16 @@
 
   "jei.key.category.cheat.mode": "JEI (Cheat Mode)",
   "key.jei.toggleCheatMode": "Toggle Cheat Mode",
+  "key.jei.toggleCheatModeConfigButton": "Toggle Cheat Mode (when hovering over config button)",
   "key.jei.cheatOneItem": "Cheat 1 item",
   "key.jei.cheatOneItem2": "Cheat 1 item",
   "key.jei.cheatItemStack": "Cheat 1 stack of items",
   "key.jei.cheatItemStack2": "Cheat 1 stack of items",
+
+  "jei.key.category.edit.mode": "JEI (Edit Mode)",
+  "key.jei.toggleEditMode": "Toggle Hide Ingredients Mode",
+  "key.jei.toggleHideIngredient": "Hide an ingredient",
+  "key.jei.toggleWildcardHideIngredient": "Hide an ingredient using wildcard matching",
 
   "jei.key.category.mouse.hover": "JEI (Hovering with Mouse)",
   "key.jei.bookmark": "Add/Remove Bookmark",
@@ -129,14 +134,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Hide Ingredients Mode:",
-  "gui.jei.editMode.description.hide": "%s-click to hide",
-  "gui.jei.editMode.description.hide.wild": "%s-right-click to hide by wildcard",
-
-  "_comment": "PC/Linux Control Key",
-  "key.jei.ctrl": "CTRL",
-
-  "_comment": "Mac Command Key",
-  "key.jei.ctrl.mac": "CMD",
+  "gui.jei.editMode.description.hide": "%s to hide",
+  "gui.jei.editMode.description.hide.wild": "%s to hide by wildcard",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Crafting",

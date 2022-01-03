@@ -99,10 +99,6 @@ public class IngredientListBatchRenderer {
 		if (itemStackElement != null) {
 			ItemStack itemStack = itemStackElement.getIngredient();
 			Minecraft minecraft = Minecraft.getInstance();
-			if (minecraft == null) {
-				LOGGER.error("Minecraft instance is missing");
-				return;
-			}
 			ItemRenderer itemRenderer = minecraft.getItemRenderer();
 			BakedModel bakedModel;
 			try {

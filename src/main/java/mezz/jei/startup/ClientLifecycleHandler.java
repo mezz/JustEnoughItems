@@ -126,10 +126,7 @@ public class ClientLifecycleHandler {
 
 	public void startJEI() {
 		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft == null) {
-			LOGGER.error("Failed to start JEI, there is no Minecraft instance.");
-			return;
-		} else if (minecraft.level == null) {
+		if (minecraft.level == null) {
 			LOGGER.error("Failed to start JEI, there is no Minecraft client level.");
 			return;
 		}
@@ -163,9 +160,6 @@ public class ClientLifecycleHandler {
 
 		public boolean shouldRun() {
 			Minecraft minecraft = Minecraft.getInstance();
-			if (minecraft == null) {
-				return false;
-			}
 			ClientPacketListener connection = minecraft.getConnection();
 			boolean isIntegrated = minecraft.isLocalServer();
 			if (connection == null || isIntegrated) {

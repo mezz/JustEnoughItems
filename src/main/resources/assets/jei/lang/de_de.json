@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Formloses Rezept",
   "jei.tooltip.cheat.mode.button.enabled": "Cheat-Modus",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Klicke auf %s zum Umschalten.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s-klicke hier zum Umschalten.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s hier zum Umschalten.",
   "jei.tooltip.recipe.by": "Rezept von: %s",
   "jei.tooltip.recipe.id": "Rezept-ID: %s",
   "jei.tooltip.not.enough.space": "Hier ist nicht genug Platz zum Anzeigen der Zutaten-Liste.",
@@ -128,14 +128,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Zutaten Ausblendungsmodus:",
-  "gui.jei.editMode.description.hide": "Ausblenden mit %s-Klick.",
-  "gui.jei.editMode.description.hide.wild": "Ausblenden per Wildcard mit %s-Rechtsklick.",
-
-  "_comment": "PC/Linux Control Key",
-  "key.jei.ctrl": "STRG",
-
-  "_comment": "Mac Command Key",
-  "key.jei.ctrl.mac": "CMD",
+  "gui.jei.editMode.description.hide": "Ausblenden mit %s.",
+  "gui.jei.editMode.description.hide.wild": "Ausblenden per Wildcard mit %s.",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Fertigungsrezepte",

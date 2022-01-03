@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Beformis receptas",
   "jei.tooltip.cheat.mode.button.enabled": "Cheat rėžimas",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Press %s to toggle it.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s-click here to toggle it.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s here to toggle it.",
   "jei.tooltip.recipe.by": "Recipe By: %s",
   "jei.tooltip.recipe.id": "Recipe ID: %s",
   "jei.tooltip.not.enough.space": "There is not enough space to display the ingredient list here.",
@@ -91,14 +91,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Hide Ingredients Mode:",
-  "gui.jei.editMode.description.hide": "%s-Click to Hide",
-  "gui.jei.editMode.description.hide.wild": "%s-right-click to Hide by Wildcard",
-
-  "_comment": "PC/Linux Control Key",
-  "key.jei.ctrl": "CTRL",
-
-  "_comment": "Mac Command Key",
-  "key.jei.ctrl.mac": "CMD",
+  "gui.jei.editMode.description.hide": "%s to hide",
+  "gui.jei.editMode.description.hide.wild": "%s to hide by wildcard",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Crafting",

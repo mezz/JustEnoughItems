@@ -40,17 +40,11 @@ public final class ServerInfo {
 	@Nullable
 	private static Path getWorldPath() {
 		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft == null) {
-			return null;
-		}
 		ClientPacketListener clientPacketListener = minecraft.getConnection();
 		if (clientPacketListener == null) {
 			return null;
 		}
 		Connection connection = clientPacketListener.getConnection();
-		if (connection == null) {
-			return null;
-		}
 		if (connection.isMemoryConnection()) {
 			MinecraftServer minecraftServer = ServerLifecycleHooks.getCurrentServer();
 			if (minecraftServer != null) {

@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Recette sans forme",
   "jei.tooltip.cheat.mode.button.enabled": "Mode triche",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Pressez %s pour l'activer.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "Cliquez sur %s ici pour le désactiver.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s ici pour le désactiver.",
   "jei.tooltip.recipe.by": "Recette par : %s",
   "jei.tooltip.recipe.id": "ID de la recette : %s",
   "jei.tooltip.not.enough.space": "Il n'y a pas assez de place pour afficher la liste d'ingrédients.",
@@ -104,14 +104,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Mode édition de la liste d'objets :",
-  "gui.jei.editMode.description.hide": "Cacher (%s-clic).",
-  "gui.jei.editMode.description.hide.wild": "Cacher par caractères génériques (%s-clic-droit).",
-
-  "_comment": "PC/Linux Control Key",
-  "key.jei.ctrl": "CTRL",
-
-  "_comment": "Mac Command Key",
-  "key.jei.ctrl.mac": "CMD",
+  "gui.jei.editMode.description.hide": "Cacher (%s).",
+  "gui.jei.editMode.description.hide.wild": "Cacher par caractères génériques (%s).",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Établi",

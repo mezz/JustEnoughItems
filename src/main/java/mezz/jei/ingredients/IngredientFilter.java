@@ -13,6 +13,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.SearchMode;
 import mezz.jei.events.EditModeToggleEvent;
 import mezz.jei.events.EventBusHelper;
@@ -26,6 +27,7 @@ import mezz.jei.search.PrefixInfo;
 import mezz.jei.util.LoggedTimer;
 import mezz.jei.util.Translator;
 import net.minecraft.core.NonNullList;
+import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -36,7 +38,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import org.apache.logging.log4j.LogManager;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -46,6 +47,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
 	private final IngredientBlacklistInternal blacklist;
+	private final IWorldConfig worldConfig;
 	private final IEditModeConfig editModeConfig;
 	private final IIngredientManager ingredientManager;
 	private final IIngredientSorter sorter;
@@ -62,6 +64,7 @@ public class IngredientFilter implements IIngredientGridSource {
 
 	public IngredientFilter(
 		IngredientBlacklistInternal blacklist,
+		IWorldConfig worldConfig,
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
 		IEditModeConfig editModeConfig,
@@ -70,6 +73,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		NonNullList<IIngredientListElement<?>> ingredients,
 		IModIdHelper modIdHelper) {
 		this.blacklist = blacklist;
+		this.worldConfig = worldConfig;
 		this.editModeConfig = editModeConfig;
 		this.ingredientManager = ingredientManager;
 		this.sorter = sorter;
@@ -93,12 +97,10 @@ public class IngredientFilter implements IIngredientGridSource {
 		}
 
 		EventBusHelper.registerWeakListener(this, EditModeToggleEvent.class, (ingredientFilter, editModeToggleEvent) -> {
-			ingredientFilter.filterCached = null;
 			ingredientFilter.updateHidden();
 		});
 
 		EventBusHelper.registerWeakListener(this, PlayerJoinedWorldEvent.class, (ingredientFilter, playerJoinedWorldEvent) -> {
-			ingredientFilter.filterCached = null;
 			ingredientFilter.updateHidden();
 		});
 
@@ -162,19 +164,25 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	public void updateHidden() {
+		boolean changed = false;
 		for (IIngredientListElementInfo<?> info : this.elementSearch.getAllIngredients()) {
 			IIngredientListElement<?> element = info.getElement();
-			updateHiddenState(element);
+			changed |= updateHiddenState(element);
+		}
+		if (changed) {
+			this.filterCached = null;
+			notifyListenersOfChange();
 		}
 	}
 
-	public <V> void updateHiddenState(IIngredientListElement<V> element) {
+	public <V> boolean updateHiddenState(IIngredientListElement<V> element) {
 		V ingredient = element.getIngredient();
 		boolean visible = isIngredientVisible(ingredient);
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
-			this.filterCached = null;
+			return true;
 		}
+		return false;
 	}
 
 	public <V> boolean isIngredientVisible(V ingredient) {
@@ -189,7 +197,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		if (!ingredientHelper.isIngredientOnServer(ingredient)) {
 			return false;
 		}
-		return editModeConfig.isEditModeEnabled() || !editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
+		return worldConfig.isEditModeEnabled() || !editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
 	}
 
 	@Override
@@ -219,7 +227,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	//This is used to allow the sorting function to set all item's indexes, precomputing the master sort order.
 	public List<IIngredientListElementInfo<?>> getIngredientListPreSort(Comparator<IIngredientListElementInfo<?>> directComparator) {
 		//First step is to get the full list.
-		List<IIngredientListElementInfo<?>> ingredientList = getIngredientListUncached("");
+		List<IIngredientListElementInfo<?>> ingredientList = elementSearch.getAllIngredients();
 		LoggedTimer filterTimer = new LoggedTimer();
 		if (debugMode) {
 			filterTimer.start("Pre-Sorting.");

@@ -48,7 +48,7 @@ public class JEIClientConfig {
 
 	public static void openSettings() {
 		Minecraft mc = Minecraft.getInstance();
-		if (mc == null || mc.player == null) {
+		if (mc.player == null) {
 			return;
 		}
 

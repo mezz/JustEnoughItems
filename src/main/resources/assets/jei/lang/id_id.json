@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Resep Tak Berbentuk",
   "jei.tooltip.cheat.mode.button.enabled": "Mode Curang diaktifkan",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Tekan %s untuk mengaktifkannya.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s-klik di sini untuk mengaktifkannya.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s di sini untuk mengaktifkannya.",
   "jei.tooltip.recipe.by": "Resep Oleh: %s",
   "jei.tooltip.recipe.id": "ID Resep: %s",
   "jei.tooltip.not.enough.space": "Tidak cukup ruang untuk menampilkan JEI di sini.",
@@ -104,14 +104,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "Mode Sembunyikan Benda JEI:",
-  "gui.jei.editMode.description.hide": "%s+klik kiri untuk menyembunyikan",
-  "gui.jei.editMode.description.hide.wild": "%s+klik kanan untuk menyembunyikan dengan Wildcard",
-
-  "_comment": "PC/Linux Control Key",
-  "key.jei.ctrl": "CTRL",
-
-  "_comment": "Mac Command Key",
-  "key.jei.ctrl.mac": "CMD",
+  "gui.jei.editMode.description.hide": "%s to hide",
+  "gui.jei.editMode.description.hide.wild": "%s to hide by wildcard",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Kerajinan",

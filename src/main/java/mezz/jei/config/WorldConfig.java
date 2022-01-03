@@ -166,6 +166,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 
 			if (worldConfig.hasChanged()) {
 				worldConfig.save();
+				EventBusHelper.post(new EditModeToggleEvent(values.editModeEnabled));
 			}
 		}
 	}

@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "무형 제작법",
   "jei.tooltip.cheat.mode.button.enabled": "치트 모드",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "%s을(를) 눌러 전환하십시오.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s을(를) 클릭하여 전환하십시오.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s here to toggle it.",
   "jei.tooltip.recipe.by": "제작법 제작자: %s",
   "jei.tooltip.recipe.id": "제작법 ID: %s",
   "jei.tooltip.not.enough.space": "여기에 재료 목록을 표시할 공간이 부족합니다.",
@@ -109,14 +109,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI 아이템 목록 수정 모드",
-  "gui.jei.editMode.description.hide": "%s-숨기려면 클릭하십시오.",
-  "gui.jei.editMode.description.hide.wild": "와일드카드로 숨기려면 %s 마우스 오른쪽 버튼을 클릭하십시오.",
-
-  "_comment": "PC/Linux Control Key",
-  "key.jei.ctrl": "CTRL",
-
-  "_comment": "Mac Command Key",
-  "key.jei.ctrl.mac": "CMD",
+  "gui.jei.editMode.description.hide": "%s to hide",
+  "gui.jei.editMode.description.hide.wild": "%s to hide by wildcard",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "제작대",

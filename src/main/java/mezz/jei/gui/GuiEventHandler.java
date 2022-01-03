@@ -125,7 +125,7 @@ public class GuiEventHandler {
 				if (tooltipStrings.isEmpty()) {
 					tooltipStrings = Collections.singletonList(new TranslatableComponent("jei.tooltip.show.recipes"));
 				}
-				TooltipRenderer.drawHoveringText(poseStack, tooltipStrings, event.getMouseX(), event.getMouseY(), minecraft.font);
+				TooltipRenderer.drawHoveringText(poseStack, tooltipStrings, event.getMouseX(), event.getMouseY());
 			}
 		}
 

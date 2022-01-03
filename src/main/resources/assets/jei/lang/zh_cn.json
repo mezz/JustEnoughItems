@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "无序配方",
   "jei.tooltip.cheat.mode.button.enabled": "作弊模式",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "按 %s 以切换。",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "按住 %s 并点击以切换。",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s here to toggle it.",
   "jei.tooltip.recipe.by": "该配方由 %s 添加",
   "jei.tooltip.recipe.id": "配方 ID: %s",
   "jei.tooltip.not.enough.space": "屏幕空间不足，无法显示 JEI 界面。",
@@ -104,14 +104,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI 物品列表编辑模式：",
-  "gui.jei.editMode.description.hide": "按住 %s 点击以隐藏。",
-  "gui.jei.editMode.description.hide.wild": "按住 %s 右击以隐藏相同 ID 的物品。",
-
-  "_comment": "PC/Linux Control Key",
-  "key.jei.ctrl": "CTRL",
-
-  "_comment": "Mac Command Key",
-  "key.jei.ctrl.mac": "CMD",
+  "gui.jei.editMode.description.hide": "%s to hide",
+  "gui.jei.editMode.description.hide.wild": "%s to hide by wildcard",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "工作台合成",

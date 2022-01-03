@@ -12,7 +12,7 @@
   "jei.tooltip.shapeless.recipe": "Receita indefinida",
   "jei.tooltip.cheat.mode.button.enabled": "Modo trapaça ativado",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Pressione %s para ativá-lo.",
-  "jei.tooltip.cheat.mode.how.to.disable.no.hotkey": "%s + clique aqui para ativá-lo.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "%s aqui para ativá-lo.",
   "jei.tooltip.recipe.by": "Receita por: %s",
   "jei.tooltip.recipe.id": "ID da receita: %s",
   "jei.tooltip.not.enough.space": "Não há espaço suficiente para exibir o JEI aqui.",
@@ -102,14 +102,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "Modo ingredientes ocultos do JEI:",
-  "gui.jei.editMode.description.hide": "%s + clique para ocultar",
-  "gui.jei.editMode.description.hide.wild": "%s + clique com o botão direito para ocultar com o curinga",
-
-  "_comment": "PC/Linux Control Key",
-  "key.jei.ctrl": "CTRL",
-
-  "_comment": "Mac Command Key",
-  "key.jei.ctrl.mac": "CMD",
+  "gui.jei.editMode.description.hide": "%s para ocultar",
+  "gui.jei.editMode.description.hide.wild": "%s to hide by wildcard",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Fabricação",
