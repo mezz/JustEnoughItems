@@ -45,7 +45,6 @@
   "jei.key.category.overlays": "JEI (Overlays)",
   "key.jei.toggleOverlay": "Item-Liste (de-)aktivieren",
   "key.jei.focusSearch": "Suchfeld",
-  "key.jei.toggleEditMode": "Ausblenden der Zutaten umschalten",
   "key.jei.previousPage": "Vorherige Seite anzeigen",
   "key.jei.nextPage": "Nächste Seite anzeigen",
   "key.jei.toggleBookmarkOverlay": "Zeige/Verstecke den mit Lesezeichen versehenen Gegenstand",
@@ -57,11 +56,18 @@
   "key.jei.previousRecipePage": "Vorherige Rezeptseite anzeigen",
   "key.jei.nextRecipePage": "Nächste Rezeptseite anzeigen",
   
-  "jei.key.category.cheat.mode": "JEI (Cheat Mode)",
-  "key.jei.toggleCheatMode": "Cheat Mode umschalten",
+  "jei.key.category.cheat.mode": "JEI (Cheat Modus)",
+  "key.jei.toggleCheatMode": "Cheat Modus umschalten",
+  "key.jei.toggleCheatModeConfigButton": "Cheat Modus umschalten (wenn Maus über Config Button schwebt)",
   "key.jei.cheatOneItem": "Cheate 1 Item",
+  "key.jei.cheatOneItem2": "Cheate 1 Item",
   "key.jei.cheatItemStack": "Cheate 1 Item-Stapel",
   "key.jei.cheatItemStack2": "Cheate 1 Item-Stapel",
+  
+  "jei.key.category.edit.mode": "JEI (Editier Modus)",
+  "key.jei.toggleEditMode": "Zutaten Ausblendungsmodus umschalten",
+  "key.jei.toggleHideIngredient": "Zutat ausblenden",
+  "key.jei.toggleWildcardHideIngredient": "Zutat ausblenden per Wildcard Übereinstimmung",
   
   "jei.key.category.mouse.hover": "JEI (Maus Hovering)",
   "key.jei.bookmark": "Hinzufügen/Entfernen Lesezeichen",
