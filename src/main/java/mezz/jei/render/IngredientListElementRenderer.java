@@ -101,7 +101,7 @@ public class IngredientListElementRenderer<T> {
 	public void drawTooltip(MatrixStack matrixStack, int mouseX, int mouseY, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig) {
 		T ingredient = element.getIngredient();
 		List<ITextProperties> tooltip = getTooltip(ingredientFilterConfig, worldConfig);
-		TooltipRenderer.drawHoveringText(ingredient, tooltip, mouseX, mouseY, matrixStack);
+		TooltipRenderer.drawHoveringText(ingredient, tooltip, mouseX, mouseY, matrixStack, ingredientRenderer);
 	}
 
 	protected void renderEditMode(MatrixStack matrixStack, Rectangle2d area, int padding, IEditModeConfig editModeConfig) {

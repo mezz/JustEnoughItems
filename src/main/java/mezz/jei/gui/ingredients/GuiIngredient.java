@@ -227,7 +227,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 					tooltip.add(acceptsAny.withStyle(TextFormatting.GRAY));
 				}
 			}
-			TooltipRenderer.drawHoveringText(value, tooltip, xOffset + mouseX, yOffset + mouseY, matrixStack);
+			TooltipRenderer.drawHoveringText(value, tooltip, xOffset + mouseX, yOffset + mouseY, matrixStack, ingredientRenderer);
 
 			RenderSystem.enableDepthTest();
 		} catch (RuntimeException e) {
