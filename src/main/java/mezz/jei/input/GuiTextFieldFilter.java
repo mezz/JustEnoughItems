@@ -7,7 +7,6 @@ import mezz.jei.Internal;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.input.mouse.IUserInputHandler;
 import net.minecraft.client.Minecraft;
@@ -53,7 +52,7 @@ public class GuiTextFieldFilter extends EditBox {
 		if (!filterText.equals(getValue())) {
 			super.setValue(filterText);
 		}
-		List<IIngredientListElement<?>> ingredientList = ingredientSource.getIngredientList(filterText);
+		List<?> ingredientList = ingredientSource.getIngredientList(filterText);
 		if (ingredientList.size() == 0) {
 			setTextColor(0xFFFF0000);
 		} else {

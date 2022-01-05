@@ -52,6 +52,10 @@ public class MultiMap<K, V, T extends Collection<V>> {
 		return map.keySet();
 	}
 
+	public void clear() {
+		map.clear();
+	}
+
 	public ImmutableMultimap<K, V> toImmutable() {
 		ImmutableMultimap.Builder<K, V> builder = ImmutableMultimap.builder();
 		for (Map.Entry<K, T> entry : map.entrySet()) {

@@ -313,8 +313,7 @@ public class IngredientSorterComparators {
 	}
 
 	public static <V> ItemStack getItemStack(IIngredientListElementInfo<V> ingredientInfo) {
-		IIngredientListElement<V> element = ingredientInfo.getElement();
-		V ingredient = element.getIngredient();
+		V ingredient = ingredientInfo.getIngredient();
 		if (ingredient instanceof ItemStack itemStack) {
 			return itemStack;
 		}

@@ -14,8 +14,7 @@ public class IngredientTypeSortingConfig extends MappedSortingConfig<IIngredient
 	}
 
 	public static String getIngredientType(IIngredientListElementInfo<?> info) {
-		IIngredientListElement<?> element = info.getElement();
-		Object ingredient = element.getIngredient();
+		Object ingredient = info.getIngredient();
 		Class<?> ingredientClass = ingredient.getClass();
 		return getIngredientType(ingredientClass);
 	}

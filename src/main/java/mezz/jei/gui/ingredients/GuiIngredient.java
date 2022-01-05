@@ -15,6 +15,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.ingredients.RegisteredIngredient;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.ChatFormatting;

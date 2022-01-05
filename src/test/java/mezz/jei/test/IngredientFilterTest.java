@@ -85,7 +85,7 @@ public class IngredientFilterTest {
 	public void testSetup() {
 		Assertions.assertNotNull(ingredientFilter);
 
-		List<IIngredientListElement<?>> ingredientList = ingredientFilter.getIngredientList("");
+		List<?> ingredientList = ingredientFilter.getIngredientList("");
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
 	}
 
@@ -137,7 +137,7 @@ public class IngredientFilterTest {
 
 		ingredientFilter.modesChanged();
 
-		List<IIngredientListElement<?>> ingredientList = ingredientFilter.getIngredientList("");
+		List<?> ingredientList = ingredientFilter.getIngredientList("");
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
 
 		List<TestIngredient> ingredients = createIngredients();
@@ -170,7 +170,7 @@ public class IngredientFilterTest {
 
 		ingredientFilter.updateHidden();
 
-		List<IIngredientListElement<?>> ingredientList = ingredientFilter.getIngredientList("");
+		List<?> ingredientList = ingredientFilter.getIngredientList("");
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientList.size());
 
 		// test after reloading the ingredient filter

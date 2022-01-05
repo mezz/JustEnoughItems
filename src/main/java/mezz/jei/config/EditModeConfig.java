@@ -91,8 +91,7 @@ public class EditModeConfig implements IEditModeConfig {
 		if (blacklistType == IngredientBlacklistType.WILDCARD) {
 			List<IIngredientListElementInfo<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(ingredient, ingredientHelper, (input) -> getIngredientUid(input, blacklistType, ingredientHelper));
 			for (IIngredientListElementInfo<V> elementToBeBlacklistedInfo : elementsToBeBlacklisted) {
-				IIngredientListElement<V> elementToBeBlacklisted = elementToBeBlacklistedInfo.getElement();
-				V ingredientToBeBlacklisted = elementToBeBlacklisted.getIngredient();
+				V ingredientToBeBlacklisted = elementToBeBlacklistedInfo.getIngredient();
 				String uid = getIngredientUid(ingredientToBeBlacklisted, IngredientBlacklistType.ITEM, ingredientHelper);
 				updated |= blacklist.remove(uid);
 			}
@@ -105,8 +104,7 @@ public class EditModeConfig implements IEditModeConfig {
 
 	private <V> boolean areAllBlacklisted(List<IIngredientListElementInfo<V>> elementInfos, IIngredientHelper<V> ingredientHelper, String newUid) {
 		for (IIngredientListElementInfo<V> elementInfo : elementInfos) {
-			IIngredientListElement<V> element = elementInfo.getElement();
-			V ingredient = element.getIngredient();
+			V ingredient = elementInfo.getIngredient();
 			String uid = getIngredientUid(ingredient, IngredientBlacklistType.ITEM, ingredientHelper);
 			if (!uid.equals(newUid) && !blacklist.contains(uid)) {
 				return false;
@@ -127,16 +125,14 @@ public class EditModeConfig implements IEditModeConfig {
 				blacklist.remove(wildUid);
 				List<IIngredientListElementInfo<V>> modMatches = ingredientFilter.getMatches(ingredient, ingredientHelper, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD, ingredientHelper));
 				for (IIngredientListElementInfo<V> modMatch : modMatches) {
-					IIngredientListElement<V> element = modMatch.getElement();
-					addIngredientToConfigBlacklist(ingredientFilter, element.getIngredient(), IngredientBlacklistType.ITEM, ingredientHelper);
+					addIngredientToConfigBlacklist(ingredientFilter, modMatch.getIngredient(), IngredientBlacklistType.ITEM, ingredientHelper);
 				}
 			}
 		} else if (blacklistType == IngredientBlacklistType.WILDCARD) {
 			// remove any item-level blacklist on items that match this wildcard
 			List<IIngredientListElementInfo<V>> modMatches = ingredientFilter.getMatches(ingredient, ingredientHelper, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD, ingredientHelper));
 			for (IIngredientListElementInfo<V> modMatch : modMatches) {
-				IIngredientListElement<V> element = modMatch.getElement();
-				V matchIngredient = element.getIngredient();
+				V matchIngredient = modMatch.getIngredient();
 				final String uid = getIngredientUid(matchIngredient, IngredientBlacklistType.ITEM, ingredientHelper);
 				updated |= blacklist.remove(uid);
 			}

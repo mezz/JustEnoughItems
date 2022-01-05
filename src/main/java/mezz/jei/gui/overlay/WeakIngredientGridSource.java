@@ -1,6 +1,5 @@
 package mezz.jei.gui.overlay;
 
-import mezz.jei.gui.ingredients.IIngredientListElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,7 +17,7 @@ public class WeakIngredientGridSource implements IIngredientGridSource {
 	}
 
 	@Override
-	public List<IIngredientListElement<?>> getIngredientList(String filterText) {
+	public List<?> getIngredientList(String filterText) {
 		IIngredientGridSource ingredientGridSource = weakIngredientSource.get();
 		if (ingredientGridSource == null) {
 			LOGGER.error("no ingredientGridSource");

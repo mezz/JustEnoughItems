@@ -156,6 +156,11 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	}
 
 	@Override
+	public V getIngredient() {
+		return element.getIngredient();
+	}
+
+	@Override
 	public void setSortedIndex(int sortIndex) {
 		this.sortedIndex = sortIndex;
 	}

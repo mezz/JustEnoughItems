@@ -53,6 +53,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private final ForgeConfigSpec.BooleanValue debugModeEnabled;
 	private final ForgeConfigSpec.BooleanValue centerSearchBarEnabled;
 	private final ForgeConfigSpec.BooleanValue lowMemorySlowSearchEnabled;
+	private final ForgeConfigSpec.BooleanValue fastItemRenderingEnabled;
 	private final ForgeConfigSpec.EnumValue<GiveMode> giveMode;
 	private final ForgeConfigSpec.IntValue maxColumns;
 	private final ForgeConfigSpec.IntValue maxRecipeGuiHeight;
@@ -72,6 +73,9 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 			builder.comment("Set low-memory mode (makes search very slow, but uses less RAM)");
 			lowMemorySlowSearchEnabled = builder.define("LowMemorySlowSearchEnabled", false);
+
+			builder.comment("Enable fast batched item rendering for JEI (disable this if items in JEI are not rendering correctly)");
+			fastItemRenderingEnabled = builder.define("FastItemRenderingEnabled", true);
 
 			builder.comment("How items should be handed to you");
 			giveMode = builder.defineEnum("GiveMode", defaultGiveMode);
@@ -136,6 +140,11 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	@Override
 	public boolean isLowMemorySlowSearchEnabled() {
 		return lowMemorySlowSearchEnabled.get();
+	}
+
+	@Override
+	public boolean isFastItemRenderingEnabled() {
+		return fastItemRenderingEnabled.get();
 	}
 
 	@Override

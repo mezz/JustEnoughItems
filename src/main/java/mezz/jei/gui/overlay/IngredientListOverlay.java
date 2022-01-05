@@ -260,8 +260,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	@Override
 	public <T> T getIngredientUnderMouse(IIngredientType<T> ingredientType) {
 		if (isListDisplayed()) {
-			return this.contents.getElementUnderMouse(ingredientType)
-				.map(IIngredientListElement::getIngredient)
+			return this.contents.getIngredientUnderMouse(ingredientType)
 				.orElse(null);
 		}
 		return null;
@@ -275,10 +274,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	@Override
 	public <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
 		if (isListDisplayed()) {
-			List<IIngredientListElement<T>> visibleElements = this.contents.getVisibleElements(ingredientType);
-			return visibleElements.stream()
-				.map(IIngredientListElement::getIngredient)
-				.toList();
+			return this.contents.getVisibleIngredients(ingredientType);
 		}
 		return Collections.emptyList();
 	}

@@ -73,7 +73,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			firstItemIndex = 0;
 		}
 		String filterText = filterTextSource.getFilterText();
-		List<IIngredientListElement<?>> ingredientList = ingredientSource.getIngredientList(filterText);
+		List<?> ingredientList = ingredientSource.getIngredientList(filterText);
 		if (firstItemIndex >= ingredientList.size()) {
 			firstItemIndex = 0;
 		}
@@ -149,15 +149,15 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY);
 	}
 
-	public <T> Optional<IIngredientListElement<T>> getElementUnderMouse(IIngredientType<T> ingredientType) {
-		return this.ingredientGrid.getElementUnderMouse(ingredientType);
+	public <T> Optional<T> getIngredientUnderMouse(IIngredientType<T> ingredientType) {
+		return this.ingredientGrid.getIngredientUnderMouse(ingredientType);
 	}
 
-	public <T> List<IIngredientListElement<T>> getVisibleElements(IIngredientType<T> ingredientType) {
+	public <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
 		return this.ingredientGrid.guiIngredientSlots.getAllGuiIngredientSlots().stream()
 			.map(slot -> slot.getIngredientRenderer(ingredientType))
 			.filter(Objects::nonNull)
-			.map(IngredientListElementRenderer::getElement)
+			.map(IngredientListElementRenderer::getIngredient)
 			.toList();
 	}
 

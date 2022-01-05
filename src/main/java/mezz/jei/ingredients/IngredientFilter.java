@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -59,7 +60,7 @@ public class IngredientFilter implements IIngredientGridSource {
 
 	@Nullable
 	private String filterCached;
-	private List<IIngredientListElement<?>> ingredientListCached = Collections.emptyList();
+	private List<?> ingredientListCached = Collections.emptyList();
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
 	public IngredientFilter(
@@ -104,13 +105,10 @@ public class IngredientFilter implements IIngredientGridSource {
 			ingredientFilter.updateHidden();
 		});
 
-		List<IIngredientListElementInfo<?>> ingredientInfo = ingredients.stream()
+		ingredients.stream()
 			.map(i -> IngredientListElementInfo.create(i, ingredientManager, modIdHelper))
-			.collect(Collectors.toList());
-
-		for (IIngredientListElementInfo<?> element : ingredientInfo) {
-			addIngredient(element);
-		}
+			.filter(Objects::nonNull)
+			.forEach(this::addIngredient);
 	}
 
 	public <V> void addIngredient(IIngredientListElementInfo<V> info) {
@@ -144,7 +142,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		while (iterator.hasNext()) {
 			int index = iterator.nextInt();
 			IIngredientListElementInfo<?> matchingElementInfo = this.elementSearch.get(index);
-			Object matchingIngredient = matchingElementInfo.getElement().getIngredient();
+			Object matchingIngredient = matchingElementInfo.getIngredient();
 			if (ingredientClass.isInstance(matchingIngredient)) {
 				V castMatchingIngredient = ingredientClass.cast(matchingIngredient);
 				String matchingUid = ingredientHelper.getUniqueId(castMatchingIngredient, UidContext.Ingredient);
@@ -201,7 +199,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	@Override
-	public List<IIngredientListElement<?>> getIngredientList(String filterText) {
+	public List<?> getIngredientList(String filterText) {
 		filterText = filterText.toLowerCase();
 		if (!filterText.equals(filterCached)) {
 			//First step is to get the filtered unsorted list.
@@ -213,7 +211,7 @@ public class IngredientFilter implements IIngredientGridSource {
 			//Then we sort it.
 			ingredientListCached = ingredientList.stream()
 				.sorted(sorter.getComparator(this, this.ingredientManager))
-				.map(IIngredientListElementInfo::getElement)
+				.map(IIngredientListElementInfo::getIngredient)
 				.collect(Collectors.toList());
 			if (debugMode) {
 				filterTimer.stop();
@@ -248,10 +246,12 @@ public class IngredientFilter implements IIngredientGridSource {
 		return Collections.unmodifiableSet(this.modNamesForSorting);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> List<T> getFilteredIngredients(String filterText, IIngredientType<T> ingredientType) {
-		List<IIngredientListElement<?>> ingredientList = getIngredientList(filterText);
-		return IngredientTypeHelper.ofType(ingredientList.stream(), ingredientType)
-			.map(IIngredientListElement::getIngredient)
+		Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
+		List<?> ingredientList = getIngredientList(filterText);
+		return (List<T>) ingredientList.stream()
+			.filter(ingredientClass::isInstance)
 			.toList();
 	}
 
@@ -315,7 +315,7 @@ public class IngredientFilter implements IIngredientGridSource {
 			int startingIndex = iterator.nextInt();
 			for (int i = startingIndex - 1; i >= 0 && !matchingIndexes.contains(i); i--) {
 				IIngredientListElementInfo<?> info = this.elementSearch.get(i);
-				Object elementIngredient = info.getElement().getIngredient();
+				Object elementIngredient = info.getIngredient();
 				if (elementIngredient.getClass() != ingredientClass) {
 					break;
 				}
@@ -330,7 +330,7 @@ public class IngredientFilter implements IIngredientGridSource {
 			}
 			for (int i = startingIndex + 1; i < this.elementSearch.size() && !matchingIndexes.contains(i); i++) {
 				IIngredientListElementInfo<?> info = this.elementSearch.get(i);
-				Object elementIngredient = info.getElement().getIngredient();
+				Object elementIngredient = info.getIngredient();
 				if (elementIngredient.getClass() != ingredientClass) {
 					break;
 				}

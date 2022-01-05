@@ -1,41 +1,60 @@
 package mezz.jei.gui.overlay;
 
+import com.google.common.base.Joiner;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.Internal;
+import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.color.ColorNamer;
+import mezz.jei.config.Constants;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.IWorldConfig;
+import mezz.jei.config.KeyBindings;
+import mezz.jei.config.SearchMode;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
-import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredient;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
-import mezz.jei.input.UserInput;
-import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.MouseUtil;
+import mezz.jei.input.UserInput;
+import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketJei;
 import mezz.jei.render.IngredientListBatchRenderer;
 import mezz.jei.render.IngredientListElementRenderer;
 import mezz.jei.render.IngredientListSlot;
+import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.MathUtil;
+import mezz.jei.util.StringUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -47,8 +66,10 @@ public class IngredientGrid implements IRecipeFocusSource {
 	private static final int INGREDIENT_PADDING = 1;
 	public static final int INGREDIENT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
 	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
+	private final IngredientManager ingredientManager;
 	private final GridAlignment alignment;
 	private final RecipesGui recipesGui;
+	private final IModIdHelper modIdHelper;
 	private final GuiScreenHelper guiScreenHelper;
 
 	private Rect2i area = new Rect2i(0, 0, 0, 0);
@@ -58,17 +79,21 @@ public class IngredientGrid implements IRecipeFocusSource {
 	private final IWorldConfig worldConfig;
 
 	public IngredientGrid(
+		IngredientManager ingredientManager,
 		GridAlignment alignment,
 		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
 		GuiScreenHelper guiScreenHelper,
-		RecipesGui recipesGui
+		RecipesGui recipesGui,
+		IModIdHelper modIdHelper
 	) {
+		this.ingredientManager = ingredientManager;
 		this.alignment = alignment;
 		this.recipesGui = recipesGui;
-		this.guiIngredientSlots = new IngredientListBatchRenderer(editModeConfig, worldConfig);
+		this.modIdHelper = modIdHelper;
+		this.guiIngredientSlots = new IngredientListBatchRenderer(clientConfig, editModeConfig, worldConfig, ingredientManager);
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
@@ -136,9 +161,20 @@ public class IngredientGrid implements IRecipeFocusSource {
 		if (!shouldDeleteItemOnClick(minecraft, mouseX, mouseY) && isMouseOver(mouseX, mouseY)) {
 			IngredientListElementRenderer<?> hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 			if (hovered != null) {
-				hovered.drawHighlight(poseStack);
+				drawHighlight(poseStack, hovered.getArea());
 			}
 		}
+	}
+
+	/**
+	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlight(PoseStack, int, int, int)} but with a custom area width and height
+	 */
+	public static void drawHighlight(PoseStack poseStack, Rect2i area) {
+		RenderSystem.disableDepthTest();
+		RenderSystem.colorMask(true, true, true, false);
+		GuiComponent.fill(poseStack, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF);
+		RenderSystem.colorMask(true, true, true, true);
+		RenderSystem.enableDepthTest();
 	}
 
 	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
@@ -149,10 +185,83 @@ public class IngredientGrid implements IRecipeFocusSource {
 			} else {
 				IngredientListElementRenderer<?> hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 				if (hovered != null) {
-					hovered.drawTooltip(poseStack, mouseX, mouseY, ingredientFilterConfig, worldConfig);
+					drawTooltip(poseStack, mouseX, mouseY, ingredientFilterConfig, worldConfig, hovered.getIngredient());
 				}
 			}
 		}
+	}
+
+	private <T> void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig, T ingredient) {
+		IIngredientType<T> ingredientType = ingredientManager.getIngredientType(ingredient);
+		RegisteredIngredient<T> registeredIngredient = ingredientManager.getRegisteredIngredient(ingredientType);
+		IIngredientRenderer<T> ingredientRenderer = registeredIngredient.getIngredientRenderer();
+
+		List<FormattedText> tooltip = getTooltip(ingredientFilterConfig, worldConfig, ingredient, registeredIngredient);
+		TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, ingredient, ingredientRenderer);
+	}
+
+	private <T> List<FormattedText> getTooltip(
+		IIngredientFilterConfig ingredientFilterConfig,
+		IWorldConfig worldConfig,
+		T ingredient,
+		RegisteredIngredient<T> registeredIngredient
+	) {
+		IIngredientRenderer<T> ingredientRenderer = registeredIngredient.getIngredientRenderer();
+		IIngredientHelper<T> ingredientHelper = registeredIngredient.getIngredientHelper();
+		List<Component> ingredientTooltipSafe = IngredientRenderHelper.getIngredientTooltipSafe(ingredient, ingredientRenderer, ingredientHelper, modIdHelper);
+		List<FormattedText> tooltip = new ArrayList<>(ingredientTooltipSafe);
+
+		Minecraft minecraft = Minecraft.getInstance();
+		int maxWidth = Constants.MAX_TOOLTIP_WIDTH;
+		for (FormattedText tooltipLine : tooltip) {
+			int width = minecraft.font.width(tooltipLine);
+			if (width > maxWidth) {
+				maxWidth = width;
+			}
+		}
+
+		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
+			addColorSearchInfoToTooltip(tooltip, maxWidth, ingredient, registeredIngredient);
+		}
+
+		if (worldConfig.isEditModeEnabled()) {
+			addEditModeInfoToTooltip(tooltip, maxWidth);
+		}
+
+		return tooltip;
+	}
+
+	public static <T> void addColorSearchInfoToTooltip(List<FormattedText> tooltip, int maxWidth, T ingredient, RegisteredIngredient<T> registeredIngredient) {
+		ColorNamer colorNamer = Internal.getColorNamer();
+
+		IIngredientHelper<T> ingredientHelper = registeredIngredient.getIngredientHelper();
+		Iterable<Integer> colors = ingredientHelper.getColors(ingredient);
+		Collection<String> colorNames = colorNamer.getColorNames(colors, false);
+		if (!colorNames.isEmpty()) {
+			String colorNamesString = Joiner.on(", ").join(colorNames);
+			Component colorTranslation = new TranslatableComponent("jei.tooltip.item.colors", colorNamesString)
+				.withStyle(ChatFormatting.GRAY);
+			List<FormattedText> lines = StringUtil.splitLines(colorTranslation, maxWidth);
+			tooltip.addAll(lines);
+		}
+	}
+
+	public static void addEditModeInfoToTooltip(List<FormattedText> tooltip, int maxWidth) {
+		List<FormattedText> lines = List.of(
+			TextComponent.EMPTY,
+			new TranslatableComponent("gui.jei.editMode.description")
+				.withStyle(ChatFormatting.DARK_GREEN),
+			new TranslatableComponent(
+				"gui.jei.editMode.description.hide",
+				KeyBindings.toggleHideIngredient.getTranslatedKeyMessage()
+			).withStyle(ChatFormatting.GRAY),
+			new TranslatableComponent(
+				"gui.jei.editMode.description.hide.wild",
+				KeyBindings.toggleWildcardHideIngredient.getTranslatedKeyMessage()
+			).withStyle(ChatFormatting.GRAY)
+		);
+		lines = StringUtil.splitLines(lines, maxWidth);
+		tooltip.addAll(lines);
 	}
 
 	private boolean shouldDeleteItemOnClick(Minecraft minecraft, double mouseX, double mouseY) {
@@ -185,9 +294,9 @@ public class IngredientGrid implements IRecipeFocusSource {
 			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
-	public <T> Optional<IIngredientListElement<T>> getElementUnderMouse(IIngredientType<T> ingredientType) {
+	public <T> Optional<T> getIngredientUnderMouse(IIngredientType<T> ingredientType) {
 		return this.guiIngredientSlots.getHovered(MouseUtil.getX(), MouseUtil.getY(), ingredientType)
-			.map(IngredientListElementRenderer::getElement);
+			.map(IngredientListElementRenderer::getIngredient);
 	}
 
 	@Override

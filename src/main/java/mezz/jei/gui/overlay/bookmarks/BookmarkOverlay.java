@@ -137,8 +137,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 	@Override
 	public <T> T getIngredientUnderMouse(IIngredientType<T> ingredientType) {
 		if (isListDisplayed()) {
-			return this.contents.getElementUnderMouse(ingredientType)
-				.map(IIngredientListElement::getIngredient)
+			return this.contents.getIngredientUnderMouse(ingredientType)
 				.orElse(null);
 		}
 		return null;

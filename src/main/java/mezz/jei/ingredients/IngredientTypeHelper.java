@@ -47,7 +47,7 @@ public final class IngredientTypeHelper {
 		if (ingredientListElement == null) {
 			return null;
 		}
-		Object ingredient = ingredientListElement.getElement().getIngredient();
+		Object ingredient = ingredientListElement.getIngredient();
 		Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
 		if (ingredientClass.isInstance(ingredient)) {
 			return (IngredientListElementRenderer<T>) ingredientListElement;

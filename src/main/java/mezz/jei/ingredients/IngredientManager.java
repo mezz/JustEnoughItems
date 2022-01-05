@@ -61,32 +61,27 @@ public class IngredientManager implements IIngredientManager {
 		this.ingredientTypeMap = ingredientTypeBuilder.build();
 	}
 
-	@Nullable
-	@SuppressWarnings("unchecked")
-	private <V> RegisteredIngredient<V> getRegisteredIngredient(IIngredientType<V> ingredientType) {
-		return (RegisteredIngredient<V>) ingredientsMap.get(ingredientType);
+	public <V> RegisteredIngredient<V> getRegisteredIngredient(IIngredientType<V> ingredientType) {
+		@SuppressWarnings("unchecked")
+		RegisteredIngredient<V> registeredIngredient = (RegisteredIngredient<V>) ingredientsMap.get(ingredientType);
+		if (registeredIngredient == null) {
+			throw new IllegalArgumentException("Unknown ingredient type: " + ingredientType.getIngredientClass());
+		}
+		return registeredIngredient;
 	}
 
 	@Override
 	public <V> Collection<V> getAllIngredients(IIngredientType<V> ingredientType) {
 		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
-		if (registeredIngredient == null) {
-			return Collections.emptySet();
-		} else {
-			IngredientSet<V> ingredients = registeredIngredient.getIngredientSet();
-			return Collections.unmodifiableCollection(ingredients);
-		}
+		IngredientSet<V> ingredients = registeredIngredient.getIngredientSet();
+		return Collections.unmodifiableCollection(ingredients);
 	}
 
 	@Nullable
 	public <V> V getIngredientByUid(IIngredientType<V> ingredientType, String uid) {
 		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
-		if (registeredIngredient == null) {
-			return null;
-		} else {
-			IngredientSet<V> ingredients = registeredIngredient.getIngredientSet();
-			return ingredients.getByUid(uid);
-		}
+		IngredientSet<V> ingredients = registeredIngredient.getIngredientSet();
+		return ingredients.getByUid(uid);
 	}
 
 	public <V> boolean isValidIngredient(V ingredient) {
@@ -110,10 +105,7 @@ public class IngredientManager implements IIngredientManager {
 	public <V> IIngredientHelper<V> getIngredientHelper(IIngredientType<V> ingredientType) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
-		if (registeredIngredient != null) {
-			return registeredIngredient.getIngredientHelper();
-		}
-		throw new IllegalArgumentException("Unknown ingredient type: " + ingredientType.getIngredientClass());
+		return registeredIngredient.getIngredientHelper();
 	}
 
 	@Override
@@ -127,9 +119,6 @@ public class IngredientManager implements IIngredientManager {
 	public <V> IIngredientRenderer<V> getIngredientRenderer(IIngredientType<V> ingredientType) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
-		if (registeredIngredient == null) {
-			throw new IllegalArgumentException("Could not find ingredient for " + ingredientType);
-		}
 		return registeredIngredient.getIngredientRenderer();
 	}
 
@@ -149,9 +138,6 @@ public class IngredientManager implements IIngredientManager {
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
 		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
-		if (registeredIngredient == null) {
-			throw new IllegalArgumentException("Unknown ingredient type: " + ingredientType.getIngredientClass());
-		}
 
 		LOGGER.info("Ingredients are being added at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
 
@@ -223,9 +209,6 @@ public class IngredientManager implements IIngredientManager {
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
 		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
-		if (registeredIngredient == null) {
-			throw new IllegalArgumentException("Unknown ingredient type: " + ingredientType.getIngredientClass());
-		}
 
 		LOGGER.info("Ingredients are being removed at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
 

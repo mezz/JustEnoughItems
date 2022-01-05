@@ -6,17 +6,25 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ISlowRenderItem;
+import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.ingredients.IngredientTypeHelper;
+import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredient;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -32,20 +40,25 @@ import java.util.Optional;
 
 public class IngredientListBatchRenderer {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int BLACKLIST_COLOR = 0xFFFF0000;
 
 	private final List<IngredientListSlot> slots = new ArrayList<>();
 
-	private final List<ItemStackFastRenderer> renderItems2d = new ArrayList<>();
-	private final List<ItemStackFastRenderer> renderItems3d = new ArrayList<>();
-	private final List<IngredientListElementRenderer<?>> renderOther = new ArrayList<>();
+	private final List<IngredientListElementRenderer<ItemStack>> renderItems2d = new ArrayList<>();
+	private final List<IngredientListElementRenderer<ItemStack>> renderItems3d = new ArrayList<>();
+	private final IngredientListBatches renderOther = new IngredientListBatches();
+	private final IClientConfig clientConfig;
 	private final IEditModeConfig editModeConfig;
 	private final IWorldConfig worldConfig;
+	private final IngredientManager ingredientManager;
 
 	private int blocked = 0;
 
-	public IngredientListBatchRenderer(IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
+	public IngredientListBatchRenderer(IClientConfig clientConfig, IEditModeConfig editModeConfig, IWorldConfig worldConfig, IngredientManager ingredientManager) {
+		this.clientConfig = clientConfig;
 		this.editModeConfig = editModeConfig;
 		this.worldConfig = worldConfig;
+		this.ingredientManager = ingredientManager;
 	}
 
 	public void clear() {
@@ -69,7 +82,7 @@ public class IngredientListBatchRenderer {
 		return slots;
 	}
 
-	public void set(final int startIndex, List<IIngredientListElement<?>> ingredientList) {
+	public void set(final int startIndex, List<?> ingredientList) {
 		renderItems2d.clear();
 		renderItems3d.clear();
 		renderOther.clear();
@@ -84,20 +97,18 @@ public class IngredientListBatchRenderer {
 				if (i >= ingredientList.size()) {
 					ingredientListSlot.clear();
 				} else {
-					IIngredientListElement<?> element = ingredientList.get(i);
-					set(ingredientListSlot, element);
+					Object ingredient = ingredientList.get(i);
+					set(ingredientListSlot, ingredient);
 				}
 				i++;
 			}
 		}
 	}
 
-	private <V> void set(IngredientListSlot ingredientListSlot, IIngredientListElement<V> element) {
+	private <V> void set(IngredientListSlot ingredientListSlot, V ingredient) {
 		ingredientListSlot.clear();
 
-		IIngredientListElement<ItemStack> itemStackElement = IngredientTypeHelper.checkedCast(element, VanillaTypes.ITEM);
-		if (itemStackElement != null) {
-			ItemStack itemStack = itemStackElement.getIngredient();
+		if (ingredient instanceof ItemStack itemStack) {
 			Minecraft minecraft = Minecraft.getInstance();
 			ItemRenderer itemRenderer = minecraft.getItemRenderer();
 			BakedModel bakedModel;
@@ -110,8 +121,12 @@ public class IngredientListBatchRenderer {
 				return;
 			}
 
-			if (!bakedModel.isCustomRenderer() && !bakedModel.isLayered() && !(itemStack.getItem() instanceof ISlowRenderItem)) {
-				ItemStackFastRenderer renderer = new ItemStackFastRenderer(itemStackElement);
+			if (
+				!bakedModel.isCustomRenderer() &&
+				!bakedModel.isLayered() &&
+				!(itemStack.getItem() instanceof ISlowRenderItem)
+			) {
+				IngredientListElementRenderer<ItemStack> renderer = new IngredientListElementRenderer<>(itemStack);
 				ingredientListSlot.setIngredientRenderer(renderer);
 				if (bakedModel.usesBlockLight()) {
 					renderItems3d.add(renderer);
@@ -122,17 +137,17 @@ public class IngredientListBatchRenderer {
 			}
 		}
 
-		IngredientListElementRenderer<V> renderer = new IngredientListElementRenderer<>(element);
+		IngredientListElementRenderer<V> renderer = new IngredientListElementRenderer<>(ingredient);
 		ingredientListSlot.setIngredientRenderer(renderer);
-		renderOther.add(renderer);
+		IIngredientType<V> ingredientType = ingredientManager.getIngredientType(ingredient);
+		renderOther.put(ingredientType, renderer);
 	}
 
 	@Nullable
 	public ClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
 		IngredientListElementRenderer<?> hovered = getHovered(mouseX, mouseY);
 		if (hovered != null) {
-			IIngredientListElement<?> element = hovered.getElement();
-			return ClickedIngredient.create(element.getIngredient(), hovered.getArea());
+			return ClickedIngredient.create(hovered.getIngredient(), hovered.getArea());
 		}
 		return null;
 	}
@@ -159,6 +174,31 @@ public class IngredientListBatchRenderer {
 	 * renders all ItemStacks
 	 */
 	public void render(Minecraft minecraft, PoseStack poseStack) {
+		if (clientConfig.isFastItemRenderingEnabled()) {
+			// optimized batch rendering
+			renderBatchedItemStacks(minecraft, poseStack);
+		} else {
+			RegisteredIngredient<ItemStack> registeredIngredient = ingredientManager.getRegisteredIngredient(VanillaTypes.ITEM);
+			IIngredientRenderer<ItemStack> ingredientRenderer = registeredIngredient.getIngredientRenderer();
+			IIngredientHelper<ItemStack> ingredientHelper = registeredIngredient.getIngredientHelper();
+			for (IngredientListElementRenderer<ItemStack> slot : renderItems3d) {
+				renderIngredient(poseStack, slot, ingredientRenderer, ingredientHelper);
+			}
+			for (IngredientListElementRenderer<ItemStack> slot : renderItems2d) {
+				renderIngredient(poseStack, slot, ingredientRenderer, ingredientHelper);
+			}
+		}
+
+		// normal rendering
+		for (IIngredientType<?> ingredientType : renderOther.getTypes()) {
+			renderIngredientType(poseStack, ingredientType);
+		}
+	}
+
+	public void renderBatchedItemStacks(Minecraft minecraft, PoseStack poseStack) {
+		if (renderItems2d.isEmpty() && renderItems3d.isEmpty()) {
+			return;
+		}
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		itemRenderer.blitOffset += 50.0F;
@@ -172,23 +212,15 @@ public class IngredientListBatchRenderer {
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-		//TODO - 1.17: Figure out if we are properly factoring the base pose stack into account when calling render
-		// in ItemStackFastRenderer, as there is a decent chance that we are not fully taking it into account for how
-		// the MVM is done.
-
 		MultiBufferSource.BufferSource buffer = minecraft.renderBuffers().bufferSource();
+		RegisteredIngredient<ItemStack> registeredItemstack = ingredientManager.getRegisteredIngredient(VanillaTypes.ITEM);
+		IIngredientHelper<ItemStack> itemStackHelper = registeredItemstack.getIngredientHelper();
+		IIngredientRenderer<ItemStack> itemStackRenderer = registeredItemstack.getIngredientRenderer();
 
-		for (ItemStackFastRenderer slot : renderItems3d) {
-			slot.renderItemAndEffectIntoGUI(buffer, poseStack, editModeConfig, worldConfig);
-		}
-		renderBatch(itemRenderer, buffer);
+		renderItemStackBatch(poseStack, itemRenderer, buffer, itemStackHelper, renderItems3d);
 
-		// 2d Items
 		Lighting.setupForFlatItems();
-		for (ItemStackFastRenderer slot : renderItems2d) {
-			slot.renderItemAndEffectIntoGUI(buffer, poseStack, editModeConfig, worldConfig);
-		}
-		renderBatch(itemRenderer, buffer);
+		renderItemStackBatch(poseStack, itemRenderer, buffer, itemStackHelper, renderItems2d);
 
 		// Default is 3d lighting, see ItemRenderer
 		Lighting.setupFor3DItems();
@@ -202,26 +234,103 @@ public class IngredientListBatchRenderer {
 		itemRenderer.blitOffset -= 50.0F;
 
 		// overlays
-		for (ItemStackFastRenderer slot : renderItems3d) {
-			slot.renderOverlay();
+		for (IngredientListElementRenderer<ItemStack> slot : renderItems3d) {
+			renderOverlay(itemStackRenderer, slot);
 		}
 
-		for (ItemStackFastRenderer slot : renderItems2d) {
-			slot.renderOverlay();
+		for (IngredientListElementRenderer<ItemStack> slot : renderItems2d) {
+			renderOverlay(itemStackRenderer, slot);
 		}
 
 		// Restore model-view matrix now that all items have been rendered
 		RenderSystem.applyModelViewMatrix();
+	}
 
-		// other rendering
-		for (IngredientListElementRenderer<?> slot : renderOther) {
-			slot.renderSlow(poseStack, editModeConfig, worldConfig);
+	private void renderItemStackFast(
+		PoseStack poseStack,
+		ItemRenderer itemRenderer,
+		MultiBufferSource.BufferSource buffer,
+		IIngredientHelper<ItemStack> itemStackHelper,
+		IngredientListElementRenderer<ItemStack> slot
+	) {
+		ItemStack itemStack = slot.getIngredient();
+		if (worldConfig.isEditModeEnabled()) {
+			renderEditMode(poseStack, slot.getArea(), slot.getPadding(), editModeConfig, itemStack, itemStackHelper);
+			RenderSystem.enableBlend();
+		}
+
+		Rect2i area = slot.getArea();
+		int padding = slot.getPadding();
+		try {
+			BakedModel bakedModel = itemRenderer.getModel(itemStack, null, null, 0);
+			poseStack.pushPose();
+			poseStack.translate((area.getX() + padding) / 16D, (area.getY() + padding) / -16D, 0);
+			itemRenderer.render(itemStack, ItemTransforms.TransformType.GUI, false, poseStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
+			poseStack.popPose();
+		} catch (RuntimeException | LinkageError e) {
+			throw ErrorUtil.createRenderIngredientException(e, itemStack);
 		}
 	}
 
-	private static void renderBatch(ItemRenderer itemRenderer, MultiBufferSource.BufferSource buffer) {
-		//Apply changes to MVM AFTER the rendering so that the edit mode overlay draws properly
-		// but before we draw the batch of items as the batch is drawn against the MVM
+	private static void renderOverlay(IIngredientRenderer<ItemStack> renderer, IngredientListElementRenderer<ItemStack> slot) {
+		ItemStack itemStack = slot.getIngredient();
+		Rect2i area = slot.getArea();
+		int padding = slot.getPadding();
+		try {
+			Minecraft minecraft = Minecraft.getInstance();
+			Font font = renderer.getFontRenderer(minecraft, itemStack);
+			ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+			itemRenderer.renderGuiItemDecorations(font, itemStack, area.getX() + padding, area.getY() + padding, null);
+		} catch (RuntimeException | LinkageError e) {
+			throw ErrorUtil.createRenderIngredientException(e, itemStack);
+		}
+	}
+
+	private <T> void renderIngredientType(PoseStack poseStack, IIngredientType<T> ingredientType) {
+		List<IngredientListElementRenderer<T>> slots = renderOther.get(ingredientType);
+		RegisteredIngredient<T> registeredIngredient = ingredientManager.getRegisteredIngredient(ingredientType);
+		IIngredientRenderer<T> ingredientRenderer = registeredIngredient.getIngredientRenderer();
+		IIngredientHelper<T> ingredientHelper = registeredIngredient.getIngredientHelper();
+		for (IngredientListElementRenderer<T> slot : slots) {
+			renderIngredient(poseStack, slot, ingredientRenderer, ingredientHelper);
+		}
+	}
+
+	private <T> void renderIngredient(PoseStack poseStack, IngredientListElementRenderer<T> slot, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
+		T ingredient = slot.getIngredient();
+		Rect2i area = slot.getArea();
+
+		if (worldConfig.isEditModeEnabled()) {
+			renderEditMode(poseStack, area, slot.getPadding(), editModeConfig, ingredient, ingredientHelper);
+			RenderSystem.enableBlend();
+		}
+		try {
+			ingredientRenderer.render(poseStack, area.getX() + slot.getPadding(), area.getY() + slot.getPadding(), ingredient);
+		} catch (RuntimeException | LinkageError e) {
+			throw ErrorUtil.createRenderIngredientException(e, ingredient);
+		}
+	}
+
+	private static <T> void renderEditMode(PoseStack poseStack, Rect2i area, int padding, IEditModeConfig editModeConfig, T ingredient, IIngredientHelper<T> ingredientHelper) {
+		if (editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
+			GuiComponent.fill(poseStack, area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
+			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+		}
+	}
+
+	private void renderItemStackBatch(
+		PoseStack poseStack,
+		ItemRenderer itemRenderer,
+		MultiBufferSource.BufferSource buffer,
+		IIngredientHelper<ItemStack> itemStackHelper,
+		List<IngredientListElementRenderer<ItemStack>> slots
+	) {
+		for (IngredientListElementRenderer<ItemStack> slot : slots) {
+			renderItemStackFast(poseStack, itemRenderer, buffer, itemStackHelper, slot);
+		}
+
+		//Apply changes to MVM AFTER the rendering so that the edit mode overlay draws properly,
+		//but before we draw the batch of items as the batch is drawn against the MVM
 		PoseStack modelViewStack = RenderSystem.getModelViewStack();
 		modelViewStack.pushPose();
 		modelViewStack.translate(16, 0, 100 + itemRenderer.blitOffset);
