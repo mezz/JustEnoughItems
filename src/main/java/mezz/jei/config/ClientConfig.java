@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import mezz.jei.Internal;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
+import mezz.jei.compat.Optifine;
 import mezz.jei.ingredients.IngredientSortStage;
 import mezz.jei.util.GiveMode;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -144,7 +145,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 	@Override
 	public boolean isFastItemRenderingEnabled() {
-		return fastItemRenderingEnabled.get();
+		return fastItemRenderingEnabled.get() && !Optifine.isPresent();
 	}
 
 	@Override
