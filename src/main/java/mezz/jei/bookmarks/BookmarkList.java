@@ -66,20 +66,31 @@ public class BookmarkList implements IIngredientGridSource {
 		return copy;
 	}
 
-	private boolean contains(Object ingredient) {
+	private <T> boolean contains(T ingredient) {
 		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
-		IIngredientHelper<Object> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 		for (Object existing : list) {
 			if (ingredient == existing) {
 				return true;
 			}
-			if (existing != null && existing.getClass() == ingredient.getClass()) {
-				if (ingredientHelper.getUniqueId(existing).equals(ingredientHelper.getUniqueId(ingredient))) {
+			if (ingredient.getClass().isInstance(existing)) {
+				@SuppressWarnings("unchecked")
+				T castExisting = (T) existing;
+				if (ingredient instanceof ItemStack) {
+					return ItemStack.areItemStacksEqual((ItemStack) ingredient, (ItemStack) castExisting);
+				}
+				if (equalUids(ingredientHelper, castExisting, ingredient)) {
 					return true;
 				}
 			}
 		}
 		return false;
+	}
+
+	private static <T> boolean equalUids(IIngredientHelper<T> ingredientHelper, T a, T b) {
+		String uidA = ingredientHelper.getUniqueId(a);
+		String uidB = ingredientHelper.getUniqueId(b);
+		return uidA.equals(uidB);
 	}
 
 	public boolean remove(Object ingredient) {
