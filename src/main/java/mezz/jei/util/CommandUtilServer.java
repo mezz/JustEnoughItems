@@ -8,6 +8,7 @@ import java.util.List;
 import mezz.jei.config.IServerConfig;
 import mezz.jei.config.ServerConfig;
 import net.minecraft.Util;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.items.ItemHandlerHelper;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
@@ -133,22 +134,25 @@ public final class CommandUtilServer {
 	}
 
 	public static void mousePickupItemStack(Player sender, ItemStack itemStack) {
-		int giveCount;
+		AbstractContainerMenu containerMenu = sender.containerMenu;
+
 		ItemStack itemStackCopy = itemStack.copy();
-		ItemStack existingStack = sender.containerMenu.getCarried();
+		ItemStack existingStack = containerMenu.getCarried();
+
+		final int giveCount;
 		if (ItemHandlerHelper.canItemStacksStack(existingStack, itemStack)) {
 			int newCount = Math.min(existingStack.getMaxStackSize(), existingStack.getCount() + itemStack.getCount());
 			giveCount = newCount - existingStack.getCount();
 			existingStack.setCount(newCount);
 		} else {
-			sender.containerMenu.setCarried(itemStack);
+			containerMenu.setCarried(itemStack);
 			giveCount = itemStack.getCount();
 		}
 
 		if (sender instanceof ServerPlayer serverPlayerEntity) {
 			itemStackCopy.setCount(giveCount);
 			notifyGive(serverPlayerEntity, itemStackCopy);
-			serverPlayerEntity.containerMenu.setRemoteCarried(serverPlayerEntity.containerMenu.getCarried());
+			containerMenu.broadcastChanges();
 		}
 	}
 
