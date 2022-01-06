@@ -150,10 +150,16 @@ public class GuiScreenHelper {
 
 	@Nullable
 	private <T> IClickedIngredient<T> createClickedIngredient(@Nullable T ingredient, AbstractContainerScreen<?> guiContainer) {
-		if (ingredient != null && ingredientManager.isValidIngredient(ingredient)) {
-			Rect2i area = null;
-			Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
-			if (ingredient instanceof ItemStack && slotUnderMouse != null && ItemStack.matches(slotUnderMouse.getItem(), (ItemStack) ingredient)) {
+		if (ingredient == null) {
+			return null;
+		}
+		if (!ingredientManager.isValidIngredient(ingredient)) {
+			return null;
+		}
+		Rect2i area = null;
+		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
+		if (ingredient instanceof ItemStack itemStack) {
+			if (slotUnderMouse != null && ItemStack.matches(slotUnderMouse.getItem(), itemStack)) {
 				area = new Rect2i(
 					guiContainer.getGuiLeft() + slotUnderMouse.x,
 					guiContainer.getGuiTop() + slotUnderMouse.y,
@@ -161,9 +167,8 @@ public class GuiScreenHelper {
 					16
 				);
 			}
-			return ClickedIngredient.create(ingredient, area);
 		}
-		return null;
+		return ClickedIngredient.create(ingredient, area);
 	}
 
 	@Nullable

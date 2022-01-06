@@ -8,7 +8,6 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.collect.IngredientSet;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
@@ -16,9 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 public class IngredientManager implements IIngredientManager {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -26,7 +23,7 @@ public class IngredientManager implements IIngredientManager {
 	private final IModIdHelper modIdHelper;
 	private final IngredientBlacklistInternal blacklist;
 
-	private final ImmutableMap<IIngredientType<?>, RegisteredIngredient<?>> ingredientsMap;
+	private final ImmutableMap<IIngredientType<?>, IngredientInfo<?>> ingredientsMap;
 	private final ImmutableList<IIngredientType<?>> registeredIngredientTypes;
 
 	private final boolean enableDebugLogs;
@@ -35,22 +32,22 @@ public class IngredientManager implements IIngredientManager {
 	public IngredientManager(
 		IModIdHelper modIdHelper,
 		IngredientBlacklistInternal blacklist,
-		List<RegisteredIngredient<?>> registeredIngredients,
+		List<IngredientInfo<?>> ingredientInfos,
 		boolean enableDebugLogs
 	) {
 		this.modIdHelper = modIdHelper;
 		this.blacklist = blacklist;
 
-		ImmutableMap.Builder<IIngredientType<?>, RegisteredIngredient<?>> ingredientsMapBuilder = ImmutableMap.builder();
-		for (RegisteredIngredient<?> registeredIngredient : registeredIngredients) {
-			IIngredientType<?> ingredientType = registeredIngredient.getIngredientType();
-			ingredientsMapBuilder.put(ingredientType, registeredIngredient);
+		ImmutableMap.Builder<IIngredientType<?>, IngredientInfo<?>> ingredientsMapBuilder = ImmutableMap.builder();
+		for (IngredientInfo<?> ingredientInfo : ingredientInfos) {
+			IIngredientType<?> ingredientType = ingredientInfo.getIngredientType();
+			ingredientsMapBuilder.put(ingredientType, ingredientInfo);
 		}
 		this.ingredientsMap = ingredientsMapBuilder.build();
 
 		//noinspection UnstableApiUsage
-		this.registeredIngredientTypes = registeredIngredients.stream()
-			.map(RegisteredIngredient::getIngredientType)
+		this.registeredIngredientTypes = ingredientInfos.stream()
+			.map(IngredientInfo::getIngredientType)
 			.collect(ImmutableList.toImmutableList());
 
 		this.enableDebugLogs = enableDebugLogs;
@@ -61,27 +58,25 @@ public class IngredientManager implements IIngredientManager {
 		this.ingredientTypeMap = ingredientTypeBuilder.build();
 	}
 
-	public <V> RegisteredIngredient<V> getRegisteredIngredient(IIngredientType<V> ingredientType) {
+	public <V> IngredientInfo<V> getIngredientInfo(IIngredientType<V> ingredientType) {
 		@SuppressWarnings("unchecked")
-		RegisteredIngredient<V> registeredIngredient = (RegisteredIngredient<V>) ingredientsMap.get(ingredientType);
-		if (registeredIngredient == null) {
+		IngredientInfo<V> ingredientInfo = (IngredientInfo<V>) ingredientsMap.get(ingredientType);
+		if (ingredientInfo == null) {
 			throw new IllegalArgumentException("Unknown ingredient type: " + ingredientType.getIngredientClass());
 		}
-		return registeredIngredient;
+		return ingredientInfo;
 	}
 
 	@Override
 	public <V> Collection<V> getAllIngredients(IIngredientType<V> ingredientType) {
-		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
-		IngredientSet<V> ingredients = registeredIngredient.getIngredientSet();
-		return Collections.unmodifiableCollection(ingredients);
+		IngredientInfo<V> ingredientInfo = getIngredientInfo(ingredientType);
+		return ingredientInfo.getAllIngredients();
 	}
 
 	@Nullable
 	public <V> V getIngredientByUid(IIngredientType<V> ingredientType, String uid) {
-		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
-		IngredientSet<V> ingredients = registeredIngredient.getIngredientSet();
-		return ingredients.getByUid(uid);
+		IngredientInfo<V> ingredientInfo = getIngredientInfo(ingredientType);
+		return ingredientInfo.getIngredientByUid(uid);
 	}
 
 	public <V> boolean isValidIngredient(V ingredient) {
@@ -104,8 +99,8 @@ public class IngredientManager implements IIngredientManager {
 	@Override
 	public <V> IIngredientHelper<V> getIngredientHelper(IIngredientType<V> ingredientType) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
-		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
-		return registeredIngredient.getIngredientHelper();
+		IngredientInfo<V> ingredientInfo = getIngredientInfo(ingredientType);
+		return ingredientInfo.getIngredientHelper();
 	}
 
 	@Override
@@ -118,8 +113,8 @@ public class IngredientManager implements IIngredientManager {
 	@Override
 	public <V> IIngredientRenderer<V> getIngredientRenderer(IIngredientType<V> ingredientType) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
-		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
-		return registeredIngredient.getIngredientRenderer();
+		IngredientInfo<V> ingredientInfo = getIngredientInfo(ingredientType);
+		return ingredientInfo.getIngredientRenderer();
 	}
 
 	@Override
@@ -137,14 +132,13 @@ public class IngredientManager implements IIngredientManager {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
-		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
+		IngredientInfo<V> ingredientInfo = getIngredientInfo(ingredientType);
 
 		LOGGER.info("Ingredients are being added at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
 
-		Set<V> set = registeredIngredient.getIngredientSet();
-		set.addAll(ingredients);
+		ingredientInfo.addIngredients(ingredients);
 
-		IIngredientHelper<V> ingredientHelper = registeredIngredient.getIngredientHelper();
+		IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 
 		for (V ingredient : ingredients) {
 			List<IIngredientListElementInfo<V>> matchingElementInfos = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);
@@ -208,12 +202,11 @@ public class IngredientManager implements IIngredientManager {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
-		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
+		IngredientInfo<V> ingredientInfo = getIngredientInfo(ingredientType);
 
 		LOGGER.info("Ingredients are being removed at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
 
-		IngredientSet<V> set = registeredIngredient.getIngredientSet();
-		set.removeAll(ingredients);
+		ingredientInfo.removeIngredients(ingredients);
 
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientType);
 

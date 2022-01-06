@@ -6,15 +6,17 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.collect.IngredientSet;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 
-public class RegisteredIngredient<T> {
+public class IngredientInfo<T> {
 	private final IIngredientType<T> ingredientType;
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final IngredientSet<T> ingredientSet;
 
-	public RegisteredIngredient(IIngredientType<T> ingredientType, Collection<T> ingredients, IIngredientHelper<T> ingredientHelper, IIngredientRenderer<T> ingredientRenderer) {
+	public IngredientInfo(IIngredientType<T> ingredientType, Collection<T> ingredients, IIngredientHelper<T> ingredientHelper, IIngredientRenderer<T> ingredientRenderer) {
 		this.ingredientType = ingredientType;
 		this.ingredientHelper = ingredientHelper;
 		this.ingredientRenderer = ingredientRenderer;
@@ -35,7 +37,20 @@ public class RegisteredIngredient<T> {
 		return ingredientRenderer;
 	}
 
-	public IngredientSet<T> getIngredientSet() {
-		return ingredientSet;
+	public Collection<T> getAllIngredients() {
+		return Collections.unmodifiableCollection(ingredientSet);
+	}
+
+	public void addIngredients(Collection<T> ingredients) {
+		this.ingredientSet.addAll(ingredients);
+	}
+
+	public void removeIngredients(Collection<T> ingredients) {
+		this.ingredientSet.removeAll(ingredients);
+	}
+
+	@Nullable
+	public T getIngredientByUid(String uid) {
+		return ingredientSet.getByUid(uid);
 	}
 }

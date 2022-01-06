@@ -28,7 +28,7 @@ import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.ModIngredientRegistration;
-import mezz.jei.ingredients.RegisteredIngredient;
+import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.ingredients.SubtypeManager;
 import mezz.jei.load.registration.AdvancedRegistration;
 import mezz.jei.load.registration.GuiHandlerRegistration;
@@ -80,8 +80,8 @@ public class PluginLoader {
 
 		ModIngredientRegistration modIngredientManager = new ModIngredientRegistration(subtypeManager);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(modIngredientManager));
-		List<RegisteredIngredient<?>> registeredIngredients = modIngredientManager.getRegisteredIngredients();
-		ingredientManager = new IngredientManager(modIdHelper, blacklist, registeredIngredients, debugMode);
+		List<IngredientInfo<?>> ingredientInfos = modIngredientManager.getIngredientInfos();
+		ingredientManager = new IngredientManager(modIdHelper, blacklist, ingredientInfos, debugMode);
 		Internal.setIngredientManager(ingredientManager);
 
 		StackHelper stackHelper = new StackHelper(subtypeManager);

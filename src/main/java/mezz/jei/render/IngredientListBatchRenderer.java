@@ -14,7 +14,7 @@ import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.ingredients.IngredientManager;
-import mezz.jei.ingredients.RegisteredIngredient;
+import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
@@ -178,9 +178,9 @@ public class IngredientListBatchRenderer {
 			// optimized batch rendering
 			renderBatchedItemStacks(minecraft, poseStack);
 		} else {
-			RegisteredIngredient<ItemStack> registeredIngredient = ingredientManager.getRegisteredIngredient(VanillaTypes.ITEM);
-			IIngredientRenderer<ItemStack> ingredientRenderer = registeredIngredient.getIngredientRenderer();
-			IIngredientHelper<ItemStack> ingredientHelper = registeredIngredient.getIngredientHelper();
+			IngredientInfo<ItemStack> ingredientInfo = ingredientManager.getIngredientInfo(VanillaTypes.ITEM);
+			IIngredientRenderer<ItemStack> ingredientRenderer = ingredientInfo.getIngredientRenderer();
+			IIngredientHelper<ItemStack> ingredientHelper = ingredientInfo.getIngredientHelper();
 			for (IngredientListElementRenderer<ItemStack> slot : renderItems3d) {
 				renderIngredient(poseStack, slot, ingredientRenderer, ingredientHelper);
 			}
@@ -213,7 +213,7 @@ public class IngredientListBatchRenderer {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
 		MultiBufferSource.BufferSource buffer = minecraft.renderBuffers().bufferSource();
-		RegisteredIngredient<ItemStack> registeredItemstack = ingredientManager.getRegisteredIngredient(VanillaTypes.ITEM);
+		IngredientInfo<ItemStack> registeredItemstack = ingredientManager.getIngredientInfo(VanillaTypes.ITEM);
 		IIngredientHelper<ItemStack> itemStackHelper = registeredItemstack.getIngredientHelper();
 		IIngredientRenderer<ItemStack> itemStackRenderer = registeredItemstack.getIngredientRenderer();
 
@@ -288,9 +288,9 @@ public class IngredientListBatchRenderer {
 
 	private <T> void renderIngredientType(PoseStack poseStack, IIngredientType<T> ingredientType) {
 		List<IngredientListElementRenderer<T>> slots = renderOther.get(ingredientType);
-		RegisteredIngredient<T> registeredIngredient = ingredientManager.getRegisteredIngredient(ingredientType);
-		IIngredientRenderer<T> ingredientRenderer = registeredIngredient.getIngredientRenderer();
-		IIngredientHelper<T> ingredientHelper = registeredIngredient.getIngredientHelper();
+		IngredientInfo<T> ingredientInfo = ingredientManager.getIngredientInfo(ingredientType);
+		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
+		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
 		for (IngredientListElementRenderer<T> slot : slots) {
 			renderIngredient(poseStack, slot, ingredientRenderer, ingredientHelper);
 		}

@@ -15,7 +15,7 @@ import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.ModIngredientRegistration;
-import mezz.jei.ingredients.RegisteredIngredient;
+import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.ingredients.SubtypeManager;
 import mezz.jei.load.registration.SubtypeRegistration;
 import mezz.jei.test.lib.TestClientConfig;
@@ -66,8 +66,8 @@ public class IngredientFilterTest {
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		IModIdHelper modIdHelper = new TestModIdHelper();
-		List<RegisteredIngredient<?>> registeredIngredients = modIngredientRegistration.getRegisteredIngredients();
-		this.ingredientManager =  new IngredientManager(modIdHelper, blacklist, registeredIngredients, true);
+		List<IngredientInfo<?>> ingredientInfos = modIngredientRegistration.getIngredientInfos();
+		this.ingredientManager =  new IngredientManager(modIdHelper, blacklist, ingredientInfos, true);
 
 		this.baseList = IngredientListElementFactory.createBaseList(ingredientManager);
 

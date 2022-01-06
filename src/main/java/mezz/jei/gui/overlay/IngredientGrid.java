@@ -21,7 +21,7 @@ import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientManager;
-import mezz.jei.ingredients.RegisteredIngredient;
+import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
@@ -193,10 +193,10 @@ public class IngredientGrid implements IRecipeFocusSource {
 
 	private <T> void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig, T ingredient) {
 		IIngredientType<T> ingredientType = ingredientManager.getIngredientType(ingredient);
-		RegisteredIngredient<T> registeredIngredient = ingredientManager.getRegisteredIngredient(ingredientType);
-		IIngredientRenderer<T> ingredientRenderer = registeredIngredient.getIngredientRenderer();
+		IngredientInfo<T> ingredientInfo = ingredientManager.getIngredientInfo(ingredientType);
+		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
 
-		List<FormattedText> tooltip = getTooltip(ingredientFilterConfig, worldConfig, ingredient, registeredIngredient);
+		List<FormattedText> tooltip = getTooltip(ingredientFilterConfig, worldConfig, ingredient, ingredientInfo);
 		TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, ingredient, ingredientRenderer);
 	}
 
@@ -204,10 +204,10 @@ public class IngredientGrid implements IRecipeFocusSource {
 		IIngredientFilterConfig ingredientFilterConfig,
 		IWorldConfig worldConfig,
 		T ingredient,
-		RegisteredIngredient<T> registeredIngredient
+		IngredientInfo<T> ingredientInfo
 	) {
-		IIngredientRenderer<T> ingredientRenderer = registeredIngredient.getIngredientRenderer();
-		IIngredientHelper<T> ingredientHelper = registeredIngredient.getIngredientHelper();
+		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
+		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
 		List<Component> ingredientTooltipSafe = IngredientRenderHelper.getIngredientTooltipSafe(ingredient, ingredientRenderer, ingredientHelper, modIdHelper);
 		List<FormattedText> tooltip = new ArrayList<>(ingredientTooltipSafe);
 
@@ -221,7 +221,7 @@ public class IngredientGrid implements IRecipeFocusSource {
 		}
 
 		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
-			addColorSearchInfoToTooltip(tooltip, maxWidth, ingredient, registeredIngredient);
+			addColorSearchInfoToTooltip(tooltip, maxWidth, ingredient, ingredientInfo);
 		}
 
 		if (worldConfig.isEditModeEnabled()) {
@@ -231,10 +231,10 @@ public class IngredientGrid implements IRecipeFocusSource {
 		return tooltip;
 	}
 
-	public static <T> void addColorSearchInfoToTooltip(List<FormattedText> tooltip, int maxWidth, T ingredient, RegisteredIngredient<T> registeredIngredient) {
+	public static <T> void addColorSearchInfoToTooltip(List<FormattedText> tooltip, int maxWidth, T ingredient, IngredientInfo<T> ingredientInfo) {
 		ColorNamer colorNamer = Internal.getColorNamer();
 
-		IIngredientHelper<T> ingredientHelper = registeredIngredient.getIngredientHelper();
+		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
 		Iterable<Integer> colors = ingredientHelper.getColors(ingredient);
 		Collection<String> colorNames = colorNamer.getColorNames(colors, false);
 		if (!colorNames.isEmpty()) {

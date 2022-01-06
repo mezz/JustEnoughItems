@@ -17,7 +17,7 @@ import mezz.jei.color.ColorGetter;
 import mezz.jei.util.ErrorUtil;
 
 public class ModIngredientRegistration implements IModIngredientRegistration {
-	private final List<RegisteredIngredient<?>> registeredIngredients = new ArrayList<>();
+	private final List<IngredientInfo<?>> ingredientInfos = new ArrayList<>();
 	private final Set<IIngredientType<?>> registeredIngredientSet = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final ISubtypeManager subtypeManager;
 
@@ -35,7 +35,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 			throw new IllegalArgumentException("Ingredient type has already been registered: " + ingredientType.getIngredientClass());
 		}
 
-		registeredIngredients.add(new RegisteredIngredient<>(ingredientType, allIngredients, ingredientHelper, ingredientRenderer));
+		ingredientInfos.add(new IngredientInfo<>(ingredientType, allIngredients, ingredientHelper, ingredientRenderer));
 		registeredIngredientSet.add(ingredientType);
 	}
 
@@ -49,7 +49,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		return ColorGetter.INSTANCE;
 	}
 
-	public List<RegisteredIngredient<?>> getRegisteredIngredients() {
-		return registeredIngredients;
+	public List<IngredientInfo<?>> getIngredientInfos() {
+		return ingredientInfos;
 	}
 }
