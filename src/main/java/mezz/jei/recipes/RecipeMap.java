@@ -8,7 +8,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.collect.ListMultiMap;
 import mezz.jei.collect.Table;
-import mezz.jei.ingredients.IngredientInformation;
+import mezz.jei.ingredients.IngredientInformationUtil;
 import mezz.jei.ingredients.IngredientsForType;
 import net.minecraft.resources.ResourceLocation;
 
@@ -38,7 +38,7 @@ public class RecipeMap {
 
 		Set<ResourceLocation> recipeCategories = new HashSet<>();
 
-		for (String key : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Recipe)) {
+		for (String key : IngredientInformationUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Recipe)) {
 			recipeCategories.addAll(categoryUidMap.get(key));
 		}
 
@@ -60,7 +60,7 @@ public class RecipeMap {
 		Map<String, List<Object>> recipesForType = recipeTable.getRow(recipeCategory);
 
 		ImmutableList.Builder<T> listBuilder = ImmutableList.builder();
-		for (String key : IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Recipe)) {
+		for (String key : IngredientInformationUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Recipe)) {
 			@SuppressWarnings("unchecked")
 			List<T> recipes = (List<T>) recipesForType.get(key);
 			if (recipes != null) {

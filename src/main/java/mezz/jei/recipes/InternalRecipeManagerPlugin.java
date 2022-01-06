@@ -16,7 +16,7 @@ import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.Focus;
-import mezz.jei.ingredients.IngredientInformation;
+import mezz.jei.ingredients.IngredientInformationUtil;
 
 public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 	private final ImmutableMultimap<String, ResourceLocation> categoriesForRecipeCatalystKeys;
@@ -88,7 +88,7 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 	private <T, V> boolean isCatalystIngredient(IRecipeCategory<T> recipeCategory, V ingredient) {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		ResourceLocation recipeCategoryUid = recipeCategory.getUid();
-		List<String> ingredientUids = IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Recipe);
+		List<String> ingredientUids = IngredientInformationUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Recipe);
 		return ingredientUids.stream()
 			.map(categoriesForRecipeCatalystKeys::get)
 			.anyMatch(catalystCategories -> catalystCategories.contains(recipeCategoryUid));

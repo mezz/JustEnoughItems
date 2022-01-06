@@ -20,8 +20,8 @@ import mezz.jei.color.ColorNamer;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.util.Translator;
 
-public final class IngredientInformation {
-	private IngredientInformation() {
+public final class IngredientInformationUtil {
+	private IngredientInformationUtil() {
 	}
 
 	public static <T> String getDisplayName(T ingredient, IIngredientHelper<T> ingredientHelper) {
@@ -34,7 +34,7 @@ public final class IngredientInformation {
 		List<Component> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
 		return tooltip.stream()
 			.map(Component::getString)
-			.map(IngredientInformation::removeChatFormatting)
+			.map(IngredientInformationUtil::removeChatFormatting)
 			.map(Translator::toLowercaseWithLocale)
 			.map(line -> {
 				for (String excludeWord : toRemove) {

@@ -65,7 +65,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 		this.modNames = this.modIds.stream()
 			.map(modIdHelper::getModNameForModId)
 			.toList();
-		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
+		this.displayName = IngredientInformationUtil.getDisplayName(ingredient, ingredientHelper);
 		this.resourceId = ingredientHelper.getResourceId(ingredient);
 		this.sortedIndex = -1;
 	}
@@ -108,7 +108,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 		String displayNameLowercase = Translator.toLowercaseWithLocale(this.displayName);
 		V ingredient = element.getIngredient();
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
-		return IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceId), config);
+		return IngredientInformationUtil.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceId), config);
 	}
 
 	@Override
@@ -142,7 +142,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	public Collection<String> getColorStrings(IIngredientManager ingredientManager) {
 		V ingredient = element.getIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		return IngredientInformation.getColorStrings(ingredient, ingredientHelper);
+		return IngredientInformationUtil.getColorStrings(ingredient, ingredientHelper);
 	}
 
 	@Override
