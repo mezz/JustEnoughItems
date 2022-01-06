@@ -1,5 +1,20 @@
 package mezz.jei.config;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.bookmarks.BookmarkList;
+import mezz.jei.ingredients.IngredientManager;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.world.item.ItemStack;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileReader;
@@ -11,23 +26,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.TagParser;
-
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.ingredients.IngredientManager;
-import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class BookmarkConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -52,19 +50,18 @@ public class BookmarkConfig {
 		this.jeiConfigurationDir = jeiConfigurationDir;
 	}
 
-	public void saveBookmarks(IIngredientManager ingredientManager, List<IIngredientListElement<?>> ingredientListElements) {
+	public void saveBookmarks(IIngredientManager ingredientManager, List<?> ingredientList) {
 		File file = getFile(jeiConfigurationDir);
 		if (file == null) {
 			return;
 		}
 
 		List<String> strings = new ArrayList<>();
-		for (IIngredientListElement<?> element : ingredientListElements) {
-			Object object = element.getIngredient();
-			if (object instanceof ItemStack stack) {
+		for (Object ingredient : ingredientList) {
+			if (ingredient instanceof ItemStack stack) {
 				strings.add(MARKER_STACK + stack.save(new CompoundTag()));
 			} else {
-				strings.add(MARKER_OTHER + getUid(ingredientManager, element));
+				strings.add(MARKER_OTHER + getUid(ingredientManager, ingredient));
 			}
 		}
 
@@ -112,7 +109,7 @@ public class BookmarkConfig {
 					ItemStack itemStack = ItemStack.of(itemStackAsNbt);
 					if (!itemStack.isEmpty()) {
 						ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);
-						bookmarkList.addToLists(normalized, false);
+						bookmarkList.addToList(normalized, false);
 					} else {
 						LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
 					}
@@ -125,7 +122,7 @@ public class BookmarkConfig {
 				if (ingredient != null) {
 					IIngredientHelper<Object> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 					Object normalized = ingredientHelper.normalizeIngredient(ingredient);
-					bookmarkList.addToLists(normalized, false);
+					bookmarkList.addToList(normalized, false);
 				}
 			} else {
 				LOGGER.error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);
@@ -134,8 +131,7 @@ public class BookmarkConfig {
 		bookmarkList.notifyListenersOfChange();
 	}
 
-	private static <T> String getUid(IIngredientManager ingredientManager, IIngredientListElement<T> element) {
-		T ingredient = element.getIngredient();
+	private static <T> String getUid(IIngredientManager ingredientManager, T ingredient) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		return ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
 	}
