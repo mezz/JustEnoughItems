@@ -9,6 +9,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.ingredients.IngredientManager;
+import net.minecraft.world.item.ItemStack;
 
 public class BookmarkList implements IIngredientGridSource {
 	private final List<Object> list = new LinkedList<>();
@@ -34,15 +35,20 @@ public class BookmarkList implements IIngredientGridSource {
 		return false;
 	}
 
-	private boolean contains(Object ingredient) {
+	private <T> boolean contains(T ingredient) {
 		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
-		IIngredientHelper<Object> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		for (Object existing : list) {
 			if (ingredient == existing) {
 				return true;
 			}
-			if (existing != null && existing.getClass() == ingredient.getClass()) {
-				if (equalUids(ingredientHelper, existing, ingredient)) {
+			if (ingredient.getClass().isInstance(existing)) {
+				@SuppressWarnings("unchecked")
+				T castExisting = (T) existing;
+				if (ingredient instanceof ItemStack) {
+					return ItemStack.matches((ItemStack) ingredient, (ItemStack) castExisting);
+				}
+				if (equalUids(ingredientHelper, castExisting, ingredient)) {
 					return true;
 				}
 			}
@@ -50,7 +56,7 @@ public class BookmarkList implements IIngredientGridSource {
 		return false;
 	}
 
-	private static boolean equalUids(IIngredientHelper<Object> ingredientHelper, Object a, Object b) {
+	private static <T> boolean equalUids(IIngredientHelper<T> ingredientHelper, T a, T b) {
 		String uidA = ingredientHelper.getUniqueId(a, UidContext.Ingredient);
 		String uidB = ingredientHelper.getUniqueId(b, UidContext.Ingredient);
 		return uidA.equals(uidB);
