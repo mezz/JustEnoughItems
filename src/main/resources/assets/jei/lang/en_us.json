@@ -58,7 +58,7 @@
 
   "jei.key.category.cheat.mode": "JEI (Cheat Mode)",
   "key.jei.toggleCheatMode": "Toggle Cheat Mode",
-  "key.jei.toggleCheatModeConfigButton": "Toggle Cheat Mode (when hovering over config button)",
+  "key.jei.toggleCheatModeConfigButton": "Toggle Cheat Mode (mouse over config button)",
   "key.jei.cheatOneItem": "Cheat 1 item",
   "key.jei.cheatOneItem2": "Cheat 1 item",
   "key.jei.cheatItemStack": "Cheat 1 stack of items",
@@ -67,7 +67,7 @@
   "jei.key.category.edit.mode": "JEI (Edit Mode)",
   "key.jei.toggleEditMode": "Toggle Hide Ingredients Mode",
   "key.jei.toggleHideIngredient": "Hide an ingredient",
-  "key.jei.toggleWildcardHideIngredient": "Hide an ingredient using wildcard matching",
+  "key.jei.toggleWildcardHideIngredient": "Hide an ingredient using wildcard",
 
   "jei.key.category.mouse.hover": "JEI (Hovering with Mouse)",
   "key.jei.bookmark": "Add/Remove Bookmark",
