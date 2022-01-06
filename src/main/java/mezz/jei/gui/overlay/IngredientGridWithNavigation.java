@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 
+import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IFilterTextSource;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
@@ -50,6 +51,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 	private final GuiScreenHelper guiScreenHelper;
 	private final IFilterTextSource filterTextSource;
 	private final IWorldConfig worldConfig;
+	private final IClientConfig clientConfig;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
 	private final IMouseHandler mouseHandler;
@@ -60,10 +62,12 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 		IFilterTextSource filterTextSource,
 		GuiScreenHelper guiScreenHelper,
 		IngredientGrid ingredientGrid,
-		IWorldConfig worldConfig
+		IWorldConfig worldConfig,
+		IClientConfig clientConfig
 	) {
 		this.filterTextSource = filterTextSource;
 		this.worldConfig = worldConfig;
+		this.clientConfig = clientConfig;
 		this.ingredientGrid = ingredientGrid;
 		this.ingredientSource = ingredientSource;
 		this.guiScreenHelper = guiScreenHelper;
@@ -152,7 +156,10 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 			this.pageDelegate.previousPage();
 			return true;
 		}
-		return checkHotbarKeys(input);
+		if (clientConfig.isCheatToHotbarUsingHotkeysEnabled()) {
+			return checkHotbarKeys(input);
+		}
+		return false;
 	}
 
 	/**
