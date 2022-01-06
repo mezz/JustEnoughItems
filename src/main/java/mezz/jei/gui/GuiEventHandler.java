@@ -54,7 +54,6 @@ public class GuiEventHandler {
 		EventBusHelper.registerWeakListener(this, ContainerScreenEvent.DrawForeground.class, GuiEventHandler::onDrawForegroundEvent);
 		EventBusHelper.registerWeakListener(this, ScreenEvent.DrawScreenEvent.Post.class, GuiEventHandler::onDrawScreenEventPost);
 		EventBusHelper.registerWeakListener(this, TickEvent.ClientTickEvent.class, GuiEventHandler::onClientTick);
-		EventBusHelper.registerWeakListener(this, ScreenEvent.PotionShiftEvent.class, GuiEventHandler::onPotionShiftEvent);
 	}
 
 	public void onOverlayToggle(OverlayToggleEvent event) {
@@ -139,11 +138,5 @@ public class GuiEventHandler {
 		}
 
 		ingredientListOverlay.handleTick();
-	}
-
-	public void onPotionShiftEvent(ScreenEvent.PotionShiftEvent event) {
-		if (ingredientListOverlay.isListDisplayed()) {
-			event.setCanceled(true);
-		}
 	}
 }

@@ -35,16 +35,19 @@ class InventoryEffectRendererGuiHandler<T extends AbstractContainerMenu> impleme
 		}
 
 		List<Rect2i> areas = new ArrayList<>();
-		int x = containerScreen.getGuiLeft() - 124;
+		int x = containerScreen.getGuiLeft() + containerScreen.getXSize() + 2;
 		int y = containerScreen.getGuiTop();
+		int availableSpace = containerScreen.width - x;
+		int width = availableSpace >= 120 ? 120 : 32;
+
 		int height = 33;
 		if (activePotionEffects.size() > 5) {
 			height = 132 / (activePotionEffects.size() - 1);
 		}
-		for (MobEffectInstance potioneffect : Ordering.natural().sortedCopy(activePotionEffects)) {
-			EffectRenderer effectRenderer = RenderProperties.getEffectRenderer(potioneffect);
-			if (effectRenderer.shouldRender(potioneffect)) {
-				areas.add(new Rect2i(x, y, 166, height));
+		for (MobEffectInstance potionEffect : activePotionEffects) {
+			EffectRenderer effectRenderer = RenderProperties.getEffectRenderer(potionEffect);
+			if (effectRenderer.shouldRender(potionEffect)) {
+				areas.add(new Rect2i(x, y, width, height));
 				y += height;
 			}
 		}
