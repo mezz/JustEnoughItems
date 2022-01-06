@@ -12,6 +12,8 @@ public interface IClientConfig {
 
 	boolean isLowMemorySlowSearchEnabled();
 
+	boolean isCheatToHotbarUsingHotkeysEnabled();
+
 	GiveMode getGiveMode();
 
 	int getMinColumns();
