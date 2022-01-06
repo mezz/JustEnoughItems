@@ -14,6 +14,8 @@ public interface IClientConfig {
 
 	boolean isFastItemRenderingEnabled();
 
+	boolean isCheatToHotbarUsingHotkeysEnabled();
+
 	GiveMode getGiveMode();
 
 	int getMinColumns();
