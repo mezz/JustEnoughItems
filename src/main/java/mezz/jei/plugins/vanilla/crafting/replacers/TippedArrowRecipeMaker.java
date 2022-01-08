@@ -9,6 +9,7 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraftforge.common.crafting.NBTIngredient;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.stream.Stream;
@@ -22,7 +23,8 @@ public final class TippedArrowRecipeMaker {
 				ItemStack arrowStack = new ItemStack(Items.ARROW);
 				ItemStack lingeringPotion = PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), potion);
 				Ingredient arrowIngredient = Ingredient.of(arrowStack);
-				Ingredient potionIngredient = Ingredient.of(lingeringPotion);
+				Ingredient potionIngredient = new NBTIngredient(lingeringPotion) {
+				};
 				NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY,
 					arrowIngredient, arrowIngredient, arrowIngredient,
 					arrowIngredient, potionIngredient, arrowIngredient,
