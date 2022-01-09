@@ -5,7 +5,6 @@ import mezz.jei.config.forge.Property;
 import mezz.jei.events.BookmarkOverlayToggleEvent;
 import mezz.jei.events.EditModeToggleEvent;
 import mezz.jei.events.EventBusHelper;
-import mezz.jei.events.OverlayToggleEvent;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.util.Translator;
@@ -84,8 +83,6 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 				worldConfig.save();
 			}
 		}
-
-		EventBusHelper.post(new OverlayToggleEvent(values.overlayEnabled));
 	}
 
 	@Override

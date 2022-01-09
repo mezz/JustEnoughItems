@@ -18,7 +18,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.events.EventBusHelper;
-import mezz.jei.events.OverlayToggleEvent;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.input.MouseUtil;
@@ -47,20 +46,12 @@ public class GuiEventHandler {
 	}
 
 	public void registerToEventBus() {
-		EventBusHelper.registerWeakListener(this, OverlayToggleEvent.class, GuiEventHandler::onOverlayToggle);
 		EventBusHelper.registerWeakListener(this, ScreenEvent.InitScreenEvent.Post.class, GuiEventHandler::onGuiInit);
 		EventBusHelper.registerWeakListener(this, ScreenOpenEvent.class, GuiEventHandler::onGuiOpen);
 		EventBusHelper.registerWeakListener(this, ScreenEvent.BackgroundDrawnEvent.class, GuiEventHandler::onDrawBackgroundEventPost);
 		EventBusHelper.registerWeakListener(this, ContainerScreenEvent.DrawForeground.class, GuiEventHandler::onDrawForegroundEvent);
 		EventBusHelper.registerWeakListener(this, ScreenEvent.DrawScreenEvent.Post.class, GuiEventHandler::onDrawScreenEventPost);
 		EventBusHelper.registerWeakListener(this, TickEvent.ClientTickEvent.class, GuiEventHandler::onClientTick);
-	}
-
-	public void onOverlayToggle(OverlayToggleEvent event) {
-		Minecraft minecraft = Minecraft.getInstance();
-		Screen currentScreen = minecraft.screen;
-		ingredientListOverlay.updateScreen(currentScreen, true);
-		leftAreaDispatcher.updateScreen(currentScreen, false);
 	}
 
 	public void onGuiInit(ScreenEvent.InitScreenEvent.Post event) {
