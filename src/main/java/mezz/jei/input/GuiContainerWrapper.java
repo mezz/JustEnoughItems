@@ -26,6 +26,10 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 			return null;
 		}
 		ContainerScreen<?> guiContainer = (ContainerScreen<?>) guiScreen;
+		IClickedIngredient<?> pluginsIngredientUnderMouse = guiScreenHelper.getPluginsIngredientUnderMouse(guiContainer, mouseX, mouseY);
+		if (pluginsIngredientUnderMouse != null) {
+			return pluginsIngredientUnderMouse;
+		}
 		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
 		if (slotUnderMouse != null) {
 			ItemStack stack = slotUnderMouse.getItem();
@@ -34,7 +38,7 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 				return ClickedIngredient.create(stack, slotArea);
 			}
 		}
-		return guiScreenHelper.getPluginsIngredientUnderMouse(guiContainer, mouseX, mouseY);
+		return null;
 	}
 
 	@Override
