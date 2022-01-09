@@ -53,6 +53,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	// properties of the gui we're beside
 	@Nullable
 	private IGuiProperties guiProperties;
+	@Nullable
+	private GuiScreen currentScreen;
 
 	public IngredientListOverlay(IngredientFilter ingredientFilter, IngredientRegistry ingredientRegistry, GuiScreenHelper guiScreenHelper) {
 		this.ingredientFilter = ingredientFilter;
@@ -87,6 +89,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	}
 
 	public void updateScreen(@Nullable GuiScreen guiScreen, boolean forceUpdate) {
+		if (currentScreen != guiScreen) {
+			currentScreen = guiScreen;
+			this.ghostIngredientDragManager.stopDrag();
+		}
 		final boolean wasDisplayed = isListDisplayed();
 		IGuiProperties guiProperties = guiScreenHelper.getGuiProperties(guiScreen);
 		if (guiProperties == null) {
@@ -96,7 +102,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 				this.ghostIngredientDragManager.stopDrag();
 			}
 		} else {
-			if (forceUpdate || this.guiProperties == null || !GuiProperties.areEqual(this.guiProperties, guiProperties)) {
+			boolean propertiesChanged = this.guiProperties == null || !GuiProperties.areEqual(this.guiProperties, guiProperties);
+			if (propertiesChanged) {
+				this.ghostIngredientDragManager.stopDrag();
+			}
+			if (forceUpdate || propertiesChanged) {
 				this.guiProperties = guiProperties;
 				this.displayArea = getDisplayArea(guiProperties);
 

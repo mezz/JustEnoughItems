@@ -94,6 +94,8 @@ public class GhostIngredientDragManager {
 			this.ghostIngredientDrag.stop();
 			this.ghostIngredientDrag = null;
 		}
+		this.hoveredIngredient = null;
+		this.hoveredIngredientTargets = null;
 	}
 
 	public <T extends GuiScreen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked) {

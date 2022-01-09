@@ -28,6 +28,8 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	private int current = 0;
 	@Nullable
 	private IGuiProperties guiProperties;
+	@Nullable
+	private GuiScreen currentScreen;
 	private Rectangle naviArea = new Rectangle();
 	private Rectangle displayArea = new Rectangle();
 	private final PageNavigation navigation;
@@ -68,6 +70,10 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 	}
 
 	public void updateScreen(@Nullable GuiScreen guiScreen, boolean forceUpdate) {
+		if (currentScreen != guiScreen) {
+			currentScreen = guiScreen;
+			contents.forEach(ILeftAreaContent::onHidden);
+		}
 		canShow = false;
 		if (hasContent()) {
 			IGuiProperties currentGuiProperties = guiScreenHelper.getGuiProperties(guiScreen);
