@@ -1,31 +1,22 @@
 package mezz.jei.plugins.vanilla.ingredients.item;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
-
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	private final StackHelper stackHelper;
@@ -37,25 +28,6 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public IIngredientType<ItemStack> getIngredientType() {
 		return VanillaTypes.ITEM;
-	}
-
-	@Override
-	public IFocus<?> translateFocus(IFocus<ItemStack> focus, IFocusFactory focusFactory) {
-		ItemStack itemStack = focus.getValue();
-		Item item = itemStack.getItem();
-		// Special case for ItemBlocks containing fluid blocks.
-		// Nothing crafts those, the player probably wants to look up fluids.
-		if (item instanceof BlockItem) {
-			Block block = ((BlockItem) item).getBlock();
-			if (block instanceof IFluidBlock fluidBlock) {
-				Fluid fluid = fluidBlock.getFluid();
-				if (fluid != null) {
-					FluidStack fluidStack = new FluidStack(fluid, FluidAttributes.BUCKET_VOLUME);
-					return focusFactory.createFocus(focus.getMode(), fluidStack);
-				}
-			}
-		}
-		return focus;
 	}
 
 	@Nullable

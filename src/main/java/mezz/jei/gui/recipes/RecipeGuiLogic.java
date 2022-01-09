@@ -44,11 +44,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public <V> boolean setFocus(Focus<V> focus) {
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(focus.getValue());
-		IFocus<?> translatedFocus = ingredientHelper.translateFocus(focus, Focus::new);
-		Focus<?> checkedTranslatedFocus = Focus.check(translatedFocus);
-
-		IngredientLookupState state = IngredientLookupState.createWithFocus(recipeManager, checkedTranslatedFocus);
+		IngredientLookupState state = IngredientLookupState.createWithFocus(recipeManager, focus);
 		ImmutableList<IRecipeCategory<?>> recipeCategories = state.getRecipeCategories();
 		if (recipeCategories.isEmpty()) {
 			return false;

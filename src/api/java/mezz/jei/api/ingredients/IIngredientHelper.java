@@ -29,8 +29,9 @@ public interface IIngredientHelper<V> {
 	 * Change one focus into a different focus.
 	 * This can be used to treat lookups of one focus as if it were something else.
 	 *
-	 * On example is looking up fluid blocks, which get translated here into looking up the fluid itself.
+	 * @deprecated since JEI 9.2.0. There isn't a good use for this anymore.
 	 */
+	@Deprecated
 	default IFocus<?> translateFocus(IFocus<V> focus, IFocusFactory focusFactory) {
 		return focus;
 	}
