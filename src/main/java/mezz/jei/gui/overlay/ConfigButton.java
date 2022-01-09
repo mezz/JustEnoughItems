@@ -36,8 +36,10 @@ public class ConfigButton extends GuiIconToggleButton {
 		tooltip.add(new TranslatableComponent("jei.tooltip.config"));
 		if (!worldConfig.isOverlayEnabled()) {
 			TranslatableComponent disabled = new TranslatableComponent("jei.tooltip.ingredient.list.disabled");
-			TranslatableComponent overLay = new TranslatableComponent(KeyBindings.toggleOverlay.saveString());
-			TranslatableComponent disabledFix = new TranslatableComponent("jei.tooltip.ingredient.list.disabled.how.to.fix", overLay);
+			TranslatableComponent disabledFix = new TranslatableComponent(
+				"jei.tooltip.ingredient.list.disabled.how.to.fix",
+				KeyBindings.toggleOverlay.getTranslatedKeyMessage()
+			);
 			tooltip.add(disabled.withStyle(ChatFormatting.GOLD));
 			tooltip.add(disabledFix.withStyle(ChatFormatting.GOLD));
 		} else if (!parent.isListDisplayed()) {

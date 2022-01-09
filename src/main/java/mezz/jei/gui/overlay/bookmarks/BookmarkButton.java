@@ -46,7 +46,10 @@ public class BookmarkButton extends GuiIconToggleButton {
 			TranslatableComponent notEnoughSpace = new TranslatableComponent("jei.tooltip.bookmarks.not.enough.space");
 			tooltip.add(notEnoughSpace.withStyle(ChatFormatting.GOLD));
 		} else {
-			TranslatableComponent key = new TranslatableComponent("jei.tooltip.bookmarks.usage.key", new TranslatableComponent(bookmarkKey.saveString()));
+			TranslatableComponent key = new TranslatableComponent(
+				"jei.tooltip.bookmarks.usage.key",
+				bookmarkKey.getTranslatedKeyMessage()
+			);
 			tooltip.add(key.withStyle(ChatFormatting.GRAY));
 		}
 	}
