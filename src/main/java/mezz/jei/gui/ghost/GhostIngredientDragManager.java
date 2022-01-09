@@ -89,6 +89,7 @@ public class GhostIngredientDragManager {
 			this.ghostIngredientDrag.stop();
 			this.ghostIngredientDrag = null;
 		}
+		this.hoveredIngredient = null;
 		this.hoveredIngredientTargets = null;
 	}
 
