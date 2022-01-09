@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.effect.MobEffectInstance;
 
-import com.google.common.collect.Ordering;
 import net.minecraftforge.client.EffectRenderer;
 import net.minecraftforge.client.RenderProperties;
 

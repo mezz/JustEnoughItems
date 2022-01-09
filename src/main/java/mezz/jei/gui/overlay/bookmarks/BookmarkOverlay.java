@@ -7,7 +7,6 @@ import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.CheatUserInputHandler;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;

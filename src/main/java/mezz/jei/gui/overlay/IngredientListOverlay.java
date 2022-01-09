@@ -9,7 +9,6 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
-import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;

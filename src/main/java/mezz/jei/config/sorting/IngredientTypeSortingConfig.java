@@ -1,7 +1,6 @@
 package mezz.jei.config.sorting;
 
 import mezz.jei.config.sorting.serializers.SortingSerializers;
-import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IIngredientListElementInfo;
 import net.minecraft.world.item.ItemStack;
 
