@@ -90,7 +90,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			.build();
 	}
 
-	public void updateScreen(@Nullable Screen guiScreen, boolean forceUpdate) {
+	public void updateScreen(@Nullable Screen guiScreen, boolean exclusionAreasChanged) {
 		final boolean wasDisplayed = isListDisplayed();
 		IGuiProperties guiProperties = guiScreenHelper.getGuiProperties(guiScreen);
 		if (guiProperties == null) {
@@ -99,8 +99,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 				this.searchField.setFocused(false);
 				this.ghostIngredientDragManager.stopDrag();
 			}
-		} else if (forceUpdate || this.guiProperties == null || !GuiProperties.areEqual(this.guiProperties, guiProperties)) {
-			updateNewScreen(guiProperties);
+		} else {
+			final boolean guiPropertiesChanged = this.guiProperties == null || !GuiProperties.areEqual(this.guiProperties, guiProperties);
+			if (exclusionAreasChanged || guiPropertiesChanged) {
+				updateNewScreen(guiProperties, guiPropertiesChanged);
+			}
 		}
 
 		if (wasDisplayed && !isListDisplayed()) {
@@ -108,9 +111,12 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		}
 	}
 
-	private void updateNewScreen(IGuiProperties guiProperties) {
+	private void updateNewScreen(IGuiProperties guiProperties, boolean guiPropertiesChanged) {
 		this.guiProperties = guiProperties;
 		this.displayArea = createDisplayArea(guiProperties);
+		if (guiPropertiesChanged) {
+			this.ghostIngredientDragManager.stopDrag();
+		}
 
 		final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, guiProperties);
 
