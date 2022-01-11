@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.config.EditModeConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.IngredientBlacklistType;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IIngredientListElementInfo;
@@ -24,6 +25,7 @@ import mezz.jei.test.lib.TestIngredientFilterConfig;
 import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
+import mezz.jei.test.lib.TestWorldConfig;
 import mezz.jei.util.Translator;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.NonNullList;
@@ -71,6 +73,7 @@ public class IngredientFilterTest {
 
 		this.editModeConfig = new EditModeConfig(null);
 
+		IWorldConfig worldConfig = new TestWorldConfig();
 		IClientConfig clientConfig = new TestClientConfig(false);
 
 		TestIngredientFilterConfig ingredientFilterConfig = new TestIngredientFilterConfig();
