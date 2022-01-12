@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -195,13 +196,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
 
-		GuiIngredient<?> hoveredIngredient = null;
-		for (GuiIngredientGroup<?> guiIngredientGroup : guiIngredientGroups.values()) {
-			hoveredIngredient = guiIngredientGroup.getHoveredIngredient(posX, posY, mouseX, mouseY);
-			if (hoveredIngredient != null) {
-				break;
-			}
-		}
+		GuiIngredient<?> hoveredIngredient = guiIngredientGroups.values().stream()
+			.map(guiIngredientGroup -> guiIngredientGroup.getHoveredIngredient(posX, posY, mouseX, mouseY))
+			.flatMap(Optional::stream)
+			.findFirst()
+			.orElse(null);
+
 		if (recipeTransferButton != null) {
 			recipeTransferButton.drawToolTip(poseStack, mouseX, mouseY);
 		}
@@ -231,22 +231,18 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 	@Override
 	@Nullable
 	public <I> I getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<I> ingredientType) {
-		GuiIngredient<?> guiIngredient = getGuiIngredientUnderMouse(mouseX, mouseY);
-		return Optional.ofNullable(guiIngredient)
+		return getGuiIngredientUnderMouse(mouseX, mouseY)
 			.map(i -> IngredientTypeHelper.checkedCast(i, ingredientType))
 			.map(GuiIngredient::getDisplayedIngredient)
 			.orElse(null);
 	}
 
-	@Nullable
-	public GuiIngredient<?> getGuiIngredientUnderMouse(double mouseX, double mouseY) {
-		for (GuiIngredientGroup<?> guiIngredientGroup : guiIngredientGroups.values()) {
-			GuiIngredient<?> clicked = guiIngredientGroup.getHoveredIngredient(posX, posY, mouseX, mouseY);
-			if (clicked != null) {
-				return clicked;
-			}
-		}
-		return null;
+	public Optional<? extends GuiIngredient<?>> getGuiIngredientUnderMouse(double mouseX, double mouseY) {
+		Collection<GuiIngredientGroup<?>> values = guiIngredientGroups.values();
+		return values.stream()
+			.map(guiIngredientGroup -> guiIngredientGroup.getHoveredIngredient(posX, posY, mouseX, mouseY))
+			.flatMap(Optional::stream)
+			.findFirst();
 	}
 
 	public boolean handleInput(UserInput input) {

@@ -52,6 +52,11 @@ public class Rectangle2dBuilder {
 		return this;
 	}
 
+	public Rectangle2dBuilder addY(int y) {
+		this.y += y;
+		return this;
+	}
+
 	public Rectangle2dBuilder subY(int y) {
 		this.y -= y;
 		return this;

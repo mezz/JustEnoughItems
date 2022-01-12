@@ -15,10 +15,10 @@ import net.minecraft.client.gui.screens.Screen;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
+import java.util.Optional;
 
-public class ClickEditHandler implements IUserInputHandler {
+public class EditInputHandler implements IUserInputHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final CombinedRecipeFocusSource focusSource;
@@ -27,7 +27,7 @@ public class ClickEditHandler implements IUserInputHandler {
 	private final IWorldConfig worldConfig;
 	private final IEditModeConfig editModeConfig;
 
-	public ClickEditHandler(CombinedRecipeFocusSource focusSource, IIngredientManager ingredientManager, IngredientFilter ingredientFilter, IWorldConfig worldConfig, IEditModeConfig editModeConfig) {
+	public EditInputHandler(CombinedRecipeFocusSource focusSource, IIngredientManager ingredientManager, IngredientFilter ingredientFilter, IWorldConfig worldConfig, IEditModeConfig editModeConfig) {
 		this.focusSource = focusSource;
 		this.ingredientManager = ingredientManager;
 		this.weakIngredientFilter = new WeakReference<>(ingredientFilter);
@@ -36,25 +36,33 @@ public class ClickEditHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public IUserInputHandler handleUserInput(Screen screen, UserInput input) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
 		if (!worldConfig.isEditModeEnabled()) {
-			return null;
+			return Optional.empty();
 		}
-		IngredientBlacklistType blacklistType = getBlacklistType(input);
-		if (blacklistType == null) {
-			return null;
+
+		if (input.is(KeyBindings.toggleHideIngredient)) {
+			return handle(input, IngredientBlacklistType.ITEM);
 		}
-		IClickedIngredient<?> clicked = focusSource.getIngredientUnderMouse(input);
-		if (clicked == null) {
-			return null;
+
+		if (input.is(KeyBindings.toggleWildcardHideIngredient)) {
+			return handle(input, IngredientBlacklistType.WILDCARD);
 		}
-		if (!input.isSimulate()) {
-			handle(clicked, blacklistType);
-		}
-		return LimitedAreaUserInputHandler.create(this, clicked.getArea());
+
+		return Optional.empty();
 	}
 
-	private <V> void handle(IClickedIngredient<V> clicked, IngredientBlacklistType blacklistType) {
+	private Optional<IUserInputHandler> handle(UserInput input, IngredientBlacklistType blacklistType) {
+		return focusSource.getIngredientUnderMouse(input)
+			.map(clicked -> {
+				if (!input.isSimulate()) {
+					execute(clicked, blacklistType);
+				}
+				return LimitedAreaInputHandler.create(this, clicked.getArea());
+			});
+	}
+
+	private <V> void execute(IClickedIngredient<V> clicked, IngredientBlacklistType blacklistType) {
 		IngredientFilter ingredientFilter = weakIngredientFilter.get();
 		if (ingredientFilter == null) {
 			LOGGER.error("Can't edit the config blacklist, the ingredient filter is null");
@@ -69,16 +77,5 @@ public class ClickEditHandler implements IUserInputHandler {
 		} else {
 			editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
 		}
-	}
-
-	@Nullable
-	private static IngredientBlacklistType getBlacklistType(UserInput userInput) {
-		if (userInput.is(KeyBindings.toggleHideIngredient)) {
-			return IngredientBlacklistType.ITEM;
-		}
-		if (userInput.is(KeyBindings.toggleWildcardHideIngredient)) {
-			return IngredientBlacklistType.WILDCARD;
-		}
-		return null;
 	}
 }

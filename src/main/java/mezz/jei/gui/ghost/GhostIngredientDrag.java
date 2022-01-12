@@ -136,7 +136,7 @@ public class GhostIngredientDrag<T> {
 	public boolean onClick(UserInput input) {
 		for (Target<T> target : targets) {
 			Rect2i area = target.getArea();
-			if (input.in(area)) {
+			if (MathUtil.contains(area, input.getMouseX(), input.getMouseY())) {
 				if (!input.isSimulate()) {
 					target.accept(ingredient);
 					handler.onComplete();

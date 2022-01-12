@@ -14,6 +14,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.TextComponent;
 
+import java.util.Optional;
+
 /**
  * A gui button that has an {@link IDrawable} instead of a string label.
  */
@@ -86,27 +88,27 @@ public class GuiIconButton extends Button {
 		}
 
 		@Override
-		public IUserInputHandler handleUserInput(Screen screen, UserInput input) {
+		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
 			if (!input.isMouse()) {
-				return null;
+				return Optional.empty();
 			}
 			double mouseX = input.getMouseX();
 			double mouseY = input.getMouseY();
 			if (!this.button.active || !this.button.visible || !isMouseOver(mouseX, mouseY)) {
-				return null;
+				return Optional.empty();
 			}
 			if (!this.button.isValidClickButton(input.getKey().getValue())) {
-				return null;
+				return Optional.empty();
 			}
 			boolean flag = this.button.clicked(mouseX, mouseY);
 			if (!flag) {
-				return null;
+				return Optional.empty();
 			}
 			if (!input.isSimulate()) {
 				this.button.playDownSound(Minecraft.getInstance().getSoundManager());
 				this.button.onClick(mouseX, mouseY);
 			}
-			return this;
+			return Optional.of(this);
 		}
 	}
 }

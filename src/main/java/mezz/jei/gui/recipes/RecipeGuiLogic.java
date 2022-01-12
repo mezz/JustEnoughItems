@@ -2,14 +2,11 @@ package mezz.jei.gui.recipes;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.IngredientLookupState;
-import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -26,18 +23,16 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeManager recipeManager;
 	private final RecipeTransferManager recipeTransferManager;
 	private final IRecipeLogicStateListener stateListener;
-	private final IngredientManager ingredientManager;
 	private final IModIdHelper modIdHelper;
 
 	private boolean initialState = true;
 	private IngredientLookupState state;
 	private final Stack<IngredientLookupState> history = new Stack<>();
 
-	public RecipeGuiLogic(IRecipeManager recipeManager, RecipeTransferManager recipeTransferManager, IRecipeLogicStateListener stateListener, IngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	public RecipeGuiLogic(IRecipeManager recipeManager, RecipeTransferManager recipeTransferManager, IRecipeLogicStateListener stateListener, IModIdHelper modIdHelper) {
 		this.recipeManager = recipeManager;
 		this.recipeTransferManager = recipeTransferManager;
 		this.stateListener = stateListener;
-		this.ingredientManager = ingredientManager;
 		this.modIdHelper = modIdHelper;
 		this.state = IngredientLookupState.createWithFocus(recipeManager, null);
 	}

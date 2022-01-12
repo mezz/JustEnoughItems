@@ -1,8 +1,7 @@
 package mezz.jei.input;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 public interface IRecipeFocusSource {
-	@Nullable
-	IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY);
+	Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY);
 }

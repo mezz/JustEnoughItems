@@ -2,15 +2,13 @@ package mezz.jei.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.input.mouse.InputType;
-import mezz.jei.util.MathUtil;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraftforge.client.event.ScreenEvent;
-import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Optional;
 
 public class UserInput {
 	@FunctionalInterface
@@ -36,24 +34,24 @@ public class UserInput {
 		return new UserInput(input, mouseX, mouseY, modifiers, InputType.IMMEDIATE);
 	}
 
-	@Nullable
-	public static UserInput fromEvent(ScreenEvent.MouseClickedEvent event) {
+	public static Optional<UserInput> fromEvent(ScreenEvent.MouseClickedEvent event) {
 		int button = event.getButton();
 		if (button < 0) {
-			return null;
+			return Optional.empty();
 		}
 		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(button);
-		return new UserInput(input, event.getMouseX(), event.getMouseY(), 0, InputType.SIMULATE);
+		UserInput userInput = new UserInput(input, event.getMouseX(), event.getMouseY(), 0, InputType.SIMULATE);
+		return Optional.of(userInput);
 	}
 
-	@Nullable
-	public static UserInput fromEvent(ScreenEvent.MouseReleasedEvent event) {
+	public static Optional<UserInput> fromEvent(ScreenEvent.MouseReleasedEvent event) {
 		int button = event.getButton();
 		if (button < 0) {
-			return null;
+			return Optional.empty();
 		}
 		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(button);
-		return new UserInput(input, event.getMouseX(), event.getMouseY(), 0, InputType.EXECUTE);
+		UserInput userInput = new UserInput(input, event.getMouseX(), event.getMouseY(), 0, InputType.EXECUTE);
+		return Optional.of(userInput);
 	}
 
 	public static UserInput fromVanilla(int keyCode, int scanCode, int modifiers) {
@@ -108,10 +106,6 @@ public class UserInput {
 		return this.key.getType() == InputConstants.Type.MOUSE;
 	}
 
-	public boolean isLeftClick() {
-		return isMouse() && this.key.getValue() == InputConstants.MOUSE_BUTTON_LEFT;
-	}
-
 	public boolean isKeyboard() {
 		return this.key.getType() == InputConstants.Type.KEYSYM;
 	}
@@ -126,22 +120,6 @@ public class UserInput {
 
 	public boolean is(Collection<KeyMapping> keyMappings) {
 		return keyMappings.stream().anyMatch(this::is);
-	}
-
-	public boolean in(Rect2i area) {
-		return MathUtil.contains(area, mouseX, mouseY);
-	}
-
-	public boolean isEscapeKey() {
-		return isKeyboard() && key.getValue() == GLFW.GLFW_KEY_ESCAPE;
-	}
-
-	public boolean isEnterKey() {
-		if (isKeyboard()) {
-			int keyCode = key.getValue();
-			return keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER;
-		}
-		return false;
 	}
 
 	public boolean callVanilla(MouseOverable mouseOverable, MouseClickable mouseClickable) {

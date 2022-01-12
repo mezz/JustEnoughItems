@@ -19,6 +19,7 @@ public final class KeyBindings {
 	private static final String editModeCategoryName = Translator.translateToLocal("jei.key.category.edit.mode");
 	private static final String recipeCategoryName = Translator.translateToLocal("jei.key.category.recipe.gui");
 	private static final String searchCategoryName = Translator.translateToLocal("jei.key.category.search");
+	private static final String jeiHiddenInternalCategoryName = "jei.key.category.hidden.internal";
 
 	public static final KeyMapping toggleOverlay;
 	public static final KeyMapping focusSearch;
@@ -53,6 +54,11 @@ public final class KeyBindings {
 
 	private static final List<KeyMapping> allBindings;
 
+	// internal only, unregistered and can't be changed because they match vanilla Minecraft hard-coded keys:
+	public static final KeyMapping escapeKey;
+	public static final KeyMapping leftClick;
+	public static final List<KeyMapping> enterKey;
+
 	static InputConstants.Key getKey(int key) {
 		return InputConstants.Type.KEYSYM.getOrCreate(key);
 	}
@@ -78,27 +84,27 @@ public final class KeyBindings {
 			// Mouse Hover
 			bookmark = new KeyMapping("key.jei.bookmark", JeiConflictContexts.JEI_GUI_HOVER, getKey(GLFW.GLFW_KEY_A), mouseHoverCategoryName),
 			showRecipe1 = new KeyMapping("key.jei.showRecipe", JeiConflictContexts.JEI_GUI_HOVER, getKey(GLFW.GLFW_KEY_R), mouseHoverCategoryName),
-			showRecipe2 = new KeyMapping("key.jei.showRecipe2", JeiConflictContexts.JEI_GUI_HOVER, InputConstants.Type.MOUSE, 0, mouseHoverCategoryName),
+			showRecipe2 = new KeyMapping("key.jei.showRecipe2", JeiConflictContexts.JEI_GUI_HOVER, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT, mouseHoverCategoryName),
 			showUses1 = new KeyMapping("key.jei.showUses", JeiConflictContexts.JEI_GUI_HOVER, getKey(GLFW.GLFW_KEY_U), mouseHoverCategoryName),
-			showUses2 = new KeyMapping("key.jei.showUses2", JeiConflictContexts.JEI_GUI_HOVER, InputConstants.Type.MOUSE, 1, mouseHoverCategoryName),
+			showUses2 = new KeyMapping("key.jei.showUses2", JeiConflictContexts.JEI_GUI_HOVER, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT, mouseHoverCategoryName),
 
 			// Search Bar
-			hoveredClearSearchBar = new KeyMapping("key.jei.clearSearchBar", JeiConflictContexts.JEI_GUI_HOVER_SEARCH, InputConstants.Type.MOUSE, 1, searchCategoryName),
+			hoveredClearSearchBar = new KeyMapping("key.jei.clearSearchBar", JeiConflictContexts.JEI_GUI_HOVER_SEARCH, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT, searchCategoryName),
 			previousSearch = new KeyMapping("key.jei.previousSearch", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UP), searchCategoryName),
 			nextSearch = new KeyMapping("key.jei.nextSearch", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_DOWN), searchCategoryName),
 
 			// Cheat Mode
 			toggleCheatMode = new KeyMapping("key.jei.toggleCheatMode", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), cheatModeCategoryName),
-			toggleCheatModeConfigButton = new KeyMapping("key.jei.toggleCheatModeConfigButton", JeiConflictContexts.JEI_GUI_HOVER_CONFIG_BUTTON, KeyModifier.CONTROL, InputConstants.Type.MOUSE, 0, cheatModeCategoryName),
-			cheatOneItem1 = new KeyMapping("key.jei.cheatOneItem", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, 0, cheatModeCategoryName),
-			cheatOneItem2 = new KeyMapping("key.jei.cheatOneItem2", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, 1, cheatModeCategoryName),
-			cheatItemStack1 = new KeyMapping("key.jei.cheatItemStack", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, KeyModifier.SHIFT, InputConstants.Type.MOUSE, 0, cheatModeCategoryName),
-			cheatItemStack2 = new KeyMapping("key.jei.cheatItemStack2", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, 2, cheatModeCategoryName),
+			toggleCheatModeConfigButton = new KeyMapping("key.jei.toggleCheatModeConfigButton", JeiConflictContexts.JEI_GUI_HOVER_CONFIG_BUTTON, KeyModifier.CONTROL, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT, cheatModeCategoryName),
+			cheatOneItem1 = new KeyMapping("key.jei.cheatOneItem", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT, cheatModeCategoryName),
+			cheatOneItem2 = new KeyMapping("key.jei.cheatOneItem2", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT, cheatModeCategoryName),
+			cheatItemStack1 = new KeyMapping("key.jei.cheatItemStack", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, KeyModifier.SHIFT, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT, cheatModeCategoryName),
+			cheatItemStack2 = new KeyMapping("key.jei.cheatItemStack2", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_MIDDLE, cheatModeCategoryName),
 
 			// Edit Mode
 			toggleEditMode = new KeyMapping("key.jei.toggleEditMode", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), editModeCategoryName),
-			toggleHideIngredient = new KeyMapping("key.jei.toggleHideIngredient", JeiConflictContexts.JEI_GUI_HOVER, KeyModifier.CONTROL, InputConstants.Type.MOUSE, 0, editModeCategoryName),
-			toggleWildcardHideIngredient = new KeyMapping("key.jei.toggleWildcardHideIngredient", JeiConflictContexts.JEI_GUI_HOVER, KeyModifier.CONTROL, InputConstants.Type.MOUSE, 1, editModeCategoryName),
+			toggleHideIngredient = new KeyMapping("key.jei.toggleHideIngredient", JeiConflictContexts.JEI_GUI_HOVER, KeyModifier.CONTROL, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT, editModeCategoryName),
+			toggleWildcardHideIngredient = new KeyMapping("key.jei.toggleWildcardHideIngredient", JeiConflictContexts.JEI_GUI_HOVER, KeyModifier.CONTROL, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT, editModeCategoryName),
 
 			// Recipes
 			recipeBack = new KeyMapping("key.jei.recipeBack", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_BACKSPACE), recipeCategoryName),
@@ -112,6 +118,13 @@ public final class KeyBindings {
 		showUses = List.of(showUses1, showUses2);
 		cheatOneItem = List.of(cheatOneItem1, cheatOneItem2);
 		cheatItemStack = List.of(cheatItemStack1, cheatItemStack2);
+
+		escapeKey = new KeyMapping("key.jei.internal.escape.key", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_ESCAPE), jeiHiddenInternalCategoryName);
+		leftClick = new KeyMapping("key.jei.internal.left.click", KeyConflictContext.GUI, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT, jeiHiddenInternalCategoryName);
+		enterKey = List.of(
+			new KeyMapping("key.jei.internal.enter.key", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_ENTER), jeiHiddenInternalCategoryName),
+			new KeyMapping("key.jei.internal.enter.key2", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_KP_ENTER), jeiHiddenInternalCategoryName)
+		);
 	}
 
 	private KeyBindings() {

@@ -14,7 +14,8 @@ import mezz.jei.input.IPaged;
 import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
-import mezz.jei.input.mouse.handlers.CombinedUserInputHandler;
+import mezz.jei.input.mouse.handlers.CombinedInputHandler;
+import mezz.jei.input.mouse.handlers.DeleteItemInputHandler;
 import mezz.jei.render.IngredientListElementRenderer;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
@@ -25,13 +26,10 @@ import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.Size2i;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -139,16 +137,15 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public IUserInputHandler createInputHandler() {
-		return new CombinedUserInputHandler(
+		return new CombinedInputHandler(
 			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.worldConfig, clientConfig, this::isMouseOver),
-			this.ingredientGrid.createInputHandler(),
+			new DeleteItemInputHandler(this.ingredientGrid),
 			this.navigation.createInputHandler()
 		);
 	}
 
-	@Nullable
 	@Override
-	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY);
 	}
 
@@ -159,7 +156,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	public <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
 		return this.ingredientGrid.guiIngredientSlots.getAllGuiIngredientSlots().stream()
 			.map(slot -> slot.getIngredientRenderer(ingredientType))
-			.filter(Objects::nonNull)
+			.flatMap(Optional::stream)
 			.map(IngredientListElementRenderer::getIngredient)
 			.toList();
 	}
@@ -279,61 +276,53 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			return false;
 		}
 
-		@Nullable
 		@Override
-		public IUserInputHandler handleUserInput(Screen screen, UserInput input) {
+		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
 			if (input.is(KeyBindings.nextPage)) {
 				this.paged.nextPage();
-				return this;
+				return Optional.of(this);
 			}
 
 			if (input.is(KeyBindings.previousPage)) {
 				this.paged.previousPage();
-				return this;
+				return Optional.of(this);
 			}
 
-			if (clientConfig.isCheatToHotbarUsingHotkeysEnabled()) {
-				if (checkHotbarKeys(screen, input)) {
-					return this;
-				}
-			}
-			return null;
+			return checkHotbarKeys(screen, input);
 		}
 
 		/**
 		 * Modeled after ContainerScreen#checkHotbarKeys(int)
 		 * Sets the stack in a hotbar slot to the one that's hovered over.
 		 */
-		protected boolean checkHotbarKeys(Screen screen, UserInput input) {
-			if (!this.worldConfig.isCheatItemsEnabled() || screen instanceof RecipesGui) {
-				return false;
+		protected Optional<IUserInputHandler> checkHotbarKeys(Screen screen, UserInput input) {
+			if (!clientConfig.isCheatToHotbarUsingHotkeysEnabled() ||
+				!this.worldConfig.isCheatItemsEnabled() ||
+				screen instanceof RecipesGui
+			) {
+				return Optional.empty();
 			}
 
 			final double mouseX = input.getMouseX();
 			final double mouseY = input.getMouseY();
 			if (!this.mouseOverable.isMouseOver(mouseX, mouseY)) {
-				return false;
+				return Optional.empty();
 			}
 
 			Minecraft minecraft = screen.getMinecraft();
 			Options gameSettings = minecraft.options;
 			int hotbarSlot = getHotbarSlotForInput(input, gameSettings);
 			if (hotbarSlot < 0) {
-				return false;
+				return Optional.empty();
 			}
 
-			IClickedIngredient<?> ingredientUnderMouse = this.focusSource.getIngredientUnderMouse(mouseX, mouseY);
-			if (ingredientUnderMouse == null) {
-				return false;
-			}
-
-			ItemStack itemStack = ingredientUnderMouse.getCheatItemStack();
-			if (itemStack.isEmpty()) {
-				return false;
-			}
-
-			CommandUtil.setHotbarStack(itemStack, hotbarSlot);
-			return true;
+			return this.focusSource.getIngredientUnderMouse(mouseX, mouseY)
+				.map(IClickedIngredient::getCheatItemStack)
+				.filter(i -> !i.isEmpty())
+				.map(itemStack -> {
+					CommandUtil.setHotbarStack(itemStack, hotbarSlot);
+					return this;
+				});
 		}
 
 		private static int getHotbarSlotForInput(UserInput input, Options gameSettings) {

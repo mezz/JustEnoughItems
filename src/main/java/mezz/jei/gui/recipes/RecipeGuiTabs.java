@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.input.mouse.handlers.CombinedUserInputHandler;
+import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 
@@ -103,7 +103,7 @@ public class RecipeGuiTabs implements IPaged {
 		}
 
 		inputHandlers.add(this.pageNavigation.createInputHandler());
-		this.inputHandler = new CombinedUserInputHandler(inputHandlers);
+		this.inputHandler = new CombinedInputHandler(inputHandlers);
 
 		pageNavigation.updatePageState();
 	}

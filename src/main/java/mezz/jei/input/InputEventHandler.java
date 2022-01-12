@@ -1,9 +1,9 @@
 package mezz.jei.input;
 
+import mezz.jei.config.KeyBindings;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.input.mouse.ICharTypedHandler;
-import mezz.jei.input.mouse.IUserInputHandler;
-import mezz.jei.input.mouse.handlers.CombinedUserInputHandler;
+import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.util.ReflectionUtil;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -13,9 +13,9 @@ import java.util.List;
 
 public class InputEventHandler {
 	private final List<ICharTypedHandler> charTypedHandlers;
-	private final CombinedUserInputHandler inputHandler;
+	private final CombinedInputHandler inputHandler;
 
-	public InputEventHandler(List<ICharTypedHandler> charTypedHandlers, CombinedUserInputHandler inputHandler) {
+	public InputEventHandler(List<ICharTypedHandler> charTypedHandlers, CombinedInputHandler inputHandler) {
 		this.charTypedHandlers = charTypedHandlers;
 		this.inputHandler = inputHandler;
 	}
@@ -46,10 +46,8 @@ public class InputEventHandler {
 		Screen screen = event.getScreen();
 		if (!isContainerTextFieldFocused(screen)) {
 			UserInput input = UserInput.fromEvent(event);
-			IUserInputHandler handler = this.inputHandler.handleUserInput(screen, input);
-			if (handler != null) {
-				event.setCanceled(true);
-			}
+			this.inputHandler.handleUserInput(screen, input)
+				.ifPresent(handler -> event.setCanceled(true));
 		}
 	}
 
@@ -60,10 +58,8 @@ public class InputEventHandler {
 		Screen screen = event.getScreen();
 		if (isContainerTextFieldFocused(screen)) {
 			UserInput input = UserInput.fromEvent(event);
-			IUserInputHandler handler = this.inputHandler.handleUserInput(screen, input);
-			if (handler != null) {
-				event.setCanceled(true);
-			}
+			this.inputHandler.handleUserInput(screen, input)
+				.ifPresent(handler -> event.setCanceled(true));
 		}
 	}
 
@@ -90,33 +86,32 @@ public class InputEventHandler {
 	}
 
 	public void onGuiMouseClickedEvent(ScreenEvent.MouseClickedEvent.Pre event) {
-		UserInput input = UserInput.fromEvent(event);
-		if (input != null) {
-			Screen screen = event.getScreen();
-			IUserInputHandler handler = this.inputHandler.handleUserInput(screen, input);
-			IUserInputHandler dragHandler = null;
-			if (input.isLeftClick()) {
-				dragHandler = this.inputHandler.handleDragStart(screen, input);
-			}
-			if (handler != null || dragHandler != null) {
-				event.setCanceled(true);
-			}
-		}
+		UserInput.fromEvent(event)
+			.ifPresent(input -> {
+				Screen screen = event.getScreen();
+				this.inputHandler.handleUserInput(screen, input)
+					.ifPresent(handled -> event.setCanceled(true));
+
+				if (input.is(KeyBindings.leftClick)) {
+					this.inputHandler.handleDragStart(screen, input)
+						.ifPresent(handled -> event.setCanceled(true));
+				}
+			});
 	}
 
 	public void onGuiMouseReleasedEvent(ScreenEvent.MouseReleasedEvent.Pre event) {
-		UserInput input = UserInput.fromEvent(event);
-		if (input != null) {
-			Screen screen = event.getScreen();
-			IUserInputHandler handled = this.inputHandler.handleUserInput(screen, input);
-			IUserInputHandler dragHandled = null;
-			if (input.isLeftClick()) {
-				dragHandled = this.inputHandler.handleDragComplete(screen, input);
-			}
-			if (handled != null || dragHandled != null) {
-				event.setCanceled(true);
-			}
-		}
+		UserInput.fromEvent(event)
+			.ifPresent(input -> {
+				Screen screen = event.getScreen();
+
+				this.inputHandler.handleUserInput(screen, input)
+					.ifPresent(handled -> event.setCanceled(true));
+
+				if (input.is(KeyBindings.leftClick)) {
+					this.inputHandler.handleDragComplete(screen, input)
+						.ifPresent(handled -> event.setCanceled(true));
+				}
+			});
 	}
 
 	public void onGuiMouseScrollEvent(ScreenEvent.MouseScrollEvent.Pre event) {

@@ -47,9 +47,11 @@ public interface IGuiContainerHandler<T extends AbstractContainerScreen<?>> {
 	 * This is useful when you want to add a spot on your GUI that opens JEI and shows recipes.
 	 *
 	 * Optionally, you can restrict what you return here based on the current mouse position.
+	 * @param guiMouseX the current X position of the mouse in gui-relative coordinates.
+	 * @param guiMouseY the current Y position of the mouse in gui-relative coordinates.
 	 * @since JEI version 6.0.1
 	 */
-	default Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen, double mouseX, double mouseY) {
+	default Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen, double guiMouseX, double guiMouseY) {
 		return Collections.emptyList();
 	}
 }

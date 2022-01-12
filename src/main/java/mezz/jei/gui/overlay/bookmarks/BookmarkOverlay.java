@@ -7,19 +7,20 @@ import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.gui.overlay.CheatUserInputHandler;
+import mezz.jei.input.mouse.handlers.CheatInputHandler;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.mouse.IUserInputHandler;
-import mezz.jei.input.mouse.handlers.CombinedUserInputHandler;
-import mezz.jei.input.mouse.handlers.ProxyUserInputHandler;
+import mezz.jei.input.mouse.handlers.CombinedInputHandler;
+import mezz.jei.input.mouse.handlers.ProxyInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.Set;
 
 public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IBookmarkOverlay {
@@ -124,12 +125,11 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 	}
 
 	@Override
-	@Nullable
-	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	@Nullable
@@ -146,13 +146,13 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 	public IUserInputHandler createInputHandler() {
 		final IUserInputHandler bookmarkButtonInputHandler = this.bookmarkButton.createInputHandler();
 
-		final IUserInputHandler displayedInputHandler = new CombinedUserInputHandler(
-			new CheatUserInputHandler(this, worldConfig, clientConfig),
+		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
+			new CheatInputHandler(this, worldConfig, clientConfig),
 			this.contents.createInputHandler(),
 			bookmarkButtonInputHandler
 		);
 
-		return new ProxyUserInputHandler(() -> {
+		return new ProxyInputHandler(() -> {
 			if (isListDisplayed()) {
 				return displayedInputHandler;
 			}

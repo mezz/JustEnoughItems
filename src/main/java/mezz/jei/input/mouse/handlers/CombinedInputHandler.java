@@ -9,25 +9,25 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
-public class CombinedUserInputHandler implements IUserInputHandler {
+public class CombinedInputHandler implements IUserInputHandler {
 	private final List<IUserInputHandler> inputHandlers;
 	private final Map<InputConstants.Key, IUserInputHandler> mousedDown = new HashMap<>();
 	@Nullable
 	private IUserInputHandler dragStarted;
 
-	public CombinedUserInputHandler(IUserInputHandler... inputHandlers) {
+	public CombinedInputHandler(IUserInputHandler... inputHandlers) {
 		this.inputHandlers = List.of(inputHandlers);
 	}
 
-	public CombinedUserInputHandler(List<IUserInputHandler> inputHandlers) {
+	public CombinedInputHandler(List<IUserInputHandler> inputHandlers) {
 		this.inputHandlers = List.copyOf(inputHandlers);
 	}
 
 	@Override
-	public IUserInputHandler handleUserInput(Screen screen, UserInput input) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
 		return switch (input.getClickState()) {
 			case IMMEDIATE -> handleImmediateClick(screen, input);
 			case SIMULATE -> handleSimulateClick(screen, input);
@@ -40,15 +40,11 @@ public class CombinedUserInputHandler implements IUserInputHandler {
 	 * We do not track the mousedDown for it,
 	 * the first handler to use it will be the "winner", the rest will get a clicked-out.
 	 */
-	@Nullable
-	private IUserInputHandler handleImmediateClick(Screen screen, UserInput input) {
+	private Optional<IUserInputHandler> handleImmediateClick(Screen screen, UserInput input) {
 		this.mousedDown.remove(input.getKey());
 
-		IUserInputHandler handled = handleClickInternal(screen, input);
-		if (handled == null) {
-			return null;
-		}
-		return this;
+		return handleClickInternal(screen, input)
+			.map(handled -> this);
 	}
 
 	/*
@@ -59,29 +55,20 @@ public class CombinedUserInputHandler implements IUserInputHandler {
 	 * and it will be added to mousedDown.
 	 * In the second pass, all handlers that were in mousedDown will be sent the real click.
 	 */
-	@Nullable
-	private IUserInputHandler handleSimulateClick(Screen screen, UserInput input) {
+	private Optional<IUserInputHandler> handleSimulateClick(Screen screen, UserInput input) {
 		this.mousedDown.remove(input.getKey());
 
-		IUserInputHandler clickHandled = handleClickInternal(screen, input);
-		if (clickHandled == null) {
-			return null;
-		}
-		this.mousedDown.put(input.getKey(), clickHandled);
-		return this;
+		return handleClickInternal(screen, input)
+			.map(handled -> {
+				this.mousedDown.put(input.getKey(), handled);
+				return this;
+			});
 	}
 
-	@Nullable
-	private IUserInputHandler handleExecuteClick(Screen screen, UserInput input) {
-		IUserInputHandler inputHandler = this.mousedDown.remove(input.getKey());
-		if (inputHandler == null) {
-			return null;
-		}
-		IUserInputHandler handled = inputHandler.handleUserInput(screen, input);
-		if (handled == null) {
-			return null;
-		}
-		return this;
+	private Optional<IUserInputHandler> handleExecuteClick(Screen screen, UserInput input) {
+		return Optional.ofNullable(this.mousedDown.remove(input.getKey()))
+			.map(inputHandler -> inputHandler.handleUserInput(screen, input))
+			.map(handled -> this);
 	}
 
 	/**
@@ -91,13 +78,12 @@ public class CombinedUserInputHandler implements IUserInputHandler {
 	 * 1. every mouse handler that fails to handleClick (returned null).
 	 * 2. every mouse handler that never got a chance to handleClick because something else handled it first.
 	 */
-	@Nullable
-	private IUserInputHandler handleClickInternal(Screen screen, UserInput input) {
-		IUserInputHandler firstHandled = null;
+	private Optional<IUserInputHandler> handleClickInternal(Screen screen, UserInput input) {
+		Optional<IUserInputHandler> firstHandled = Optional.empty();
 		for (IUserInputHandler inputHandler : this.inputHandlers) {
-			if (firstHandled == null) {
+			if (firstHandled.isEmpty()) {
 				firstHandled = inputHandler.handleUserInput(screen, input);
-				if (firstHandled == null) {
+				if (firstHandled.isEmpty()) {
 					inputHandler.handleMouseClickedOut(input.getKey());
 				}
 			} else {
@@ -129,34 +115,32 @@ public class CombinedUserInputHandler implements IUserInputHandler {
 			.anyMatch(inputHandler -> inputHandler.handleMouseScrolled(mouseX, mouseY, scrollDelta));
 	}
 
-	@Nullable
 	@Override
-	public IUserInputHandler handleDragStart(Screen screen, UserInput input) {
+	public Optional<IUserInputHandler> handleDragStart(Screen screen, UserInput input) {
 		if (this.dragStarted != null) {
 			this.dragStarted.handleDragCanceled();
 		}
 
-		this.dragStarted = this.inputHandlers.stream()
+		Optional<IUserInputHandler> dragStarted = this.inputHandlers.stream()
 			.map(i -> i.handleDragStart(screen, input))
-			.filter(Objects::nonNull)
-			.findFirst()
+			.flatMap(Optional::stream)
+			.findFirst();
+
+		this.dragStarted = dragStarted
 			.orElse(null);
 
-		if (this.dragStarted == null) {
-			return null;
-		}
-		return this;
+		return dragStarted
+			.map(started -> this);
 	}
 
-	@Nullable
 	@Override
-	public IUserInputHandler handleDragComplete(Screen screen, UserInput input) {
+	public Optional<IUserInputHandler> handleDragComplete(Screen screen, UserInput input) {
 		if (this.dragStarted == null) {
-			return null;
+			return Optional.empty();
 		}
 		this.dragStarted.handleDragComplete(screen, input);
 		this.dragStarted = null;
-		return this;
+		return Optional.of(this);
 	}
 
 	@Override

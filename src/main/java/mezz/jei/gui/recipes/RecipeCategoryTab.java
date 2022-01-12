@@ -22,6 +22,7 @@ import net.minecraft.sounds.SoundEvents;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class RecipeCategoryTab extends RecipeGuiTab {
 	private final IRecipeGuiLogic logic;
@@ -34,16 +35,16 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	@Override
-	public IUserInputHandler handleUserInput(Screen screen, UserInput input) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
 		if (!isMouseOver(input.getMouseX(), input.getMouseY())) {
-			return null;
+			return Optional.empty();
 		}
 		if (!input.isSimulate()) {
 			logic.setRecipeCategory(category);
 			SoundManager soundHandler = Minecraft.getInstance().getSoundManager();
 			soundHandler.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 		}
-		return this;
+		return Optional.of(this);
 	}
 
 	@Override

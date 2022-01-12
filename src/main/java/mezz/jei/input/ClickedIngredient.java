@@ -3,6 +3,7 @@ package mezz.jei.input;
 import javax.annotation.Nullable;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.gui.ingredients.GuiIngredient;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
 
@@ -15,23 +16,33 @@ import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Optional;
+
 public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final V value;
 	@Nullable
 	private final Rect2i area;
-	private boolean canSetFocusWithMouse;
-	private boolean allowsCheating;
+	private final boolean canSetFocusWithMouse;
+	private final boolean allowsCheating;
 
-	@Nullable
-	public static <V> ClickedIngredient<V> create(V value, @Nullable Rect2i area) {
+	public static <V> Optional<IClickedIngredient<? extends V>> create(GuiIngredient<V> guiIngredient, boolean allowsCheating, boolean canSetFocusWithMouse) {
+		V displayedIngredient = guiIngredient.getDisplayedIngredient();
+		if (displayedIngredient == null) {
+			return Optional.empty();
+		}
+		return create(displayedIngredient, guiIngredient.getRect(), allowsCheating, canSetFocusWithMouse);
+	}
+
+	public static <V> Optional<IClickedIngredient<? extends V>> create(V value, @Nullable Rect2i area, boolean allowsCheating, boolean canSetFocusWithMouse) {
 		ErrorUtil.checkNotNull(value, "value");
 		IngredientManager ingredientManager = Internal.getIngredientManager();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value);
 		try {
 			if (ingredientHelper.isValidIngredient(value)) {
-				return new ClickedIngredient<>(value, area);
+				ClickedIngredient<V> clickedIngredient = new ClickedIngredient<>(value, area, allowsCheating, canSetFocusWithMouse);
+				return Optional.of(clickedIngredient);
 			}
 			String ingredientInfo = ingredientHelper.getErrorInfo(value);
 			LOGGER.error("Clicked invalid ingredient. Ingredient Info: {}", ingredientInfo);
@@ -39,12 +50,14 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 			String ingredientInfo = ingredientHelper.getErrorInfo(value);
 			LOGGER.error("Clicked invalid ingredient. Ingredient Info: {}", ingredientInfo, e);
 		}
-		return null;
+		return Optional.empty();
 	}
 
-	private ClickedIngredient(V value, @Nullable Rect2i area) {
+	private ClickedIngredient(V value, @Nullable Rect2i area, boolean allowsCheating, boolean canSetFocusWithMouse) {
 		this.value = value;
 		this.area = area;
+		this.allowsCheating = allowsCheating;
+		this.canSetFocusWithMouse = canSetFocusWithMouse;
 	}
 
 	@Override
@@ -56,14 +69,6 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	@Override
 	public Rect2i getArea() {
 		return area;
-	}
-
-	public void setAllowsCheating() {
-		this.allowsCheating = true;
-	}
-
-	public void setCanSetFocusWithMouse() {
-		this.canSetFocusWithMouse = true;
 	}
 
 	@Override

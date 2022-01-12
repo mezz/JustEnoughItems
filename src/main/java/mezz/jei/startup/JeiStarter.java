@@ -33,12 +33,12 @@ import mezz.jei.input.CombinedRecipeFocusSource;
 import mezz.jei.input.GuiContainerWrapper;
 import mezz.jei.input.InputEventHandler;
 import mezz.jei.input.mouse.ICharTypedHandler;
-import mezz.jei.input.mouse.handlers.ClickBookmarkHandler;
-import mezz.jei.input.mouse.handlers.ClickEditHandler;
+import mezz.jei.input.mouse.handlers.BookmarkInputHandler;
+import mezz.jei.input.mouse.handlers.EditInputHandler;
 import mezz.jei.input.mouse.handlers.FocusInputHandler;
-import mezz.jei.input.mouse.handlers.ClickGlobalHandler;
-import mezz.jei.input.mouse.handlers.CombinedUserInputHandler;
-import mezz.jei.input.mouse.handlers.GuiAreaClickHandler;
+import mezz.jei.input.mouse.handlers.GlobalInputHandler;
+import mezz.jei.input.mouse.handlers.CombinedInputHandler;
+import mezz.jei.input.mouse.handlers.GuiAreaInputHandler;
 import mezz.jei.load.PluginCaller;
 import mezz.jei.load.PluginHelper;
 import mezz.jei.load.PluginLoader;
@@ -89,7 +89,7 @@ public class JeiStarter {
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
 		GuiScreenHelper guiScreenHelper = pluginLoader.createGuiScreenHelper(plugins);
-		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, ingredientManager, modIdHelper, clientConfig);
+		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, modIdHelper, clientConfig);
 
 		IngredientGrid ingredientListGrid = new IngredientGrid(ingredientManager, GridAlignment.LEFT, editModeConfig, ingredientFilterConfig, clientConfig, worldConfig, guiScreenHelper, recipesGui, modIdHelper);
 
@@ -125,14 +125,14 @@ public class JeiStarter {
 			ingredientListOverlay
 		);
 
-		CombinedUserInputHandler userInputHandler = new CombinedUserInputHandler(
-			new ClickEditHandler(recipeFocusSource, ingredientManager, ingredientFilter, worldConfig, editModeConfig),
+		CombinedInputHandler userInputHandler = new CombinedInputHandler(
+			new EditInputHandler(recipeFocusSource, ingredientManager, ingredientFilter, worldConfig, editModeConfig),
 			ingredientListOverlay.createInputHandler(),
 			leftAreaDispatcher.createInputHandler(),
 			new FocusInputHandler(recipeFocusSource, recipesGui),
-			new ClickBookmarkHandler(recipeFocusSource, bookmarkList),
-			new ClickGlobalHandler(worldConfig),
-			new GuiAreaClickHandler(guiScreenHelper, recipesGui)
+			new BookmarkInputHandler(recipeFocusSource, bookmarkList),
+			new GlobalInputHandler(worldConfig),
+			new GuiAreaInputHandler(guiScreenHelper, recipesGui)
 		);
 		InputEventHandler inputEventHandler = new InputEventHandler(charTypedHandlers, userInputHandler);
 		Internal.setInputEventHandler(inputEventHandler);

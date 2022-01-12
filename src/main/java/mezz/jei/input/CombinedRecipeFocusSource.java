@@ -1,9 +1,8 @@
 package mezz.jei.input;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class CombinedRecipeFocusSource {
@@ -13,20 +12,18 @@ public class CombinedRecipeFocusSource {
 		this.handlers = Arrays.asList(handlers);
 	}
 
-	@Nullable
-	public IClickedIngredient<?> getIngredientUnderMouse(UserInput input) {
+	public Optional<? extends IClickedIngredient<?>> getIngredientUnderMouse(UserInput input) {
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
 
 		Stream<? extends IClickedIngredient<?>> stream = handlers.stream()
 			.map(handler -> handler.getIngredientUnderMouse(mouseX, mouseY))
-			.filter(Objects::nonNull);
+			.flatMap(Optional::stream);
 
 		if (input.isMouse()) {
 			stream = stream.filter(IClickedIngredient::canSetFocusWithMouse);
 		}
-		return stream
-			.findFirst()
-			.orElse(null);
+
+		return stream.findFirst();
 	}
 }

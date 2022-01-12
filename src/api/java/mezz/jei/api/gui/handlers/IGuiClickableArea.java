@@ -16,6 +16,8 @@ public interface IGuiClickableArea {
 	 * The hover/click area for this {@link IGuiClickableArea}.
 	 * When hovered, the message from {@link #getTooltipStrings()} will be displayed.
 	 * When clicked, {@link #onClick(IFocusFactory, IRecipesGui)} will be called.
+	 *
+	 * Area is in gui-relative coordinates (not absolute Screen coordinates).
 	 */
 	Rect2i getArea();
 

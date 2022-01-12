@@ -26,11 +26,6 @@ import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.MouseUtil;
-import mezz.jei.input.UserInput;
-import mezz.jei.input.mouse.IUserInputHandler;
-import mezz.jei.network.Network;
-import mezz.jei.network.packets.PacketDeletePlayerItem;
-import mezz.jei.network.packets.PacketJei;
 import mezz.jei.render.IngredientListBatchRenderer;
 import mezz.jei.render.IngredientListElementRenderer;
 import mezz.jei.render.IngredientListSlot;
@@ -41,9 +36,7 @@ import mezz.jei.util.StringUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -53,7 +46,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -159,10 +151,9 @@ public class IngredientGrid implements IRecipeFocusSource {
 		guiIngredientSlots.render(minecraft, poseStack);
 
 		if (!shouldDeleteItemOnClick(minecraft, mouseX, mouseY) && isMouseOver(mouseX, mouseY)) {
-			IngredientListElementRenderer<?> hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
-			if (hovered != null) {
-				drawHighlight(poseStack, hovered.getArea());
-			}
+			guiIngredientSlots.getHovered(mouseX, mouseY)
+				.map(IngredientListElementRenderer::getArea)
+				.ifPresent(area -> drawHighlight(poseStack, area));
 		}
 	}
 
@@ -183,10 +174,9 @@ public class IngredientGrid implements IRecipeFocusSource {
 				TranslatableComponent deleteItem = new TranslatableComponent("jei.tooltip.delete.item");
 				TooltipRenderer.drawHoveringText(poseStack, List.of(deleteItem), mouseX, mouseY);
 			} else {
-				IngredientListElementRenderer<?> hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
-				if (hovered != null) {
-					drawTooltip(poseStack, mouseX, mouseY, ingredientFilterConfig, worldConfig, hovered.getIngredient());
-				}
+				guiIngredientSlots.getHovered(mouseX, mouseY)
+					.map(IngredientListElementRenderer::getIngredient)
+					.ifPresent(ingredient -> drawTooltip(poseStack, mouseX, mouseY, ingredientFilterConfig, worldConfig, ingredient));
 			}
 		}
 	}
@@ -264,7 +254,7 @@ public class IngredientGrid implements IRecipeFocusSource {
 		tooltip.addAll(lines);
 	}
 
-	private boolean shouldDeleteItemOnClick(Minecraft minecraft, double mouseX, double mouseY) {
+	public boolean shouldDeleteItemOnClick(Minecraft minecraft, double mouseX, double mouseY) {
 		if (!worldConfig.isDeleteItemsInCheatModeActive()) {
 			return false;
 		}
@@ -281,10 +271,10 @@ public class IngredientGrid implements IRecipeFocusSource {
 		}
 		GiveMode giveMode = this.clientConfig.getGiveMode();
 		if (giveMode == GiveMode.MOUSE_PICKUP) {
-			IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
-			if (ingredientUnderMouse != null && ingredientUnderMouse.getValue() instanceof ItemStack value) {
-				return !ItemHandlerHelper.canItemStacksStack(itemStack, value);
-			}
+			return getIngredientUnderMouse(mouseX, mouseY)
+				.map(IClickedIngredient::getCheatItemStack)
+				.map(i -> !ItemHandlerHelper.canItemStacksStack(itemStack, i))
+				.orElse(false);
 		}
 		return true;
 	}
@@ -300,50 +290,9 @@ public class IngredientGrid implements IRecipeFocusSource {
 	}
 
 	@Override
-	@Nullable
-	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
-		if (isMouseOver(mouseX, mouseY)) {
-			ClickedIngredient<?> clicked = guiIngredientSlots.getIngredientUnderMouse(mouseX, mouseY);
-			if (clicked != null) {
-				clicked.setAllowsCheating();
-				clicked.setCanSetFocusWithMouse();
-			}
-			return clicked;
-		}
-		return null;
+	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		return guiIngredientSlots.getHovered(mouseX, mouseY)
+			.flatMap(hovered -> ClickedIngredient.create(hovered.getIngredient(), hovered.getArea(), true, true));
 	}
 
-	public IUserInputHandler createInputHandler() {
-		return new UserInputHandler();
-	}
-
-	private class UserInputHandler implements IUserInputHandler {
-		@Nullable
-		@Override
-		public IUserInputHandler handleUserInput(Screen screen, UserInput userInput) {
-			double mouseX = userInput.getMouseX();
-			double mouseY = userInput.getMouseY();
-			if (!isMouseOver(mouseX, mouseY)) {
-				return null;
-			}
-			Minecraft minecraft = Minecraft.getInstance();
-			if (!shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
-				return null;
-			}
-			LocalPlayer player = minecraft.player;
-			if (player == null) {
-				return null;
-			}
-			ItemStack itemStack = player.containerMenu.getCarried();
-			if (itemStack.isEmpty()) {
-				return null;
-			}
-			if (!userInput.isSimulate()) {
-				player.containerMenu.setCarried(ItemStack.EMPTY);
-				PacketJei packet = new PacketDeletePlayerItem(itemStack);
-				Network.sendPacketToServer(packet);
-			}
-			return this;
-		}
-	}
 }

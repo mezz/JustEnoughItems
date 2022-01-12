@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import net.minecraft.client.renderer.Rect2i;
@@ -144,14 +145,10 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		return guiIngredients;
 	}
 
-	@Nullable
-	public GuiIngredient<T> getHoveredIngredient(int xOffset, int yOffset, double mouseX, double mouseY) {
-		for (GuiIngredient<T> ingredient : guiIngredients.values()) {
-			if (ingredient.isMouseOver(xOffset, yOffset, mouseX, mouseY)) {
-				return ingredient;
-			}
-		}
-		return null;
+	public Optional<GuiIngredient<T>> getHoveredIngredient(int xOffset, int yOffset, double mouseX, double mouseY) {
+		return guiIngredients.values().stream()
+			.filter(ingredient -> ingredient.isMouseOver(xOffset, yOffset, mouseX, mouseY))
+			.findFirst();
 	}
 
 	public void draw(PoseStack poseStack, int xOffset, int yOffset, int highlightColor, int mouseX, int mouseY) {

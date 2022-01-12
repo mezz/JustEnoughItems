@@ -4,12 +4,11 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 public interface IUserInputHandler {
-	@Nullable
-	default IUserInputHandler handleUserInput(Screen screen, UserInput input) {
-		return null;
+	default Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
+		return Optional.empty();
 	}
 
 	/**
@@ -23,14 +22,12 @@ public interface IUserInputHandler {
 		return false;
 	}
 
-	@Nullable
-	default IUserInputHandler handleDragStart(Screen screen, UserInput input) {
-		return null;
+	default Optional<IUserInputHandler> handleDragStart(Screen screen, UserInput input) {
+		return Optional.empty();
 	}
 
-	@Nullable
-	default IUserInputHandler handleDragComplete(Screen screen, UserInput input) {
-		return null;
+	default Optional<IUserInputHandler> handleDragComplete(Screen screen, UserInput input) {
+		return Optional.empty();
 	}
 
 	default void handleDragCanceled() {

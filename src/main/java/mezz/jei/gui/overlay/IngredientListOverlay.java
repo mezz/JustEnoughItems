@@ -15,10 +15,10 @@ import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.mouse.ICharTypedHandler;
 import mezz.jei.input.mouse.IUserInputHandler;
-import mezz.jei.input.mouse.handlers.CombinedUserInputHandler;
-import mezz.jei.input.mouse.handlers.EditModeUserInputHandler;
-import mezz.jei.input.mouse.handlers.NullUserInputHandler;
-import mezz.jei.input.mouse.handlers.ProxyUserInputHandler;
+import mezz.jei.input.mouse.handlers.CheatInputHandler;
+import mezz.jei.input.mouse.handlers.CombinedInputHandler;
+import mezz.jei.input.mouse.handlers.NullInputHandler;
+import mezz.jei.input.mouse.handlers.ProxyInputHandler;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.Rectangle2dBuilder;
 import net.minecraft.client.Minecraft;
@@ -30,6 +30,7 @@ import net.minecraft.util.Tuple;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFocusSource, ICharTypedHandler {
@@ -220,29 +221,27 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	@Override
-	@Nullable
-	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	public IUserInputHandler createInputHandler() {
-		final IUserInputHandler displayedInputHandler = new CombinedUserInputHandler(
+		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
 			this.ghostIngredientDragManager.createInputHandler(),
 			this.searchField.createInputHandler(),
-			new EditModeUserInputHandler(worldConfig),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler(),
-			new CheatUserInputHandler(this.contents, worldConfig, clientConfig)
+			new CheatInputHandler(this.contents, worldConfig, clientConfig)
 		);
 
 		final IUserInputHandler hiddenInputHandler = this.configButton.createInputHandler();
 
-		return new ProxyUserInputHandler(() -> {
+		return new ProxyInputHandler(() -> {
 			if (this.guiProperties == null) {
-				return NullUserInputHandler.INSTANCE;
+				return NullInputHandler.INSTANCE;
 			}
 			if (isListDisplayed()) {
 				return displayedInputHandler;

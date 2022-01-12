@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.Rect2i;
@@ -33,7 +34,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 	private final DrawableNineSliceTexture backgroundTab;
 
-	private final List<GuiIngredient<Object>> ingredients;
+	private final List<GuiIngredient<?>> ingredients;
 	private final DrawableNineSliceTexture slotBackground;
 	private int left = 0;
 	private int top = 0;
@@ -124,30 +125,15 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		return null;
 	}
 
-	@Nullable
-	private GuiIngredient<?> getHovered(double mouseX, double mouseY) {
-		for (GuiIngredient<?> guiIngredient : this.ingredients) {
-			if (guiIngredient.isMouseOver(0, 0, mouseX, mouseY)) {
-				return guiIngredient;
-			}
-		}
-		return null;
+	private Optional<GuiIngredient<?>> getHovered(double mouseX, double mouseY) {
+		return this.ingredients.stream()
+			.filter(guiIngredient -> guiIngredient.isMouseOver(0, 0, mouseX, mouseY))
+			.findFirst();
 	}
 
-	@Nullable
 	@Override
-	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
-		GuiIngredient<?> hovered = getHovered(mouseX, mouseY);
-		if (hovered != null) {
-			Object ingredientUnderMouse = hovered.getDisplayedIngredient();
-			if (ingredientUnderMouse != null) {
-				ClickedIngredient<Object> ingredient = ClickedIngredient.create(ingredientUnderMouse, hovered.getRect());
-				if (ingredient != null) {
-					ingredient.setCanSetFocusWithMouse();
-				}
-				return ingredient;
-			}
-		}
-		return null;
+	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		return getHovered(mouseX, mouseY)
+			.flatMap(hovered -> ClickedIngredient.create(hovered, false, true));
 	}
 }

@@ -1,7 +1,7 @@
 package mezz.jei.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.input.mouse.handlers.CombinedUserInputHandler;
+import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -63,7 +63,7 @@ public class PageNavigation {
 	}
 
 	public IUserInputHandler createInputHandler() {
-		return new CombinedUserInputHandler(
+		return new CombinedInputHandler(
 			this.nextButton.createInputHandler(),
 			this.backButton.createInputHandler()
 		);

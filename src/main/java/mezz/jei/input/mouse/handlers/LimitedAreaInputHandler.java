@@ -8,8 +8,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
-public class LimitedAreaUserInputHandler implements IUserInputHandler {
+public class LimitedAreaInputHandler implements IUserInputHandler {
 	private final IUserInputHandler handler;
 	private final Rect2i area;
 
@@ -17,22 +18,21 @@ public class LimitedAreaUserInputHandler implements IUserInputHandler {
 		if (area == null) {
 			return handler;
 		}
-		return new LimitedAreaUserInputHandler(handler, area);
+		return new LimitedAreaInputHandler(handler, area);
 	}
 
-	private LimitedAreaUserInputHandler(IUserInputHandler handler, Rect2i area) {
+	private LimitedAreaInputHandler(IUserInputHandler handler, Rect2i area) {
 		this.handler = handler;
 		this.area = area;
 	}
 
 	@Override
-	public IUserInputHandler handleUserInput(Screen screen, UserInput input) {
-		if (input.in(this.area)) {
-			if (this.handler.handleUserInput(screen, input) != null) {
-				return this;
-			}
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
+		if (MathUtil.contains(this.area, input.getMouseX(), input.getMouseY())) {
+			return this.handler.handleUserInput(screen, input)
+				.map(handled -> this);
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	@Override
@@ -48,26 +48,22 @@ public class LimitedAreaUserInputHandler implements IUserInputHandler {
 		return false;
 	}
 
-	@Nullable
 	@Override
-	public IUserInputHandler handleDragStart(Screen screen, UserInput input) {
-		if (input.in(this.area)) {
-			if (this.handler.handleDragStart(screen, input) != null) {
-				return this;
-			}
+	public Optional<IUserInputHandler> handleDragStart(Screen screen, UserInput input) {
+		if (MathUtil.contains(this.area, input.getMouseX(), input.getMouseY())) {
+			return this.handler.handleDragStart(screen, input)
+				.map(handled -> this);
 		}
-		return null;
+		return Optional.empty();
 	}
 
-	@Nullable
 	@Override
-	public IUserInputHandler handleDragComplete(Screen screen, UserInput input) {
-		if (input.in(this.area)) {
-			if (this.handler.handleDragComplete(screen, input) != null) {
-				return this;
-			}
+	public Optional<IUserInputHandler> handleDragComplete(Screen screen, UserInput input) {
+		if (MathUtil.contains(this.area, input.getMouseX(), input.getMouseY())) {
+			return this.handler.handleDragComplete(screen, input)
+				.map(handled -> this);
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	@Override

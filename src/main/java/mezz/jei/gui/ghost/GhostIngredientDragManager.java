@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IRecipeFocusSource;
@@ -64,8 +65,8 @@ public class GhostIngredientDragManager {
 		if (this.ghostIngredientDrag != null) {
 			this.ghostIngredientDrag.drawTargets(poseStack, mouseX, mouseY);
 		} else {
-			IClickedIngredient<?> elementUnderMouse = this.source.getIngredientUnderMouse(mouseX, mouseY);
-			Object hovered = elementUnderMouse == null ? null : elementUnderMouse.getValue();
+			Optional<IClickedIngredient<?>> elementUnderMouse = this.source.getIngredientUnderMouse(mouseX, mouseY);
+			Object hovered = elementUnderMouse.map(IClickedIngredient::getValue).orElse(null);
 			if (!Objects.equals(hovered, this.hoveredIngredient)) {
 				this.hoveredIngredient = hovered;
 				this.hoveredIngredientTargets = null;
@@ -113,37 +114,35 @@ public class GhostIngredientDragManager {
 	}
 
 	private class UserInputHandler implements IUserInputHandler {
-		@Nullable
 		@Override
-		public IUserInputHandler handleDragStart(Screen screen, UserInput input) {
+		public Optional<IUserInputHandler> handleDragStart(Screen screen, UserInput input) {
 			if (screen instanceof RecipesGui) {
-				return null;
-			}
-			IClickedIngredient<?> clicked = source.getIngredientUnderMouse(input.getMouseX(), input.getMouseY());
-			if (clicked == null) {
-				return null;
+				return Optional.empty();
 			}
 			Minecraft minecraft = Minecraft.getInstance();
 			LocalPlayer player = minecraft.player;
 			if (player == null) {
-				return null;
+				return Optional.empty();
 			}
-			ItemStack mouseItem = player.containerMenu.getCarried();
-			if (mouseItem.isEmpty() &&
-					handleClickGhostIngredient(screen, clicked, input)) {
-				return this;
-			}
-			return null;
+
+			return source.getIngredientUnderMouse(input.getMouseX(), input.getMouseY())
+				.flatMap(clicked -> {
+					ItemStack mouseItem = player.containerMenu.getCarried();
+					if (mouseItem.isEmpty() &&
+						handleClickGhostIngredient(screen, clicked, input)) {
+						return Optional.of(this);
+					}
+					return Optional.empty();
+				});
 		}
 
-		@Nullable
 		@Override
-		public IUserInputHandler handleDragComplete(Screen screen, UserInput input) {
+		public Optional<IUserInputHandler> handleDragComplete(Screen screen, UserInput input) {
 			if (screen instanceof RecipesGui) {
-				return null;
+				return Optional.empty();
 			}
 			if (ghostIngredientDrag == null) {
-				return null;
+				return Optional.empty();
 			}
 			boolean success = ghostIngredientDrag.onClick(input);
 			double mouseX = input.getMouseX();
@@ -155,9 +154,9 @@ public class GhostIngredientDragManager {
 			ghostIngredientDrag = null;
 			hoveredIngredientTargets = null;
 			if (success) {
-				return this;
+				return Optional.of(this);
 			}
-			return null;
+			return Optional.empty();
 		}
 
 		@Override

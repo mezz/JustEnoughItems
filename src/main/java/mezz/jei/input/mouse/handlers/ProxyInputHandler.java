@@ -5,18 +5,18 @@ import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
 import net.minecraft.client.gui.screens.Screen;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.function.Supplier;
 
-public class ProxyUserInputHandler implements IUserInputHandler {
+public class ProxyInputHandler implements IUserInputHandler {
 	private final Supplier<IUserInputHandler> source;
 
-	public ProxyUserInputHandler(Supplier<IUserInputHandler> source) {
+	public ProxyInputHandler(Supplier<IUserInputHandler> source) {
 		this.source = source;
 	}
 
 	@Override
-	public IUserInputHandler handleUserInput(Screen screen, UserInput input) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
 		return this.source.get().handleUserInput(screen, input);
 	}
 
@@ -30,15 +30,13 @@ public class ProxyUserInputHandler implements IUserInputHandler {
 		return this.source.get().handleMouseScrolled(mouseX, mouseY, scrollDelta);
 	}
 
-	@Nullable
 	@Override
-	public IUserInputHandler handleDragStart(Screen screen, UserInput input) {
+	public Optional<IUserInputHandler> handleDragStart(Screen screen, UserInput input) {
 		return this.source.get().handleDragStart(screen, input);
 	}
 
-	@Nullable
 	@Override
-	public IUserInputHandler handleDragComplete(Screen screen, UserInput input) {
+	public Optional<IUserInputHandler> handleDragComplete(Screen screen, UserInput input) {
 		return this.source.get().handleDragComplete(screen, input);
 	}
 

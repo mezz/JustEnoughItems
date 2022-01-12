@@ -1,11 +1,16 @@
 package mezz.jei.input;
 
-import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 public class TextHistory {
 	private static final int MAX_HISTORY = 100;
+
+	public enum Direction {
+		NEXT, PREVIOUS
+	}
+
 	private final List<String> history = new LinkedList<>();
 
 	public boolean add(String currentText) {
@@ -20,8 +25,14 @@ public class TextHistory {
 		return false;
 	}
 
-	@Nullable
-	public String getPrevious(String currentText) {
+	public Optional<String> get(Direction direction, String currentText) {
+		return switch (direction) {
+			case NEXT -> getNext(currentText);
+			case PREVIOUS -> getPrevious(currentText);
+		};
+	}
+
+	public Optional<String> getPrevious(String currentText) {
 		int historyIndex = history.indexOf(currentText);
 		if (historyIndex < 0) {
 			if (add(currentText)) {
@@ -31,23 +42,23 @@ public class TextHistory {
 			}
 		}
 		if (historyIndex <= 0) {
-			return null;
+			return Optional.empty();
 		}
-		return history.get(historyIndex - 1);
+		String value = history.get(historyIndex - 1);
+		return Optional.of(value);
 	}
 
-	@Nullable
-	public String getNext(String currentText) {
+	public Optional<String> getNext(String currentText) {
 		int historyIndex = history.indexOf(currentText);
 		if (historyIndex < 0) {
-			return null;
+			return Optional.empty();
 		}
-		String historyString;
+		final String historyString;
 		if (historyIndex + 1 < history.size()) {
 			historyString = history.get(historyIndex + 1);
 		} else {
 			historyString = "";
 		}
-		return historyString;
+		return Optional.of(historyString);
 	}
 }

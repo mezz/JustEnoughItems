@@ -4,9 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.time.Duration;
 import java.util.Collections;
-import java.util.List;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -109,14 +107,14 @@ public class GuiEventHandler {
 		drawnOnBackground = false;
 
 		if (screen instanceof AbstractContainerScreen<?> guiContainer) {
-			IGuiClickableArea guiClickableArea = guiScreenHelper.getGuiClickableArea(guiContainer, event.getMouseX() - guiContainer.getGuiLeft(), event.getMouseY() - guiContainer.getGuiTop());
-			if (guiClickableArea != null) {
-				List<Component> tooltipStrings = guiClickableArea.getTooltipStrings();
-				if (tooltipStrings.isEmpty()) {
-					tooltipStrings = Collections.singletonList(new TranslatableComponent("jei.tooltip.show.recipes"));
-				}
-				TooltipRenderer.drawHoveringText(poseStack, tooltipStrings, event.getMouseX(), event.getMouseY());
-			}
+			guiScreenHelper.getGuiClickableArea(guiContainer, event.getMouseX() - guiContainer.getGuiLeft(), event.getMouseY() - guiContainer.getGuiTop())
+				.map(IGuiClickableArea::getTooltipStrings)
+				.ifPresent(tooltipStrings -> {
+					if (tooltipStrings.isEmpty()) {
+						tooltipStrings = Collections.singletonList(new TranslatableComponent("jei.tooltip.show.recipes"));
+					}
+					TooltipRenderer.drawHoveringText(poseStack, tooltipStrings, event.getMouseX(), event.getMouseY());
+				});
 		}
 
 		ingredientListOverlay.drawTooltips(minecraft, poseStack, event.getMouseX(), event.getMouseY());

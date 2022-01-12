@@ -7,13 +7,14 @@ import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.mouse.IUserInputHandler;
-import mezz.jei.input.mouse.handlers.NullUserInputHandler;
-import mezz.jei.input.mouse.handlers.ProxyUserInputHandler;
+import mezz.jei.input.mouse.handlers.NullInputHandler;
+import mezz.jei.input.mouse.handlers.ProxyInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.Set;
 
 public class LeftAreaDispatcher implements IRecipeFocusSource {
@@ -68,21 +69,20 @@ public class LeftAreaDispatcher implements IRecipeFocusSource {
 	}
 
 	@Override
-	@Nullable
-	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (canShow) {
 			return contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	public IUserInputHandler createInputHandler() {
 		IUserInputHandler contentsInputHandler = this.contents.createInputHandler();
-		return new ProxyUserInputHandler(() -> {
+		return new ProxyInputHandler(() -> {
 			if (canShow) {
 				return contentsInputHandler;
 			}
-			return NullUserInputHandler.INSTANCE;
+			return NullInputHandler.INSTANCE;
 		});
 	}
 }

@@ -1,22 +1,5 @@
 package mezz.jei.gui;
 
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
-
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
@@ -26,6 +9,22 @@ import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.util.MathUtil;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GuiScreenHelper {
 	private final IngredientManager ingredientManager;
@@ -108,22 +107,16 @@ public class GuiScreenHelper {
 		return allGuiExtraAreas;
 	}
 
-	@Nullable
-	public <T extends AbstractContainerScreen<?>> IClickedIngredient<?> getPluginsIngredientUnderMouse(T guiContainer, double mouseX, double mouseY) {
-		return getIngredientsUnderMouse(guiContainer, mouseX, mouseY)
-			.map(c -> createClickedIngredient(c, guiContainer))
-			.filter(Objects::nonNull)
-			.findFirst()
-			.orElse(null);
-	}
-
-	private <T extends AbstractContainerScreen<?>> Stream<Object> getIngredientsUnderMouse(T guiContainer, double mouseX, double mouseY) {
+	public <T extends AbstractContainerScreen<?>> Optional<IClickedIngredient<?>> getPluginsIngredientUnderMouse(T guiContainer, double mouseX, double mouseY) {
 		return Stream.concat(
-			this.guiContainerHandlers.getActiveGuiHandlerStream(guiContainer)
-				.map(a -> a.getIngredientUnderMouse(guiContainer, mouseX, mouseY)),
-			this.globalGuiHandlers.stream()
-				.map(a -> a.getIngredientUnderMouse(mouseX, mouseY))
-		);
+				this.guiContainerHandlers.getActiveGuiHandlerStream(guiContainer)
+					.map(a -> a.getIngredientUnderMouse(guiContainer, mouseX, mouseY)),
+				this.globalGuiHandlers.stream()
+					.map(a -> a.getIngredientUnderMouse(mouseX, mouseY))
+			)
+			.map(i -> createClickedIngredient(i, guiContainer))
+			.flatMap(Optional::stream)
+			.findFirst();
 	}
 
 	@Nullable
@@ -148,13 +141,12 @@ public class GuiScreenHelper {
 		return null;
 	}
 
-	@Nullable
-	private <T> IClickedIngredient<T> createClickedIngredient(@Nullable T ingredient, AbstractContainerScreen<?> guiContainer) {
+	private <T> Optional<IClickedIngredient<? extends T>> createClickedIngredient(@Nullable T ingredient, AbstractContainerScreen<?> guiContainer) {
 		if (ingredient == null) {
-			return null;
+			return Optional.empty();
 		}
 		if (!ingredientManager.isValidIngredient(ingredient)) {
-			return null;
+			return Optional.empty();
 		}
 		Rect2i area = null;
 		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
@@ -168,12 +160,11 @@ public class GuiScreenHelper {
 				);
 			}
 		}
-		return ClickedIngredient.create(ingredient, area);
+		return ClickedIngredient.create(ingredient, area, false, false);
 	}
 
-	@Nullable
-	public IGuiClickableArea getGuiClickableArea(AbstractContainerScreen<?> guiContainer, double mouseX, double mouseY) {
-		return this.guiContainerHandlers.getGuiClickableArea(guiContainer, mouseX, mouseY);
+	public Optional<IGuiClickableArea> getGuiClickableArea(AbstractContainerScreen<?> guiContainer, double guiMouseX, double guiMouseY) {
+		return this.guiContainerHandlers.getGuiClickableArea(guiContainer, guiMouseX, guiMouseY);
 	}
 
 }

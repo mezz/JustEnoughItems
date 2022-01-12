@@ -13,9 +13,9 @@ import mezz.jei.api.ingredients.ISlowRenderItem;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
-import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.IngredientInfo;
-import mezz.jei.input.ClickedIngredient;
+import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.IngredientTypeHelper;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -32,11 +32,10 @@ import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class IngredientListBatchRenderer {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -143,31 +142,23 @@ public class IngredientListBatchRenderer {
 		renderOther.put(ingredientType, renderer);
 	}
 
-	@Nullable
-	public ClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
-		IngredientListElementRenderer<?> hovered = getHovered(mouseX, mouseY);
-		if (hovered != null) {
-			return ClickedIngredient.create(hovered.getIngredient(), hovered.getArea());
-		}
-		return null;
-	}
-
-	@Nullable
-	public IngredientListElementRenderer<?> getHovered(double mouseX, double mouseY) {
-		for (IngredientListSlot slot : slots) {
-			if (slot.isMouseOver(mouseX, mouseY)) {
-				return slot.getIngredientRenderer();
-			}
-		}
-		return null;
+	public Optional<IngredientListElementRenderer<?>> getHovered(double mouseX, double mouseY) {
+		return getHoveredStream(mouseX, mouseY)
+			.findFirst();
 	}
 
 	public <T> Optional<IngredientListElementRenderer<T>> getHovered(double mouseX, double mouseY, IIngredientType<T> ingredientType) {
-		return this.slots.stream()
-			.filter(s -> s.isMouseOver(mouseX, mouseY))
-			.map(s -> s.getIngredientRenderer(ingredientType))
-			.filter(Objects::nonNull)
+		return getHoveredStream(mouseX, mouseY)
+			.map(ingredientRenderer -> IngredientTypeHelper.checkedCast(ingredientRenderer, ingredientType))
+			.flatMap(Optional::stream)
 			.findFirst();
+	}
+
+	private Stream<IngredientListElementRenderer<?>> getHoveredStream(double mouseX, double mouseY) {
+		return slots.stream()
+			.filter(s -> s.isMouseOver(mouseX, mouseY))
+			.map(IngredientListSlot::getIngredientRenderer)
+			.flatMap(Optional::stream);
 	}
 
 	/**

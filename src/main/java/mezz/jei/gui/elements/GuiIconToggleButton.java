@@ -10,9 +10,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class GuiIconToggleButton {
 	private final IDrawable offIcon;
@@ -67,17 +67,18 @@ public abstract class GuiIconToggleButton {
 
 	private class UserInputHandler implements IUserInputHandler {
 		@Override
-		@Nullable
-		public final IUserInputHandler handleUserInput(Screen screen, UserInput input) {
+		public final Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
 			if (isMouseOver(input.getMouseX(), input.getMouseY())) {
 				IUserInputHandler handler = button.createInputHandler();
-				if (handler.handleUserInput(screen, input) != null) {
-					if (onMouseClicked(input)) {
-						return this;
-					}
-				}
+				return handler.handleUserInput(screen, input)
+					.flatMap(handled -> {
+						if (onMouseClicked(input)) {
+							return Optional.of(this);
+						}
+						return Optional.empty();
+					});
 			}
-			return null;
+			return Optional.empty();
 		}
 	}
 }

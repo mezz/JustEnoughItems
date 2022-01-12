@@ -21,8 +21,6 @@ import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.textures.Textures;
-import mezz.jei.ingredients.IngredientManager;
-import mezz.jei.ingredients.IngredientTypeHelper;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
@@ -94,14 +92,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public RecipesGui(
 		IRecipeManager recipeManager,
 		RecipeTransferManager recipeTransferManager,
-		IngredientManager ingredientManager,
 		IModIdHelper modIdHelper,
 		IClientConfig clientConfig
 	) {
 		super(new TextComponent("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;
 		this.clientConfig = clientConfig;
-		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, ingredientManager, modIdHelper);
+		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, modIdHelper);
 		this.recipeCatalysts = new RecipeCatalysts();
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
 		this.minecraft = Minecraft.getInstance();
@@ -278,45 +275,41 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		return false;
 	}
 
-	@Nullable
 	@Override
-	public IClickedIngredient<?> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isOpen()) {
-			IClickedIngredient<?> clicked = recipeCatalysts.getIngredientUnderMouse(mouseX, mouseY);
-			if (clicked == null) {
-				if (isMouseOver(mouseX, mouseY)) {
-					clicked = getRecipeLayoutsIngredientUnderMouse(mouseX, mouseY);
-				}
-			}
-
-			return clicked;
+			return recipeCatalysts.getIngredientUnderMouse(mouseX, mouseY)
+				.or(() -> getRecipeLayoutsIngredientUnderMouse(mouseX, mouseY));
 		}
-		return null;
+		return Optional.empty();
 	}
 
-	@Nullable
-	private IClickedIngredient<?> getRecipeLayoutsIngredientUnderMouse(double mouseX, double mouseY) {
-		for (RecipeLayout<?> recipeLayout : this.recipeLayouts) {
-			GuiIngredient<?> clicked = recipeLayout.getGuiIngredientUnderMouse(mouseX, mouseY);
-			if (clicked != null) {
-				Object displayedIngredient = clicked.getDisplayedIngredient();
-				if (displayedIngredient != null) {
-					Rect2i area = clicked.getRect();
-					area = new Rect2i(
-						area.getX() + recipeLayout.getPosX(),
-						area.getY() + recipeLayout.getPosY(),
-						area.getWidth(),
-						area.getHeight()
-					);
-					ClickedIngredient<Object> clickedIngredient = ClickedIngredient.create(displayedIngredient, area);
-					if (clickedIngredient != null) {
-						clickedIngredient.setCanSetFocusWithMouse();
-					}
-					return clickedIngredient;
-				}
-			}
-		}
-		return null;
+	private Optional<IClickedIngredient<?>> getRecipeLayoutsIngredientUnderMouse(double mouseX, double mouseY) {
+		return this.recipeLayouts.stream()
+			.map(recipeLayout -> getRecipeLayoutIngredientUnderMouse(recipeLayout, mouseX, mouseY))
+			.flatMap(Optional::stream)
+			.findFirst();
+	}
+
+	private static Optional<IClickedIngredient<?>> getRecipeLayoutIngredientUnderMouse(RecipeLayout<?> recipeLayout, double mouseX, double mouseY) {
+		return recipeLayout.getGuiIngredientUnderMouse(mouseX, mouseY)
+			.flatMap(clicked ->
+				Optional.ofNullable(clicked.getDisplayedIngredient())
+					.flatMap(displayedIngredient -> {
+						Rect2i area = absoluteClickedArea(recipeLayout, clicked.getRect());
+						return ClickedIngredient.create(displayedIngredient, area, false, true);
+					})
+			);
+	}
+
+	/**
+	 * Converts from relative recipeLayout coordinates to absolute screen coordinates
+	 */
+	private static Rect2i absoluteClickedArea(RecipeLayout<?> recipeLayout, Rect2i area) {
+		return new Rectangle2dBuilder(area)
+			.addX(recipeLayout.getPosX())
+			.addY(recipeLayout.getPosY())
+			.build();
 	}
 
 	@Override
@@ -356,7 +349,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		double mouseY = input.getMouseY();
 		if (isMouseOver(mouseX, mouseY)) {
 			if (titleHoverChecker.checkHover(mouseX, mouseY)) {
-				if (input.isLeftClick() && logic.setCategoryFocus()) {
+				if (input.is(KeyBindings.leftClick) && logic.setCategoryFocus()) {
 					return true;
 				}
 			} else {
@@ -369,12 +362,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 
 		IUserInputHandler handler = recipeGuiTabs.getInputHandler();
-		if (handler.handleUserInput(this, input) != null) {
+		if (handler.handleUserInput(this, input).isPresent()) {
 			return true;
 		}
 
 		Minecraft minecraft = Minecraft.getInstance();
-		if (input.isEscapeKey() || input.is(minecraft.options.keyInventory)) {
+		if (input.is(KeyBindings.escapeKey) || input.is(minecraft.options.keyInventory)) {
 			onClose();
 			return true;
 		} else if (input.is(KeyBindings.recipeBack)) {
@@ -450,10 +443,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public <T> T getIngredientUnderMouse(IIngredientType<T> ingredientType) {
 		double x = MouseUtil.getX();
 		double y = MouseUtil.getY();
-		IClickedIngredient<?> ingredient = getIngredientUnderMouse(x, y);
-		return Optional.ofNullable(ingredient)
-			.map(i -> IngredientTypeHelper.checkedCast(i, ingredientType))
+		Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
+
+		return getIngredientUnderMouse(x, y)
 			.map(IClickedIngredient::getValue)
+			.filter(ingredientClass::isInstance)
+			.map(ingredientClass::cast)
 			.orElse(null);
 	}
 

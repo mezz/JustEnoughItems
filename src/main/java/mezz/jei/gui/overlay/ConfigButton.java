@@ -9,7 +9,6 @@ import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.UserInput;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -76,7 +75,7 @@ public class ConfigButton extends GuiIconToggleButton {
 	protected boolean onMouseClicked(UserInput input) {
 		if (worldConfig.isOverlayEnabled()) {
 			if (!input.isSimulate()) {
-				if (Screen.hasControlDown()) {
+				if (input.is(KeyBindings.toggleCheatModeConfigButton)) {
 					worldConfig.toggleCheatItemsEnabled();
 				} else {
 					JEIClientConfig.openSettings();

@@ -59,6 +59,7 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
+	@Deprecated
 	public <V> IDrawable createDrawableIngredient(V ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);

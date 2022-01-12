@@ -8,6 +8,8 @@ import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.util.MathUtil;
 
+import java.util.Optional;
+
 public class IngredientListSlot {
 	private final Rect2i area;
 	private final int padding;
@@ -21,13 +23,11 @@ public class IngredientListSlot {
 		this.area = new Rect2i(xPosition, yPosition, size, size);
 	}
 
-	@Nullable
-	public IngredientListElementRenderer<?> getIngredientRenderer() {
-		return ingredientRenderer;
+	public Optional<IngredientListElementRenderer<?>> getIngredientRenderer() {
+		return Optional.ofNullable(ingredientRenderer);
 	}
 
-	@Nullable
-	public <T> IngredientListElementRenderer<T> getIngredientRenderer(IIngredientType<T> ingredientType) {
+	public <T> Optional<IngredientListElementRenderer<T>> getIngredientRenderer(IIngredientType<T> ingredientType) {
 		return IngredientTypeHelper.checkedCast(ingredientRenderer, ingredientType);
 	}
 
