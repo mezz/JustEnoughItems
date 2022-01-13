@@ -122,6 +122,18 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	}
 
 	@Override
+	public ResourceLocation getResourceLocation(FluidStack ingredient) {
+		Fluid fluid = ingredient.getFluid();
+		ResourceLocation registryName = fluid.getRegistryName();
+		if (registryName == null) {
+			String ingredientInfo = getErrorInfo(ingredient);
+			throw new IllegalStateException("fluid.getRegistryName() returned null for: " + ingredientInfo);
+		}
+
+		return registryName;
+	}
+
+	@Override
 	public ItemStack getCheatItemStack(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
 		Item filledBucket = fluid.getBucket();

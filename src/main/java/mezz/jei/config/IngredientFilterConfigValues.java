@@ -6,6 +6,6 @@ public class IngredientFilterConfigValues {
 	public SearchMode tagSearchMode = SearchMode.REQUIRE_PREFIX;
 	public SearchMode creativeTabSearchMode = SearchMode.DISABLED;
 	public SearchMode colorSearchMode = SearchMode.DISABLED;
-	public SearchMode resourceIdSearchMode = SearchMode.DISABLED;
+	public SearchMode resourceLocationSearchMode = SearchMode.DISABLED;
 	public boolean searchAdvancedTooltips = false;
 }

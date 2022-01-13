@@ -11,7 +11,7 @@ public class IngredientFilterConfig implements IIngredientFilterConfig, IJEIConf
 	public final ForgeConfigSpec.EnumValue<SearchMode> tagSearchMode;
 	public final ForgeConfigSpec.EnumValue<SearchMode> creativeTabSearchMode;
 	public final ForgeConfigSpec.EnumValue<SearchMode> colorSearchMode;
-	public final ForgeConfigSpec.EnumValue<SearchMode> resourceIdSearchMode;
+	public final ForgeConfigSpec.EnumValue<SearchMode> resourceLocationSearchMode;
 	public final ForgeConfigSpec.BooleanValue searchAdvancedTooltips;
 
 	public IngredientFilterConfig(ForgeConfigSpec.Builder builder) {
@@ -29,8 +29,8 @@ public class IngredientFilterConfig implements IIngredientFilterConfig, IJEIConf
 		creativeTabSearchMode = builder.defineEnum("CreativeTabSearchMode", defaultValues.creativeTabSearchMode);
 		builder.comment("Search mode for Colors (prefix: ^)");
 		colorSearchMode = builder.defineEnum("ColorSearchMode", defaultValues.colorSearchMode);
-		builder.comment("Search mode for resources IDs (prefix: &)");
-		resourceIdSearchMode = builder.defineEnum("ResourceIdSearchMode", defaultValues.resourceIdSearchMode);
+		builder.comment("Search mode for resources locations (prefix: &)");
+		resourceLocationSearchMode = builder.defineEnum("ResourceLocationSearchMode", defaultValues.resourceLocationSearchMode);
 		builder.comment("Search advanced tooltips (visible with F3+H)");
 		searchAdvancedTooltips = builder.define("SearchAdvancedTooltips", defaultValues.searchAdvancedTooltips);
 		builder.pop();
@@ -43,7 +43,7 @@ public class IngredientFilterConfig implements IIngredientFilterConfig, IJEIConf
 		values.tagSearchMode = tagSearchMode.get();
 		values.creativeTabSearchMode = creativeTabSearchMode.get();
 		values.colorSearchMode = colorSearchMode.get();
-		values.resourceIdSearchMode = resourceIdSearchMode.get();
+		values.resourceLocationSearchMode = resourceLocationSearchMode.get();
 		values.searchAdvancedTooltips = searchAdvancedTooltips.get();
 	}
 
@@ -73,8 +73,8 @@ public class IngredientFilterConfig implements IIngredientFilterConfig, IJEIConf
 	}
 
 	@Override
-	public SearchMode getResourceIdSearchMode() {
-		return values.resourceIdSearchMode;
+	public SearchMode getResourceLocationSearchMode() {
+		return values.resourceLocationSearchMode;
 	}
 
 	@Override

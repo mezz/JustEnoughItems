@@ -175,6 +175,6 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	}
 
 	public String getIngredientModId(T ingredient) {
-		return ingredientHelper.getModId(ingredient);
+		return ingredientHelper.getResourceLocation(ingredient).getNamespace();
 	}
 }

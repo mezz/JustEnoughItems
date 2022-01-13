@@ -31,7 +31,7 @@ public class TestIngredientFilterConfig implements IIngredientFilterConfig {
 	}
 
 	@Override
-	public SearchMode getResourceIdSearchMode() {
+	public SearchMode getResourceLocationSearchMode() {
 		return SearchMode.ENABLED;
 	}
 

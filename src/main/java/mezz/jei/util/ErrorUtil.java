@@ -324,11 +324,7 @@ public final class ErrorUtil {
 				return modIdHelper.getModNameForModId(modId);
 			});
 		}
-		ingredientCategory.setDetail("Registry Name", () -> {
-			String modId = ingredientHelper.getModId(ingredient);
-			String resourceId = ingredientHelper.getResourceId(ingredient);
-			return modId + ":" + resourceId;
-		});
+		ingredientCategory.setDetail("Registry Name", () -> ingredientHelper.getResourceLocation(ingredient).toString());
 		ingredientCategory.setDetail("Display Name", () -> ingredientHelper.getDisplayName(ingredient));
 		ingredientCategory.setDetail("String Name", ingredient::toString);
 

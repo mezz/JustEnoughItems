@@ -27,7 +27,7 @@ public interface IIngredientListElementInfo<V> {
 
 	Collection<String> getColorStrings(IIngredientManager ingredientManager);
 
-	String getResourceId();
+	ResourceLocation getResourceLocation();
 
 	IIngredientListElement<V> getElement();
 
