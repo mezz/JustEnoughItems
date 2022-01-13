@@ -9,7 +9,7 @@ import mezz.jei.config.Config;
 public abstract class AbstractModIdHelper implements IModIdHelper {
 	@Override
 	public <T> String getModNameForIngredient(T ingredient, IIngredientHelper<T> ingredientHelper) {
-		String modId = ingredientHelper.getModId(ingredient);
+		String modId = ingredientHelper.getResourceLocation(ingredient).getNamespace();
 		return getModNameForModId(modId);
 	}
 

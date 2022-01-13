@@ -10,12 +10,13 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import net.minecraft.util.ResourceLocation;
+
 import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
-import mezz.jei.util.LegacyUtil;
 import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 
@@ -29,7 +30,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private final String displayName;
 	private final List<String> modIds;
 	private final List<String> modNames;
-	private final String resourceId;
+	private final ResourceLocation resourceLocation;
 	private boolean visible = true;
 
 	@Nullable
@@ -52,8 +53,9 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		this.orderIndex = orderIndex;
 		this.ingredientHelper = ingredientHelper;
 		this.ingredientRenderer = ingredientRenderer;
+		this.resourceLocation = ingredientHelper.getResourceLocation(ingredient);
 		String displayModId = ingredientHelper.getDisplayModId(ingredient);
-		String modId = ingredientHelper.getModId(ingredient);
+		String modId = this.resourceLocation.getNamespace();
 		this.modIds = new ArrayList<>();
 		this.modIds.add(displayModId);
 		if (!modId.equals(displayModId)) {
@@ -61,7 +63,6 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		}
 		this.modNames = this.modIds.stream().map(modIdHelper::getModNameForModId).collect(Collectors.toList());
 		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
-		this.resourceId = LegacyUtil.getResourceId(ingredient, ingredientHelper);
 	}
 
 	@Override
@@ -120,7 +121,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		String modId = this.modIds.get(0);
 		String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
 		String displayNameLowercase = Translator.toLowercaseWithLocale(this.displayName);
-		return IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceId));
+		return IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceLocation.getPath()));
 	}
 
 	@Override
@@ -146,7 +147,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 
 	@Override
 	public String getResourceId() {
-		return resourceId;
+		return resourceLocation.toString();
 	}
 
 	@Override

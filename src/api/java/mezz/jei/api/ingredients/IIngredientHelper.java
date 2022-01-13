@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IIngredientType;
@@ -81,7 +82,9 @@ public interface IIngredientHelper<V> {
 	 * Return the modId of the mod that created this ingredient.
 	 *
 	 * @since JEI 3.11.0
+	 * @deprecated since JEI 4.17.0. Use {@link #getResourceLocation(Object)} instead.
 	 */
+	@Deprecated
 	String getModId(V ingredient);
 
 	/**
@@ -90,7 +93,7 @@ public interface IIngredientHelper<V> {
 	 * @since JEI 4.8.0
 	 */
 	default String getDisplayModId(V ingredient) {
-		return getModId(ingredient);
+		return getResourceLocation(ingredient).getNamespace();
 	}
 
 	/**
@@ -108,8 +111,19 @@ public interface IIngredientHelper<V> {
 	 * Return the resource id of the given ingredient.
 	 *
 	 * @since JEI 4.3.2
+	 * @deprecated since JEI 4.17.0. Use {@link #getResourceLocation(Object)} instead.
 	 */
+	@Deprecated
 	String getResourceId(V ingredient);
+
+	/**
+	 * Return the registry name of the given ingredient.
+	 *
+	 * @since JEI 4.17.0
+	 */
+	default ResourceLocation getResourceLocation(V ingredient) {
+		return new ResourceLocation(getModId(ingredient), getResourceId(ingredient));
+	}
 
 	/**
 	 * Called when a player is in cheat mode and clicks an ingredient in the list.
