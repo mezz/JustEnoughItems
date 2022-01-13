@@ -33,7 +33,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	private final String displayName;
 	private final List<String> modIds;
 	private final List<String> modNames;
-	private final String resourceId;
+	private final ResourceLocation resourceLocation;
 	private Integer sortedIndex;
 
 	@Nullable
@@ -56,8 +56,9 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	protected IngredientListElementInfo(IIngredientListElement<V> element, IIngredientHelper<V> ingredientHelper, IModIdHelper modIdHelper) {
 		this.element = element;
 		V ingredient = element.getIngredient();
+		this.resourceLocation = ingredientHelper.getResourceLocation(ingredient);
 		String displayModId = ingredientHelper.getDisplayModId(ingredient);
-		String modId = ingredientHelper.getModId(ingredient);
+		String modId = this.resourceLocation.getNamespace();
 		this.modIds = new ArrayList<>();
 		this.modIds.add(displayModId);
 		if (!modId.equals(displayModId)) {
@@ -67,7 +68,6 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 			.map(modIdHelper::getModNameForModId)
 			.collect(Collectors.toList());
 		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
-		this.resourceId = ingredientHelper.getResourceId(ingredient);
 		this.sortedIndex = -1;
 	}
 
@@ -109,7 +109,8 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 		String displayNameLowercase = Translator.toLowercaseWithLocale(this.displayName);
 		V ingredient = element.getIngredient();
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
-		return IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceId), config);
+		ImmutableSet<String> toRemove = ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceLocation.getPath());
+		return IngredientInformation.getTooltipStrings(ingredient, ingredientRenderer, toRemove, config);
 	}
 
 	@Override
@@ -147,8 +148,8 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	}
 
 	@Override
-	public String getResourceId() {
-		return resourceId;
+	public ResourceLocation getResourceLocation() {
+		return resourceLocation;
 	}
 
 	@Override

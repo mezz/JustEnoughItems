@@ -85,14 +85,17 @@ public interface IIngredientHelper<V> {
 
 	/**
 	 * Return the modId of the mod that created this ingredient.
+	 * @deprecated since JEI 7.10.0. Use {@link #getResourceLocation(Object)} instead.
 	 */
+	@Deprecated
 	String getModId(V ingredient);
 
 	/**
 	 * Return the modId of the mod that should be displayed.
+	 * This mod id can be different from the one in the resource location.
 	 */
 	default String getDisplayModId(V ingredient) {
-		return getModId(ingredient);
+		return getResourceLocation(ingredient).getNamespace();
 	}
 
 	/**
@@ -106,8 +109,18 @@ public interface IIngredientHelper<V> {
 
 	/**
 	 * Return the resource id of the given ingredient.
+	 * @deprecated since JEI 7.10.0. Use {@link #getResourceLocation(Object)} instead.
 	 */
+	@Deprecated
 	String getResourceId(V ingredient);
+
+	/**
+	 * Return the registry name of the given ingredient.
+	 * @since JEI 7.10.0
+	 */
+	default ResourceLocation getResourceLocation(V ingredient) {
+		return new ResourceLocation(getModId(ingredient), getResourceId(ingredient));
+	}
 
 	/**
 	 * Called when a player is in cheat mode and clicks an ingredient in the list.

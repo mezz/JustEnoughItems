@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import net.minecraft.util.ResourceLocation;
 
 public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 	@Override
@@ -57,6 +58,11 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 	@Override
 	public String getResourceId(TestIngredient ingredient) {
 		return "Test Ingredient Resource Id " + ingredient;
+	}
+
+	@Override
+	public ResourceLocation getResourceLocation(TestIngredient ingredient) {
+		return new ResourceLocation("jei_test_mod", "test_ingredient_" + ingredient.getNumber());
 	}
 
 	@Override

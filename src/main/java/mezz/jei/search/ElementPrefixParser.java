@@ -60,7 +60,7 @@ public class ElementPrefixParser {
 		addPrefix(new PrefixInfo<>(
 			'&',
 			config::getResourceIdSearchMode,
-			element -> ImmutableList.of(element.getResourceId()),
+			element -> ImmutableList.of(element.getResourceLocation().toString()),
 			GeneralizedSuffixTree::new
 		));
 	}

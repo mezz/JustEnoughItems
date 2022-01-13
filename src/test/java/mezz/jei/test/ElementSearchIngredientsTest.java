@@ -145,7 +145,7 @@ public class ElementSearchIngredientsTest {
 		);
 
 		// Operation: search by the identifier prefix for one ingredient.
-		Set<Integer> results = fixture.searchIngredientNumbers("&Test Ingredient Resource Id TestIngredient#20");
+		Set<Integer> results = fixture.searchIngredientNumbers("&jei_test_mod:test_ingredient_20");
 
 		// Assertions: identifier search returns only the matching ingredient.
 		Assertions.assertEquals(numbers(20), results);
