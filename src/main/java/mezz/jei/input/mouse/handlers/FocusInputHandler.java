@@ -23,11 +23,11 @@ public class FocusInputHandler implements IUserInputHandler {
 	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
 		if (input.is(KeyBindings.showRecipe)) {
-			return handleShow(input, IFocus.Mode.INPUT);
+			return handleShow(input, IFocus.Mode.OUTPUT);
 		}
 
 		if (input.is(KeyBindings.showUses)) {
-			return handleShow(input, IFocus.Mode.OUTPUT);
+			return handleShow(input, IFocus.Mode.INPUT);
 		}
 
 		return Optional.empty();
