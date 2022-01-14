@@ -45,7 +45,7 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 
 	@Override
 	public String getModId(TestIngredient ingredient) {
-		return "JEI Test Mod";
+		return "jei_test_mod";
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 
 	@Override
 	public String getResourceId(TestIngredient ingredient) {
-		return "Test Ingredient Resource Id " + ingredient;
+		return "test_ingredient_" + ingredient.getNumber();
 	}
 
 	@Override
