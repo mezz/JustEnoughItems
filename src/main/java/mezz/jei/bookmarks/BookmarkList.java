@@ -67,45 +67,52 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	private <T> boolean contains(T ingredient) {
-		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
-		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-		for (Object existing : list) {
-			if (ingredient == existing) {
-				return true;
-			}
-			if (ingredient.getClass().isInstance(existing)) {
-				@SuppressWarnings("unchecked")
-				T castExisting = (T) existing;
-				if (ingredient instanceof ItemStack) {
-					return ItemStack.areItemStacksEqual((ItemStack) ingredient, (ItemStack) castExisting);
-				}
-				if (equalUids(ingredientHelper, castExisting, ingredient)) {
-					return true;
-				}
-			}
-		}
-		return false;
+		return indexOf(ingredient) >= 0;
 	}
 
-	private static <T> boolean equalUids(IIngredientHelper<T> ingredientHelper, T a, T b) {
-		String uidA = ingredientHelper.getUniqueId(a);
-		String uidB = ingredientHelper.getUniqueId(b);
+	private <T> int indexOf(T ingredient) {
+		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
+		IIngredientHelper<T> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		ingredient = normalize(ingredient);
+		String uniqueId = ingredientHelper.getUniqueId(ingredient);
+
+		for (int i = 0; i < list.size(); i++) {
+			Object existing = list.get(i);
+			if (equal(ingredientHelper, ingredient, uniqueId, existing)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private static <T> boolean equal(IIngredientHelper<T> ingredientHelper, T a, String uidA, Object b) {
+		if (a == b) {
+			return true;
+		}
+		if (!a.getClass().isInstance(b)) {
+			return false;
+		}
+		if (a instanceof ItemStack) {
+			return ItemStack.areItemStacksEqual((ItemStack) a, (ItemStack) b);
+		}
+
+		@SuppressWarnings("unchecked")
+		T castB = (T) b;
+		String uidB = ingredientHelper.getUniqueId(castB);
 		return uidA.equals(uidB);
 	}
 
-	public boolean remove(Object ingredient) {
-		int index = 0;
-		for (Object existing : list) {
-			if (ingredient == existing) {
-				list.remove(index);
-				ingredientListElements.remove(index);
-				notifyListenersOfChange();
-				saveBookmarks();
-				return true;
-			}
-			index++;
+	public <T> boolean remove(T ingredient) {
+		int index = indexOf(ingredient);
+		if (index < 0) {
+			return false;
 		}
-		return false;
+
+		list.remove(index);
+		ingredientListElements.remove(index);
+		notifyListenersOfChange();
+		saveBookmarks();
+		return true;
 	}
 
 	public void saveBookmarks() {
