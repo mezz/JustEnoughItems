@@ -1,7 +1,6 @@
 package mezz.jei.startup;
 
 import mezz.jei.config.IWorldConfig;
-import mezz.jei.config.ServerInfo;
 import mezz.jei.network.PacketHandler;
 import mezz.jei.network.PacketHandlerClient;
 import net.minecraftforge.api.distmarker.Dist;
@@ -10,14 +9,24 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.event.EventNetworkChannel;
 
 public class NetworkHandler {
+	private static final String NETWORK_PROTOCOL_VERSION = "1.0.0";
 	private final EventNetworkChannel channel;
 
 	public NetworkHandler() {
-		channel = NetworkRegistry.newEventChannel(PacketHandler.CHANNEL_ID, () -> "1.0.0", s -> {
-			boolean jeiOnServer = !NetworkRegistry.ABSENT.equals(s);
-			ServerInfo.onConnectedToServer(jeiOnServer);
-			return true;
-		}, s -> true);
+		channel = NetworkRegistry.newEventChannel(
+			PacketHandler.CHANNEL_ID,
+			() -> NETWORK_PROTOCOL_VERSION,
+			NetworkHandler::isClientAcceptedVersion,
+			NetworkHandler::isServerAcceptedVersion
+		);
+	}
+
+	private static boolean isClientAcceptedVersion(String version) {
+		return true;
+	}
+
+	private static boolean isServerAcceptedVersion(String version) {
+		return true;
 	}
 
 	public void createServerPacketHandler() {

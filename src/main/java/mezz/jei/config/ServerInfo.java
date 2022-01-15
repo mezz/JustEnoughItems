@@ -1,18 +1,26 @@
 package mezz.jei.config;
 
-import javax.annotation.Nullable;
-
-import net.minecraft.client.multiplayer.ClientPacketListener;
+import com.google.common.collect.ImmutableMap;
+import mezz.jei.network.PacketHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.Connection;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.network.ConnectionData;
+import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
+import javax.annotation.Nullable;
 import java.nio.file.Path;
+import java.util.Optional;
+import java.util.UUID;
 
 public final class ServerInfo {
-	private static boolean jeiOnServer = false;
+	@Nullable
+	private static UUID jeiOnServerCacheUuid = null;
+	private static boolean jeiOnServerCacheValue = false;
+
 	private static final Path worldDirPath = Path.of("world");
 	private static final String unsafeFileChars = "[^\\w-]";
 
@@ -21,11 +29,23 @@ public final class ServerInfo {
 	}
 
 	public static boolean isJeiOnServer() {
-		return jeiOnServer;
-	}
-
-	public static void onConnectedToServer(boolean jeiOnServer) {
-		ServerInfo.jeiOnServer = jeiOnServer;
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientPacketListener clientPacketListener = minecraft.getConnection();
+		if (clientPacketListener == null) {
+			return false;
+		}
+		UUID id = clientPacketListener.getId();
+		if (!id.equals(jeiOnServerCacheUuid)) {
+			jeiOnServerCacheUuid = id;
+			jeiOnServerCacheValue = Optional.of(clientPacketListener)
+				.map(ClientPacketListener::getConnection)
+				.map(NetworkHooks::getConnectionData)
+				.map(ConnectionData::getChannels)
+				.map(ImmutableMap::keySet)
+				.map(keys -> keys.contains(PacketHandler.CHANNEL_ID))
+				.orElse(false);
+		}
+		return jeiOnServerCacheValue;
 	}
 
 	@Nullable
