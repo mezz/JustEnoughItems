@@ -1,31 +1,42 @@
 package mezz.jei.config;
 
-import javax.annotation.Nullable;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
+import mezz.jei.network.PacketHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.network.FMLConnectionData;
+import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+
+import javax.annotation.Nullable;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public final class ServerInfo {
 	private static final Path worldDirPath = Paths.get("world");
-	private static boolean jeiOnServer = false;
 	private static final String unsafeFileChars = "[^\\w-]";
+	@Nullable
+	private static NetworkManager jeiOnServerCacheConnection;
+	private static boolean jeiOnServerCacheValue;
 
 	private ServerInfo() {
 
 	}
 
 	public static boolean isJeiOnServer() {
-		return jeiOnServer;
-	}
-
-	public static void onConnectedToServer(boolean jeiOnServer) {
-		ServerInfo.jeiOnServer = jeiOnServer;
+		ClientPlayNetHandler clientPlayNetHandler = Minecraft.getInstance().getConnection();
+		if (clientPlayNetHandler == null) {
+			return false;
+		}
+		NetworkManager connection = clientPlayNetHandler.getConnection();
+		if (connection != jeiOnServerCacheConnection) {
+			jeiOnServerCacheConnection = connection;
+			FMLConnectionData connectionData = NetworkHooks.getConnectionData(connection);
+			jeiOnServerCacheValue = connectionData != null && connectionData.getChannels().containsKey(PacketHandler.CHANNEL_ID);
+		}
+		return jeiOnServerCacheValue;
 	}
 
 	@Nullable
