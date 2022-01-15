@@ -1,6 +1,6 @@
 {
-   "pack":{
-      "pack_format":7,
-      "description":"JEI Resources"
+   "pack": {
+      "description": "JEI Resources",
+      "pack_format": 8
    }
 }
