@@ -26,61 +26,68 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	public <T> boolean add(T ingredient) {
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		Object normalized = ingredientHelper.normalizeIngredient(ingredient);
-		if (!contains(normalized)) {
-			if (addToLists(normalized, true)) {
-				notifyListenersOfChange();
-				bookmarkConfig.saveBookmarks(ingredientManager, ingredientListElements);
-				return true;
-			}
+		if (contains(ingredient)) {
+			return false;
 		}
-		return false;
+		addToLists(ingredient, true);
+		notifyListenersOfChange();
+		bookmarkConfig.saveBookmarks(ingredientManager, ingredientListElements);
+		return true;
 	}
 
 	private <T> boolean contains(T ingredient) {
-		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		for (Object existing : list) {
-			if (ingredient == existing) {
-				return true;
-			}
-			if (ingredient.getClass().isInstance(existing)) {
-				@SuppressWarnings("unchecked")
-				T castExisting = (T) existing;
-				if (ingredient instanceof ItemStack) {
-					return ItemStack.matches((ItemStack) ingredient, (ItemStack) castExisting);
-				}
-				if (equalUids(ingredientHelper, castExisting, ingredient)) {
-					return true;
-				}
-			}
-		}
-		return false;
+		return indexOf(ingredient) >= 0;
 	}
 
-	private static <T> boolean equalUids(IIngredientHelper<T> ingredientHelper, T a, T b) {
-		String uidA = ingredientHelper.getUniqueId(a, UidContext.Ingredient);
-		String uidB = ingredientHelper.getUniqueId(b, UidContext.Ingredient);
+	private <T> int indexOf(T ingredient) {
+		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
+		ingredient = ingredientHelper.normalizeIngredient(ingredient);
+		String uniqueId = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+
+		for (int i = 0; i < list.size(); i++) {
+			Object existing = list.get(i);
+			if (equal(ingredientHelper, ingredient, uniqueId, existing)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private static <T> boolean equal(IIngredientHelper<T> ingredientHelper, T a, String uidA, Object b) {
+		if (a == b) {
+			return true;
+		}
+		if (!a.getClass().isInstance(b)) {
+			return false;
+		}
+		if (a instanceof ItemStack) {
+			return ItemStack.matches((ItemStack) a, (ItemStack) b);
+		}
+
+		@SuppressWarnings("unchecked")
+		T castB = (T) b;
+		String uidB = ingredientHelper.getUniqueId(castB, UidContext.Ingredient);
 		return uidA.equals(uidB);
 	}
 
-	public boolean remove(Object ingredient) {
-		int index = 0;
-		for (Object existing : list) {
-			if (ingredient == existing) {
-				list.remove(index);
-				ingredientListElements.remove(index);
-				notifyListenersOfChange();
-				bookmarkConfig.saveBookmarks(ingredientManager, ingredientListElements);
-				return true;
-			}
-			index++;
+	public <T> boolean remove(T ingredient) {
+		int index = indexOf(ingredient);
+		if (index < 0) {
+			return false;
 		}
-		return false;
+
+		list.remove(index);
+		ingredientListElements.remove(index);
+		notifyListenersOfChange();
+		bookmarkConfig.saveBookmarks(ingredientManager, ingredientListElements);
+		return true;
 	}
 
-	public <T> boolean addToLists(T ingredient, boolean addToFront) {
+	public <T> void addToLists(T ingredient, boolean addToFront) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
+		ingredient = ingredientHelper.normalizeIngredient(ingredient);
+
 		IIngredientListElement<T> element = IngredientListElementFactory.createUnorderedElement(ingredient);
 		if (addToFront) {
 			list.add(0, ingredient);
@@ -89,7 +96,6 @@ public class BookmarkList implements IIngredientGridSource {
 			list.add(ingredient);
 			ingredientListElements.add(element);
 		}
-		return true;
 	}
 
 	@Override
