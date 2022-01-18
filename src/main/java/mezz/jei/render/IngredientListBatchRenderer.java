@@ -17,11 +17,11 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -254,7 +254,7 @@ public class IngredientListBatchRenderer {
 		}
 
 		ItemStack itemStack = typedIngredient.getIngredient();
-		Rect2i area = slot.getArea();
+		ImmutableRect2i area = slot.getArea();
 		int padding = slot.getPadding();
 		try {
 			BakedModel bakedModel = itemRenderer.getModel(itemStack, null, null, 0);
@@ -271,7 +271,7 @@ public class IngredientListBatchRenderer {
 
 	private static void renderOverlay(IIngredientRenderer<ItemStack> renderer, IngredientListElementRenderer<ItemStack> slot) {
 		ItemStack itemStack = slot.getTypedIngredient().getIngredient();
-		Rect2i area = slot.getArea();
+		ImmutableRect2i area = slot.getArea();
 		int padding = slot.getPadding();
 		try {
 			Minecraft minecraft = Minecraft.getInstance();
@@ -295,7 +295,7 @@ public class IngredientListBatchRenderer {
 
 	private <T> void renderIngredient(PoseStack poseStack, IngredientListElementRenderer<T> slot, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
 		ITypedIngredient<T> typedIngredient = slot.getTypedIngredient();
-		Rect2i area = slot.getArea();
+		ImmutableRect2i area = slot.getArea();
 		int slotPadding = slot.getPadding();
 		if (worldConfig.isEditModeEnabled()) {
 			renderEditMode(poseStack, area, slotPadding, editModeConfig, typedIngredient, ingredientHelper);
@@ -317,7 +317,7 @@ public class IngredientListBatchRenderer {
 		}
 	}
 
-	private static <T> void renderEditMode(PoseStack poseStack, Rect2i area, int padding, IEditModeConfig editModeConfig, ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
+	private static <T> void renderEditMode(PoseStack poseStack, ImmutableRect2i area, int padding, IEditModeConfig editModeConfig, ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
 		if (editModeConfig.isIngredientOnConfigBlacklist(typedIngredient, ingredientHelper)) {
 			GuiComponent.fill(poseStack, area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
 			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);

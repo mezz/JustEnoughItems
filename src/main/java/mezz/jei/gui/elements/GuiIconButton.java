@@ -8,10 +8,10 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.TextComponent;
 
 import java.util.Optional;
@@ -27,7 +27,7 @@ public class GuiIconButton extends Button {
 		this.icon = icon;
 	}
 
-	public void updateBounds(Rect2i area) {
+	public void updateBounds(ImmutableRect2i area) {
 		this.x = area.getX();
 		this.y = area.getY();
 		this.width = area.getWidth();

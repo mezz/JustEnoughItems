@@ -11,6 +11,7 @@ import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
+import mezz.jei.util.ImmutableRect2i;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -35,7 +36,7 @@ public class GuiScreenHelper {
 	private final GuiContainerHandlers guiContainerHandlers;
 	private final Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers;
 	private final Map<Class<?>, IScreenHandler<?>> guiScreenHandlers;
-	private Set<Rect2i> guiExclusionAreas = Collections.emptySet();
+	private Set<ImmutableRect2i> guiExclusionAreas = Collections.emptySet();
 
 	public GuiScreenHelper(
 		RegisteredIngredients registeredIngredients,
@@ -79,16 +80,16 @@ public class GuiScreenHelper {
 	public boolean updateGuiExclusionAreas(Screen screen) {
 		Set<Rect2i> guiAreas = getPluginsExclusionAreas(screen);
 		if (!MathUtil.equalRects(guiAreas, this.guiExclusionAreas)) {
-			// make a defensive copy because Rectangle is mutable
+			// make a defensive copy because Rect2i is mutable
 			this.guiExclusionAreas = guiAreas.stream()
-				.map(MathUtil::copyRect)
+				.map(ImmutableRect2i::new)
 				.collect(Collectors.toUnmodifiableSet());
 			return true;
 		}
 		return false;
 	}
 
-	public Set<Rect2i> getGuiExclusionAreas() {
+	public Set<ImmutableRect2i> getGuiExclusionAreas() {
 		return guiExclusionAreas;
 	}
 
@@ -98,16 +99,19 @@ public class GuiScreenHelper {
 	}
 
 	private Set<Rect2i> getPluginsExclusionAreas(Screen screen) {
-		Set<Rect2i> allGuiExtraAreas = new HashSet<>();
+		Set<Rect2i> globalGuiHandlerExclusionAreas = globalGuiHandlers.stream()
+			.map(IGlobalGuiHandler::getGuiExtraAreas)
+			.flatMap(Collection::stream)
+			.collect(Collectors.toSet());
+
 		if (screen instanceof AbstractContainerScreen<?> guiContainer) {
 			Collection<Rect2i> guiExtraAreas = this.guiContainerHandlers.getGuiExtraAreas(guiContainer);
-			allGuiExtraAreas.addAll(guiExtraAreas);
+			Set<Rect2i> areas = new HashSet<>(guiExtraAreas);
+			areas.addAll(globalGuiHandlerExclusionAreas);
+			return areas;
+		} else {
+			return globalGuiHandlerExclusionAreas;
 		}
-		for (IGlobalGuiHandler globalGuiHandler : globalGuiHandlers) {
-			Collection<Rect2i> guiExtraAreas = globalGuiHandler.getGuiExtraAreas();
-			allGuiExtraAreas.addAll(guiExtraAreas);
-		}
-		return allGuiExtraAreas;
 	}
 
 	public <T extends AbstractContainerScreen<?>> Optional<IClickedIngredient<?>> getPluginsIngredientUnderMouse(T guiContainer, double mouseX, double mouseY) {
@@ -150,7 +154,7 @@ public class GuiScreenHelper {
 		}
 		return TypedIngredient.create(registeredIngredients, ingredient)
 			.map(typedIngredient -> {
-				Rect2i area = getSlotArea(typedIngredient, guiContainer);
+				ImmutableRect2i area = getSlotArea(typedIngredient, guiContainer);
 				return new ClickedIngredient<>(typedIngredient, area, false, false);
 			});
 	}
@@ -160,7 +164,7 @@ public class GuiScreenHelper {
 	}
 
 	@Nullable
-	public static <T> Rect2i getSlotArea(ITypedIngredient<T> typedIngredient, AbstractContainerScreen<?> guiContainer) {
+	public static <T> ImmutableRect2i getSlotArea(ITypedIngredient<T> typedIngredient, AbstractContainerScreen<?> guiContainer) {
 		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
 		if (slotUnderMouse == null) {
 			return null;
@@ -168,7 +172,7 @@ public class GuiScreenHelper {
 		return typedIngredient.getIngredient(VanillaTypes.ITEM)
 			.filter(i -> ItemStack.matches(slotUnderMouse.getItem(), i))
 			.map(i ->
-				new Rect2i(
+				new ImmutableRect2i(
 					guiContainer.getGuiLeft() + slotUnderMouse.x,
 					guiContainer.getGuiTop() + slotUnderMouse.y,
 					16,

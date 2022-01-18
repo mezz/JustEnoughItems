@@ -1,7 +1,7 @@
 package mezz.jei.gui;
 
+import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.renderer.Rect2i;
 
 public class HoverChecker {
 	private int top;
@@ -33,7 +33,7 @@ public class HoverChecker {
 		this.right = right;
 	}
 
-	public void updateBounds(Rect2i rect) {
+	public void updateBounds(ImmutableRect2i rect) {
 		this.top = rect.getY();
 		this.bottom = rect.getY() + rect.getHeight();
 		this.left = rect.getX();

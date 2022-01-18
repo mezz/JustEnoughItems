@@ -1,9 +1,9 @@
 package mezz.jei.input;
 
+import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.util.ImmutableRect2i;
 import org.jetbrains.annotations.Nullable;
 
-import mezz.jei.api.ingredients.ITypedIngredient;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
 
 public interface IClickedIngredient<V> {
@@ -11,7 +11,7 @@ public interface IClickedIngredient<V> {
 	ITypedIngredient<V> getValue();
 
 	@Nullable
-	Rect2i getArea();
+	ImmutableRect2i getArea();
 
 	ItemStack getCheatItemStack();
 

@@ -1,27 +1,25 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import it.unimi.dsi.fastutil.ints.IntSet;
-import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.Internal;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.gui.ingredients.RecipeSlot;
-import net.minecraft.client.renderer.Rect2i;
-
-import mezz.jei.Internal;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
+import mezz.jei.util.ImmutableRect2i;
 import mezz.jei.util.MathUtil;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * The area drawn on left side of the {@link RecipesGui} that shows which items can craft the current recipe category.
@@ -46,7 +44,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 		Textures textures = Internal.getTextures();
 		backgroundTab = textures.getCatalystTab();
-		slotBackground = textures.getNineSliceSlot();
+		slotBackground = textures.getRecipeCatalystSlotBackground();
 	}
 
 	public boolean isEmpty() {
@@ -61,7 +59,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		this.recipeSlots.clear();
 
 		if (!ingredients.isEmpty()) {
-			Rect2i recipeArea = recipesGui.getArea();
+			ImmutableRect2i recipeArea = recipesGui.getArea();
 			int availableHeight = recipeArea.getHeight() - 8;
 			int borderHeight = (2 * borderSize) + (2 * ingredientBorderSize);
 			int maxIngredientsPerColumn = (availableHeight - borderHeight) / ingredientSize;

@@ -22,12 +22,10 @@ import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.input.mouse.handlers.NullInputHandler;
 import mezz.jei.input.mouse.handlers.ProxyInputHandler;
 import mezz.jei.util.MathUtil;
-import mezz.jei.util.Rectangle2dBuilder;
+import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.util.Tuple;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
@@ -47,7 +45,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final GuiScreenHelper guiScreenHelper;
 	private final GuiTextFieldFilter searchField;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
-	private Rect2i displayArea = new Rect2i(0, 0, 0, 0);
+	private ImmutableRect2i displayArea = ImmutableRect2i.EMPTY;
 	private boolean hasRoom;
 
 	// properties of the gui we're next to
@@ -66,13 +64,18 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.contents = contents;
 		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
-		ingredientGridSource.addListener(() -> onSetFilterText(worldConfig.getFilterText()));
+
 		this.searchField = new GuiTextFieldFilter(ingredientGridSource);
 		this.searchField.setResponder(text -> {
 			if (this.worldConfig.setFilterText(text)) {
-				updateLayout(true);
+				updateBounds(true);
 			}
 		});
+		ingredientGridSource.addListener(() -> {
+			this.searchField.setValue(worldConfig.getFilterText());
+			updateBounds(true);
+		});
+
 		this.configButton = ConfigButton.create(this, worldConfig);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, registeredIngredients, worldConfig);
 		this.searchField.setFocused(false);
@@ -82,14 +85,12 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return worldConfig.isOverlayEnabled() && this.guiProperties != null && this.hasRoom;
 	}
 
-	private static Rect2i createDisplayArea(IGuiProperties guiProperties) {
-		Rect2i screenRectangle = GuiProperties.getScreenRectangle(guiProperties);
+	private static ImmutableRect2i createDisplayArea(IGuiProperties guiProperties) {
+		ImmutableRect2i screenRectangle = GuiProperties.getScreenRectangle(guiProperties);
 		int guiRight = GuiProperties.getGuiRight(guiProperties);
-		Tuple<Rect2i, Rect2i> result = MathUtil.splitX(screenRectangle, guiRight);
-		Rect2i displayArea = result.getB();
-		return new Rectangle2dBuilder(displayArea)
-			.insetByPadding(BORDER_PADDING)
-			.build();
+		return screenRectangle
+			.cropLeft(guiRight)
+			.insetByPadding(BORDER_PADDING);
 	}
 
 	public void updateScreen(@Nullable Screen guiScreen, boolean exclusionAreasChanged) {
@@ -119,33 +120,29 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (guiPropertiesChanged) {
 			this.ghostIngredientDragManager.stopDrag();
 		}
+		updateBounds(false);
+	}
 
-		final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, guiProperties);
+	private void updateBounds(boolean filterChanged) {
+		if (this.guiProperties == null) {
+			return;
+		}
+		final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, this.guiProperties);
 
-		Set<Rect2i> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
-		Rect2i availableContentsArea = new Rectangle2dBuilder(this.displayArea)
-			.subtractHeight(searchBarCentered ? 0 : SEARCH_HEIGHT + BORDER_PADDING)
-			.build();
+		final ImmutableRect2i availableContentsArea = getAvailableContentsArea(searchBarCentered);
+		final Set<ImmutableRect2i> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
 		this.hasRoom = this.contents.updateBounds(availableContentsArea, guiExclusionAreas);
 
-		// update area to match contents size
-		Rect2i contentsArea = this.contents.getArea();
-		this.displayArea = new Rectangle2dBuilder(this.displayArea)
-			.setX(contentsArea)
-			.setWidth(contentsArea)
-			.build();
-
-		Tuple<Rect2i, Rect2i> result = getSearchAndConfigArea(searchBarCentered, guiProperties, this.displayArea);
-		Rect2i searchAndConfigArea = result.getB();
-
-		result = MathUtil.splitXRight(searchAndConfigArea, BUTTON_SIZE);
-		Rect2i searchArea = result.getA();
-		Rect2i configButtonArea = result.getB();
+		final ImmutableRect2i searchAndConfigArea = getSearchAndConfigArea(searchBarCentered, guiProperties);
+		final ImmutableRect2i searchArea = searchAndConfigArea.cropRight(BUTTON_SIZE);
+		final ImmutableRect2i configButtonArea = searchAndConfigArea.keepRight(BUTTON_SIZE);
 
 		this.searchField.updateBounds(searchArea);
 		this.configButton.updateBounds(configButtonArea);
 
-		updateLayout(false);
+		if (this.hasRoom) {
+			this.contents.updateLayout(filterChanged);
+		}
 	}
 
 	private static boolean isSearchBarCentered(IClientConfig clientConfig, IGuiProperties guiProperties) {
@@ -153,24 +150,27 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			GuiProperties.getGuiBottom(guiProperties) + SEARCH_HEIGHT < guiProperties.getScreenHeight();
 	}
 
-	private static Tuple<Rect2i, Rect2i> getSearchAndConfigArea(boolean searchBarCentered, IGuiProperties guiProperties, Rect2i displayArea) {
+	private ImmutableRect2i getAvailableContentsArea(boolean searchBarCentered) {
 		if (searchBarCentered) {
-			Rect2i guiRectangle = GuiProperties.getGuiRectangle(guiProperties);
-			Rect2i searchRect = new Rect2i(
-				guiRectangle.getX(),
-				displayArea.getHeight() - SEARCH_HEIGHT,
-				guiRectangle.getWidth(),
-				SEARCH_HEIGHT
-			);
-			return new Tuple<>(displayArea, searchRect);
-		} else {
-			return MathUtil.splitYBottom(displayArea, SEARCH_HEIGHT);
+			return this.displayArea;
 		}
+		return this.displayArea.cropBottom(SEARCH_HEIGHT + BORDER_PADDING);
 	}
 
-	public void updateLayout(boolean filterChanged) {
-		this.contents.updateLayout(filterChanged);
-		this.searchField.setValue(this.worldConfig.getFilterText());
+	private ImmutableRect2i getSearchAndConfigArea(boolean searchBarCentered, IGuiProperties guiProperties) {
+		if (searchBarCentered) {
+			ImmutableRect2i guiRectangle = GuiProperties.getGuiRectangle(guiProperties);
+			return this.displayArea
+				.keepBottom(SEARCH_HEIGHT)
+				.matchWidthAndX(guiRectangle);
+		} else if (this.hasRoom) {
+			final ImmutableRect2i contentsArea = this.contents.getBackgroundArea();
+			return this.displayArea
+				.keepBottom(SEARCH_HEIGHT)
+				.matchWidthAndX(contentsArea);
+		} else {
+			return this.displayArea.keepBottom(SEARCH_HEIGHT);
+		}
 	}
 
 	public void drawScreen(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
@@ -282,11 +282,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 				.orElse(null);
 		}
 		return null;
-	}
-
-	public void onSetFilterText(String filterText) {
-		this.searchField.setValue(filterText);
-		updateLayout(true);
 	}
 
 	@Override

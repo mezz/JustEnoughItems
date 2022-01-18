@@ -1,18 +1,18 @@
 package mezz.jei.gui.elements;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import net.minecraft.resources.ResourceLocation;
-
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Matrix4f;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.JeiSpriteUploader;
-import com.mojang.math.Matrix4f;
+import mezz.jei.util.ImmutableRect2i;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Breaks a texture into 9 pieces so that it can be scaled to any size.
@@ -38,6 +38,10 @@ public class DrawableNineSliceTexture {
 		this.sliceRight = right;
 		this.sliceTop = top;
 		this.sliceBottom = bottom;
+	}
+
+	public void draw(PoseStack poseStack, ImmutableRect2i area) {
+		draw(poseStack, area.getX(), area.getY(), area.getWidth(), area.getHeight());
 	}
 
 	public void draw(PoseStack poseStack, int xOffset, int yOffset, int width, int height) {

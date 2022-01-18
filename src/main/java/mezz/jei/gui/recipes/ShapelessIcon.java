@@ -5,7 +5,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.elements.HighResolutionDrawable;
-import net.minecraft.client.renderer.Rect2i;
+import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 
@@ -33,7 +33,7 @@ public class ShapelessIcon {
 		this.posX = posX;
 		this.posY = posY;
 
-		Rect2i area = new Rect2i(posX, posY, icon.getWidth(), icon.getHeight());
+		ImmutableRect2i area = new ImmutableRect2i(posX, posY, icon.getWidth(), icon.getHeight());
 		this.hoverChecker.updateBounds(area);
 	}
 

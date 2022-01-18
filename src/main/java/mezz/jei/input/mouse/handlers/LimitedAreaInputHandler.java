@@ -3,25 +3,25 @@ package mezz.jei.input.mouse.handlers;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.util.ImmutableRect2i;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class LimitedAreaInputHandler implements IUserInputHandler {
 	private final IUserInputHandler handler;
-	private final Rect2i area;
+	private final ImmutableRect2i area;
 
-	public static IUserInputHandler create(IUserInputHandler handler, @Nullable Rect2i area) {
+	public static IUserInputHandler create(IUserInputHandler handler, @Nullable ImmutableRect2i area) {
 		if (area == null) {
 			return handler;
 		}
 		return new LimitedAreaInputHandler(handler, area);
 	}
 
-	private LimitedAreaInputHandler(IUserInputHandler handler, Rect2i area) {
+	private LimitedAreaInputHandler(IUserInputHandler handler, ImmutableRect2i area) {
 		this.handler = handler;
 		this.area = area;
 	}

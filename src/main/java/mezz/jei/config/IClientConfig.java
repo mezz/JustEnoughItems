@@ -18,10 +18,6 @@ public interface IClientConfig {
 
 	GiveMode getGiveMode();
 
-	int getMinColumns();
-
-	int getMaxColumns();
-
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();

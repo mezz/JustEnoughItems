@@ -8,7 +8,6 @@ import mezz.jei.config.BookmarkConfig;
 import mezz.jei.config.EditModeConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
-import mezz.jei.config.IngredientFilterConfig;
 import mezz.jei.config.JEIClientConfigs;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.config.ModIdFormattingConfig;
@@ -48,10 +47,8 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures, JEIClientConfigs jeiClientConfigs) {
 		this.runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
-
 		File jeiConfigurationDir = createConfigDir();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		IngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getFilterConfig();
 		this.modIdFormattingConfig = jeiClientConfigs.getModNameFormat();
 		IModIdHelper modIdHelper = new ForgeModIdHelper(clientConfig, this.modIdFormattingConfig);
 		ErrorUtil.setModIdHelper(modIdHelper);
@@ -74,9 +71,8 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 		this.jeiStarter = new JeiStarter(
 			plugins,
 			textures,
-			clientConfig,
+			jeiClientConfigs,
 			editModeConfig,
-			ingredientFilterConfig,
 			this.worldConfig,
 			bookmarkConfig,
 			modIdHelper,

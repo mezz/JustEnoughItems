@@ -12,13 +12,17 @@ public class Textures {
 	private final JeiSpriteUploader spriteUploader;
 
 	private final IDrawableStatic slot;
-	private final DrawableNineSliceTexture nineSliceSlot;
+	private final DrawableNineSliceTexture recipeCatalystSlotBackground;
+	private final DrawableNineSliceTexture ingredientListSlotBackground;
+	private final DrawableNineSliceTexture bookmarkListSlotBackground;
 	private final IDrawableStatic tabSelected;
 	private final IDrawableStatic tabUnselected;
 	private final DrawableNineSliceTexture buttonDisabled;
 	private final DrawableNineSliceTexture buttonEnabled;
 	private final DrawableNineSliceTexture buttonHighlight;
-	private final DrawableNineSliceTexture guiBackground;
+	private final DrawableNineSliceTexture recipeGuiBackground;
+	private final DrawableNineSliceTexture ingredientListBackground;
+	private final DrawableNineSliceTexture bookmarkListBackground;
 	private final DrawableNineSliceTexture recipeBackground;
 	private final DrawableNineSliceTexture searchBackground;
 
@@ -37,16 +41,18 @@ public class Textures {
 	public Textures(JeiSpriteUploader spriteUploader) {
 		this.spriteUploader = spriteUploader;
 
-		ResourceLocation slotSpriteLocation = registerSprite("slot");
-		this.slot = new DrawableSprite(this.spriteUploader, slotSpriteLocation, 18, 18);
-		this.nineSliceSlot = new DrawableNineSliceTexture(this.spriteUploader, slotSpriteLocation, 18, 18, 4, 4, 4, 4);
-
+		this.slot = registerGuiSprite("slot", 18, 18);
+		this.recipeCatalystSlotBackground = registerNineSliceGuiSprite("recipe_catalyst_slot_background", 18, 18, 4, 4, 4, 4);
+		this.ingredientListSlotBackground = registerNineSliceGuiSprite("ingredient_list_slot_background", 18, 18, 4, 4, 4, 4);
+		this.bookmarkListSlotBackground = registerNineSliceGuiSprite("bookmark_list_slot_background", 18, 18, 4, 4, 4, 4);
 		this.tabSelected = registerGuiSprite("tab_selected", 24, 24);
 		this.tabUnselected = registerGuiSprite("tab_unselected", 24, 24);
 		this.buttonDisabled = registerNineSliceGuiSprite("button_disabled", 20, 20, 6, 6, 6, 6);
 		this.buttonEnabled = registerNineSliceGuiSprite("button_enabled", 20, 20, 6, 6, 6, 6);
 		this.buttonHighlight = registerNineSliceGuiSprite("button_highlight", 20, 20, 6, 6, 6, 6);
-		this.guiBackground = registerNineSliceGuiSprite("gui_background", 64, 64, 16, 16, 16, 16);
+		this.recipeGuiBackground = registerNineSliceGuiSprite("gui_background", 64, 64, 16, 16, 16, 16);
+		this.ingredientListBackground = registerNineSliceGuiSprite("ingredient_list_background", 64, 64, 16, 16, 16, 16);
+		this.bookmarkListBackground = registerNineSliceGuiSprite("bookmark_list_background", 64, 64, 16, 16, 16, 16);
 		this.recipeBackground = registerNineSliceGuiSprite("single_recipe_background", 64, 64, 16, 16, 16, 16);
 		this.searchBackground = registerNineSliceGuiSprite("search_background", 20, 20, 6, 6, 6, 6);
 		this.catalystTab = registerNineSliceGuiSprite("catalyst_tab", 28, 28, 8, 9, 8, 8);
@@ -138,8 +144,16 @@ public class Textures {
 		}
 	}
 
-	public DrawableNineSliceTexture getGuiBackground() {
-		return guiBackground;
+	public DrawableNineSliceTexture getRecipeGuiBackground() {
+		return recipeGuiBackground;
+	}
+
+	public DrawableNineSliceTexture getIngredientListBackground() {
+		return ingredientListBackground;
+	}
+
+	public DrawableNineSliceTexture getBookmarkListBackground() {
+		return bookmarkListBackground;
 	}
 
 	public DrawableNineSliceTexture getRecipeBackground() {
@@ -158,8 +172,16 @@ public class Textures {
 		return catalystTab;
 	}
 
-	public DrawableNineSliceTexture getNineSliceSlot() {
-		return nineSliceSlot;
+	public DrawableNineSliceTexture getRecipeCatalystSlotBackground() {
+		return recipeCatalystSlotBackground;
+	}
+
+	public DrawableNineSliceTexture getIngredientListSlotBackground() {
+		return ingredientListSlotBackground;
+	}
+
+	public DrawableNineSliceTexture getBookmarkListSlotBackground() {
+		return bookmarkListSlotBackground;
 	}
 
 	public IDrawableStatic getFlameIcon() {

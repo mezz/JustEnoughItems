@@ -45,16 +45,6 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public int getMaxColumns() {
-		return 5;
-	}
-
-	@Override
-	public int getMinColumns() {
-		return 5;
-	}
-
-	@Override
 	public int getMaxRecipeGuiHeight() {
 		return 500;
 	}
