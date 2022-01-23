@@ -1,6 +1,7 @@
 package mezz.jei.recipes;
 
 import java.util.List;
+import java.util.Set;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.resources.ResourceLocation;
@@ -32,7 +33,8 @@ public class RecipeCatalystBuilder {
 	private <T> void addCatalyst(T catalystIngredient, IRecipeCategory<?> recipeCategory, RecipeMap recipeInputMap) {
 		IIngredientType<T> ingredientType = ingredientManager.getIngredientType(catalystIngredient);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		recipeInputMap.addRecipeCategory(recipeCategory, catalystIngredient, ingredientHelper);
+		String ingredientUid = ingredientHelper.getUniqueId(catalystIngredient, UidContext.Recipe);
+		recipeInputMap.addRecipeCategory(recipeCategory, Set.of(ingredientUid));
 		String catalystIngredientKey = getUniqueId(catalystIngredient, ingredientManager);
 		categoriesForRecipeCatalystKeysBuilder.put(catalystIngredientKey, recipeCategory.getUid());
 	}

@@ -31,6 +31,20 @@ public class RecipeCategoryDataMap {
 		return recipeCategoryData;
 	}
 
+	public <T> RecipeCategoryData<T> get(Iterable<T> recipes, ResourceLocation recipeCategoryUid) {
+		RecipeCategoryData<?> recipeCategoryData = get(recipeCategoryUid);
+		IRecipeCategory<?> recipeCategory = recipeCategoryData.getRecipeCategory();
+		Class<?> recipeClass = recipeCategory.getRecipeClass();
+		for (T recipe : recipes) {
+			if (!recipeClass.isInstance(recipe)) {
+				throw new IllegalArgumentException(recipeCategory.getUid() + " recipes must be an instance of " + recipeClass + ". Instead got: " + recipe.getClass());
+			}
+		}
+		@SuppressWarnings("unchecked")
+		RecipeCategoryData<T> castRecipeCategoryData = (RecipeCategoryData<T>) recipeCategoryData;
+		return castRecipeCategoryData;
+	}
+
 	public <T> RecipeCategoryData<T> get(T recipe, ResourceLocation recipeCategoryUid) {
 		RecipeCategoryData<?> recipeCategoryData = get(recipeCategoryUid);
 		IRecipeCategory<?> recipeCategory = recipeCategoryData.getRecipeCategory();

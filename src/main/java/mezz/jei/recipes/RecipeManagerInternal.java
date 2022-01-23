@@ -73,8 +73,7 @@ public class RecipeManagerInternal {
 			ingredientManager,
 			recipeCategoriesDataMap,
 			recipeInputMap,
-			recipeOutputMap,
-			() -> getRecipeCategoriesStream(null, null, false)
+			recipeOutputMap
 		);
 		this.plugins.add(new RecipeManagerPluginSafeWrapper(internalRecipeManagerPlugin));
 		for (IRecipeManagerPlugin plugin : plugins) {
@@ -82,41 +81,54 @@ public class RecipeManagerInternal {
 		}
 	}
 
-	public void addRecipes(Iterable<?> recipes, ResourceLocation recipeCategoryUid) {
+	public <T> void addRecipes(Collection<T> recipes, ResourceLocation recipeCategoryUid) {
 		LOGGER.debug("Loading recipes: " + recipeCategoryUid);
-		for (Object recipe : recipes) {
-			addRecipe(recipe, recipeCategoryUid);
-		}
-	}
 
-	public <T> void addRecipe(T recipe, ResourceLocation recipeCategoryUid) {
-		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesDataMap.get(recipe, recipeCategoryUid);
-		addRecipe(recipe, recipeCategoryData);
-	}
-
-	private <T> void addRecipe(T recipe, RecipeCategoryData<T> recipeCategoryData) {
+		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesDataMap.get(recipes, recipeCategoryUid);
 		IRecipeCategory<T> recipeCategory = recipeCategoryData.getRecipeCategory();
-		if (!recipeCategory.isHandled(recipe)) {
-			return;
-		}
 		Set<T> hiddenRecipes = recipeCategoryData.getHiddenRecipes();
-		if (hiddenRecipes.contains(recipe)) {
-			unhideRecipe(recipe, recipeCategory.getUid());
-			return;
+
+		List<T> addedRecipes = recipes.stream()
+			.filter(recipe -> {
+				if (hiddenRecipes.contains(recipe) || !recipeCategory.isHandled(recipe)) {
+					return false;
+				}
+				Ingredients ingredients = getIngredients(recipe, recipeCategory);
+				if (ingredients == null) {
+					return false;
+				}
+				return addRecipe(recipe, recipeCategory, ingredients);
+			})
+			.toList();
+
+		if (!addedRecipes.isEmpty()) {
+			recipeCategoryData.getRecipes().addAll(addedRecipes);
+			recipeCategoriesVisibleCache = null;
 		}
+	}
+
+	@Nullable
+	private static <T> Ingredients getIngredients(T recipe, IRecipeCategory<T> recipeCategory) {
 		try {
 			Ingredients ingredients = new Ingredients();
 			recipeCategory.setIngredients(recipe, ingredients);
-
-			recipeInputMap.addRecipe(recipe, recipeCategory, ingredients.getInputIngredients());
-			recipeOutputMap.addRecipe(recipe, recipeCategory, ingredients.getOutputIngredients());
-
-			recipeCategoryData.getRecipes().add(recipe);
-
-			recipeCategoriesVisibleCache = null;
+			return ingredients;
 		} catch (RuntimeException | LinkageError e) {
 			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
-			LOGGER.error("Found a broken recipe: {}\n", recipeInfo, e);
+			LOGGER.error("Found a broken recipe, failed to set Ingredients: {}\n", recipeInfo, e);
+			return null;
+		}
+	}
+
+	private <T> boolean addRecipe(T recipe, IRecipeCategory<T> recipeCategory, Ingredients ingredients) {
+		try {
+			recipeInputMap.addRecipe(recipe, recipeCategory, ingredients.getInputIngredients());
+			recipeOutputMap.addRecipe(recipe, recipeCategory, ingredients.getOutputIngredients());
+			return true;
+		} catch (RuntimeException | LinkageError e) {
+			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
+			LOGGER.error("Found a broken recipe, failed to addRecipe: {}\n", recipeInfo, e);
+			return false;
 		}
 	}
 
