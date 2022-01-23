@@ -140,6 +140,90 @@ curseforge {
 
 afterEvaluate {
 	tasks.curseforge238222.dependsOn makeChangelog
+
+	// lwjgl 3.3.0 has support for apple silicon
+	dependencies {
+		minecraft('org.lwjgl:lwjgl-jemalloc:3.3.0') {
+			force = true
+		}
+		minecraft('org.lwjgl:lwjgl-openal:3.3.0') {
+			force = true
+		}
+		minecraft('org.lwjgl:lwjgl-opengl:3.3.0') {
+			force = true
+		}
+		minecraft('org.lwjgl:lwjgl-glfw:3.3.0') {
+			force = true
+		}
+		minecraft('org.lwjgl:lwjgl-stb:3.3.0') {
+			force = true
+		}
+		minecraft('org.lwjgl:lwjgl-tinyfd:3.3.0') {
+			force = true
+		}
+	}
+}
+
+//import net.minecraftforge.gradle.common.task.ExtractNatives
+import net.minecraftforge.gradle.common.util.Utils
+import net.minecraftforge.gradle.common.util.VersionJson
+import org.apache.commons.io.FileUtils
+
+import java.nio.file.FileSystems
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+
+task extractLwjglNatives(type: ExtractLwjglNatives) {
+	meta = tasks.extractNatives.meta
+	output = tasks.extractNatives.output
+}
+
+extractNatives {
+	finalizedBy extractLwjglNatives
+}
+
+// Extract LWJGL natives from the native JARs provided by LWJGL on Sonatype
+abstract class ExtractLwjglNatives extends DefaultTask {
+	@InputFile
+	abstract RegularFileProperty getMeta();
+
+	@OutputDirectory
+	abstract DirectoryProperty getOutput();
+
+	@TaskAction
+	void run() {
+		println "running ExtractLwjglNatives "
+		def os = VersionJson.OS.current
+		def osName = os == VersionJson.OS.OSX ? 'macos' : os.name
+		def classifier = osName
+		if (['aarch64', 'arm64'].contains(System.getProperty('os.arch')))
+			classifier += '-arm64'
+		def json = Utils.loadJson(meta.getAsFile().get(), VersionJson.class)
+		json.getNatives().each {
+			if (it.path.startsWith('org/lwjgl')) {
+				def version = '3.3.0-20211105.165143-15'
+				def type = it.path.split(/\//)[2]
+				def path = "org/lwjgl/$type/3.3.0-SNAPSHOT/$type-$version-natives-${classifier}.jar"
+				def target = Utils.getCache(getProject(), 'libraries', path)
+				def url = new URL("https://oss.sonatype.org/content/repositories/snapshots/$path")
+				if (!target.exists()) {
+					if (!target.getParentFile().exists()) {
+						target.getParentFile().mkdirs()
+					}
+					FileUtils.copyURLToFile(url, target)
+				}
+				def rootPath = FileSystems.newFileSystem(target.toPath(), new HashMap<>()).getPath('/')
+				Files.walk(rootPath.resolve(osName))
+					.filter { Files.isRegularFile(it) }
+					.each {
+						def outputFile = getOutput().get().getAsFile()
+						def filePath = outputFile.toPath().resolve(it.fileName.toString())
+						println "overwriting ${filePath}\nwith native version from ${path}"
+						Files.copy(it, filePath, StandardCopyOption.REPLACE_EXISTING)
+					}
+			}
+		}
+	}
 }
 
 jar {
