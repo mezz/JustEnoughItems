@@ -164,7 +164,6 @@ afterEvaluate {
 	}
 }
 
-//import net.minecraftforge.gradle.common.task.ExtractNatives
 import net.minecraftforge.gradle.common.util.Utils
 import net.minecraftforge.gradle.common.util.VersionJson
 import org.apache.commons.io.FileUtils
@@ -172,6 +171,7 @@ import org.apache.commons.io.FileUtils
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import java.nio.file.Path
 
 task extractLwjglNatives(type: ExtractLwjglNatives) {
 	meta = tasks.extractNatives.meta
@@ -182,7 +182,7 @@ extractNatives {
 	finalizedBy extractLwjglNatives
 }
 
-// Extract LWJGL natives from the native JARs provided by LWJGL on Sonatype
+// Extract LWJGL natives from the native JARs provided by LWJGL on Maven Central
 abstract class ExtractLwjglNatives extends DefaultTask {
 	@InputFile
 	abstract RegularFileProperty getMeta();
@@ -192,20 +192,23 @@ abstract class ExtractLwjglNatives extends DefaultTask {
 
 	@TaskAction
 	void run() {
-		println "running ExtractLwjglNatives "
 		def os = VersionJson.OS.current
 		def osName = os == VersionJson.OS.OSX ? 'macos' : os.name
 		def classifier = osName
-		if (['aarch64', 'arm64'].contains(System.getProperty('os.arch')))
+		def arch = System.getProperty('os.arch')
+		if (['aarch64', 'arm64'].contains(arch)) {
 			classifier += '-arm64'
+		}
 		def json = Utils.loadJson(meta.getAsFile().get(), VersionJson.class)
-		json.getNatives().each {
-			if (it.path.startsWith('org/lwjgl')) {
-				def version = '3.3.0-20211105.165143-15'
+		json.getNatives()
+			.stream()
+			.filter {it.path.startsWith('org/lwjgl') }
+			.each {
+				def version = '3.3.0'
 				def type = it.path.split(/\//)[2]
-				def path = "org/lwjgl/$type/3.3.0-SNAPSHOT/$type-$version-natives-${classifier}.jar"
+				def path = "org/lwjgl/$type/$version/$type-$version-natives-${classifier}.jar"
 				def target = Utils.getCache(getProject(), 'libraries', path)
-				def url = new URL("https://oss.sonatype.org/content/repositories/snapshots/$path")
+				def url = new URL("https://repo1.maven.org/maven2/$path")
 				if (!target.exists()) {
 					if (!target.getParentFile().exists()) {
 						target.getParentFile().mkdirs()
@@ -217,11 +220,15 @@ abstract class ExtractLwjglNatives extends DefaultTask {
 					.filter { Files.isRegularFile(it) }
 					.each {
 						def outputFile = getOutput().get().getAsFile()
-						def filePath = outputFile.toPath().resolve(it.fileName.toString())
-						println "overwriting ${filePath}\nwith native version from ${path}"
+						def filePath = Path.of("${outputFile.toPath()}${it}")
+						def file = filePath.toFile()
+						if (!file.exists()) {
+							if (!file.getParentFile().exists()) {
+								file.getParentFile().mkdirs()
+							}
+						}
 						Files.copy(it, filePath, StandardCopyOption.REPLACE_EXISTING)
 					}
-			}
 		}
 	}
 }
