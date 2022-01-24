@@ -60,26 +60,26 @@ public final class ErrorUtil {
 		recipeInfoBuilder.append("\nOutputs:");
 		Set<IIngredientType> outputTypes = ingredients.getOutputIngredients().keySet();
 		for (IIngredientType<?> outputType : outputTypes) {
-			List<String> ingredientOutputInfo = getIngredientOutputInfo(outputType, ingredients);
+			String ingredientOutputInfo = getIngredientOutputInfo(outputType, ingredients);
 			recipeInfoBuilder.append('\n').append(outputType.getIngredientClass().getName()).append(": ").append(ingredientOutputInfo);
 		}
 
 		recipeInfoBuilder.append("\nInputs:");
 		Set<IIngredientType> inputTypes = ingredients.getInputIngredients().keySet();
 		for (IIngredientType<?> inputType : inputTypes) {
-			List<String> ingredientInputInfo = getIngredientInputInfo(inputType, ingredients);
+			String ingredientInputInfo = getIngredientInputInfo(inputType, ingredients);
 			recipeInfoBuilder.append('\n').append(inputType.getIngredientClass().getName()).append(": ").append(ingredientInputInfo);
 		}
 
 		return recipeInfoBuilder.toString();
 	}
 
-	private static <T> List<String> getIngredientOutputInfo(IIngredientType<T> ingredientType, IIngredients ingredients) {
+	private static <T> String getIngredientOutputInfo(IIngredientType<T> ingredientType, IIngredients ingredients) {
 		List<List<T>> outputs = ingredients.getOutputs(ingredientType);
 		return getIngredientInfo(ingredientType, outputs);
 	}
 
-	private static <T> List<String> getIngredientInputInfo(IIngredientType<T> ingredientType, IIngredients ingredients) {
+	private static <T> String getIngredientInputInfo(IIngredientType<T> ingredientType, IIngredients ingredients) {
 		List<List<T>> inputs = ingredients.getInputs(ingredientType);
 		return getIngredientInfo(ingredientType, inputs);
 	}
@@ -112,12 +112,12 @@ public final class ErrorUtil {
 
 		recipeInfoBuilder.append("\nOutputs:");
 		List<List<ItemStack>> outputs = Collections.singletonList(Collections.singletonList(output));
-		List<String> ingredientOutputInfo = getIngredientInfo(VanillaTypes.ITEM, outputs);
+		String ingredientOutputInfo = getIngredientInfo(VanillaTypes.ITEM, outputs);
 		recipeInfoBuilder.append('\n').append(ItemStack.class.getName()).append(": ").append(ingredientOutputInfo);
 
 		recipeInfoBuilder.append("\nInputs:");
 		List<List<ItemStack>> inputLists = Internal.getStackHelper().expandRecipeItemStackInputs(inputs, false);
-		List<String> ingredientInputInfo = getIngredientInfo(VanillaTypes.ITEM, inputLists);
+		String ingredientInputInfo = getIngredientInfo(VanillaTypes.ITEM, inputLists);
 		recipeInfoBuilder.append('\n').append(ItemStack.class.getName()).append(": ").append(ingredientInputInfo);
 
 		return recipeInfoBuilder.toString();
@@ -128,20 +128,34 @@ public final class ErrorUtil {
 		return ingredientHelper.getErrorInfo(ingredient);
 	}
 
-	public static <T> List<String> getIngredientInfo(IIngredientType<T> ingredientType, List<? extends List<T>> ingredients) {
+	public static <T> String getIngredientInfo(IIngredientType<T> ingredientType, List<? extends List<T>> ingredients) {
 		IIngredientHelper<T> ingredientHelper = Internal.getIngredientRegistry().getIngredientHelper(ingredientType);
-		List<String> allInfos = new ArrayList<>(ingredients.size());
+		List<String> allInfos = new ArrayList<>(Math.min(ingredients.size() + 1, 101));
 
-		for (List<T> inputList : ingredients) {
-			List<String> infos = new ArrayList<>(inputList.size());
-			for (T input : inputList) {
-				String errorInfo = ingredientHelper.getErrorInfo(input);
-				infos.add(errorInfo);
-			}
-			allInfos.add(infos.toString());
+		int slotLimit = Math.min(ingredients.size(), 100);
+		for (int i = 0; i < slotLimit; i++) {
+			allInfos.add(getIngredientSlotInfo(ingredientHelper, ingredients.get(i)));
+		}
+		if (ingredients.size() > 100) {
+			allInfos.add(String.format("<truncated to %s elements, skipped %s>", 100, ingredients.size() - 100));
 		}
 
-		return allInfos;
+		return allInfos.toString();
+	}
+
+	private static <T> String getIngredientSlotInfo(IIngredientHelper<T> ingredientHelper, List<T> ingredients) {
+		List<String> infos = new ArrayList<>(Math.min(ingredients.size() + 1, 11));
+
+		int ingredientLimit = Math.min(ingredients.size(), 10);
+		for (int i = 0; i < ingredientLimit; i++) {
+			String errorInfo = ingredientHelper.getErrorInfo(ingredients.get(i));
+			infos.add(errorInfo);
+		}
+		if (ingredients.size() > 10) {
+			infos.add(String.format("<truncated to %s elements, skipped %s>", 10, ingredients.size() - 10));
+		}
+
+		return infos.toString();
 	}
 
 	public static String getItemStackInfo(@Nullable ItemStack itemStack) {
