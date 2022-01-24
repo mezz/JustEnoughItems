@@ -141,7 +141,7 @@ curseforge {
 afterEvaluate {
 	tasks.curseforge238222.dependsOn makeChangelog
 
-	// lwjgl 3.3.0 has support for apple silicon
+	// lwjgl 3.3.0 and java-objc-bridge:1.1 have support for apple silicon
 	dependencies {
 		minecraft('org.lwjgl:lwjgl-jemalloc:3.3.0') {
 			force = true
@@ -159,6 +159,9 @@ afterEvaluate {
 			force = true
 		}
 		minecraft('org.lwjgl:lwjgl-tinyfd:3.3.0') {
+			force = true
+		}
+		minecraft('ca.weblite:java-objc-bridge:1.1') {
 			force = true
 		}
 	}
