@@ -1,13 +1,11 @@
 package mezz.jei.input.mouse.handlers;
 
-import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
-import mezz.jei.util.MathUtil;
 import mezz.jei.util.Rectangle2dBuilder;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
