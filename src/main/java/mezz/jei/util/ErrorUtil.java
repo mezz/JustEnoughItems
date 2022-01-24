@@ -1,9 +1,9 @@
 package mezz.jei.util;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.ClientConfig;
@@ -69,20 +69,33 @@ public final class ErrorUtil {
 			return recipeInfoBuilder.toString();
 		}
 
-		recipeInfoBuilder.append("\n  Outputs:");
-		List<IngredientsForType<?>> outputIngredients = ingredients.getOutputIngredients();
-		for (IngredientsForType<?> output : outputIngredients) {
-			IIngredientType<?> outputType = output.getIngredientType();
-			List<String> ingredientOutputInfo = getIngredientOutputInfo(outputType, ingredients);
-			recipeInfoBuilder.append("\n    ").append(outputType.getIngredientClass().getName()).append(": ").append(ingredientOutputInfo);
+		{
+			recipeInfoBuilder.append("\n  Outputs:");
+			ingredients.getOutputIngredients()
+				.stream()
+				.map(IngredientsForType::getIngredientType)
+				.forEach(outputType -> {
+					String ingredientOutputInfo = getIngredientOutputInfo(outputType, ingredients);
+					recipeInfoBuilder
+						.append("\n    ")
+						.append(outputType.getIngredientClass().getName())
+						.append(": ")
+						.append(ingredientOutputInfo);
+				});
 		}
 
-		recipeInfoBuilder.append("\n  Inputs:");
-		List<IngredientsForType<?>> inputIngredients = ingredients.getInputIngredients();
-		for (IngredientsForType<?> input : inputIngredients) {
-			IIngredientType<?> inputType = input.getIngredientType();
-			List<String> ingredientInputInfo = getIngredientInputInfo(inputType, ingredients);
-			recipeInfoBuilder.append("\n    ").append(inputType.getIngredientClass().getName()).append(": ").append(ingredientInputInfo);
+		{
+			recipeInfoBuilder.append("\n  Inputs:");
+			ingredients.getInputIngredients().stream()
+				.map(IngredientsForType::getIngredientType)
+				.forEach(inputType -> {
+					String ingredientInputInfo = getIngredientInputInfo(inputType, ingredients);
+					recipeInfoBuilder
+						.append("\n    ")
+						.append(inputType.getIngredientClass().getName())
+						.append(": ")
+						.append(ingredientInputInfo);
+				});
 		}
 
 		recipeInfoBuilder.append("\n}");
@@ -90,12 +103,12 @@ public final class ErrorUtil {
 		return recipeInfoBuilder.toString();
 	}
 
-	private static <T> List<String> getIngredientOutputInfo(IIngredientType<T> ingredientType, IIngredients ingredients) {
+	private static <T> String getIngredientOutputInfo(IIngredientType<T> ingredientType, IIngredients ingredients) {
 		List<List<T>> outputs = ingredients.getOutputs(ingredientType);
 		return getIngredientInfo(ingredientType, outputs);
 	}
 
-	private static <T> List<String> getIngredientInputInfo(IIngredientType<T> ingredientType, IIngredients ingredients) {
+	private static <T> String getIngredientInputInfo(IIngredientType<T> ingredientType, IIngredients ingredients) {
 		List<List<T>> inputs = ingredients.getInputs(ingredientType);
 		return getIngredientInfo(ingredientType, inputs);
 	}
@@ -128,20 +141,33 @@ public final class ErrorUtil {
 		return ingredientHelper.getErrorInfo(ingredient);
 	}
 
-	public static <T> List<String> getIngredientInfo(IIngredientType<T> ingredientType, List<? extends List<T>> ingredients) {
+	public static <T> String getIngredientInfo(IIngredientType<T> ingredientType, List<? extends List<T>> ingredients) {
 		IIngredientHelper<T> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredientType);
-		List<String> allInfos = new ArrayList<>(ingredients.size());
+		Stream<String> stringStream = ingredients.stream()
+			.map(slot -> ErrorUtil.getIngredientSlotInfo(ingredientHelper, slot));
 
-		for (List<T> inputList : ingredients) {
-			List<String> infos = new ArrayList<>(inputList.size());
-			for (T input : inputList) {
-				String errorInfo = ingredientHelper.getErrorInfo(input);
-				infos.add(errorInfo);
-			}
-			allInfos.add(infos.toString());
+		return truncatedStream(stringStream, ingredients.size(), 100)
+			.toList()
+			.toString();
+	}
+
+	private static <T> String getIngredientSlotInfo(IIngredientHelper<T> ingredientHelper, List<T> slot) {
+		Stream<String> stringStream = slot.stream()
+			.map(ingredientHelper::getErrorInfo);
+
+		return truncatedStream(stringStream, slot.size(), 10)
+			.toList()
+			.toString();
+	}
+
+	private static Stream<String> truncatedStream(Stream<String> stream, int size, int limit) {
+		if (size + 1 > limit) {
+			return Stream.concat(
+				stream.limit(limit),
+				Stream.of(String.format("<truncated to %s elements, skipped %s>", limit, size - limit))
+			);
 		}
-
-		return allInfos;
+		return stream;
 	}
 
 	@SuppressWarnings("ConstantConditions")
