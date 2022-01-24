@@ -21,10 +21,10 @@ public class PluginCaller {
 		for (IModPlugin plugin : plugins) {
 			try {
 				ResourceLocation pluginUid = plugin.getPluginUid();
-				LOGGER.debug("{}: {} ...", title, pluginUid);
+				LOGGER.info("{}: {} ...", title, pluginUid);
 				Stopwatch stopwatch = Stopwatch.createStarted();
 				func.accept(plugin);
-				LOGGER.debug("{}: {} took {}", title, pluginUid, stopwatch);
+				LOGGER.info("{}: {} took {}", title, pluginUid, stopwatch);
 			} catch (RuntimeException | LinkageError e) {
 				if (plugin instanceof VanillaPlugin) {
 					throw e;
