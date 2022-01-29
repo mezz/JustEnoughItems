@@ -1,8 +1,8 @@
 package mezz.jei.gui.recipes;
 
-import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.gui.Focus;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
@@ -10,19 +10,19 @@ import java.util.List;
 public class FocusedRecipes<T> {
 	private final IRecipeManager recipeManager;
 	private final IRecipeCategory<T> recipeCategory;
-	private final @Nullable IFocus<?> focus;
+	private final List<Focus<?>> focuses;
 
 	/**
 	 * List of recipes for the currently selected recipeClass
 	 */
 	private @Nullable List<T> recipes;
 
-	public static <T> FocusedRecipes<T> create(@Nullable IFocus<?> focus, IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
-		return new FocusedRecipes<>(focus, recipeManager, recipeCategory);
+	public static <T> FocusedRecipes<T> create(List<Focus<?>> focuses, IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
+		return new FocusedRecipes<>(focuses, recipeManager, recipeCategory);
 	}
 
-	private FocusedRecipes(@Nullable IFocus<?> focus, IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
-		this.focus = focus;
+	private FocusedRecipes(List<Focus<?>> focuses, IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
+		this.focuses = focuses;
 		this.recipeManager = recipeManager;
 		this.recipeCategory = recipeCategory;
 		this.recipes = null;
@@ -34,7 +34,7 @@ public class FocusedRecipes<T> {
 
 	public List<T> getRecipes() {
 		if (recipes == null) {
-			recipes = recipeManager.getRecipes(recipeCategory, focus, false);
+			recipes = recipeManager.getRecipes(recipeCategory, focuses, false);
 		}
 		return recipes;
 	}

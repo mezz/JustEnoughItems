@@ -5,12 +5,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
-import mezz.jei.api.gui.ingredient.ITooltipCallback;
+import mezz.jei.api.gui.ingredient.IGuiIngredientTooltipCallback;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -18,11 +21,6 @@ import net.minecraft.network.chat.Component;
  * Plugins implement these for recipe categories that support it, for each type of recipe they have.
  */
 public interface IRecipeCategoryExtension {
-
-	/**
-	 * Gets all the recipe's ingredients by filling out an instance of {@link IIngredients}.
-	 */
-	void setIngredients(IIngredients ingredients);
 
 	/**
 	 * Draw additional info about the recipe.
@@ -42,7 +40,7 @@ public interface IRecipeCategoryExtension {
 	 * Get the tooltip for whatever's under the mouse.
 	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IGuiIngredientGroup#addTooltipCallback(ITooltipCallback)}
+	 * To add to ingredient tooltips, see {@link IGuiIngredientGroup#addTooltipCallback(IGuiIngredientTooltipCallback)}
 	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltipStrings(Object, double, double)}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
@@ -83,5 +81,17 @@ public interface IRecipeCategoryExtension {
 	@Deprecated
 	default boolean handleClick(double mouseX, double mouseY, int mouseButton) {
 		return false;
+	}
+
+	/**
+	 * Gets all the recipe's ingredients by filling out an instance of {@link IIngredients}.
+	 *
+	 * @deprecated since JEI 9.3.0.
+	 * Subclasses of this interface should define their own methods of setting ingredients.
+	 * @see ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, List)
+	 */
+	@Deprecated
+	default void setIngredients(IIngredients ingredients) {
+
 	}
 }

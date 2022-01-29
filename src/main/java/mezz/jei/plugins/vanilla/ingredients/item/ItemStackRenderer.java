@@ -27,7 +27,11 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Override
-	public void render(PoseStack poseStack, int xPosition, int yPosition, @Nullable ItemStack ingredient) {
+	public void render(PoseStack poseStack, int xPosition, int yPosition, int width, int height, @Nullable ItemStack ingredient) {
+		// Scaling ItemStack rendering is a pain because the rendering is weird,
+		// so we just ignore width and height for this renderer.
+		// For reference, see the hacks in the ItemZoom mod required to make scaling work properly.
+
 		if (ingredient != null) {
 			PoseStack modelViewStack = RenderSystem.getModelViewStack();
 			modelViewStack.pushPose();
@@ -47,6 +51,11 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			// Restore model-view matrix now that the item has been rendered
 			RenderSystem.applyModelViewMatrix();
 		}
+	}
+
+	@Override
+	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable ItemStack ingredient) {
+		render(stack, xPosition, yPosition, 16, 16, ingredient);
 	}
 
 	@Override

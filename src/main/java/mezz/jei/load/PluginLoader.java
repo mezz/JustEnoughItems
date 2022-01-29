@@ -138,7 +138,7 @@ public class PluginLoader {
 		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, vanillaRecipeFactory, recipeManagerInternal);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
-		return new RecipeManager(recipeManagerInternal, modIdHelper);
+		return new RecipeManager(recipeManagerInternal, modIdHelper, ingredientManager);
 	}
 
 	public IngredientFilter createIngredientFilter(IIngredientSorter ingredientSorter, IWorldConfig worldConfig, IEditModeConfig editModeConfig, IIngredientFilterConfig ingredientFilterConfig) {

@@ -1,40 +1,39 @@
 package mezz.jei.gui.ingredients;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-
-import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import net.minecraft.client.renderer.Rect2i;
-
-import mezz.jei.Internal;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
+import mezz.jei.api.gui.ingredient.IGuiIngredientTooltipCallback;
 import mezz.jei.api.gui.ingredient.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.Focus;
-import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.util.ErrorUtil;
+import net.minecraft.client.renderer.Rect2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final Map<Integer, GuiIngredient<T>> guiIngredients = new HashMap<>();
-	private final Set<Integer> inputSlots = new HashSet<>();
-	private final Set<Integer> outputSlots = new HashSet<>();
+	private final EnumMap<RecipeIngredientRole, Set<Integer>> slots = new EnumMap<>(RecipeIngredientRole.class);
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final IIngredientType<T> ingredientType;
@@ -46,13 +45,11 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	@Nullable
 	private Focus<T> focus;
 
-	private final List<ITooltipCallback<T>> tooltipCallbacks = new ArrayList<>();
+	private final List<IGuiIngredientTooltipCallback> tooltipCallbacks = new ArrayList<>();
 
-	public GuiIngredientGroup(IIngredientType<T> ingredientType, @Nullable Focus<T> focus, int cycleOffset) {
+	public GuiIngredientGroup(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, int cycleOffset) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		this.ingredientType = ingredientType;
-		this.focus = focus;
-		IngredientManager ingredientManager = Internal.getIngredientManager();
 		this.ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		this.ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		this.cycleOffset = cycleOffset;
@@ -60,19 +57,23 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 
 	@Override
 	public void init(int slotIndex, boolean input, int xPosition, int yPosition) {
-		init(slotIndex, input, ingredientRenderer, xPosition, yPosition, 16, 16, 0, 0);
+		RecipeIngredientRole role = input ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT;
+		init(slotIndex, role, ingredientRenderer, xPosition, yPosition, 16, 16, 0, 0);
 	}
 
 	@Override
-	public void init(int slotIndex, boolean input, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xPadding, int yPadding) {
+	public void init(int slotIndex, boolean input, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xInset, int yInset) {
+		RecipeIngredientRole role = input ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT;
+		init(slotIndex, role, ingredientRenderer, xPosition, yPosition, width, height, xInset, yInset);
+	}
+
+	@Override
+	public void init(int slotIndex, RecipeIngredientRole role, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xInset, int yInset) {
 		Rect2i rect = new Rect2i(xPosition, yPosition, width, height);
-		GuiIngredient<T> guiIngredient = new GuiIngredient<>(slotIndex, input, ingredientRenderer, ingredientHelper, rect, xPadding, yPadding, cycleOffset);
+		GuiIngredient<T> guiIngredient = new GuiIngredient<>(slotIndex, role, ingredientRenderer, ingredientHelper, rect, xInset, yInset, cycleOffset);
 		guiIngredients.put(slotIndex, guiIngredient);
-		if (input) {
-			inputSlots.add(slotIndex);
-		} else {
-			outputSlots.add(slotIndex);
-		}
+		slots.computeIfAbsent(role, key -> new IntOpenHashSet())
+			.add(slotIndex);
 	}
 
 	@Override
@@ -84,6 +85,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 
 		List<Integer> slots = new ArrayList<>(guiIngredients.keySet());
 		Collections.sort(slots);
+		Set<Integer> inputSlots = this.slots.get(RecipeIngredientRole.INPUT);
 		for (Integer slot : slots) {
 			if (inputSlots.contains(slot)) {
 				if (inputIndex < inputs.size()) {
@@ -115,8 +117,7 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		}
 		GuiIngredient<T> guiIngredient = guiIngredients.get(slotIndex);
 
-		IFocus.Mode ingredientMode = guiIngredient.isInput() ? IFocus.Mode.INPUT : IFocus.Mode.OUTPUT;
-		if (focus == null || focus.getMode() == ingredientMode) {
+		if (focus == null || focus.getRole() == guiIngredient.getRole()) {
 			guiIngredient.set(ingredients, focus);
 		} else {
 			guiIngredient.set(ingredients, null);
@@ -135,8 +136,15 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	}
 
 	@Override
+	@Deprecated
 	public void addTooltipCallback(ITooltipCallback<T> tooltipCallback) {
-		ErrorUtil.checkNotNull(tooltipCallbacks, "tooltipCallback");
+		ErrorUtil.checkNotNull(tooltipCallback, "tooltipCallback");
+		this.tooltipCallbacks.add(new LegacyTooltipAdapter<>(this.ingredientType, tooltipCallback));
+	}
+
+	@Override
+	public void addTooltipCallback(IGuiIngredientTooltipCallback tooltipCallback) {
+		ErrorUtil.checkNotNull(tooltipCallback, "tooltipCallback");
 		this.tooltipCallbacks.add(tooltipCallback);
 	}
 
@@ -166,15 +174,11 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		if (focus == null) {
 			this.focus = null;
 		} else {
-			this.focus = Focus.check(focus);
+			this.focus = Focus.checkOne(focus);
 		}
 	}
 
-	public Set<Integer> getOutputSlots() {
-		return outputSlots;
-	}
-
-	public String getIngredientModId(T ingredient) {
-		return ingredientHelper.getResourceLocation(ingredient).getNamespace();
+	public EnumMap<RecipeIngredientRole, Set<Integer>> getSlots() {
+		return slots;
 	}
 }

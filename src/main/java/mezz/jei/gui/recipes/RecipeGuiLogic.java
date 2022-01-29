@@ -5,6 +5,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.IngredientLookupState;
 import mezz.jei.recipes.RecipeTransferManager;
@@ -23,23 +24,31 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeManager recipeManager;
 	private final RecipeTransferManager recipeTransferManager;
 	private final IRecipeLogicStateListener stateListener;
+	private final IIngredientManager ingredientManager;
 	private final IModIdHelper modIdHelper;
 
 	private boolean initialState = true;
 	private IngredientLookupState state;
 	private final Stack<IngredientLookupState> history = new Stack<>();
 
-	public RecipeGuiLogic(IRecipeManager recipeManager, RecipeTransferManager recipeTransferManager, IRecipeLogicStateListener stateListener, IModIdHelper modIdHelper) {
+	public RecipeGuiLogic(
+		IRecipeManager recipeManager,
+		RecipeTransferManager recipeTransferManager,
+		IRecipeLogicStateListener stateListener,
+		IIngredientManager ingredientManager,
+		IModIdHelper modIdHelper
+	) {
 		this.recipeManager = recipeManager;
 		this.recipeTransferManager = recipeTransferManager;
 		this.stateListener = stateListener;
+		this.ingredientManager = ingredientManager;
 		this.modIdHelper = modIdHelper;
-		this.state = IngredientLookupState.createWithFocus(recipeManager, null);
+		this.state = IngredientLookupState.createWithFocus(recipeManager, List.of());
 	}
 
 	@Override
-	public <V> boolean setFocus(Focus<V> focus) {
-		IngredientLookupState state = IngredientLookupState.createWithFocus(recipeManager, focus);
+	public boolean setFocus(List<Focus<?>> focuses) {
+		IngredientLookupState state = IngredientLookupState.createWithFocus(recipeManager, focuses);
 		ImmutableList<IRecipeCategory<?>> recipeCategories = state.getRecipeCategories();
 		if (recipeCategories.isEmpty()) {
 			return false;
@@ -59,6 +68,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		LocalPlayer player = minecraft.player;
 		if (player != null) {
 			AbstractContainerMenu openContainer = player.containerMenu;
+			//noinspection ConstantConditions
 			if (openContainer != null) {
 				for (int i = 0; i < recipeCategories.size(); i++) {
 					IRecipeCategory<?> recipeCategory = recipeCategories.get(i);
@@ -102,7 +112,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	public boolean setCategoryFocus() {
 		IRecipeCategory<?> recipeCategory = getSelectedRecipeCategory();
 
-		final IngredientLookupState state = IngredientLookupState.createWithFocus(recipeManager, null);
+		final IngredientLookupState state = IngredientLookupState.createWithFocus(recipeManager, List.of());
 		state.setRecipeCategory(recipeCategory);
 		setState(state, true);
 
@@ -166,7 +176,8 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		final int firstRecipeIndex = state.getRecipeIndex() - (state.getRecipeIndex() % state.getRecipesPerPage());
 		for (int recipeIndex = firstRecipeIndex; recipeIndex < recipes.size() && recipeLayouts.size() < state.getRecipesPerPage(); recipeIndex++) {
 			T recipe = recipes.get(recipeIndex);
-			RecipeLayout<T> recipeLayout = RecipeLayout.create(recipeWidgetIndex++, recipeCategory, recipe, state.getFocus(), modIdHelper, posX, recipePosY);
+			int index = recipeWidgetIndex++;
+			RecipeLayout<T> recipeLayout = RecipeLayout.create(index, recipeCategory, recipe, state.getFocuses(), ingredientManager, modIdHelper, posX, recipePosY);
 			if (recipeLayout == null) {
 				recipes.remove(recipeIndex);
 				recipeManager.hideRecipe(recipe, recipeCategory.getUid());
@@ -252,7 +263,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean hasAllCategories() {
-		return state.getRecipeCategories().size() == recipeManager.getRecipeCategories(null, false).size();
+		return state.getRecipeCategories().size() == recipeManager.getRecipeCategories(List.of(), false).size();
 	}
 
 }

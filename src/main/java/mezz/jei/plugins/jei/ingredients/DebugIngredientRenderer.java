@@ -25,7 +25,7 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 	}
 
 	@Override
-	public void render(PoseStack poseStack, int xPosition, int yPosition, @Nullable DebugIngredient ingredient) {
+	public void render(PoseStack poseStack, int xPosition, int yPosition, int width, int height, @Nullable DebugIngredient ingredient) {
 		if (ingredient != null) {
 			Minecraft minecraft = Minecraft.getInstance();
 			Font font = getFontRenderer(minecraft, ingredient);

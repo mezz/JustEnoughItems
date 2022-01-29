@@ -14,12 +14,12 @@ public class RecipeCategoryDataMap {
 
 	public RecipeCategoryDataMap(
 		List<IRecipeCategory<?>> recipeCategories,
-		ImmutableListMultimap<IRecipeCategory<?>, Object> recipeCatalystsMap
+		ImmutableListMultimap<IRecipeCategory<?>, Object> recipeCategoryCatalystsMap
 	) {
 		ImmutableMap.Builder<ResourceLocation, RecipeCategoryData<?>> mapBuilder = ImmutableMap.builder();
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
-			ImmutableList<Object> recipeCatalysts = recipeCatalystsMap.get(recipeCategory);
-			mapBuilder.put(recipeCategory.getUid(), new RecipeCategoryData<>(recipeCategory, recipeCatalysts));
+			ImmutableList<Object> recipeCategoryCatalysts = recipeCategoryCatalystsMap.get(recipeCategory);
+			mapBuilder.put(recipeCategory.getUid(), new RecipeCategoryData<>(recipeCategory, recipeCategoryCatalysts));
 		}
 		this.map = mapBuilder.build();
 	}
@@ -29,6 +29,20 @@ public class RecipeCategoryDataMap {
 		@SuppressWarnings("unchecked")
 		RecipeCategoryData<T> recipeCategoryData = (RecipeCategoryData<T>) get(recipeCategoryUid);
 		return recipeCategoryData;
+	}
+
+	public <T> RecipeCategoryData<T> get(Iterable<T> recipes, ResourceLocation recipeCategoryUid) {
+		RecipeCategoryData<?> recipeCategoryData = get(recipeCategoryUid);
+		IRecipeCategory<?> recipeCategory = recipeCategoryData.getRecipeCategory();
+		Class<?> recipeClass = recipeCategory.getRecipeClass();
+		for (T recipe : recipes) {
+			if (!recipeClass.isInstance(recipe)) {
+				throw new IllegalArgumentException(recipeCategory.getUid() + " recipes must be an instance of " + recipeClass + ". Instead got: " + recipe.getClass());
+			}
+		}
+		@SuppressWarnings("unchecked")
+		RecipeCategoryData<T> castRecipeCategoryData = (RecipeCategoryData<T>) recipeCategoryData;
+		return castRecipeCategoryData;
 	}
 
 	public <T> RecipeCategoryData<T> get(T recipe, ResourceLocation recipeCategoryUid) {

@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.config.ClientConfig;
-import mezz.jei.ingredients.IngredientsForType;
+import mezz.jei.ingredients.IIngredientSupplier;
+import mezz.jei.recipes.RecipeManagerInternal;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -28,12 +30,10 @@ import mezz.jei.Internal;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.ingredients.IngredientManager;
-import mezz.jei.ingredients.Ingredients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,57 +60,47 @@ public final class ErrorUtil {
 		String recipeName = getNameForRecipe(recipe);
 		recipeInfoBuilder.append(recipeName).append(" {");
 
-		Ingredients ingredients = new Ingredients();
-
-		try {
-			recipeCategory.setIngredients(recipe, ingredients);
-		} catch (RuntimeException | LinkageError ignored) {
+		IIngredientSupplier ingredientSupplier = RecipeManagerInternal.getIngredientSupplier(recipe, recipeCategory);
+		if (ingredientSupplier == null) {
 			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
 			return recipeInfoBuilder.toString();
 		}
 
-		{
-			recipeInfoBuilder.append("\n  Outputs:");
-			ingredients.getOutputIngredients()
-				.stream()
-				.map(IngredientsForType::getIngredientType)
-				.forEach(outputType -> {
-					String ingredientOutputInfo = getIngredientOutputInfo(outputType, ingredients);
-					recipeInfoBuilder
-						.append("\n    ")
-						.append(outputType.getIngredientClass().getName())
-						.append(": ")
-						.append(ingredientOutputInfo);
-				});
-		}
+		recipeInfoBuilder.append("\n  Outputs:");
+		appendRoleData(ingredientSupplier, RecipeIngredientRole.OUTPUT, recipeInfoBuilder);
 
-		{
-			recipeInfoBuilder.append("\n  Inputs:");
-			ingredients.getInputIngredients().stream()
-				.map(IngredientsForType::getIngredientType)
-				.forEach(inputType -> {
-					String ingredientInputInfo = getIngredientInputInfo(inputType, ingredients);
-					recipeInfoBuilder
-						.append("\n    ")
-						.append(inputType.getIngredientClass().getName())
-						.append(": ")
-						.append(ingredientInputInfo);
-				});
-		}
+		recipeInfoBuilder.append("\n  Inputs:");
+		appendRoleData(ingredientSupplier, RecipeIngredientRole.INPUT, recipeInfoBuilder);
+
+		recipeInfoBuilder.append("\n  Catalysts:");
+		appendRoleData(ingredientSupplier, RecipeIngredientRole.CATALYST, recipeInfoBuilder);
 
 		recipeInfoBuilder.append("\n}");
 
 		return recipeInfoBuilder.toString();
 	}
 
-	private static <T> String getIngredientOutputInfo(IIngredientType<T> ingredientType, IIngredients ingredients) {
-		List<List<T>> outputs = ingredients.getOutputs(ingredientType);
-		return getIngredientInfo(ingredientType, outputs);
+	private static void appendRoleData(IIngredientSupplier ingredientSupplier, RecipeIngredientRole role, StringBuilder recipeInfoBuilder) {
+		for (IIngredientType<?> ingredientType : ingredientSupplier.getIngredientTypes(role)) {
+			String ingredientOutputInfo = getIngredientInfo(ingredientType, role, ingredientSupplier);
+			recipeInfoBuilder
+				.append("\n    ")
+				.append(ingredientType.getIngredientClass().getName())
+				.append(": ")
+				.append(ingredientOutputInfo);
+		}
 	}
 
-	private static <T> String getIngredientInputInfo(IIngredientType<T> ingredientType, IIngredients ingredients) {
-		List<List<T>> inputs = ingredients.getInputs(ingredientType);
-		return getIngredientInfo(ingredientType, inputs);
+	private static <T> String getIngredientInfo(IIngredientType<T> ingredientType, RecipeIngredientRole role, IIngredientSupplier ingredients) {
+		List<T> ingredientList = ingredients.getIngredientStream(ingredientType, role).toList();
+		IIngredientHelper<T> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredientType);
+
+		Stream<String> stringStream = ingredientList.stream()
+			.map(ingredientHelper::getErrorInfo);
+
+		return truncatedStream(stringStream, ingredientList.size(), 10)
+			.toList()
+			.toString();
 	}
 
 	public static String getNameForRecipe(Object recipe) {
@@ -139,25 +129,6 @@ public final class ErrorUtil {
 	public static <T> String getIngredientInfo(T ingredient) {
 		IIngredientHelper<T> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredient);
 		return ingredientHelper.getErrorInfo(ingredient);
-	}
-
-	public static <T> String getIngredientInfo(IIngredientType<T> ingredientType, List<? extends List<T>> ingredients) {
-		IIngredientHelper<T> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredientType);
-		Stream<String> stringStream = ingredients.stream()
-			.map(slot -> ErrorUtil.getIngredientSlotInfo(ingredientHelper, slot));
-
-		return truncatedStream(stringStream, ingredients.size(), 100)
-			.toList()
-			.toString();
-	}
-
-	private static <T> String getIngredientSlotInfo(IIngredientHelper<T> ingredientHelper, List<T> slot) {
-		Stream<String> stringStream = slot.stream()
-			.map(ingredientHelper::getErrorInfo);
-
-		return truncatedStream(stringStream, slot.size(), 10)
-			.toList()
-			.toString();
 	}
 
 	private static Stream<String> truncatedStream(Stream<String> stream, int size, int limit) {

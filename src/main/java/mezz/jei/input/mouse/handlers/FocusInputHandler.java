@@ -1,6 +1,6 @@
 package mezz.jei.input.mouse.handlers;
 
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.Focus;
@@ -9,6 +9,7 @@ import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
 import net.minecraft.client.gui.screens.Screen;
 
+import java.util.List;
 import java.util.Optional;
 
 public class FocusInputHandler implements IUserInputHandler {
@@ -23,22 +24,24 @@ public class FocusInputHandler implements IUserInputHandler {
 	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
 		if (input.is(KeyBindings.showRecipe)) {
-			return handleShow(input, IFocus.Mode.OUTPUT);
+			return handleShow(input, List.of(RecipeIngredientRole.OUTPUT));
 		}
 
 		if (input.is(KeyBindings.showUses)) {
-			return handleShow(input, IFocus.Mode.INPUT);
+			return handleShow(input, List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CATALYST));
 		}
 
 		return Optional.empty();
 	}
 
-	private Optional<IUserInputHandler> handleShow(UserInput input, IFocus.Mode focusMode) {
+	private Optional<IUserInputHandler> handleShow(UserInput input, List<RecipeIngredientRole> roles) {
 		return focusSource.getIngredientUnderMouse(input)
 			.map(clicked -> {
 				if (!input.isSimulate()) {
-					Focus<?> focus = new Focus<>(focusMode, clicked.getValue());
-					recipesGui.show(focus);
+					List<? extends Focus<?>> focuses = roles.stream()
+						.map(role -> new Focus<>(role, clicked.getValue()))
+						.toList();
+					recipesGui.show(focuses);
 				}
 				return LimitedAreaInputHandler.create(this, clicked.getArea());
 			});

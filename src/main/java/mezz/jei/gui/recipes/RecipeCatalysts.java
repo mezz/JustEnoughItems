@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.Internal;
@@ -93,7 +94,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 			ingredientSize,
 			ingredientSize
 		);
-		GuiIngredient<T> guiIngredient = new GuiIngredient<>(index, true, ingredientRenderer, ingredientHelper, rect, 0, 0, 0);
+		GuiIngredient<T> guiIngredient = new GuiIngredient<>(index, RecipeIngredientRole.CATALYST, ingredientRenderer, ingredientHelper, rect, 0, 0, 0);
 		guiIngredient.set(Collections.singletonList(ingredient), null);
 		return guiIngredient;
 	}

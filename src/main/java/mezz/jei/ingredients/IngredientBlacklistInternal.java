@@ -1,7 +1,6 @@
 package mezz.jei.ingredients;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -21,9 +20,13 @@ public class IngredientBlacklistInternal {
 	}
 
 	public <V> boolean isIngredientBlacklistedByApi(V ingredient, IIngredientHelper<V> ingredientHelper) {
-		List<String> uids = IngredientInformationUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Ingredient);
+		String uid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+		String uidWild = ingredientHelper.getWildcardId(ingredient);
 
-		return uids.stream()
-			.anyMatch(ingredientBlacklist::contains);
+		if (uid.equals(uidWild)) {
+			return ingredientBlacklist.contains(uid);
+		}
+		return ingredientBlacklist.contains(uid) || ingredientBlacklist.contains(uidWild);
 	}
+
 }

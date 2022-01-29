@@ -1,6 +1,8 @@
 package mezz.jei.api.helpers;
 
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.ITickTimer;
@@ -9,6 +11,8 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+
+import java.util.List;
 
 /**
  * Helps with the implementation of GUIs.
@@ -56,12 +60,6 @@ public interface IGuiHelper {
 	<V> IDrawable createDrawableIngredient(IIngredientType<V> type, V ingredient);
 
 	/**
-	 * Create a crafting grid helper.
-	 * Helps set crafting-grid-style GuiItemStackGroup.
-	 */
-	ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1);
-
-	/**
 	 * Create a timer to help with rendering things that normally depend on ticks.
 	 *
 	 * @param ticksPerCycle the number of ticks for timer to run before starting over at 0
@@ -76,4 +74,15 @@ public interface IGuiHelper {
 	 */
 	@Deprecated
 	<V> IDrawable createDrawableIngredient(V ingredient);
+
+	/**
+	 * Create a crafting grid helper.
+	 * Helps set crafting-grid-style GuiItemStackGroup.
+	 *
+	 * @deprecated since JEI 9.3.0.
+	 * This is now given only when needed, in
+	 * {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, List)}
+	 */
+	@Deprecated
+	ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1);
 }

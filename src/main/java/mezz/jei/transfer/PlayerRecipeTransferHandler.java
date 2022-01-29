@@ -1,182 +1,206 @@
 package mezz.jei.transfer;
 
-import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
-
-import com.google.common.collect.ImmutableSet;
+import com.mojang.blaze3d.vertex.PoseStack;
+import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
-import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.ingredient.IGuiIngredient;
-import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.config.ServerInfo;
-import mezz.jei.gui.ingredients.GuiItemStackGroup;
-import mezz.jei.network.Network;
-import mezz.jei.network.packets.PacketRecipeTransfer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<InventoryMenu, CraftingRecipe> {
-	private static final Logger LOGGER = LogManager.getLogger();
+	/**
+	 * Indexes from the crafting table that fit into the player crafting grid
+	 * when we trim the right and bottom edges .
+	 */
+	private static final Int2IntMap INDEX_MAPPING = new Int2IntArrayMap(Map.of(
+		1, 1,
+		2, 2,
+		4, 3,
+		5, 4
+	));
 
 	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
-	private final IRecipeTransferInfo<InventoryMenu, CraftingRecipe> transferHelper;
+	private final IRecipeTransferInfo<InventoryMenu, CraftingRecipe> transferInfo;
 
-	public PlayerRecipeTransferHandler(IStackHelper stackhelper, IRecipeTransferHandlerHelper handlerHelper) {
-		this.stackHelper = stackhelper;
+	public PlayerRecipeTransferHandler(IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper) {
+		this.stackHelper = stackHelper;
 		this.handlerHelper = handlerHelper;
-		this.transferHelper = new BasicRecipeTransferInfo<>(InventoryMenu.class, CraftingRecipe.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
+		this.transferInfo = new BasicRecipeTransferInfo<>(InventoryMenu.class, CraftingRecipe.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
 	}
 
 	@Override
 	public Class<InventoryMenu> getContainerClass() {
-		return transferHelper.getContainerClass();
+		return InventoryMenu.class;
 	}
 
 	@Override
 	public Class<CraftingRecipe> getRecipeClass() {
-		return transferHelper.getRecipeClass();
+		return CraftingRecipe.class;
 	}
 
 	@Nullable
 	@Override
-	public IRecipeTransferError transferRecipe(InventoryMenu container, CraftingRecipe recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
+	public IRecipeTransferError transferRecipe(InventoryMenu container, CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, Player player, boolean maxTransfer, boolean doTransfer) {
 		if (!ServerInfo.isJeiOnServer()) {
 			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
+		
+		boolean allGoodInputSlots = recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT, VanillaTypes.ITEM)
+			.stream()
+			.allMatch(slot -> INDEX_MAPPING.containsKey(slot.getSlotIndex()));
 
-		if (!transferHelper.canHandle(container, recipe)) {
-			return handlerHelper.createInternalError();
+		if (!allGoodInputSlots) {
+			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.too.large.player.inventory");
+			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
 
-		Map<Integer, Slot> inventorySlots = new HashMap<>();
-		for (Slot slot : transferHelper.getInventorySlots(container, recipe)) {
-			inventorySlots.put(slot.index, slot);
-		}
+		// map the crafting table input slots to player inventory input slots
+		recipeSlotsView = new RecipeSlotsView(mapSlots(recipeSlotsView.getSlotViews()));
 
-		Map<Integer, Slot> craftingSlots = new HashMap<>();
-		for (Slot slot : transferHelper.getRecipeSlots(container, recipe)) {
-			craftingSlots.put(slot.index, slot);
-		}
+		IRecipeTransferHandler<InventoryMenu, CraftingRecipe> handler = new BasicRecipeTransferHandler<>(stackHelper, handlerHelper, transferInfo);
+		return handler.transferRecipe(container, recipe, recipeSlotsView, player, maxTransfer, doTransfer);
 
-		IGuiItemStackGroup itemStackGroup = recipeLayout.getItemStacks();
-		int inputCount = 0;
-		{
-			// indexes that do not fit into the player crafting grid
-			Set<Integer> badIndexes = ImmutableSet.of(2, 5, 6, 7, 8);
+//		if (!ServerInfo.isJeiOnServer()) {
+//			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.no.server");
+//			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
+//		}
+//
+//		if (!transferInfo.canHandle(container, recipe)) {
+//			return handlerHelper.createInternalError();
+//		}
+//
+//		List<Slot> craftingSlots = Collections.unmodifiableList(transferInfo.getRecipeSlots(container, recipe));
+//		List<Slot> inventorySlots = Collections.unmodifiableList(transferInfo.getInventorySlots(container, recipe));
+//		List<Integer> craftingSlotIndexes = BasicRecipeTransferHandler.slotIndexes(craftingSlots);
+//		List<Integer> inventorySlotIndexes = BasicRecipeTransferHandler.slotIndexes(inventorySlots);
+//
+//		if (!BasicRecipeTransferHandler.validateTransferInfo(transferInfo, container, craftingSlotIndexes, inventorySlotIndexes)) {
+//			return handlerHelper.createInternalError();
+//		}
+//
+//		List<IRecipeSlotView> inputItemSlotViews = recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT, VanillaTypes.ITEM);
+//		if (!BasicRecipeTransferHandler.validateRecipeView(transferInfo, container, craftingSlotIndexes, inputItemSlotViews)) {
+//			return handlerHelper.createInternalError();
+//		}
+//
+//		BasicRecipeTransferHandler.InventoryState inventoryState = BasicRecipeTransferHandler.getInventoryState(craftingSlots, inventorySlots, player, container, transferInfo);
+//		if (inventoryState == null) {
+//			return handlerHelper.createInternalError();
+//		}
+//
+//		// check if we have enough inventory space to shuffle items around to their final locations
+//		int inputCount = inputItemSlotViews.size();
+//		if (!inventoryState.hasRoom(inputCount)) {
+//			Component message = new TranslatableComponent("jei.tooltip.error.recipe.transfer.inventory.full");
+//			return handlerHelper.createUserErrorWithTooltip(message);
+//		}
+//
+//		RecipeTransferUtil.MatchingItemsResult matchingItemsResult = RecipeTransferUtil.getMatchingItems(stackHelper, inventoryState.availableItemStacks(), inputItemSlotViews);
+//
+//		if (matchingItemsResult.missingItems.size() > 0) {
+//			Component message = new TranslatableComponent("jei.tooltip.error.recipe.transfer.missing");
+//			// unmap the player inventory input slots back to crafting table slots,
+//			// to display them correctly as missing in JEI's display of the crafting recipe
+////			List<IRecipeSlotView> unmappedMissingItems = unmapSlots(matchingItemsResult.missingItems);
+//			return handlerHelper.createUserErrorForMissingSlots(message, matchingItemsResult.missingItems);
+//		}
+//
+//		if (doTransfer) {
+//			boolean requireCompleteSets = transferInfo.requireCompleteSets(container, recipe);
+//			PacketRecipeTransfer packet = new PacketRecipeTransfer(
+//				matchingItemsResult.matchingItems,
+//				craftingSlotIndexes,
+//				inventorySlotIndexes,
+//				maxTransfer,
+//				requireCompleteSets
+//			);
+//			Network.sendPacketToServer(packet);
+//		}
+//
+//		return null;
+	}
 
-			int inputIndex = 0;
-			for (IGuiIngredient<ItemStack> ingredient : itemStackGroup.getGuiIngredients().values()) {
-				if (ingredient.isInput()) {
-					if (!ingredient.getAllIngredients().isEmpty()) {
-						inputCount++;
-						if (badIndexes.contains(inputIndex)) {
-							Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.too.large.player.inventory");
-							return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
-						}
-					}
-					inputIndex++;
+	private static List<IRecipeSlotView> mapSlots(List<IRecipeSlotView> slots) {
+		return slots.stream()
+			.map(slot -> {
+				int slotIndex = slot.getSlotIndex();
+				int newSlotIndex = INDEX_MAPPING.getOrDefault(slotIndex, slotIndex);
+				if (newSlotIndex == slotIndex) {
+					return slot;
 				}
-			}
-		}
+				return new MappedRecipeSlotView(slot, newSlotIndex);
+			})
+			.toList();
+	}
 
-		// compact the crafting grid into a 2x2 area
-		List<IGuiIngredient<ItemStack>> guiIngredients = new ArrayList<>();
-		for (IGuiIngredient<ItemStack> guiIngredient : itemStackGroup.getGuiIngredients().values()) {
-			if (guiIngredient.isInput()) {
-				guiIngredients.add(guiIngredient);
-			}
-		}
-		IGuiItemStackGroup playerInvItemStackGroup = new GuiItemStackGroup(null, 0);
-		int[] playerGridIndexes = {0, 1, 3, 4};
-		for (int i = 0; i < 4; i++) {
-			int index = playerGridIndexes[i];
-			if (index < guiIngredients.size()) {
-				IGuiIngredient<ItemStack> ingredient = guiIngredients.get(index);
-				playerInvItemStackGroup.init(i, true, 0, 0);
-				playerInvItemStackGroup.set(i, ingredient.getAllIngredients());
-			}
-		}
-
-		Map<Integer, ItemStack> availableItemStacks = new HashMap<>();
-		int filledCraftSlotCount = 0;
-		int emptySlotCount = 0;
-
-		for (Slot slot : craftingSlots.values()) {
-			final ItemStack stack = slot.getItem();
-			if (!stack.isEmpty()) {
-				if (!slot.mayPickup(player)) {
-					LOGGER.error("Recipe Transfer helper {} does not work for container {}. Player can't move item out of Crafting Slot number {}", transferHelper.getClass(), container.getClass(), slot.index);
-					return handlerHelper.createInternalError();
+	private static List<IRecipeSlotView> unmapSlots(List<IRecipeSlotView> slots) {
+		return slots.stream()
+			.map(slot -> {
+				if (slot instanceof MappedRecipeSlotView mappedSlot) {
+					return mappedSlot.getOriginal();
 				}
-				filledCraftSlotCount++;
-				availableItemStacks.put(slot.index, stack.copy());
-			}
+				return slot;
+			})
+			.toList();
+	}
+
+	private static class MappedRecipeSlotView implements IRecipeSlotView {
+		private final IRecipeSlotView original;
+		private final Integer newSlotIndex;
+
+		public MappedRecipeSlotView(IRecipeSlotView original, Integer newSlotIndex) {
+			this.original = original;
+			this.newSlotIndex = newSlotIndex;
 		}
 
-		for (Slot slot : inventorySlots.values()) {
-			final ItemStack stack = slot.getItem();
-			if (!stack.isEmpty()) {
-				availableItemStacks.put(slot.index, stack.copy());
-			} else {
-				emptySlotCount++;
-			}
+		@Override
+		public List<?> getAllIngredients() {
+			return original.getAllIngredients();
 		}
 
-		// check if we have enough inventory space to shuffle items around to their final locations
-		if (filledCraftSlotCount - inputCount > emptySlotCount) {
-			Component message = new TranslatableComponent("jei.tooltip.error.recipe.transfer.inventory.full");
-			return handlerHelper.createUserErrorWithTooltip(message);
+		@Override
+		public <T> Stream<T> getAllIngredients(IIngredientType<T> ingredientType) {
+			return original.getAllIngredients(ingredientType);
 		}
 
-		RecipeTransferUtil.MatchingItemsResult matchingItemsResult = RecipeTransferUtil.getMatchingItems(stackHelper, availableItemStacks, playerInvItemStackGroup.getGuiIngredients());
-
-		if (matchingItemsResult.missingItems.size() > 0) {
-			Component message = new TranslatableComponent("jei.tooltip.error.recipe.transfer.missing");
-			matchingItemsResult = RecipeTransferUtil.getMatchingItems(stackHelper, availableItemStacks, itemStackGroup.getGuiIngredients());
-			return handlerHelper.createUserErrorForSlots(message, matchingItemsResult.missingItems);
+		@Override
+		public int getSlotIndex() {
+			return newSlotIndex;
 		}
 
-		List<Integer> craftingSlotIndexes = new ArrayList<>(craftingSlots.keySet());
-		Collections.sort(craftingSlotIndexes);
-
-		List<Integer> inventorySlotIndexes = new ArrayList<>(inventorySlots.keySet());
-		Collections.sort(inventorySlotIndexes);
-
-		// check that the slots exist and can be altered
-		for (Map.Entry<Integer, Integer> entry : matchingItemsResult.matchingItems.entrySet()) {
-			int craftNumber = entry.getKey();
-			int slotNumber = craftingSlotIndexes.get(craftNumber);
-			if (slotNumber < 0 || slotNumber >= container.slots.size()) {
-				LOGGER.error("Recipes Transfer Helper {} references slot {} outside of the inventory's size {}", transferHelper.getClass(), slotNumber, container.slots.size());
-				return handlerHelper.createInternalError();
-			}
+		@Override
+		public RecipeIngredientRole getRole() {
+			return original.getRole();
 		}
 
-		if (doTransfer) {
-			PacketRecipeTransfer packet = new PacketRecipeTransfer(matchingItemsResult.matchingItems, craftingSlotIndexes, inventorySlotIndexes, maxTransfer, false);
-			Network.sendPacketToServer(packet);
+		@Override
+		public void drawHighlight(PoseStack stack, int color, int xOffset, int yOffset) {
+			original.drawHighlight(stack, color, xOffset, yOffset);
 		}
 
-		return null;
+		public IRecipeSlotView getOriginal() {
+			return original;
+		}
 	}
 }

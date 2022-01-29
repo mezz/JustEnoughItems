@@ -89,7 +89,7 @@ public class JeiStarter {
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
 		GuiScreenHelper guiScreenHelper = pluginLoader.createGuiScreenHelper(plugins);
-		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, modIdHelper, clientConfig);
+		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, ingredientManager, modIdHelper, clientConfig);
 
 		IngredientGrid ingredientListGrid = new IngredientGrid(ingredientManager, GridAlignment.LEFT, editModeConfig, ingredientFilterConfig, clientConfig, worldConfig, guiScreenHelper, recipesGui, modIdHelper);
 

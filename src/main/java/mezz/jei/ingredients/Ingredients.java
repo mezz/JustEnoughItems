@@ -3,16 +3,25 @@ package mezz.jei.ingredients;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
-public class Ingredients implements IIngredients {
+/**
+ * @deprecated internally since JEI 9.3.0. Use {@link RecipeLayoutBuilder} instead.
+ */
+@Deprecated
+public class Ingredients implements IIngredients, IIngredientSupplier {
 	private final List<IngredientsForType<?>> inputs = new ArrayList<>();
 	private final List<IngredientsForType<?>> outputs = new ArrayList<>();
 
@@ -79,14 +88,6 @@ public class Ingredients implements IIngredients {
 		return getIngredients(ingredientType, this.outputs);
 	}
 
-	public List<IngredientsForType<?>> getInputIngredients() {
-		return inputs;
-	}
-
-	public List<IngredientsForType<?>> getOutputIngredients() {
-		return outputs;
-	}
-
 	private static <T> void setIngredients(IIngredientType<T> ingredientType, List<IngredientsForType<?>> ingredientsForTypes, List<List<T>> ingredients) {
 		IngredientsForType<T> recipeIngredients = getIngredientsForType(ingredientType, ingredientsForTypes);
 		if (recipeIngredients == null) {
@@ -114,5 +115,44 @@ public class Ingredients implements IIngredients {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public List<? extends IIngredientType<?>> getIngredientTypes(RecipeIngredientRole role) {
+		List<IngredientsForType<?>> source;
+		if (role == RecipeIngredientRole.INPUT) {
+			source = inputs;
+		} else if (role == RecipeIngredientRole.OUTPUT) {
+			source = outputs;
+		} else {
+			return List.of();
+		}
+
+		return source.stream()
+			.map(IngredientsForType::getIngredientType)
+			.distinct()
+			.toList();
+	}
+
+	@Override
+	public <T> Stream<T> getIngredientStream(IIngredientType<T> ingredientType, RecipeIngredientRole role) {
+		List<IngredientsForType<?>> source;
+		if (role == RecipeIngredientRole.INPUT) {
+			source = inputs;
+		} else if (role == RecipeIngredientRole.OUTPUT) {
+			source = outputs;
+		} else {
+			return Stream.empty();
+		}
+
+		IngredientsForType<T> ingredientsForType = getIngredientsForType(ingredientType, source);
+		if (ingredientsForType == null) {
+			return Stream.empty();
+		}
+		List<List<T>> ingredients = ingredientsForType.getIngredients();
+		return ingredients.stream()
+			.filter(Objects::nonNull)
+			.flatMap(Collection::stream)
+			.filter(Objects::nonNull);
 	}
 }

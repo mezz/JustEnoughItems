@@ -5,13 +5,17 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.gui.IRecipeLayoutView;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.ingredient.IGuiIngredientTooltipCallback;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.IFocus;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
-import mezz.jei.api.gui.ingredient.ITooltipCallback;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.network.chat.Component;
@@ -50,46 +54,48 @@ public interface IRecipeCategory<T> {
 
 	/**
 	 * Icon for the category tab.
-	 * You can use {@link IGuiHelper#createDrawableIngredient(Object)} to create a drawable from an ingredient.
+	 * You can use {@link IGuiHelper#createDrawableIngredient(IIngredientType, Object)}
+	 * to create a drawable from an ingredient.
 	 *
 	 * @return icon to draw on the category tab, max size is 16x16 pixels.
 	 */
 	IDrawable getIcon();
 
 	/**
-	 * Sets all the recipe's ingredients by filling out an instance of {@link IIngredients}.
+	 * Sets all the recipe's ingredients by filling out an instance of {@link IRecipeLayoutBuilder}.
 	 * This is used by JEI for lookups, to figure out what ingredients are inputs and outputs for a recipe.
 	 */
-	void setIngredients(T recipe, IIngredients ingredients);
+	default void setRecipe(IRecipeLayoutBuilder builder, T recipe, List<? extends IFocus<?>> focuses) {
 
-	/**
-	 * Set the {@link IRecipeLayout} properties from the recipe.
-	 *
-	 * @param recipeLayout  the layout that needs its properties set.
-	 * @param recipe        the recipe, for extra information.
-	 * @param ingredients   the ingredients, already set earlier by {@link IRecipeCategory#setIngredients}
-	 */
-	void setRecipe(IRecipeLayout recipeLayout, T recipe, IIngredients ingredients);
+	}
 
 	/**
 	 * Draw extras or additional info about the recipe.
 	 * Use the mouse position for things like button highlights.
 	 * Tooltips are handled by {@link #getTooltipStrings(Object, double, double)}
 	 *
-	 * @param mouseX the X position of the mouse, relative to the recipe.
-	 * @param mouseY the Y position of the mouse, relative to the recipe.
+	 * @param recipe           the current recipe being drawn.
+	 * @param recipeLayoutView a view of the current recipe layout being drawn.
+	 * @param stack            the current {@link PoseStack} for rendering.
+	 * @param mouseX           the X position of the mouse, relative to the recipe.
+	 * @param mouseY           the Y position of the mouse, relative to the recipe.
+	 *
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
+	 * @see IRecipeLayoutView for information about the ingredients that are currently being drawn.
+	 *
+	 * @since JEI 9.3.0
 	 */
-	default void draw(T recipe, PoseStack stack, double mouseX, double mouseY) {
-
+	default void draw(T recipe, IRecipeLayoutView recipeLayoutView, PoseStack stack, double mouseX, double mouseY) {
+		// if not implemented, this calls the old draw function for backward compatibility
+		draw(recipe, stack, mouseX, mouseY);
 	}
 
 	/**
 	 * Get the tooltip for whatever's under the mouse.
 	 * Ingredient tooltips are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IGuiIngredientGroup#addTooltipCallback(ITooltipCallback)}
+	 * To add to ingredient tooltips, see {@link IGuiIngredientGroup#addTooltipCallback(IGuiIngredientTooltipCallback)}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
@@ -134,10 +140,54 @@ public interface IRecipeCategory<T> {
 	 * @param mouseY      the Y position of the mouse, relative to the recipe.
 	 * @param mouseButton the current mouse event button.
 	 * @return true if the click was handled, false otherwise
+	 *
 	 * @deprecated since JEI 8.3.0. Use {@link #handleInput(Object, double, double, InputConstants.Key)}
 	 */
 	@Deprecated
 	default boolean handleClick(T recipe, double mouseX, double mouseY, int mouseButton) {
 		return false;
+	}
+
+	/**
+	 * Sets all the recipe's ingredients by filling out an instance of {@link IIngredients}.
+	 * This is used by JEI for lookups, to figure out what ingredients are inputs and outputs for a recipe.
+	 *
+	 * @deprecated since JEI 9.3.0.
+	 * This is handled automatically by {@link #setRecipe(IRecipeLayoutBuilder, Object, List)} instead.
+	 */
+	@Deprecated
+	default void setIngredients(T recipe, IIngredients ingredients) {
+
+	}
+
+	/**
+	 * Set the {@link IRecipeLayout} properties from the recipe.
+	 *
+	 * @param recipeLayout  the layout that needs its properties set.
+	 * @param recipe        the recipe, for extra information.
+	 * @param ingredients   the ingredients, already set earlier by {@link IRecipeCategory#setIngredients}
+	 *
+	 * @deprecated since JEI 9.3.0. Use {@link #setRecipe(IRecipeLayoutBuilder, Object, List)} instead.
+	 */
+	@Deprecated
+	default void setRecipe(IRecipeLayout recipeLayout, T recipe, IIngredients ingredients) {
+
+	}
+
+	/**
+	 * Draw extras or additional info about the recipe.
+	 * Use the mouse position for things like button highlights.
+	 * Tooltips are handled by {@link #getTooltipStrings(Object, double, double)}
+	 *
+	 * @param mouseX the X position of the mouse, relative to the recipe.
+	 * @param mouseY the Y position of the mouse, relative to the recipe.
+	 * @see IDrawable for a simple class for drawing things.
+	 * @see IGuiHelper for useful functions.
+	 *
+	 * @deprecated since JEI 9.3.0. Use {@link #draw(Object, IRecipeLayoutView, PoseStack, double, double)}
+	 */
+	@Deprecated
+	default void draw(T recipe, PoseStack stack, double mouseX, double mouseY) {
+
 	}
 }

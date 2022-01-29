@@ -15,7 +15,8 @@ import net.minecraft.network.chat.Component;
 /**
  * Renders a type of ingredient in JEI's item list and recipes.
  *
- * If you have a new type of ingredient to add to JEI, you will have to implement this in order to use
+ * If you have a new type of ingredient to add to JEI,
+ * you will have to implement this to create a default renderer for
  * {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
  */
 public interface IIngredientRenderer<T> {
@@ -24,9 +25,17 @@ public interface IIngredientRenderer<T> {
 	 *
 	 * @param xPosition  The x position to render the ingredient.
 	 * @param yPosition  The y position to render the ingredient.
-	 * @param ingredient the ingredient to render. May be null, some renderers (like fluid tanks) will render a
+	 * @param width      The width to render the ingredient with.
+	 * @param height  	 The height to render the ingredient with.
+	 * @param ingredient the ingredient to render.
+	 *                   May be null, some renderers (like fluid tanks) will render an empty background.
+	 *
+	 * @since JEI 9.3.0
 	 */
-	void render(PoseStack stack, int xPosition, int yPosition, @Nullable T ingredient);
+	default void render(PoseStack stack, int xPosition, int yPosition, int width, int height, @Nullable T ingredient) {
+		// if not implemented, this calls the old render function for backward compatibility
+		render(stack, xPosition, yPosition, ingredient);
+	}
 
 	/**
 	 * Get the tooltip text for this ingredient. JEI renders the tooltip based on this.
@@ -46,5 +55,20 @@ public interface IIngredientRenderer<T> {
 	 */
 	default Font getFontRenderer(Minecraft minecraft, T ingredient) {
 		return minecraft.font;
+	}
+
+	/**
+	 * Renders an ingredient at a specific location.
+	 *
+	 * @param xPosition  The x position to render the ingredient.
+	 * @param yPosition  The y position to render the ingredient.
+	 * @param ingredient the ingredient to render.
+	 *                   May be null, some renderers (like fluid tanks) will render an empty background.
+	 *
+	 * @deprecated since JEI 9.3.0. Use {@link #render(PoseStack, int, int, int, int, Object)} instead.
+	 */
+	@Deprecated
+	default void render(PoseStack stack, int xPosition, int yPosition, @Nullable T ingredient) {
+
 	}
 }

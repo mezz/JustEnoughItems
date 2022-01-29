@@ -33,7 +33,4 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 
 	@Override
 	void set(int slotIndex, @Nullable ItemStack itemStack);
-
-	@Override
-	void addTooltipCallback(ITooltipCallback<ItemStack> tooltipCallback);
 }

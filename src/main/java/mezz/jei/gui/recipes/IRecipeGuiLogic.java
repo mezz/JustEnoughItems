@@ -30,7 +30,7 @@ public interface IRecipeGuiLogic {
 
 	void nextPage();
 
-	<V> boolean setFocus(Focus<V> focus);
+	boolean setFocus(List<Focus<?>> focuses);
 
 	boolean back();
 

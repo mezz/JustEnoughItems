@@ -68,7 +68,7 @@ public class GuiHelper implements IGuiHelper {
 
 	@Override
 	public ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1) {
-		return new CraftingGridHelper(craftInputSlot1);
+		return new CraftingGridHelper(craftInputSlot1, 0);
 	}
 
 	@Override

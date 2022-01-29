@@ -6,8 +6,10 @@ import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
+import net.minecraft.network.chat.Component;
 
 /**
  * Represents one drawn ingredient that is part of a recipe.
@@ -35,15 +37,32 @@ public interface IGuiIngredient<T> {
 	List<T> getAllIngredients();
 
 	/**
-	 * Returns true if this ingredient is an input for the recipe, otherwise it is an output.
+	 * Returns the recipe slot index of this ingredient.
+	 *
+	 * @since JEI 9.3.0
 	 */
-	boolean isInput();
+	int getSlotIndex();
+
+	/**
+	 * Returns the type of focus that matches this ingredient.
+	 *
+	 * @since JEI 9.3.0
+	 */
+	RecipeIngredientRole getRole();
 
 	/**
 	 * Draws a highlight on background of this ingredient.
 	 * This is used by recipe transfer errors to turn missing ingredient backgrounds to red, but can be used for other purposes.
 	 *
-	 * @see IRecipeTransferHandlerHelper#createUserErrorForSlots(net.minecraft.network.chat.Component, Collection).
+	 * @see IRecipeTransferHandlerHelper#createUserErrorForMissingSlots(Component, Collection).
 	 */
 	void drawHighlight(PoseStack stack, int color, int xOffset, int yOffset);
+
+	/**
+	 * Returns true if this ingredient is an input for the recipe, otherwise it is an output.
+	 *
+	 * @deprecated since JEI 9.3.0. Use {@link #getRole()} instead.
+	 */
+	@Deprecated
+	boolean isInput();
 }

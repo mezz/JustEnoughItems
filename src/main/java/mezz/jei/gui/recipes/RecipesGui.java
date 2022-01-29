@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.KeyBindings;
@@ -92,13 +93,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public RecipesGui(
 		IRecipeManager recipeManager,
 		RecipeTransferManager recipeTransferManager,
+		IIngredientManager ingredientManager,
 		IModIdHelper modIdHelper,
 		IClientConfig clientConfig
 	) {
 		super(new TextComponent("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;
 		this.clientConfig = clientConfig;
-		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, modIdHelper);
+		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, ingredientManager, modIdHelper);
 		this.recipeCatalysts = new RecipeCatalysts();
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
 		this.minecraft = Minecraft.getInstance();
@@ -423,8 +425,16 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public <V> void show(IFocus<V> focus) {
-		Focus<V> checkedFocus = Focus.check(focus);
-		if (logic.setFocus(checkedFocus)) {
+		List<Focus<?>> checkedFocuses = Focus.check(focus);
+		if (logic.setFocus(checkedFocuses)) {
+			open();
+		}
+	}
+
+	@Override
+	public void show(List<? extends IFocus<?>> focuses) {
+		List<Focus<?>> checkedFocuses = Focus.check(focuses);
+		if (logic.setFocus(checkedFocuses)) {
 			open();
 		}
 	}

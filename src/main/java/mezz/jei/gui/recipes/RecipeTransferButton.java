@@ -54,6 +54,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 				TranslatableComponent tooltipTransfer = new TranslatableComponent("jei.tooltip.transfer");
 				TooltipRenderer.drawHoveringText(poseStack, List.of(tooltipTransfer), mouseX, mouseY);
 			} else {
+				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeLayout.getPosX(), recipeLayout.getPosY());
 				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
 			}
 		}

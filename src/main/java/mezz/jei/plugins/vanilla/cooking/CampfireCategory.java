@@ -1,18 +1,20 @@
 package mezz.jei.plugins.vanilla.cooking;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.gui.drawable.IDrawableAnimated;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.item.crafting.CampfireCookingRecipe;
-import net.minecraft.resources.ResourceLocation;
-
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.IRecipeLayoutView;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.config.Constants;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.CampfireCookingRecipe;
+import net.minecraft.world.level.block.Blocks;
+
+import java.util.List;
 
 public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRecipe> {
 	private final IDrawable background;
@@ -40,7 +42,7 @@ public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRec
 	}
 
 	@Override
-	public void draw(CampfireCookingRecipe recipe, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(CampfireCookingRecipe recipe, IRecipeLayoutView recipeLayoutView, PoseStack poseStack, double mouseX, double mouseY) {
 		animatedFlame.draw(poseStack, 1, 20);
 		IDrawableAnimated arrow = getArrow(recipe);
 		arrow.draw(poseStack, 24, 8);
@@ -48,12 +50,11 @@ public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRec
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, CampfireCookingRecipe recipe, IIngredients ingredients) {
-		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+	public void setRecipe(IRecipeLayoutBuilder builder, CampfireCookingRecipe recipe, List<? extends IFocus<?>> focuses) {
+		builder.addSlot(inputSlot, RecipeIngredientRole.INPUT, 0, 0)
+			.addIngredients(recipe.getIngredients().get(0));
 
-		guiItemStacks.init(inputSlot, true, 0, 0);
-		guiItemStacks.init(outputSlot, false, 60, 8);
-
-		guiItemStacks.set(ingredients);
+		builder.addSlot(outputSlot, RecipeIngredientRole.OUTPUT, 60, 8)
+			.addIngredient(recipe.getResultItem());
 	}
 }

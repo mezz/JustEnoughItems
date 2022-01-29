@@ -83,7 +83,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		IngredientManager ingredientManager = Internal.getIngredientManager();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
 		RenderSystem.enableDepthTest();
-		ingredientRenderer.render(poseStack, iconX, iconY, ingredient);
+		ingredientRenderer.render(poseStack, iconX, iconY, 16, 16, ingredient);
 		RenderSystem.disableDepthTest();
 	}
 

@@ -1,50 +1,36 @@
 package mezz.jei.plugins.vanilla.anvil;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-
-import java.util.Map;
-
-import net.minecraft.world.level.block.Blocks;
+import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.IRecipeLayoutView;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.config.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
-
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IGuiIngredient;
-import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
-import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.config.Constants;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
-
 	private final IDrawable background;
 	private final IDrawable icon;
-	private final LoadingCache<AnvilRecipe, AnvilRecipeDisplayData> cachedDisplayData;
 
 	public AnvilRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18)
 			.addPadding(0, 20, 0, 0)
 			.build();
 		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Blocks.ANVIL));
-		cachedDisplayData = CacheBuilder.newBuilder()
-			.maximumSize(25)
-			.build(new CacheLoader<>() {
-				@Override
-				public AnvilRecipeDisplayData load(AnvilRecipe key) {
-					return new AnvilRecipeDisplayData();
-				}
-			});
 	}
 
 	@Override
@@ -73,66 +59,44 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 	}
 
 	@Override
-	public void setIngredients(AnvilRecipe recipe, IIngredients ingredients) {
-		ingredients.setInputLists(VanillaTypes.ITEM, recipe.getInputs());
-		ingredients.setOutputLists(VanillaTypes.ITEM, recipe.getOutputs());
+	public void setRecipe(IRecipeLayoutBuilder builder, AnvilRecipe recipe, List<? extends IFocus<?>> focuses) {
+		builder.addSlot(0, RecipeIngredientRole.INPUT, 0, 0)
+			.addIngredients(recipe.getLeftInputs());
+
+		builder.addSlot(1, RecipeIngredientRole.INPUT, 49, 0)
+			.addIngredients(recipe.getRightInputs());
+
+		builder.addSlot(2, RecipeIngredientRole.OUTPUT, 107, 0)
+			.addIngredients(recipe.getOutputs());
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, AnvilRecipe recipe, IIngredients ingredients) {
-		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+	public void draw(AnvilRecipe recipe, IRecipeLayoutView recipeLayout, PoseStack poseStack, double mouseX, double mouseY) {
+		ItemStack leftStack = recipeLayout.getDisplayedIngredient(VanillaTypes.ITEM, 0);
+		ItemStack rightStack = recipeLayout.getDisplayedIngredient(VanillaTypes.ITEM, 1);
+		if (leftStack == null || rightStack == null) {
+			return;
+		}
 
-		guiItemStacks.init(0, true, 0, 0);
-		guiItemStacks.init(1, true, 49, 0);
-		guiItemStacks.init(2, false, 107, 0);
+		int cost = AnvilRecipeMaker.findLevelsCost(leftStack, rightStack);
+		String costText = cost < 0 ? "err" : Integer.toString(cost);
+		String text = I18n.get("container.repair.cost", costText);
 
-		guiItemStacks.set(ingredients);
-
-		AnvilRecipeDisplayData displayData = cachedDisplayData.getUnchecked(recipe);
-		displayData.setCurrentIngredients(guiItemStacks.getGuiIngredients());
+		Minecraft minecraft = Minecraft.getInstance();
+		LocalPlayer player = minecraft.player;
+		// Show red if the player doesn't have enough levels
+		int mainColor = playerHasEnoughLevels(player, cost) ? 0xFF80FF20 : 0xFFFF6060;
+		drawRepairCost(minecraft, poseStack, text, mainColor);
 	}
 
-	@Override
-	public void draw(AnvilRecipe recipe, PoseStack poseStack, double mouseX, double mouseY) {
-		AnvilRecipeDisplayData displayData = cachedDisplayData.getUnchecked(recipe);
-		Map<Integer, ? extends IGuiIngredient<ItemStack>> currentIngredients = displayData.getCurrentIngredients();
-		if (currentIngredients == null) {
-			return;
+	private static boolean playerHasEnoughLevels(@Nullable LocalPlayer player, int cost) {
+		if (player == null) {
+			return true;
 		}
-
-		ItemStack newLeftStack = currentIngredients.get(0).getDisplayedIngredient();
-		ItemStack newRightStack = currentIngredients.get(1).getDisplayedIngredient();
-
-		if (newLeftStack == null || newRightStack == null) {
-			return;
+		if (player.isCreative()) {
+			return true;
 		}
-
-		ItemStack lastLeftStack = displayData.getLastLeftStack();
-		ItemStack lastRightStack = displayData.getLastRightStack();
-		int lastCost = displayData.getLastCost();
-		if (lastLeftStack == null || lastRightStack == null
-			|| !ItemStack.matches(lastLeftStack, newLeftStack)
-			|| !ItemStack.matches(lastRightStack, newRightStack)) {
-			lastCost = AnvilRecipeMaker.findLevelsCost(newLeftStack, newRightStack);
-			displayData.setLast(newLeftStack, newRightStack, lastCost);
-		}
-
-		if (lastCost != 0) {
-			String costText = lastCost < 0 ? "err" : Integer.toString(lastCost);
-			String text = I18n.get("container.repair.cost", costText);
-
-			Minecraft minecraft = Minecraft.getInstance();
-			int mainColor = 0xFF80FF20;
-			LocalPlayer player = minecraft.player;
-			if (player != null &&
-				(lastCost >= 40 || lastCost > player.experienceLevel) &&
-				!player.isCreative()) {
-				// Show red if the player doesn't have enough levels
-				mainColor = 0xFFFF6060;
-			}
-
-			drawRepairCost(minecraft, poseStack, text, mainColor);
-		}
+		return cost < 40 && cost <= player.experienceLevel;
 	}
 
 	private void drawRepairCost(Minecraft minecraft, PoseStack poseStack, String text, int mainColor) {

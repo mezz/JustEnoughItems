@@ -3,11 +3,12 @@ package mezz.jei.plugins.vanilla.compostable;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.IRecipeLayoutView;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -17,6 +18,8 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+
+import java.util.List;
 
 public class CompostableRecipeCategory implements IRecipeCategory<CompostableRecipe> {
 	private static final int inputSlot = 0;
@@ -62,19 +65,13 @@ public class CompostableRecipeCategory implements IRecipeCategory<CompostableRec
 	}
 
 	@Override
-	public void setIngredients(CompostableRecipe recipe, IIngredients ingredients) {
-		ingredients.setInputLists(VanillaTypes.ITEM, recipe.getInputs());
+	public void setRecipe(IRecipeLayoutBuilder builder, CompostableRecipe recipe, List<? extends IFocus<?>> focuses) {
+		builder.addSlot(inputSlot, RecipeIngredientRole.INPUT, 0, 0)
+			.addIngredients(recipe.getInputs());
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, CompostableRecipe recipe, IIngredients ingredients) {
-		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-		guiItemStacks.init(inputSlot, true, 0, 0);
-		guiItemStacks.set(ingredients);
-	}
-
-	@Override
-	public void draw(CompostableRecipe recipe, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(CompostableRecipe recipe, IRecipeLayoutView recipeLayoutView, PoseStack poseStack, double mouseX, double mouseY) {
 		slot.draw(poseStack);
 
 		float chance = recipe.getChance();

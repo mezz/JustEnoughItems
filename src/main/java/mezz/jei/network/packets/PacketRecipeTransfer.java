@@ -1,26 +1,34 @@
 package mezz.jei.network.packets;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.network.FriendlyByteBuf;
-
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
 import mezz.jei.transfer.BasicRecipeTransferHandlerServer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class PacketRecipeTransfer extends PacketJei {
-	public final Map<Integer, Integer> recipeMap;
-	public final List<Integer> craftingSlots;
-	public final List<Integer> inventorySlots;
+	public final Map<IRecipeSlotView, Slot> recipeSlotToInventorySlotMap;
+	public final List<Slot> craftingSlots;
+	public final List<Slot> inventorySlots;
 	private final boolean maxTransfer;
 	private final boolean requireCompleteSets;
 
-	public PacketRecipeTransfer(Map<Integer, Integer> recipeMap, List<Integer> craftingSlots, List<Integer> inventorySlots, boolean maxTransfer, boolean requireCompleteSets) {
-		this.recipeMap = recipeMap;
+	public PacketRecipeTransfer(
+		Map<IRecipeSlotView, Slot> recipeSlotToInventorySlotMap,
+		List<Slot> craftingSlots,
+		List<Slot> inventorySlots,
+		boolean maxTransfer,
+		boolean requireCompleteSets
+	) {
+		this.recipeSlotToInventorySlotMap = recipeSlotToInventorySlotMap;
 		this.craftingSlots = craftingSlots;
 		this.inventorySlots = inventorySlots;
 		this.maxTransfer = maxTransfer;
@@ -34,20 +42,20 @@ public class PacketRecipeTransfer extends PacketJei {
 
 	@Override
 	public void writePacketData(FriendlyByteBuf buf) {
-		buf.writeVarInt(recipeMap.size());
-		for (Map.Entry<Integer, Integer> recipeMapEntry : recipeMap.entrySet()) {
-			buf.writeVarInt(recipeMapEntry.getKey());
-			buf.writeVarInt(recipeMapEntry.getValue());
+		buf.writeVarInt(recipeSlotToInventorySlotMap.size());
+		for (Map.Entry<IRecipeSlotView, Slot> recipeMapEntry : recipeSlotToInventorySlotMap.entrySet()) {
+			buf.writeVarInt(recipeMapEntry.getKey().getSlotIndex());
+			buf.writeVarInt(recipeMapEntry.getValue().index);
 		}
 
 		buf.writeVarInt(craftingSlots.size());
-		for (Integer craftingSlot : craftingSlots) {
-			buf.writeVarInt(craftingSlot);
+		for (Slot craftingSlot : craftingSlots) {
+			buf.writeVarInt(craftingSlot.index);
 		}
 
 		buf.writeVarInt(inventorySlots.size());
-		for (Integer inventorySlot : inventorySlots) {
-			buf.writeVarInt(inventorySlot);
+		for (Slot inventorySlot : inventorySlots) {
+			buf.writeVarInt(inventorySlot.index);
 		}
 
 		buf.writeBoolean(maxTransfer);
@@ -55,31 +63,44 @@ public class PacketRecipeTransfer extends PacketJei {
 	}
 
 	public static void readPacketData(FriendlyByteBuf buf, Player player) {
-		int recipeMapSize = buf.readVarInt();
-		Map<Integer, Integer> recipeMap = new HashMap<>();
-		for (int i = 0; i < recipeMapSize; i++) {
+		AbstractContainerMenu container = player.containerMenu;
+
+		int recipeSlotsSize = buf.readVarInt();
+		List<Tuple<Slot, Slot>> recipeSlotToSourceSlots = new ArrayList<>(recipeSlotsSize);
+		for (int i = 0; i < recipeSlotsSize; i++) {
 			int slotIndex = buf.readVarInt();
-			int recipeItem = buf.readVarInt();
-			recipeMap.put(slotIndex, recipeItem);
+			Slot recipeSlot = container.getSlot(slotIndex);
+			int inventoryIndex = buf.readVarInt();
+			Slot inventorySlot = container.getSlot(inventoryIndex);
+			recipeSlotToSourceSlots.add(new Tuple<>(recipeSlot, inventorySlot));
 		}
 
 		int craftingSlotsSize = buf.readVarInt();
-		List<Integer> craftingSlots = new ArrayList<>();
+		List<Slot> craftingSlots = new ArrayList<>(craftingSlotsSize);
 		for (int i = 0; i < craftingSlotsSize; i++) {
 			int slotIndex = buf.readVarInt();
-			craftingSlots.add(slotIndex);
+			Slot slot = container.getSlot(slotIndex);
+			craftingSlots.add(slot);
 		}
 
 		int inventorySlotsSize = buf.readVarInt();
-		List<Integer> inventorySlots = new ArrayList<>();
+		List<Slot> inventorySlots = new ArrayList<>();
 		for (int i = 0; i < inventorySlotsSize; i++) {
 			int slotIndex = buf.readVarInt();
-			inventorySlots.add(slotIndex);
+			Slot slot = container.getSlot(slotIndex);
+			inventorySlots.add(slot);
 		}
 		boolean maxTransfer = buf.readBoolean();
 		boolean requireCompleteSets = buf.readBoolean();
 
-		BasicRecipeTransferHandlerServer.setItems(player, recipeMap, craftingSlots, inventorySlots, maxTransfer, requireCompleteSets);
+		BasicRecipeTransferHandlerServer.setItems(
+			player,
+			recipeSlotToSourceSlots,
+			craftingSlots,
+			inventorySlots,
+			maxTransfer,
+			requireCompleteSets
+		);
 	}
 
 }

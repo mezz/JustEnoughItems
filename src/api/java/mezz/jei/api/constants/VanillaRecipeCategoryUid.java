@@ -15,7 +15,6 @@ import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
-import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICustomCraftingCategoryExtension;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IRecipeRegistration;
 
@@ -28,9 +27,8 @@ public final class VanillaRecipeCategoryUid {
 	 *
 	 * Automatically includes all vanilla and Forge recipes.
 	 *
-	 * To add a shaped recipe extension to this category, it must implement {@link ICraftingCategoryExtension#getSize()}.
-	 *
-	 * To override the normal behavior of the crafting recipe category, you can implement {@link ICustomCraftingCategoryExtension}
+	 * To add a shaped recipe extension to this category, it must implement
+	 * {@link ICraftingCategoryExtension#getWidth()} and {@link ICraftingCategoryExtension#getHeight()}.
 	 */
 	public static final ResourceLocation CRAFTING = new ResourceLocation(ModIds.MINECRAFT_ID, "crafting");
 

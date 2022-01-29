@@ -33,6 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -278,7 +279,7 @@ public class IngredientListBatchRenderer {
 	}
 
 	private <T> void renderIngredientType(PoseStack poseStack, IIngredientType<T> ingredientType) {
-		List<IngredientListElementRenderer<T>> slots = renderOther.get(ingredientType);
+		Collection<IngredientListElementRenderer<T>> slots = renderOther.get(ingredientType);
 		IngredientInfo<T> ingredientInfo = ingredientManager.getIngredientInfo(ingredientType);
 		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
 		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
@@ -291,12 +292,17 @@ public class IngredientListBatchRenderer {
 		T ingredient = slot.getIngredient();
 		Rect2i area = slot.getArea();
 
+		int slotPadding = slot.getPadding();
 		if (worldConfig.isEditModeEnabled()) {
-			renderEditMode(poseStack, area, slot.getPadding(), editModeConfig, ingredient, ingredientHelper);
+			renderEditMode(poseStack, area, slotPadding, editModeConfig, ingredient, ingredientHelper);
 			RenderSystem.enableBlend();
 		}
 		try {
-			ingredientRenderer.render(poseStack, area.getX() + slot.getPadding(), area.getY() + slot.getPadding(), ingredient);
+			int xPosition = area.getX() + slotPadding;
+			int yPosition = area.getY() + slotPadding;
+			int width = area.getWidth() - (2 * slotPadding);
+			int height = area.getHeight() - (2 * slotPadding);
+			ingredientRenderer.render(poseStack, xPosition, yPosition, width, height, ingredient);
 		} catch (RuntimeException | LinkageError e) {
 			throw ErrorUtil.createRenderIngredientException(e, ingredient);
 		}

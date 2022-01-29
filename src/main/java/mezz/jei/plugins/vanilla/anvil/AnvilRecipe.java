@@ -1,27 +1,30 @@
 package mezz.jei.plugins.vanilla.anvil;
 
-import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import net.minecraft.world.item.ItemStack;
 
-import com.google.common.collect.ImmutableList;
-
 public class AnvilRecipe implements IJeiAnvilRecipe {
-	private final List<List<ItemStack>> inputs;
-	private final List<List<ItemStack>> outputs;
+	private final List<ItemStack> leftInputs;
+	private final List<ItemStack> rightInputs;
+	private final List<ItemStack> outputs;
 
-	public AnvilRecipe(List<ItemStack> leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
-		this.inputs = ImmutableList.of(leftInput, rightInputs);
-		this.outputs = Collections.singletonList(outputs);
+	public AnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs) {
+		this.leftInputs = leftInputs;
+		this.rightInputs = rightInputs;
+		this.outputs = outputs;
 	}
 
-	public List<List<ItemStack>> getInputs() {
-		return inputs;
+	public List<ItemStack> getLeftInputs() {
+		return leftInputs;
 	}
 
-	public List<List<ItemStack>> getOutputs() {
+	public List<ItemStack> getRightInputs() {
+		return rightInputs;
+	}
+
+	public List<ItemStack> getOutputs() {
 		return outputs;
 	}
 }

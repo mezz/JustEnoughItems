@@ -20,8 +20,9 @@ import mezz.jei.api.runtime.IJeiRuntime;
 public interface IRecipeManager {
 	/**
 	 * Returns a new focus.
+	 * @since JEI 9.3.0
 	 */
-	<V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient);
+	<V> IFocus<V> createFocus(RecipeIngredientRole role, V ingredient);
 
 	/**
 	 * Returns a list of Recipe Categories for the focus.
@@ -30,6 +31,15 @@ public interface IRecipeManager {
 	 * @since JEI 7.7.1
 	 */
 	<V> List<IRecipeCategory<?>> getRecipeCategories(@Nullable IFocus<V> focus, boolean includeHidden);
+
+	/**
+	 * Returns a list of Recipe Categories for multiple focuses.
+	 *
+	 * @param focuses       an optional collection of search focus to narrow the results on
+	 * @param includeHidden set true to include recipe categories that are hidden or have no recipes.
+	 * @since JEI 9.3.0
+	 */
+	List<IRecipeCategory<?>> getRecipeCategories(Collection<? extends IFocus<?>> focuses, boolean includeHidden);
 
 	/**
 	 * Returns a list of Recipe Categories for the focus
@@ -56,6 +66,7 @@ public interface IRecipeManager {
 	 * @since JEI 7.7.1
 	 */
 	<T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus, boolean includeHidden);
+	<T> List<T> getRecipes(IRecipeCategory<T> recipeCategory, List<? extends IFocus<?>> focuses, boolean includeHidden);
 
 	/**
 	 * Returns an unmodifiable collection of ingredients that can craft the recipes from recipeCategory.
@@ -120,4 +131,13 @@ public interface IRecipeManager {
 	 */
 	@Deprecated
 	<T> void addRecipe(T recipe, ResourceLocation recipeCategoryUid);
+
+	/**
+	 * Returns a new focus.
+	 * @deprecated since JEI 9.3.0. Use {@link #createFocus(RecipeIngredientRole, Object)} instead.
+	 */
+	@Deprecated
+	default <V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient) {
+		return createFocus(mode.toRole(), ingredient);
+	}
 }

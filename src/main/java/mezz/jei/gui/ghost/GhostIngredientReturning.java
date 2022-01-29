@@ -65,7 +65,7 @@ public class GhostIngredientReturning<T> {
 		double y = start.y + Math.round(dy * percent);
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		itemRenderer.blitOffset += 150.0F;
-		ingredientRenderer.render(poseStack, (int) x, (int) y, ingredient);
+		ingredientRenderer.render(poseStack, (int) x, (int) y, 16, 16, ingredient);
 		itemRenderer.blitOffset -= 150.0F;
 	}
 

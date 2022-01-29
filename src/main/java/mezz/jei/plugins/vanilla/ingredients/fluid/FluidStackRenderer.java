@@ -31,14 +31,11 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 
 public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	private static final NumberFormat nf = NumberFormat.getIntegerInstance();
-	private static final int TEX_WIDTH = 16;
-	private static final int TEX_HEIGHT = 16;
+	private static final int TEXTURE_SIZE = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 
 	private final int capacityMb;
 	private final TooltipMode tooltipMode;
-	private final int width;
-	private final int height;
 	@Nullable
 	private final IDrawable overlay;
 
@@ -49,26 +46,24 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	public FluidStackRenderer() {
-		this(FluidAttributes.BUCKET_VOLUME, TooltipMode.ITEM_LIST, TEX_WIDTH, TEX_HEIGHT, null);
+		this(FluidAttributes.BUCKET_VOLUME, TooltipMode.ITEM_LIST, null);
 	}
 
-	public FluidStackRenderer(int capacityMb, boolean showCapacity, int width, int height, @Nullable IDrawable overlay) {
-		this(capacityMb, showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT, width, height, overlay);
+	public FluidStackRenderer(int capacityMb, boolean showCapacity, @Nullable IDrawable overlay) {
+		this(capacityMb, showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT, overlay);
 	}
 
-	public FluidStackRenderer(int capacityMb, TooltipMode tooltipMode, int width, int height, @Nullable IDrawable overlay) {
+	public FluidStackRenderer(int capacityMb, TooltipMode tooltipMode, @Nullable IDrawable overlay) {
 		this.capacityMb = capacityMb;
 		this.tooltipMode = tooltipMode;
-		this.width = width;
-		this.height = height;
 		this.overlay = overlay;
 	}
 
 	@Override
-	public void render(PoseStack poseStack, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
+	public void render(PoseStack poseStack, final int xPosition, final int yPosition, final int width, final int height, @Nullable FluidStack fluidStack) {
 		RenderSystem.enableBlend();
 
-		drawFluid(poseStack, xPosition, yPosition, fluidStack);
+		drawFluid(poseStack, xPosition, yPosition, width, height, fluidStack);
 
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 
@@ -82,7 +77,12 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		RenderSystem.disableBlend();
 	}
 
-	private void drawFluid(PoseStack poseStack, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
+	@Override
+	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable FluidStack ingredient) {
+		render(stack, xPosition, yPosition, 16, 16, ingredient);
+	}
+
+	private void drawFluid(PoseStack poseStack, final int xPosition, final int yPosition, final int width, final int height, @Nullable FluidStack fluidStack) {
 		if (fluidStack == null) {
 			return;
 		}
@@ -113,22 +113,22 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		Matrix4f matrix = poseStack.last().pose();
 		setGLColorFromInt(color);
 
-		final int xTileCount = tiledWidth / TEX_WIDTH;
-		final int xRemainder = tiledWidth - (xTileCount * TEX_WIDTH);
-		final int yTileCount = scaledAmount / TEX_HEIGHT;
-		final int yRemainder = scaledAmount - (yTileCount * TEX_HEIGHT);
+		final int xTileCount = tiledWidth / TEXTURE_SIZE;
+		final int xRemainder = tiledWidth - (xTileCount * TEXTURE_SIZE);
+		final int yTileCount = scaledAmount / TEXTURE_SIZE;
+		final int yRemainder = scaledAmount - (yTileCount * TEXTURE_SIZE);
 
 		final int yStart = yPosition + tiledHeight;
 
 		for (int xTile = 0; xTile <= xTileCount; xTile++) {
 			for (int yTile = 0; yTile <= yTileCount; yTile++) {
-				int width = (xTile == xTileCount) ? xRemainder : TEX_WIDTH;
-				int height = (yTile == yTileCount) ? yRemainder : TEX_HEIGHT;
-				int x = xPosition + (xTile * TEX_WIDTH);
-				int y = yStart - ((yTile + 1) * TEX_HEIGHT);
+				int width = (xTile == xTileCount) ? xRemainder : TEXTURE_SIZE;
+				int height = (yTile == yTileCount) ? yRemainder : TEXTURE_SIZE;
+				int x = xPosition + (xTile * TEXTURE_SIZE);
+				int y = yStart - ((yTile + 1) * TEXTURE_SIZE);
 				if (width > 0 && height > 0) {
-					int maskTop = TEX_HEIGHT - height;
-					int maskRight = TEX_WIDTH - width;
+					int maskTop = TEXTURE_SIZE - height;
+					int maskRight = TEXTURE_SIZE - width;
 
 					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 100);
 				}

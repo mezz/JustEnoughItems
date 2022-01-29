@@ -6,15 +6,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class CompostableRecipe {
-	private final List<List<ItemStack>> inputs;
+	private final List<ItemStack> inputs;
 	private final float chance;
 
 	public CompostableRecipe(ItemStack input, float chance) {
-		this.inputs = Collections.singletonList(Collections.singletonList(input));
+		this.inputs = Collections.singletonList(input);
 		this.chance = chance;
 	}
 
-	public List<List<ItemStack>> getInputs() {
+	public List<ItemStack> getInputs() {
 		return inputs;
 	}
 

@@ -1,16 +1,16 @@
 package mezz.jei.api.recipe.transfer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-
-import mezz.jei.api.gui.IRecipeLayout;
 
 /**
  * A reason that a recipe transfer couldn't happen.
  *
  * Recipe transfer errors can be created with {@link IRecipeTransferHandlerHelper} or you can implement your own.
- * These errors are returned from {@link IRecipeTransferHandler#transferRecipe(AbstractContainerMenu, Object, IRecipeLayout, Player, boolean, boolean)}.
+ * These errors are returned from {@link IRecipeTransferHandler#transferRecipe(AbstractContainerMenu, Object, IRecipeSlotsView, Player, boolean, boolean)}.
  */
 public interface IRecipeTransferError {
 	enum Type {
@@ -39,6 +39,22 @@ public interface IRecipeTransferError {
 
 	/**
 	 * Called on {@link Type#USER_FACING} errors.
+	 *
+	 * @since JEI 9.3.0
 	 */
-	void showError(PoseStack stack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY);
+	default void showError(PoseStack stack, int mouseX, int mouseY, int recipeX, int recipeY) {
+
+	}
+
+	/**
+	 * Called on {@link Type#USER_FACING} errors.
+	 *
+	 * @deprecated since JEI 9.3.0.
+	 * {@link IRecipeLayout} is being phased-out.
+	 * Use {@link #showError(PoseStack, int, int, int, int)} instead.
+	 */
+	@Deprecated
+	default void showError(PoseStack stack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
+
+	}
 }

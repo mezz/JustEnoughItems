@@ -2,33 +2,32 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.IRecipeLayoutView;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
+import mezz.jei.config.Constants;
+import mezz.jei.gui.CraftingGridHelper;
+import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
+import mezz.jei.ingredients.Ingredients;
+import mezz.jei.recipes.ExtendableRecipeCategoryHelper;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraftforge.common.util.Size2i;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.resources.ResourceLocation;
-
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
-import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
-import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
-import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
-import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICustomCraftingCategoryExtension;
-import mezz.jei.config.Constants;
-import mezz.jei.recipes.ExtendableRecipeCategoryHelper;
 
 public class CraftingRecipeCategory implements IExtendableRecipeCategory<CraftingRecipe, ICraftingCategoryExtension> {
 	private static final int craftOutputSlot = 0;
@@ -48,7 +47,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 		background = guiHelper.createDrawable(location, 0, 60, width, height);
 		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Blocks.CRAFTING_TABLE));
 		localizedName = new TranslatableComponent("gui.jei.category.craftingTable");
-		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1);
+		craftingGridHelper = new CraftingGridHelper(craftInputSlot1, craftOutputSlot);
 	}
 
 	@Override
@@ -77,46 +76,32 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, CraftingRecipe recipe, IIngredients ingredients) {
-		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-
-		guiItemStacks.init(craftOutputSlot, false, 94, 18);
-
-		for (int y = 0; y < 3; ++y) {
-			for (int x = 0; x < 3; ++x) {
-				int index = craftInputSlot1 + x + (y * 3);
-				guiItemStacks.init(index, true, x * 18, y * 18);
-			}
-		}
-
+	public void setRecipe(IRecipeLayoutBuilder builder, CraftingRecipe recipe, List<? extends IFocus<?>> focuses) {
 		ICraftingCategoryExtension recipeExtension = this.extendableHelper.getRecipeExtension(recipe);
+		recipeExtension.setRecipe(builder, craftingGridHelper, focuses);
 
-		if (recipeExtension instanceof ICustomCraftingCategoryExtension customExtension) {
-			customExtension.setRecipe(recipeLayout, ingredients);
+		// temporary hack to detect if the plugin needs legacy support
+		if (builder instanceof RecipeLayoutBuilder b && b.isUsed()) {
 			return;
 		}
+		legacySetRecipe(builder, recipeExtension);
+	}
 
+	@SuppressWarnings("deprecation")
+	private void legacySetRecipe(IRecipeLayoutBuilder builder, ICraftingCategoryExtension recipeExtension) {
+		Ingredients ingredients = new Ingredients();
+		recipeExtension.setIngredients(ingredients);
 		List<List<ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
 		List<List<ItemStack>> outputs = ingredients.getOutputs(VanillaTypes.ITEM);
 
-		Size2i size = recipeExtension.getSize();
-		if (size != null && size.width > 0 && size.height > 0) {
-			craftingGridHelper.setInputs(guiItemStacks, inputs, size.width, size.height);
-		} else {
-			craftingGridHelper.setInputs(guiItemStacks, inputs);
-			recipeLayout.setShapeless();
-		}
-		guiItemStacks.set(craftOutputSlot, outputs.get(0));
+		int width = recipeExtension.getWidth();
+		int height = recipeExtension.getHeight();
+		craftingGridHelper.setInputs(builder, VanillaTypes.ITEM, inputs, width, height);
+		craftingGridHelper.setOutputs(builder, VanillaTypes.ITEM, outputs.get(0));
 	}
 
 	@Override
-	public void setIngredients(CraftingRecipe recipe, IIngredients ingredients) {
-		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
-		extension.setIngredients(ingredients);
-	}
-
-	@Override
-	public void draw(CraftingRecipe recipe, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(CraftingRecipe recipe, IRecipeLayoutView recipeLayoutView, PoseStack poseStack, double mouseX, double mouseY) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
 		int recipeWidth = this.background.getWidth();
 		int recipeHeight = this.background.getHeight();

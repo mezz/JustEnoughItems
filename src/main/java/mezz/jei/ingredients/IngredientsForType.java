@@ -4,6 +4,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 
 import java.util.List;
 
+@Deprecated
 public class IngredientsForType<T> {
 	private final IIngredientType<T> ingredientType;
 	private List<List<T>> ingredients;
