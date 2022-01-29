@@ -45,6 +45,7 @@ public interface IRecipeSlotView {
 
 	/**
 	 * Returns the type of focus that matches this ingredient.
+	 *
 	 * @since JEI 9.3.0
 	 */
 	RecipeIngredientRole getRole();
@@ -54,6 +55,8 @@ public interface IRecipeSlotView {
 	 * This is used by recipe transfer errors to turn missing ingredient backgrounds to red, but can be used for other purposes.
 	 *
 	 * @see IRecipeTransferHandlerHelper#createUserErrorForMissingSlots(Component, Collection).
+	 *
+	 * @since JEI 9.3.0
 	 */
 	void drawHighlight(PoseStack stack, int color, int xOffset, int yOffset);
 }

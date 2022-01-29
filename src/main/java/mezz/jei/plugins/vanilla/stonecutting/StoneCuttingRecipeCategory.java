@@ -62,21 +62,6 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRe
 		return icon;
 	}
 
-//	@Override
-//	public void setIngredients(StonecutterRecipe recipe, IIngredients ingredients) {
-//		ingredients.setInputIngredients(recipe.getIngredients());
-//		ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
-//	}
-//
-//	@Override
-//	public void setRecipe(IRecipeLayout recipeLayout, StonecutterRecipe recipe, IIngredients ingredients) {
-//		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-//		guiItemStacks.init(inputSlot, true, 0, 8);
-//		guiItemStacks.init(outputSlot, false, 60, 8);
-//
-//		guiItemStacks.set(ingredients);
-//	}
-
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, StonecutterRecipe recipe, List<? extends IFocus<?>> focuses) {
 		builder.addSlot(inputSlot, RecipeIngredientRole.INPUT, 0, 8)

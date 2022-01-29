@@ -53,23 +53,6 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
 		return icon;
 	}
 
-//	@Override
-//	public void setIngredients(UpgradeRecipe recipe, IIngredients ingredients) {
-//		ingredients.setInputIngredients(Arrays.asList(recipe.base, recipe.addition));
-//		ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
-//	}
-//
-//	@Override
-//	public void setRecipe(IRecipeLayout recipeLayout, UpgradeRecipe recipe, IIngredients ingredients) {
-//		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-//
-//		guiItemStacks.init(0, true, 0, 0);
-//		guiItemStacks.init(1, true, 49, 0);
-//		guiItemStacks.init(2, false, 107, 0);
-//
-//		guiItemStacks.set(ingredients);
-//	}
-
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, UpgradeRecipe recipe, List<? extends IFocus<?>> focuses) {
 		builder.addSlot(0, RecipeIngredientRole.INPUT, 0, 0)
