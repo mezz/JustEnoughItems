@@ -1,6 +1,7 @@
 package mezz.jei.recipes;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IFocus;
@@ -37,14 +38,14 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 		ErrorUtil.assertMainThread();
 
-		internal.addRecipes(List.of(recipe), recipeCategoryUid);
+		internal.addRecipe(recipe, recipeCategoryUid);
 	}
 
 	@Override
 	@Nullable
 	public IRecipeCategory<?> getRecipeCategory(ResourceLocation recipeCategoryUid, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		return internal.getRecipeCategoriesStream(List.of(recipeCategoryUid), null, includeHidden)
+		return internal.getRecipeCategoriesStream(ImmutableSet.of(recipeCategoryUid), null, includeHidden)
 			.findFirst()
 			.orElse(null);
 	}

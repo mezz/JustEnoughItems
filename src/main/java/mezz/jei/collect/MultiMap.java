@@ -1,9 +1,7 @@
 package mezz.jei.collect;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -24,17 +22,12 @@ public class MultiMap<K, V, T extends Collection<V>> {
 		this.collectionMappingFunction = (k -> collectionSupplier.get());
 	}
 
-	public Collection<V> get(K key) {
-		T collection = map.get(key);
-		if (collection != null) {
-			return Collections.unmodifiableCollection(collection);
-		}
-		return List.of();
+	public T get(K key) {
+		return map.computeIfAbsent(key, collectionMappingFunction);
 	}
 
 	public boolean put(K key, V value) {
-		T collection = map.computeIfAbsent(key, collectionMappingFunction);
-		return collection.add(value);
+		return get(key).add(value);
 	}
 
 	public boolean remove(K key, V value) {
@@ -65,7 +58,12 @@ public class MultiMap<K, V, T extends Collection<V>> {
 
 	public ImmutableMultimap<K, V> toImmutable() {
 		ImmutableMultimap.Builder<K, V> builder = ImmutableMultimap.builder();
-		map.forEach(builder::putAll);
+		for (Map.Entry<K, T> entry : map.entrySet()) {
+			K key = entry.getKey();
+			for (V value : entry.getValue()) {
+				builder.put(key, value);
+			}
+		}
 		return builder.build();
 	}
 }

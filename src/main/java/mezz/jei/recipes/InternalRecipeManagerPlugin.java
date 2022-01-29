@@ -2,12 +2,13 @@ package mezz.jei.recipes;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import com.google.common.collect.ImmutableCollection;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.resources.ResourceLocation;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
@@ -23,23 +24,26 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 	private final RecipeCategoryDataMap recipeCategoriesMap;
 	private final RecipeMap recipeInputMap;
 	private final RecipeMap recipeOutputMap;
+	private final Supplier<Stream<IRecipeCategory<?>>> visibleRecipeCategoriesSupplier;
 
 	public InternalRecipeManagerPlugin(
 		ImmutableMultimap<String, ResourceLocation> categoriesForRecipeCatalystKeys,
 		IIngredientManager ingredientManager,
 		RecipeCategoryDataMap recipeCategoriesMap,
 		RecipeMap recipeInputMap,
-		RecipeMap recipeOutputMap
+		RecipeMap recipeOutputMap,
+		Supplier<Stream<IRecipeCategory<?>>> visibleRecipeCategoriesSupplier
 	) {
 		this.categoriesForRecipeCatalystKeys = categoriesForRecipeCatalystKeys;
 		this.ingredientManager = ingredientManager;
 		this.recipeCategoriesMap = recipeCategoriesMap;
 		this.recipeInputMap = recipeInputMap;
 		this.recipeOutputMap = recipeOutputMap;
+		this.visibleRecipeCategoriesSupplier = visibleRecipeCategoriesSupplier;
 	}
 
 	@Override
-	public <V> List<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus) {
+	public <V> ImmutableList<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus) {
 		focus = Focus.check(focus);
 		V ingredient = focus.getValue();
 
@@ -49,8 +53,14 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 		};
 	}
 
+	private ImmutableList<ResourceLocation> getRecipeCategories() {
+		return visibleRecipeCategoriesSupplier.get()
+			.map(IRecipeCategory::getUid)
+			.collect(ImmutableList.toImmutableList());
+	}
+
 	@Override
-	public <T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
+	public <T, V> ImmutableList<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
 		focus = Focus.check(focus);
 		V ingredient = focus.getValue();
 
@@ -61,15 +71,15 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 		}
 	}
 
-	private <T, V> List<T> getInputRecipes(IRecipeCategory<T> recipeCategory, V ingredient) {
-		final List<T> recipes = recipeInputMap.getRecipes(recipeCategory, ingredient);
+	private <T, V> ImmutableList<T> getInputRecipes(IRecipeCategory<T> recipeCategory, V ingredient) {
+		final ImmutableList<T> recipes = recipeInputMap.getRecipes(recipeCategory, ingredient);
 
 		if (isCatalystIngredient(recipeCategory, ingredient)) {
 			RecipeCategoryData<T> categoryData = recipeCategoriesMap.get(recipeCategory);
 			List<T> recipesForCategory = categoryData.getRecipes();
 			return Stream.concat(recipes.stream(), recipesForCategory.stream())
 				.distinct()
-				.toList();
+				.collect(ImmutableList.toImmutableList());
 		}
 
 		return recipes;
@@ -78,9 +88,10 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 	private <T, V> boolean isCatalystIngredient(IRecipeCategory<T> recipeCategory, V ingredient) {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		ResourceLocation recipeCategoryUid = recipeCategory.getUid();
-		String ingredientUid = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
-		ImmutableCollection<ResourceLocation> catalystCategories = categoriesForRecipeCatalystKeys.get(ingredientUid);
-		return catalystCategories.contains(recipeCategoryUid);
+		List<String> ingredientUids = IngredientInformationUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Recipe);
+		return ingredientUids.stream()
+			.map(categoriesForRecipeCatalystKeys::get)
+			.anyMatch(catalystCategories -> catalystCategories.contains(recipeCategoryUid));
 	}
 
 	@Override
