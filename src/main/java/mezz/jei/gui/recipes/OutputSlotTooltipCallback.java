@@ -1,7 +1,7 @@
 package mezz.jei.gui.recipes;
 
-import mezz.jei.api.gui.ingredient.IGuiIngredient;
-import mezz.jei.api.gui.ingredient.IGuiIngredientTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
-public class OutputSlotTooltipCallback implements IGuiIngredientTooltipCallback {
+public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 	private final ResourceLocation recipeName;
 	private final IModIdHelper modIdHelper;
 	private final IIngredientManager ingredientManager;
@@ -31,12 +31,12 @@ public class OutputSlotTooltipCallback implements IGuiIngredientTooltipCallback 
 	}
 
 	@Override
-	public void onTooltip(IGuiIngredient<?> guiIngredient, List<Component> tooltip) {
-		Object displayedIngredient = guiIngredient.getDisplayedIngredient();
+	public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
+		Object displayedIngredient = recipeSlotView.getDisplayedIngredient();
 		if (displayedIngredient == null) {
 			return;
 		}
-		if (guiIngredient.getRole() != RecipeIngredientRole.OUTPUT) {
+		if (recipeSlotView.getRole() != RecipeIngredientRole.OUTPUT) {
 			return;
 		}
 

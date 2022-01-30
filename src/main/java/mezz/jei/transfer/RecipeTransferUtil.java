@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.gui.ingredients.RecipeSlots;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;
@@ -71,8 +72,8 @@ public final class RecipeTransferUtil {
 			return RecipeTransferErrorInternal.INSTANCE;
 		}
 
-		RecipeSlotsView recipeSlotsView = recipeLayout.createRecipeSlotsView();
-		return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlotsView, player, maxTransfer, doTransfer);
+		RecipeSlots recipeSlots = recipeLayout.createRecipeSlotsView();
+		return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlots, player, maxTransfer, doTransfer);
 	}
 
 	public static boolean allowsTransfer(@Nullable IRecipeTransferError error) {

@@ -10,14 +10,14 @@ import net.minecraft.network.chat.Component;
  * Note that this works on anything that implements {@link IGuiIngredientGroup},
  * like {@link IGuiItemStackGroup} and {@link IGuiFluidStackGroup}.
  *
- * @deprecated since JEI 9.3.0. Use {@link IGuiIngredientTooltipCallback} instead.
+ * @deprecated since JEI 9.3.0. Use {@link IRecipeSlotTooltipCallback} instead.
  */
 @Deprecated
 @FunctionalInterface
 public interface ITooltipCallback<T> {
 	/**
 	 * Change the tooltip for an ingredient.
-	 * @deprecated since JEI 9.3.0. Use {@link IGuiIngredientTooltipCallback#onTooltip(IGuiIngredient, List)} instead.
+	 * @deprecated since JEI 9.3.0. Use {@link IRecipeSlotTooltipCallback#onTooltip(IGuiIngredient, List)} instead.
 	 */
 	@Deprecated
 	void onTooltip(int slotIndex, boolean input, T ingredient, List<Component> tooltip);

@@ -10,6 +10,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.Slot;
 
 /**
  * Represents one drawn ingredient that is part of a recipe.
@@ -37,7 +38,7 @@ public interface IGuiIngredient<T> {
 	List<T> getAllIngredients();
 
 	/**
-	 * Returns the recipe slot index of this ingredient.
+	 * Returns the recipe slot index {@link Slot#index} of this ingredient.
 	 *
 	 * @since JEI 9.3.0
 	 */

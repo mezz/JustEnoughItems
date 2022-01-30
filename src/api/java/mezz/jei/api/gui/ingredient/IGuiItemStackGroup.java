@@ -2,10 +2,14 @@ package mezz.jei.api.gui.ingredient;
 
 import org.jetbrains.annotations.Nullable;
 
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.api.gui.IRecipeLayout;
+
+import java.util.List;
 
 /**
  * IGuiItemStackGroup displays ItemStacks in a gui.
@@ -13,7 +17,11 @@ import mezz.jei.api.gui.IRecipeLayout;
  * If multiple ItemStacks are set, they will be displayed in rotation.
  *
  * Get an instance from {@link IRecipeLayout#getItemStacks()}.
+ *
+ * @deprecated since JEI 9.3.0.
+ * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
  */
+@Deprecated
 public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 
 	/**

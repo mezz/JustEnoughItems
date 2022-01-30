@@ -19,7 +19,7 @@ import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
-import mezz.jei.gui.ingredients.GuiIngredient;
+import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.ClickedIngredient;
@@ -245,7 +245,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			recipeLayout.drawRecipe(poseStack, mouseX, mouseY);
 		}
 
-		GuiIngredient<?> hoveredRecipeCatalyst = recipeCatalysts.draw(poseStack, mouseX, mouseY);
+		RecipeSlot hoveredRecipeCatalyst = recipeCatalysts.draw(poseStack, mouseX, mouseY);
 
 		recipeGuiTabs.draw(minecraft, poseStack, mouseX, mouseY);
 
@@ -294,7 +294,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	private static Optional<IClickedIngredient<?>> getRecipeLayoutIngredientUnderMouse(RecipeLayout<?> recipeLayout, double mouseX, double mouseY) {
-		return recipeLayout.getGuiIngredientUnderMouse(mouseX, mouseY)
+		return recipeLayout.getRecipeSlotUnderMouse(mouseX, mouseY)
 			.flatMap(clicked ->
 				Optional.ofNullable(clicked.getDisplayedIngredient())
 					.flatMap(displayedIngredient -> {

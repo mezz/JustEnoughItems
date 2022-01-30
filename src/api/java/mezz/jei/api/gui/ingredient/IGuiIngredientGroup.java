@@ -26,7 +26,11 @@ import mezz.jei.api.registration.IModIngredientRegistration;
  *
  * @see IGuiItemStackGroup
  * @see IGuiFluidStackGroup
+ *
+ * @deprecated since JEI 9.3.0.
+ * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
  */
+@Deprecated
 public interface IGuiIngredientGroup<T> {
 	/**
 	 * Set a background image to draw behind the ingredient.
@@ -38,7 +42,7 @@ public interface IGuiIngredientGroup<T> {
 	 * Add a callback to alter the tooltip for these ingredients.
 	 * @since JEI 9.3.0
 	 */
-	void addTooltipCallback(IGuiIngredientTooltipCallback tooltipCallback);
+	void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback);
 
 	/**
 	 * Get the ingredients after they have been set.
@@ -107,7 +111,7 @@ public interface IGuiIngredientGroup<T> {
 
 	/**
 	 * Add a callback to alter the tooltip for these ingredients.
-	 * @deprecated since JEI 9.3.0. Use {@link #addTooltipCallback(IGuiIngredientTooltipCallback)} instead.
+	 * @deprecated since JEI 9.3.0. Use {@link #addTooltipCallback(IRecipeSlotTooltipCallback)} instead.
 	 */
 	@Deprecated
 	void addTooltipCallback(ITooltipCallback<T> tooltipCallback);

@@ -1,7 +1,7 @@
 package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IGuiIngredientTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 
@@ -64,6 +64,10 @@ public interface IRecipeLayoutSlotBuilder extends IIngredientAcceptor<IRecipeLay
 	 */
 	IRecipeLayoutSlotBuilder setInnerPadding(int xPadding, int yPadding);
 
-	// TODO: recipe layout slot tooltip callback
-	IRecipeLayoutSlotBuilder addTooltipCallback(IGuiIngredientTooltipCallback tooltipCallback);
+	/**
+	 * Add a callback to alter the tooltip for these ingredients.
+	 *
+	 * @see IRecipeSlotTooltipCallback
+	 */
+	IRecipeLayoutSlotBuilder addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback);
 }

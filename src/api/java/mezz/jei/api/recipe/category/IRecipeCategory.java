@@ -7,7 +7,7 @@ import java.util.List;
 
 import mezz.jei.api.gui.IRecipeLayoutView;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.ingredient.IGuiIngredientTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
 import net.minecraft.resources.ResourceLocation;
@@ -95,7 +95,7 @@ public interface IRecipeCategory<T> {
 	 * Get the tooltip for whatever's under the mouse.
 	 * Ingredient tooltips are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IGuiIngredientGroup#addTooltipCallback(IGuiIngredientTooltipCallback)}
+	 * To add to ingredient tooltips, see {@link IGuiIngredientGroup#addTooltipCallback(IRecipeSlotTooltipCallback)}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.

@@ -9,7 +9,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayoutView;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IGuiIngredientTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -222,9 +222,9 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			.addIngredient(DebugIngredient.TYPE, new DebugIngredient(2));
 
 		// mixed types
-		IGuiIngredientTooltipCallback tooltipCallback = (guiIngredient, tooltip) -> {
-			int slotIndex = guiIngredient.getSlotIndex();
-			switch (guiIngredient.getRole()) {
+		IRecipeSlotTooltipCallback tooltipCallback = (recipeSlotView, tooltip) -> {
+			int slotIndex = recipeSlotView.getSlotIndex();
+			switch (recipeSlotView.getRole()) {
 				case INPUT -> tooltip.add(new TextComponent(slotIndex + " Input DebugIngredient"));
 				case OUTPUT -> tooltip.add(new TextComponent(slotIndex + " Output DebugIngredient"));
 				case CATALYST -> tooltip.add(new TextComponent(slotIndex + " Catalyst DebugIngredient"));

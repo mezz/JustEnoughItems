@@ -28,11 +28,10 @@ public interface IIngredientRenderer<T> {
 	 * @param width      The width to render the ingredient with.
 	 * @param height  	 The height to render the ingredient with.
 	 * @param ingredient the ingredient to render.
-	 *                   May be null, some renderers (like fluid tanks) will render an empty background.
 	 *
 	 * @since JEI 9.3.0
 	 */
-	default void render(PoseStack stack, int xPosition, int yPosition, int width, int height, @Nullable T ingredient) {
+	default void render(PoseStack stack, int xPosition, int yPosition, int width, int height, T ingredient) {
 		// if not implemented, this calls the old render function for backward compatibility
 		render(stack, xPosition, yPosition, ingredient);
 	}

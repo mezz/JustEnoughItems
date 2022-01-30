@@ -2,6 +2,7 @@ package mezz.jei.api.gui;
 
 import org.jetbrains.annotations.Nullable;
 
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
@@ -11,11 +12,17 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IModIngredientRegistration;
 
+import java.util.List;
+
 /**
  * Represents the layout of one recipe on-screen.
  * It is passed to plugins in {@link IRecipeCategory#setRecipe(IRecipeLayout, Object, IIngredients)}.
  *
  * @see IRecipeLayoutDrawable
+ *
+ * @deprecated since JEI 9.3.0.
+ * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+ * and other methods that do not use {@link IRecipeLayout}.
  */
 public interface IRecipeLayout {
 	/**

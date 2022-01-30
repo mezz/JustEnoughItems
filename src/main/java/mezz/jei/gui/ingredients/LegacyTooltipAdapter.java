@@ -1,7 +1,7 @@
 package mezz.jei.gui.ingredients;
 
-import mezz.jei.api.gui.ingredient.IGuiIngredient;
-import mezz.jei.api.gui.ingredient.IGuiIngredientTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class LegacyTooltipAdapter<T> implements IGuiIngredientTooltipCallback {
+public class LegacyTooltipAdapter<T> implements IRecipeSlotTooltipCallback {
 	private final IIngredientType<T> ingredientType;
 	private final ITooltipCallback<T> legacyTooltipCallback;
 
@@ -20,14 +20,12 @@ public class LegacyTooltipAdapter<T> implements IGuiIngredientTooltipCallback {
 	}
 
 	@Override
-	public void onTooltip(IGuiIngredient<?> guiIngredient, List<Component> tooltip) {
-		Object displayedIngredient = guiIngredient.getDisplayedIngredient();
-		Class<? extends T> ingredientClass = this.ingredientType.getIngredientClass();
-		if (ingredientClass.isInstance(displayedIngredient)) {
-			T castIngredient = ingredientClass.cast(displayedIngredient);
-			int slotIndex = guiIngredient.getSlotIndex();
-			boolean isInput = guiIngredient.getRole() == RecipeIngredientRole.INPUT;
-			legacyTooltipCallback.onTooltip(slotIndex, isInput, castIngredient, tooltip);
+	public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
+		T displayedIngredient = recipeSlotView.getDisplayedIngredient(ingredientType);
+		if (displayedIngredient != null) {
+			int slotIndex = recipeSlotView.getSlotIndex();
+			boolean isInput = recipeSlotView.getRole() == RecipeIngredientRole.INPUT;
+			legacyTooltipCallback.onTooltip(slotIndex, isInput, displayedIngredient, tooltip);
 		}
 	}
 }

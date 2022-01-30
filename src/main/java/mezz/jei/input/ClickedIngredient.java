@@ -1,21 +1,19 @@
 package mezz.jei.input;
 
-import org.jetbrains.annotations.Nullable;
-
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.gui.ingredients.GuiIngredient;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.item.ItemStack;
-
 import com.google.common.base.MoreObjects;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.util.ErrorUtil;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class ClickedIngredient<V> implements IClickedIngredient<V> {
@@ -27,12 +25,12 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	private final boolean canSetFocusWithMouse;
 	private final boolean allowsCheating;
 
-	public static <V> Optional<IClickedIngredient<? extends V>> create(GuiIngredient<V> guiIngredient, boolean allowsCheating, boolean canSetFocusWithMouse) {
-		V displayedIngredient = guiIngredient.getDisplayedIngredient();
+	public static Optional<IClickedIngredient<?>> create(RecipeSlot recipeSlot, boolean allowsCheating, boolean canSetFocusWithMouse) {
+		Object displayedIngredient = recipeSlot.getDisplayedIngredient();
 		if (displayedIngredient == null) {
 			return Optional.empty();
 		}
-		return create(displayedIngredient, guiIngredient.getRect(), allowsCheating, canSetFocusWithMouse);
+		return create(displayedIngredient, recipeSlot.getRect(), allowsCheating, canSetFocusWithMouse);
 	}
 
 	public static <V> Optional<IClickedIngredient<? extends V>> create(V value, @Nullable Rect2i area, boolean allowsCheating, boolean canSetFocusWithMouse) {

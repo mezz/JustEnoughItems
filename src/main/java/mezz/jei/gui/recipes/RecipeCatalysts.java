@@ -4,19 +4,16 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.gui.ingredients.RecipeSlot;
 import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.Internal;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.ClickedIngredient;
@@ -35,7 +32,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 	private final DrawableNineSliceTexture backgroundTab;
 
-	private final List<GuiIngredient<?>> ingredients;
+	private final List<RecipeSlot> recipeSlots;
 	private final DrawableNineSliceTexture slotBackground;
 	private int left = 0;
 	private int top = 0;
@@ -43,7 +40,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	private int height = 0;
 
 	public RecipeCatalysts() {
-		ingredients = new ArrayList<>();
+		recipeSlots = new ArrayList<>();
 
 		Textures textures = Internal.getTextures();
 		backgroundTab = textures.getCatalystTab();
@@ -51,7 +48,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	}
 
 	public boolean isEmpty() {
-		return this.ingredients.isEmpty();
+		return this.recipeSlots.isEmpty();
 	}
 
 	public int getWidth() {
@@ -59,7 +56,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	}
 
 	public void updateLayout(List<Object> ingredients, RecipesGui recipesGui) {
-		this.ingredients.clear();
+		this.recipeSlots.clear();
 
 		if (!ingredients.isEmpty()) {
 			Rect2i recipeArea = recipesGui.getArea();
@@ -76,16 +73,14 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 			for (int i = 0; i < ingredients.size(); i++) {
 				Object ingredientForSlot = ingredients.get(i);
-				GuiIngredient<Object> guiIngredient = createGuiIngredient(ingredientForSlot, i, maxIngredientsPerColumn);
-				this.ingredients.add(guiIngredient);
+				RecipeSlot recipeSlot = createGuiIngredient(ingredientForSlot, i, maxIngredientsPerColumn);
+				this.recipeSlots.add(recipeSlot);
 			}
 		}
 	}
 
-	private <T> GuiIngredient<T> createGuiIngredient(T ingredient, int index, int maxIngredientsPerColumn) {
+	private <T> RecipeSlot createGuiIngredient(T ingredient, int index, int maxIngredientsPerColumn) {
 		IngredientManager ingredientManager = Internal.getIngredientManager();
-		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		int column = index / maxIngredientsPerColumn;
 		int row = index % maxIngredientsPerColumn;
 		Rect2i rect = new Rect2i(
@@ -94,14 +89,22 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 			ingredientSize,
 			ingredientSize
 		);
-		GuiIngredient<T> guiIngredient = new GuiIngredient<>(index, RecipeIngredientRole.CATALYST, ingredientRenderer, ingredientHelper, rect, 0, 0, 0);
-		guiIngredient.set(Collections.singletonList(ingredient), null);
-		return guiIngredient;
+		RecipeSlot recipeSlot = new RecipeSlot(
+			ingredientManager,
+			RecipeIngredientRole.CATALYST,
+			index,
+			rect,
+			0,
+			0,
+			0
+		);
+		recipeSlot.set(List.of(ingredient), null);
+		return recipeSlot;
 	}
 
 	@Nullable
-	public GuiIngredient<?> draw(PoseStack poseStack, int mouseX, int mouseY) {
-		int ingredientCount = ingredients.size();
+	public RecipeSlot draw(PoseStack poseStack, int mouseX, int mouseY) {
+		int ingredientCount = recipeSlots.size();
 		if (ingredientCount > 0) {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -114,21 +117,21 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 			}
 			RenderSystem.enableDepthTest();
 
-			GuiIngredient<?> hovered = null;
-			for (GuiIngredient<?> guiIngredient : this.ingredients) {
-				if (guiIngredient.isMouseOver(0, 0, mouseX, mouseY)) {
-					hovered = guiIngredient;
+			RecipeSlot hovered = null;
+			for (RecipeSlot recipeSlot : this.recipeSlots) {
+				if (recipeSlot.isMouseOver(mouseX, mouseY)) {
+					hovered = recipeSlot;
 				}
-				guiIngredient.draw(poseStack, 0, 0);
+				recipeSlot.draw(poseStack, 0, 0);
 			}
 			return hovered;
 		}
 		return null;
 	}
 
-	private Optional<GuiIngredient<?>> getHovered(double mouseX, double mouseY) {
-		return this.ingredients.stream()
-			.filter(guiIngredient -> guiIngredient.isMouseOver(0, 0, mouseX, mouseY))
+	private Optional<RecipeSlot> getHovered(double mouseX, double mouseY) {
+		return this.recipeSlots.stream()
+			.filter(recipeSlot -> recipeSlot.isMouseOver(mouseX, mouseY))
 			.findFirst();
 	}
 

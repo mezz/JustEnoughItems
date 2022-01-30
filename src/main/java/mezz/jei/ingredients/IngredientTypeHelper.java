@@ -2,7 +2,6 @@ package mezz.jei.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.gui.Focus;
-import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.render.IngredientListElementRenderer;
 
 import javax.annotation.Nullable;
@@ -43,14 +42,5 @@ public final class IngredientTypeHelper {
 			return Optional.of(castElement);
 		}
 		return Optional.empty();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public static <T> GuiIngredient<T> checkedCast(GuiIngredient<?> guiIngredient, IIngredientType<T> ingredientType) {
-		if (guiIngredient.getIngredientType() == ingredientType) {
-			return (GuiIngredient<T>) guiIngredient;
-		}
-		return null;
 	}
 }

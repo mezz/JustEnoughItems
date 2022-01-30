@@ -6,11 +6,11 @@ import mezz.jei.Internal;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IGuiIngredientTooltipCallback;
+import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.gui.ingredients.GuiIngredientGroup;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.IngredientsForTypeMap;
@@ -37,7 +37,7 @@ public class RecipeLayoutSlotBuilder implements IRecipeLayoutSlotBuilder, IRecip
 	private IDrawable background;
 	private final IngredientsForTypeMap ingredients = new IngredientsForTypeMap();
 	private final Map<IIngredientType<?>, IIngredientRenderer<?>> renderOverrides = new Object2ObjectArrayMap<>(0);
-	private final List<IGuiIngredientTooltipCallback> tooltipCallbacks = new ArrayList<>(0);
+	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>(0);
 
 	public RecipeLayoutSlotBuilder(int slotIndex, RecipeIngredientRole role, int x, int y) {
 		this.slotIndex = slotIndex;
@@ -112,7 +112,7 @@ public class RecipeLayoutSlotBuilder implements IRecipeLayoutSlotBuilder, IRecip
 	}
 
 	@Override
-	public IRecipeLayoutSlotBuilder addTooltipCallback(IGuiIngredientTooltipCallback tooltipCallback) {
+	public IRecipeLayoutSlotBuilder addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
 		ErrorUtil.checkNotNull(tooltipCallback, "tooltipCallback");
 
 		this.tooltipCallbacks.add(tooltipCallback);
@@ -128,7 +128,7 @@ public class RecipeLayoutSlotBuilder implements IRecipeLayoutSlotBuilder, IRecip
 	}
 
 	private  <T, R> void setRecipeLayout(IIngredientType<T> ingredientType, RecipeLayout<R> recipeLayout) {
-		GuiIngredientGroup<T> ingredientsGroup = recipeLayout.getIngredientsGroup(ingredientType);
+		IGuiIngredientGroup<T> ingredientsGroup = recipeLayout.getIngredientsGroup(ingredientType);
 
 		IIngredientRenderer<T> ingredientRenderer = this.getIngredientRenderer(ingredientType);
 		ingredientsGroup.init(
@@ -150,8 +150,8 @@ public class RecipeLayoutSlotBuilder implements IRecipeLayoutSlotBuilder, IRecip
 			ingredientsGroup.setBackground(this.slotIndex, this.background);
 		}
 
-		for (IGuiIngredientTooltipCallback iGuiIngredientTooltipCallback : tooltipCallbacks) {
-			ingredientsGroup.addTooltipCallback(iGuiIngredientTooltipCallback);
+		for (IRecipeSlotTooltipCallback iRecipeSlotTooltipCallback : tooltipCallbacks) {
+			ingredientsGroup.addTooltipCallback(iRecipeSlotTooltipCallback);
 		}
 	}
 

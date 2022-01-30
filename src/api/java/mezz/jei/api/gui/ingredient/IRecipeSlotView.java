@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.Slot;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
@@ -35,6 +36,24 @@ public interface IRecipeSlotView {
 	 * @since JEI 9.3.0
 	 */
 	<T> Stream<T> getAllIngredients(IIngredientType<T> ingredientType);
+
+	/**
+	 * The ingredient variation that is shown at this moment.
+	 * For ingredients that rotate through several values, this will change over time.
+	 *
+	 * @since JEI 9.3.0
+	 */
+	@Nullable
+	<T> T getDisplayedIngredient(IIngredientType<T> ingredientType);
+
+	/**
+	 * The ingredient variation that is shown at this moment.
+	 * For ingredients that rotate through several values, this will change over time.
+	 *
+	 * @since JEI 9.3.0
+	 */
+	@Nullable
+	Object getDisplayedIngredient();
 
 	/**
 	 * Returns the ({@link Slot#index} of this ingredient.

@@ -36,6 +36,11 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 	private final int capacityMb;
 	private final TooltipMode tooltipMode;
+	/**
+	 * we shouldn't draw an overlay like this anymore,
+	 * it is kept for backward compatibility for
+	 * {@link mezz.jei.api.gui.ingredient.IGuiFluidStackGroup}
+	 */
 	@Nullable
 	private final IDrawable overlay;
 
@@ -60,7 +65,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	@Override
-	public void render(PoseStack poseStack, final int xPosition, final int yPosition, final int width, final int height, @Nullable FluidStack fluidStack) {
+	public void render(PoseStack poseStack, final int xPosition, final int yPosition, final int width, final int height, FluidStack fluidStack) {
 		RenderSystem.enableBlend();
 
 		drawFluid(poseStack, xPosition, yPosition, width, height, fluidStack);
@@ -79,13 +84,13 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 
 	@Override
 	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable FluidStack ingredient) {
+		if (ingredient == null) {
+			return;
+		}
 		render(stack, xPosition, yPosition, 16, 16, ingredient);
 	}
 
-	private void drawFluid(PoseStack poseStack, final int xPosition, final int yPosition, final int width, final int height, @Nullable FluidStack fluidStack) {
-		if (fluidStack == null) {
-			return;
-		}
+	private void drawFluid(PoseStack poseStack, final int xPosition, final int yPosition, final int width, final int height, FluidStack fluidStack) {
 		Fluid fluid = fluidStack.getFluid();
 		if (fluid == null) {
 			return;
