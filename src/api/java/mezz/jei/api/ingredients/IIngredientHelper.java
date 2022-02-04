@@ -31,7 +31,7 @@ public interface IIngredientHelper<V> {
 	 *
 	 * @deprecated since JEI 9.2.0. There isn't a good use for this anymore.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.2.0")
 	default IFocus<?> translateFocus(IFocus<V> focus, IFocusFactory focusFactory) {
 		return focus;
 	}
@@ -43,7 +43,7 @@ public interface IIngredientHelper<V> {
 	 * @since JEI 7.3.0
 	 */
 	@Nullable
-	V getMatch(Iterable<V> ingredients, V ingredientToMatch, UidContext context);
+	V getMatch(Iterable<? extends V> ingredients, V ingredientToMatch, UidContext context);
 
 	/**
 	 * Display name used for searching. Normally this is the first line of the tooltip.
@@ -69,7 +69,7 @@ public interface IIngredientHelper<V> {
 	 * Return the modId of the mod that created this ingredient.
 	 * @deprecated since JEI 9.2.2. Use {@link #getResourceLocation(Object)} instead.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.2.2")
 	String getModId(V ingredient);
 
 	/**
@@ -93,7 +93,7 @@ public interface IIngredientHelper<V> {
 	 * Return the resource id of the given ingredient.
 	 * @deprecated since JEI 9.2.2. Use {@link #getResourceLocation(Object)} instead.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.2.2")
 	String getResourceId(V ingredient);
 
 	/**

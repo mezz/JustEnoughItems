@@ -6,6 +6,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.UserInput;
@@ -61,9 +62,9 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 			iconY += (16 - icon.getHeight()) / 2;
 			icon.draw(poseStack, iconX, iconY);
 		} else {
-			List<Object> recipeCatalysts = logic.getRecipeCatalysts(category);
+			List<ITypedIngredient<?>> recipeCatalysts = logic.getRecipeCatalysts(category);
 			if (!recipeCatalysts.isEmpty()) {
-				Object ingredient = recipeCatalysts.get(0);
+				ITypedIngredient<?> ingredient = recipeCatalysts.get(0);
 				renderIngredient(poseStack, iconX, iconY, ingredient);
 			} else {
 				String text = category.getTitle().getString().substring(0, 2);
@@ -79,11 +80,11 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		}
 	}
 
-	private static <T> void renderIngredient(PoseStack poseStack, int iconX, int iconY, T ingredient) {
+	private static <T> void renderIngredient(PoseStack poseStack, int iconX, int iconY, ITypedIngredient<T> ingredient) {
 		IngredientManager ingredientManager = Internal.getIngredientManager();
-		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
+		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient.getType());
 		RenderSystem.enableDepthTest();
-		ingredientRenderer.render(poseStack, iconX, iconY, 16, 16, ingredient);
+		ingredientRenderer.render(poseStack, iconX, iconY, 16, 16, ingredient.getIngredient());
 		RenderSystem.disableDepthTest();
 	}
 

@@ -16,7 +16,7 @@ public class MatchingIterable implements Iterable<ItemStackMatchable<ItemStack>>
 
 	@Override
 	public Iterator<ItemStackMatchable<ItemStack>> iterator() {
-		Iterator<ItemStack> stacks = recipeSlotView.getAllIngredients(VanillaTypes.ITEM).iterator();
+		Iterator<ItemStack> stacks = recipeSlotView.getIngredients(VanillaTypes.ITEM).iterator();
 		return new DelegateIterator<>(stacks) {
 			@Override
 			public ItemStackMatchable<ItemStack> next() {

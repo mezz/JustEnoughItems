@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableTable;
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -25,10 +26,10 @@ import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.ModIngredientRegistration;
-import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.ingredients.SubtypeManager;
 import mezz.jei.load.registration.AdvancedRegistration;
 import mezz.jei.load.registration.GuiHandlerRegistration;
@@ -41,8 +42,8 @@ import mezz.jei.load.registration.VanillaCategoryExtensionRegistration;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
-import mezz.jei.recipes.RecipeManagerInternal;
 import mezz.jei.recipes.RecipeManager;
+import mezz.jei.recipes.RecipeManagerInternal;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
 import mezz.jei.util.ErrorUtil;
@@ -116,9 +117,9 @@ public class PluginLoader {
 	public IRecipeManager createRecipeManager(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin, RecipeCategorySortingConfig recipeCategorySortingConfig) {
 		ImmutableList<IRecipeCategory<?>> recipeCategories = createRecipeCategories(plugins, vanillaPlugin);
 
-		RecipeCatalystRegistration recipeCatalystRegistration = new RecipeCatalystRegistration();
+		RecipeCatalystRegistration recipeCatalystRegistration = new RecipeCatalystRegistration(ingredientManager);
 		PluginCaller.callOnPlugins("Registering recipe catalysts", plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration));
-		ImmutableListMultimap<ResourceLocation, Object> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
+		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
 
 		AdvancedRegistration advancedRegistration = new AdvancedRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering advanced plugins", plugins, p -> p.registerAdvanced(advancedRegistration));

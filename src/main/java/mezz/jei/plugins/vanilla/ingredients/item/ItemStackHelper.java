@@ -32,7 +32,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Nullable
 	@Override
-	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch, UidContext context) {
+	public ItemStack getMatch(Iterable<? extends ItemStack> ingredients, ItemStack toMatch, UidContext context) {
 		for (ItemStack stack : ingredients) {
 			if (stackHelper.isEquivalent(toMatch, stack, context)) {
 				return stack;
@@ -61,6 +61,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		return StackHelper.getRegistryNameForStack(ingredient);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getModId(ItemStack ingredient) {
 		ErrorUtil.checkNotEmpty(ingredient);
@@ -93,6 +94,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		return ColorGetter.getColors(ingredient, 2);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getResourceId(ItemStack ingredient) {
 		ErrorUtil.checkNotEmpty(ingredient);

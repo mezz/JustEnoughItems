@@ -53,7 +53,7 @@ public interface IRecipeTransferError {
 	 * {@link IRecipeLayout} is being phased-out.
 	 * Use {@link #showError(PoseStack, int, int, int, int)} instead.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void showError(PoseStack stack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
 
 	}

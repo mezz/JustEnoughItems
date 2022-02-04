@@ -2,10 +2,10 @@ package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
-
-import javax.annotation.Nullable;
+import net.minecraft.world.inventory.Slot;
 
 /**
  * Allows setting properties of a slot on a {@link IRecipeLayoutBuilder}.
@@ -15,13 +15,13 @@ import javax.annotation.Nullable;
  *
  * @since JEI 9.3.0
  */
-public interface IRecipeLayoutSlotBuilder extends IIngredientAcceptor<IRecipeLayoutSlotBuilder> {
+public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuilder> {
 	/**
 	 * Set a custom background to draw behind the slot's ingredients.
 	 *
 	 * @since JEI 9.3.0
 	 */
-	IRecipeLayoutSlotBuilder setBackground(IDrawable background);
+	IRecipeSlotBuilder setBackground(IDrawable background);
 
 	/**
 	 * Set the properties of this slot's fluid renderer.
@@ -29,13 +29,10 @@ public interface IRecipeLayoutSlotBuilder extends IIngredientAcceptor<IRecipeLay
 	 *
 	 * @param capacityMb   maximum amount of fluid that this "tank" can hold in milli-buckets
 	 * @param showCapacity set `true` to show the capacity in the tooltip
-	 * @param overlay      optional overlay to display over the tank.
-	 * 	                   Typically, the overlay is fluid level lines,
-	 * 	                   but it could also be a mask to shape the tank.
 	 *
 	 * @since JEI 9.3.0
 	 */
-	IRecipeLayoutSlotBuilder setFluidRenderer(int capacityMb, boolean showCapacity, @Nullable IDrawable overlay);
+	IRecipeSlotBuilder setFluidRenderer(int capacityMb, boolean showCapacity);
 
 	/**
 	 * Set a custom renderer for the given ingredient type for this slot.
@@ -45,15 +42,27 @@ public interface IRecipeLayoutSlotBuilder extends IIngredientAcceptor<IRecipeLay
 	 *
 	 * @since JEI 9.3.0
 	 */
-	<T> IRecipeLayoutSlotBuilder setCustomRenderer(IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer);
+	<T> IRecipeSlotBuilder setCustomRenderer(
+		IIngredientType<T> ingredientType,
+		IIngredientRenderer<T> ingredientRenderer
+	);
+
+	/**
+	 * Set an overlay to draw on top of the slot's ingredient.
+	 *
+	 * @since JEI 9.3.0
+	 */
+	IRecipeSlotBuilder setOverlay(IDrawable overlay);
 
 	/**
 	 * Set the rendering size of the ingredient and its background.
 	 *
 	 * @param width  the full width of the rendered ingredient and its background
 	 * @param height the full height of the rendered ingredient and its background
+	 *
+	 * @since JEI 9.3.0
 	 */
-	IRecipeLayoutSlotBuilder setSize(int width, int height);
+	IRecipeSlotBuilder setSize(int width, int height);
 
 	/**
 	 * Set the ingredient inset relative to the background.
@@ -61,13 +70,33 @@ public interface IRecipeLayoutSlotBuilder extends IIngredientAcceptor<IRecipeLay
 	 *
 	 * @param xPadding the extra x offset added to the ingredient position relative to the background
 	 * @param yPadding the extra y offset added to the ingredient position relative to the background
+	 *
+	 * @since JEI 9.3.0
 	 */
-	IRecipeLayoutSlotBuilder setInnerPadding(int xPadding, int yPadding);
+	IRecipeSlotBuilder setInnerPadding(int xPadding, int yPadding);
 
 	/**
 	 * Add a callback to alter the tooltip for these ingredients.
 	 *
 	 * @see IRecipeSlotTooltipCallback
+	 *
+	 * @since JEI 9.3.0
 	 */
-	IRecipeLayoutSlotBuilder addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback);
+	IRecipeSlotBuilder addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback);
+
+	/**
+	 * For recipe transfer, set the corresponding {@link Slot#index} for this recipe slot in the given container.
+	 *
+	 * @see IRecipeSlotView#getContainerSlotIndex()
+	 *
+	 * @since JEI 9.3.0
+	 */
+	IRecipeSlotBuilder setContainerSlotIndex(int slotIndex);
+
+	/**
+	 * Give the slot a unique id, for use by {@link IRecipeLayoutView#getDisplayedIngredient(IIngredientType, int)}
+	 *
+	 * @since JEI 9.3.0
+	 */
+	IRecipeSlotBuilder setSlotId(IRecipeSlotId slotId);
 }

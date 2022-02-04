@@ -44,8 +44,12 @@ public class PacketRecipeTransfer extends PacketJei {
 	public void writePacketData(FriendlyByteBuf buf) {
 		buf.writeVarInt(recipeSlotToInventorySlotMap.size());
 		for (Map.Entry<IRecipeSlotView, Slot> recipeMapEntry : recipeSlotToInventorySlotMap.entrySet()) {
-			buf.writeVarInt(recipeMapEntry.getKey().getSlotIndex());
-			buf.writeVarInt(recipeMapEntry.getValue().index);
+			IRecipeSlotView slotView = recipeMapEntry.getKey();
+			int slotIndex = slotView.getContainerSlotIndex().orElseThrow();
+			buf.writeVarInt(slotIndex);
+
+			Slot inventorySlot = recipeMapEntry.getValue();
+			buf.writeVarInt(inventorySlot.index);
 		}
 
 		buf.writeVarInt(craftingSlots.size());

@@ -2,7 +2,6 @@ package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 
 import java.util.List;
 
@@ -18,15 +17,14 @@ public interface IRecipeLayoutBuilder {
 	/**
 	 * Add a slot that will be drawn at the given position relative to the recipe layout.
 	 *
-	 * @param slotIndex the index of this slot, used for {@link IRecipeTransferHandler}
 	 * @param recipeIngredientRole the {@link RecipeIngredientRole} of this slot (for lookups).
 	 * @param x relative x position of the slot on the recipe layout.
 	 * @param y relative y position of the slot on the recipe layout.
-	 * @return a {@link IRecipeLayoutSlotBuilder} that has further methods for adding ingredients, etc.
+	 * @return a {@link IRecipeSlotBuilder} that has further methods for adding ingredients, etc.
 	 *
 	 * @since JEI 9.3.0
 	 */
-	IRecipeLayoutSlotBuilder addSlot(int slotIndex, RecipeIngredientRole recipeIngredientRole, int x, int y);
+	IRecipeSlotBuilder addSlot(RecipeIngredientRole recipeIngredientRole, int x, int y);
 
 	/**
 	 * Add ingredients that are important for recipe lookup, but are not displayed on the recipe layout.

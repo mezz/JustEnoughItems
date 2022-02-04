@@ -3,6 +3,8 @@ package mezz.jei.recipes;
 import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -30,8 +32,16 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <V> IFocus<V> createFocus(RecipeIngredientRole role, V ingredient) {
-		return new Focus<>(role, ingredient);
+	public <V> IFocus<V> createFocus(RecipeIngredientRole role, IIngredientType<V> ingredientType, V ingredient) {
+		return Focus.createFromApi(ingredientManager, role, ingredientType, ingredient);
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public <V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient) {
+		RecipeIngredientRole role = mode.toRole();
+		IIngredientType<V> ingredientType = ingredientManager.getIngredientType(ingredient);
+		return Focus.createFromApi(ingredientManager, role, ingredientType, ingredient);
 	}
 
 	@Override
@@ -64,17 +74,18 @@ public class RecipeManager implements IRecipeManager {
 	@Override
 	public <V> List<IRecipeCategory<?>> getRecipeCategories(@Nullable IFocus<V> focus, boolean includeHidden) {
 		List<Focus<?>> internalFocus = Focus.checkNullable(focus);
-		return internal.getRecipeCategoriesStream(null, internalFocus, includeHidden)
+		return internal.getRecipeCategoriesStream(List.of(), internalFocus, includeHidden)
 			.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<IRecipeCategory<?>> getRecipeCategories(Collection<? extends IFocus<?>> focus, boolean includeHidden) {
 		List<Focus<?>> internalFocus = Focus.check(focus);
-		return internal.getRecipeCategoriesStream(null, internalFocus, includeHidden)
+		return internal.getRecipeCategoriesStream(List.of(), internalFocus, includeHidden)
 			.collect(Collectors.toList());
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
@@ -91,10 +102,20 @@ public class RecipeManager implements IRecipeManager {
 			.collect(Collectors.toList());
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public List<Object> getRecipeCatalysts(IRecipeCategory<?> recipeCategory, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		return internal.getRecipeCatalysts(recipeCategory, includeHidden);
+		return internal.getRecipeCatalystStream(recipeCategory, includeHidden)
+			.map(ITypedIngredient::getIngredient)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<ITypedIngredient<?>> getRecipeCatalystsTyped(IRecipeCategory<?> recipeCategory, boolean includeHidden) {
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+		return internal.getRecipeCatalystStream(recipeCategory, includeHidden)
+			.toList();
 	}
 
 	@Override

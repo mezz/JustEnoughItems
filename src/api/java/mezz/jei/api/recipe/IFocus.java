@@ -1,28 +1,29 @@
 package mezz.jei.api.recipe;
 
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
+
 /**
  * The current search focus.
  * Set by the player when they look up the recipe. The ingredient being looked up is the focus.
  * This class is immutable, the value and mode do not change.
  *
- * Create a focus with {@link IRecipeManager#createFocus(Mode, Object)}.
+ * Create a focus with {@link IRecipeManager#createFocus(RecipeIngredientRole, IIngredientType, Object)}.
  *
  * Use a null IFocus to signify no focus, like in the case of looking up categories of recipes.
  */
 public interface IFocus<V> {
 	/**
 	 * The ingredient that is being focused on.
+	 * @since JEI 9.3.0
 	 */
-	V getValue();
+	ITypedIngredient<V> getTypedValue();
 
 	/**
 	 * The focused recipe ingredient role.
 	 * @since JEI 9.3.0
 	 */
-	default RecipeIngredientRole getRole() {
-		// if not implemented, this calls the old getMode function for backward compatibility
-		return getMode().toRole();
-	}
+	RecipeIngredientRole getRole();
 
 	/**
 	 * The focus mode.
@@ -30,7 +31,7 @@ public interface IFocus<V> {
 	 * When a player looks up the uses for an item, that item is an {@link Mode#INPUT} focus.
 	 * @deprecated since JEI 9.3.0. Use {@link RecipeIngredientRole} instead.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	enum Mode {
 		INPUT, OUTPUT;
 
@@ -38,9 +39,7 @@ public interface IFocus<V> {
 		 * Convert this legacy {@link IFocus} {@link Mode} into a {@link RecipeIngredientRole}.
 		 *
 		 * @since JEI 9.3.0
-		 * @deprecated since JEI 9.3.0
 		 */
-		@Deprecated
 		public RecipeIngredientRole toRole() {
 			return switch (this) {
 				case INPUT -> RecipeIngredientRole.INPUT;
@@ -50,11 +49,21 @@ public interface IFocus<V> {
 	}
 
 	/**
+	 * The ingredient that is being focused on.
+	 *
+	 * @deprecated use {@link #getTypedValue()} instead.
+	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	default V getValue() {
+		return getTypedValue().getIngredient();
+	}
+
+	/**
 	 * The focus mode.
 	 * When a player looks up the recipes to make an item, that item is an {@link Mode#OUTPUT} focus.
 	 * When a player looks up the uses for an item, that item is an {@link Mode#INPUT} focus.
 	 * @deprecated since JEI 9.3.0. Use {@link #getRole()} instead.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	Mode getMode();
 }

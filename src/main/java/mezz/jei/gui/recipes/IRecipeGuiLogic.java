@@ -2,6 +2,7 @@ package mezz.jei.gui.recipes;
 
 import java.util.List;
 
+import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.collect.ImmutableList;
@@ -44,9 +45,9 @@ public interface IRecipeGuiLogic {
 
 	ImmutableList<IRecipeCategory<?>> getRecipeCategories();
 
-	List<Object> getRecipeCatalysts();
+	List<ITypedIngredient<?>> getRecipeCatalysts();
 
-	List<Object> getRecipeCatalysts(IRecipeCategory<?> recipeCategory);
+	List<ITypedIngredient<?>> getRecipeCatalysts(IRecipeCategory<?> recipeCategory);
 
 	List<RecipeLayout<?>> getRecipeLayouts(int posX, int posY, int spacingY);
 }

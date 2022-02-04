@@ -16,7 +16,7 @@ public class RecipeSlotsGuiItemStackGroupAdapter extends RecipeSlotsGuiIngredien
 	}
 
 	@Override
-	public void init(int slotIndex, boolean input, int xPosition, int yPosition) {
-		init(slotIndex, input, renderer, xPosition, yPosition, GuiIngredientProperties.getWidth(1), GuiIngredientProperties.getHeight(1), 1, 1);
+	public void init(int ingredientIndex, boolean input, int xPosition, int yPosition) {
+		init(ingredientIndex, input, renderer, xPosition, yPosition, GuiIngredientProperties.getWidth(1), GuiIngredientProperties.getHeight(1), 1, 1);
 	}
 }

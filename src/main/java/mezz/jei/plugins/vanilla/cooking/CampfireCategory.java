@@ -2,10 +2,10 @@ package mezz.jei.plugins.vanilla.cooking;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
-import mezz.jei.api.gui.IRecipeLayoutView;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -42,7 +42,7 @@ public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRec
 	}
 
 	@Override
-	public void draw(CampfireCookingRecipe recipe, IRecipeLayoutView recipeLayoutView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(CampfireCookingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		animatedFlame.draw(poseStack, 1, 20);
 		IDrawableAnimated arrow = getArrow(recipe);
 		arrow.draw(poseStack, 24, 8);
@@ -51,10 +51,12 @@ public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRec
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, CampfireCookingRecipe recipe, List<? extends IFocus<?>> focuses) {
-		builder.addSlot(inputSlot, RecipeIngredientRole.INPUT, 0, 0)
-			.addIngredients(recipe.getIngredients().get(0));
+		builder.addSlot(RecipeIngredientRole.INPUT, 0, 0)
+			.addIngredients(recipe.getIngredients().get(0))
+			.setContainerSlotIndex(inputSlot);
 
-		builder.addSlot(outputSlot, RecipeIngredientRole.OUTPUT, 60, 8)
-			.addIngredient(recipe.getResultItem());
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 60, 8)
+			.addItemStack(recipe.getResultItem())
+			.setContainerSlotIndex(outputSlot);
 	}
 }

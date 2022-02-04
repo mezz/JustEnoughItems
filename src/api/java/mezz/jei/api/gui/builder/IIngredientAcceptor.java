@@ -4,6 +4,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * Has convenience functions to make adding ingredients easier.
  *
  * @see IRecipeLayoutBuilder
- * @see IRecipeLayoutSlotBuilder
+ * @see IRecipeSlotBuilder
  *
  * @since JEI 9.3.0
  */
@@ -23,7 +24,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 *
 	 * @since JEI 9.3.0
 	 */
-	<I> THIS addIngredients(IIngredientType<I> ingredientType, List<I> ingredients);
+	<I> THIS addIngredients(IIngredientType<I> ingredientType, List<@Nullable I> ingredients);
 
 	/**
 	 * Add one ingredient.
@@ -33,11 +34,29 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	<I> THIS addIngredient(IIngredientType<I> ingredientType, I ingredient);
 
 	/**
+	 * Add an ordered list of ingredients.
+	 * The type of ingredients can be mixed, as long as they are all valid ingredient types.
+	 * Prefer using {@link #addIngredients(IIngredientType, List)} for type safety.
+	 *
+	 * @since JEI 9.3.0
+	 */
+	THIS addIngredientsUntyped(List<?> ingredients);
+
+	/**
+	 * Convenience function to add an ordered list of {@link ItemStack} from an {@link Ingredient}.
+	 *
+	 * @since JEI 9.3.0
+	 */
+	default THIS addIngredients(Ingredient ingredient) {
+		return addIngredients(VanillaTypes.ITEM, Arrays.asList(ingredient.getItems()));
+	}
+
+	/**
 	 * Convenience function to add an order list of {@link ItemStack}.
 	 *
 	 * @since JEI 9.3.0
 	 */
-	default THIS addIngredients(List<ItemStack> itemStacks) {
+	default THIS addItemStacks(List<ItemStack> itemStacks) {
 		return addIngredients(VanillaTypes.ITEM, itemStacks);
 	}
 
@@ -46,17 +65,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 *
 	 * @since JEI 9.3.0
 	 */
-	default THIS addIngredient(ItemStack itemStack) {
+	default THIS addItemStack(ItemStack itemStack) {
 		return addIngredient(VanillaTypes.ITEM, itemStack);
-	}
-
-	/**
-	 * Convenience function to add an ordered list of {@link ItemStack}
-	 * from an {@link Ingredient}.
-	 *
-	 * @since JEI 9.3.0
-	 */
-	default THIS addIngredients(Ingredient ingredient) {
-		return addIngredients(VanillaTypes.ITEM, Arrays.asList(ingredient.getItems()));
 	}
 }

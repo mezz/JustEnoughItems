@@ -6,13 +6,12 @@ import mezz.jei.Internal;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayoutView;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
@@ -43,8 +42,8 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	public static final ResourceLocation UID = new ResourceLocation(ModIds.JEI_ID, "debug");
@@ -98,7 +97,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public void draw(DebugRecipe recipe, IRecipeLayoutView recipeLayoutView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		IJeiRuntime runtime = JeiDebugPlugin.jeiRuntime;
 		if (runtime != null) {
 			this.item.draw(poseStack, 50, 20);
@@ -108,133 +107,71 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			minecraft.font.draw(poseStack, ingredientFilter.getFilterText(), 20, 52, 0);
 
 			IIngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
-			IIngredientManager ingredientManager = runtime.getIngredientManager();
-			Collection<IIngredientType<?>> ingredientTypes = ingredientManager.getRegisteredIngredientTypes();
-			for (IIngredientType<?> ingredientType : ingredientTypes) {
-				Object ingredientUnderMouse = ingredientListOverlay.getIngredientUnderMouse(ingredientType);
-				if (ingredientUnderMouse != null) {
-					drawIngredientName(minecraft, poseStack, ingredientUnderMouse);
-					break;
-				} else {
-					IBookmarkOverlay bookmarkOverlay = runtime.getBookmarkOverlay();
-					ingredientUnderMouse = bookmarkOverlay.getIngredientUnderMouse(ingredientType);
-					if (ingredientUnderMouse != null) {
-						drawIngredientName(minecraft, poseStack, ingredientUnderMouse);
-						break;
-					}
-				}
-			}
+			Optional<ITypedIngredient<?>> ingredientUnderMouse = getIngredientUnderMouse(ingredientListOverlay, runtime.getBookmarkOverlay());
+			ingredientUnderMouse.ifPresent(typedIngredient -> drawIngredientName(minecraft, poseStack, typedIngredient));
 		}
 
 		ExtendedButton button = recipe.getButton();
 		button.render(poseStack, (int) mouseX, (int) mouseY, 0);
 	}
 
-	private static <T> void drawIngredientName(Minecraft minecraft, PoseStack poseStack, T ingredient) {
+	private static Optional<ITypedIngredient<?>> getIngredientUnderMouse(IIngredientListOverlay ingredientListOverlay, IBookmarkOverlay bookmarkOverlay) {
+		return ingredientListOverlay.getIngredientUnderMouse()
+			.or(bookmarkOverlay::getIngredientUnderMouse);
+	}
+
+	private static <T> void drawIngredientName(Minecraft minecraft, PoseStack poseStack, ITypedIngredient<T> ingredient) {
 		IIngredientManager ingredientManager = JeiDebugPlugin.ingredientManager;
 		if (ingredientManager != null) {
-			IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-			String jeiUid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+			IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient.getType());
+			String jeiUid = ingredientHelper.getUniqueId(ingredient.getIngredient(), UidContext.Ingredient);
 			minecraft.font.draw(poseStack, jeiUid, 50, 52, 0);
 		}
 	}
 
-//	@Override
-//	public void setRecipe(IRecipeLayout recipeLayout, DebugRecipe recipe, IIngredients ingredients) {
-//		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-//
-//		guiItemStacks.addTooltipCallback((guiIngredient, tooltip) -> {
-//			int slotIndex = guiIngredient.getSlotIndex();
-//			switch (guiIngredient.getRecipeIngredientType()) {
-//				case INPUT -> tooltip.add(new TextComponent(slotIndex + " Input itemStack"));
-//				case OUTPUT -> tooltip.add(new TextComponent(slotIndex + " Output itemStack"));
-//				case CATALYST -> tooltip.add(new TextComponent(slotIndex + " Catalyst itemStack"));
-//			}
-//		});
-//
-//		guiItemStacks.init(0, false, 70, 0);
-//		guiItemStacks.init(1, true, 110, 0);
-//		guiItemStacks.set(0, new ItemStack(Items.WATER_BUCKET));
-//		guiItemStacks.set(1, Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));
-//
-//		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
-//		guiFluidStacks.addTooltipCallback((guiIngredient, tooltip) -> {
-//			int slotIndex = guiIngredient.getSlotIndex();
-//			switch (guiIngredient.getRecipeIngredientType()) {
-//				case INPUT -> tooltip.add(new TextComponent(slotIndex + " Input fluidStack"));
-//				case OUTPUT -> tooltip.add(new TextComponent(slotIndex + " Output fluidStack"));
-//				case CATALYST -> tooltip.add(new TextComponent(slotIndex + " Catalyst fluidStack"));
-//			}
-//		});
-//
-//		guiFluidStacks.init(0, false, 90, 0, 16, 58, 16000, false, tankOverlay);
-//		guiFluidStacks.init(1, true, 24, 0, 12, 47, 2000, true, null);
-//
-//		guiFluidStacks.setBackground(0, tankBackground);
-//
-//		List<List<FluidStack>> fluidInputs = ingredients.getInputs(VanillaTypes.FLUID);
-//		guiFluidStacks.set(0, fluidInputs.get(0));
-//		guiFluidStacks.set(1, fluidInputs.get(1));
-//
-//		IGuiIngredientGroup<DebugIngredient> debugIngredientsGroup = recipeLayout.getIngredientsGroup(DebugIngredient.TYPE);
-//		debugIngredientsGroup.addTooltipCallback((guiIngredient, tooltip) -> {
-//			int slotIndex = guiIngredient.getSlotIndex();
-//			switch (guiIngredient.getRecipeIngredientType()) {
-//				case INPUT -> tooltip.add(new TextComponent(slotIndex + " Input DebugIngredient"));
-//				case OUTPUT -> tooltip.add(new TextComponent(slotIndex + " Output DebugIngredient"));
-//				case CATALYST -> tooltip.add(new TextComponent(slotIndex + " Catalyst DebugIngredient"));
-//			}
-//		});
-//
-//		debugIngredientsGroup.init(0, true, 40, 0);
-//		debugIngredientsGroup.init(1, false, 40, 16);
-//		debugIngredientsGroup.init(2, false, 40, 32);
-//
-//		debugIngredientsGroup.set(ingredients);
-//	}
-
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, DebugRecipe recipe, List<? extends IFocus<?>> focuses) {
 		// ITEM type
-		builder.addSlot(0, RecipeIngredientRole.OUTPUT, 70, 0)
-				.addIngredient(new ItemStack(Items.WATER_BUCKET));
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 70, 0)
+				.addItemStack(new ItemStack(Items.WATER_BUCKET));
 
-		builder.addSlot(1, RecipeIngredientRole.INPUT, 110, 0)
-				.addIngredients(Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));
+		builder.addSlot(RecipeIngredientRole.INPUT, 110, 0)
+				.addIngredientsUntyped(Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));
 
 		// FLUID type
-		builder.addSlot(2, RecipeIngredientRole.OUTPUT, 90, 0)
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 90, 0)
 			.setSize(16, 58)
-			.setFluidRenderer(16000, false, tankOverlay)
+			.setFluidRenderer(16000, false)
+			.setOverlay(tankOverlay)
 			.setBackground(tankBackground)
 			.addIngredient(VanillaTypes.FLUID, new FluidStack(Fluids.WATER, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME)));
 
-		builder.addSlot(3, RecipeIngredientRole.INPUT, 24, 0)
-			.setFluidRenderer(2000, true, null)
+		builder.addSlot(RecipeIngredientRole.INPUT, 24, 0)
+			.setFluidRenderer(2000, true)
 			.setSize(12, 47)
 			.addIngredient(VanillaTypes.FLUID, new FluidStack(Fluids.LAVA, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME)));
 
 		// DEBUG type
-		builder.addSlot(4, RecipeIngredientRole.INPUT, 40, 0)
+		builder.addSlot(RecipeIngredientRole.INPUT, 40, 0)
 			.addIngredients(DebugIngredient.TYPE, List.of(new DebugIngredient(0), new DebugIngredient(1)));
 
-		builder.addSlot(5, RecipeIngredientRole.OUTPUT, 40, 16)
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 40, 16)
 			.addIngredient(DebugIngredient.TYPE, new DebugIngredient(2));
 
 		// mixed types
-		IRecipeSlotTooltipCallback tooltipCallback = (recipeSlotView, tooltip) -> {
-			int slotIndex = recipeSlotView.getSlotIndex();
-			switch (recipeSlotView.getRole()) {
-				case INPUT -> tooltip.add(new TextComponent(slotIndex + " Input DebugIngredient"));
-				case OUTPUT -> tooltip.add(new TextComponent(slotIndex + " Output DebugIngredient"));
-				case CATALYST -> tooltip.add(new TextComponent(slotIndex + " Catalyst DebugIngredient"));
-			}
-		};
-		builder.addSlot(99, RecipeIngredientRole.INPUT, 40, 32)
+		builder.addSlot(RecipeIngredientRole.INPUT, 40, 32)
 			.addIngredient(DebugIngredient.TYPE, new DebugIngredient(3))
-			.addIngredient(VanillaTypes.FLUID, new FluidStack(Fluids.LAVA, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME)))
-			.addIngredient(new ItemStack(Items.LAVA_BUCKET))
-			.addTooltipCallback(tooltipCallback);
+			.addIngredientsUntyped(List.of(
+				new FluidStack(Fluids.LAVA, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME)),
+				new ItemStack(Items.LAVA_BUCKET)
+			))
+			.addTooltipCallback((recipeSlotView, tooltip) -> {
+				switch (recipeSlotView.getRole()) {
+					case INPUT -> tooltip.add(new TextComponent("Input DebugIngredient"));
+					case OUTPUT -> tooltip.add(new TextComponent( "Output DebugIngredient"));
+					case CATALYST -> tooltip.add(new TextComponent("Catalyst DebugIngredient"));
+				}
+			});
 	}
 
 	@Override

@@ -2,10 +2,13 @@ package mezz.jei.plugins.jei.info;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
-import mezz.jei.api.gui.IRecipeLayoutView;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -19,7 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
-public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe<?>> {
+public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe> {
 	public static final int recipeWidth = 160;
 	public static final int recipeHeight = 125;
 	private static final int lineSpacing = 2;
@@ -41,10 +44,9 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 		return VanillaRecipeCategoryUid.INFORMATION;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Class<? extends IngredientInfoRecipe<?>> getRecipeClass() {
-		return (Class<? extends IngredientInfoRecipe<?>>) (Object) IngredientInfoRecipe.class;
+	public Class<? extends IngredientInfoRecipe> getRecipeClass() {
+		return IngredientInfoRecipe.class;
 	}
 
 	@Override
@@ -63,7 +65,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	public void draw(IngredientInfoRecipe<?> recipe, IRecipeLayoutView recipeLayoutView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(IngredientInfoRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		int xPos = 0;
 		int yPos = slotBackground.getHeight() + 4;
 
@@ -75,17 +77,21 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, IngredientInfoRecipe<?> recipe, List<? extends IFocus<?>> focuses) {
-		setRecipeTyped(builder, recipe, focuses);
+	public void setRecipe(IRecipeLayoutBuilder builder, IngredientInfoRecipe recipe, List<? extends IFocus<?>> focuses) {
+		int xPos = (recipeWidth - 18) / 2;
+
+		IRecipeSlotBuilder inputSlotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, xPos, 0)
+			.setBackground(slotBackground);
+
+		IIngredientAcceptor<?> outputSlotBuilder = builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT);
+
+		for (ITypedIngredient<?> typedIngredient : recipe.getIngredients()) {
+			addIngredient(typedIngredient, inputSlotBuilder);
+			addIngredient(typedIngredient, outputSlotBuilder);
+		}
 	}
 
-	private <T> void setRecipeTyped(IRecipeLayoutBuilder builder, IngredientInfoRecipe<T> recipe, List<? extends IFocus<?>> focuses) {
-		int xPos = (recipeWidth - 18) / 2;
-		builder.addSlot(0, RecipeIngredientRole.INPUT, xPos, 0)
-			.setBackground(slotBackground)
-			.addIngredients(recipe.getIngredientType(), recipe.getIngredients());
-
-		builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT)
-			.addIngredients(recipe.getIngredientType(), recipe.getIngredients());
+	private static <T> void addIngredient(ITypedIngredient<T> typedIngredient, IIngredientAcceptor<?> slotBuilder) {
+		slotBuilder.addIngredient(typedIngredient.getType(), typedIngredient.getIngredient());
 	}
 }

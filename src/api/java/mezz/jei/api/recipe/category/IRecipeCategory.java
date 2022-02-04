@@ -2,27 +2,26 @@ package mezz.jei.api.recipe.category;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IFocus;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+
 import java.util.Collections;
 import java.util.List;
 
-import mezz.jei.api.gui.IRecipeLayoutView;
-import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.recipe.IFocus;
-import net.minecraft.resources.ResourceLocation;
-
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
-import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
-import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.network.chat.Component;
-
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
- * Handles setting up the GUI for its recipe category in {@link #setRecipe(IRecipeLayout, T, IIngredients)}.
+ * Handles setting up the GUI for its recipe category in {@link #setRecipe(IRecipeLayoutBuilder, Object, List)}.
  * Also draws elements that are common to all recipes in the category like the background.
  */
 public interface IRecipeCategory<T> {
@@ -82,11 +81,11 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
-	 * @see IRecipeLayoutView for information about the ingredients that are currently being drawn.
+	 * @see IRecipeSlotsView for information about the ingredients that are currently being drawn.
 	 *
 	 * @since JEI 9.3.0
 	 */
-	default void draw(T recipe, IRecipeLayoutView recipeLayoutView, PoseStack stack, double mouseX, double mouseY) {
+	default void draw(T recipe, IRecipeSlotsView recipeLayoutView, PoseStack stack, double mouseX, double mouseY) {
 		// if not implemented, this calls the old draw function for backward compatibility
 		draw(recipe, stack, mouseX, mouseY);
 	}
@@ -95,7 +94,7 @@ public interface IRecipeCategory<T> {
 	 * Get the tooltip for whatever's under the mouse.
 	 * Ingredient tooltips are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IGuiIngredientGroup#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
@@ -143,7 +142,7 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @deprecated since JEI 8.3.0. Use {@link #handleInput(Object, double, double, InputConstants.Key)}
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "8.3.0")
 	default boolean handleClick(T recipe, double mouseX, double mouseY, int mouseButton) {
 		return false;
 	}
@@ -155,7 +154,7 @@ public interface IRecipeCategory<T> {
 	 * @deprecated since JEI 9.3.0.
 	 * This is handled automatically by {@link #setRecipe(IRecipeLayoutBuilder, Object, List)} instead.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void setIngredients(T recipe, IIngredients ingredients) {
 
 	}
@@ -169,7 +168,7 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @deprecated since JEI 9.3.0. Use {@link #setRecipe(IRecipeLayoutBuilder, Object, List)} instead.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void setRecipe(IRecipeLayout recipeLayout, T recipe, IIngredients ingredients) {
 
 	}
@@ -184,9 +183,9 @@ public interface IRecipeCategory<T> {
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
 	 *
-	 * @deprecated since JEI 9.3.0. Use {@link #draw(Object, IRecipeLayoutView, PoseStack, double, double)}
+	 * @deprecated since JEI 9.3.0. Use {@link #draw(Object, IRecipeSlotsView, PoseStack, double, double)}
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void draw(T recipe, PoseStack stack, double mouseX, double mouseY) {
 
 	}

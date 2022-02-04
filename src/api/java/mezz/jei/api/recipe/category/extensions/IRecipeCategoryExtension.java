@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
-import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
@@ -37,10 +37,10 @@ public interface IRecipeCategoryExtension {
 	}
 
 	/**
-	 * Get the tooltip for whatever's under the mouse.
+	 * Get the tooltip for whatever is under the mouse.
 	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IGuiIngredientGroup#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
 	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltipStrings(Object, double, double)}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
@@ -78,7 +78,7 @@ public interface IRecipeCategoryExtension {
 	 * @return true if the click was handled, false otherwise
 	 * @deprecated since JEI 8.3.0. Use {@link #handleInput(double, double, InputConstants.Key)}
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "8.3.0")
 	default boolean handleClick(double mouseX, double mouseY, int mouseButton) {
 		return false;
 	}
@@ -90,7 +90,7 @@ public interface IRecipeCategoryExtension {
 	 * Subclasses of this interface should define their own methods of setting ingredients.
 	 * @see ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, List)
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void setIngredients(IIngredients ingredients) {
 
 	}

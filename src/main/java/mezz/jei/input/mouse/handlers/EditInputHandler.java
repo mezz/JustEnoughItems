@@ -1,6 +1,7 @@
 package mezz.jei.input.mouse.handlers;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
@@ -69,13 +70,13 @@ public class EditInputHandler implements IUserInputHandler {
 			return;
 		}
 
-		V ingredient = clicked.getValue();
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
+		ITypedIngredient<V> typedIngredient = clicked.getValue();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
 
-		if (editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
-			editModeConfig.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
+		if (editModeConfig.isIngredientOnConfigBlacklist(typedIngredient, ingredientHelper)) {
+			editModeConfig.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientManager, typedIngredient, blacklistType, ingredientHelper);
 		} else {
-			editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
+			editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, typedIngredient, blacklistType, ingredientHelper);
 		}
 	}
 }

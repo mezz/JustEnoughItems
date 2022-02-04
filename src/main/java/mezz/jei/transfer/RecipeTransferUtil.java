@@ -2,9 +2,9 @@ package mezz.jei.transfer;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
@@ -72,8 +72,9 @@ public final class RecipeTransferUtil {
 			return RecipeTransferErrorInternal.INSTANCE;
 		}
 
-		RecipeSlots recipeSlots = recipeLayout.createRecipeSlotsView();
-		return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlots, player, maxTransfer, doTransfer);
+		RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
+		IRecipeSlotsView recipeSlotsView = recipeSlots.getView();
+		return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlotsView, player, maxTransfer, doTransfer);
 	}
 
 	public static boolean allowsTransfer(@Nullable IRecipeTransferError error) {
@@ -182,22 +183,20 @@ public final class RecipeTransferUtil {
 	) {
 		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
 
-		slotsView.stream()
-			.filter(ingredient -> ingredient.getRole() == RecipeIngredientRole.INPUT)
-			.forEach(ingredient -> {
-				Map.Entry<Slot, ItemStack> matching = containsAnyStackIndexed(stackhelper, availableItemStacks, ingredient);
-				if (matching == null) {
-					matchingItemResult.missingItems.add(ingredient);
-				} else {
-					Slot matchingSlot = matching.getKey();
-					ItemStack matchingStack = matching.getValue();
-					matchingStack.shrink(1);
-					if (matchingStack.isEmpty()) {
-						availableItemStacks.remove(matchingSlot);
-					}
-					matchingItemResult.matchingItems.put(ingredient, matchingSlot);
+		slotsView.forEach(ingredient -> {
+			Map.Entry<Slot, ItemStack> matching = containsAnyStackIndexed(stackhelper, availableItemStacks, ingredient);
+			if (matching == null) {
+				matchingItemResult.missingItems.add(ingredient);
+			} else {
+				Slot matchingSlot = matching.getKey();
+				ItemStack matchingStack = matching.getValue();
+				matchingStack.shrink(1);
+				if (matchingStack.isEmpty()) {
+					availableItemStacks.remove(matchingSlot);
 				}
-			});
+				matchingItemResult.matchingItems.put(ingredient, matchingSlot);
+			}
+		});
 
 		return matchingItemResult;
 	}

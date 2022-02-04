@@ -8,8 +8,9 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import java.util.Optional;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"removal"})
 public class LegacyTooltipAdapter<T> implements IRecipeSlotTooltipCallback {
 	private final IIngredientType<T> ingredientType;
 	private final ITooltipCallback<T> legacyTooltipCallback;
@@ -21,11 +22,11 @@ public class LegacyTooltipAdapter<T> implements IRecipeSlotTooltipCallback {
 
 	@Override
 	public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
-		T displayedIngredient = recipeSlotView.getDisplayedIngredient(ingredientType);
-		if (displayedIngredient != null) {
-			int slotIndex = recipeSlotView.getSlotIndex();
+		Optional<T> displayedIngredient = recipeSlotView.getDisplayedIngredient(ingredientType);
+		if (displayedIngredient.isPresent() && recipeSlotView instanceof RecipeSlot recipeSlot) {
+			int ingredientIndex = recipeSlot.getLegacyIngredientIndex();
 			boolean isInput = recipeSlotView.getRole() == RecipeIngredientRole.INPUT;
-			legacyTooltipCallback.onTooltip(slotIndex, isInput, displayedIngredient, tooltip);
+			legacyTooltipCallback.onTooltip(ingredientIndex, isInput, displayedIngredient.get(), tooltip);
 		}
 	}
 }

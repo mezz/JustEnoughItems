@@ -24,17 +24,28 @@ import java.util.List;
  * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
  * and other methods that do not use {@link IRecipeLayout}.
  */
+@Deprecated(forRemoval = true, since = "9.3.0")
 public interface IRecipeLayout {
 	/**
 	 * Contains all the itemStacks displayed on this recipe layout.
 	 * Init and set them in your recipe category.
+	 *
+	 * @deprecated since JEI 9.3.0.
+	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * and other methods that do not use {@link IRecipeLayout}.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	IGuiItemStackGroup getItemStacks();
 
 	/**
 	 * Contains all the fluidStacks displayed on this recipe layout.
 	 * Init and set them in your recipe category.
+	 *
+	 * @deprecated since JEI 9.3.0.
+	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * and other methods that do not use {@link IRecipeLayout}.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	IGuiFluidStackGroup getFluidStacks();
 
 	/**
@@ -45,7 +56,12 @@ public interface IRecipeLayout {
 	 *
 	 * @see #getItemStacks()
 	 * @see #getFluidStacks()
+	 *
+	 * @deprecated since JEI 9.3.0.
+	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * and other methods that do not use {@link IRecipeLayout}.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	<T> IGuiIngredientGroup<T> getIngredientsGroup(IIngredientType<T> ingredientType);
 
 	/**
@@ -53,7 +69,12 @@ public interface IRecipeLayout {
 	 * The ingredient being looked up is the focus.
 	 * Returns null if there is no focus, or if the focus is a different type
 	 * @since JEI 7.0.1
+	 *
+	 * @deprecated since JEI 9.3.0.
+	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * and other methods that do not use {@link IRecipeLayout}.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	@Nullable
 	<V> IFocus<V> getFocus(IIngredientType<V> ingredientType);
 
@@ -61,12 +82,22 @@ public interface IRecipeLayout {
 	 * Moves the recipe transfer button's position relative to the recipe layout.
 	 * By default the recipe transfer button is at the bottom, to the right of the recipe.
 	 * If it doesn't fit there, you can use this to move it when you init the recipe layout.
+	 *
+	 * @deprecated since JEI 9.3.0.
+	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * and other methods that do not use {@link IRecipeLayout}.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	void moveRecipeTransferButton(int posX, int posY);
 
 	/**
 	 * Adds a shapeless icon to the top right of the recipe, that shows a tooltip saying "shapeless" when hovered over.
+	 *
+	 * @deprecated since JEI 9.3.0.
+	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * and other methods that do not use {@link IRecipeLayout}.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	void setShapeless();
 
 }

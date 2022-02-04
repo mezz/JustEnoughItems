@@ -2,6 +2,7 @@ package mezz.jei.test;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.config.EditModeConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
@@ -17,6 +18,7 @@ import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.ModIngredientRegistration;
 import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.ingredients.SubtypeManager;
+import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.load.registration.SubtypeRegistration;
 import mezz.jei.test.lib.TestClientConfig;
 import mezz.jei.test.lib.TestIngredient;
@@ -164,7 +166,9 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(baseList);
 		Assertions.assertNotNull(editModeConfig);
 
-		TestIngredient blacklistedIngredient = (TestIngredient) baseList.get(0).getIngredient();
+		IIngredientListElement<?> element = baseList.get(0);
+		ITypedIngredient<?> typedIngredient = element.getTypedIngredient();
+		ITypedIngredient<TestIngredient> blacklistedIngredient = TypedIngredient.optionalCast(typedIngredient, TestIngredient.TYPE).orElseThrow();
 		TestIngredientHelper testIngredientHelper = new TestIngredientHelper();
 		editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, blacklistedIngredient, IngredientBlacklistType.ITEM, testIngredientHelper);
 
@@ -217,7 +221,7 @@ public class IngredientFilterTest {
 		}
 
 		for (TestIngredient ingredient : ingredientsToAdd) {
-			assert ingredientFilter.isIngredientVisible(ingredient);
+			assert ingredientFilter.isIngredientVisible(TestIngredient.TYPE, ingredient);
 		}
 	}
 
@@ -240,7 +244,7 @@ public class IngredientFilterTest {
 		}
 
 		for (TestIngredient ingredient : ingredientsToRemove) {
-			assert !ingredientFilter.isIngredientVisible(ingredient);
+			assert !ingredientFilter.isIngredientVisible(TestIngredient.TYPE, ingredient);
 		}
 	}
 }

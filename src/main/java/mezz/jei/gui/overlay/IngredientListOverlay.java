@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IWorldConfig;
@@ -13,6 +14,7 @@ import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
+import mezz.jei.input.MouseUtil;
 import mezz.jei.input.mouse.ICharTypedHandler;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.CheatInputHandler;
@@ -260,11 +262,21 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return searchField.charTyped(codePoint, modifiers);
 	}
 
+	@Override
+	public Optional<ITypedIngredient<?>> getIngredientUnderMouse() {
+		if (isListDisplayed()) {
+			return this.contents.getIngredientUnderMouse(MouseUtil.getX(), MouseUtil.getY())
+				.map(IClickedIngredient::getValue);
+		}
+		return Optional.empty();
+	}
+
 	@Nullable
 	@Override
 	public <T> T getIngredientUnderMouse(IIngredientType<T> ingredientType) {
 		if (isListDisplayed()) {
 			return this.contents.getIngredientUnderMouse(ingredientType)
+				.map(ITypedIngredient::getIngredient)
 				.orElse(null);
 		}
 		return null;
@@ -278,7 +290,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	@Override
 	public <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
 		if (isListDisplayed()) {
-			return this.contents.getVisibleIngredients(ingredientType);
+			return this.contents.getVisibleIngredients(ingredientType)
+				.map(ITypedIngredient::getIngredient)
+				.toList();
 		}
 		return Collections.emptyList();
 	}

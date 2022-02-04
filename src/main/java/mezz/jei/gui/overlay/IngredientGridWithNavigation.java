@@ -2,6 +2,7 @@ package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IFilterTextSource;
 import mezz.jei.config.IWorldConfig;
@@ -32,6 +33,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Displays a list of ingredients with navigation at the top.
@@ -74,7 +76,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			firstItemIndex = 0;
 		}
 		String filterText = filterTextSource.getFilterText();
-		List<?> ingredientList = ingredientSource.getIngredientList(filterText);
+		List<ITypedIngredient<?>> ingredientList = ingredientSource.getIngredientList(filterText);
 		if (firstItemIndex >= ingredientList.size()) {
 			firstItemIndex = 0;
 		}
@@ -149,16 +151,15 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY);
 	}
 
-	public <T> Optional<T> getIngredientUnderMouse(IIngredientType<T> ingredientType) {
+	public <T> Optional<ITypedIngredient<T>> getIngredientUnderMouse(IIngredientType<T> ingredientType) {
 		return this.ingredientGrid.getIngredientUnderMouse(ingredientType);
 	}
 
-	public <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
+	public <T> Stream<ITypedIngredient<T>> getVisibleIngredients(IIngredientType<T> ingredientType) {
 		return this.ingredientGrid.guiIngredientSlots.getAllGuiIngredientSlots().stream()
 			.map(slot -> slot.getIngredientRenderer(ingredientType))
 			.flatMap(Optional::stream)
-			.map(IngredientListElementRenderer::getIngredient)
-			.toList();
+			.map(IngredientListElementRenderer::getTypedIngredient);
 	}
 
 	private class IngredientGridPaged implements IPaged {

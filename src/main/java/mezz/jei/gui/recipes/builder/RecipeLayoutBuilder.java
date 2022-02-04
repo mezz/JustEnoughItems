@@ -1,41 +1,39 @@
 package mezz.jei.gui.recipes.builder;
 
-import it.unimi.dsi.fastutil.ints.IntArraySet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.builder.IRecipeLayoutSlotBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.IIngredientSupplier;
-import mezz.jei.ingredients.IngredientsForTypeMap;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSupplier {
 	private final List<IRecipeLayoutSlotSource> slots = new ArrayList<>();
-	private final IntSet slotIds = new IntArraySet();
+	private final IIngredientManager ingredientManager;
 	private boolean shapeless = false;
 	private int recipeTransferX = -1;
 	private int recipeTransferY = -1;
 
+	public RecipeLayoutBuilder(IIngredientManager ingredientManager) {
+		this.ingredientManager = ingredientManager;
+	}
+
 	@Override
-	public IRecipeLayoutSlotBuilder addSlot(int slotIndex, RecipeIngredientRole role, int x, int y) {
-		if (!this.slotIds.add(slotIndex)) {
-			throw new IllegalArgumentException("A slot has already been created at slot index " + slotIndex);
-		}
-		RecipeLayoutSlotBuilder slotBuilder = new RecipeLayoutSlotBuilder(slotIndex, role, x, y);
+	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role, int x, int y) {
+		RecipeSlotBuilder slotBuilder = new RecipeSlotBuilder(ingredientManager, role, x, y);
 		this.slots.add(slotBuilder);
 		return slotBuilder;
 	}
 
 	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
-		InvisibleRecipeLayoutSlotSource slot = new InvisibleRecipeLayoutSlotSource(role);
+		InvisibleRecipeLayoutSlotSource slot = new InvisibleRecipeLayoutSlotSource(this.ingredientManager, role);
 		this.slots.add(slot);
 		return slot;
 	}
@@ -73,22 +71,17 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 	}
 
 	@Override
-	public List<? extends IIngredientType<?>> getIngredientTypes(RecipeIngredientRole role) {
+	public Stream<? extends IIngredientType<?>> getIngredientTypes(RecipeIngredientRole role) {
 		return this.slots.stream()
 			.filter(slot -> slot.getRole() == role)
-			.map(IRecipeLayoutSlotSource::getIngredientsForTypeMap)
-			.map(IngredientsForTypeMap::getIngredientTypes)
-			.flatMap(Collection::stream)
-			.distinct()
-			.toList();
+			.flatMap(IRecipeLayoutSlotSource::getIngredientTypes)
+			.distinct();
 	}
 
 	@Override
 	public <T> Stream<T> getIngredientStream(IIngredientType<T> ingredientType, RecipeIngredientRole role) {
 		return this.slots.stream()
 			.filter(slot -> slot.getRole() == role)
-			.map(IRecipeLayoutSlotSource::getIngredientsForTypeMap)
-			.map(ingredientsForTypeMap -> ingredientsForTypeMap.getIngredients(ingredientType))
-			.flatMap(Collection::stream);
+			.flatMap(slot -> slot.getIngredients(ingredientType));
 	}
 }

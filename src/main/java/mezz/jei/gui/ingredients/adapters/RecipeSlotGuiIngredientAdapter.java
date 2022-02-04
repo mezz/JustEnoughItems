@@ -9,6 +9,7 @@ import mezz.jei.gui.ingredients.RecipeSlot;
 import javax.annotation.Nullable;
 import java.util.List;
 
+@SuppressWarnings("removal")
 public class RecipeSlotGuiIngredientAdapter<T> implements IGuiIngredient<T> {
 	private final RecipeSlot recipeSlot;
 	private final IIngredientType<T> ingredientType;
@@ -29,23 +30,14 @@ public class RecipeSlotGuiIngredientAdapter<T> implements IGuiIngredient<T> {
 	@Nullable
 	@Override
 	public T getDisplayedIngredient() {
-		return this.recipeSlot.getDisplayedIngredient(this.ingredientType);
+		return this.recipeSlot.getDisplayedIngredient(this.ingredientType)
+			.orElse(null);
 	}
 
 	@Override
 	public List<T> getAllIngredients() {
-		return this.recipeSlot.getAllIngredients(this.ingredientType)
+		return this.recipeSlot.getIngredients(this.ingredientType)
 			.toList();
-	}
-
-	@Override
-	public int getSlotIndex() {
-		return this.recipeSlot.getSlotIndex();
-	}
-
-	@Override
-	public RecipeIngredientRole getRole() {
-		return this.recipeSlot.getRole();
 	}
 
 	@Override
@@ -55,9 +47,10 @@ public class RecipeSlotGuiIngredientAdapter<T> implements IGuiIngredient<T> {
 
 	@Override
 	public boolean isInput() {
-		return switch (getRole()) {
+		RecipeIngredientRole role = this.recipeSlot.getRole();
+		return switch (role) {
 			case INPUT, CATALYST -> true;
-			case OUTPUT -> false;
+			case OUTPUT, RENDER_ONLY -> false;
 		};
 	}
 

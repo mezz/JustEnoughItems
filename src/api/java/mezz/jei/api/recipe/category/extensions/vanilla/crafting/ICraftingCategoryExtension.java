@@ -86,7 +86,7 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	 * @return the size of a shaped recipe, or null for a shapeless recipe
 	 * @deprecated since JEI 9.3.0. Use {@link #getWidth()} and {@link #getHeight()} instead.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	@Nullable
 	default Size2i getSize() {
 		return null;

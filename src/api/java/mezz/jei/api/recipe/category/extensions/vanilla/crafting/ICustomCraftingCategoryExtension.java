@@ -9,14 +9,16 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
 
+import java.util.List;
+
 /**
  * This interface allows recipes to override the default behavior in the
  * {@link VanillaRecipeCategoryUid#CRAFTING} recipe category.
  *
  * @deprecated since JEI 9.3.0.
- * Use {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper)} instead.
+ * Use {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, List)} instead.
  */
-@Deprecated
+@Deprecated(forRemoval = true, since = "9.3.0")
 public interface ICustomCraftingCategoryExtension extends ICraftingCategoryExtension {
 	/**
 	 * This is called to override the vanilla crafting category's
@@ -30,8 +32,9 @@ public interface ICustomCraftingCategoryExtension extends ICraftingCategoryExten
 	 * @param ingredients  the ingredients, already set by the recipeWrapper
 	 *
 	 * @deprecated since JEI 9.3.0.
-	 * Use {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper)} instead.
+	 * Use {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, List)} instead.
 	 */
-	@Deprecated
+	@SuppressWarnings("removal")
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	void setRecipe(IRecipeLayout recipeLayout, IIngredients ingredients);
 }

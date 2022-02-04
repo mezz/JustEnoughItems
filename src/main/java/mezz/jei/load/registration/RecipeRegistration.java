@@ -60,7 +60,7 @@ public class RecipeRegistration implements IRecipeRegistration {
 
 	@Override
 	public <T> void addIngredientInfo(T ingredient, IIngredientType<T> ingredientType, Component... descriptionComponents) {
-		ErrorUtil.checkIsValidIngredient(ingredient, "ingredient");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(descriptionComponents, "descriptionComponents");
 
@@ -70,13 +70,10 @@ public class RecipeRegistration implements IRecipeRegistration {
 	@Override
 	public <T> void addIngredientInfo(List<T> ingredients, IIngredientType<T> ingredientType, Component... descriptionComponents) {
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
-		for (Object ingredient : ingredients) {
-			ErrorUtil.checkIsValidIngredient(ingredient, "ingredient");
-		}
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(descriptionComponents, "descriptionComponents");
 
-		List<IngredientInfoRecipe<T>> recipes = IngredientInfoRecipe.create(ingredients, ingredientType, descriptionComponents);
+		List<IngredientInfoRecipe> recipes = IngredientInfoRecipe.create(ingredientManager, ingredients, ingredientType, descriptionComponents);
 		addRecipes(recipes, VanillaRecipeCategoryUid.INFORMATION);
 	}
 }

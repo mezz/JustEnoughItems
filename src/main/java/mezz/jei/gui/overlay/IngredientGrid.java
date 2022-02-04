@@ -8,6 +8,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.config.Constants;
 import mezz.jei.config.IClientConfig;
@@ -175,14 +176,15 @@ public class IngredientGrid implements IRecipeFocusSource {
 				TooltipRenderer.drawHoveringText(poseStack, List.of(deleteItem), mouseX, mouseY);
 			} else {
 				guiIngredientSlots.getHovered(mouseX, mouseY)
-					.map(IngredientListElementRenderer::getIngredient)
+					.map(IngredientListElementRenderer::getTypedIngredient)
 					.ifPresent(ingredient -> drawTooltip(poseStack, mouseX, mouseY, ingredientFilterConfig, worldConfig, ingredient));
 			}
 		}
 	}
 
-	private <T> void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig, T ingredient) {
-		IIngredientType<T> ingredientType = ingredientManager.getIngredientType(ingredient);
+	private <T> void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig, ITypedIngredient<T> value) {
+		IIngredientType<T> ingredientType = value.getType();
+		T ingredient = value.getIngredient();
 		IngredientInfo<T> ingredientInfo = ingredientManager.getIngredientInfo(ingredientType);
 		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
 
@@ -284,15 +286,15 @@ public class IngredientGrid implements IRecipeFocusSource {
 			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
-	public <T> Optional<T> getIngredientUnderMouse(IIngredientType<T> ingredientType) {
+	public <T> Optional<ITypedIngredient<T>> getIngredientUnderMouse(IIngredientType<T> ingredientType) {
 		return this.guiIngredientSlots.getHovered(MouseUtil.getX(), MouseUtil.getY(), ingredientType)
-			.map(IngredientListElementRenderer::getIngredient);
+			.map(IngredientListElementRenderer::getTypedIngredient);
 	}
 
 	@Override
 	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return guiIngredientSlots.getHovered(mouseX, mouseY)
-			.flatMap(hovered -> ClickedIngredient.create(hovered.getIngredient(), hovered.getArea(), true, true));
+			.map(hovered -> new ClickedIngredient<>(hovered.getTypedIngredient(), hovered.getArea(), true, true));
 	}
 
 }

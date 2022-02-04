@@ -1,6 +1,5 @@
 package mezz.jei.plugins.vanilla.brewing;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraftforge.registries.ForgeRegistries;
@@ -17,7 +16,6 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 	private final List<ItemStack> potionInputs;
 	private final ItemStack potionOutput;
 	private final BrewingRecipeUtil brewingRecipeUtil;
-	private final List<List<ItemStack>> inputs;
 	private final int hashCode;
 
 	public JeiBrewingRecipe(List<ItemStack> ingredients, List<ItemStack> potionInputs, ItemStack potionOutput, BrewingRecipeUtil brewingRecipeUtil) {
@@ -27,12 +25,6 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 		this.brewingRecipeUtil = brewingRecipeUtil;
 
 		brewingRecipeUtil.addRecipe(potionInputs, potionOutput);
-
-		this.inputs = new ArrayList<>();
-		this.inputs.add(potionInputs);
-		this.inputs.add(potionInputs);
-		this.inputs.add(potionInputs);
-		this.inputs.add(ingredients);
 
 		ItemStack firstIngredient = ingredients.get(0);
 		ItemStack firstInput = potionInputs.get(0);
@@ -44,8 +36,12 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 			firstIngredient.getItem());
 	}
 
-	public List<List<ItemStack>> getInputs() {
-		return inputs;
+	public List<ItemStack> getPotionInputs() {
+		return potionInputs;
+	}
+
+	public List<ItemStack> getIngredients() {
+		return ingredients;
 	}
 
 	public ItemStack getPotionOutput() {

@@ -21,7 +21,7 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 
 	@Nullable
 	@Override
-	public DebugIngredient getMatch(Iterable<DebugIngredient> ingredients, DebugIngredient ingredientToMatch, UidContext context) {
+	public DebugIngredient getMatch(Iterable<? extends DebugIngredient> ingredients, DebugIngredient ingredientToMatch, UidContext context) {
 		for (DebugIngredient debugIngredient : ingredients) {
 			if (debugIngredient.getNumber() == ingredientToMatch.getNumber()) {
 				String keyLhs = getUniqueId(ingredientToMatch, context);
@@ -44,11 +44,13 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 		return "JEI_debug_" + ingredient.getNumber();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getModId(DebugIngredient ingredient) {
 		return ModIds.JEI_ID;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getResourceId(DebugIngredient ingredient) {
 		return "debug_" + ingredient.getNumber();

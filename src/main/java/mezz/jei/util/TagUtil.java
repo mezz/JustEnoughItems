@@ -6,15 +6,15 @@ import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagCollection;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
 public class TagUtil {
 	@Nullable
-	public static ResourceLocation getTagEquivalent(Collection<ItemStack> itemStacks) {
+	public static ResourceLocation getTagEquivalent(Collection<@Nullable ItemStack> itemStacks) {
 		if (itemStacks.size() < 2) {
 			return null;
 		}

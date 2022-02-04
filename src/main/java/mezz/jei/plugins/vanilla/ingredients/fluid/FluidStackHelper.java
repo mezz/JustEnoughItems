@@ -41,7 +41,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	@Nullable
-	public FluidStack getMatch(Iterable<FluidStack> ingredients, FluidStack toMatch, UidContext context) {
+	public FluidStack getMatch(Iterable<? extends FluidStack> ingredients, FluidStack toMatch, UidContext context) {
 		for (FluidStack fluidStack : ingredients) {
 			if (toMatch.getFluid() == fluidStack.getFluid()) {
 				String keyLhs = getUniqueId(toMatch, context);
@@ -83,6 +83,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		return "fluid:" + registryName;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getModId(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
@@ -109,6 +110,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		return Collections.emptyList();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getResourceId(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();

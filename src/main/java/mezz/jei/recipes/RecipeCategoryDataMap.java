@@ -2,6 +2,7 @@ package mezz.jei.recipes;
 
 import java.util.List;
 
+import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.collect.ImmutableList;
@@ -14,11 +15,11 @@ public class RecipeCategoryDataMap {
 
 	public RecipeCategoryDataMap(
 		List<IRecipeCategory<?>> recipeCategories,
-		ImmutableListMultimap<IRecipeCategory<?>, Object> recipeCategoryCatalystsMap
+		ImmutableListMultimap<IRecipeCategory<?>, ITypedIngredient<?>> recipeCategoryCatalystsMap
 	) {
 		ImmutableMap.Builder<ResourceLocation, RecipeCategoryData<?>> mapBuilder = ImmutableMap.builder();
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
-			ImmutableList<Object> recipeCategoryCatalysts = recipeCategoryCatalystsMap.get(recipeCategory);
+			ImmutableList<ITypedIngredient<?>> recipeCategoryCatalysts = recipeCategoryCatalystsMap.get(recipeCategory);
 			mapBuilder.put(recipeCategory.getUid(), new RecipeCategoryData<>(recipeCategory, recipeCategoryCatalysts));
 		}
 		this.map = mapBuilder.build();

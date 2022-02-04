@@ -72,7 +72,7 @@ public interface IGuiHelper {
 	 * Returns a 16x16 drawable for the given ingredient, matching the one JEI draws in the ingredient list.
 	 * @deprecated since JEI 9.1.1. Use {@link #createDrawableIngredient(IIngredientType, Object)}
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.1.1")
 	<V> IDrawable createDrawableIngredient(V ingredient);
 
 	/**
@@ -83,6 +83,6 @@ public interface IGuiHelper {
 	 * This is now given only when needed, in
 	 * {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, List)}
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1);
 }

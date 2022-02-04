@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -31,7 +32,7 @@ public interface IIngredientListElementInfo<V> {
 
 	IIngredientListElement<V> getElement();
 
-	V getIngredient();
+	ITypedIngredient<V> getTypedIngredient();
 
 	void setSortedIndex(int sortIndex);
 

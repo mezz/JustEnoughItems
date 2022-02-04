@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -101,9 +102,11 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 
 		{
 			Set<Slot> recipeTargets = matchingItemsResult.matchingItems.keySet().stream()
-				.map(IRecipeSlotView::getSlotIndex)
-				.map(container::getSlot)
+				.map(IRecipeSlotView::getContainerSlotIndex)
+				.flatMapToInt(OptionalInt::stream)
+				.mapToObj(container::getSlot)
 				.collect(Collectors.toSet());
+
 			Collection<Slot> ingredientTargets = matchingItemsResult.matchingItems.values();
 			if (!RecipeTransferUtil.validateSlots(player, recipeTargets, ingredientTargets, craftingSlots, inventorySlots)) {
 				return handlerHelper.createInternalError();
@@ -153,7 +156,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 	}
 
 	public static <C extends AbstractContainerMenu, R> boolean validateRecipeView(IRecipeTransferInfo<C, R> transferInfo, C container, List<Integer> craftingSlotIndexes, List<IRecipeSlotView> inputSlots) {
-		List<Integer> inputSlotIndexes = recipeSlotIndexes(inputSlots);
+		List<Integer> inputSlotIndexes = recipeSlotIndexes(container, inputSlots);
 		if (!craftingSlotIndexes.containsAll(inputSlotIndexes)) {
 			LOGGER.error("Recipe View {} does not work for container {}. " +
 					"The Recipe View references input slot indexes [{}] that are not found in the inventory crafting slots [{}]",
@@ -173,9 +176,12 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			.toList();
 	}
 
-	public static List<Integer> recipeSlotIndexes(Collection<IRecipeSlotView> recipeSlotViews) {
+	public static List<Integer> recipeSlotIndexes(AbstractContainerMenu containerMenu, Collection<IRecipeSlotView> recipeSlotViews) {
 		return recipeSlotViews.stream()
-			.map(IRecipeSlotView::getSlotIndex)
+			.map(IRecipeSlotView::getContainerSlotIndex)
+			.flatMapToInt(OptionalInt::stream)
+			.mapToObj(containerMenu::getSlot)
+			.map(s -> s.index)
 			.sorted()
 			.distinct()
 			.toList();

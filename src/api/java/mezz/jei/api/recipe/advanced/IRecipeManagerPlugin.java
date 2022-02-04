@@ -25,13 +25,13 @@ public interface IRecipeManagerPlugin {
 
 	/**
 	 * Returns a list of Recipes in the recipeCategory that have the focus.
-	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipes(IRecipeCategory, IFocus, boolean)}.
+	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipes(IRecipeCategory, List, boolean)}.
 	 */
 	<T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus);
 
 	/**
 	 * Returns a list of all Recipes in the recipeCategory.
-	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipes(IRecipeCategory, IFocus, boolean)}.
+	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipes(IRecipeCategory, List, boolean)}.
 	 */
 	<T> List<T> getRecipes(IRecipeCategory<T> recipeCategory);
 }

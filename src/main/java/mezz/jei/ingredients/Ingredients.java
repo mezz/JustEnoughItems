@@ -7,10 +7,9 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -31,8 +30,8 @@ public class Ingredients implements IIngredients, IIngredientSupplier {
 	}
 
 	@Override
-	public <T> void setInputLists(IIngredientType<T> ingredientType, List<List<T>> inputs) {
-		List<List<T>> expandedInputs = new ArrayList<>(inputs);
+	public <T> void setInputLists(IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs) {
+		List<@Nullable List<@Nullable T>> expandedInputs = new ArrayList<>(inputs);
 		setIngredients(ingredientType, this.inputs, expandedInputs);
 	}
 
@@ -41,17 +40,17 @@ public class Ingredients implements IIngredients, IIngredientSupplier {
 		List<List<ItemStack>> inputLists = new ArrayList<>();
 		for (Ingredient input : inputs) {
 			ItemStack[] stacks = input.getItems();
-			List<ItemStack> expandedInput = Arrays.asList(stacks);
+			List<ItemStack> expandedInput = List.of(stacks);
 			inputLists.add(expandedInput);
 		}
 		setIngredients(VanillaTypes.ITEM, this.inputs, inputLists);
 	}
 
 	@Override
-	public <T> void setInputs(IIngredientType<T> ingredientType, List<T> inputs) {
-		List<List<T>> expandedInputs = new ArrayList<>();
-		for (T input : inputs) {
-			List<T> expandedInput = Collections.singletonList(input);
+	public <T> void setInputs(IIngredientType<T> ingredientType, List<@Nullable T> inputs) {
+		List<@Nullable List<@Nullable T>> expandedInputs = new ArrayList<>();
+		for (@Nullable T input : inputs) {
+			List<@Nullable T> expandedInput = Collections.singletonList(input);
 			expandedInputs.add(expandedInput);
 		}
 		setIngredients(ingredientType, this.inputs, expandedInputs);
@@ -63,32 +62,36 @@ public class Ingredients implements IIngredients, IIngredientSupplier {
 	}
 
 	@Override
-	public <T> void setOutputs(IIngredientType<T> ingredientType, List<T> outputs) {
-		List<List<T>> expandedOutputs = new ArrayList<>();
-		for (T output : outputs) {
-			List<T> expandedOutput = Collections.singletonList(output);
+	public <T> void setOutputs(IIngredientType<T> ingredientType, List<@Nullable T> outputs) {
+		List<@Nullable List<@Nullable T>> expandedOutputs = new ArrayList<>();
+		for (@Nullable T output : outputs) {
+			List<@Nullable T> expandedOutput = Collections.singletonList(output);
 			expandedOutputs.add(expandedOutput);
 		}
 		setIngredients(ingredientType, this.outputs, expandedOutputs);
 	}
 
 	@Override
-	public <T> void setOutputLists(IIngredientType<T> ingredientType, List<List<T>> outputs) {
-		List<List<T>> expandedOutputs = new ArrayList<>(outputs);
+	public <T> void setOutputLists(IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> outputs) {
+		List<@Nullable List<@Nullable T>> expandedOutputs = new ArrayList<>(outputs);
 		setIngredients(ingredientType, this.outputs, expandedOutputs);
 	}
 
 	@Override
-	public <T> List<List<T>> getInputs(IIngredientType<T> ingredientType) {
+	public <T> List<@Nullable List<@Nullable T>> getInputs(IIngredientType<T> ingredientType) {
 		return getIngredients(ingredientType, this.inputs);
 	}
 
 	@Override
-	public <T> List<List<T>> getOutputs(IIngredientType<T> ingredientType) {
+	public <T> List<@Nullable List<@Nullable T>> getOutputs(IIngredientType<T> ingredientType) {
 		return getIngredients(ingredientType, this.outputs);
 	}
 
-	private static <T> void setIngredients(IIngredientType<T> ingredientType, List<IngredientsForType<?>> ingredientsForTypes, List<List<T>> ingredients) {
+	private static <T> void setIngredients(
+		IIngredientType<T> ingredientType,
+		List<IngredientsForType<?>> ingredientsForTypes,
+		List<@Nullable List<@Nullable T>> ingredients
+	) {
 		IngredientsForType<T> recipeIngredients = getIngredientsForType(ingredientType, ingredientsForTypes);
 		if (recipeIngredients == null) {
 			ingredientsForTypes.add(new IngredientsForType<>(ingredientType, ingredients));
@@ -97,7 +100,7 @@ public class Ingredients implements IIngredients, IIngredientSupplier {
 		}
 	}
 
-	private static <T> List<List<T>> getIngredients(IIngredientType<T> ingredientType, List<IngredientsForType<?>> ingredientsForTypes) {
+	private static <T> List<@Nullable List<@Nullable T>> getIngredients(IIngredientType<T> ingredientType, List<IngredientsForType<?>> ingredientsForTypes) {
 		IngredientsForType<T> recipeIngredients = getIngredientsForType(ingredientType, ingredientsForTypes);
 		if (recipeIngredients == null) {
 			return Collections.emptyList();
@@ -118,20 +121,19 @@ public class Ingredients implements IIngredients, IIngredientSupplier {
 	}
 
 	@Override
-	public List<? extends IIngredientType<?>> getIngredientTypes(RecipeIngredientRole role) {
+	public Stream<? extends IIngredientType<?>> getIngredientTypes(RecipeIngredientRole role) {
 		List<IngredientsForType<?>> source;
 		if (role == RecipeIngredientRole.INPUT) {
 			source = inputs;
 		} else if (role == RecipeIngredientRole.OUTPUT) {
 			source = outputs;
 		} else {
-			return List.of();
+			return Stream.of();
 		}
 
 		return source.stream()
 			.map(IngredientsForType::getIngredientType)
-			.distinct()
-			.toList();
+			.distinct();
 	}
 
 	@Override
@@ -149,7 +151,7 @@ public class Ingredients implements IIngredients, IIngredientSupplier {
 		if (ingredientsForType == null) {
 			return Stream.empty();
 		}
-		List<List<T>> ingredients = ingredientsForType.getIngredients();
+		List<@Nullable List<@Nullable T>> ingredients = ingredientsForType.getIngredients();
 		return ingredients.stream()
 			.filter(Objects::nonNull)
 			.flatMap(Collection::stream)

@@ -3,9 +3,9 @@ package mezz.jei.plugins.vanilla.compostable;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayoutView;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -66,12 +66,13 @@ public class CompostableRecipeCategory implements IRecipeCategory<CompostableRec
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, CompostableRecipe recipe, List<? extends IFocus<?>> focuses) {
-		builder.addSlot(inputSlot, RecipeIngredientRole.INPUT, 0, 0)
-			.addIngredients(recipe.getInputs());
+		builder.addSlot(RecipeIngredientRole.INPUT, 0, 0)
+			.addItemStacks(recipe.getInputs())
+			.setContainerSlotIndex(inputSlot);
 	}
 
 	@Override
-	public void draw(CompostableRecipe recipe, IRecipeLayoutView recipeLayoutView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(CompostableRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		slot.draw(poseStack);
 
 		float chance = recipe.getChance();

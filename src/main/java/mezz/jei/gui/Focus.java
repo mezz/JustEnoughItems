@@ -1,47 +1,50 @@
 package mezz.jei.gui;
 
 import mezz.jei.Internal;
-import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.util.ErrorUtil;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class Focus<V> implements IFocus<V> {
 	private final RecipeIngredientRole role;
-	private final V value;
+	private final ITypedIngredient<V> value;
 
-	public Focus(IFocus.Mode mode, V value) {
-		ErrorUtil.checkNotNull(mode, "focus mode");
-		ErrorUtil.checkIsValidIngredient(value, "focus value");
-		this.role = mode.toRole();
-		IIngredientHelper<V> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(value);
-		this.value = ingredientHelper.copyIngredient(value);
-	}
-
-	public Focus(RecipeIngredientRole role, V value) {
+	public Focus(RecipeIngredientRole role, ITypedIngredient<V> value) {
 		ErrorUtil.checkNotNull(role, "focus role");
-		ErrorUtil.checkIsValidIngredient(value, "focus value");
+		ErrorUtil.checkNotNull(value, "focus value");
 		this.role = role;
-		IIngredientHelper<V> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(value);
-		this.value = ingredientHelper.copyIngredient(value);
+		this.value = value;
 	}
 
 	@Override
-	public V getValue() {
+	public ITypedIngredient<V> getTypedValue() {
 		return value;
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings("removal")
+	@Override
+	public V getValue() {
+		return value.getIngredient();
+	}
+
+	@SuppressWarnings({"removal"})
 	@Override
 	public IFocus.Mode getMode() {
 		return switch (role) {
 			case INPUT, CATALYST -> IFocus.Mode.INPUT;
-			case OUTPUT -> IFocus.Mode.OUTPUT;
+			case OUTPUT, RENDER_ONLY -> IFocus.Mode.OUTPUT;
 		};
 	}
 
@@ -58,7 +61,28 @@ public final class Focus<V> implements IFocus<V> {
 			return (Focus<V>) focus;
 		}
 		ErrorUtil.checkNotNull(focus, "focus");
-		return new Focus<>(focus.getRole(), focus.getValue());
+		@SuppressWarnings("removal")  // call the old function in case they don't implement the new getTypedValue yet
+		V value = focus.getValue();
+
+		IngredientManager ingredientManager = Internal.getIngredientManager();
+		IIngredientType<V> ingredientType = ingredientManager.getIngredientType(value);
+		return createFromApi(ingredientManager, focus.getRole(), ingredientType, value);
+	}
+
+	@SuppressWarnings("removal")
+	public static <V> Focus<V> createFromLegacyApi(IIngredientManager ingredientManager, IFocus.Mode mode, V value) {
+		IIngredientType<V> ingredientType = ingredientManager.getIngredientType(value);
+		return createFromApi(ingredientManager, mode.toRole(), ingredientType, value);
+	}
+
+	public static <V> Focus<V> createFromApi(IIngredientManager ingredientManager, RecipeIngredientRole role, IIngredientType<V> ingredientType, V value) {
+		Optional<ITypedIngredient<V>> typedIngredient = TypedIngredient.createTyped(ingredientManager, ingredientType, value)
+			.flatMap(i -> TypedIngredient.deepCopy(ingredientManager, i));
+
+		if (typedIngredient.isEmpty()) {
+			throw new IllegalArgumentException("Focus value is invalid: " + ErrorUtil.getIngredientInfo(value, ingredientType));
+		}
+		return new Focus<>(role, typedIngredient.get());
 	}
 
 	/**
@@ -81,12 +105,10 @@ public final class Focus<V> implements IFocus<V> {
 	/**
 	 * Make sure any IFocus coming in through API calls is validated and turned into JEI's Focus.
 	 */
-	@SuppressWarnings("unchecked")
 	public static List<Focus<?>> check(Collection<? extends IFocus<?>> focuses) {
-		List<? extends Focus<?>> result = focuses.stream()
+		return focuses.stream()
 			.filter(Objects::nonNull)
 			.map(Focus::checkOne)
-			.toList();
-		return (List<Focus<?>>) result;
+			.collect(Collectors.toUnmodifiableList());
 	}
 }

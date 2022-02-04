@@ -1,7 +1,6 @@
 package mezz.jei.api.gui.drawable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.gui.IRecipeLayoutView;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.gui.ingredients.RecipeSlot;
 import net.minecraft.client.renderer.Rect2i;
@@ -55,7 +56,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		return width - overlapSize;
 	}
 
-	public void updateLayout(List<Object> ingredients, RecipesGui recipesGui) {
+	public void updateLayout(List<ITypedIngredient<?>> ingredients, RecipesGui recipesGui) {
 		this.recipeSlots.clear();
 
 		if (!ingredients.isEmpty()) {
@@ -72,14 +73,14 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 			left = recipeArea.getX() - width + overlapSize; // overlaps the recipe gui slightly
 
 			for (int i = 0; i < ingredients.size(); i++) {
-				Object ingredientForSlot = ingredients.get(i);
-				RecipeSlot recipeSlot = createGuiIngredient(ingredientForSlot, i, maxIngredientsPerColumn);
+				ITypedIngredient<?> ingredientForSlot = ingredients.get(i);
+				RecipeSlot recipeSlot = createSlot(ingredientForSlot, i, maxIngredientsPerColumn);
 				this.recipeSlots.add(recipeSlot);
 			}
 		}
 	}
 
-	private <T> RecipeSlot createGuiIngredient(T ingredient, int index, int maxIngredientsPerColumn) {
+	private <T> RecipeSlot createSlot(ITypedIngredient<T> typedIngredient, int index, int maxIngredientsPerColumn) {
 		IngredientManager ingredientManager = Internal.getIngredientManager();
 		int column = index / maxIngredientsPerColumn;
 		int row = index % maxIngredientsPerColumn;
@@ -92,13 +93,12 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		RecipeSlot recipeSlot = new RecipeSlot(
 			ingredientManager,
 			RecipeIngredientRole.CATALYST,
-			index,
 			rect,
 			0,
 			0,
 			0
 		);
-		recipeSlot.set(List.of(ingredient), null);
+		recipeSlot.set(List.of(Optional.of(typedIngredient)), null);
 		return recipeSlot;
 	}
 
@@ -138,6 +138,9 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	@Override
 	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return getHovered(mouseX, mouseY)
-			.flatMap(hovered -> ClickedIngredient.create(hovered, false, true));
+			.flatMap(hovered ->
+				hovered.getDisplayedIngredient()
+					.map(displayedIngredient -> new ClickedIngredient<>(displayedIngredient, hovered.getRect(), false, true))
+			);
 	}
 }

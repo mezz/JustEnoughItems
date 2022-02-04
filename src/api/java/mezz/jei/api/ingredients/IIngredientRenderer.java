@@ -66,7 +66,7 @@ public interface IIngredientRenderer<T> {
 	 *
 	 * @deprecated since JEI 9.3.0. Use {@link #render(PoseStack, int, int, int, int, Object)} instead.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void render(PoseStack stack, int xPosition, int yPosition, @Nullable T ingredient) {
 
 	}

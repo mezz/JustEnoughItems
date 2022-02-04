@@ -12,13 +12,13 @@ import net.minecraft.network.chat.Component;
  *
  * @deprecated since JEI 9.3.0. Use {@link IRecipeSlotTooltipCallback} instead.
  */
-@Deprecated
+@Deprecated(forRemoval = true, since = "9.3.0")
 @FunctionalInterface
 public interface ITooltipCallback<T> {
 	/**
 	 * Change the tooltip for an ingredient.
-	 * @deprecated since JEI 9.3.0. Use {@link IRecipeSlotTooltipCallback#onTooltip(IGuiIngredient, List)} instead.
+	 * @deprecated since JEI 9.3.0. Use {@link IRecipeSlotTooltipCallback#onTooltip(IRecipeSlotView, List)} instead.
 	 */
-	@Deprecated
-	void onTooltip(int slotIndex, boolean input, T ingredient, List<Component> tooltip);
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	void onTooltip(int ingredientIndex, boolean input, T ingredient, List<Component> tooltip);
 }

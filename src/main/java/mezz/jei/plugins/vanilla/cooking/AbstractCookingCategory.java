@@ -5,10 +5,10 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayoutView;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.config.Constants;
@@ -67,14 +67,8 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		return icon;
 	}
 
-//	@Override
-//	public void setIngredients(T recipe, IIngredients ingredients) {
-//		ingredients.setInputIngredients(recipe.getIngredients());
-//		ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
-//	}
-
 	@Override
-	public void draw(T recipe, IRecipeLayoutView recipeLayoutView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(T recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		animatedFlame.draw(poseStack, 1, 20);
 
 		IDrawableAnimated arrow = getArrow(recipe);
@@ -112,23 +106,15 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		return localizedName;
 	}
 
-//	@Override
-//	public void setRecipe(IRecipeLayout recipeLayout, T recipe, IIngredients ingredients) {
-//		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-//
-//		guiItemStacks.init(inputSlot, true, 0, 0);
-//		guiItemStacks.init(outputSlot, false, 60, 18);
-//
-//		guiItemStacks.set(ingredients);
-//	}
-
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, T recipe, List<? extends IFocus<?>> focuses) {
-		builder.addSlot(inputSlot, INPUT, 0, 0)
-			.addIngredients(recipe.getIngredients().get(0));
+		builder.addSlot(INPUT, 0, 0)
+			.addIngredients(recipe.getIngredients().get(0))
+			.setContainerSlotIndex(inputSlot);
 
-		builder.addSlot(outputSlot, OUTPUT, 60, 18)
-			.addIngredient(recipe.getResultItem());
+		builder.addSlot(OUTPUT, 60, 18)
+			.addItemStack(recipe.getResultItem())
+			.setContainerSlotIndex(outputSlot);
 	}
 
 	@Override

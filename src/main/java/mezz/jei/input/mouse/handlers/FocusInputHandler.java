@@ -1,5 +1,6 @@
 package mezz.jei.input.mouse.handlers;
 
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.config.KeyBindings;
@@ -11,6 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class FocusInputHandler implements IUserInputHandler {
 	private final CombinedRecipeFocusSource focusSource;
@@ -38,9 +40,9 @@ public class FocusInputHandler implements IUserInputHandler {
 		return focusSource.getIngredientUnderMouse(input)
 			.map(clicked -> {
 				if (!input.isSimulate()) {
-					List<? extends Focus<?>> focuses = roles.stream()
+					List<IFocus<?>> focuses = roles.stream()
 						.map(role -> new Focus<>(role, clicked.getValue()))
-						.toList();
+						.collect(Collectors.toList());
 					recipesGui.show(focuses);
 				}
 				return LimitedAreaInputHandler.create(this, clicked.getArea());

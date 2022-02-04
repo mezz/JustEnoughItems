@@ -1,13 +1,15 @@
 package mezz.jei.api.gui.ingredient;
 
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
 /**
  * Used to add tooltips to ingredients drawn on a recipe.
- * Implement a tooltip callback and set it with {@link IGuiIngredientGroup#addTooltipCallback(IRecipeSlotTooltipCallback)}.
- * Note that this works on anything that implements {@link IGuiIngredientGroup}, like {@link IGuiItemStackGroup} and {@link IGuiFluidStackGroup}.
+ *
+ * Implement a tooltip callback and add it with
+ * {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
  *
  * @since JEI 9.3.0
  */

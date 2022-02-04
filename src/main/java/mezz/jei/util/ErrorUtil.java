@@ -81,14 +81,15 @@ public final class ErrorUtil {
 	}
 
 	private static void appendRoleData(IIngredientSupplier ingredientSupplier, RecipeIngredientRole role, StringBuilder recipeInfoBuilder) {
-		for (IIngredientType<?> ingredientType : ingredientSupplier.getIngredientTypes(role)) {
-			String ingredientOutputInfo = getIngredientInfo(ingredientType, role, ingredientSupplier);
-			recipeInfoBuilder
-				.append("\n    ")
-				.append(ingredientType.getIngredientClass().getName())
-				.append(": ")
-				.append(ingredientOutputInfo);
-		}
+		ingredientSupplier.getIngredientTypes(role)
+			.forEach(ingredientType -> {
+				String ingredientOutputInfo = getIngredientInfo(ingredientType, role, ingredientSupplier);
+				recipeInfoBuilder
+					.append("\n    ")
+					.append(ingredientType.getIngredientClass().getName())
+					.append(": ")
+					.append(ingredientOutputInfo);
+			});
 	}
 
 	private static <T> String getIngredientInfo(IIngredientType<T> ingredientType, RecipeIngredientRole role, IIngredientSupplier ingredients) {
@@ -126,8 +127,9 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static <T> String getIngredientInfo(T ingredient) {
-		IIngredientHelper<T> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredient);
+	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType) {
+		IngredientManager ingredientManager = Internal.getIngredientManager();
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		return ingredientHelper.getErrorInfo(ingredient);
 	}
 
@@ -272,25 +274,6 @@ public final class ErrorUtil {
 					throw new NullPointerException(name + " must not contain null values.");
 				}
 			}
-		}
-	}
-
-	public static <T> void checkIsInstance(IIngredientType<T> ingredientType, T ingredient, String name) {
-		checkNotNull(ingredient, name);
-		Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
-		if (!ingredientClass.isInstance(ingredient)) {
-			throw new IllegalArgumentException("Invalid ingredient found. Parameter Name: " + name +
-				" Should be an instance of: " + ingredientClass + " Instead got: " + ingredient.getClass());
-		}
-	}
-
-	public static <T> void checkIsValidIngredient(T ingredient, String name) {
-		checkNotNull(ingredient, name);
-		IngredientManager ingredientManager = Internal.getIngredientManager();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		if (!ingredientHelper.isValidIngredient(ingredient)) {
-			String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
-			throw new IllegalArgumentException("Invalid ingredient found. Parameter Name: " + name + " Ingredient Info: " + ingredientInfo);
 		}
 	}
 

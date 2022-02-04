@@ -118,7 +118,7 @@ public class JeiStarter {
 			recipesGui,
 			ingredientListOverlay,
 			leftAreaDispatcher,
-			new GuiContainerWrapper(guiScreenHelper)
+			new GuiContainerWrapper(ingredientManager, guiScreenHelper)
 		);
 
 		List<ICharTypedHandler> charTypedHandlers = List.of(
@@ -132,7 +132,7 @@ public class JeiStarter {
 			new FocusInputHandler(recipeFocusSource, recipesGui),
 			new BookmarkInputHandler(recipeFocusSource, bookmarkList),
 			new GlobalInputHandler(worldConfig),
-			new GuiAreaInputHandler(guiScreenHelper, recipesGui)
+			new GuiAreaInputHandler(ingredientManager, guiScreenHelper, recipesGui)
 		);
 		InputEventHandler inputEventHandler = new InputEventHandler(charTypedHandlers, userInputHandler);
 		Internal.setInputEventHandler(inputEventHandler);

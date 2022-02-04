@@ -1,16 +1,19 @@
 package mezz.jei.api.gui.ingredient;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotId;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.Slot;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.List;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.stream.Stream;
 
 /**
@@ -21,46 +24,55 @@ import java.util.stream.Stream;
  */
 public interface IRecipeSlotView {
 	/**
+	 * All ingredient variations of the given type that can be shown.
+	 *
+	 * @see #getAllIngredients() to get ingredients of every type together.
+	 *
+	 * @since JEI 9.3.0
+	 */
+	<T> Stream<T> getIngredients(IIngredientType<T> ingredientType);
+
+	/**
 	 * All ingredient variations that can be shown.
 	 * This list can contain multiple types of ingredient.
 	 *
-	 * @see #getAllIngredients(IIngredientType) to limit to one type of ingredient.
+	 * @see #getIngredients(IIngredientType) to limit to one type of ingredient.
 	 *
 	 * @since JEI 9.3.0
 	 */
-	List<?> getAllIngredients();
-
-	/**
-	 * All ingredient variations of the given type that can be shown.
-	 *
-	 * @since JEI 9.3.0
-	 */
-	<T> Stream<T> getAllIngredients(IIngredientType<T> ingredientType);
+	Stream<ITypedIngredient<?>> getAllIngredients();
 
 	/**
 	 * The ingredient variation that is shown at this moment.
 	 * For ingredients that rotate through several values, this will change over time.
+	 * If nothing of this type is currently shown, this will return {@link Optional#empty()}.
 	 *
 	 * @since JEI 9.3.0
 	 */
-	@Nullable
-	<T> T getDisplayedIngredient(IIngredientType<T> ingredientType);
+	<T> Optional<T> getDisplayedIngredient(IIngredientType<T> ingredientType);
 
 	/**
 	 * The ingredient variation that is shown at this moment.
 	 * For ingredients that rotate through several values, this will change over time.
+	 * If nothing is currently shown, this will return {@link Optional#empty()}.
 	 *
 	 * @since JEI 9.3.0
 	 */
-	@Nullable
-	Object getDisplayedIngredient();
+	Optional<ITypedIngredient<?>> getDisplayedIngredient();
 
 	/**
-	 * Returns the ({@link Slot#index} of this ingredient.
+	 * For recipe transfer, returns the ({@link Slot#index} of this ingredient if it has one.
 	 *
 	 * @since JEI 9.3.0
 	 */
-	int getSlotIndex();
+	OptionalInt getContainerSlotIndex();
+
+	/**
+	 * The {@link IRecipeSlotId} if one was set by {@link IRecipeSlotBuilder#setSlotId(IRecipeSlotId)}
+	 *
+	 * @since JEI 9.3.0
+	 */
+	Optional<IRecipeSlotId> getSlotId();
 
 	/**
 	 * Returns the type of focus that matches this ingredient.

@@ -3,9 +3,10 @@ package mezz.jei.plugins.vanilla.anvil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayoutView;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotId;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -21,10 +22,13 @@ import net.minecraft.world.level.block.Blocks;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 	private final IDrawable background;
 	private final IDrawable icon;
+	private final IRecipeSlotId leftInputId = () -> "left";
+	private final IRecipeSlotId rightInputId = () -> "right";
 
 	public AnvilRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18)
@@ -60,25 +64,34 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, AnvilRecipe recipe, List<? extends IFocus<?>> focuses) {
-		builder.addSlot(0, RecipeIngredientRole.INPUT, 0, 0)
-			.addIngredients(recipe.getLeftInputs());
+		builder.addSlot(RecipeIngredientRole.INPUT, 0, 0)
+			.addItemStacks(recipe.getLeftInputs())
+			.setContainerSlotIndex(0)
+			.setSlotId(leftInputId);
 
-		builder.addSlot(1, RecipeIngredientRole.INPUT, 49, 0)
-			.addIngredients(recipe.getRightInputs());
+		builder.addSlot(RecipeIngredientRole.INPUT, 49, 0)
+			.addItemStacks(recipe.getRightInputs())
+			.setContainerSlotIndex(1)
+			.setSlotId(rightInputId);
 
-		builder.addSlot(2, RecipeIngredientRole.OUTPUT, 107, 0)
-			.addIngredients(recipe.getOutputs());
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 107, 0)
+			.addItemStacks(recipe.getOutputs())
+			.setContainerSlotIndex(2);
 	}
 
 	@Override
-	public void draw(AnvilRecipe recipe, IRecipeLayoutView recipeLayout, PoseStack poseStack, double mouseX, double mouseY) {
-		ItemStack leftStack = recipeLayout.getDisplayedIngredient(VanillaTypes.ITEM, 0);
-		ItemStack rightStack = recipeLayout.getDisplayedIngredient(VanillaTypes.ITEM, 1);
-		if (leftStack == null || rightStack == null) {
+	public void draw(AnvilRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+		Optional<ItemStack> leftStack = recipeSlotsView.getSlotView(leftInputId)
+			.flatMap(slotView -> slotView.getDisplayedIngredient(VanillaTypes.ITEM));
+
+		Optional<ItemStack> rightStack = recipeSlotsView.getSlotView(rightInputId)
+			.flatMap(slotView -> slotView.getDisplayedIngredient(VanillaTypes.ITEM));
+
+		if (leftStack.isEmpty() || rightStack.isEmpty()) {
 			return;
 		}
 
-		int cost = AnvilRecipeMaker.findLevelsCost(leftStack, rightStack);
+		int cost = AnvilRecipeMaker.findLevelsCost(leftStack.get(), rightStack.get());
 		String costText = cost < 0 ? "err" : Integer.toString(cost);
 		String text = I18n.get("container.repair.cost", costText);
 

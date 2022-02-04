@@ -3,55 +3,24 @@ package mezz.jei.input;
 import com.google.common.base.MoreObjects;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.ingredients.RecipeSlot;
-import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 public class ClickedIngredient<V> implements IClickedIngredient<V> {
-	private static final Logger LOGGER = LogManager.getLogger();
-
-	private final V value;
+	private final ITypedIngredient<V> value;
 	@Nullable
 	private final Rect2i area;
 	private final boolean canSetFocusWithMouse;
 	private final boolean allowsCheating;
 
-	public static Optional<IClickedIngredient<?>> create(RecipeSlot recipeSlot, boolean allowsCheating, boolean canSetFocusWithMouse) {
-		Object displayedIngredient = recipeSlot.getDisplayedIngredient();
-		if (displayedIngredient == null) {
-			return Optional.empty();
-		}
-		return create(displayedIngredient, recipeSlot.getRect(), allowsCheating, canSetFocusWithMouse);
-	}
-
-	public static <V> Optional<IClickedIngredient<? extends V>> create(V value, @Nullable Rect2i area, boolean allowsCheating, boolean canSetFocusWithMouse) {
+	public ClickedIngredient(ITypedIngredient<V> value, @Nullable Rect2i area, boolean allowsCheating, boolean canSetFocusWithMouse) {
 		ErrorUtil.checkNotNull(value, "value");
-		IngredientManager ingredientManager = Internal.getIngredientManager();
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value);
-		try {
-			if (ingredientHelper.isValidIngredient(value)) {
-				ClickedIngredient<V> clickedIngredient = new ClickedIngredient<>(value, area, allowsCheating, canSetFocusWithMouse);
-				return Optional.of(clickedIngredient);
-			}
-			String ingredientInfo = ingredientHelper.getErrorInfo(value);
-			LOGGER.error("Clicked invalid ingredient. Ingredient Info: {}", ingredientInfo);
-		} catch (RuntimeException e) {
-			String ingredientInfo = ingredientHelper.getErrorInfo(value);
-			LOGGER.error("Clicked invalid ingredient. Ingredient Info: {}", ingredientInfo, e);
-		}
-		return Optional.empty();
-	}
-
-	private ClickedIngredient(V value, @Nullable Rect2i area, boolean allowsCheating, boolean canSetFocusWithMouse) {
 		this.value = value;
 		this.area = area;
 		this.allowsCheating = allowsCheating;
@@ -59,7 +28,7 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	}
 
 	@Override
-	public V getValue() {
+	public ITypedIngredient<V> getValue() {
 		return value;
 	}
 
@@ -73,8 +42,8 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	public ItemStack getCheatItemStack() {
 		if (allowsCheating) {
 			IIngredientManager ingredientManager = Internal.getIngredientManager();
-			IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value);
-			return ingredientHelper.getCheatItemStack(value);
+			IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
+			return ingredientHelper.getCheatItemStack(value.getIngredient());
 		}
 		return ItemStack.EMPTY;
 	}
@@ -87,9 +56,9 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	@Override
 	public String toString() {
 		IIngredientManager ingredientManager = Internal.getIngredientManager();
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value);
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		return MoreObjects.toStringHelper(ClickedIngredient.class)
-			.add("value", ingredientHelper.getUniqueId(value, UidContext.Ingredient))
+			.add("value", ingredientHelper.getUniqueId(value.getIngredient(), UidContext.Ingredient))
 			.add("area", area)
 			.add("allowsCheating", allowsCheating)
 			.add("canSetFocusWithMouse", canSetFocusWithMouse)

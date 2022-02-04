@@ -1,19 +1,20 @@
 package mezz.jei.ingredients;
 
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 
 public class IngredientListElement<V> implements IIngredientListElement<V> {
-	private final V ingredient;
+	private final ITypedIngredient<V> ingredient;
 	private final int orderIndex;
 	private boolean visible = true;
 
-	public IngredientListElement(V ingredient, int orderIndex) {
+	public IngredientListElement(ITypedIngredient<V> ingredient, int orderIndex) {
 		this.ingredient = ingredient;
 		this.orderIndex = orderIndex;
 	}
 
 	@Override
-	public final V getIngredient() {
+	public final ITypedIngredient<V> getTypedIngredient() {
 		return ingredient;
 	}
 

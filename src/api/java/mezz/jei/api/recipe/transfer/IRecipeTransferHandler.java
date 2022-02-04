@@ -61,7 +61,7 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	 * @deprecated since JEI 9.3.0.
 	 * Use {@link #transferRecipe(AbstractContainerMenu, Object, IRecipeSlotsView, Player, boolean, boolean)} instead.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	@Nullable
 	default IRecipeTransferError transferRecipe(C container, R recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
 		return null;

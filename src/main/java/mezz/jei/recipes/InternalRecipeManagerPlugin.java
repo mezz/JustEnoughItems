@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Stream;
 
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.resources.ResourceLocation;
@@ -33,11 +34,11 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 	@Override
 	public <V> List<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus) {
 		focus = Focus.checkOne(focus);
-		V ingredient = focus.getValue();
+		ITypedIngredient<V> ingredient = focus.getTypedValue();
 		RecipeIngredientRole role = focus.getRole();
 		RecipeMap recipeMap = this.recipeMaps.get(role);
-		IIngredientHelper<V> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredient);
-		String ingredientUid = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
+		IIngredientHelper<V> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredient.getType());
+		String ingredientUid = ingredientHelper.getUniqueId(ingredient.getIngredient(), UidContext.Recipe);
 
 		List<ResourceLocation> recipeCategories = recipeMap.getRecipeCategories(ingredientUid);
 		if (focus.getRole() == RecipeIngredientRole.INPUT) {
@@ -57,11 +58,11 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 	@Override
 	public <T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
 		focus = Focus.checkOne(focus);
-		V ingredient = focus.getValue();
+		ITypedIngredient<V> ingredient = focus.getTypedValue();
 		RecipeIngredientRole role = focus.getRole();
 
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		String ingredientUid = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient.getType());
+		String ingredientUid = ingredientHelper.getUniqueId(ingredient.getIngredient(), UidContext.Recipe);
 
 		RecipeMap recipeMap = this.recipeMaps.get(role);
 		List<T> recipes = recipeMap.getRecipes(recipeCategory, ingredientUid);

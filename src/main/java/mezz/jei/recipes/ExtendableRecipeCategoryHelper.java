@@ -45,7 +45,7 @@ public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtensio
 
 	public <R extends T> W getRecipeExtension(R recipe) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
-		W recipeExtension = cache.computeIfAbsent(recipe, this::getRecipeExtensionUncached);
+		@Nullable W recipeExtension = cache.computeIfAbsent(recipe, this::getRecipeExtensionUncached);
 		if (recipeExtension == null) {
 			String recipeName = ErrorUtil.getNameForRecipe(recipe);
 			throw new RuntimeException("Failed to create recipe extension for recipe: " + recipeName);

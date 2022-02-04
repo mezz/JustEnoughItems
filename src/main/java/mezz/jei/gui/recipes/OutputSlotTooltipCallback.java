@@ -4,6 +4,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.ChatFormatting;
@@ -14,6 +15,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
+import java.util.Optional;
 
 public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 	private final ResourceLocation recipeName;
@@ -32,8 +34,8 @@ public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 
 	@Override
 	public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
-		Object displayedIngredient = recipeSlotView.getDisplayedIngredient();
-		if (displayedIngredient == null) {
+		Optional<ITypedIngredient<?>> displayedIngredient = recipeSlotView.getDisplayedIngredient();
+		if (displayedIngredient.isEmpty()) {
 			return;
 		}
 		if (recipeSlotView.getRole() != RecipeIngredientRole.OUTPUT) {
@@ -41,7 +43,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 		}
 
 		if (modIdHelper.isDisplayingModNameEnabled()) {
-			ResourceLocation ingredientName = getResourceLocation(displayedIngredient);
+			ResourceLocation ingredientName = getResourceLocation(displayedIngredient.get());
 
 			String recipeModId = recipeName.getNamespace();
 			String ingredientModId = ingredientName.getNamespace();
@@ -60,8 +62,8 @@ public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 		}
 	}
 
-	private <T> ResourceLocation getResourceLocation(T ingredient) {
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		return ingredientHelper.getResourceLocation(ingredient);
+	private <T> ResourceLocation getResourceLocation(ITypedIngredient<T> ingredient) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient.getType());
+		return ingredientHelper.getResourceLocation(ingredient.getIngredient());
 	}
 }

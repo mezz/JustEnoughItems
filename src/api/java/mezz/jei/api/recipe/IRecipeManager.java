@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
@@ -22,7 +23,7 @@ public interface IRecipeManager {
 	 * Returns a new focus.
 	 * @since JEI 9.3.0
 	 */
-	<V> IFocus<V> createFocus(RecipeIngredientRole role, V ingredient);
+	<V> IFocus<V> createFocus(RecipeIngredientRole role, IIngredientType<V> ingredientType, V ingredient);
 
 	/**
 	 * Returns a list of Recipe Categories for the focus.
@@ -59,22 +60,24 @@ public interface IRecipeManager {
 	IRecipeCategory<?> getRecipeCategory(ResourceLocation recipeCategoryUid, boolean includeHidden);
 
 	/**
-	 * Returns a list of recipes in the recipeCategory that have the focus.
+	 * Returns a list of recipes in the recipeCategory that have the given focuses.
+	 *
 	 * @param recipeCategory the recipe category to find recipes in
-	 * @param focus the current search focus, or null if there is no focus.
+	 * @param focuses the current search focuses, or an empty list if there is no focus.
 	 * @param includeHidden set true to include recipes that are hidden.
-	 * @since JEI 7.7.1
+	 *
+	 * @since JEI 9.3.0
 	 */
-	<T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus, boolean includeHidden);
 	<T> List<T> getRecipes(IRecipeCategory<T> recipeCategory, List<? extends IFocus<?>> focuses, boolean includeHidden);
 
 	/**
 	 * Returns an unmodifiable collection of ingredients that can craft the recipes from recipeCategory.
 	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
 	 * These are registered with {@link IRecipeCatalystRegistration#addRecipeCatalyst(IIngredientType, Object, ResourceLocation...)}.
-	 * @since JEI 7.7.1
+	 *
+	 * @since JEI 9.3.0
 	 */
-	List<Object> getRecipeCatalysts(IRecipeCategory<?> recipeCategory, boolean includeHidden);
+	List<ITypedIngredient<?>> getRecipeCatalystsTyped(IRecipeCategory<?> recipeCategory, boolean includeHidden);
 
 	/**
 	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
@@ -134,10 +137,31 @@ public interface IRecipeManager {
 
 	/**
 	 * Returns a new focus.
-	 * @deprecated since JEI 9.3.0. Use {@link #createFocus(RecipeIngredientRole, Object)} instead.
+	 * @deprecated since JEI 9.3.0. Use {@link #createFocus(RecipeIngredientRole, IIngredientType, Object)} instead.
 	 */
-	@Deprecated
-	default <V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient) {
-		return createFocus(mode.toRole(), ingredient);
-	}
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	<V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient);
+
+	/**
+	 * Returns a list of recipes in the recipeCategory that have the focus.
+	 * @param recipeCategory the recipe category to find recipes in
+	 * @param focus the current search focus, or null if there is no focus.
+	 * @param includeHidden set true to include recipes that are hidden.
+	 * @since JEI 7.7.1
+	 *
+	 * @deprecated since JEI 9.3.0. Use {@link #getRecipes(IRecipeCategory, List, boolean)} instead.
+	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	<T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus, boolean includeHidden);
+
+	/**
+	 * Returns an unmodifiable collection of ingredients that can craft the recipes from recipeCategory.
+	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
+	 * These are registered with {@link IRecipeCatalystRegistration#addRecipeCatalyst(IIngredientType, Object, ResourceLocation...)}.
+	 * @since JEI 7.7.1
+	 *
+	 * @deprecated Use {@link #getRecipeCatalystsTyped(IRecipeCategory, boolean)} instead.
+	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	List<Object> getRecipeCatalysts(IRecipeCategory<?> recipeCategory, boolean includeHidden);
 }

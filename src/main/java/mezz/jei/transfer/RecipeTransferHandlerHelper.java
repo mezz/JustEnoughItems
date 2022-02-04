@@ -31,10 +31,11 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	}
 
 	@Override
-	public IRecipeTransferError createUserErrorForSlots(Component tooltipMessage, Collection<Integer> missingItemSlots) {
+	@Deprecated
+	public IRecipeTransferError createUserErrorForSlots(Component tooltipMessage, Collection<Integer> missingItemIndexes) {
 		ErrorUtil.checkNotNull(tooltipMessage, "tooltipMessage");
-		ErrorUtil.checkNotEmpty(missingItemSlots, "missingItemSlots");
+		ErrorUtil.checkNotEmpty(missingItemIndexes, "missingItemIndexes");
 
-		return new RecipeTransferErrorSlots(tooltipMessage, Set.copyOf(missingItemSlots));
+		return new RecipeTransferErrorIngredientIndexes(tooltipMessage, Set.copyOf(missingItemIndexes));
 	}
 }

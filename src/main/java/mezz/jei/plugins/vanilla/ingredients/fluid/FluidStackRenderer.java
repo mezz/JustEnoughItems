@@ -41,6 +41,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	 * it is kept for backward compatibility for
 	 * {@link mezz.jei.api.gui.ingredient.IGuiFluidStackGroup}
 	 */
+	@SuppressWarnings("removal")
 	@Nullable
 	private final IDrawable overlay;
 
@@ -54,11 +55,16 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		this(FluidAttributes.BUCKET_VOLUME, TooltipMode.ITEM_LIST, null);
 	}
 
+	public FluidStackRenderer(int capacityMb, boolean showCapacity) {
+		this(capacityMb, showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT, null);
+	}
+
+	@Deprecated
 	public FluidStackRenderer(int capacityMb, boolean showCapacity, @Nullable IDrawable overlay) {
 		this(capacityMb, showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT, overlay);
 	}
 
-	public FluidStackRenderer(int capacityMb, TooltipMode tooltipMode, @Nullable IDrawable overlay) {
+	private FluidStackRenderer(int capacityMb, TooltipMode tooltipMode, @Nullable IDrawable overlay) {
 		this.capacityMb = capacityMb;
 		this.tooltipMode = tooltipMode;
 		this.overlay = overlay;
@@ -82,6 +88,7 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		RenderSystem.disableBlend();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable FluidStack ingredient) {
 		if (ingredient == null) {

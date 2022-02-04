@@ -9,12 +9,11 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.collect.SetMultiMap;
 import mezz.jei.ingredients.IIngredientSupplier;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -47,6 +46,7 @@ public class RecipeMap {
 		categoryCatalystUidToRecipeCategoryMap.put(ingredientUid, recipeCategoryUid);
 	}
 
+	@UnmodifiableView
 	public <T> List<T> getRecipes(IRecipeCategory<T> recipeCategory, String ingredientUid) {
 		return recipeTable.get(recipeCategory, ingredientUid);
 	}
@@ -57,23 +57,27 @@ public class RecipeMap {
 	}
 
 	public <T> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientSupplier ingredientSupplier) {
-		for (IIngredientType<?> ingredientsType : ingredientSupplier.getIngredientTypes(this.role)) {
-			addRecipe(recipe, recipeCategory, ingredientSupplier, ingredientsType);
-		}
+		ingredientSupplier.getIngredientTypes(this.role)
+			.forEach(ingredientType ->
+				addRecipe(recipe, recipeCategory, ingredientSupplier, ingredientType)
+			);
 	}
 
 	private <T, V> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientSupplier ingredientSupplier, IIngredientType<V> ingredientType) {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
-		Set<String> ingredientUids = ingredientSupplier.getIngredientStream(ingredientType, this.role)
+		List<String> ingredientUids = ingredientSupplier.getIngredientStream(ingredientType, this.role)
 			.filter(ingredientHelper::isValidIngredient)
 			.map(i -> ingredientHelper.getUniqueId(i, UidContext.Recipe))
-			.collect(Collectors.toSet());
+			.distinct()
+			.toList();
 
-		ResourceLocation recipeCategoryUid = recipeCategory.getUid();
-		for (String uid : ingredientUids) {
-			ingredientUidToCategoryMap.put(uid, recipeCategoryUid);
+		if (!ingredientUids.isEmpty()) {
+			ResourceLocation recipeCategoryUid = recipeCategory.getUid();
+			for (String uid : ingredientUids) {
+				ingredientUidToCategoryMap.put(uid, recipeCategoryUid);
+			}
+			recipeTable.add(recipe, recipeCategory, ingredientUids);
 		}
-		recipeTable.add(recipe, recipeCategory, ingredientUids);
 	}
 }

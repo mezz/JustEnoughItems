@@ -44,6 +44,7 @@ public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICra
 		return recipe.getId();
 	}
 
+	@SuppressWarnings("removal")
 	@Nullable
 	@Override
 	public Size2i getSize() {

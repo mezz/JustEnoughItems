@@ -8,15 +8,16 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 
 public class RecipeCategoryData<T> {
 	private final IRecipeCategory<T> recipeCategory;
-	private final ImmutableList<Object> recipeCategoryCatalysts;
+	private final ImmutableList<ITypedIngredient<?>> recipeCategoryCatalysts;
 	private final List<T> recipes = new ArrayList<>();
 	private final Set<T> hiddenRecipes = Collections.newSetFromMap(new IdentityHashMap<>());
 
-	public RecipeCategoryData(IRecipeCategory<T> recipeCategory, ImmutableList<Object> recipeCategoryCatalysts) {
+	public RecipeCategoryData(IRecipeCategory<T> recipeCategory, ImmutableList<ITypedIngredient<?>> recipeCategoryCatalysts) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryCatalysts = recipeCategoryCatalysts;
 	}
@@ -25,7 +26,7 @@ public class RecipeCategoryData<T> {
 		return recipeCategory;
 	}
 
-	public ImmutableList<Object> getRecipeCategoryCatalysts() {
+	public ImmutableList<ITypedIngredient<?>> getRecipeCategoryCatalysts() {
 		return recipeCategoryCatalysts;
 	}
 

@@ -2,6 +2,7 @@ package mezz.jei.gui.recipes;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
@@ -133,14 +134,14 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public List<Object> getRecipeCatalysts() {
+	public List<ITypedIngredient<?>> getRecipeCatalysts() {
 		IRecipeCategory<?> category = getSelectedRecipeCategory();
 		return getRecipeCatalysts(category);
 	}
 
 	@Override
-	public List<Object> getRecipeCatalysts(IRecipeCategory<?> recipeCategory) {
-		return recipeManager.getRecipeCatalysts(recipeCategory, false);
+	public List<ITypedIngredient<?>> getRecipeCatalysts(IRecipeCategory<?> recipeCategory) {
+		return recipeManager.getRecipeCatalystsTyped(recipeCategory, false);
 	}
 
 	@Override

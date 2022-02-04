@@ -22,7 +22,7 @@ public interface IRecipesGui {
 	 * @see IRecipeManager#createFocus(RecipeIngredientRole, Object)
 	 */
 	<V> void show(IFocus<V> focus);
-	void show(List<? extends IFocus<?>> focuses);
+	void show(List<IFocus<?>> focuses);
 
 	/**
 	 * Show entire categories of recipes.

@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IClientConfig;
@@ -37,6 +38,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -60,7 +62,7 @@ public class IngredientFilter implements IIngredientGridSource {
 
 	@Nullable
 	private String filterCached;
-	private List<?> ingredientListCached = Collections.emptyList();
+	private List<ITypedIngredient<?>> ingredientListCached = Collections.emptyList();
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
 	public IngredientFilter(
@@ -97,13 +99,17 @@ public class IngredientFilter implements IIngredientGridSource {
 			this.elementSearch.registerPrefix(prefixInfo);
 		}
 
-		EventBusHelper.registerWeakListener(this, EditModeToggleEvent.class, (ingredientFilter, editModeToggleEvent) -> {
-			ingredientFilter.updateHidden();
-		});
+		EventBusHelper.registerWeakListener(
+			this,
+			EditModeToggleEvent.class,
+			(ingredientFilter, editModeToggleEvent) -> ingredientFilter.updateHidden()
+		);
 
-		EventBusHelper.registerWeakListener(this, PlayerJoinedWorldEvent.class, (ingredientFilter, playerJoinedWorldEvent) -> {
-			ingredientFilter.updateHidden();
-		});
+		EventBusHelper.registerWeakListener(
+			this,
+			PlayerJoinedWorldEvent.class,
+			(ingredientFilter, playerJoinedWorldEvent) -> ingredientFilter.updateHidden()
+		);
 
 		ingredients.stream()
 			.map(i -> IngredientListElementInfo.create(i, ingredientManager, modIdHelper))
@@ -128,10 +134,11 @@ public class IngredientFilter implements IIngredientGridSource {
 		sorter.invalidateCache();
 	}
 
-	public <V> List<IIngredientListElementInfo<V>> findMatchingElements(IIngredientHelper<V> ingredientHelper, V ingredient) {
+	public <V> List<IIngredientListElementInfo<V>> findMatchingElements(IIngredientHelper<V> ingredientHelper, ITypedIngredient<V> typedIngredient) {
+		V ingredient = typedIngredient.getIngredient();
+		IIngredientType<V> type = typedIngredient.getType();
 		final String ingredientUid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
 		final String displayName = ingredientHelper.getDisplayName(ingredient);
-		@SuppressWarnings("unchecked") final Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
 
 		final List<IIngredientListElementInfo<V>> matchingElements = new ArrayList<>();
 		final IntSet matchingIndexes = this.elementSearch.getSearchResults(Translator.toLowercaseWithLocale(displayName), PrefixInfo.NO_PREFIX);
@@ -142,16 +149,16 @@ public class IngredientFilter implements IIngredientGridSource {
 		while (iterator.hasNext()) {
 			int index = iterator.nextInt();
 			IIngredientListElementInfo<?> matchingElementInfo = this.elementSearch.get(index);
-			Object matchingIngredient = matchingElementInfo.getIngredient();
-			if (ingredientClass.isInstance(matchingIngredient)) {
-				V castMatchingIngredient = ingredientClass.cast(matchingIngredient);
-				String matchingUid = ingredientHelper.getUniqueId(castMatchingIngredient, UidContext.Ingredient);
-				if (ingredientUid.equals(matchingUid)) {
-					@SuppressWarnings("unchecked")
-					IIngredientListElementInfo<V> matchingElementInfoCast = (IIngredientListElementInfo<V>) matchingElementInfo;
-					matchingElements.add(matchingElementInfoCast);
-				}
-			}
+			ITypedIngredient<?> matchingIngredient = matchingElementInfo.getTypedIngredient();
+			TypedIngredient.optionalCast(matchingIngredient, type)
+				.ifPresent(castMatchingIngredient -> {
+					String matchingUid = ingredientHelper.getUniqueId(castMatchingIngredient.getIngredient(), UidContext.Ingredient);
+					if (ingredientUid.equals(matchingUid)) {
+						@SuppressWarnings("unchecked")
+						IIngredientListElementInfo<V> matchingElementInfoCast = (IIngredientListElementInfo<V>) matchingElementInfo;
+						matchingElements.add(matchingElementInfoCast);
+					}
+				});
 		}
 		return matchingElements;
 	}
@@ -174,8 +181,8 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	public <V> boolean updateHiddenState(IIngredientListElement<V> element) {
-		V ingredient = element.getIngredient();
-		boolean visible = isIngredientVisible(ingredient);
+		ITypedIngredient<V> typedIngredient = element.getTypedIngredient();
+		boolean visible = isIngredientVisible(typedIngredient);
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			return true;
@@ -183,23 +190,31 @@ public class IngredientFilter implements IIngredientGridSource {
 		return false;
 	}
 
-	public <V> boolean isIngredientVisible(V ingredient) {
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		return isIngredientVisible(ingredient, ingredientHelper);
+	public <V> boolean isIngredientVisible(ITypedIngredient<V> typedIngredient) {
+		IIngredientType<V> ingredientType = typedIngredient.getType();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		return isIngredientVisible(typedIngredient, ingredientHelper);
 	}
 
-	public <V> boolean isIngredientVisible(V ingredient, IIngredientHelper<V> ingredientHelper) {
-		if (blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper)) {
+	public <V> boolean isIngredientVisible(IIngredientType<V> ingredientType, V ingredient) {
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		return TypedIngredient.createTyped(ingredientManager, ingredientType, ingredient)
+			.map(i -> isIngredientVisible(i, ingredientHelper))
+			.orElse(false);
+	}
+
+	public <V> boolean isIngredientVisible(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
+		if (blacklist.isIngredientBlacklistedByApi(typedIngredient, ingredientHelper)) {
 			return false;
 		}
-		if (!ingredientHelper.isIngredientOnServer(ingredient)) {
+		if (!ingredientHelper.isIngredientOnServer(typedIngredient.getIngredient())) {
 			return false;
 		}
-		return worldConfig.isEditModeEnabled() || !editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
+		return worldConfig.isEditModeEnabled() || !editModeConfig.isIngredientOnConfigBlacklist(typedIngredient, ingredientHelper);
 	}
 
 	@Override
-	public List<?> getIngredientList(String filterText) {
+	public List<ITypedIngredient<?>> getIngredientList(String filterText) {
 		filterText = filterText.toLowerCase();
 		if (!filterText.equals(filterCached)) {
 			//First step is to get the filtered unsorted list.
@@ -211,7 +226,7 @@ public class IngredientFilter implements IIngredientGridSource {
 			//Then we sort it.
 			ingredientListCached = ingredientList.stream()
 				.sorted(sorter.getComparator(this, this.ingredientManager))
-				.map(IIngredientListElementInfo::getIngredient)
+				.map(IIngredientListElementInfo::getTypedIngredient)
 				.collect(Collectors.toList());
 			if (debugMode) {
 				filterTimer.stop();
@@ -246,12 +261,12 @@ public class IngredientFilter implements IIngredientGridSource {
 		return Collections.unmodifiableSet(this.modNamesForSorting);
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> List<T> getFilteredIngredients(String filterText, IIngredientType<T> ingredientType) {
-		Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
-		List<?> ingredientList = getIngredientList(filterText);
-		return (List<T>) ingredientList.stream()
-			.filter(ingredientClass::isInstance)
+		List<ITypedIngredient<?>> ingredientList = getIngredientList(filterText);
+		return ingredientList.stream()
+			.map(i -> TypedIngredient.optionalCast(i, ingredientType))
+			.flatMap(Optional::stream)
+			.map(ITypedIngredient::getIngredient)
 			.toList();
 	}
 
@@ -297,11 +312,10 @@ public class IngredientFilter implements IIngredientGridSource {
 	/**
 	 * Scans up and down the element list to find wildcard matches that touch the given element.
 	 */
-	public <T> List<IIngredientListElementInfo<T>> getMatches(T ingredient, IIngredientHelper<T> ingredientHelper, Function<T, String> uidFunction) {
-		final String uid = uidFunction.apply(ingredient);
-		@SuppressWarnings("unchecked")
-		Class<? extends T> ingredientClass = (Class<? extends T>) ingredient.getClass();
-		List<IIngredientListElementInfo<T>> matchingElements = findMatchingElements(ingredientHelper, ingredient);
+	public <T> List<IIngredientListElementInfo<T>> getMatches(ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper, Function<ITypedIngredient<T>, String> uidFunction) {
+		IIngredientType<T> ingredientType = typedIngredient.getType();
+		final String uid = uidFunction.apply(typedIngredient);
+		List<IIngredientListElementInfo<T>> matchingElements = findMatchingElements(ingredientHelper, typedIngredient);
 		IntSet matchingIndexes = new IntOpenHashSet(50);
 		IntSet startingIndexes = new IntOpenHashSet(matchingElements.size());
 		for (IIngredientListElementInfo<?> matchingElement : matchingElements) {
@@ -315,36 +329,43 @@ public class IngredientFilter implements IIngredientGridSource {
 			int startingIndex = iterator.nextInt();
 			for (int i = startingIndex - 1; i >= 0 && !matchingIndexes.contains(i); i--) {
 				IIngredientListElementInfo<?> info = this.elementSearch.get(i);
-				Object elementIngredient = info.getIngredient();
-				if (elementIngredient.getClass() != ingredientClass) {
-					break;
+				Optional<IIngredientListElementInfo<T>> match = getMatch(info, ingredientType, uid, uidFunction);
+				if (match.isPresent()) {
+					matchingIndexes.add(i);
+					matchingElements.add(match.get());
 				}
-				String elementWildcardId = uidFunction.apply(ingredientClass.cast(elementIngredient));
-				if (!uid.equals(elementWildcardId)) {
-					break;
-				}
-				matchingIndexes.add(i);
-				@SuppressWarnings("unchecked")
-				IIngredientListElementInfo<T> castInfo = (IIngredientListElementInfo<T>) info;
-				matchingElements.add(castInfo);
 			}
 			for (int i = startingIndex + 1; i < this.elementSearch.size() && !matchingIndexes.contains(i); i++) {
 				IIngredientListElementInfo<?> info = this.elementSearch.get(i);
-				Object elementIngredient = info.getIngredient();
-				if (elementIngredient.getClass() != ingredientClass) {
-					break;
+				Optional<IIngredientListElementInfo<T>> match = getMatch(info, ingredientType, uid, uidFunction);
+				if (match.isPresent()) {
+					matchingIndexes.add(i);
+					matchingElements.add(match.get());
 				}
-				String elementWildcardId = uidFunction.apply(ingredientClass.cast(elementIngredient));
-				if (!uid.equals(elementWildcardId)) {
-					break;
-				}
-				matchingIndexes.add(i);
-				@SuppressWarnings("unchecked")
-				IIngredientListElementInfo<T> castElement = (IIngredientListElementInfo<T>) info;
-				matchingElements.add(castElement);
 			}
 		}
 		return matchingElements;
+	}
+
+	private static <T> Optional<IIngredientListElementInfo<T>> getMatch(IIngredientListElementInfo<?> info, IIngredientType<T> ingredientType, String uid, Function<ITypedIngredient<T>, String> uidFunction) {
+		return optionalCast(info, ingredientType)
+			.filter(cast -> isMatch(cast, uid, uidFunction));
+	}
+
+	private static <T> Optional<IIngredientListElementInfo<T>> optionalCast(IIngredientListElementInfo<?> info, IIngredientType<T> ingredientType) {
+		ITypedIngredient<?> typedIngredient = info.getTypedIngredient();
+		if (typedIngredient.getType() == ingredientType) {
+			@SuppressWarnings("unchecked")
+			IIngredientListElementInfo<T> cast = (IIngredientListElementInfo<T>) info;
+			return Optional.of(cast);
+		}
+		return Optional.empty();
+	}
+
+	private static <T> boolean isMatch(IIngredientListElementInfo<T> info, String uid, Function<ITypedIngredient<T>, String> uidFunction) {
+		ITypedIngredient<T> typedIngredient = info.getTypedIngredient();
+		String elementUid = uidFunction.apply(typedIngredient);
+		return uid.equals(elementUid);
 	}
 
 	@Nullable
