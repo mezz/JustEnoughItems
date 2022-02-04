@@ -45,4 +45,12 @@ public interface IGuiFluidStackGroup extends IGuiIngredientGroup<FluidStack> {
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void init(int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int capacityMb, boolean showCapacity, @Nullable IDrawable overlay);
+
+	@Override
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	void set(int slotIndex, @Nullable FluidStack fluidStack);
+
+	@Override
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	void addTooltipCallback(ITooltipCallback<FluidStack> tooltipCallback);
 }

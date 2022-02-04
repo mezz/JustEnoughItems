@@ -7,6 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.api.gui.IRecipeLayout;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -34,4 +35,13 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 	@Override
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void init(int ingredientIndex, boolean input, int xPosition, int yPosition);
+
+
+	@Override
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	void set(int slotIndex, @Nullable ItemStack itemStack);
+
+	@Override
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	void addTooltipCallback(ITooltipCallback<ItemStack> tooltipCallback);
 }
