@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -69,76 +70,92 @@ public class EditModeConfig implements IEditModeConfig {
 
 	@Override
 	public <V> void addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientManager ingredientManager, ITypedIngredient<V> typedIngredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		// combine item-level blacklist into wildcard-level ones
-		if (blacklistType == IngredientBlacklistType.ITEM) {
-			final String uid = getIngredientUid(typedIngredient, IngredientBlacklistType.ITEM, ingredientHelper);
-			List<IIngredientListElementInfo<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(typedIngredient, ingredientHelper, (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD, ingredientHelper));
-			if (areAllBlacklisted(elementsToBeBlacklisted, ingredientHelper, uid)) {
-				if (addIngredientToConfigBlacklist(ingredientFilter, typedIngredient, IngredientBlacklistType.WILDCARD, ingredientHelper)) {
-					saveBlacklist();
-				}
-				return;
-			}
-		}
 		if (addIngredientToConfigBlacklist(ingredientFilter, typedIngredient, blacklistType, ingredientHelper)) {
 			saveBlacklist();
 		}
 	}
 
-	private <V> boolean addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, ITypedIngredient<V> typedIngredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		boolean updated = false;
+	private <V> boolean addIngredientToConfigBlacklist(
+		IngredientFilter ingredientFilter,
+		ITypedIngredient<V> typedIngredient,
+		IngredientBlacklistType blacklistType,
+		IIngredientHelper<V> ingredientHelper
+	) {
+		String wildcardUid = getIngredientUid(typedIngredient, IngredientBlacklistType.WILDCARD, ingredientHelper);
 
-		// remove lower-level blacklist entries when a higher-level one is added
-		if (blacklistType == IngredientBlacklistType.WILDCARD) {
-			List<IIngredientListElementInfo<V>> elementsToBeBlacklisted = ingredientFilter.getMatches(typedIngredient, ingredientHelper, (input) -> getIngredientUid(input, blacklistType, ingredientHelper));
-			for (IIngredientListElementInfo<V> elementToBeBlacklistedInfo : elementsToBeBlacklisted) {
-				ITypedIngredient<V> typedIngredientToBeBlacklisted = elementToBeBlacklistedInfo.getTypedIngredient();
-				String uid = getIngredientUid(typedIngredientToBeBlacklisted, IngredientBlacklistType.ITEM, ingredientHelper);
-				updated |= blacklist.remove(uid);
+		if (blacklistType == IngredientBlacklistType.ITEM) {
+			String uid = getIngredientUid(typedIngredient, blacklistType, ingredientHelper);
+
+			if (wildcardUid.equals(uid)) {
+				// there's only one type of this ingredient, adding it as ITEM the same as adding it as WILDCARD.
+				return blacklist.add(wildcardUid);
 			}
+
+			boolean updated = blacklist.add(uid);
+			if (updated) {
+				Set<String> wildcardIndividualUids = getMatchingItemUids(typedIngredient, ingredientHelper, ingredientFilter);
+				if (blacklist.containsAll(wildcardIndividualUids)) {
+					// Everything matching is blacklisted, upgrade this to WILDCARD
+					blacklist.removeAll(wildcardIndividualUids);
+					blacklist.add(wildcardUid);
+				}
+			}
+			return updated;
+		} else if (blacklistType == IngredientBlacklistType.WILDCARD) {
+			Set<String> wildcardIndividualUids = getMatchingItemUids(typedIngredient, ingredientHelper, ingredientFilter);
+			// remove lower-level blacklist entries when a higher-level one is added
+			return blacklist.removeAll(wildcardIndividualUids) | blacklist.add(wildcardUid);
 		}
 
-		final String uid = getIngredientUid(typedIngredient, blacklistType, ingredientHelper);
-		updated |= blacklist.add(uid);
-		return updated;
+		return false;
 	}
 
-	private <V> boolean areAllBlacklisted(List<IIngredientListElementInfo<V>> elementInfos, IIngredientHelper<V> ingredientHelper, String newUid) {
-		for (IIngredientListElementInfo<V> elementInfo : elementInfos) {
-			ITypedIngredient<V> typedIngredient = elementInfo.getTypedIngredient();
-			String uid = getIngredientUid(typedIngredient, IngredientBlacklistType.ITEM, ingredientHelper);
-			if (!uid.equals(newUid) && !blacklist.contains(uid)) {
-				return false;
+	private static <V> Set<String> getMatchingItemUids(
+		ITypedIngredient<V> typedIngredient,
+		IIngredientHelper<V> ingredientHelper,
+		IngredientFilter ingredientFilter
+	) {
+		Function<ITypedIngredient<V>, String> wildcardUidFunction = (i) -> getIngredientUid(i, IngredientBlacklistType.WILDCARD, ingredientHelper);
+		Function<ITypedIngredient<V>, String> itemUidFunction = (i) -> getIngredientUid(i, IngredientBlacklistType.ITEM, ingredientHelper);
+
+		{
+			String itemUid = itemUidFunction.apply(typedIngredient);
+			String wildcardUid = wildcardUidFunction.apply(typedIngredient);
+			if (itemUid.equals(wildcardUid)) {
+				return Set.of(itemUid);
 			}
 		}
-		return true;
+
+		List<IIngredientListElementInfo<V>> wildcardMatches = ingredientFilter.searchForWildcardMatches(typedIngredient, ingredientHelper, wildcardUidFunction);
+		return wildcardMatches.stream()
+			.map(IIngredientListElementInfo::getTypedIngredient)
+			.map(itemUidFunction)
+			.collect(Collectors.toSet());
 	}
 
 	@Override
-	public <V> void removeIngredientFromConfigBlacklist(IngredientFilter ingredientFilter, IIngredientManager ingredientManager, ITypedIngredient<V> typedIngredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+	public <V> void removeIngredientFromConfigBlacklist(
+		IngredientFilter ingredientFilter,
+		IIngredientManager ingredientManager,
+		ITypedIngredient<V> typedIngredient,
+		IngredientBlacklistType blacklistType,
+		IIngredientHelper<V> ingredientHelper
+	) {
 		boolean updated = false;
 
-		Function<ITypedIngredient<V>, String> wildcardUidFunc = (input) -> getIngredientUid(input, IngredientBlacklistType.WILDCARD, ingredientHelper);
 		if (blacklistType == IngredientBlacklistType.ITEM) {
-			// deconstruct any wildcard blacklist since we are removing one element from it
+			// deconstruct any wildcard blacklist since we are removing one element from it later
 			final String wildUid = getIngredientUid(typedIngredient, IngredientBlacklistType.WILDCARD, ingredientHelper);
 			if (blacklist.contains(wildUid)) {
-				updated = true;
 				blacklist.remove(wildUid);
-				List<IIngredientListElementInfo<V>> modMatches = ingredientFilter.getMatches(typedIngredient, ingredientHelper, wildcardUidFunc);
-				for (IIngredientListElementInfo<V> modMatch : modMatches) {
-					ITypedIngredient<V> matchIngredient = modMatch.getTypedIngredient();
-					addIngredientToConfigBlacklist(ingredientFilter, matchIngredient, IngredientBlacklistType.ITEM, ingredientHelper);
-				}
+				Set<String> uids = getMatchingItemUids(typedIngredient, ingredientHelper, ingredientFilter);
+				blacklist.addAll(uids);
+				updated = true;
 			}
 		} else if (blacklistType == IngredientBlacklistType.WILDCARD) {
 			// remove any item-level blacklist on items that match this wildcard
-			List<IIngredientListElementInfo<V>> modMatches = ingredientFilter.getMatches(typedIngredient, ingredientHelper, wildcardUidFunc);
-			for (IIngredientListElementInfo<V> modMatch : modMatches) {
-				ITypedIngredient<V> matchIngredient = modMatch.getTypedIngredient();
-				final String uid = getIngredientUid(matchIngredient, IngredientBlacklistType.ITEM, ingredientHelper);
-				updated |= blacklist.remove(uid);
-			}
+			Set<String> uids = getMatchingItemUids(typedIngredient, ingredientHelper, ingredientFilter);
+			updated = blacklist.removeAll(uids);
 		}
 
 		final String uid = getIngredientUid(typedIngredient, blacklistType, ingredientHelper);

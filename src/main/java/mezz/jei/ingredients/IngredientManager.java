@@ -140,14 +140,12 @@ public class IngredientManager implements IIngredientManager {
 		IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 
 		for (ITypedIngredient<V> value : typedIngredients) {
-			List<IIngredientListElementInfo<V>> matchingElementInfos = ingredientFilter.findMatchingElements(ingredientHelper, value);
-			if (!matchingElementInfos.isEmpty()) {
-				for (IIngredientListElementInfo<V> matchingElementInfo : matchingElementInfos) {
-					IIngredientListElement<V> matchingElement = matchingElementInfo.getElement();
-					ITypedIngredient<V> typedIngredient = matchingElement.getTypedIngredient();
-					blacklist.removeIngredientFromBlacklist(typedIngredient, ingredientHelper);
-					ingredientFilter.updateHiddenState(matchingElement);
-				}
+			Optional<IIngredientListElementInfo<V>> matchingElementInfo = ingredientFilter.searchForMatchingElement(ingredientHelper, value);
+			if (matchingElementInfo.isPresent()) {
+				IIngredientListElement<V> matchingElement = matchingElementInfo.get().getElement();
+				ITypedIngredient<V> typedIngredient = matchingElement.getTypedIngredient();
+				blacklist.removeIngredientFromBlacklist(typedIngredient, ingredientHelper);
+				ingredientFilter.updateHiddenState(matchingElement);
 				if (enableDebugLogs) {
 					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
 				}
@@ -214,15 +212,15 @@ public class IngredientManager implements IIngredientManager {
 			.map(i -> TypedIngredient.createTyped(this, ingredientType, i))
 			.flatMap(Optional::stream)
 			.forEach(typedIngredient -> {
-				List<IIngredientListElementInfo<V>> matchingElementInfos = ingredientFilter.findMatchingElements(ingredientHelper, typedIngredient);
-				if (matchingElementInfos.isEmpty()) {
+				Optional<IIngredientListElementInfo<V>> matchingElementInfo = ingredientFilter.searchForMatchingElement(ingredientHelper, typedIngredient);
+				if (matchingElementInfo.isEmpty()) {
 					String errorInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
-					LOGGER.error("Could not find any matching ingredients to remove: {}", errorInfo);
-				} else if (enableDebugLogs) {
-					LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
-				}
-				for (IIngredientListElementInfo<V> matchingElementInfo : matchingElementInfos) {
-					IIngredientListElement<V> matchingElement = matchingElementInfo.getElement();
+					LOGGER.error("Could not find a matching ingredient to remove: {}", errorInfo);
+				} else {
+					if (enableDebugLogs) {
+						LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
+					}
+					IIngredientListElement<V> matchingElement = matchingElementInfo.get().getElement();
 					blacklist.addIngredientToBlacklist(matchingElement.getTypedIngredient(), ingredientHelper);
 					matchingElement.setVisible(false);
 				}

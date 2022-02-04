@@ -6,7 +6,6 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IIngredientListElementInfo;
 import net.minecraft.core.NonNullList;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -19,11 +18,10 @@ public class ElementSearchLowMem implements IElementSearch {
 		this.elementInfoList = NonNullList.create();
 	}
 
-	@Nullable
 	@Override
 	public IntSet getSearchResults(String token, PrefixInfo prefixInfo) {
 		if (token.isEmpty()) {
-			return null;
+			return IntSet.of();
 		}
 
 		int[] results = IntStream.range(0, elementInfoList.size())
