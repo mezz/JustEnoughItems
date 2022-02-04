@@ -41,7 +41,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	@Nullable
-	public FluidStack getMatch(Iterable<? extends FluidStack> ingredients, FluidStack toMatch, UidContext context) {
+	public FluidStack getMatch(Iterable<FluidStack> ingredients, FluidStack toMatch, UidContext context) {
 		for (FluidStack fluidStack : ingredients) {
 			if (toMatch.getFluid() == fluidStack.getFluid()) {
 				String keyLhs = getUniqueId(toMatch, context);

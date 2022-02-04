@@ -43,7 +43,7 @@ public interface IIngredientHelper<V> {
 	 * @since JEI 7.3.0
 	 */
 	@Nullable
-	V getMatch(Iterable<? extends V> ingredients, V ingredientToMatch, UidContext context);
+	V getMatch(Iterable<V> ingredients, V ingredientToMatch, UidContext context);
 
 	/**
 	 * Display name used for searching. Normally this is the first line of the tooltip.

@@ -15,7 +15,7 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 
 	@Nullable
 	@Override
-	public TestIngredient getMatch(Iterable<? extends TestIngredient> ingredients, TestIngredient ingredientToMatch, UidContext context) {
+	public TestIngredient getMatch(Iterable<TestIngredient> ingredients, TestIngredient ingredientToMatch, UidContext context) {
 		for (TestIngredient ingredient : ingredients) {
 			if (ingredient.getNumber() == ingredientToMatch.getNumber()) {
 				String keyLhs = getUniqueId(ingredientToMatch, context);

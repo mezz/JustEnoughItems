@@ -32,7 +32,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Nullable
 	@Override
-	public ItemStack getMatch(Iterable<? extends ItemStack> ingredients, ItemStack toMatch, UidContext context) {
+	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch, UidContext context) {
 		for (ItemStack stack : ingredients) {
 			if (stackHelper.isEquivalent(toMatch, stack, context)) {
 				return stack;
