@@ -106,11 +106,11 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 			.addItemStacks(potionInputs)
 			.setContainerSlotIndex(brewPotionSlot1);
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 23, 43)
+		builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 23, 43)
 			.addItemStacks(potionInputs)
 			.setContainerSlotIndex(brewPotionSlot2);
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 46, 36)
+		builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 46, 36)
 			.addItemStacks(potionInputs)
 			.setContainerSlotIndex(brewPotionSlot3);
 
