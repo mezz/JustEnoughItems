@@ -26,7 +26,7 @@ public interface IIngredientRenderer<T> {
 	 * @param xPosition  The x position to render the ingredient.
 	 * @param yPosition  The y position to render the ingredient.
 	 * @param width      The width to render the ingredient with.
-	 * @param height  	 The height to render the ingredient with.
+	 * @param height     The height to render the ingredient with.
 	 * @param ingredient the ingredient to render.
 	 *
 	 * @since JEI 9.3.0
