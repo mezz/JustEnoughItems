@@ -65,17 +65,18 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		this.cycleOffset = cycleOffset;
 	}
 
-	private RecipeSlot getSlot(int guiIngredientIndex) {
+	private Optional<RecipeSlot> getSlot(int guiIngredientIndex) {
 		RecipeSlotGuiIngredientAdapter<T> adapter = this.guiIngredients.get(guiIngredientIndex);
-		return adapter.getRecipeSlot();
+		return Optional.ofNullable(adapter)
+			.map(RecipeSlotGuiIngredientAdapter::getRecipeSlot);
 	}
 
 	@Override
 	public void setBackground(int slotIndex, IDrawable background) {
 		ErrorUtil.checkNotNull(background, "background");
 
-		RecipeSlot recipeSlot = getSlot(slotIndex);
-		recipeSlot.setBackground(background);
+		getSlot(slotIndex)
+			.ifPresent(recipeSlot -> recipeSlot.setBackground(background));
 	}
 
 	@Override
@@ -181,16 +182,17 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 			}
 		}
 
-		List<Optional<ITypedIngredient<?>>> typedIngredients = getTypedIngredients(ingredients);
-		RecipeSlot recipeSlot = getSlot(slotIndex);
+		getSlot(slotIndex)
+			.ifPresent(recipeSlot -> {
+				List<Optional<ITypedIngredient<?>>> typedIngredients = getTypedIngredients(ingredients);
+				if (focus == null || focus.getRole() == recipeSlot.getRole()) {
+					recipeSlot.set(typedIngredients, focus);
+				} else {
+					recipeSlot.set(typedIngredients, null);
+				}
 
-		if (focus == null || focus.getRole() == recipeSlot.getRole()) {
-			recipeSlot.set(typedIngredients, focus);
-		} else {
-			recipeSlot.set(typedIngredients, null);
-		}
-
-		this.legacyTooltipCallbacks.forEach(recipeSlot::addTooltipCallback);
+				this.legacyTooltipCallbacks.forEach(recipeSlot::addTooltipCallback);
+			});
 	}
 
 	private List<Optional<ITypedIngredient<?>>> getTypedIngredients(@Nullable List<@Nullable T> ingredients) {
