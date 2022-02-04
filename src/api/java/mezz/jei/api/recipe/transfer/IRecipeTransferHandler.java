@@ -44,7 +44,7 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	 */
 	@Nullable
 	default IRecipeTransferError transferRecipe(C container, R recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
-		return null;
+		throw new UnsupportedOperationException("The new transferRecipe method has not been implemented on this recipe transfer handler");
 	}
 
 	/**
