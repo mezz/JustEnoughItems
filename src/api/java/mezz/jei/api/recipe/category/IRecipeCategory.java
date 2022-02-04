@@ -71,13 +71,13 @@ public interface IRecipeCategory<T> {
 	/**
 	 * Draw extras or additional info about the recipe.
 	 * Use the mouse position for things like button highlights.
-	 * Tooltips are handled by {@link #getTooltipStrings(Object, double, double)}
+	 * Tooltips are handled by {@link #getTooltipStrings(Object, IRecipeSlotsView, double, double)}
 	 *
-	 * @param recipe           the current recipe being drawn.
-	 * @param recipeLayoutView a view of the current recipe layout being drawn.
-	 * @param stack            the current {@link PoseStack} for rendering.
-	 * @param mouseX           the X position of the mouse, relative to the recipe.
-	 * @param mouseY           the Y position of the mouse, relative to the recipe.
+	 * @param recipe          the current recipe being drawn.
+	 * @param recipeSlotsView a view of the current recipe slots being drawn.
+	 * @param stack           the current {@link PoseStack} for rendering.
+	 * @param mouseX          the X position of the mouse, relative to the recipe.
+	 * @param mouseY          the Y position of the mouse, relative to the recipe.
 	 *
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
@@ -85,23 +85,28 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @since JEI 9.3.0
 	 */
-	default void draw(T recipe, IRecipeSlotsView recipeLayoutView, PoseStack stack, double mouseX, double mouseY) {
+	default void draw(T recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
 		// if not implemented, this calls the old draw function for backward compatibility
 		draw(recipe, stack, mouseX, mouseY);
 	}
 
 	/**
-	 * Get the tooltip for whatever's under the mouse.
+	 * Get the tooltip for whatever is under the mouse.
 	 * Ingredient tooltips are already handled by JEI, this is for anything else.
 	 *
 	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
 	 *
-	 * @param mouseX the X position of the mouse, relative to the recipe.
-	 * @param mouseY the Y position of the mouse, relative to the recipe.
+	 * @param recipe          the current recipe being drawn.
+	 * @param recipeSlotsView a view of the current recipe slots being drawn.
+	 * @param mouseX          the X position of the mouse, relative to the recipe.
+	 * @param mouseY          the Y position of the mouse, relative to the recipe.
 	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
+	 *
+	 * @since JEI 9.3.0
 	 */
-	default List<Component> getTooltipStrings(T recipe, double mouseX, double mouseY) {
-		return Collections.emptyList();
+	default List<Component> getTooltipStrings(T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+		// if not implemented, this calls the old draw function for backward compatibility
+		return getTooltipStrings(recipe, mouseX, mouseY);
 	}
 
 	/**
@@ -176,7 +181,7 @@ public interface IRecipeCategory<T> {
 	/**
 	 * Draw extras or additional info about the recipe.
 	 * Use the mouse position for things like button highlights.
-	 * Tooltips are handled by {@link #getTooltipStrings(Object, double, double)}
+	 * Tooltips are handled by {@link #getTooltipStrings(Object, IRecipeSlotsView, double, double)}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
@@ -188,5 +193,23 @@ public interface IRecipeCategory<T> {
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void draw(T recipe, PoseStack stack, double mouseX, double mouseY) {
 
+	}
+
+	/**
+	 * Get the tooltip for whatever is under the mouse.
+	 * Ingredient tooltips are already handled by JEI, this is for anything else.
+	 *
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 *
+	 * @param recipe the current recipe being drawn.
+	 * @param mouseX the X position of the mouse, relative to the recipe.
+	 * @param mouseY the Y position of the mouse, relative to the recipe.
+	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
+	 *
+	 * @deprecated Use {@link #getTooltipStrings(Object, IRecipeSlotsView, double, double)} instead.
+	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	default List<Component> getTooltipStrings(T recipe, double mouseX, double mouseY) {
+		return Collections.emptyList();
 	}
 }

@@ -238,7 +238,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 		if (hoveredSlot != null) {
 			hoveredSlot.drawOverlays(poseStack, posX, posY, recipeMouseX, recipeMouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
-			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeMouseX, recipeMouseY);
+			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeSlots.getView(), recipeMouseX, recipeMouseY);
 			if (tooltipStrings.isEmpty() && shapelessIcon != null) {
 				tooltipStrings = shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY);
 			}

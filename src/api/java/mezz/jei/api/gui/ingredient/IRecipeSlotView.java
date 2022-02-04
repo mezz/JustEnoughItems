@@ -68,11 +68,11 @@ public interface IRecipeSlotView {
 	OptionalInt getContainerSlotIndex();
 
 	/**
-	 * The {@link IRecipeSlotId} if one was set by {@link IRecipeSlotBuilder#setSlotId(IRecipeSlotId)}
+	 * The unique {@link IRecipeSlotId} of this slot.
 	 *
 	 * @since JEI 9.3.0
 	 */
-	Optional<IRecipeSlotId> getSlotId();
+	IRecipeSlotId getSlotId();
 
 	/**
 	 * Returns the type of focus that matches this ingredient.

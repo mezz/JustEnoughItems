@@ -145,9 +145,11 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	}
 
 	@Override
-	public IRecipeSlotBuilder setSlotId(IRecipeSlotId slotId) {
-		this.slotId = slotId;
-		return this;
+	public IRecipeSlotId getSlotId() {
+		if (this.slotId == null) {
+			this.slotId = RecipeSlotId.create();
+		}
+		return this.slotId;
 	}
 
 	@Override

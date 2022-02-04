@@ -175,7 +175,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public List<Component> getTooltipStrings(DebugRecipe recipe, double mouseX, double mouseY) {
+	public List<Component> getTooltipStrings(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
 		List<Component> tooltipStrings = new ArrayList<>();
 		tooltipStrings.add(new TextComponent("Debug Recipe Category Tooltip is very long and going to wrap").withStyle(ChatFormatting.GOLD));
 

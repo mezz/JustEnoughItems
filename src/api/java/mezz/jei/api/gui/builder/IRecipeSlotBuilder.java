@@ -3,6 +3,7 @@ package mezz.jei.api.gui.builder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.world.inventory.Slot;
@@ -94,9 +95,9 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	IRecipeSlotBuilder setContainerSlotIndex(int slotIndex);
 
 	/**
-	 * Give the slot a unique id, for use by {@link IRecipeLayoutView#getDisplayedIngredient(IIngredientType, int)}
+	 * Give the slot a unique id, for use by {@link IRecipeSlotsView#findSlotView(IRecipeSlotId)}
 	 *
 	 * @since JEI 9.3.0
 	 */
-	IRecipeSlotBuilder setSlotId(IRecipeSlotId slotId);
+	IRecipeSlotId getSlotId();
 }

@@ -23,15 +23,9 @@ public class RecipeSlotsView implements IRecipeSlotsView {
 	}
 
 	@Override
-	public Optional<IRecipeSlotView> getSlotView(IRecipeSlotId recipeSlotId) {
-		String recipeSlotUid = recipeSlotId.getUid();
+	public Optional<IRecipeSlotView> findSlotView(IRecipeSlotId recipeSlotId) {
 		return this.slots.stream()
-			.filter(slot ->
-				slot.getSlotId()
-					.map(IRecipeSlotId::getUid)
-					.map(recipeSlotUid::equals)
-					.orElse(false)
-			)
+			.filter(slot -> recipeSlotId.equals(slot.getSlotId()))
 			.findFirst();
 	}
 

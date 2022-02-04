@@ -8,7 +8,6 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
  *
  * @since JEI 9.3.0
  */
-@FunctionalInterface
 public interface IRecipeSlotId {
-	String getUid();
+
 }

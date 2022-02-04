@@ -51,9 +51,8 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 	private final IIngredientManager ingredientManager;
 	private final RecipeIngredientRole role;
+	private final IRecipeSlotId slotId;
 	private int slotIndex = -1;
-	@Nullable
-	private IRecipeSlotId slotId;
 	private int legacyIngredientIndex = -1;
 
 	private final Rect2i rect;
@@ -82,6 +81,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	public RecipeSlot(
 		IIngredientManager ingredientManager,
 		RecipeIngredientRole role,
+		IRecipeSlotId slotId,
 		Rect2i rect,
 		int xInset,
 		int yInset,
@@ -89,6 +89,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	) {
 		this.ingredientManager = ingredientManager;
 		this.role = role;
+		this.slotId = slotId;
 		this.rect = rect;
 		this.xInset = xInset;
 		this.yInset = yInset;
@@ -97,10 +98,6 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 	public void setSlotIndex(int slotIndex) {
 		this.slotIndex = slotIndex;
-	}
-
-	public void setSlotId(@Nullable IRecipeSlotId slotId) {
-		this.slotId = slotId;
 	}
 
 	public void setLegacyIngredientIndex(int legacyIngredientIndex) {
@@ -151,8 +148,8 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	}
 
 	@Override
-	public Optional<IRecipeSlotId> getSlotId() {
-		return Optional.ofNullable(this.slotId);
+	public IRecipeSlotId getSlotId() {
+		return this.slotId;
 	}
 
 	@Override

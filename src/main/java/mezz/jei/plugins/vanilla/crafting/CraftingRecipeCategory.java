@@ -110,7 +110,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	}
 
 	@Override
-	public List<Component> getTooltipStrings(CraftingRecipe recipe, double mouseX, double mouseY) {
+	public List<Component> getTooltipStrings(CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
 		return extension.getTooltipStrings(mouseX, mouseY);
 	}

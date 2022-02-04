@@ -145,7 +145,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 		}
 
 		@Override
-		public Optional<IRecipeSlotId> getSlotId() {
+		public IRecipeSlotId getSlotId() {
 			return original.getSlotId();
 		}
 
