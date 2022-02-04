@@ -28,27 +28,27 @@ public interface IGuiFluidStackGroup extends IGuiIngredientGroup<FluidStack> {
 	/**
 	 * Initialize the fluid at slotIndex.
 	 *
-	 * @param slotIndex    the slot index of this fluid
-	 * @param input        whether this slot is an input
-	 * @param xPosition    x position relative to the recipe background
-	 * @param yPosition    y position relative to the recipe background
-	 * @param width        width of this fluid
-	 * @param height       height of this fluid
-	 * @param capacityMb   maximum amount of fluid that this "tank" can hold in milli-buckets
-	 * @param showCapacity show the capacity in the tooltip
-	 * @param overlay      optional overlay to display over the tank.
-	 *                     Typically the overlay is fluid level lines, but it could also be a mask to shape the tank.
+	 * @param ingredientIndex the ingredient index of this fluid
+	 * @param input           whether this slot is an input
+	 * @param xPosition       x position relative to the recipe background
+	 * @param yPosition       y position relative to the recipe background
+	 * @param width           width of this fluid
+	 * @param height          height of this fluid
+	 * @param capacityMb      maximum amount of fluid that this "tank" can hold in milli-buckets
+	 * @param showCapacity    show the capacity in the tooltip
+	 * @param overlay         optional overlay to display over the tank.
+	 *                        Typically the overlay is fluid level lines, but it could also be a mask to shape the tank.
 	 *
 	 * @deprecated @since JEI 9.3.0.
 	 * Use {@link IRecipeSlotBuilder#setFluidRenderer(int, boolean)} instead.
 	 * To add an overlay, use {@link IRecipeSlotBuilder#setOverlay(IDrawable)}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
-	void init(int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int capacityMb, boolean showCapacity, @Nullable IDrawable overlay);
+	void init(int ingredientIndex, boolean input, int xPosition, int yPosition, int width, int height, int capacityMb, boolean showCapacity, @Nullable IDrawable overlay);
 
 	@Override
 	@Deprecated(forRemoval = true, since = "9.3.0")
-	void set(int slotIndex, @Nullable FluidStack fluidStack);
+	void set(int ingredientIndex, @Nullable FluidStack fluidStack);
 
 	@Override
 	@Deprecated(forRemoval = true, since = "9.3.0")

@@ -39,7 +39,7 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 
 	@Override
 	@Deprecated(forRemoval = true, since = "9.3.0")
-	void set(int slotIndex, @Nullable ItemStack itemStack);
+	void set(int ingredientIndex, @Nullable ItemStack itemStack);
 
 	@Override
 	@Deprecated(forRemoval = true, since = "9.3.0")
