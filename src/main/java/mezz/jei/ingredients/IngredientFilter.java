@@ -300,18 +300,20 @@ public class IngredientFilter implements IIngredientGridSource {
 			for (int i = startingIndex - 1; i >= 0 && !matchingIndexes.contains(i); i--) {
 				IIngredientListElementInfo<?> info = this.elementSearch.get(i);
 				Optional<IIngredientListElementInfo<T>> match = getMatch(info, ingredientType, uid, uidFunction);
-				if (match.isPresent()) {
-					matchingIndexes.add(i);
-					matchingElements.add(match.get());
+				if (match.isEmpty()) {
+					break;
 				}
+				matchingIndexes.add(i);
+				matchingElements.add(match.get());
 			}
 			for (int i = startingIndex + 1; i < this.elementSearch.size() && !matchingIndexes.contains(i); i++) {
 				IIngredientListElementInfo<?> info = this.elementSearch.get(i);
 				Optional<IIngredientListElementInfo<T>> match = getMatch(info, ingredientType, uid, uidFunction);
-				if (match.isPresent()) {
-					matchingIndexes.add(i);
-					matchingElements.add(match.get());
+				if (match.isEmpty()) {
+					break;
 				}
+				matchingIndexes.add(i);
+				matchingElements.add(match.get());
 			}
 		}
 		return matchingElements;
