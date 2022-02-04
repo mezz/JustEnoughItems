@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -25,7 +25,7 @@ public interface IRecipeSlotsView {
 	 *
 	 * @since JEI 9.3.0
 	 */
-	List<IRecipeSlotView> getSlotViews();
+	Collection<IRecipeSlotView> getSlotViews();
 
 	/**
 	 * Get the list of slots that have ingredients in them for a recipe,
@@ -33,7 +33,7 @@ public interface IRecipeSlotsView {
 	 *
 	 * @since JEI 9.3.0
 	 */
-	List<IRecipeSlotView> getSlotViews(RecipeIngredientRole role, IIngredientType<?> ingredientType);
+	Collection<IRecipeSlotView> getSlotViews(RecipeIngredientRole role, IIngredientType<?> ingredientType);
 
 	/**
 	 * Get a recipe slot by its {@link IRecipeSlotId} from {@link IRecipeSlotBuilder#getSlotId()}

@@ -25,7 +25,7 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -84,13 +84,13 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 		}
 
 		// map the crafting table input slots to player inventory input slots
-		List<IRecipeSlotView> recipeSlotViews = mapSlots(recipeSlotsView.getSlotViews());
+		Collection<IRecipeSlotView> recipeSlotViews = mapSlots(recipeSlotsView.getSlotViews());
 		RecipeSlotsView mappedRecipeSlots = new RecipeSlotsView(recipeSlotViews);
 		IRecipeTransferHandler<InventoryMenu, CraftingRecipe> handler = new BasicRecipeTransferHandler<>(stackHelper, handlerHelper, transferInfo);
 		return handler.transferRecipe(container, recipe, mappedRecipeSlots, player, maxTransfer, doTransfer);
 	}
 
-	private static List<IRecipeSlotView> mapSlots(List<IRecipeSlotView> slotViews) {
+	private static Collection<IRecipeSlotView> mapSlots(Collection<IRecipeSlotView> slotViews) {
 		return slotViews.stream()
 			.map(slotView -> {
 				OptionalInt optionalSlotIndex = slotView.getContainerSlotIndex();

@@ -11,20 +11,21 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public class PacketRecipeTransfer extends PacketJei {
 	public final Map<IRecipeSlotView, Slot> recipeSlotToInventorySlotMap;
-	public final List<Slot> craftingSlots;
-	public final List<Slot> inventorySlots;
+	public final Collection<Slot> craftingSlots;
+	public final Collection<Slot> inventorySlots;
 	private final boolean maxTransfer;
 	private final boolean requireCompleteSets;
 
 	public PacketRecipeTransfer(
 		Map<IRecipeSlotView, Slot> recipeSlotToInventorySlotMap,
-		List<Slot> craftingSlots,
-		List<Slot> inventorySlots,
+		Collection<Slot> craftingSlots,
+		Collection<Slot> inventorySlots,
 		boolean maxTransfer,
 		boolean requireCompleteSets
 	) {

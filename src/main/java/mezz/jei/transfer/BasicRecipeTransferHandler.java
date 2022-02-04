@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
@@ -67,16 +66,16 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			return handlerHelper.createInternalError();
 		}
 
-		List<Slot> craftingSlots = Collections.unmodifiableList(transferInfo.getRecipeSlots(container, recipe));
-		List<Slot> inventorySlots = Collections.unmodifiableList(transferInfo.getInventorySlots(container, recipe));
-		List<Integer> craftingSlotIndexes = slotIndexes(craftingSlots);
-		List<Integer> inventorySlotIndexes = slotIndexes(inventorySlots);
+		Collection<Slot> craftingSlots = Collections.unmodifiableCollection(transferInfo.getRecipeSlots(container, recipe));
+		Collection<Slot> inventorySlots = Collections.unmodifiableCollection(transferInfo.getInventorySlots(container, recipe));
+		Collection<Integer> craftingSlotIndexes = slotIndexes(craftingSlots);
+		Collection<Integer> inventorySlotIndexes = slotIndexes(inventorySlots);
 
 		if (!validateTransferInfo(transferInfo, container, craftingSlotIndexes, inventorySlotIndexes)) {
 			return handlerHelper.createInternalError();
 		}
 
-		List<IRecipeSlotView> inputItemSlotViews = recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT, VanillaTypes.ITEM);
+		Collection<IRecipeSlotView> inputItemSlotViews = recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT, VanillaTypes.ITEM);
 		if (!validateRecipeView(transferInfo, container, craftingSlotIndexes, inputItemSlotViews)) {
 			return handlerHelper.createInternalError();
 		}
@@ -131,10 +130,10 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 	public static <C extends AbstractContainerMenu, R> boolean validateTransferInfo(
 		IRecipeTransferInfo<C, R> transferInfo,
 		C container,
-		List<Integer> craftingSlotIndexes,
-		List<Integer> inventorySlotIndexes
+		Collection<Integer> craftingSlotIndexes,
+		Collection<Integer> inventorySlotIndexes
 	) {
-		List<Integer> containerSlotIndexes = slotIndexes(container.slots);
+		Collection<Integer> containerSlotIndexes = slotIndexes(container.slots);
 
 		if (!containerSlotIndexes.containsAll(craftingSlotIndexes)) {
 			LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
@@ -155,8 +154,13 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		return true;
 	}
 
-	public static <C extends AbstractContainerMenu, R> boolean validateRecipeView(IRecipeTransferInfo<C, R> transferInfo, C container, List<Integer> craftingSlotIndexes, List<IRecipeSlotView> inputSlots) {
-		List<Integer> inputSlotIndexes = recipeSlotIndexes(container, inputSlots);
+	public static <C extends AbstractContainerMenu, R> boolean validateRecipeView(
+		IRecipeTransferInfo<C, R> transferInfo,
+		C container,
+		Collection<Integer> craftingSlotIndexes,
+		Collection<IRecipeSlotView> inputSlots
+	) {
+		Collection<Integer> inputSlotIndexes = recipeSlotIndexes(inputSlots);
 		if (!craftingSlotIndexes.containsAll(inputSlotIndexes)) {
 			LOGGER.error("Recipe View {} does not work for container {}. " +
 					"The Recipe View references input slot indexes [{}] that are not found in the inventory crafting slots [{}]",
@@ -168,7 +172,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		return true;
 	}
 
-	public static List<Integer> slotIndexes(Collection<Slot> slots) {
+	public static Collection<Integer> slotIndexes(Collection<Slot> slots) {
 		return slots.stream()
 			.map(s -> s.index)
 			.sorted()
@@ -176,21 +180,20 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			.toList();
 	}
 
-	public static List<Integer> recipeSlotIndexes(AbstractContainerMenu containerMenu, Collection<IRecipeSlotView> recipeSlotViews) {
+	public static Collection<Integer> recipeSlotIndexes(Collection<IRecipeSlotView> recipeSlotViews) {
 		return recipeSlotViews.stream()
 			.map(IRecipeSlotView::getContainerSlotIndex)
 			.flatMapToInt(OptionalInt::stream)
-			.mapToObj(containerMenu::getSlot)
-			.map(s -> s.index)
 			.sorted()
 			.distinct()
+			.boxed()
 			.toList();
 	}
 
 	@Nullable
 	public static <C extends AbstractContainerMenu, R> InventoryState getInventoryState(
-		List<Slot> craftingSlots,
-		List<Slot> inventorySlots,
+		Collection<Slot> craftingSlots,
+		Collection<Slot> inventorySlots,
 		Player player,
 		C container,
 		IRecipeTransferInfo<C, R> transferInfo

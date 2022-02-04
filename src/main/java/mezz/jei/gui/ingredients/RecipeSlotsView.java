@@ -6,19 +6,19 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 public class RecipeSlotsView implements IRecipeSlotsView {
-	private final List<IRecipeSlotView> slots;
+	private final Collection<IRecipeSlotView> slots;
 
-	public RecipeSlotsView(List<? extends IRecipeSlotView> slots) {
-		this.slots = Collections.unmodifiableList(slots);
+	public RecipeSlotsView(Collection<? extends IRecipeSlotView> slots) {
+		this.slots = Collections.unmodifiableCollection(slots);
 	}
 
 	@Override
-	public List<IRecipeSlotView> getSlotViews() {
+	public Collection<IRecipeSlotView> getSlotViews() {
 		return this.slots;
 	}
 
@@ -30,7 +30,7 @@ public class RecipeSlotsView implements IRecipeSlotsView {
 	}
 
 	@Override
-	public List<IRecipeSlotView> getSlotViews(RecipeIngredientRole role, IIngredientType<?> ingredientType) {
+	public Collection<IRecipeSlotView> getSlotViews(RecipeIngredientRole role, IIngredientType<?> ingredientType) {
 		return this.slots.stream()
 			.filter(slotView -> slotView.getRole() == role)
 			.filter(slotView -> slotView.getIngredients(ingredientType).findAny().isPresent())

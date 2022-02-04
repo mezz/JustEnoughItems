@@ -86,8 +86,8 @@ public final class RecipeTransferUtil {
 		Player player,
 		Collection<Slot> recipeTargetSlots,
 		Collection<Slot> ingredientTargetSlots,
-		List<Slot> craftingSlots,
-		List<Slot> inventorySlots
+		Collection<Slot> craftingSlots,
+		Collection<Slot> inventorySlots
 	) {
 		Set<Integer> inventorySlotIndexes = inventorySlots.stream()
 			.map(s -> s.index)
@@ -179,7 +179,7 @@ public final class RecipeTransferUtil {
 	public static MatchingItemsResult getMatchingItems(
 		IStackHelper stackhelper,
 		Map<Slot, ItemStack> availableItemStacks,
-		List<IRecipeSlotView> slotsView
+		Collection<IRecipeSlotView> slotsView
 	) {
 		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
 
