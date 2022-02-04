@@ -37,7 +37,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	private int height = DEFAULT_SIZE;
 	private int xPadding;
 	private int yPadding;
-	private int slotIndex = -1;
+	private int containerSlotIndex = -1;
 	@Nullable
 	private IDrawable background;
 	@Nullable
@@ -45,8 +45,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	private final IngredientAcceptor ingredients;
 	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>(0);
 	private final RendererOverrides rendererOverrides = new RendererOverrides();
-	@Nullable
-	private IRecipeSlotId slotId;
+	private final IRecipeSlotId slotId;
 
 	public RecipeSlotBuilder(
 		IIngredientManager ingredientManager,
@@ -56,6 +55,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	) {
 		this.ingredientManager = ingredientManager;
 		this.ingredients = new IngredientAcceptor(ingredientManager);
+		this.slotId = RecipeSlotId.create();
 		this.role = role;
 		this.xPos = x;
 		this.yPos = y;
@@ -139,16 +139,13 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	}
 
 	@Override
-	public IRecipeSlotBuilder setContainerSlotIndex(int slotIndex) {
-		this.slotIndex = slotIndex;
+	public IRecipeSlotBuilder setContainerSlotIndex(int containerSlotIndex) {
+		this.containerSlotIndex = containerSlotIndex;
 		return this;
 	}
 
 	@Override
 	public IRecipeSlotId getSlotId() {
-		if (this.slotId == null) {
-			this.slotId = RecipeSlotId.create();
-		}
 		return this.slotId;
 	}
 
@@ -160,6 +157,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 		RecipeSlot recipeSlot = new RecipeSlot(
 			this.ingredientManager,
 			this.role,
+			this.slotId,
 			rect,
 			this.xPadding,
 			this.yPadding,
@@ -173,8 +171,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 		recipeSlot.setOverlay(this.overlay);
 		this.tooltipCallbacks.forEach(recipeSlot::addTooltipCallback);
 		recipeSlot.setRendererOverrides(this.rendererOverrides);
-		recipeSlot.setSlotIndex(this.slotIndex);
-		recipeSlot.setSlotId(this.slotId);
+		recipeSlot.setContainerSlotIndex(this.containerSlotIndex);
 
 		recipeSlots.addSlot(recipeSlot);
 	}

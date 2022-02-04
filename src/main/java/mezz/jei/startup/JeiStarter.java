@@ -29,6 +29,7 @@ import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientFilterApi;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.IngredientVisibility;
 import mezz.jei.input.CombinedRecipeFocusSource;
 import mezz.jei.input.GuiContainerWrapper;
 import mezz.jei.input.InputEventHandler;
@@ -80,9 +81,10 @@ public class JeiStarter {
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
 		PluginLoader pluginLoader = new PluginLoader(plugins, textures, clientConfig, modIdHelper, debugMode);
 		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
-		IngredientFilter ingredientFilter = pluginLoader.createIngredientFilter(ingredientSorter, worldConfig, editModeConfig, ingredientFilterConfig);
+		IngredientVisibility ingredientVisibility = pluginLoader.createIngredientVisibility(worldConfig, editModeConfig);
+		IngredientFilter ingredientFilter = pluginLoader.createIngredientFilter(ingredientSorter, ingredientVisibility, ingredientFilterConfig);
 		BookmarkList bookmarkList = pluginLoader.createBookmarkList(bookmarkConfig);
-		IRecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, vanillaPlugin, recipeCategorySortingConfig);
+		IRecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, vanillaPlugin, recipeCategorySortingConfig, ingredientVisibility);
 		ImmutableTable<Class<?>, ResourceLocation, IRecipeTransferHandler<?, ?>> recipeTransferHandlers = pluginLoader.createRecipeTransferHandlers(plugins);
 		RecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
 

@@ -12,8 +12,8 @@ import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import mezz.jei.ingredients.IIngredientSupplier;
-import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.IngredientVisibility;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.resources.ResourceLocation;
@@ -36,6 +36,7 @@ public class RecipeManagerInternal {
 
 	private final ImmutableList<IRecipeCategory<?>> recipeCategories;
 	private final Set<ResourceLocation> hiddenRecipeCategoryUids = new HashSet<>();
+	private final IngredientVisibility ingredientVisibility;
 	private @Nullable ImmutableList<IRecipeCategory<?>> recipeCategoriesVisibleCache = null;
 	private final RecipeCategoryDataMap recipeCategoriesDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
@@ -47,9 +48,11 @@ public class RecipeManagerInternal {
 		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
 		IngredientManager ingredientManager,
 		ImmutableList<IRecipeManagerPlugin> plugins,
-		RecipeCategorySortingConfig recipeCategorySortingConfig
+		RecipeCategorySortingConfig recipeCategorySortingConfig,
+		IngredientVisibility ingredientVisibility
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
+		this.ingredientVisibility = ingredientVisibility;
 
 		Collection<ResourceLocation> recipeCategoryResourceLocations = recipeCategories.stream()
 			.map(IRecipeCategory::getUid)
@@ -252,9 +255,8 @@ public class RecipeManagerInternal {
 		if (includeHidden) {
 			return catalysts.stream();
 		}
-		IngredientFilter ingredientFilter = Internal.getIngredientFilter();
 		return catalysts.stream()
-			.filter(ingredientFilter::isIngredientVisible);
+			.filter(ingredientVisibility::isIngredientVisible);
 	}
 
 	public <T> void hideRecipe(T recipe, ResourceLocation recipeCategoryUid) {

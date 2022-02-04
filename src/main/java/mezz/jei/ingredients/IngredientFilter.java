@@ -12,9 +12,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IClientConfig;
-import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
-import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.SearchMode;
 import mezz.jei.events.EditModeToggleEvent;
 import mezz.jei.events.EventBusHelper;
@@ -49,11 +47,9 @@ public class IngredientFilter implements IIngredientGridSource {
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
-	private final IngredientBlacklistInternal blacklist;
-	private final IWorldConfig worldConfig;
-	private final IEditModeConfig editModeConfig;
 	private final IIngredientManager ingredientManager;
 	private final IIngredientSorter sorter;
+	private final IngredientVisibility ingredientVisibility;
 	private final boolean debugMode;
 
 	private final IElementSearch elementSearch;
@@ -66,20 +62,17 @@ public class IngredientFilter implements IIngredientGridSource {
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
 	public IngredientFilter(
-		IngredientBlacklistInternal blacklist,
-		IWorldConfig worldConfig,
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
-		IEditModeConfig editModeConfig,
 		IIngredientManager ingredientManager,
 		IIngredientSorter sorter,
 		NonNullList<IIngredientListElement<?>> ingredients,
-		IModIdHelper modIdHelper) {
-		this.blacklist = blacklist;
-		this.worldConfig = worldConfig;
-		this.editModeConfig = editModeConfig;
+		IModIdHelper modIdHelper,
+		IngredientVisibility ingredientVisibility
+	) {
 		this.ingredientManager = ingredientManager;
 		this.sorter = sorter;
+		this.ingredientVisibility = ingredientVisibility;
 
 		if (clientConfig.isLowMemorySlowSearchEnabled()) {
 			this.elementSearch = new ElementSearchLowMem();
@@ -182,35 +175,12 @@ public class IngredientFilter implements IIngredientGridSource {
 
 	public <V> boolean updateHiddenState(IIngredientListElement<V> element) {
 		ITypedIngredient<V> typedIngredient = element.getTypedIngredient();
-		boolean visible = isIngredientVisible(typedIngredient);
+		boolean visible = this.ingredientVisibility.isIngredientVisible(typedIngredient);
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			return true;
 		}
 		return false;
-	}
-
-	public <V> boolean isIngredientVisible(ITypedIngredient<V> typedIngredient) {
-		IIngredientType<V> ingredientType = typedIngredient.getType();
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		return isIngredientVisible(typedIngredient, ingredientHelper);
-	}
-
-	public <V> boolean isIngredientVisible(IIngredientType<V> ingredientType, V ingredient) {
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		return TypedIngredient.createTyped(ingredientManager, ingredientType, ingredient)
-			.map(i -> isIngredientVisible(i, ingredientHelper))
-			.orElse(false);
-	}
-
-	public <V> boolean isIngredientVisible(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
-		if (blacklist.isIngredientBlacklistedByApi(typedIngredient, ingredientHelper)) {
-			return false;
-		}
-		if (!ingredientHelper.isIngredientOnServer(typedIngredient.getIngredient())) {
-			return false;
-		}
-		return worldConfig.isEditModeEnabled() || !editModeConfig.isIngredientOnConfigBlacklist(typedIngredient, ingredientHelper);
 	}
 
 	@Override

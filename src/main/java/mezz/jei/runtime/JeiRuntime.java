@@ -17,7 +17,14 @@ public class JeiRuntime implements IJeiRuntime {
 	private final IIngredientFilter ingredientFilter;
 	private final IIngredientManager ingredientManager;
 
-	public JeiRuntime(IRecipeManager recipeManager, IngredientListOverlay ingredientListOverlay, IBookmarkOverlay bookmarkOverlay, RecipesGui recipesGui, IIngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
+	public JeiRuntime(
+		IRecipeManager recipeManager,
+		IngredientListOverlay ingredientListOverlay,
+		IBookmarkOverlay bookmarkOverlay,
+		RecipesGui recipesGui,
+		IIngredientFilter ingredientFilter,
+		IIngredientManager ingredientManager
+	) {
 		this.recipeManager = recipeManager;
 		this.ingredientListOverlay = ingredientListOverlay;
 		this.bookmarkOverlay = bookmarkOverlay;

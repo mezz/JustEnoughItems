@@ -18,7 +18,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.ingredients.IngredientVisibility;
 import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
@@ -35,11 +35,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
-import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -52,7 +50,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	private final IIngredientManager ingredientManager;
 	private final RecipeIngredientRole role;
 	private final IRecipeSlotId slotId;
-	private int slotIndex = -1;
+	private int containerSlotIndex = -1;
 	private int legacyIngredientIndex = -1;
 
 	private final Rect2i rect;
@@ -61,11 +59,12 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 	private final CycleTimer cycleTimer;
 
-	/**  ingredients, taking focus into account */
+	/** ingredients, taking focus into account */
 	@Unmodifiable
 	private List<Optional<ITypedIngredient<?>>> displayIngredients = List.of();
+
 	/** all ingredients, ignoring focus */
-	@UnmodifiableView
+	@Unmodifiable
 	private List<Optional<ITypedIngredient<?>>> allIngredients = List.of();
 
 	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
@@ -75,8 +74,6 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	private IDrawable background;
 	@Nullable
 	private IDrawable overlay;
-
-	private boolean enabled;
 
 	public RecipeSlot(
 		IIngredientManager ingredientManager,
@@ -96,8 +93,8 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		this.cycleTimer = new CycleTimer(cycleOffset);
 	}
 
-	public void setSlotIndex(int slotIndex) {
-		this.slotIndex = slotIndex;
+	public void setContainerSlotIndex(int containerSlotIndex) {
+		this.containerSlotIndex = containerSlotIndex;
 	}
 
 	public void setLegacyIngredientIndex(int legacyIngredientIndex) {
@@ -141,10 +138,10 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 	@Override
 	public OptionalInt getContainerSlotIndex() {
-		if (slotIndex < 0) {
+		if (containerSlotIndex < 0) {
 			return OptionalInt.empty();
 		}
-		return OptionalInt.of(slotIndex);
+		return OptionalInt.of(containerSlotIndex);
 	}
 
 	@Override
@@ -214,7 +211,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	}
 
 	public void set(List<Optional<ITypedIngredient<?>>> ingredients, @Nullable Focus<?> focus) {
-		this.allIngredients = Collections.unmodifiableList(ingredients);
+		this.allIngredients = List.copyOf(ingredients);
 		setFocus(focus);
 	}
 
@@ -223,14 +220,12 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		if (match.isPresent()) {
 			this.displayIngredients = List.of(match);
 		} else {
-			IngredientFilter ingredientFilter = Internal.getIngredientFilter();
+			IngredientVisibility ingredientVisibility = Internal.getIngredientVisibility();
 			this.displayIngredients = this.allIngredients.stream()
-				.filter(i -> i.isEmpty() || ingredientFilter.isIngredientVisible(i.get()))
+				.filter(i -> i.isEmpty() || ingredientVisibility.isIngredientVisible(i.get()))
 				.limit(MAX_DISPLAYED_INGREDIENTS)
 				.toList();
 		}
-
-		this.enabled = !this.displayIngredients.isEmpty();
 	}
 
 	private <T> Optional<ITypedIngredient<?>> getMatch(@Nullable Focus<T> focus) {
@@ -249,7 +244,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return enabled && MathUtil.contains(rect, mouseX, mouseY);
+		return MathUtil.contains(rect, mouseX, mouseY);
 	}
 
 	public void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
