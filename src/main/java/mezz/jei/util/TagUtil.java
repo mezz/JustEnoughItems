@@ -10,17 +10,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 public class TagUtil {
 	@Nullable
-	public static ResourceLocation getTagEquivalent(Collection<@Nullable ItemStack> itemStacks) {
+	public static ResourceLocation getTagEquivalent(Collection<ItemStack> itemStacks) {
 		if (itemStacks.size() < 2) {
 			return null;
 		}
 
 		List<Item> items = itemStacks.stream()
-			.filter(Objects::nonNull)
 			.map(ItemStack::getItem)
 			.toList();
 
