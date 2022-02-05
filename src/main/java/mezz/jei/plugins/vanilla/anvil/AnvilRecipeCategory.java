@@ -4,12 +4,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.builder.IRecipeSlotId;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -29,10 +26,8 @@ import java.util.Optional;
 public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 	private final IDrawable background;
 	private final IDrawable icon;
-	@Nullable
-	private IRecipeSlotId leftInputId;
-	@Nullable
-	private IRecipeSlotId rightInputId;
+	private final String leftSlotName = "leftSlot";
+	private final String rightSlotName = "rightSlot";
 
 	public AnvilRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18)
@@ -68,37 +63,28 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, AnvilRecipe recipe, List<? extends IFocus<?>> focuses) {
-		IRecipeSlotBuilder leftSlot = builder.addSlot(RecipeIngredientRole.INPUT, 0, 0)
+		builder.addSlot(RecipeIngredientRole.INPUT, 0, 0)
 			.addItemStacks(recipe.getLeftInputs())
-			.setContainerSlotIndex(0);
+			.setContainerSlotIndex(0)
+			.setSlotName(leftSlotName);
 
-		leftInputId = leftSlot.getSlotId();
-
-		IRecipeSlotBuilder rightSlot = builder.addSlot(RecipeIngredientRole.INPUT, 49, 0)
+		builder.addSlot(RecipeIngredientRole.INPUT, 49, 0)
 			.addItemStacks(recipe.getRightInputs())
-			.setContainerSlotIndex(1);
-
-		rightInputId = rightSlot.getSlotId();
+			.setContainerSlotIndex(1)
+			.setSlotName(rightSlotName);
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 107, 0)
 			.addItemStacks(recipe.getOutputs())
 			.setContainerSlotIndex(2);
 	}
 
-	private static <T> Optional<T> getDisplayedIngredient(
-		@Nullable IRecipeSlotId slotId,
-		IRecipeSlotsView recipeSlotsView,
-		IIngredientType<T> ingredientType
-	) {
-		return Optional.ofNullable(slotId)
-			.flatMap(recipeSlotsView::findSlotView)
-			.flatMap(slotView -> slotView.getDisplayedIngredient(ingredientType));
-	}
-
 	@Override
 	public void draw(AnvilRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
-		Optional<ItemStack> leftStack = getDisplayedIngredient(leftInputId, recipeSlotsView, VanillaTypes.ITEM);
-		Optional<ItemStack> rightStack = getDisplayedIngredient(rightInputId, recipeSlotsView, VanillaTypes.ITEM);
+		Optional<ItemStack> leftStack = recipeSlotsView.findSlotByName(leftSlotName)
+			.flatMap(slot1 -> slot1.getDisplayedIngredient(VanillaTypes.ITEM));
+
+		Optional<ItemStack> rightStack = recipeSlotsView.findSlotByName(rightSlotName)
+			.flatMap(slot -> slot.getDisplayedIngredient(VanillaTypes.ITEM));
 
 		if (leftStack.isEmpty() || rightStack.isEmpty()) {
 			return;

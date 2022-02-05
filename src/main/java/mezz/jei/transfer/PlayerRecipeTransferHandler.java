@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.builder.IRecipeSlotId;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
@@ -145,8 +144,8 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 		}
 
 		@Override
-		public IRecipeSlotId getSlotId() {
-			return original.getSlotId();
+		public Optional<String> getSlotName() {
+			return original.getSlotName();
 		}
 
 		@Override

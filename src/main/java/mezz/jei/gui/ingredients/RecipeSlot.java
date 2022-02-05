@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.builder.IRecipeSlotId;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
@@ -49,7 +48,6 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 	private final IIngredientManager ingredientManager;
 	private final RecipeIngredientRole role;
-	private final IRecipeSlotId slotId;
 	private int containerSlotIndex = -1;
 	private int legacyIngredientIndex = -1;
 
@@ -74,11 +72,12 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	private IDrawable background;
 	@Nullable
 	private IDrawable overlay;
+	@Nullable
+	private String slotName;
 
 	public RecipeSlot(
 		IIngredientManager ingredientManager,
 		RecipeIngredientRole role,
-		IRecipeSlotId slotId,
 		Rect2i rect,
 		int xInset,
 		int yInset,
@@ -86,7 +85,6 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	) {
 		this.ingredientManager = ingredientManager;
 		this.role = role;
-		this.slotId = slotId;
 		this.rect = rect;
 		this.xInset = xInset;
 		this.yInset = yInset;
@@ -145,8 +143,8 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	}
 
 	@Override
-	public IRecipeSlotId getSlotId() {
-		return this.slotId;
+	public Optional<String> getSlotName() {
+		return Optional.ofNullable(this.slotName);
 	}
 
 	@Override
@@ -305,5 +303,9 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 	public Rect2i getRect() {
 		return this.rect;
+	}
+
+	public void setSlotName(@Nullable String slotName) {
+		this.slotName = slotName;
 	}
 }

@@ -1,6 +1,5 @@
 package mezz.jei.gui.ingredients;
 
-import mezz.jei.api.gui.builder.IRecipeSlotId;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -23,9 +22,13 @@ public class RecipeSlotsView implements IRecipeSlotsView {
 	}
 
 	@Override
-	public Optional<IRecipeSlotView> findSlotView(IRecipeSlotId recipeSlotId) {
+	public Optional<IRecipeSlotView> findSlotByName(String slotName) {
 		return this.slots.stream()
-			.filter(slot -> recipeSlotId.equals(slot.getSlotId()))
+			.filter(slot ->
+				slot.getSlotName()
+					.map(slotName::equals)
+					.orElse(false)
+			)
 			.findFirst();
 	}
 

@@ -95,9 +95,9 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	IRecipeSlotBuilder setContainerSlotIndex(int slotIndex);
 
 	/**
-	 * Give the slot a unique id, for use by {@link IRecipeSlotsView#findSlotView(IRecipeSlotId)}
+	 * Give the slot a unique name, for use by {@link IRecipeSlotsView#findSlotByName(String)}
 	 *
 	 * @since JEI 9.3.0
 	 */
-	IRecipeSlotId getSlotId();
+	IRecipeSlotBuilder setSlotName(String slotName);
 }

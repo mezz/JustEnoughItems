@@ -11,7 +11,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.gui.ingredients.RecipeSlot;
-import mezz.jei.gui.recipes.builder.RecipeSlotId;
 import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.Internal;
@@ -94,7 +93,6 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		RecipeSlot recipeSlot = new RecipeSlot(
 			ingredientManager,
 			RecipeIngredientRole.CATALYST,
-			RecipeSlotId.create(),
 			rect,
 			0,
 			0,

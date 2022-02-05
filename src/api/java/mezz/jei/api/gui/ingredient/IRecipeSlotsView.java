@@ -2,7 +2,6 @@ package mezz.jei.api.gui.ingredient;
 
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.builder.IRecipeSlotId;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
@@ -36,9 +35,9 @@ public interface IRecipeSlotsView {
 	Collection<IRecipeSlotView> getSlotViews(RecipeIngredientRole role, IIngredientType<?> ingredientType);
 
 	/**
-	 * Get a recipe slot by its {@link IRecipeSlotId} from {@link IRecipeSlotBuilder#getSlotId()}
+	 * Get a recipe slot by its name set in {@link IRecipeSlotBuilder#setSlotName(String)}.
 	 *
 	 * @since JEI 9.3.0
 	 */
-	Optional<IRecipeSlotView> findSlotView(IRecipeSlotId recipeSlotId);
+	Optional<IRecipeSlotView> findSlotByName(String slotName);
 }

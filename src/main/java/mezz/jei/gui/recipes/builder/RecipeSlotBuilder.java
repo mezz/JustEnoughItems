@@ -3,7 +3,6 @@ package mezz.jei.gui.recipes.builder;
 import com.google.common.base.Preconditions;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.builder.IRecipeSlotId;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -31,8 +30,12 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 
 	private final IIngredientManager ingredientManager;
 	private final RecipeIngredientRole role;
+	private final IngredientAcceptor ingredients;
+	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>(0);
+	private final RendererOverrides rendererOverrides = new RendererOverrides();
 	private final int xPos;
 	private final int yPos;
+
 	private int width = DEFAULT_SIZE;
 	private int height = DEFAULT_SIZE;
 	private int xPadding;
@@ -42,10 +45,8 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	private IDrawable background;
 	@Nullable
 	private IDrawable overlay;
-	private final IngredientAcceptor ingredients;
-	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>(0);
-	private final RendererOverrides rendererOverrides = new RendererOverrides();
-	private final IRecipeSlotId slotId;
+	@Nullable
+	private String slotName;
 
 	public RecipeSlotBuilder(
 		IIngredientManager ingredientManager,
@@ -55,7 +56,6 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	) {
 		this.ingredientManager = ingredientManager;
 		this.ingredients = new IngredientAcceptor(ingredientManager);
-		this.slotId = RecipeSlotId.create();
 		this.role = role;
 		this.xPos = x;
 		this.yPos = y;
@@ -145,8 +145,9 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	}
 
 	@Override
-	public IRecipeSlotId getSlotId() {
-		return this.slotId;
+	public IRecipeSlotBuilder setSlotName(String slotName) {
+		this.slotName = slotName;
+		return this;
 	}
 
 	@Override
@@ -157,7 +158,6 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 		RecipeSlot recipeSlot = new RecipeSlot(
 			this.ingredientManager,
 			this.role,
-			this.slotId,
 			rect,
 			this.xPadding,
 			this.yPadding,
@@ -172,6 +172,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 		this.tooltipCallbacks.forEach(recipeSlot::addTooltipCallback);
 		recipeSlot.setRendererOverrides(this.rendererOverrides);
 		recipeSlot.setContainerSlotIndex(this.containerSlotIndex);
+		recipeSlot.setSlotName(this.slotName);
 
 		recipeSlots.addSlot(recipeSlot);
 	}

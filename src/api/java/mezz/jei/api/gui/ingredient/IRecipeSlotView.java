@@ -1,7 +1,7 @@
 package mezz.jei.api.gui.ingredient;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.gui.builder.IRecipeSlotId;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -67,11 +67,11 @@ public interface IRecipeSlotView {
 	OptionalInt getContainerSlotIndex();
 
 	/**
-	 * The unique {@link IRecipeSlotId} of this slot.
+	 * The slot's name if one was set by {@link IRecipeSlotBuilder#setSlotName(String)}
 	 *
 	 * @since JEI 9.3.0
 	 */
-	IRecipeSlotId getSlotId();
+	Optional<String> getSlotName();
 
 	/**
 	 * Returns the type of focus that matches this ingredient.
