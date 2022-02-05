@@ -86,7 +86,7 @@ public interface IRecipeCategory<T> {
 	 * @since JEI 9.3.0
 	 */
 	default void draw(T recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
-		// if not implemented, this calls the old draw function for backward compatibility
+		// if not implemented, this calls the old function for backward compatibility
 		draw(recipe, stack, mouseX, mouseY);
 	}
 
@@ -105,7 +105,7 @@ public interface IRecipeCategory<T> {
 	 * @since JEI 9.3.0
 	 */
 	default List<Component> getTooltipStrings(T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		// if not implemented, this calls the old draw function for backward compatibility
+		// if not implemented, this calls the old function for backward compatibility
 		return getTooltipStrings(recipe, mouseX, mouseY);
 	}
 
