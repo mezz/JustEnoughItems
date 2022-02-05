@@ -98,7 +98,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 			0,
 			0
 		);
-		recipeSlot.set(List.of(Optional.of(typedIngredient)), null);
+		recipeSlot.set(List.of(Optional.of(typedIngredient)), List.of());
 		return recipeSlot;
 	}
 

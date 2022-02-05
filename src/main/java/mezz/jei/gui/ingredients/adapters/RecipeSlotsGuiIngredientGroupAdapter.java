@@ -186,9 +186,9 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 			.ifPresent(recipeSlot -> {
 				List<Optional<ITypedIngredient<?>>> typedIngredients = getTypedIngredients(ingredients);
 				if (focus == null || focus.getRole() == recipeSlot.getRole()) {
-					recipeSlot.set(typedIngredients, focus);
+					recipeSlot.set(typedIngredients, List.of(focus));
 				} else {
-					recipeSlot.set(typedIngredients, null);
+					recipeSlot.set(typedIngredients, List.of());
 				}
 
 				this.legacyTooltipCallbacks.forEach(recipeSlot::addTooltipCallback);

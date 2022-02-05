@@ -6,6 +6,7 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.IIngredientSupplier;
 
@@ -57,7 +58,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		return !this.slots.isEmpty();
 	}
 
-	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout) {
+	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, List<Focus<?>> focuses) {
 		if (this.shapeless) {
 			recipeLayout.setShapeless();
 		}
@@ -66,7 +67,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		}
 
 		for (IRecipeLayoutSlotSource slot : this.slots) {
-			slot.setRecipeLayout(recipeLayout);
+			slot.setRecipeLayout(recipeLayout, focuses);
 		}
 	}
 

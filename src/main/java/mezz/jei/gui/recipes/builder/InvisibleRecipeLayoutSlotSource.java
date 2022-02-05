@@ -4,6 +4,7 @@ import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.IngredientAcceptor;
 import org.jetbrains.annotations.Nullable;
@@ -44,7 +45,7 @@ public class InvisibleRecipeLayoutSlotSource implements IRecipeLayoutSlotSource,
 	}
 
 	@Override
-	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout) {
+	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, List<Focus<?>> focuses) {
 		// invisible, don't set the layout
 	}
 

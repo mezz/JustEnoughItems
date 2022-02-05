@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.ingredients.RecipeSlots;
 import mezz.jei.gui.ingredients.RendererOverrides;
@@ -151,7 +152,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	}
 
 	@Override
-	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout) {
+	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, List<Focus<?>> focuses) {
 		RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
 
 		Rect2i rect = new Rect2i(xPos, yPos, width, height);
@@ -166,7 +167,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 
 		List<Optional<ITypedIngredient<?>>> allIngredients = this.ingredients.getAllIngredients();
 
-		recipeSlot.set(allIngredients, null);
+		recipeSlot.set(allIngredients, focuses);
 		recipeSlot.setBackground(this.background);
 		recipeSlot.setOverlay(this.overlay);
 		this.tooltipCallbacks.forEach(recipeSlot::addTooltipCallback);

@@ -208,15 +208,14 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		this.overlay = overlay;
 	}
 
-	public void set(List<Optional<ITypedIngredient<?>>> ingredients, @Nullable Focus<?> focus) {
+	public void set(List<Optional<ITypedIngredient<?>>> ingredients, List<Focus<?>> focuses) {
 		this.allIngredients = List.copyOf(ingredients);
-		setFocus(focus);
-	}
 
-	public <T> void setFocus(@Nullable Focus<T> focus) {
-		Optional<ITypedIngredient<?>> match = getMatch(focus);
-		if (match.isPresent()) {
-			this.displayIngredients = List.of(match);
+		List<ITypedIngredient<?>> matches = getMatches(focuses);
+		if (!matches.isEmpty()) {
+			this.displayIngredients = matches.stream()
+				.<Optional<ITypedIngredient<?>>>map(Optional::of)
+				.toList();
 		} else {
 			IngredientVisibility ingredientVisibility = Internal.getIngredientVisibility();
 			this.displayIngredients = this.allIngredients.stream()
@@ -226,8 +225,15 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		}
 	}
 
-	private <T> Optional<ITypedIngredient<?>> getMatch(@Nullable Focus<T> focus) {
-		if (focus == null || this.getRole() != focus.getRole()) {
+	private List<ITypedIngredient<?>> getMatches(List<Focus<?>> focuses) {
+		return focuses.stream()
+			.map(this::getMatch)
+			.flatMap(Optional::stream)
+			.toList();
+	}
+
+	private <T> Optional<ITypedIngredient<?>> getMatch(Focus<T> focus) {
+		if (this.getRole() != focus.getRole()) {
 			return Optional.empty();
 		}
 		ITypedIngredient<T> focusValue = focus.getTypedValue();

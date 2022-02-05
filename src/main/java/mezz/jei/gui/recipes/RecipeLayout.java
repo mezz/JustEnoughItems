@@ -95,7 +95,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
 			if (builder.isUsed()) {
-				builder.setRecipeLayout(recipeLayout);
+				builder.setRecipeLayout(recipeLayout, focuses);
 				return true;
 			}
 		} catch (RuntimeException | LinkageError e) {
