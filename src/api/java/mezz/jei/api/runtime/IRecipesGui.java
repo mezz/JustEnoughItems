@@ -17,11 +17,20 @@ import mezz.jei.api.recipe.IRecipeManager;
 public interface IRecipesGui {
 	/**
 	 * Show recipes for an {@link IFocus}.
-	 * Opens the {@link IRecipesGui} if it is closed.
+	 * Opens the {@link IRecipesGui} if recipes are found and the gui is closed.
 	 *
-	 * @see IRecipeManager#createFocus(RecipeIngredientRole, Object)
+	 * @see IRecipeManager#createFocus(RecipeIngredientRole, IIngredientType, Object)
 	 */
 	<V> void show(IFocus<V> focus);
+
+	/**
+	 * Show recipes for multiple {@link IFocus}.
+	 * Opens the {@link IRecipesGui} if recipes are found and the gui is closed.
+	 *
+	 * @see IRecipeManager#createFocus(RecipeIngredientRole, IIngredientType, Object)
+	 *
+	 * @since JEI 9.3.0
+	 */
 	void show(List<IFocus<?>> focuses);
 
 	/**
