@@ -19,6 +19,10 @@ import java.util.stream.Stream;
 
 public class IngredientAcceptor implements IIngredientAcceptor<IngredientAcceptor> {
 	private final IIngredientManager ingredientManager;
+	/**
+	 * A list of ingredients, including "blank" ingredients represented by {@link Optional#empty()}.
+	 * Blank ingredients are drawn as "nothing" in a rotation of ingredients, but aren't considered in lookups.
+	 */
 	private final List<Optional<ITypedIngredient<?>>> ingredients = new ArrayList<>();
 	private final Set<IIngredientType<?>> types = new HashSet<>();
 
