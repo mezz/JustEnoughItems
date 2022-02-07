@@ -91,10 +91,9 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	@SuppressWarnings("removal")
 	@Override
 	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable FluidStack ingredient) {
-		if (ingredient == null) {
-			return;
+		if (ingredient != null) {
+			render(stack, xPosition, yPosition, 16, 16, ingredient);
 		}
-		render(stack, xPosition, yPosition, 16, 16, ingredient);
 	}
 
 	private void drawFluid(PoseStack poseStack, final int xPosition, final int yPosition, final int width, final int height, FluidStack fluidStack) {
