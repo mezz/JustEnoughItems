@@ -26,6 +26,7 @@ import mezz.jei.util.LoggedTimer;
 import mezz.jei.util.Translator;
 import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.Unmodifiable;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
@@ -40,7 +41,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class IngredientFilter implements IIngredientGridSource {
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
@@ -185,8 +185,8 @@ public class IngredientFilter implements IIngredientGridSource {
 			//Then we sort it.
 			ingredientListCached = ingredientList.stream()
 				.sorted(sorter.getComparator(this, this.ingredientManager))
-				.map(IIngredientListElementInfo::getTypedIngredient)
-				.collect(Collectors.toList());
+				.<ITypedIngredient<?>>map(IIngredientListElementInfo::getTypedIngredient)
+				.toList();
 			if (debugMode) {
 				filterTimer.stop();
 				LogManager.getLogger().info("Filter has " + ingredientListCached.size() + " of " + ingredientList.size());
@@ -197,6 +197,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	//This is used to allow the sorting function to set all item's indexes, precomputing the master sort order.
+	@Unmodifiable
 	public List<IIngredientListElementInfo<?>> getIngredientListPreSort(Comparator<IIngredientListElementInfo<?>> directComparator) {
 		//First step is to get the full list.
 		List<IIngredientListElementInfo<?>> ingredientList = elementSearch.getAllIngredients();
@@ -207,7 +208,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		//Then we sort it.
 		List<IIngredientListElementInfo<?>> fullSortedList = ingredientList.stream()
 			.sorted(directComparator)
-			.collect(Collectors.toList());
+			.toList();
 		if (debugMode) {
 			filterTimer.stop();
 			LogManager.getLogger().info("Sort has " + ingredientList.size());

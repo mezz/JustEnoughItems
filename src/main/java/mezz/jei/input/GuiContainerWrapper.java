@@ -35,7 +35,7 @@ public class GuiContainerWrapper implements IRecipeFocusSource {
 		return Optional.ofNullable(guiContainer.getSlotUnderMouse())
 			.flatMap(slot -> {
 				ItemStack stack = slot.getItem();
-				return TypedIngredient.create(this.ingredientManager, VanillaTypes.ITEM, stack)
+				return TypedIngredient.createTyped(this.ingredientManager, VanillaTypes.ITEM, stack)
 					.map(typedIngredient -> {
 						Rect2i slotArea = new Rect2i(slot.x, slot.y, 16, 16);
 						return new ClickedIngredient<>(typedIngredient, slotArea, false, false);

@@ -205,7 +205,7 @@ public class IngredientFilterTest {
 			.map(Component::getString)
 			.map(Translator::toLowercaseWithLocale)
 			.filter(line -> !StringUtil.isNullOrEmpty(line))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	public static List<TestIngredient> createIngredients() {

@@ -103,8 +103,8 @@ public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtensio
 		}
 
 		List<Class<? extends T>> assignableClasses = assignableHandlers.stream()
-			.map(RecipeHandler::getRecipeClass)
-			.collect(Collectors.toList());
+			.<Class<? extends T>>map(RecipeHandler::getRecipeClass)
+			.toList();
 		LOGGER.warn("Found multiple matching recipe handlers for {}: {}", recipeClass, assignableClasses);
 		RecipeHandler<R, W> recipeHandler = assignableHandlers.get(0);
 		return recipeHandler.apply(recipe);

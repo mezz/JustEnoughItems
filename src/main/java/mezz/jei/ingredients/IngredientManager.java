@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class IngredientManager implements IIngredientManager {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -50,8 +49,8 @@ public class IngredientManager implements IIngredientManager {
 		this.ingredientsMap = ingredientsMapBuilder.build();
 
 		this.registeredIngredientTypes = ingredientInfos.stream()
-			.map(IngredientInfo::getIngredientType)
-			.collect(Collectors.toList());
+			.<IIngredientType<?>>map(IngredientInfo::getIngredientType)
+			.toList();
 
 		this.enableDebugLogs = enableDebugLogs;
 		ImmutableMap.Builder<Class<?>, IIngredientType<?>> ingredientTypeBuilder = ImmutableMap.builder();

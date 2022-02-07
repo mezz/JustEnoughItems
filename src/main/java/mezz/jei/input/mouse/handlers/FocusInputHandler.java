@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screens.Screen;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FocusInputHandler implements IUserInputHandler {
 	private final CombinedRecipeFocusSource focusSource;
@@ -41,8 +42,8 @@ public class FocusInputHandler implements IUserInputHandler {
 			.map(clicked -> {
 				if (!input.isSimulate()) {
 					List<IFocus<?>> focuses = roles.stream()
-						.map(role -> new Focus<>(role, clicked.getValue()))
-						.collect(Collectors.toList());
+						.<IFocus<?>>map(role -> new Focus<>(role, clicked.getValue()))
+						.toList();
 					recipesGui.show(focuses);
 				}
 				return LimitedAreaInputHandler.create(this, clicked.getArea());

@@ -27,7 +27,7 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 
 		for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
 			ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-			ITypedIngredient<?> typedIngredient = TypedIngredient.create(this.ingredientManager, ingredientType, catalystIngredient)
+			ITypedIngredient<T> typedIngredient = TypedIngredient.createTyped(this.ingredientManager, ingredientType, catalystIngredient)
 				.orElseThrow(() -> new IllegalArgumentException("Recipe catalyst must not be empty"));
 			this.recipeCatalysts.put(recipeCategoryUid, typedIngredient);
 		}

@@ -10,11 +10,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.TooltipFlag;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public final class IngredientInformationUtil {
 	private IngredientInformationUtil() {
@@ -25,6 +25,7 @@ public final class IngredientInformationUtil {
 		return removeChatFormatting(displayName);
 	}
 
+	@Unmodifiable
 	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove, IIngredientFilterConfig config) {
 		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
 		List<Component> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
@@ -39,7 +40,7 @@ public final class IngredientInformationUtil {
 				return line;
 			})
 			.filter(line -> !StringUtil.isNullOrEmpty(line))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private static String removeChatFormatting(String string) {
