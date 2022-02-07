@@ -34,11 +34,11 @@ public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 
 	@Override
 	public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
-		Optional<ITypedIngredient<?>> displayedIngredient = recipeSlotView.getDisplayedIngredient();
-		if (displayedIngredient.isEmpty()) {
+		if (recipeSlotView.getRole() != RecipeIngredientRole.OUTPUT) {
 			return;
 		}
-		if (recipeSlotView.getRole() != RecipeIngredientRole.OUTPUT) {
+		Optional<ITypedIngredient<?>> displayedIngredient = recipeSlotView.getDisplayedIngredient();
+		if (displayedIngredient.isEmpty()) {
 			return;
 		}
 
