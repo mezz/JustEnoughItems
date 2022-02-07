@@ -3,7 +3,6 @@ package mezz.jei.collect;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -29,7 +28,7 @@ public class MultiMap<K, V, T extends Collection<V>> {
 		if (collection != null) {
 			return Collections.unmodifiableCollection(collection);
 		}
-		return List.of();
+		return Collections.emptyList();
 	}
 
 	public boolean put(K key, V value) {

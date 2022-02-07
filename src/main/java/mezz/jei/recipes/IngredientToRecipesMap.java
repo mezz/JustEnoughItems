@@ -22,7 +22,7 @@ public class IngredientToRecipesMap<R> {
 	public List<R> get(String ingredientUid) {
 		List<R> recipes = uidToRecipes.get(ingredientUid);
 		if (recipes == null) {
-			return List.of();
+			return Collections.emptyList();
 		}
 		return Collections.unmodifiableList(recipes);
 	}
