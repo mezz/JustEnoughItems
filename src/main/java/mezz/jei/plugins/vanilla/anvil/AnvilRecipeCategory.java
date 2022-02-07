@@ -65,17 +65,14 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 	public void setRecipe(IRecipeLayoutBuilder builder, AnvilRecipe recipe, List<? extends IFocus<?>> focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 0, 0)
 			.addItemStacks(recipe.getLeftInputs())
-			.setContainerSlotIndex(0)
 			.setSlotName(leftSlotName);
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 49, 0)
 			.addItemStacks(recipe.getRightInputs())
-			.setContainerSlotIndex(1)
 			.setSlotName(rightSlotName);
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 107, 0)
-			.addItemStacks(recipe.getOutputs())
-			.setContainerSlotIndex(2);
+			.addItemStacks(recipe.getOutputs());
 	}
 
 	@Override

@@ -41,7 +41,6 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	private int height = DEFAULT_SIZE;
 	private int xPadding;
 	private int yPadding;
-	private int containerSlotIndex = -1;
 	@Nullable
 	private IDrawable background;
 	@Nullable
@@ -140,12 +139,6 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	}
 
 	@Override
-	public IRecipeSlotBuilder setContainerSlotIndex(int containerSlotIndex) {
-		this.containerSlotIndex = containerSlotIndex;
-		return this;
-	}
-
-	@Override
 	public IRecipeSlotBuilder setSlotName(String slotName) {
 		this.slotName = slotName;
 		return this;
@@ -172,7 +165,6 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 		recipeSlot.setOverlay(this.overlay);
 		this.tooltipCallbacks.forEach(recipeSlot::addTooltipCallback);
 		recipeSlot.setRendererOverrides(this.rendererOverrides);
-		recipeSlot.setContainerSlotIndex(this.containerSlotIndex);
 		recipeSlot.setSlotName(this.slotName);
 
 		recipeSlots.addSlot(recipeSlot);

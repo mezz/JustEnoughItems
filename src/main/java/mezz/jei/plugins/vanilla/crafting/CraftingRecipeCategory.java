@@ -13,7 +13,6 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.config.Constants;
-import mezz.jei.gui.CraftingGridHelper;
 import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.recipes.ExtendableRecipeCategoryHelper;
@@ -31,7 +30,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class CraftingRecipeCategory implements IExtendableRecipeCategory<CraftingRecipe, ICraftingCategoryExtension> {
-	private static final int craftOutputSlot = 0;
 	private static final int craftInputSlot1 = 1;
 
 	public static final int width = 116;
@@ -48,7 +46,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 		background = guiHelper.createDrawable(location, 0, 60, width, height);
 		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Blocks.CRAFTING_TABLE));
 		localizedName = new TranslatableComponent("gui.jei.category.craftingTable");
-		craftingGridHelper = new CraftingGridHelper(craftInputSlot1, craftOutputSlot);
+		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1);
 	}
 
 	@Override

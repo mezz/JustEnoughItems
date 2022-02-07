@@ -19,7 +19,6 @@ import java.util.List;
 import net.minecraft.network.chat.Component;
 
 public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
-
 	private final IDrawable background;
 	private final IDrawable icon;
 
@@ -56,16 +55,13 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, UpgradeRecipe recipe, List<? extends IFocus<?>> focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 0, 0)
-			.addIngredients(recipe.base)
-			.setContainerSlotIndex(0);
+			.addIngredients(recipe.base);
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 49, 0)
-			.addIngredients(recipe.addition)
-			.setContainerSlotIndex(1);
+			.addIngredients(recipe.addition);
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 107, 0)
-			.addItemStack(recipe.getResultItem())
-			.setContainerSlotIndex(2);
+			.addItemStack(recipe.getResultItem());
 	}
 
 	@Override

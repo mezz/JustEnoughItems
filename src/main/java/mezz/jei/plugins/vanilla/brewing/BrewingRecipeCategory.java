@@ -25,13 +25,6 @@ import net.minecraft.network.chat.TranslatableComponent;
 import java.util.List;
 
 public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> {
-
-	private static final int brewPotionSlot1 = 0;
-	private static final int brewPotionSlot2 = 1;
-	private static final int brewPotionSlot3 = 2;
-	private static final int brewIngredientSlot = 3;
-	private static final int outputSlot = 4;
-
 	private final IDrawable background;
 	private final IDrawable icon;
 	private final IDrawable slotDrawable;
@@ -103,24 +96,19 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 		List<ItemStack> potionInputs = recipe.getPotionInputs();
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 0, 36)
-			.addItemStacks(potionInputs)
-			.setContainerSlotIndex(brewPotionSlot1);
+			.addItemStacks(potionInputs);
 
-		builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 23, 43)
-			.addItemStacks(potionInputs)
-			.setContainerSlotIndex(brewPotionSlot2);
+		builder.addSlot(RecipeIngredientRole.INPUT, 23, 43)
+			.addItemStacks(potionInputs);
 
-		builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 46, 36)
-			.addItemStacks(potionInputs)
-			.setContainerSlotIndex(brewPotionSlot3);
+		builder.addSlot(RecipeIngredientRole.INPUT, 46, 36)
+			.addItemStacks(potionInputs);
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 23, 2)
-			.addItemStacks(recipe.getIngredients())
-			.setContainerSlotIndex(brewIngredientSlot);
+			.addItemStacks(recipe.getIngredients());
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 80, 2)
 			.addItemStack(recipe.getPotionOutput())
-			.setContainerSlotIndex(outputSlot)
 			.setBackground(slotDrawable);
 	}
 

@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.stream.Stream;
 
 public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
@@ -48,7 +47,6 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 	private final IIngredientManager ingredientManager;
 	private final RecipeIngredientRole role;
-	private int containerSlotIndex = -1;
 	private int legacyIngredientIndex = -1;
 
 	private final Rect2i rect;
@@ -57,11 +55,17 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 	private final CycleTimer cycleTimer;
 
-	/** ingredients, taking focus into account */
+	/**
+	 * Displayed ingredients, taking focus into account.
+	 * {@link Optional#empty()} ingredients represent a "blank" drawn ingredient in the rotation.
+	 */
 	@Unmodifiable
 	private List<Optional<ITypedIngredient<?>>> displayIngredients = List.of();
 
-	/** all ingredients, ignoring focus */
+	/**
+	 * All ingredients, ignoring focus
+	 * {@link Optional#empty()} ingredients represent a "blank" drawn ingredient in the rotation.
+	 */
 	@Unmodifiable
 	private List<Optional<ITypedIngredient<?>>> allIngredients = List.of();
 
@@ -91,10 +95,6 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		this.cycleTimer = new CycleTimer(cycleOffset);
 	}
 
-	public void setContainerSlotIndex(int containerSlotIndex) {
-		this.containerSlotIndex = containerSlotIndex;
-	}
-
 	public void setLegacyIngredientIndex(int legacyIngredientIndex) {
 		this.legacyIngredientIndex = legacyIngredientIndex;
 	}
@@ -115,6 +115,12 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	}
 
 	@Override
+	public boolean isEmpty() {
+		// note that an all-blanks (all Optional#isEmpty()) slot is considered empty.
+		return getAllIngredients().findAny().isEmpty();
+	}
+
+	@Override
 	public <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
 		return getAllIngredients()
 			.map(i -> TypedIngredient.optionalCast(i, ingredientType))
@@ -132,14 +138,6 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		return getDisplayedIngredient()
 			.flatMap(i -> TypedIngredient.optionalCast(i, ingredientType))
 			.map(ITypedIngredient::getIngredient);
-	}
-
-	@Override
-	public OptionalInt getContainerSlotIndex() {
-		if (containerSlotIndex < 0) {
-			return OptionalInt.empty();
-		}
-		return OptionalInt.of(containerSlotIndex);
 	}
 
 	@Override

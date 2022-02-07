@@ -66,10 +66,9 @@ public class GuiHelper implements IGuiHelper {
 		return new DrawableIngredient<>(ingredient, ingredientRenderer);
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1) {
-		return new CraftingGridHelper(craftInputSlot1, 0);
+		return new CraftingGridHelper(craftInputSlot1);
 	}
 
 	@Override

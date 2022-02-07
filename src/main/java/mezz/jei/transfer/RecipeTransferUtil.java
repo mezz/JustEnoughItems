@@ -23,9 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -91,8 +89,7 @@ public final class RecipeTransferUtil {
 
 	public static boolean validateSlots(
 		Player player,
-		Collection<Slot> recipeTargetSlots,
-		Collection<Slot> ingredientTargetSlots,
+		Collection<TransferOperation> transferOperations,
 		Collection<Slot> craftingSlots,
 		Collection<Slot> inventorySlots
 	) {
@@ -103,15 +100,16 @@ public final class RecipeTransferUtil {
 			.map(s -> s.index)
 			.collect(Collectors.toSet());
 
-		// check that all recipeSlotToSourceSlots recipe slots are included in craftingSlots
+		// check that all craftingTargetSlots are included in craftingSlots
 		{
-			List<Integer> invalidRecipeIndexes = recipeTargetSlots.stream()
+			List<Integer> invalidRecipeIndexes = transferOperations.stream()
+				.map(TransferOperation::craftingSlot)
 				.map(s -> s.index)
 				.filter(s -> !craftingSlotIndexes.contains(s))
 				.toList();
 			if (!invalidRecipeIndexes.isEmpty()) {
 				LOGGER.error(
-					"Transfer handler has invalid slots for the origin of the recipe, " +
+					"Transfer handler has invalid slots for the destination of the recipe, " +
 						"the slots are not included in the list of crafting slots. " +
 						StringUtil.intsToString(invalidRecipeIndexes)
 				);
@@ -119,15 +117,16 @@ public final class RecipeTransferUtil {
 			}
 		}
 
-		// check that all recipeSlotToSourceSlots inventory slots are included in inventorySlots or recipeSlots
+		// check that all ingredientTargetSlots are included in inventorySlots or recipeSlots
 		{
-			List<Integer> invalidInventorySlotIndexes = ingredientTargetSlots.stream()
+			List<Integer> invalidInventorySlotIndexes = transferOperations.stream()
+				.map(TransferOperation::inventorySlot)
 				.map(s -> s.index)
 				.filter(s -> !inventorySlotIndexes.contains(s) && !craftingSlotIndexes.contains(s))
 				.toList();
 			if (!invalidInventorySlotIndexes.isEmpty()) {
 				LOGGER.error(
-					"Transfer handler has invalid slots for the inventory stacks for the recipe, " +
+					"Transfer handler has invalid source slots for the inventory stacks for the recipe, " +
 						"the slots are not included in the list of inventory slots or recipe slots. " +
 						StringUtil.intsToString(invalidInventorySlotIndexes) + 
 						"\n inventory slots: " + StringUtil.intsToString(inventorySlotIndexes) +
@@ -174,26 +173,28 @@ public final class RecipeTransferUtil {
 		return true;
 	}
 
-	public static class MatchingItemsResult {
-		public final Map<IRecipeSlotView, Slot> matchingItems = new IdentityHashMap<>();
-		public final List<IRecipeSlotView> missingItems = new ArrayList<>();
-	}
-
 	/**
 	 * Returns a list of items in slots that complete the recipe defined by requiredStacksList.
 	 * Returns a result that contains missingItems if there are not enough items in availableItemStacks.
 	 */
-	public static MatchingItemsResult getMatchingItems(
+	public static RecipeTransferOperationsResult getRecipeTransferOperations(
 		IStackHelper stackhelper,
 		Map<Slot, ItemStack> availableItemStacks,
-		Collection<IRecipeSlotView> slotsView
+		List<IRecipeSlotView> requiredItemStacks,
+		List<Slot> craftingSlots
 	) {
-		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
+		RecipeTransferOperationsResult transferOperations = new RecipeTransferOperationsResult();
 
-		slotsView.forEach(ingredient -> {
-			Map.Entry<Slot, ItemStack> matching = containsAnyStackIndexed(stackhelper, availableItemStacks, ingredient);
+		for (int i = 0; i < requiredItemStacks.size(); i++) {
+			IRecipeSlotView requiredItemStack = requiredItemStacks.get(i);
+			if (requiredItemStack.isEmpty()) {
+				continue;
+			}
+			Slot craftingSlot = craftingSlots.get(i);
+
+			Map.Entry<Slot, ItemStack> matching = containsAnyStackIndexed(stackhelper, availableItemStacks, requiredItemStack);
 			if (matching == null) {
-				matchingItemResult.missingItems.add(ingredient);
+				transferOperations.missingItems.add(requiredItemStack);
 			} else {
 				Slot matchingSlot = matching.getKey();
 				ItemStack matchingStack = matching.getValue();
@@ -201,11 +202,11 @@ public final class RecipeTransferUtil {
 				if (matchingStack.isEmpty()) {
 					availableItemStacks.remove(matchingSlot);
 				}
-				matchingItemResult.matchingItems.put(ingredient, matchingSlot);
+				transferOperations.results.add(new TransferOperation(matchingSlot, craftingSlot));
 			}
-		});
+		}
 
-		return matchingItemResult;
+		return transferOperations;
 	}
 
 	@Nullable

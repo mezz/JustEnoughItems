@@ -13,11 +13,9 @@ import java.util.List;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
 	private final int craftInputSlot1;
-	private final int craftOutputSlot;
 
-	public CraftingGridHelper(int craftInputSlot1, int craftOutputSlot) {
+	public CraftingGridHelper(int craftInputSlot1) {
 		this.craftInputSlot1 = craftInputSlot1;
-		this.craftOutputSlot = craftOutputSlot;
 	}
 
 	@SuppressWarnings("removal")
@@ -48,9 +46,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		List<IRecipeSlotBuilder> inputSlots = new ArrayList<>();
 		for (int y = 0; y < 3; ++y) {
 			for (int x = 0; x < 3; ++x) {
-				int index = craftInputSlot1 + x + (y * 3);
-				IRecipeSlotBuilder slot = builder.addSlot(RecipeIngredientRole.INPUT, x * 18, y * 18)
-					.setContainerSlotIndex(index);
+				IRecipeSlotBuilder slot = builder.addSlot(RecipeIngredientRole.INPUT, x * 18, y * 18);
 				inputSlots.add(slot);
 			}
 		}
@@ -72,8 +68,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 			return;
 		}
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 94, 18)
-			.addIngredients(ingredientType, outputs)
-			.setContainerSlotIndex(craftOutputSlot);
+			.addIngredients(ingredientType, outputs);
 	}
 
 	private static int getShapelessSize(int total) {

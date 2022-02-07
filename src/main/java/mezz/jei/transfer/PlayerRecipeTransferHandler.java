@@ -1,20 +1,15 @@
 package mezz.jei.transfer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
-import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.config.ServerInfo;
 import mezz.jei.gui.ingredients.RecipeSlotsView;
 import net.minecraft.network.chat.Component;
@@ -24,32 +19,22 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.stream.Stream;
+import java.util.List;
 
 public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<InventoryMenu, CraftingRecipe> {
 	/**
-	 * Indexes from the crafting table that fit into the player crafting grid
-	 * when we trim the right and bottom edges .
+	 * Indexes from the crafting recipe inputs that fit into the player crafting grid
+	 * when we trim the right and bottom edges.
 	 */
-	private static final Int2IntMap INDEX_MAPPING = new Int2IntArrayMap(Map.of(
-		1, 1,
-		2, 2,
-		4, 3,
-		5, 4
-	));
+	private static final IntSet PLAYER_INV_INDEXES = IntArraySet.of(0, 1, 3, 4);
 
-	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
-	private final IRecipeTransferInfo<InventoryMenu, CraftingRecipe> transferInfo;
+	private final IRecipeTransferHandler<InventoryMenu, CraftingRecipe> handler;
 
 	public PlayerRecipeTransferHandler(IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper) {
-		this.stackHelper = stackHelper;
 		this.handlerHelper = handlerHelper;
-		this.transferInfo = new BasicRecipeTransferInfo<>(InventoryMenu.class, CraftingRecipe.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
+		var transferInfo = new BasicRecipeTransferInfo<>(InventoryMenu.class, CraftingRecipe.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
+		this.handler = new BasicRecipeTransferHandler<>(stackHelper, handlerHelper, transferInfo);
 	}
 
 	@Override
@@ -67,95 +52,39 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 	public IRecipeTransferError transferRecipe(InventoryMenu container, CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, Player player, boolean maxTransfer, boolean doTransfer) {
 		if (!ServerInfo.isJeiOnServer()) {
 			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.no.server");
-			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
-		}
-		
-		boolean allGoodInputSlots = recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT, VanillaTypes.ITEM)
-			.stream()
-			.allMatch(slotView -> {
-				OptionalInt slotIndex = slotView.getContainerSlotIndex();
-				return slotIndex.isPresent() && INDEX_MAPPING.containsKey(slotIndex.getAsInt());
-			});
-
-		if (!allGoodInputSlots) {
-			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.too.large.player.inventory");
-			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
+			return this.handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
 
-		// map the crafting table input slots to player inventory input slots
-		Collection<IRecipeSlotView> recipeSlotViews = mapSlots(recipeSlotsView.getSlotViews());
-		RecipeSlotsView mappedRecipeSlots = new RecipeSlotsView(recipeSlotViews);
-		IRecipeTransferHandler<InventoryMenu, CraftingRecipe> handler = new BasicRecipeTransferHandler<>(stackHelper, handlerHelper, transferInfo);
-		return handler.transferRecipe(container, recipe, mappedRecipeSlots, player, maxTransfer, doTransfer);
+		List<IRecipeSlotView> slotViews = recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT);
+		if (!validateIngredientsOutsidePlayerGridAreEmpty(slotViews)) {
+			Component tooltipMessage = new TranslatableComponent(
+				"jei.tooltip.error.recipe.transfer.too.large.player.inventory"
+			);
+			return this.handlerHelper.createUserErrorWithTooltip(tooltipMessage);
+		}
+
+		// filter the crafting table input slots to player inventory input slots
+		List<IRecipeSlotView> filteredSlotViews = filterSlots(slotViews);
+		RecipeSlotsView filteredRecipeSlots = new RecipeSlotsView(filteredSlotViews);
+		return this.handler.transferRecipe(container, recipe, filteredRecipeSlots, player, maxTransfer, doTransfer);
 	}
 
-	private static Collection<IRecipeSlotView> mapSlots(Collection<IRecipeSlotView> slotViews) {
-		return slotViews.stream()
-			.map(slotView -> {
-				OptionalInt optionalSlotIndex = slotView.getContainerSlotIndex();
-				if (optionalSlotIndex.isEmpty()) {
-					return slotView;
+	private static boolean validateIngredientsOutsidePlayerGridAreEmpty(List<IRecipeSlotView> slotViews) {
+		int bound = slotViews.size();
+		for (int i = 0; i < bound; i++) {
+			if (!PLAYER_INV_INDEXES.contains(i)) {
+				IRecipeSlotView slotView = slotViews.get(i);
+				if (!slotView.isEmpty()) {
+					return false;
 				}
-				int slotIndex = optionalSlotIndex.getAsInt();
-				int newSlotIndex = INDEX_MAPPING.getOrDefault(slotIndex, slotIndex);
-				if (newSlotIndex == slotIndex) {
-					return slotView;
-				}
-				return new MappedRecipeSlotView(slotView, newSlotIndex);
-			})
-			.toList();
-	}
-
-	private static class MappedRecipeSlotView implements IRecipeSlotView {
-		private final IRecipeSlotView original;
-		private final Integer newSlotIndex;
-
-		public MappedRecipeSlotView(IRecipeSlotView original, Integer newSlotIndex) {
-			this.original = original;
-			this.newSlotIndex = newSlotIndex;
-		}
-
-		@Override
-		public Stream<ITypedIngredient<?>> getAllIngredients() {
-			return original.getAllIngredients();
-		}
-
-		@Override
-		public <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
-			return original.getIngredients(ingredientType);
-		}
-
-		@Override
-		public <T> Optional<T> getDisplayedIngredient(IIngredientType<T> ingredientType) {
-			return original.getDisplayedIngredient(ingredientType);
-		}
-
-		@Override
-		public Optional<ITypedIngredient<?>> getDisplayedIngredient() {
-			return original.getDisplayedIngredient();
-		}
-
-		@Override
-		public OptionalInt getContainerSlotIndex() {
-			if (newSlotIndex < 0) {
-				return OptionalInt.empty();
 			}
-			return OptionalInt.of(newSlotIndex);
 		}
+		return true;
+	}
 
-		@Override
-		public Optional<String> getSlotName() {
-			return original.getSlotName();
-		}
-
-		@Override
-		public RecipeIngredientRole getRole() {
-			return original.getRole();
-		}
-
-		@Override
-		public void drawHighlight(PoseStack stack, int color, int xOffset, int yOffset) {
-			original.drawHighlight(stack, color, xOffset, yOffset);
-		}
+	private static List<IRecipeSlotView> filterSlots(List<IRecipeSlotView> slotViews) {
+		return PLAYER_INV_INDEXES.intStream()
+			.mapToObj(slotViews::get)
+			.toList();
 	}
 }

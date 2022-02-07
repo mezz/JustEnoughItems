@@ -1,6 +1,5 @@
 package mezz.jei.transfer;
 
-import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -17,7 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public final class BasicRecipeTransferHandlerServer {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -30,25 +28,17 @@ public final class BasicRecipeTransferHandlerServer {
 	 */
 	public static void setItems(
 		Player player,
-		List<Tuple<Slot, Slot>> recipeSlotToSourceSlots,
+		List<TransferOperation> transferOperations,
 		List<Slot> craftingSlots,
 		List<Slot> inventorySlots,
 		boolean maxTransfer,
 		boolean requireCompleteSets
 	) {
-		{
-			Set<Slot> recipeTargets = recipeSlotToSourceSlots.stream()
-				.map(Tuple::getA)
-				.collect(Collectors.toSet());
-			Set<Slot> ingredientTargets = recipeSlotToSourceSlots.stream()
-				.map(Tuple::getB)
-				.collect(Collectors.toSet());
-			if (!RecipeTransferUtil.validateSlots(player, recipeTargets, ingredientTargets, craftingSlots, inventorySlots)) {
-				return;
-			}
+		if (!RecipeTransferUtil.validateSlots(player, transferOperations, craftingSlots, inventorySlots)) {
+			return;
 		}
 
-		Map<Slot, ItemStack> recipeSlotToRequiredItemStack = calculateRequiredStacks(recipeSlotToSourceSlots, player);
+		Map<Slot, ItemStack> recipeSlotToRequiredItemStack = calculateRequiredStacks(transferOperations, player);
 		if (recipeSlotToRequiredItemStack == null) {
 			return;
 		}
@@ -142,11 +132,11 @@ public final class BasicRecipeTransferHandlerServer {
 	}
 
 	@Nullable
-	private static Map<Slot, ItemStack> calculateRequiredStacks(List<Tuple<Slot, Slot>> recipeSlotToSourceSlots, Player player) {
-		Map<Slot, ItemStack> recipeSlotToRequired = new HashMap<>(recipeSlotToSourceSlots.size());
-		for (Tuple<Slot, Slot> entry : recipeSlotToSourceSlots) {
-			Slot recipeSlot = entry.getA();
-			Slot inventorySlot = entry.getB();
+	private static Map<Slot, ItemStack> calculateRequiredStacks(List<TransferOperation> transferOperations, Player player) {
+		Map<Slot, ItemStack> recipeSlotToRequired = new HashMap<>(transferOperations.size());
+		for (TransferOperation transferOperation : transferOperations) {
+			Slot recipeSlot = transferOperation.craftingSlot();
+			Slot inventorySlot = transferOperation.inventorySlot();
 			if (!inventorySlot.mayPickup(player)) {
 				LOGGER.error(
 					"Tried to transfer recipe but was given an" +

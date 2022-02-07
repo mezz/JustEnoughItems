@@ -20,9 +20,6 @@ import net.minecraft.network.chat.TranslatableComponent;
 import java.util.List;
 
 public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRecipe> {
-	private static final int inputSlot = 0;
-	private static final int outputSlot = 1;
-
 	public static final int width = 82;
 	public static final int height = 34;
 
@@ -65,12 +62,10 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRe
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, StonecutterRecipe recipe, List<? extends IFocus<?>> focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 0, 8)
-			.addIngredients(recipe.getIngredients().get(0))
-			.setContainerSlotIndex(inputSlot);
+			.addIngredients(recipe.getIngredients().get(0));
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 60,  8)
-			.addItemStack(recipe.getResultItem())
-			.setContainerSlotIndex(outputSlot);
+			.addItemStack(recipe.getResultItem());
 	}
 
 	@Override

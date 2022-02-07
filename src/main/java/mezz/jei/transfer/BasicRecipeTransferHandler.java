@@ -1,6 +1,5 @@
 package mezz.jei.transfer;
 
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
@@ -26,8 +25,8 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -66,17 +65,14 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			return handlerHelper.createInternalError();
 		}
 
-		Collection<Slot> craftingSlots = Collections.unmodifiableCollection(transferInfo.getRecipeSlots(container, recipe));
-		Collection<Slot> inventorySlots = Collections.unmodifiableCollection(transferInfo.getInventorySlots(container, recipe));
-		Collection<Integer> craftingSlotIndexes = slotIndexes(craftingSlots);
-		Collection<Integer> inventorySlotIndexes = slotIndexes(inventorySlots);
-
-		if (!validateTransferInfo(transferInfo, container, craftingSlotIndexes, inventorySlotIndexes)) {
+		List<Slot> craftingSlots = Collections.unmodifiableList(transferInfo.getRecipeSlots(container, recipe));
+		List<Slot> inventorySlots = Collections.unmodifiableList(transferInfo.getInventorySlots(container, recipe));
+		if (!validateTransferInfo(transferInfo, container, craftingSlots, inventorySlots)) {
 			return handlerHelper.createInternalError();
 		}
 
-		Collection<IRecipeSlotView> inputItemSlotViews = recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT, VanillaTypes.ITEM);
-		if (!validateRecipeView(transferInfo, container, craftingSlotIndexes, inputItemSlotViews)) {
+		List<IRecipeSlotView> inputItemSlotViews = recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT);
+		if (!validateRecipeView(transferInfo, container, craftingSlots, inputItemSlotViews)) {
 			return handlerHelper.createInternalError();
 		}
 
@@ -92,22 +88,20 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			return handlerHelper.createUserErrorWithTooltip(message);
 		}
 
-		RecipeTransferUtil.MatchingItemsResult matchingItemsResult = RecipeTransferUtil.getMatchingItems(stackHelper, inventoryState.availableItemStacks, inputItemSlotViews);
+		RecipeTransferOperationsResult transferOperations = RecipeTransferUtil.getRecipeTransferOperations(
+			stackHelper,
+			inventoryState.availableItemStacks,
+			inputItemSlotViews,
+			craftingSlots
+		);
 
-		if (matchingItemsResult.missingItems.size() > 0) {
+		if (transferOperations.missingItems.size() > 0) {
 			Component message = new TranslatableComponent("jei.tooltip.error.recipe.transfer.missing");
-			return handlerHelper.createUserErrorForMissingSlots(message, matchingItemsResult.missingItems);
+			return handlerHelper.createUserErrorForMissingSlots(message, transferOperations.missingItems);
 		}
 
 		{
-			Set<Slot> recipeTargets = matchingItemsResult.matchingItems.keySet().stream()
-				.map(IRecipeSlotView::getContainerSlotIndex)
-				.flatMapToInt(OptionalInt::stream)
-				.mapToObj(container::getSlot)
-				.collect(Collectors.toSet());
-
-			Collection<Slot> ingredientTargets = matchingItemsResult.matchingItems.values();
-			if (!RecipeTransferUtil.validateSlots(player, recipeTargets, ingredientTargets, craftingSlots, inventorySlots)) {
+			if (!RecipeTransferUtil.validateSlots(player, transferOperations.results, craftingSlots, inventorySlots)) {
 				return handlerHelper.createInternalError();
 			}
 		}
@@ -115,7 +109,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		if (doTransfer) {
 			boolean requireCompleteSets = transferInfo.requireCompleteSets(container, recipe);
 			PacketRecipeTransfer packet = new PacketRecipeTransfer(
-				matchingItemsResult.matchingItems,
+				transferOperations.results,
 				craftingSlots,
 				inventorySlots,
 				maxTransfer,
@@ -130,9 +124,11 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 	public static <C extends AbstractContainerMenu, R> boolean validateTransferInfo(
 		IRecipeTransferInfo<C, R> transferInfo,
 		C container,
-		Collection<Integer> craftingSlotIndexes,
-		Collection<Integer> inventorySlotIndexes
+		List<Slot> craftingSlots,
+		List<Slot> inventorySlots
 	) {
+		Collection<Integer> craftingSlotIndexes = slotIndexes(craftingSlots);
+		Collection<Integer> inventorySlotIndexes = slotIndexes(inventorySlots);
 		Collection<Integer> containerSlotIndexes = slotIndexes(container.slots);
 
 		if (!containerSlotIndexes.containsAll(craftingSlotIndexes)) {
@@ -157,14 +153,13 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 	public static <C extends AbstractContainerMenu, R> boolean validateRecipeView(
 		IRecipeTransferInfo<C, R> transferInfo,
 		C container,
-		Collection<Integer> craftingSlotIndexes,
-		Collection<IRecipeSlotView> inputSlots
+		List<Slot> craftingSlots,
+		List<IRecipeSlotView> inputSlots
 	) {
-		Collection<Integer> inputSlotIndexes = recipeSlotIndexes(inputSlots);
-		if (!craftingSlotIndexes.containsAll(inputSlotIndexes)) {
+		if (inputSlots.size() > craftingSlots.size()) {
 			LOGGER.error("Recipe View {} does not work for container {}. " +
-					"The Recipe View references input slot indexes [{}] that are not found in the inventory crafting slots [{}]",
-				transferInfo.getClass(), container.getClass(), StringUtil.intsToString(inputSlotIndexes), StringUtil.intsToString(craftingSlotIndexes)
+					"The Recipe View has more input slots ({}) than the number of inventory crafting slots ({})",
+				transferInfo.getClass(), container.getClass(), inputSlots.size(), craftingSlots.size()
 			);
 			return false;
 		}
@@ -172,22 +167,10 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		return true;
 	}
 
-	public static Collection<Integer> slotIndexes(Collection<Slot> slots) {
+	public static Set<Integer> slotIndexes(Collection<Slot> slots) {
 		return slots.stream()
 			.map(s -> s.index)
-			.sorted()
-			.distinct()
-			.toList();
-	}
-
-	public static Collection<Integer> recipeSlotIndexes(Collection<IRecipeSlotView> recipeSlotViews) {
-		return recipeSlotViews.stream()
-			.map(IRecipeSlotView::getContainerSlotIndex)
-			.flatMapToInt(OptionalInt::stream)
-			.sorted()
-			.distinct()
-			.boxed()
-			.toList();
+			.collect(Collectors.toSet());
 	}
 
 	@Nullable

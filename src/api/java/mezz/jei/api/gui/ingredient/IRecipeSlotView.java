@@ -8,11 +8,9 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.Slot;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.stream.Stream;
 
 /**
@@ -42,6 +40,13 @@ public interface IRecipeSlotView {
 	Stream<ITypedIngredient<?>> getAllIngredients();
 
 	/**
+	 * @return true if there are no ingredients in this recipe slot.
+	 *
+	 * @since JEI 9.3.0
+	 */
+	boolean isEmpty();
+
+	/**
 	 * The ingredient variation that is shown at this moment.
 	 * For ingredients that rotate through several values, this will change over time.
 	 * If nothing of this type is currently shown, this will return {@link Optional#empty()}.
@@ -58,13 +63,6 @@ public interface IRecipeSlotView {
 	 * @since JEI 9.3.0
 	 */
 	Optional<ITypedIngredient<?>> getDisplayedIngredient();
-
-	/**
-	 * For recipe transfer, returns the ({@link Slot#index} of this ingredient if it has one.
-	 *
-	 * @since JEI 9.3.0
-	 */
-	OptionalInt getContainerSlotIndex();
 
 	/**
 	 * The slot's name if one was set by {@link IRecipeSlotBuilder#setSlotName(String)}

@@ -1,11 +1,10 @@
 package mezz.jei.network.packets;
 
-import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
 import mezz.jei.transfer.BasicRecipeTransferHandlerServer;
+import mezz.jei.transfer.TransferOperation;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -13,23 +12,22 @@ import net.minecraft.world.inventory.Slot;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public class PacketRecipeTransfer extends PacketJei {
-	public final Map<IRecipeSlotView, Slot> recipeSlotToInventorySlotMap;
+	public final Collection<TransferOperation> transferOperations;
 	public final Collection<Slot> craftingSlots;
 	public final Collection<Slot> inventorySlots;
 	private final boolean maxTransfer;
 	private final boolean requireCompleteSets;
 
 	public PacketRecipeTransfer(
-		Map<IRecipeSlotView, Slot> recipeSlotToInventorySlotMap,
+		Collection<TransferOperation> transferOperations,
 		Collection<Slot> craftingSlots,
 		Collection<Slot> inventorySlots,
 		boolean maxTransfer,
 		boolean requireCompleteSets
 	) {
-		this.recipeSlotToInventorySlotMap = recipeSlotToInventorySlotMap;
+		this.transferOperations = transferOperations;
 		this.craftingSlots = craftingSlots;
 		this.inventorySlots = inventorySlots;
 		this.maxTransfer = maxTransfer;
@@ -43,14 +41,9 @@ public class PacketRecipeTransfer extends PacketJei {
 
 	@Override
 	public void writePacketData(FriendlyByteBuf buf) {
-		buf.writeVarInt(recipeSlotToInventorySlotMap.size());
-		for (Map.Entry<IRecipeSlotView, Slot> recipeMapEntry : recipeSlotToInventorySlotMap.entrySet()) {
-			IRecipeSlotView slotView = recipeMapEntry.getKey();
-			int slotIndex = slotView.getContainerSlotIndex().orElseThrow();
-			buf.writeVarInt(slotIndex);
-
-			Slot inventorySlot = recipeMapEntry.getValue();
-			buf.writeVarInt(inventorySlot.index);
+		buf.writeVarInt(transferOperations.size());
+		for (TransferOperation operation : transferOperations) {
+			operation.writePacketData(buf);
 		}
 
 		buf.writeVarInt(craftingSlots.size());
@@ -70,14 +63,11 @@ public class PacketRecipeTransfer extends PacketJei {
 	public static void readPacketData(FriendlyByteBuf buf, Player player) {
 		AbstractContainerMenu container = player.containerMenu;
 
-		int recipeSlotsSize = buf.readVarInt();
-		List<Tuple<Slot, Slot>> recipeSlotToSourceSlots = new ArrayList<>(recipeSlotsSize);
-		for (int i = 0; i < recipeSlotsSize; i++) {
-			int slotIndex = buf.readVarInt();
-			Slot recipeSlot = container.getSlot(slotIndex);
-			int inventoryIndex = buf.readVarInt();
-			Slot inventorySlot = container.getSlot(inventoryIndex);
-			recipeSlotToSourceSlots.add(new Tuple<>(recipeSlot, inventorySlot));
+		int transferOperationsSize = buf.readVarInt();
+		List<TransferOperation> transferOperations = new ArrayList<>(transferOperationsSize);
+		for (int i = 0; i < transferOperationsSize; i++) {
+			TransferOperation transferOperation = TransferOperation.readPacketData(buf, container);
+			transferOperations.add(transferOperation);
 		}
 
 		int craftingSlotsSize = buf.readVarInt();
@@ -100,7 +90,7 @@ public class PacketRecipeTransfer extends PacketJei {
 
 		BasicRecipeTransferHandlerServer.setItems(
 			player,
-			recipeSlotToSourceSlots,
+			transferOperations,
 			craftingSlots,
 			inventorySlots,
 			maxTransfer,

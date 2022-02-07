@@ -71,8 +71,7 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, FuelRecipe recipe, List<? extends IFocus<?>> focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 0, 16)
-			.addItemStacks(recipe.getInputs())
-			.setContainerSlotIndex(fuelSlot);
+			.addItemStacks(recipe.getInputs());
 	}
 
 	@Override

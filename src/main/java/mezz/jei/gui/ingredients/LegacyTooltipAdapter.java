@@ -24,6 +24,7 @@ public class LegacyTooltipAdapter<T> implements IRecipeSlotTooltipCallback {
 	public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
 		Optional<T> displayedIngredient = recipeSlotView.getDisplayedIngredient(ingredientType);
 		if (displayedIngredient.isPresent() && recipeSlotView instanceof RecipeSlot recipeSlot) {
+			// casting this IRecipeSlotView to RecipeSlot is a hack for legacy support
 			int ingredientIndex = recipeSlot.getLegacyIngredientIndex();
 			boolean isInput = recipeSlotView.getRole() == RecipeIngredientRole.INPUT;
 			legacyTooltipCallback.onTooltip(ingredientIndex, isInput, displayedIngredient.get(), tooltip);

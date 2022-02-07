@@ -2,11 +2,9 @@ package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
-import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
-import net.minecraft.world.inventory.Slot;
 
 /**
  * Allows setting properties of a slot on a {@link IRecipeLayoutBuilder}.
@@ -84,15 +82,6 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 * @since JEI 9.3.0
 	 */
 	IRecipeSlotBuilder addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback);
-
-	/**
-	 * For recipe transfer, set the corresponding {@link Slot#index} for this recipe slot in the given container.
-	 *
-	 * @see IRecipeSlotView#getContainerSlotIndex()
-	 *
-	 * @since JEI 9.3.0
-	 */
-	IRecipeSlotBuilder setContainerSlotIndex(int slotIndex);
 
 	/**
 	 * Give the slot a unique name, for use by {@link IRecipeSlotsView#findSlotByName(String)}

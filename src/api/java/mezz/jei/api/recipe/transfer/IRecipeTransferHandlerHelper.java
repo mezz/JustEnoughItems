@@ -36,10 +36,7 @@ public interface IRecipeTransferHandlerHelper {
 	 *
 	 * @since JEI 9.3.0
 	 */
-	IRecipeTransferError createUserErrorForMissingSlots(
-		Component tooltipMessage,
-		Collection<IRecipeSlotView> missingItemSlots
-	);
+	IRecipeTransferError createUserErrorForMissingSlots(Component tooltipMessage, Collection<IRecipeSlotView> missingItemSlots);
 
 	/**
 	 * Create an error with type {@link Type#USER_FACING} that shows a tooltip and highlights missing item slots.

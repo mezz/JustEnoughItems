@@ -22,8 +22,6 @@ import net.minecraft.world.level.block.Blocks;
 import java.util.List;
 
 public class CompostableRecipeCategory implements IRecipeCategory<CompostableRecipe> {
-	private static final int inputSlot = 0;
-
 	public static final int width = 120;
 	public static final int height = 18;
 
@@ -67,8 +65,7 @@ public class CompostableRecipeCategory implements IRecipeCategory<CompostableRec
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, CompostableRecipe recipe, List<? extends IFocus<?>> focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 0, 0)
-			.addItemStacks(recipe.getInputs())
-			.setContainerSlotIndex(inputSlot);
+			.addItemStacks(recipe.getInputs());
 	}
 
 	@Override
