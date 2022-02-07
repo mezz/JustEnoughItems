@@ -140,14 +140,18 @@ public final class BasicRecipeTransferHandlerServer {
 			if (!inventorySlot.mayPickup(player)) {
 				LOGGER.error(
 					"Tried to transfer recipe but was given an" +
-						" inventory slot that the player can't pickup from: " + inventorySlot.index);
+					" inventory slot that the player can't pickup from: {}" ,
+					inventorySlot.index
+				);
 				return null;
 			}
 			final ItemStack slotStack = inventorySlot.getItem();
 			if (slotStack.isEmpty()) {
 				LOGGER.error(
 					"Tried to transfer recipe but was given an" +
-						" empty inventory slot as an ingredient source: " + inventorySlot.index);
+					" empty inventory slot as an ingredient source: {}",
+					inventorySlot.index
+				);
 				return null;
 			}
 			ItemStack stack = slotStack.copy();
