@@ -67,11 +67,7 @@ public class BrewingRecipeUtil {
 			.min()
 			.orElse(Integer.MAX_VALUE);
 
-		if (minPrevSteps == Integer.MAX_VALUE) {
-			return Integer.MAX_VALUE;
-		}
-
-		int brewingSteps = minPrevSteps + 1;
+		int brewingSteps = minPrevSteps == Integer.MAX_VALUE ? Integer.MAX_VALUE : minPrevSteps + 1;
 		brewingStepCache.put(potionOutputUid, brewingSteps);
 		return brewingSteps;
 	}
