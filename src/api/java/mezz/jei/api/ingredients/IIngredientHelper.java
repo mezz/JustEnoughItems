@@ -3,6 +3,7 @@ package mezz.jei.api.ingredients;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.world.item.ItemStack;
@@ -181,4 +182,13 @@ public interface IIngredientHelper<V> {
 	 */
 	String getErrorInfo(@Nullable V ingredient);
 
+	/**
+	 * If these ingredients represent everything from a single tag,
+	 * returns that tag's resource location.
+	 *
+	 * @since 9.3.0
+	 */
+	default Optional<ResourceLocation> getTagEquivalent(Collection<V> ingredients) {
+		return Optional.empty();
+	}
 }

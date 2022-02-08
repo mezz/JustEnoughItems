@@ -3,7 +3,6 @@ package mezz.jei.gui.ingredients;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
@@ -22,21 +21,17 @@ import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.MathUtil;
-import mezz.jei.util.TagUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -192,14 +187,13 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 			tooltipCallback.onTooltip(this, tooltip);
 		}
 
-		if (value instanceof ItemStack) {
-			Collection<ItemStack> itemStacks = getIngredients(VanillaTypes.ITEM).toList();
-			ResourceLocation tagEquivalent = TagUtil.getTagEquivalent(itemStacks);
-			if (tagEquivalent != null) {
+		List<T> ingredients = getIngredients(ingredientType).toList();
+		ingredientHelper.getTagEquivalent(ingredients)
+			.ifPresent(tagEquivalent -> {
 				final TranslatableComponent acceptsAny = new TranslatableComponent("jei.tooltip.recipe.tag", tagEquivalent);
 				tooltip.add(acceptsAny.withStyle(ChatFormatting.GRAY));
-			}
-		}
+			});
+
 		return tooltip;
 	}
 

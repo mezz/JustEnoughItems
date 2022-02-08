@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class IngredientFilterTest {
 	private static final int EXTRA_INGREDIENT_COUNT = 5;

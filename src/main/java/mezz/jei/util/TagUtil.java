@@ -1,33 +1,39 @@
 package mezz.jei.util;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagCollection;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 public class TagUtil {
-	@Nullable
-	public static ResourceLocation getTagEquivalent(Collection<ItemStack> itemStacks) {
-		if (itemStacks.size() < 2) {
-			return null;
+	public static <VALUE, STACK> Optional<ResourceLocation> getTagEquivalent(
+		Collection<STACK> stacks,
+		Function<STACK, VALUE> stackToValue,
+		TagCollection<VALUE> tagCollection
+	) {
+		if (stacks.size() < 2) {
+			return Optional.empty();
 		}
 
-		List<Item> items = itemStacks.stream()
-			.map(ItemStack::getItem)
+		List<VALUE> values = stacks.stream()
+			.map(stackToValue)
 			.toList();
 
-		TagCollection<Item> collection = ItemTags.getAllTags();
-		Collection<Tag<Item>> tags = collection.getAllTags().values();
-		return tags.stream()
-			.filter(tag -> tag.getValues().equals(items))
-			.findFirst()
-			.map(collection::getId)
-			.orElse(null);
+		return tagCollection
+			.getAllTags()
+			.entrySet()
+			.stream()
+			.filter(e -> {
+				Tag<VALUE> valueTags = e.getValue();
+				List<VALUE> tagValues = valueTags.getValues();
+				return tagValues.equals(values);
+			})
+			.map(Map.Entry::getKey)
+			.findFirst();
 	}
 }
