@@ -184,7 +184,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		getSlot(slotIndex)
 			.ifPresent(recipeSlot -> {
 				List<Optional<ITypedIngredient<?>>> typedIngredients = getTypedIngredients(ingredients);
-				if (focus != null && focus.getRole() == recipeSlot.getRole()) {
+				if (focus != null) {
 					recipeSlot.set(typedIngredients, List.of(focus));
 				} else {
 					recipeSlot.set(typedIngredients, List.of());
