@@ -157,7 +157,7 @@ public final class RecipeTransferUtil {
 					craftingSlots.stream(),
 					inventorySlots.stream()
 				)
-				.filter(slot -> !slot.hasItem())
+				.filter(Slot::hasItem)
 				.filter(slot -> !slot.mayPickup(player))
 				.map(slot -> slot.index)
 				.toList();
