@@ -11,14 +11,14 @@ import java.util.List;
  * Implement a tooltip callback and add it with
  * {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
  *
- * @since JEI 9.3.0
+ * @since 9.3.0
  */
 @FunctionalInterface
 public interface IRecipeSlotTooltipCallback {
 	/**
 	 * Change the tooltip for an ingredient.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip);
 }

@@ -11,7 +11,7 @@ import java.util.List;
  *
  * Plugins add slot locations and ingredients to JEI using this interface.
  *
- * @since JEI 9.3.0
+ * @since 9.3.0
  */
 public interface IRecipeLayoutBuilder {
 	/**
@@ -22,7 +22,7 @@ public interface IRecipeLayoutBuilder {
 	 * @param y relative y position of the slot on the recipe layout.
 	 * @return a {@link IRecipeSlotBuilder} that has further methods for adding ingredients, etc.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	IRecipeSlotBuilder addSlot(RecipeIngredientRole recipeIngredientRole, int x, int y);
 
@@ -31,7 +31,7 @@ public interface IRecipeLayoutBuilder {
 	 * @param recipeIngredientRole the {@link RecipeIngredientRole} of these ingredients (for lookups).
 	 * @return an {@link IIngredientAcceptor} to add ingredients to.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole recipeIngredientRole);
 
@@ -40,7 +40,7 @@ public interface IRecipeLayoutBuilder {
 	 * By default, the recipe transfer button is at the bottom, to the right of the recipe.
 	 * If it doesn't fit there, you can use this to move it when you init the recipe layout.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	void moveRecipeTransferButton(int posX, int posY);
 
@@ -48,7 +48,7 @@ public interface IRecipeLayoutBuilder {
 	 * Adds a shapeless icon to the top right of the recipe,
 	 * that shows a tooltip saying "shapeless" when hovered over.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	void setShapeless();
 }

@@ -64,7 +64,7 @@ public interface IRecipeLayout {
 	 * The current search focus. Set by the player when they look up the recipe.
 	 * The ingredient being looked up is the focus.
 	 * Returns null if there is no focus, or if the focus is a different type
-	 * @since JEI 7.0.1
+	 * @since 7.0.1
 	 *
 	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
 	 * and other methods that do not use {@link IRecipeLayout}.

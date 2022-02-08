@@ -16,13 +16,13 @@ import java.util.Optional;
 public interface IIngredientListOverlay {
 	/**
 	 * @return the ingredient that's currently under the mouse.
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	Optional<ITypedIngredient<?>> getIngredientUnderMouse();
 
 	/**
 	 * @return the ingredient that's currently under the mouse if it matches the given type, or null if there is none.
-	 * @since JEI 7.0.1
+	 * @since 7.0.1
 	 */
 	@Nullable
 	<T> T getIngredientUnderMouse(IIngredientType<T> ingredientType);

@@ -62,7 +62,7 @@ public interface IRecipeCategoryExtension {
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
 	 * @param input  the current input from the player.
 	 * @return true if the input was handled, false otherwise
-	 * @since JEI 8.3.0
+	 * @since 8.3.0
 	 */
 	default boolean handleInput(double mouseX, double mouseY, InputConstants.Key input) {
 		if (input.getType() == InputConstants.Type.MOUSE) {

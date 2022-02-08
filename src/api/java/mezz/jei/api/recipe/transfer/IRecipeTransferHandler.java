@@ -40,7 +40,7 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	 * @param doTransfer  if true, do the transfer. if false, check for errors but do not actually transfer the items
 	 * @return a recipe transfer error if the recipe can't be transferred. Return null on success.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	@Nullable
 	default IRecipeTransferError transferRecipe(C container, R recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
@@ -56,11 +56,11 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	 * @param doTransfer   if true, do the transfer. if false, check for errors but do not actually transfer the items
 	 * @return a recipe transfer error if the recipe can't be transferred. Return null on success.
 	 *
-	 * @since JEI 7.1.3
+	 * @since 7.1.3
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Use {@link #transferRecipe(AbstractContainerMenu, Object, IRecipeSlotsView, Player, boolean, boolean)} instead.
+	 * @deprecated Use {@link #transferRecipe(AbstractContainerMenu, Object, IRecipeSlotsView, Player, boolean, boolean)} instead.
 	 */
+	@SuppressWarnings({"DeprecatedIsStillUsed", "unused"})
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	@Nullable
 	default IRecipeTransferError transferRecipe(C container, R recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {

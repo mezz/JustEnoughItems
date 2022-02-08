@@ -29,7 +29,7 @@ public interface IIngredientRenderer<T> {
 	 * @param height     The height to render the ingredient with.
 	 * @param ingredient the ingredient to render.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	default void render(PoseStack stack, int xPosition, int yPosition, int width, int height, T ingredient) {
 		// if not implemented, this calls the old render function for backward compatibility

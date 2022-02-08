@@ -15,8 +15,7 @@ import java.util.List;
  * This interface allows recipes to override the default behavior in the
  * {@link VanillaRecipeCategoryUid#CRAFTING} recipe category.
  *
- * @deprecated since JEI 9.3.0.
- * Use {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, List)} instead.
+ * @deprecated Use {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, List)} instead.
  */
 @Deprecated(forRemoval = true, since = "9.3.0")
 public interface ICustomCraftingCategoryExtension extends ICraftingCategoryExtension {
@@ -31,8 +30,7 @@ public interface ICustomCraftingCategoryExtension extends ICraftingCategoryExten
 	 * @param recipeLayout the layout that needs its properties set.
 	 * @param ingredients  the ingredients, already set by the recipeWrapper
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Use {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, List)} instead.
+	 * @deprecated Use {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, List)} instead.
 	 */
 	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")

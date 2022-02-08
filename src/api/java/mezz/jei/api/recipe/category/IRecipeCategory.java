@@ -44,7 +44,7 @@ public interface IRecipeCategory<T> {
 	/**
 	 * Returns a text component representing the name of this recipe type.
 	 * Drawn at the top of the recipe GUI pages for this category.
-	 * @since JEI 7.6.4
+	 * @since 7.6.4
 	 */
 	Component getTitle();
 
@@ -88,7 +88,7 @@ public interface IRecipeCategory<T> {
 	 * @see IGuiHelper for useful functions.
 	 * @see IRecipeSlotsView for information about the ingredients that are currently being drawn.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	default void draw(T recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
 		// if not implemented, this calls the old function for backward compatibility
@@ -107,7 +107,7 @@ public interface IRecipeCategory<T> {
 	 * @param mouseY          the Y position of the mouse, relative to the recipe.
 	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	default List<Component> getTooltipStrings(T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
 		// if not implemented, this calls the old function for backward compatibility
@@ -124,7 +124,7 @@ public interface IRecipeCategory<T> {
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
 	 * @param input  the current input
 	 * @return true if the input was handled, false otherwise
-	 * @since JEI 8.3.0
+	 * @since 8.3.0
 	 */
 	default boolean handleInput(T recipe, double mouseX, double mouseY, InputConstants.Key input) {
 		if (input.getType() == InputConstants.Type.MOUSE) {
@@ -135,7 +135,7 @@ public interface IRecipeCategory<T> {
 
 	/**
 	 * @return true if the given recipe can be handled by this category.
-	 * @since JEI 7.2.0
+	 * @since 7.2.0
 	 */
 	default boolean isHandled(T recipe) {
 		return true;
@@ -150,7 +150,7 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @return the registry name of the recipe, or null if there is none
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	@Nullable
 	default ResourceLocation getRegistryName(T recipe) {

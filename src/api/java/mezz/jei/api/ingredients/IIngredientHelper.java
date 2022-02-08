@@ -41,7 +41,7 @@ public interface IIngredientHelper<V> {
 	 * Find a matching ingredient from a group of them.
 	 * Used for finding a specific focused ingredient in a recipe.
 	 * Return null if there is no match.
-	 * @since JEI 7.3.0
+	 * @since 7.3.0
 	 */
 	@Nullable
 	V getMatch(Iterable<V> ingredients, V ingredientToMatch, UidContext context);
@@ -53,7 +53,7 @@ public interface IIngredientHelper<V> {
 
 	/**
 	 * Unique ID for use in comparing, blacklisting, and looking up ingredients.
-	 * @since JEI 7.3.0
+	 * @since 7.3.0
 	 */
 	String getUniqueId(V ingredient, UidContext context);
 
@@ -101,7 +101,7 @@ public interface IIngredientHelper<V> {
 
 	/**
 	 * Return the registry name of the given ingredient.
-	 * @since JEI 9.2.2
+	 * @since 9.2.2
 	 */
 	default ResourceLocation getResourceLocation(V ingredient) {
 		return new ResourceLocation(getModId(ingredient), getResourceId(ingredient));

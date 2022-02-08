@@ -4,7 +4,6 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
@@ -16,10 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-/**
- * @deprecated internally since JEI 9.3.0. Use {@link RecipeLayoutBuilder} instead.
- */
-@Deprecated
+@SuppressWarnings({"removal", "deprecation"})
 public class Ingredients implements IIngredients, IIngredientSupplier {
 	private final List<IngredientsForType<?>> inputs = new ArrayList<>();
 	private final List<IngredientsForType<?>> outputs = new ArrayList<>();

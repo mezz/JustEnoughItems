@@ -29,7 +29,7 @@ public interface IRecipesGui {
 	 *
 	 * @see IRecipeManager#createFocus(RecipeIngredientRole, IIngredientType, Object)
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	void show(List<IFocus<?>> focuses);
 

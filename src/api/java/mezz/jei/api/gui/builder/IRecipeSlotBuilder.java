@@ -12,13 +12,13 @@ import mezz.jei.api.ingredients.IIngredientType;
  *
  * @see IIngredientAcceptor
  *
- * @since JEI 9.3.0
+ * @since 9.3.0
  */
 public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuilder> {
 	/**
 	 * Set a custom background to draw behind the slot's ingredients.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	IRecipeSlotBuilder setBackground(IDrawable background);
 
@@ -29,7 +29,7 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 * @param capacityMb   maximum amount of fluid that this "tank" can hold in milli-buckets
 	 * @param showCapacity set `true` to show the capacity in the tooltip
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	IRecipeSlotBuilder setFluidRenderer(int capacityMb, boolean showCapacity);
 
@@ -39,7 +39,7 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 * @param ingredientType     the type of ingredient to use the custom renderer on
 	 * @param ingredientRenderer the custom ingredient renderer to use for this type
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	<T> IRecipeSlotBuilder setCustomRenderer(
 		IIngredientType<T> ingredientType,
@@ -49,7 +49,7 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	/**
 	 * Set an overlay to draw on top of the slot's ingredient.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	IRecipeSlotBuilder setOverlay(IDrawable overlay);
 
@@ -59,7 +59,7 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 * @param width  the full width of the rendered ingredient and its background
 	 * @param height the full height of the rendered ingredient and its background
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	IRecipeSlotBuilder setSize(int width, int height);
 
@@ -70,7 +70,7 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 * @param xPadding the extra x offset added to the ingredient position relative to the background
 	 * @param yPadding the extra y offset added to the ingredient position relative to the background
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	IRecipeSlotBuilder setInnerPadding(int xPadding, int yPadding);
 
@@ -79,14 +79,14 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 *
 	 * @see IRecipeSlotTooltipCallback
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	IRecipeSlotBuilder addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback);
 
 	/**
 	 * Give the slot a unique name, for use by {@link IRecipeSlotsView#findSlotByName(String)}
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	IRecipeSlotBuilder setSlotName(String slotName);
 }

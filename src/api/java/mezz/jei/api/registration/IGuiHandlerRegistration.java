@@ -25,7 +25,7 @@ public interface IGuiHandlerRegistration {
 	/**
 	 * Same as {@link #addGuiContainerHandler(Class, IGuiContainerHandler)} but for handlers that use Java Generics to
 	 * support multiple types of containers. This type of handler runs into type issues with the regular method.
-	 * @since JEI 7.1.1
+	 * @since 7.1.1
 	 */
 	<T extends AbstractContainerScreen<?>> void addGenericGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<?> guiHandler);
 

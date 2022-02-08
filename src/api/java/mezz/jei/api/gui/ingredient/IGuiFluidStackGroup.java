@@ -38,8 +38,7 @@ public interface IGuiFluidStackGroup extends IGuiIngredientGroup<FluidStack> {
 	 * @param overlay         optional overlay to display over the tank.
 	 *                        Typically the overlay is fluid level lines, but it could also be a mask to shape the tank.
 	 *
-	 * @deprecated @since JEI 9.3.0.
-	 * Use {@link IRecipeSlotBuilder#setFluidRenderer(int, boolean)} instead.
+	 * @deprecated Use {@link IRecipeSlotBuilder#setFluidRenderer(int, boolean)} instead.
 	 * To add an overlay, use {@link IRecipeSlotBuilder#setOverlay(IDrawable)}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")

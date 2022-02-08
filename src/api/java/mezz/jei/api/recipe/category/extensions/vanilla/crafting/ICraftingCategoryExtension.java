@@ -30,7 +30,7 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	 *
 	 * @see IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	default void setRecipe(
 		IRecipeLayoutBuilder recipeLayoutBuilder,
@@ -56,7 +56,7 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 
 	/**
 	 * @return the width of a shaped recipe, or 0 for a shapeless recipe
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	default int getWidth() {
 		// if not implemented, this calls the old getSize function for backward compatibility
@@ -69,7 +69,7 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 
 	/**
 	 * @return the height of a shaped recipe, or 0 for a shapeless recipe
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	default int getHeight() {
 		// if not implemented, this calls the old getSize function for backward compatibility
@@ -82,7 +82,7 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 
 	/**
 	 * @return the size of a shaped recipe, or null for a shapeless recipe
-	 * @deprecated since JEI 9.3.0. Use {@link #getWidth()} and {@link #getHeight()} instead.
+	 * @deprecated Use {@link #getWidth()} and {@link #getHeight()} instead.
 	 */
 	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(forRemoval = true, since = "9.3.0")

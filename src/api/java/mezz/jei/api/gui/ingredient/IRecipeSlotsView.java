@@ -13,27 +13,27 @@ import java.util.Optional;
  *
  * This view is meant as a source of information for recipe transfer, drawing, and tooltips.
  *
- * @since JEI 9.3.0
+ * @since 9.3.0
  */
 public interface IRecipeSlotsView {
 	/**
 	 * Get all slots for a recipe.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	List<IRecipeSlotView> getSlotViews();
 
 	/**
 	 * Get the list of slots for the given {@link RecipeIngredientRole} for a recipe.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	List<IRecipeSlotView> getSlotViews(RecipeIngredientRole role);
 
 	/**
 	 * Get a recipe slot by its name set with {@link IRecipeSlotBuilder#setSlotName(String)}.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	Optional<IRecipeSlotView> findSlotByName(String slotName);
 }

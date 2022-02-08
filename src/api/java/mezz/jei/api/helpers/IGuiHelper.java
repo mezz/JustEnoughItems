@@ -50,7 +50,7 @@ public interface IGuiHelper {
 
 	/**
 	 * Returns a 16x16 drawable for the given ingredient, matching the one JEI draws in the ingredient list.
-	 * @since JEI 9.1.1
+	 * @since 9.1.1
 	 */
 	<V> IDrawable createDrawableIngredient(IIngredientType<V> type, V ingredient);
 

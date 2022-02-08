@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface IBookmarkOverlay {
 	/**
 	 * @return the ingredient that's currently under the mouse.
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	Optional<ITypedIngredient<?>> getIngredientUnderMouse();
 

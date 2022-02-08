@@ -20,14 +20,14 @@ public interface ICraftingGridHelper {
 	 * Place input ingredients onto the crafting grid in a consistent way.
 	 * For shapeless recipes, use a width and height of 0.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	<T> void setInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height);
 
 	/**
 	 * Place output ingredients at the right location.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	<T> void setOutputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, @Nullable List<@Nullable T> outputs);
 

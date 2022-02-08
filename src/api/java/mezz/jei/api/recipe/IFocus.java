@@ -15,13 +15,13 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 public interface IFocus<V> {
 	/**
 	 * The ingredient that is being focused on.
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	ITypedIngredient<V> getTypedValue();
 
 	/**
 	 * The focused recipe ingredient role.
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	RecipeIngredientRole getRole();
 
@@ -38,7 +38,7 @@ public interface IFocus<V> {
 		/**
 		 * Convert this legacy {@link IFocus} {@link Mode} into a {@link RecipeIngredientRole}.
 		 *
-		 * @since JEI 9.3.0
+		 * @since 9.3.0
 		 */
 		public RecipeIngredientRole toRole() {
 			return switch (this) {

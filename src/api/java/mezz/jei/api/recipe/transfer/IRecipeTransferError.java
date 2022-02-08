@@ -29,7 +29,7 @@ public interface IRecipeTransferError {
 		/**
 		 * Errors that still allow the usage of the recipe transfer button.
 		 * Hovering over the button will display the error, however the button is active and can be used.
-		 * @since JEI version 6.0.2
+		 * @since 6.0.2
 		 */
 		COSMETIC
 
@@ -40,7 +40,7 @@ public interface IRecipeTransferError {
 	/**
 	 * Called on {@link Type#USER_FACING} errors.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	default void showError(PoseStack stack, int mouseX, int mouseY, int recipeX, int recipeY) {
 
@@ -49,10 +49,10 @@ public interface IRecipeTransferError {
 	/**
 	 * Called on {@link Type#USER_FACING} errors.
 	 *
-	 * @deprecated since JEI 9.3.0.
+	 * @deprecated Use {@link #showError(PoseStack, int, int, int, int)} instead.
 	 * {@link IRecipeLayout} is being phased-out.
-	 * Use {@link #showError(PoseStack, int, int, int, int)} instead.
 	 */
+	@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void showError(PoseStack stack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
 

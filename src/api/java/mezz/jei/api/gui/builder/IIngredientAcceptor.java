@@ -16,20 +16,20 @@ import java.util.List;
  * @see IRecipeLayoutBuilder
  * @see IRecipeSlotBuilder
  *
- * @since JEI 9.3.0
+ * @since 9.3.0
  */
 public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	/**
 	 * Add an ordered list of ingredients.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	<I> THIS addIngredients(IIngredientType<I> ingredientType, List<@Nullable I> ingredients);
 
 	/**
 	 * Add one ingredient.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	<I> THIS addIngredient(IIngredientType<I> ingredientType, I ingredient);
 
@@ -38,14 +38,14 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 * The type of ingredients can be mixed, as long as they are all valid ingredient types.
 	 * Prefer using {@link #addIngredients(IIngredientType, List)} for type safety.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	THIS addIngredientsUntyped(List<?> ingredients);
 
 	/**
 	 * Convenience function to add an ordered list of {@link ItemStack} from an {@link Ingredient}.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	default THIS addIngredients(Ingredient ingredient) {
 		return addIngredients(VanillaTypes.ITEM, Arrays.asList(ingredient.getItems()));
@@ -54,7 +54,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	/**
 	 * Convenience function to add an order list of {@link ItemStack}.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	default THIS addItemStacks(List<ItemStack> itemStacks) {
 		return addIngredients(VanillaTypes.ITEM, itemStacks);
@@ -63,7 +63,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	/**
 	 * Convenience function to add one {@link ItemStack}.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	default THIS addItemStack(ItemStack itemStack) {
 		return addIngredient(VanillaTypes.ITEM, itemStack);

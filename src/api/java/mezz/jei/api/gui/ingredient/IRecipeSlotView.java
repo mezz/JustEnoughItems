@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  * Represents one drawn ingredient that is part of a recipe.
  * Useful for implementing {@link IRecipeTransferHandler} and some other advanced cases.
  *
- * @since JEI 9.3.0
+ * @since 9.3.0
  */
 public interface IRecipeSlotView {
 	/**
@@ -25,7 +25,7 @@ public interface IRecipeSlotView {
 	 *
 	 * @see #getAllIngredients() to get ingredients of every type together.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	<T> Stream<T> getIngredients(IIngredientType<T> ingredientType);
 
@@ -35,14 +35,14 @@ public interface IRecipeSlotView {
 	 *
 	 * @see #getIngredients(IIngredientType) to limit to one type of ingredient.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	Stream<ITypedIngredient<?>> getAllIngredients();
 
 	/**
 	 * @return true if there are no ingredients in this recipe slot.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	boolean isEmpty();
 
@@ -51,7 +51,7 @@ public interface IRecipeSlotView {
 	 * For ingredients that rotate through several values, this will change over time.
 	 * If nothing of this type is currently shown, this will return {@link Optional#empty()}.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	<T> Optional<T> getDisplayedIngredient(IIngredientType<T> ingredientType);
 
@@ -60,21 +60,21 @@ public interface IRecipeSlotView {
 	 * For ingredients that rotate through several values, this will change over time.
 	 * If nothing is currently shown, this will return {@link Optional#empty()}.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	Optional<ITypedIngredient<?>> getDisplayedIngredient();
 
 	/**
 	 * The slot's name if one was set by {@link IRecipeSlotBuilder#setSlotName(String)}
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	Optional<String> getSlotName();
 
 	/**
 	 * Returns the type of focus that matches this ingredient.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	RecipeIngredientRole getRole();
 
@@ -84,7 +84,7 @@ public interface IRecipeSlotView {
 	 *
 	 * @see IRecipeTransferHandlerHelper#createUserErrorForMissingSlots(Component, Collection).
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	void drawHighlight(PoseStack stack, int color, int xOffset, int yOffset);
 }

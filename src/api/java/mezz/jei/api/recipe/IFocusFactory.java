@@ -6,7 +6,7 @@ public interface IFocusFactory {
 	/**
 	 * Returns a new focus.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	<V> IFocus<V> createFocus(RecipeIngredientRole role, IIngredientType<V> ingredientType, V ingredient);
 

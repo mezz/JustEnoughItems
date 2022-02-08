@@ -20,7 +20,7 @@ public interface ISubtypeRegistration {
 	 *
 	 * @param item        the item that has subtypes.
 	 * @param interpreter the interpreter for the item.
-	 * @since JEI 7.6.2
+	 * @since 7.6.2
 	 */
 	void registerSubtypeInterpreter(Item item, IIngredientSubtypeInterpreter<ItemStack> interpreter);
 

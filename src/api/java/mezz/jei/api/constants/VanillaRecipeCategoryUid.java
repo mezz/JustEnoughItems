@@ -95,7 +95,7 @@ public final class VanillaRecipeCategoryUid {
 	 * The smithing recipe category.
 	 *
 	 * Automatically includes every {@link UpgradeRecipe}.
-	 * @since JEI 7.3.1
+	 * @since 7.3.1
 	 */
 	public static final ResourceLocation SMITHING = new ResourceLocation(ModIds.MINECRAFT_ID, "smithing");
 
@@ -103,7 +103,7 @@ public final class VanillaRecipeCategoryUid {
 	 * The sompostable recipe category.
 	 *
 	 * Automatically includes every item added to {@link ComposterBlock#COMPOSTABLES}.
-	 * @since JEI 8.1.0
+	 * @since 8.1.0
 	 */
 	public static final ResourceLocation COMPOSTABLE = new ResourceLocation(ModIds.MINECRAFT_ID, "compostable");
 

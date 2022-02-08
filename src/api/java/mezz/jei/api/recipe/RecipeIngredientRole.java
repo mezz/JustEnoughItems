@@ -3,7 +3,7 @@ package mezz.jei.api.recipe;
 /**
  * The relationship between an ingredient and a recipe.
  *
- * @since JEI 9.3.0
+ * @since 9.3.0
  */
 public enum RecipeIngredientRole {
 	/**

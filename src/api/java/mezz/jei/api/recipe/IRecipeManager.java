@@ -21,7 +21,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 public interface IRecipeManager {
 	/**
 	 * Returns a new focus.
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	<V> IFocus<V> createFocus(RecipeIngredientRole role, IIngredientType<V> ingredientType, V ingredient);
 
@@ -29,7 +29,7 @@ public interface IRecipeManager {
 	 * Returns a list of Recipe Categories for the focus.
 	 * @param focus an optional search focus to narrow the results on
 	 * @param includeHidden set true to include recipe categories that are hidden or have no recipes.
-	 * @since JEI 7.7.1
+	 * @since 7.7.1
 	 */
 	<V> List<IRecipeCategory<?>> getRecipeCategories(@Nullable IFocus<V> focus, boolean includeHidden);
 
@@ -38,7 +38,7 @@ public interface IRecipeManager {
 	 *
 	 * @param focuses       an optional collection of search focus to narrow the results on
 	 * @param includeHidden set true to include recipe categories that are hidden or have no recipes.
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	List<IRecipeCategory<?>> getRecipeCategories(Collection<? extends IFocus<?>> focuses, boolean includeHidden);
 
@@ -47,14 +47,14 @@ public interface IRecipeManager {
 	 * @param recipeCategoryUids a list of recipe category uids to retrieve
 	 * @param focus an optional search focus to narrow the results on
 	 * @param includeHidden set true to include recipe categories that are hidden or have no recipes.
-	 * @since JEI 7.7.1
+	 * @since 7.7.1
 	 */
 	<V> List<IRecipeCategory<?>> getRecipeCategories(Collection<ResourceLocation> recipeCategoryUids, @Nullable IFocus<V> focus, boolean includeHidden);
 
 	/**
 	 * Returns the recipe category for the given UID.
 	 * Returns null if the recipe category does not exist.
-	 * @since JEI 7.7.1
+	 * @since 7.7.1
 	 */
 	@Nullable
 	IRecipeCategory<?> getRecipeCategory(ResourceLocation recipeCategoryUid, boolean includeHidden);
@@ -66,7 +66,7 @@ public interface IRecipeManager {
 	 * @param focuses the current search focuses, or an empty list if there is no focus.
 	 * @param includeHidden set true to include recipes that are hidden.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	<T> List<T> getRecipes(IRecipeCategory<T> recipeCategory, List<? extends IFocus<?>> focuses, boolean includeHidden);
 
@@ -75,7 +75,7 @@ public interface IRecipeManager {
 	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
 	 * These are registered with {@link IRecipeCatalystRegistration#addRecipeCatalyst(IIngredientType, Object, ResourceLocation...)}.
 	 *
-	 * @since JEI 9.3.0
+	 * @since 9.3.0
 	 */
 	List<ITypedIngredient<?>> getRecipeCatalystsTyped(IRecipeCategory<?> recipeCategory, boolean includeHidden);
 
@@ -148,7 +148,7 @@ public interface IRecipeManager {
 	 * @param recipeCategory the recipe category to find recipes in
 	 * @param focus the current search focus, or null if there is no focus.
 	 * @param includeHidden set true to include recipes that are hidden.
-	 * @since JEI 7.7.1
+	 * @since 7.7.1
 	 *
 	 * @deprecated Use {@link #getRecipes(IRecipeCategory, List, boolean)} instead.
 	 */
@@ -159,7 +159,7 @@ public interface IRecipeManager {
 	 * Returns an unmodifiable collection of ingredients that can craft the recipes from recipeCategory.
 	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
 	 * These are registered with {@link IRecipeCatalystRegistration#addRecipeCatalyst(IIngredientType, Object, ResourceLocation...)}.
-	 * @since JEI 7.7.1
+	 * @since 7.7.1
 	 *
 	 * @deprecated Use {@link #getRecipeCatalystsTyped(IRecipeCategory, boolean)} instead.
 	 */

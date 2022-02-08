@@ -9,7 +9,7 @@ package mezz.jei.api.ingredients.subtypes;
  * {@link IIngredientSubtypeInterpreter} and registering it with JEI in
  * {@link mezz.jei.api.registration.ISubtypeRegistration}
  *
- * @since JEI 7.6.2
+ * @since 7.6.2
  */
 @FunctionalInterface
 public interface IIngredientSubtypeInterpreter<T> {
