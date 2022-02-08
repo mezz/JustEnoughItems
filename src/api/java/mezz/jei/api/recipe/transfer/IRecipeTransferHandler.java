@@ -60,7 +60,7 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	 *
 	 * @deprecated Use {@link #transferRecipe(AbstractContainerMenu, Object, IRecipeSlotsView, Player, boolean, boolean)} instead.
 	 */
-	@SuppressWarnings({"DeprecatedIsStillUsed", "unused"})
+	@SuppressWarnings({"DeprecatedIsStillUsed", "unused", "removal"})
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	@Nullable
 	default IRecipeTransferError transferRecipe(C container, R recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {

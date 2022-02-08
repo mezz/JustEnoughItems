@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
  *
  * Create an instance with {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocus)}.
  */
+@SuppressWarnings("removal")
 public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	/**
 	 * Set the position of the recipe layout in screen coordinates.

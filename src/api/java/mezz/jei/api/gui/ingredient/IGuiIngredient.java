@@ -21,7 +21,7 @@ import net.minecraft.network.chat.Component;
  * In the new system, this class is replaced by {@link IRecipeSlotView},
  * which handles multiple ingredient types together.
  */
-@SuppressWarnings("removal")
+@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 @Deprecated(forRemoval = true, since = "9.3.0")
 public interface IGuiIngredient<T> {
 	/**
