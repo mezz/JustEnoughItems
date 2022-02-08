@@ -23,7 +23,15 @@ public interface IRecipeLayoutBuilder {
 	 * @return a {@link IRecipeSlotBuilder} that has further methods for adding ingredients, etc.
 	 *
 	 * @since 9.3.0
+	 *
+	 * @apiNote When porting from {@link mezz.jei.api.gui.ingredient.IGuiItemStackGroup} to this new method,
+	 * in most cases you will need to add 1 pixel x and y to your coordinates here.
+	 * For ItemStack ingredients, JEI used to automatically add a 1 pixel offset on all sides,
+	 * so that a 16x16 item would be centered on an 18x18 slot texture background.
+	 * This automatic behavior was confusing and inconsistent with other ingredient types, so
+	 * this new method does not have a hidden automatic 1 pixel offset. Sorry!
 	 */
+	@SuppressWarnings("removal")
 	IRecipeSlotBuilder addSlot(RecipeIngredientRole recipeIngredientRole, int x, int y);
 
 	/**

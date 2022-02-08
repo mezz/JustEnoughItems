@@ -51,10 +51,10 @@ public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRec
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, CampfireCookingRecipe recipe, List<? extends IFocus<?>> focuses) {
-		builder.addSlot(RecipeIngredientRole.INPUT, 0, 0)
+		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.addIngredients(recipe.getIngredients().get(0));
 
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 60, 8)
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 61, 9)
 			.addItemStack(recipe.getResultItem());
 	}
 }

@@ -46,7 +46,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		List<IRecipeSlotBuilder> inputSlots = new ArrayList<>();
 		for (int y = 0; y < 3; ++y) {
 			for (int x = 0; x < 3; ++x) {
-				IRecipeSlotBuilder slot = builder.addSlot(RecipeIngredientRole.INPUT, x * 18, y * 18);
+				IRecipeSlotBuilder slot = builder.addSlot(RecipeIngredientRole.INPUT, x * 18 + 1, y * 18 + 1);
 				inputSlots.add(slot);
 			}
 		}
@@ -67,7 +67,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		if (outputs == null) {
 			return;
 		}
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 94, 18)
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 95, 19)
 			.addIngredients(ingredientType, outputs);
 	}
 

@@ -61,12 +61,8 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		this.localizedName = new TextComponent("debug");
 
 		ResourceLocation backgroundTexture = new ResourceLocation(ModIds.JEI_ID, Constants.TEXTURE_GUI_PATH + "debug.png");
-		this.tankBackground = guiHelper.drawableBuilder(backgroundTexture, 220, 196, 18, 60)
-			.addPadding(-1, -1, -1, -1)
-			.build();
-		this.tankOverlay = guiHelper.drawableBuilder(backgroundTexture, 238, 196, 18, 60)
-			.addPadding(-1, -1, -1, -1)
-			.build();
+		this.tankBackground = guiHelper.createDrawable(backgroundTexture, 220, 196, 18, 60);
+		this.tankOverlay = guiHelper.createDrawable(backgroundTexture, 238, 196, 18, 60);
 		this.item = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Items.ACACIA_LEAVES));
 	}
 
@@ -136,19 +132,17 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 				.addItemStack(new ItemStack(Items.WATER_BUCKET));
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 110, 0)
-				.addIngredientsUntyped(Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));
+				.addIngredientsUnsafe(Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));
 
 		// FLUID type
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 90, 0)
-			.setSize(16, 58)
-			.setFluidRenderer(16000, false)
-			.setOverlay(tankOverlay)
-			.setBackground(tankBackground)
+			.setFluidRenderer(16000, false, 16, 58)
+			.setOverlay(tankOverlay, -1, -1)
+			.setBackground(tankBackground, -1, -1)
 			.addIngredient(VanillaTypes.FLUID, new FluidStack(Fluids.WATER, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME)));
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 24, 0)
-			.setFluidRenderer(2000, true)
-			.setSize(12, 47)
+			.setFluidRenderer(2000, true, 12, 47)
 			.addIngredient(VanillaTypes.FLUID, new FluidStack(Fluids.LAVA, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME)));
 
 		// DEBUG type
@@ -161,7 +155,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		// mixed types
 		builder.addSlot(RecipeIngredientRole.INPUT, 40, 32)
 			.addIngredient(DebugIngredient.TYPE, new DebugIngredient(3))
-			.addIngredientsUntyped(List.of(
+			.addIngredientsUnsafe(List.of(
 				new FluidStack(Fluids.LAVA, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME)),
 				new ItemStack(Items.LAVA_BUCKET)
 			))

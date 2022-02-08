@@ -47,13 +47,10 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 	private final IIngredientManager ingredientManager;
 	private final RecipeIngredientRole role;
-	private int legacyIngredientIndex = -1;
-
-	private final Rect2i rect;
-	private final int xInset;
-	private final int yInset;
-
 	private final CycleTimer cycleTimer;
+
+	private int legacyIngredientIndex = -1;
+	private Rect2i rect;
 
 	/**
 	 * Displayed ingredients, taking focus into account.
@@ -70,7 +67,6 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	private List<Optional<ITypedIngredient<?>>> allIngredients = List.of();
 
 	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
-	@Nullable
 	private RendererOverrides rendererOverrides;
 	@Nullable
 	private IDrawable background;
@@ -82,16 +78,14 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	public RecipeSlot(
 		IIngredientManager ingredientManager,
 		RecipeIngredientRole role,
-		Rect2i rect,
-		int xInset,
-		int yInset,
+		int xPos,
+		int yPos,
 		int cycleOffset
 	) {
 		this.ingredientManager = ingredientManager;
+		this.rendererOverrides = new RendererOverrides(ingredientManager);
 		this.role = role;
-		this.rect = rect;
-		this.xInset = xInset;
-		this.yInset = yInset;
+		this.rect = new Rect2i(xPos, yPos, 16, 16);
 		this.cycleTimer = new CycleTimer(cycleOffset);
 	}
 
@@ -103,8 +97,14 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		return legacyIngredientIndex;
 	}
 
-	public void setRendererOverrides(@Nullable RendererOverrides rendererOverrides) {
+	public void setRendererOverrides(RendererOverrides rendererOverrides) {
 		this.rendererOverrides = rendererOverrides;
+		this.rect = new Rect2i(
+			this.rect.getX(),
+			this.rect.getY(),
+			rendererOverrides.getIngredientWidth(),
+			rendererOverrides.getIngredientHeight()
+		);
 	}
 
 	@Override
@@ -151,11 +151,14 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	}
 
 	@Override
-	public void drawHighlight(PoseStack poseStack, int color, int xOffset, int yOffset) {
-		int x = rect.getX() + xOffset + xInset;
-		int y = rect.getY() + yOffset + yInset;
+	public void drawHighlight(PoseStack poseStack, int color) {
+		int x = this.rect.getX();
+		int y = this.rect.getY();
+		int width = this.rect.getWidth();
+		int height = this.rect.getHeight();
+
 		RenderSystem.disableDepthTest();
-		fill(poseStack, x, y, x + rect.getWidth() - xInset * 2, y + rect.getHeight() - yInset * 2, color);
+		fill(poseStack, x, y, x + width, y + height , color);
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 
@@ -164,32 +167,15 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		T value = typedIngredient.getIngredient();
 
 		try {
-			RenderSystem.disableDepthTest();
+			poseStack.pushPose();
+			{
+				poseStack.translate(xOffset, yOffset, 0);
+				drawHighlight(poseStack, 0x7FFFFFFF);
+			}
+			poseStack.popPose();
 
-			fill(poseStack,
-				xOffset + rect.getX() + xInset,
-				yOffset + rect.getY() + yInset,
-				xOffset + rect.getX() + rect.getWidth() - xInset,
-				yOffset + rect.getY() + rect.getHeight() - yInset,
-				0x7FFFFFFF);
-			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-
-			IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
 			IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
-			IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-			List<Component> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
-			for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
-				tooltipCallback.onTooltip(this, tooltip);
-			}
-
-			if (value instanceof ItemStack) {
-				Collection<ItemStack> itemStacks = getIngredients(VanillaTypes.ITEM).toList();
-				ResourceLocation tagEquivalent = TagUtil.getTagEquivalent(itemStacks);
-				if (tagEquivalent != null) {
-					final TranslatableComponent acceptsAny = new TranslatableComponent("jei.tooltip.recipe.tag", tagEquivalent);
-					tooltip.add(acceptsAny.withStyle(ChatFormatting.GRAY));
-				}
-			}
+			List<Component> tooltip = getTooltip(value, ingredientType, ingredientRenderer);
 			TooltipRenderer.drawHoveringText(poseStack, tooltip, xOffset + mouseX, yOffset + mouseY, value, ingredientRenderer);
 
 			RenderSystem.enableDepthTest();
@@ -198,11 +184,30 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		}
 	}
 
-	public void setBackground(@Nullable IDrawable background) {
+	private <T> List<Component> getTooltip(T value, IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer) {
+		IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		List<Component> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
+		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
+			tooltipCallback.onTooltip(this, tooltip);
+		}
+
+		if (value instanceof ItemStack) {
+			Collection<ItemStack> itemStacks = getIngredients(VanillaTypes.ITEM).toList();
+			ResourceLocation tagEquivalent = TagUtil.getTagEquivalent(itemStacks);
+			if (tagEquivalent != null) {
+				final TranslatableComponent acceptsAny = new TranslatableComponent("jei.tooltip.recipe.tag", tagEquivalent);
+				tooltip.add(acceptsAny.withStyle(ChatFormatting.GRAY));
+			}
+		}
+		return tooltip;
+	}
+
+	public void setBackground(IDrawable background) {
 		this.background = background;
 	}
 
-	public void setOverlay(@Nullable IDrawable overlay) {
+	public void setOverlay(IDrawable overlay) {
 		this.overlay = overlay;
 	}
 
@@ -245,8 +250,8 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		return TypedIngredient.create(this.ingredientManager, ingredientType, match);
 	}
 
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		return MathUtil.contains(rect, mouseX, mouseY);
+	public boolean isMouseOver(double recipeMouseX, double recipeMouseY) {
+		return MathUtil.contains(this.rect, recipeMouseX, recipeMouseY);
 	}
 
 	public void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
@@ -254,47 +259,45 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	}
 
 	private <T> IIngredientRenderer<T> getIngredientRenderer(IIngredientType<T> ingredientType) {
-		return Optional.ofNullable(rendererOverrides)
+		return Optional.of(rendererOverrides)
 			.flatMap(r -> r.getIngredientRenderer(ingredientType))
 			.orElseGet(() -> ingredientManager.getIngredientRenderer(ingredientType));
 	}
 
-	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
+	public void draw(PoseStack poseStack) {
 		cycleTimer.onDraw();
 
-		final int x = xOffset + rect.getX();
-		final int y = yOffset + rect.getY();
+		final int x = this.rect.getX();
+		final int y = this.rect.getY();
+		poseStack.pushPose();
+		{
+			poseStack.translate(x, y, 0);
 
-		if (background != null) {
-			background.draw(poseStack, x, y);
+			if (background != null) {
+				background.draw(poseStack);
+			}
+
+			RenderSystem.enableBlend();
+
+			getDisplayedIngredient()
+				.ifPresent(ingredient -> drawIngredient(poseStack, ingredient));
+
+			if (overlay != null) {
+				overlay.draw(poseStack);
+			}
+
+			RenderSystem.disableBlend();
 		}
-
-		RenderSystem.enableBlend();
-
-		getDisplayedIngredient()
-			.ifPresent(ingredient -> drawIngredient(poseStack, x, y, ingredient));
-
-		if (overlay != null) {
-			poseStack.pushPose();
-			poseStack.translate(0, 0, 200);
-			overlay.draw(poseStack, x, y);
-			poseStack.popPose();
-		}
-
-		RenderSystem.disableBlend();
+		poseStack.popPose();
 	}
 
-	private <T> void drawIngredient(PoseStack poseStack, int x, int y, ITypedIngredient<T> typedIngredient) {
+	private <T> void drawIngredient(PoseStack poseStack, ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		T ingredient = typedIngredient.getIngredient();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 
 		try {
-			int xPosition = x + xInset;
-			int yPosition = y + yInset;
-			int width = rect.getWidth() - (2 * xInset);
-			int height = rect.getHeight() - (2 * yInset);
-			ingredientRenderer.render(poseStack, xPosition, yPosition, width, height, ingredient);
+			ingredientRenderer.render(poseStack, ingredient);
 		} catch (RuntimeException | LinkageError e) {
 			throw ErrorUtil.createRenderIngredientException(e, ingredient);
 		}
@@ -309,7 +312,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		return this.rect;
 	}
 
-	public void setSlotName(@Nullable String slotName) {
+	public void setSlotName(String slotName) {
 		this.slotName = slotName;
 	}
 }

@@ -61,10 +61,10 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRe
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, StonecutterRecipe recipe, List<? extends IFocus<?>> focuses) {
-		builder.addSlot(RecipeIngredientRole.INPUT, 0, 8)
+		builder.addSlot(RecipeIngredientRole.INPUT, 1, 9)
 			.addIngredients(recipe.getIngredients().get(0));
 
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 60,  8)
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 61,  9)
 			.addItemStack(recipe.getResultItem());
 	}
 

@@ -64,7 +64,7 @@ public class CompostableRecipeCategory implements IRecipeCategory<CompostableRec
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, CompostableRecipe recipe, List<? extends IFocus<?>> focuses) {
-		builder.addSlot(RecipeIngredientRole.INPUT, 0, 0)
+		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.addItemStacks(recipe.getInputs());
 	}
 

@@ -83,9 +83,14 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	private static <T> void renderIngredient(PoseStack poseStack, int iconX, int iconY, ITypedIngredient<T> ingredient) {
 		IngredientManager ingredientManager = Internal.getIngredientManager();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient.getType());
-		RenderSystem.enableDepthTest();
-		ingredientRenderer.render(poseStack, iconX, iconY, 16, 16, ingredient.getIngredient());
-		RenderSystem.disableDepthTest();
+		poseStack.pushPose();
+		{
+			poseStack.translate(iconX, iconY, 0);
+			RenderSystem.enableDepthTest();
+			ingredientRenderer.render(poseStack, ingredient.getIngredient());
+			RenderSystem.disableDepthTest();
+		}
+		poseStack.popPose();
 	}
 
 	@Override

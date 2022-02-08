@@ -95,21 +95,21 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 	public void setRecipe(IRecipeLayoutBuilder builder, JeiBrewingRecipe recipe, List<? extends IFocus<?>> focuses) {
 		List<ItemStack> potionInputs = recipe.getPotionInputs();
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 0, 36)
+		builder.addSlot(RecipeIngredientRole.INPUT, 1, 37)
 			.addItemStacks(potionInputs);
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 23, 43)
+		builder.addSlot(RecipeIngredientRole.INPUT, 24, 44)
 			.addItemStacks(potionInputs);
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 46, 36)
+		builder.addSlot(RecipeIngredientRole.INPUT, 47, 37)
 			.addItemStacks(potionInputs);
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 23, 2)
+		builder.addSlot(RecipeIngredientRole.INPUT, 24, 3)
 			.addItemStacks(recipe.getIngredients());
 
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 80, 2)
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 81, 3)
 			.addItemStack(recipe.getPotionOutput())
-			.setBackground(slotDrawable);
+			.setBackground(slotDrawable, -1, -1);
 	}
 
 	private static class BrewingBubblesTickTimer implements ITickTimer {

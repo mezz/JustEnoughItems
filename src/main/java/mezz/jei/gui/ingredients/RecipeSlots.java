@@ -29,11 +29,11 @@ public class RecipeSlots {
 		this.slots.add(slot);
 	}
 
-	public void draw(PoseStack poseStack, int posX, int posY, int highlightColor, int mouseX, int mouseY) {
+	public void draw(PoseStack poseStack, int highlightColor, int recipeMouseX, int recipeMouseY) {
 		for (RecipeSlot slot : slots) {
-			slot.draw(poseStack, posX, posY);
-			if (slot.isMouseOver(mouseX - posX, mouseY - posY)) {
-				slot.drawHighlight(poseStack, highlightColor, posX, posY);
+			slot.draw(poseStack);
+			if (slot.isMouseOver(recipeMouseX, recipeMouseY)) {
+				slot.drawHighlight(poseStack, highlightColor);
 			}
 		}
 	}

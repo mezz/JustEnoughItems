@@ -10,15 +10,15 @@ import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings({"removal", "deprecation"})
 public class RecipeSlotsGuiFluidStackGroupAdapter extends RecipeSlotsGuiIngredientGroupAdapter<FluidStack> implements IGuiFluidStackGroup {
 	public RecipeSlotsGuiFluidStackGroupAdapter(RecipeSlots recipeSlots, IIngredientManager ingredientManager, int cycleOffset) {
 		super(recipeSlots, ingredientManager, VanillaTypes.FLUID, cycleOffset);
 	}
 
-	@SuppressWarnings({"removal", "deprecation"})
 	@Override
 	public void init(int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int capacityMb, boolean showCapacity, @Nullable IDrawable overlay) {
-		FluidStackRenderer renderer = new FluidStackRenderer(capacityMb, showCapacity, overlay);
+		FluidStackRenderer renderer = new FluidStackRenderer(capacityMb, showCapacity, width, height, overlay);
 		init(slotIndex, input, renderer, xPosition, yPosition, width, height, 0, 0);
 	}
 }

@@ -31,7 +31,7 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	}
 
 	@Override
-	public IngredientAcceptor addIngredientsUntyped(List<?> ingredients) {
+	public IngredientAcceptor addIngredientsUnsafe(List<?> ingredients) {
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		for (Object ingredient : ingredients) {

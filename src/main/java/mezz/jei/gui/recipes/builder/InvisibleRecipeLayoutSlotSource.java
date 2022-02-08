@@ -22,8 +22,8 @@ public class InvisibleRecipeLayoutSlotSource implements IRecipeLayoutSlotSource,
 	}
 
 	@Override
-	public InvisibleRecipeLayoutSlotSource addIngredientsUntyped(List<?> ingredients) {
-		this.ingredients.addIngredientsUntyped(ingredients);
+	public InvisibleRecipeLayoutSlotSource addIngredientsUnsafe(List<?> ingredients) {
+		this.ingredients.addIngredientsUnsafe(ingredients);
 		return this;
 	}
 

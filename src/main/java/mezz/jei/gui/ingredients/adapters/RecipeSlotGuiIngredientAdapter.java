@@ -42,7 +42,12 @@ public class RecipeSlotGuiIngredientAdapter<T> implements IGuiIngredient<T> {
 
 	@Override
 	public void drawHighlight(PoseStack stack, int color, int xOffset, int yOffset) {
-		this.recipeSlot.drawHighlight(stack, color, xOffset, yOffset);
+		stack.pushPose();
+		{
+			stack.translate(xOffset, yOffset, 0);
+			this.recipeSlot.drawHighlight(stack, color);
+		}
+		stack.popPose();
 	}
 
 	@Override

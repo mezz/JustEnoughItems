@@ -40,7 +40,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 *
 	 * @since 9.3.0
 	 */
-	THIS addIngredientsUntyped(List<?> ingredients);
+	THIS addIngredientsUnsafe(List<?> ingredients);
 
 	/**
 	 * Convenience function to add an ordered list of {@link ItemStack} from an {@link Ingredient}.

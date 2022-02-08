@@ -18,9 +18,15 @@ public class RecipeTransferErrorMissingSlots extends RecipeTransferErrorTooltip 
 
 	@Override
 	public void showError(PoseStack poseStack, int mouseX, int mouseY, int recipeX, int recipeY) {
-		for (IRecipeSlotView slot : slots) {
-			slot.drawHighlight(poseStack, HIGHLIGHT_COLOR, recipeX, recipeY);
+		poseStack.pushPose();
+		{
+			poseStack.translate(recipeX, recipeY, 0);
+
+			for (IRecipeSlotView slot : slots) {
+				slot.drawHighlight(poseStack, HIGHLIGHT_COLOR);
+			}
 		}
+		poseStack.popPose();
 
 		super.showError(poseStack, mouseX, mouseY, recipeX, recipeY);
 	}

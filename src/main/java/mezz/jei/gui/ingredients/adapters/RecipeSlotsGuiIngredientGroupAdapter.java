@@ -20,7 +20,6 @@ import mezz.jei.gui.ingredients.RecipeSlots;
 import mezz.jei.gui.ingredients.RendererOverrides;
 import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.client.renderer.Rect2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -100,12 +99,12 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	}
 
 	private void addSlot(int ingredientIndex, RecipeIngredientRole role, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xInset, int yInset) {
-		Rect2i rect = new Rect2i(xPosition, yPosition, width, height);
-		RecipeSlot recipeSlot = new RecipeSlot(this.ingredientManager, role, rect, xInset, yInset, this.cycleOffset);
+		LegacyAdaptedIngredientRenderer<T> legacyAdaptedIngredientRenderer = new LegacyAdaptedIngredientRenderer<>(ingredientRenderer, width, height, xInset, yInset);
+		RecipeSlot recipeSlot = new RecipeSlot(this.ingredientManager, role, xPosition + xInset, yPosition + yInset, this.cycleOffset);
 		recipeSlot.setLegacyIngredientIndex(ingredientIndex);
 
-		RendererOverrides rendererOverrides = new RendererOverrides();
-		rendererOverrides.addOverride(this.ingredientType, ingredientRenderer);
+		RendererOverrides rendererOverrides = new RendererOverrides(ingredientManager);
+		rendererOverrides.addOverride(this.ingredientType, legacyAdaptedIngredientRenderer);
 		recipeSlot.setRendererOverrides(rendererOverrides);
 
 		this.recipeSlots.addSlot(recipeSlot);

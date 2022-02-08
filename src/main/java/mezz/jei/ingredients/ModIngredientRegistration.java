@@ -7,6 +7,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -31,6 +32,14 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		ErrorUtil.checkNotNull(allIngredients, "allIngredients");
 		ErrorUtil.checkNotNull(ingredientHelper, "ingredientHelper");
 		ErrorUtil.checkNotNull(ingredientRenderer, "ingredientRenderer");
+		Preconditions.checkArgument(ingredientRenderer.getWidth() == 16,
+			"the default ingredient renderer registered here will be used for drawing " +
+				"ingredients in the ingredient list, and it must have a width of 16"
+		);
+		Preconditions.checkArgument(ingredientRenderer.getHeight() == 16,
+			"the default ingredient renderer registered here will be used for drawing " +
+				"ingredients in the ingredient list, and it must have a height of 16"
+		);
 		if (registeredIngredientSet.contains(ingredientType)) {
 			throw new IllegalArgumentException("Ingredient type has already been registered: " + ingredientType.getIngredientClass());
 		}

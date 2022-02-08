@@ -54,13 +54,13 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, UpgradeRecipe recipe, List<? extends IFocus<?>> focuses) {
-		builder.addSlot(RecipeIngredientRole.INPUT, 0, 0)
+		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.addIngredients(recipe.base);
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 49, 0)
+		builder.addSlot(RecipeIngredientRole.INPUT, 50, 1)
 			.addIngredients(recipe.addition);
 
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 107, 0)
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 1)
 			.addItemStack(recipe.getResultItem());
 	}
 

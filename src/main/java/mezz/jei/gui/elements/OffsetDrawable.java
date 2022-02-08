@@ -4,33 +4,34 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
 
 /**
- * Draws an icon at a higher resolution than normal (determined by the scale parameter).
+ * Draws with a built-in offset.
  */
-public class DrawableScaled implements IDrawable {
+public class OffsetDrawable implements IDrawable {
 	private final IDrawable drawable;
-	private final int scale;
+	private final int xOffset;
+	private final int yOffset;
 
-	public DrawableScaled(IDrawable drawable, int scale) {
+	public OffsetDrawable(IDrawable drawable, int xOffset, int yOffset) {
 		this.drawable = drawable;
-		this.scale = scale;
+		this.xOffset = xOffset;
+		this.yOffset = yOffset;
 	}
 
 	@Override
 	public int getWidth() {
-		return drawable.getWidth() / scale;
+		return drawable.getWidth();
 	}
 
 	@Override
 	public int getHeight() {
-		return drawable.getHeight() / scale;
+		return drawable.getHeight();
 	}
 
 	@Override
 	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
 		poseStack.pushPose();
 		{
-			poseStack.translate(xOffset, yOffset, 0);
-			poseStack.scale(1 / (float) scale, 1 / (float) scale, 1);
+			poseStack.translate(this.xOffset + xOffset, this.yOffset + yOffset, 0);
 			this.drawable.draw(poseStack);
 		}
 		poseStack.popPose();
@@ -40,7 +41,7 @@ public class DrawableScaled implements IDrawable {
 	public void draw(PoseStack poseStack) {
 		poseStack.pushPose();
 		{
-			poseStack.scale(1 / (float) scale, 1 / (float) scale, 1);
+			poseStack.translate(this.xOffset, this.yOffset, 0);
 			this.drawable.draw(poseStack);
 		}
 		poseStack.popPose();

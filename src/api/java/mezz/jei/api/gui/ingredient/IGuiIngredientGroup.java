@@ -34,7 +34,7 @@ import net.minecraft.world.item.crafting.Ingredient;
  * In the new system, this class is replaced by {@link IRecipeSlotBuilder},
  * which handles multiple ingredient types together.
  */
-@SuppressWarnings("removal")
+@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 @Deprecated(forRemoval = true, since = "9.3.0")
 public interface IGuiIngredientGroup<T> {
 	/**
@@ -42,7 +42,7 @@ public interface IGuiIngredientGroup<T> {
 	 * Some examples are slot background or tank background.
 	 *
 	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
-	 * In the new system, this is replaced by {@link IRecipeSlotBuilder#setBackground(IDrawable)}.
+	 * In the new system, this is replaced by {@link IRecipeSlotBuilder#setBackground(IDrawable, int, int)}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void setBackground(int ingredientIndex, IDrawable background);
@@ -111,9 +111,7 @@ public interface IGuiIngredientGroup<T> {
 	 *
 	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
 	 * In the new system, this is replaced by
-	 * {@link IRecipeLayoutBuilder#addSlot(RecipeIngredientRole, int, int)},
-	 * {@link IRecipeSlotBuilder#setSize(int, int)}, and
-	 * {@link IRecipeSlotBuilder#setInnerPadding(int, int)}.
+	 * {@link IRecipeLayoutBuilder#addSlot(RecipeIngredientRole, int, int)}
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void init(int ingredientIndex, boolean input,

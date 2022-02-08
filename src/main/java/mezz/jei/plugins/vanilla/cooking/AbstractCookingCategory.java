@@ -108,10 +108,10 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, T recipe, List<? extends IFocus<?>> focuses) {
-		builder.addSlot(INPUT, 0, 0)
+		builder.addSlot(INPUT, 1, 1)
 			.addIngredients(recipe.getIngredients().get(0));
 
-		builder.addSlot(OUTPUT, 60, 18)
+		builder.addSlot(OUTPUT, 61, 19)
 			.addItemStack(recipe.getResultItem());
 	}
 

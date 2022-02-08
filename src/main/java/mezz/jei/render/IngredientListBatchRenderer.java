@@ -305,9 +305,12 @@ public class IngredientListBatchRenderer {
 		try {
 			int xPosition = area.getX() + slotPadding;
 			int yPosition = area.getY() + slotPadding;
-			int width = area.getWidth() - (2 * slotPadding);
-			int height = area.getHeight() - (2 * slotPadding);
-			ingredientRenderer.render(poseStack, xPosition, yPosition, width, height, ingredient);
+			poseStack.pushPose();
+			{
+				poseStack.translate(xPosition, yPosition, 0);
+				ingredientRenderer.render(poseStack, ingredient);
+			}
+			poseStack.popPose();
 		} catch (RuntimeException | LinkageError e) {
 			throw ErrorUtil.createRenderIngredientException(e, ingredient);
 		}

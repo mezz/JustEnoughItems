@@ -205,10 +205,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 			if (shapelessIcon != null) {
 				shapelessIcon.draw(poseStack);
 			}
+
+			recipeSlots.draw(poseStack, HIGHLIGHT_COLOR, mouseX, mouseY);
 		}
 		poseStack.popPose();
-
-		recipeSlots.draw(poseStack, posX, posY, HIGHLIGHT_COLOR, mouseX, mouseY);
 
 		if (recipeTransferButton != null) {
 			Minecraft minecraft = Minecraft.getInstance();

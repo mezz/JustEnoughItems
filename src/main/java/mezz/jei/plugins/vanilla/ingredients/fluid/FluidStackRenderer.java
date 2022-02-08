@@ -1,5 +1,6 @@
 package mezz.jei.plugins.vanilla.ingredients.fluid;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -41,9 +42,12 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	 * it is kept for backward compatibility for
 	 * {@link mezz.jei.api.gui.ingredient.IGuiFluidStackGroup}
 	 */
-	@SuppressWarnings("removal")
+	@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 	@Nullable
+	@Deprecated
 	private final IDrawable overlay;
+	private final int width;
+	private final int height;
 
 	enum TooltipMode {
 		SHOW_AMOUNT,
@@ -52,36 +56,42 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	public FluidStackRenderer() {
-		this(FluidAttributes.BUCKET_VOLUME, TooltipMode.ITEM_LIST, null);
+		this(FluidAttributes.BUCKET_VOLUME, TooltipMode.ITEM_LIST, 16, 16, null);
 	}
 
-	public FluidStackRenderer(int capacityMb, boolean showCapacity) {
-		this(capacityMb, showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT, null);
+	public FluidStackRenderer(int capacityMb, boolean showCapacity, int width, int height) {
+		this(capacityMb, showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT, width, height, null);
 	}
 
+	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated
-	public FluidStackRenderer(int capacityMb, boolean showCapacity, @Nullable IDrawable overlay) {
-		this(capacityMb, showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT, overlay);
+	public FluidStackRenderer(int capacityMb, boolean showCapacity, int width, int height, @Nullable IDrawable overlay) {
+		this(capacityMb, showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT, width, height, overlay);
 	}
 
-	private FluidStackRenderer(int capacityMb, TooltipMode tooltipMode, @Nullable IDrawable overlay) {
+	private FluidStackRenderer(int capacityMb, TooltipMode tooltipMode, int width, int height, @Nullable IDrawable overlay) {
+		Preconditions.checkArgument(capacityMb > 0, "capacity must be > 0");
+		Preconditions.checkArgument(width > 0, "width must be > 0");
+		Preconditions.checkArgument(height > 0, "height must be > 0");
 		this.capacityMb = capacityMb;
 		this.tooltipMode = tooltipMode;
+		this.width = width;
+		this.height = height;
 		this.overlay = overlay;
 	}
 
 	@Override
-	public void render(PoseStack poseStack, final int xPosition, final int yPosition, final int width, final int height, FluidStack fluidStack) {
+	public void render(PoseStack poseStack, FluidStack fluidStack) {
 		RenderSystem.enableBlend();
 
-		drawFluid(poseStack, xPosition, yPosition, width, height, fluidStack);
+		drawFluid(poseStack, 0, 0, width, height, fluidStack);
 
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 
 		if (overlay != null) {
 			poseStack.pushPose();
 			poseStack.translate(0, 0, 200);
-			overlay.draw(poseStack, xPosition, yPosition);
+			overlay.draw(poseStack);
 			poseStack.popPose();
 		}
 
@@ -92,7 +102,10 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	@Override
 	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable FluidStack ingredient) {
 		if (ingredient != null) {
-			render(stack, xPosition, yPosition, 16, 16, ingredient);
+			stack.pushPose();
+			stack.translate(xPosition, yPosition, 0);
+			render(stack, ingredient);
+			stack.popPose();
 		}
 	}
 
@@ -205,5 +218,15 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		}
 
 		return tooltip;
+	}
+
+	@Override
+	public int getWidth() {
+		return width;
+	}
+
+	@Override
+	public int getHeight() {
+		return height;
 	}
 }

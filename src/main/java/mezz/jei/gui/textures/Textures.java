@@ -1,6 +1,6 @@
 package mezz.jei.gui.textures;
 
-import mezz.jei.gui.elements.DrawableScaled;
+import mezz.jei.gui.elements.HighResolutionDrawable;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.ModIds;
@@ -22,7 +22,7 @@ public class Textures {
 	private final DrawableNineSliceTexture recipeBackground;
 	private final DrawableNineSliceTexture searchBackground;
 
-	private final DrawableScaled shapelessIcon;
+	private final HighResolutionDrawable shapelessIcon;
 	private final IDrawableStatic arrowPrevious;
 	private final IDrawableStatic arrowNext;
 	private final IDrawableStatic recipeTransfer;
@@ -53,7 +53,7 @@ public class Textures {
 
 		DrawableSprite rawShapelessIcon = registerGuiSprite("icons/shapeless_icon", 36, 36)
 			.trim(1, 2, 1, 1);
-		this.shapelessIcon = new DrawableScaled(rawShapelessIcon, 4);
+		this.shapelessIcon = new HighResolutionDrawable(rawShapelessIcon, 4);
 
 		this.arrowPrevious = registerGuiSprite("icons/arrow_previous", 9, 9)
 			.trim(0, 0, 1, 1);
@@ -96,7 +96,7 @@ public class Textures {
 		return tabUnselected;
 	}
 
-	public DrawableScaled getShapelessIcon() {
+	public HighResolutionDrawable getShapelessIcon() {
 		return shapelessIcon;
 	}
 

@@ -27,11 +27,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Override
-	public void render(PoseStack poseStack, int xPosition, int yPosition, int width, int height, @Nullable ItemStack ingredient) {
-		// Scaling ItemStack rendering is a pain because the rendering is weird,
-		// so we just ignore width and height for this renderer.
-		// For reference, see the hacks in the ItemZoom mod required to make scaling work properly.
-
+	public void render(PoseStack poseStack, @Nullable ItemStack ingredient) {
 		if (ingredient != null) {
 			PoseStack modelViewStack = RenderSystem.getModelViewStack();
 			modelViewStack.pushPose();
@@ -43,8 +39,8 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 				Minecraft minecraft = Minecraft.getInstance();
 				Font font = getFontRenderer(minecraft, ingredient);
 				ItemRenderer itemRenderer = minecraft.getItemRenderer();
-				itemRenderer.renderAndDecorateFakeItem(ingredient, xPosition, yPosition);
-				itemRenderer.renderGuiItemDecorations(font, ingredient, xPosition, yPosition, null);
+				itemRenderer.renderAndDecorateFakeItem(ingredient, 0, 0);
+				itemRenderer.renderGuiItemDecorations(font, ingredient, 0, 0, null);
 				RenderSystem.disableBlend();
 			}
 			modelViewStack.popPose();
@@ -53,9 +49,15 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		}
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable ItemStack ingredient) {
-		render(stack, xPosition, yPosition, 16, 16, ingredient);
+		stack.pushPose();
+		{
+			stack.translate(xPosition, yPosition, 0);
+			render(stack, ingredient);
+		}
+		stack.popPose();
 	}
 
 	@Override
@@ -81,5 +83,15 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			fontRenderer = minecraft.font;
 		}
 		return fontRenderer;
+	}
+
+	@Override
+	public int getWidth() {
+		return 16;
+	}
+
+	@Override
+	public int getHeight() {
+		return 16;
 	}
 }

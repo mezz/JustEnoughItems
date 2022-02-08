@@ -78,10 +78,10 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, IngredientInfoRecipe recipe, List<? extends IFocus<?>> focuses) {
-		int xPos = (recipeWidth - 18) / 2;
+		int xPos = (recipeWidth - 16) / 2;
 
-		IRecipeSlotBuilder inputSlotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, xPos, 0)
-			.setBackground(slotBackground);
+		IRecipeSlotBuilder inputSlotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, xPos, 1)
+			.setBackground(slotBackground, -1, -1);
 
 		IIngredientAcceptor<?> outputSlotBuilder = builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT);
 

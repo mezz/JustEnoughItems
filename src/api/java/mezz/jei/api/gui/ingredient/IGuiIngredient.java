@@ -71,7 +71,7 @@ public interface IGuiIngredient<T> {
 	 * @see IRecipeTransferHandlerHelper#createUserErrorForMissingSlots(Component, Collection).
 	 *
 	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
-	 * In the new system, this is replaced by {@link IRecipeSlotView#drawHighlight(PoseStack, int, int, int)}.
+	 * In the new system, this is replaced by {@link IRecipeSlotView#drawHighlight(PoseStack, int)}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void drawHighlight(PoseStack stack, int color, int xOffset, int yOffset);

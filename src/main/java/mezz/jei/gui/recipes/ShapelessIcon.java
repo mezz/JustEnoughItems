@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.gui.HoverChecker;
-import mezz.jei.gui.elements.DrawableScaled;
+import mezz.jei.gui.elements.HighResolutionDrawable;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ShapelessIcon {
-	private final DrawableScaled icon;
+	private final HighResolutionDrawable icon;
 	private final HoverChecker hoverChecker;
 	private int posX;
 	private int posY;

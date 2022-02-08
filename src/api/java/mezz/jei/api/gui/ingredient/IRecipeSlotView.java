@@ -86,5 +86,5 @@ public interface IRecipeSlotView {
 	 *
 	 * @since 9.3.0
 	 */
-	void drawHighlight(PoseStack stack, int color, int xOffset, int yOffset);
+	void drawHighlight(PoseStack stack, int color);
 }

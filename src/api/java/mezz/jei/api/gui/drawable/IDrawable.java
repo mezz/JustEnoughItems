@@ -28,10 +28,10 @@ public interface IDrawable {
 
 	int getHeight();
 
-	default void draw(PoseStack stack) {
-		draw(stack, 0, 0);
+	default void draw(PoseStack poseStack) {
+		draw(poseStack, 0, 0);
 	}
 
-	void draw(PoseStack stack, int xOffset, int yOffset);
+	void draw(PoseStack poseStack, int xOffset, int yOffset);
 
 }

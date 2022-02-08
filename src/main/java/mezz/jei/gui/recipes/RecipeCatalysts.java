@@ -84,18 +84,13 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		IngredientManager ingredientManager = Internal.getIngredientManager();
 		int column = index / maxIngredientsPerColumn;
 		int row = index % maxIngredientsPerColumn;
-		Rect2i rect = new Rect2i(
-			left + borderSize + (column * ingredientSize) + ingredientBorderSize,
-			top + borderSize + (row * ingredientSize) + ingredientBorderSize,
-			ingredientSize,
-			ingredientSize
-		);
+		int xPos = left + borderSize + (column * ingredientSize) + ingredientBorderSize;
+		int yPos = top + borderSize + (row * ingredientSize) + ingredientBorderSize;
 		RecipeSlot recipeSlot = new RecipeSlot(
 			ingredientManager,
 			RecipeIngredientRole.CATALYST,
-			rect,
-			0,
-			0,
+			xPos,
+			yPos,
 			0
 		);
 		recipeSlot.set(List.of(Optional.of(typedIngredient)), List.of());
@@ -122,7 +117,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 				if (recipeSlot.isMouseOver(mouseX, mouseY)) {
 					hovered = recipeSlot;
 				}
-				recipeSlot.draw(poseStack, 0, 0);
+				recipeSlot.draw(poseStack);
 			}
 			return hovered;
 		}
