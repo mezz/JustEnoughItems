@@ -137,6 +137,25 @@ public interface IRecipeCategory<T> {
 	}
 
 	/**
+	 * Return the registry name of the recipe here.
+	 * With advanced tooltips on, this will show on the output item's tooltip.
+	 *
+	 * This will also show the modId when the recipe modId and output item modId do not match.
+	 * This lets the player know where the recipe came from.
+	 *
+	 * @return the registry name of the recipe, or null if there is none
+	 *
+	 * @since JEI 9.3.0
+	 */
+	@Nullable
+	default ResourceLocation getRegistryName(T recipe) {
+		if (recipe instanceof Recipe vanillaRecipe) {
+			return vanillaRecipe.getId();
+		}
+		return null;
+	}
+
+	/**
 	 * Called when a player clicks the recipe.
 	 * Useful for implementing buttons, hyperlinks, and other interactions to your recipe.
 	 *

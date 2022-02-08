@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -121,8 +122,8 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 
 	@Override
 	public boolean isHandled(CraftingRecipe recipe) {
-		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtensionOrNull(recipe);
-		return extension != null;
+		return this.extendableHelper.getOptionalRecipeExtension(recipe)
+			.isPresent();
 	}
 
 	@Override
@@ -133,5 +134,12 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	@Override
 	public <R extends CraftingRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Predicate<R> extensionFilter, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
 		extendableHelper.addRecipeExtensionFactory(recipeClass, extensionFilter, extensionFactory);
+	}
+
+	@Override
+	public ResourceLocation getRegistryName(CraftingRecipe recipe) {
+		return this.extendableHelper.getOptionalRecipeExtension(recipe)
+			.flatMap(extension -> Optional.ofNullable(extension.getRegistryName()))
+			.orElseGet(recipe::getId);
 	}
 }

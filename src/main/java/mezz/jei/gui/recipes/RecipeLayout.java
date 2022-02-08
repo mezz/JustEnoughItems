@@ -34,12 +34,11 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,8 +75,9 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 			setRecipeLayout(recipeLayout, recipeCategory, recipe, ingredientManager, focuses) ||
 			setRecipeLayoutLegacy(recipeLayout, recipeCategory, recipe)
 		) {
-			if (recipe instanceof Recipe) {
-				addOutputSlotTooltip(recipeLayout, (Recipe<?>) recipe, modIdHelper);
+			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
+			if (recipeName != null) {
+				addOutputSlotTooltip(recipeLayout, recipeName, modIdHelper);
 			}
 			return recipeLayout;
 		}
@@ -117,14 +117,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 		return false;
 	}
 
-	private static void addOutputSlotTooltip(RecipeLayout<?> recipeLayout, Recipe<?> recipe, IModIdHelper modIdHelper) {
+	private static void addOutputSlotTooltip(RecipeLayout<?> recipeLayout, ResourceLocation recipeName, IModIdHelper modIdHelper) {
 		RecipeSlots recipeSlots = recipeLayout.recipeSlots;
 		List<RecipeSlot> outputSlots = recipeSlots.getSlots().stream()
 			.filter(r -> r.getRole() == RecipeIngredientRole.OUTPUT)
 			.toList();
 
 		if (!outputSlots.isEmpty()) {
-			ResourceLocation recipeName = recipe.getId();
 			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName, modIdHelper, recipeLayout.ingredientManager);
 			for (RecipeSlot outputSlot : outputSlots) {
 				outputSlot.addTooltipCallback(callback);
