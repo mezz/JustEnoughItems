@@ -51,4 +51,12 @@ public interface IRecipeLayoutBuilder {
 	 * @since 9.3.0
 	 */
 	void setShapeless();
+
+	/**
+	 * Adds a shapeless icon to the specified position relative to the recipe layout,
+	 * that shows a tooltip saying "shapeless" when hovered over.
+	 *
+	 * @since 9.3.0
+	 */
+	void setShapeless(int posX, int posY);
 }

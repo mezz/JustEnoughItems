@@ -87,7 +87,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 		legacySetRecipe(builder, recipeExtension);
 	}
 
-	@SuppressWarnings({"deprecation", "removal"})
+	@SuppressWarnings({"removal"})
 	private void legacySetRecipe(IRecipeLayoutBuilder builder, ICraftingCategoryExtension recipeExtension) {
 		Ingredients ingredients = new Ingredients();
 		recipeExtension.setIngredients(ingredients);

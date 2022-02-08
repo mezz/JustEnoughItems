@@ -37,8 +37,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -104,7 +104,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 		return false;
 	}
 
-	@SuppressWarnings("deprecation")
 	private static <T> boolean setRecipeLayoutLegacy(RecipeLayout<T> recipeLayout, IRecipeCategory<T> recipeCategory, T recipe) {
 		try {
 			IIngredients ingredients = new Ingredients();
@@ -204,7 +203,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 			// drawExtras and drawInfo often render text which messes with the color, this clears it
 			RenderSystem.setShaderColor(1, 1, 1, 1);
 			if (shapelessIcon != null) {
-				shapelessIcon.draw(poseStack, background.getWidth());
+				shapelessIcon.draw(poseStack);
 			}
 		}
 		poseStack.popPose();
@@ -317,6 +316,17 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 	@Override
 	public void setShapeless() {
 		this.shapelessIcon = new ShapelessIcon();
+		int categoryWidth = this.recipeCategory.getBackground().getWidth();
+
+		// align to top-right
+		int x = categoryWidth - shapelessIcon.getIcon().getWidth();
+		int y = 0;
+		this.shapelessIcon.setPosition(x, y);
+	}
+
+	public void setShapeless(int shapelessX, int shapelessY) {
+		this.shapelessIcon = new ShapelessIcon();
+		this.shapelessIcon.setPosition(shapelessX, shapelessY);
 	}
 
 	@Deprecated

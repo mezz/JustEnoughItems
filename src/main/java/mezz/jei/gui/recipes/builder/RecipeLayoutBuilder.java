@@ -20,6 +20,8 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 	private boolean shapeless = false;
 	private int recipeTransferX = -1;
 	private int recipeTransferY = -1;
+	private int shapelessX = -1;
+	private int shapelessY = -1;
 
 	public RecipeLayoutBuilder(IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
@@ -50,6 +52,13 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		this.shapeless = true;
 	}
 
+	@Override
+	public void setShapeless(int posX, int posY) {
+		this.shapeless = true;
+		this.shapelessX = posX;
+		this.shapelessY = posY;
+	}
+
 	/**
 	 * Returns `true` if this builder has been used,
 	 * useful for detecting when plugins use the builder or need legacy support.
@@ -60,7 +69,11 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 
 	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, List<Focus<?>> focuses) {
 		if (this.shapeless) {
-			recipeLayout.setShapeless();
+			if (this.shapelessX >= 0 && this.shapelessY >= 0) {
+				recipeLayout.setShapeless(this.shapelessX, this.shapelessY);
+			} else {
+				recipeLayout.setShapeless();
+			}
 		}
 		if (this.recipeTransferX >= 0 && this.recipeTransferY >= 0) {
 			recipeLayout.moveRecipeTransferButton(this.recipeTransferX, this.recipeTransferY);
