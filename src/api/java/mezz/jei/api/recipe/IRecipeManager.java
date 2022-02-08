@@ -137,7 +137,8 @@ public interface IRecipeManager {
 
 	/**
 	 * Returns a new focus.
-	 * @deprecated since JEI 9.3.0. Use {@link #createFocus(RecipeIngredientRole, IIngredientType, Object)} instead.
+	 *
+	 * @deprecated Use {@link #createFocus(RecipeIngredientRole, IIngredientType, Object)} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	<V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient);
@@ -149,7 +150,7 @@ public interface IRecipeManager {
 	 * @param includeHidden set true to include recipes that are hidden.
 	 * @since JEI 7.7.1
 	 *
-	 * @deprecated since JEI 9.3.0. Use {@link #getRecipes(IRecipeCategory, List, boolean)} instead.
+	 * @deprecated Use {@link #getRecipes(IRecipeCategory, List, boolean)} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	<T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus, boolean includeHidden);

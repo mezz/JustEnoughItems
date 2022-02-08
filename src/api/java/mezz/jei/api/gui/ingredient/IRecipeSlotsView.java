@@ -1,6 +1,5 @@
 package mezz.jei.api.gui.ingredient;
 
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
@@ -12,8 +11,7 @@ import java.util.Optional;
  * Represents all the drawn ingredients in slots that are part of a recipe.
  * Useful for implementing {@link IRecipeTransferHandler} and some other advanced cases.
  *
- * This view is meant to replace {@link IRecipeLayout} and {@link IGuiIngredientGroup}
- * as a source of information for recipe transfer, drawing, and tooltips.
+ * This view is meant as a source of information for recipe transfer, drawing, and tooltips.
  *
  * @since JEI 9.3.0
  */

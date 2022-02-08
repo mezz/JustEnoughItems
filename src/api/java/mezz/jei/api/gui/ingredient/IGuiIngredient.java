@@ -17,8 +17,7 @@ import net.minecraft.network.chat.Component;
  * Useful for implementing {@link IRecipeTransferHandler} and some other advanced cases.
  * Get these from {@link IGuiIngredientGroup#getGuiIngredients()}.
  *
- * @deprecated since JEI 9.3.0
- * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+ * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
  * In the new system, this class is replaced by {@link IRecipeSlotView},
  * which handles multiple ingredient types together.
  */
@@ -28,8 +27,7 @@ public interface IGuiIngredient<T> {
 	/**
 	 * @return The ingredient type for this {@link IGuiIngredient}.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
 	 * In the new system, this class is replaced by {@link IRecipeSlotView}, which handles multiple ingredient types.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
@@ -39,8 +37,7 @@ public interface IGuiIngredient<T> {
 	 * The ingredient variation that is shown at this moment.
 	 * For ingredients that rotate through several values, this will change over time.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
 	 * In the new system, this is replaced by {@link IRecipeSlotView#getDisplayedIngredient(IIngredientType)}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
@@ -52,8 +49,7 @@ public interface IGuiIngredient<T> {
 	 * For ingredients that rotate through several values, this will have them all even if a focus is set.
 	 * This list can contain null values.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
 	 * In the new system, this is replaced by {@link IRecipeSlotView#getAllIngredients()}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
@@ -62,8 +58,7 @@ public interface IGuiIngredient<T> {
 	/**
 	 * Returns true if this ingredient is an input for the recipe, otherwise it is an output.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
 	 * In the new system, this is replaced by {@link IRecipeSlotView#getRole()}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
@@ -75,8 +70,7 @@ public interface IGuiIngredient<T> {
 	 *
 	 * @see IRecipeTransferHandlerHelper#createUserErrorForMissingSlots(Component, Collection).
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
 	 * In the new system, this is replaced by {@link IRecipeSlotView#drawHighlight(PoseStack, int, int, int)}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")

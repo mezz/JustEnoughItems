@@ -64,7 +64,7 @@ public interface IIngredientRenderer<T> {
 	 * @param ingredient the ingredient to render.
 	 *                   May be null, some renderers (like fluid tanks) will render an empty background.
 	 *
-	 * @deprecated since JEI 9.3.0. Use {@link #render(PoseStack, int, int, int, int, Object)} instead.
+	 * @deprecated Use {@link #render(PoseStack, int, int, int, int, Object)} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void render(PoseStack stack, int xPosition, int yPosition, @Nullable T ingredient) {

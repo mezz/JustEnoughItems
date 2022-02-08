@@ -15,6 +15,7 @@ public class RecipeSlotsGuiFluidStackGroupAdapter extends RecipeSlotsGuiIngredie
 		super(recipeSlots, ingredientManager, VanillaTypes.FLUID, cycleOffset);
 	}
 
+	@SuppressWarnings({"removal", "deprecation"})
 	@Override
 	public void init(int slotIndex, boolean input, int xPosition, int yPosition, int width, int height, int capacityMb, boolean showCapacity, @Nullable IDrawable overlay) {
 		FluidStackRenderer renderer = new FluidStackRenderer(capacityMb, showCapacity, overlay);

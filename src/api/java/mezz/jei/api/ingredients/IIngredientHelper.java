@@ -29,8 +29,9 @@ public interface IIngredientHelper<V> {
 	 * Change one focus into a different focus.
 	 * This can be used to treat lookups of one focus as if it were something else.
 	 *
-	 * @deprecated since JEI 9.2.0. There isn't a good use for this anymore.
+	 * @deprecated There isn't a good use for this anymore.
 	 */
+	@SuppressWarnings("unused")
 	@Deprecated(forRemoval = true, since = "9.2.0")
 	default IFocus<?> translateFocus(IFocus<V> focus, IFocusFactory focusFactory) {
 		return focus;
@@ -67,8 +68,9 @@ public interface IIngredientHelper<V> {
 
 	/**
 	 * Return the modId of the mod that created this ingredient.
-	 * @deprecated since JEI 9.2.2. Use {@link #getResourceLocation(Object)} instead.
+	 * @deprecated Use {@link #getResourceLocation(Object)} instead.
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(forRemoval = true, since = "9.2.2")
 	String getModId(V ingredient);
 
@@ -91,8 +93,9 @@ public interface IIngredientHelper<V> {
 
 	/**
 	 * Return the resource id of the given ingredient.
-	 * @deprecated since JEI 9.2.2. Use {@link #getResourceLocation(Object)} instead.
+	 * @deprecated Use {@link #getResourceLocation(Object)} instead.
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(forRemoval = true, since = "9.2.2")
 	String getResourceId(V ingredient);
 

@@ -19,8 +19,7 @@ import java.util.List;
  *
  * Get an instance from {@link IRecipeLayout#getFluidStacks()}.
  *
- * @deprecated since JEI 9.3.0.
- * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+ * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
  */
 @SuppressWarnings("removal")
 @Deprecated(forRemoval = true, since = "9.3.0")

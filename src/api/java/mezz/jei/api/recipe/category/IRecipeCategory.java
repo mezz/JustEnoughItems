@@ -15,7 +15,9 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
 
+import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,6 +36,9 @@ public interface IRecipeCategory<T> {
 	 */
 	ResourceLocation getUid();
 
+	/**
+	 * Returns the class of recipes that this recipe category handles.
+	 */
 	Class<? extends T> getRecipeClass();
 
 	/**
@@ -164,8 +169,9 @@ public interface IRecipeCategory<T> {
 	 * @param mouseButton the current mouse event button.
 	 * @return true if the click was handled, false otherwise
 	 *
-	 * @deprecated since JEI 8.3.0. Use {@link #handleInput(Object, double, double, InputConstants.Key)}
+	 * @deprecated Use {@link #handleInput(Object, double, double, InputConstants.Key)}
 	 */
+	@SuppressWarnings({"DeprecatedIsStillUsed", "unused"})
 	@Deprecated(forRemoval = true, since = "8.3.0")
 	default boolean handleClick(T recipe, double mouseX, double mouseY, int mouseButton) {
 		return false;
@@ -175,9 +181,9 @@ public interface IRecipeCategory<T> {
 	 * Sets all the recipe's ingredients by filling out an instance of {@link IIngredients}.
 	 * This is used by JEI for lookups, to figure out what ingredients are inputs and outputs for a recipe.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * This is handled automatically by {@link #setRecipe(IRecipeLayoutBuilder, Object, List)} instead.
+	 * @deprecated This is handled automatically by {@link #setRecipe(IRecipeLayoutBuilder, Object, List)} instead.
 	 */
+	@SuppressWarnings({"removal", "unused"})
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void setIngredients(T recipe, IIngredients ingredients) {
 
@@ -190,8 +196,9 @@ public interface IRecipeCategory<T> {
 	 * @param recipe        the recipe, for extra information.
 	 * @param ingredients   the ingredients, already set earlier by {@link IRecipeCategory#setIngredients}
 	 *
-	 * @deprecated since JEI 9.3.0. Use {@link #setRecipe(IRecipeLayoutBuilder, Object, List)} instead.
+	 * @deprecated Use {@link #setRecipe(IRecipeLayoutBuilder, Object, List)} instead.
 	 */
+	@SuppressWarnings({"unused", "removal"})
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void setRecipe(IRecipeLayout recipeLayout, T recipe, IIngredients ingredients) {
 
@@ -207,8 +214,9 @@ public interface IRecipeCategory<T> {
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
 	 *
-	 * @deprecated since JEI 9.3.0. Use {@link #draw(Object, IRecipeSlotsView, PoseStack, double, double)}
+	 * @deprecated Use {@link #draw(Object, IRecipeSlotsView, PoseStack, double, double)}
 	 */
+	@SuppressWarnings("unused")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void draw(T recipe, PoseStack stack, double mouseX, double mouseY) {
 
@@ -227,6 +235,7 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @deprecated Use {@link #getTooltipStrings(Object, IRecipeSlotsView, double, double)} instead.
 	 */
+	@SuppressWarnings("unused")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default List<Component> getTooltipStrings(T recipe, double mouseX, double mouseY) {
 		return Collections.emptyList();

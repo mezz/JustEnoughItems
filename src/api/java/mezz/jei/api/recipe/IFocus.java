@@ -29,7 +29,7 @@ public interface IFocus<V> {
 	 * The focus mode.
 	 * When a player looks up the recipes to make an item, that item is an {@link Mode#OUTPUT} focus.
 	 * When a player looks up the uses for an item, that item is an {@link Mode#INPUT} focus.
-	 * @deprecated since JEI 9.3.0. Use {@link RecipeIngredientRole} instead.
+	 * @deprecated Use {@link RecipeIngredientRole} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	enum Mode {
@@ -62,7 +62,7 @@ public interface IFocus<V> {
 	 * The focus mode.
 	 * When a player looks up the recipes to make an item, that item is an {@link Mode#OUTPUT} focus.
 	 * When a player looks up the uses for an item, that item is an {@link Mode#INPUT} focus.
-	 * @deprecated since JEI 9.3.0. Use {@link #getRole()} instead.
+	 * @deprecated Use {@link #getRole()} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	Mode getMode();

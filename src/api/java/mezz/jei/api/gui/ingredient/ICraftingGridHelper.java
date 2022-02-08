@@ -34,8 +34,7 @@ public interface ICraftingGridHelper {
 	/**
 	 * Place inputs ingredients onto the crafting grid in a consistent way.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Use {@link #setInputs(IRecipeLayoutBuilder, IIngredientType, List, int, int)} instead.
+	 * @deprecated Use {@link #setInputs(IRecipeLayoutBuilder, IIngredientType, List, int, int)} instead.
 	 */
 	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
@@ -44,8 +43,7 @@ public interface ICraftingGridHelper {
 	/**
 	 * Place inputs ingredients onto the crafting grid in a consistent way.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Use {@link #setInputs(IRecipeLayoutBuilder, IIngredientType, List, int, int)} instead.
+	 * @deprecated Use {@link #setInputs(IRecipeLayoutBuilder, IIngredientType, List, int, int)} instead.
 	 */
 	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")

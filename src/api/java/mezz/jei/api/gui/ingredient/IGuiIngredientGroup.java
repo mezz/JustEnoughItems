@@ -30,19 +30,18 @@ import net.minecraft.world.item.crafting.Ingredient;
  * @see IGuiItemStackGroup
  * @see IGuiFluidStackGroup
  *
- * @deprecated since JEI 9.3.0.
- * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
+ * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
  * In the new system, this class is replaced by {@link IRecipeSlotBuilder},
  * which handles multiple ingredient types together.
  */
+@SuppressWarnings("removal")
 @Deprecated(forRemoval = true, since = "9.3.0")
 public interface IGuiIngredientGroup<T> {
 	/**
 	 * Set a background image to draw behind the ingredient.
 	 * Some examples are slot background or tank background.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
 	 * In the new system, this is replaced by {@link IRecipeSlotBuilder#setBackground(IDrawable)}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
@@ -51,8 +50,7 @@ public interface IGuiIngredientGroup<T> {
 	/**
 	 * Add a callback to alter the tooltip for these ingredients.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
 	 * In the new system, this is replaced by {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
@@ -65,8 +63,7 @@ public interface IGuiIngredientGroup<T> {
 	 * Note that this key index is related to the index of ingredients in {@link IIngredients},
 	 * and not necessarily related to {@link Slot#index}.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
 	 * In the new system, this is replaced by {@link IRecipeSlotsView}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
@@ -88,9 +85,8 @@ public interface IGuiIngredientGroup<T> {
 	 * @see IGuiItemStackGroup#init(int, boolean, int, int)
 	 * @see IGuiFluidStackGroup#init(int, boolean, int, int, int, int, int, boolean, IDrawable)
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
-	 * In the new system, this is replaced by {@link IRecipeLayoutBuilder#addSlot(int, RecipeIngredientRole, int, int)}
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
+	 * In the new system, this is replaced by {@link IRecipeLayoutBuilder#addSlot(RecipeIngredientRole, int, int)}
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void init(int ingredientIndex, boolean input, int xPosition, int yPosition);
@@ -113,8 +109,7 @@ public interface IGuiIngredientGroup<T> {
 	 * @see IGuiItemStackGroup#init(int, boolean, int, int)
 	 * @see IGuiFluidStackGroup#init(int, boolean, int, int, int, int, int, boolean, IDrawable)
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
 	 * In the new system, this is replaced by
 	 * {@link IRecipeLayoutBuilder#addSlot(RecipeIngredientRole, int, int)},
 	 * {@link IRecipeSlotBuilder#setSize(int, int)}, and
@@ -133,8 +128,8 @@ public interface IGuiIngredientGroup<T> {
 	 *
 	 * Useful for recipes that display things in a custom way depending on what the overall recipe focus is.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * This is no longer available, you can directly limit the ingredients that are set.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void setOverrideDisplayFocus(@Nullable IFocus<T> focus);
@@ -143,8 +138,7 @@ public interface IGuiIngredientGroup<T> {
 	 * Set all the ingredients in the group, based on the {@link IIngredients}
 	 * passed to {@link IRecipeCategory#setRecipe(IRecipeLayout, Object, IIngredients)}.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
 	 * In the new system, this is replaced by {@link IRecipeSlotBuilder#addIngredients(Ingredient)}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
@@ -153,8 +147,7 @@ public interface IGuiIngredientGroup<T> {
 	/**
 	 * Set the ingredient at ingredientIndex to a rotating collection of ingredients.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
 	 * In the new system, this is replaced by {@link IRecipeSlotBuilder#addIngredients(IIngredientType, List)}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
@@ -163,8 +156,7 @@ public interface IGuiIngredientGroup<T> {
 	/**
 	 * Set the ingredient at ingredientIndex to a specific ingredient.
 	 *
-	 * @deprecated since JEI 9.3.0.
-	 * Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
 	 * In the new system, this is replaced by {@link IRecipeSlotBuilder#addIngredient(IIngredientType, Object)}.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")

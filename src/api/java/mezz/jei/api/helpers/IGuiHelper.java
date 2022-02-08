@@ -71,7 +71,7 @@ public interface IGuiHelper {
 
 	/**
 	 * Returns a 16x16 drawable for the given ingredient, matching the one JEI draws in the ingredient list.
-	 * @deprecated since JEI 9.1.1. Use {@link #createDrawableIngredient(IIngredientType, Object)}
+	 * @deprecated Use {@link #createDrawableIngredient(IIngredientType, Object)}
 	 */
 	@Deprecated(forRemoval = true, since = "9.1.1")
 	<V> IDrawable createDrawableIngredient(V ingredient);

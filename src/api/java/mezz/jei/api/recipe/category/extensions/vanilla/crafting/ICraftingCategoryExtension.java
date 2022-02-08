@@ -1,19 +1,17 @@
 package mezz.jei.api.recipe.category.extensions.vanilla.crafting;
 
-import org.jetbrains.annotations.Nullable;
-
+import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
-import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
-import net.minecraftforge.common.util.Size2i;
-import net.minecraft.resources.ResourceLocation;
-
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
+import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.common.util.Size2i;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -86,6 +84,7 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	 * @return the size of a shaped recipe, or null for a shapeless recipe
 	 * @deprecated since JEI 9.3.0. Use {@link #getWidth()} and {@link #getHeight()} instead.
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	@Nullable
 	default Size2i getSize() {

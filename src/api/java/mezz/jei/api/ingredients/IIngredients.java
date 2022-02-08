@@ -2,6 +2,7 @@ package mezz.jei.api.ingredients;
 
 import java.util.List;
 
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import mezz.jei.api.constants.VanillaTypes;
@@ -17,11 +18,20 @@ import org.jetbrains.annotations.Nullable;
  * what items are in the recipe, for lookups.
  * It is also passed back to {@link IRecipeCategory#setRecipe(IRecipeLayout, Object, IIngredients)}
  * where it can be used to set ingredient groups in the recipe layout with {@link IGuiIngredientGroup#set(IIngredients)}
+ *
+ * @deprecated Use the new {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)},
+ * which does not use this class.
  */
+@SuppressWarnings("removal")
+@Deprecated(forRemoval = true, since = "9.3.0")
 public interface IIngredients {
 	/**
 	 * Sets the recipe's inputs. Each input ingredient represents one slot.
+	 *
+	 * @deprecated Use the new {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)},
+	 * which does not use this class.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	void setInputIngredients(List<Ingredient> inputs);
 
 	/**
@@ -29,7 +39,11 @@ public interface IIngredients {
 	 *
 	 * @param ingredientType The type of ingredient: {@link VanillaTypes#ITEM}, {@link VanillaTypes#FLUID}, etc
 	 * @param input          The list of ingredients representing each input slot.
+	 *
+	 * @deprecated Use the new {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)},
+	 * which does not use this class.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	<T> void setInput(IIngredientType<T> ingredientType, T input);
 
 	/**
@@ -37,7 +51,11 @@ public interface IIngredients {
 	 *
 	 * @param ingredientType The type of ingredient: {@link VanillaTypes#ITEM}, {@link VanillaTypes#FLUID}, etc
 	 * @param input          The list of ingredients representing each input slot.
+	 *
+	 * @deprecated Use the new {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)},
+	 * which does not use this class.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	<T> void setInputs(IIngredientType<T> ingredientType, List<@Nullable T> input);
 
 	/**
@@ -46,7 +64,11 @@ public interface IIngredients {
 	 *
 	 * @param ingredientType The type of ingredient: {@link VanillaTypes#ITEM}, {@link VanillaTypes#FLUID}, etc
 	 * @param inputs         The outer list represents the slot, the inner list is a rotating list of ingredients in that slot.
+	 *
+	 * @deprecated Use the new {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)},
+	 * which does not use this class.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	<T> void setInputLists(IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs);
 
 	/**
@@ -54,7 +76,11 @@ public interface IIngredients {
 	 *
 	 * @param ingredientType The type of ingredient: {@link VanillaTypes#ITEM}, {@link VanillaTypes#FLUID}, etc
 	 * @param output         The single ingredient representing the recipe output.
+	 *
+	 * @deprecated Use the new {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)},
+	 * which does not use this class.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	<T> void setOutput(IIngredientType<T> ingredientType, T output);
 
 	/**
@@ -62,7 +88,11 @@ public interface IIngredients {
 	 *
 	 * @param ingredientType The type of ingredient: {@link VanillaTypes#ITEM}, {@link VanillaTypes#FLUID}, etc
 	 * @param outputs        The list of ingredients representing each output slot.
+	 *
+	 * @deprecated Use the new {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)},
+	 * which does not use this class.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	<T> void setOutputs(IIngredientType<T> ingredientType, List<@Nullable T> outputs);
 
 	/**
@@ -71,18 +101,30 @@ public interface IIngredients {
 	 *
 	 * @param ingredientType The type of ingredient: {@link VanillaTypes#ITEM}, {@link VanillaTypes#FLUID}, etc
 	 * @param outputs        The outer list represents the slot, the inner list is a rotating list of ingredients in that slot.
+	 *
+	 * @deprecated Use the new {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)},
+	 * which does not use this class.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	<T> void setOutputLists(IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> outputs);
 
 	/**
 	 * Get all the inputs that have been set for the ingredientClass.
 	 * Each list element represents one slot. The inner list represents the ingredient(s) in the slot.
+	 *
+	 * @deprecated Use the new {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)},
+	 * which does not use this class.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	<T> List<@Nullable List<@Nullable T>> getInputs(IIngredientType<T> ingredientType);
 
 	/**
 	 * Get all the outputs that have been set for the ingredientClass.
 	 * Each list element represents one slot.
+	 *
+	 * @deprecated Use the new {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)},
+	 * which does not use this class.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	<T> List<@Nullable List<@Nullable T>> getOutputs(IIngredientType<T> ingredientType);
 }
