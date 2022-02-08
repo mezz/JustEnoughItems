@@ -100,7 +100,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 
 	private void addSlot(int ingredientIndex, RecipeIngredientRole role, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xInset, int yInset) {
 		LegacyAdaptedIngredientRenderer<T> legacyAdaptedIngredientRenderer = new LegacyAdaptedIngredientRenderer<>(ingredientRenderer, width, height, xInset, yInset);
-		RecipeSlot recipeSlot = new RecipeSlot(this.ingredientManager, role, xPosition + xInset, yPosition + yInset, this.cycleOffset);
+		RecipeSlot recipeSlot = new RecipeSlot(this.ingredientManager, role, xPosition, yPosition, this.cycleOffset);
 		recipeSlot.setLegacyIngredientIndex(ingredientIndex);
 
 		RendererOverrides rendererOverrides = new RendererOverrides(ingredientManager);
