@@ -1,6 +1,6 @@
 package mezz.jei.collect;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;

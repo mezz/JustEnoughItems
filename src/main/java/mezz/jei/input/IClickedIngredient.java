@@ -1,6 +1,6 @@
 package mezz.jei.input;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;

@@ -1,6 +1,6 @@
 package mezz.jei.recipes;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.resources.ResourceLocation;

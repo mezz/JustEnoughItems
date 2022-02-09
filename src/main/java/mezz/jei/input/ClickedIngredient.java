@@ -1,6 +1,6 @@
 package mezz.jei.input;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.gui.ingredients.GuiIngredient;

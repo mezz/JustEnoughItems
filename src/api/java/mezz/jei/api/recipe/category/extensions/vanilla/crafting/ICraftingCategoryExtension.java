@@ -1,6 +1,6 @@
 package mezz.jei.api.recipe.category.extensions.vanilla.crafting;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraftforge.common.util.Size2i;
 import net.minecraft.resources.ResourceLocation;

@@ -1,6 +1,6 @@
 package mezz.jei.plugins.jei.ingredients;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;

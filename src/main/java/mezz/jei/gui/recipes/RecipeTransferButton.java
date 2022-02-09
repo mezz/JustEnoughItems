@@ -2,7 +2,7 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;

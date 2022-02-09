@@ -5,7 +5,7 @@ import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
 import net.minecraft.client.gui.screens.Screen;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

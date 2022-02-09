@@ -5,7 +5,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.util.ErrorUtil;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public final class Focus<V> implements IFocus<V> {
 	private final Mode mode;

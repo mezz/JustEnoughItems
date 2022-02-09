@@ -1,6 +1,6 @@
 package mezz.jei.api.gui.handlers;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.function.Function;
 
 import mezz.jei.api.registration.IGuiHandlerRegistration;

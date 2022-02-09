@@ -1,6 +1,6 @@
 package mezz.jei.load;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import mezz.jei.api.IModPlugin;

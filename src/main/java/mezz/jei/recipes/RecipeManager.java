@@ -12,7 +12,7 @@ import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -6,7 +6,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraftforge.client.event.ScreenEvent;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Optional;
 

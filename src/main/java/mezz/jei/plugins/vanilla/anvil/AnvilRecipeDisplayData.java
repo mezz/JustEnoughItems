@@ -1,6 +1,6 @@
 package mezz.jei.plugins.vanilla.anvil;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 import net.minecraft.world.item.ItemStack;

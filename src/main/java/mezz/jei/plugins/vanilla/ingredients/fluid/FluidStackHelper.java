@@ -1,7 +1,7 @@
 package mezz.jei.plugins.vanilla.ingredients.fluid;
 
 import java.util.Collection;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 
 import mezz.jei.api.constants.VanillaTypes;

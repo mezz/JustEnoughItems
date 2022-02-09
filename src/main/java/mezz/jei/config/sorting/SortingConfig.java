@@ -4,7 +4,7 @@ import mezz.jei.config.sorting.serializers.ISortingSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;

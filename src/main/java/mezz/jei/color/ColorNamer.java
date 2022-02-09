@@ -1,6 +1,6 @@
 package mezz.jei.color;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;

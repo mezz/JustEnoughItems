@@ -15,7 +15,7 @@
  */
 package mezz.jei.search.suffixtree;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;

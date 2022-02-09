@@ -2,7 +2,7 @@ package mezz.jei.api.runtime;
 
 import mezz.jei.api.ingredients.IIngredientType;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The {@link IBookmarkOverlay} is JEI's gui that displays all the bookmarked ingredients next to an open container gui.

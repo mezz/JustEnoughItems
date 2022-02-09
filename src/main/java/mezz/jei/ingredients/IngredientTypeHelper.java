@@ -5,7 +5,7 @@ import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.render.IngredientListElementRenderer;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public final class IngredientTypeHelper {

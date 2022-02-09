@@ -18,7 +18,7 @@ package mezz.jei.color;
  * available at http://lokeshdhakar.com/projects/color-thief/
  */
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
 import com.mojang.blaze3d.platform.NativeImage;

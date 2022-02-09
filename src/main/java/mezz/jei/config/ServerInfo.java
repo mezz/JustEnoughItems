@@ -11,7 +11,7 @@ import net.minecraftforge.network.ConnectionData;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;

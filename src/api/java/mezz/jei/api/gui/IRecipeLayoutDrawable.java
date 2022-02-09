@@ -1,7 +1,7 @@
 package mezz.jei.api.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;

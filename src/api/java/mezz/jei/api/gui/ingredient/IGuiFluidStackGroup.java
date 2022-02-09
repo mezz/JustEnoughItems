@@ -1,6 +1,6 @@
 package mezz.jei.api.gui.ingredient;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraftforge.fluids.FluidStack;
 

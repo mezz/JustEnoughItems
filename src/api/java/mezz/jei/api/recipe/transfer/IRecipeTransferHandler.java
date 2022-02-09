@@ -1,6 +1,6 @@
 package mezz.jei.api.recipe.transfer;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;

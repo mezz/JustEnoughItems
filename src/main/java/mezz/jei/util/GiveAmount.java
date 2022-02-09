@@ -4,7 +4,7 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.input.UserInput;
 import net.minecraft.world.item.ItemStack;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public enum GiveAmount {
 	ONE, MAX;

@@ -1,6 +1,6 @@
 package mezz.jei;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.color.ColorNamer;

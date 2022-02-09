@@ -1,6 +1,6 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.world.item.ItemStack;
 

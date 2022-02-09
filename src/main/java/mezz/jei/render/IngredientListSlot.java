@@ -1,6 +1,6 @@
 package mezz.jei.render;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.ingredients.IngredientTypeHelper;

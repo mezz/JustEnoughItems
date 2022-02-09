@@ -19,7 +19,7 @@ import mezz.jei.input.mouse.handlers.ProxyInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.Set;
 

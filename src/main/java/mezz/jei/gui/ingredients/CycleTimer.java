@@ -1,6 +1,6 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import net.minecraft.client.gui.screens.Screen;

@@ -3,7 +3,7 @@ package mezz.jei.search;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.ingredients.IIngredientListElementInfo;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public interface IElementSearch {

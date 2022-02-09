@@ -2,7 +2,7 @@ package mezz.jei.gui.ghost;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;

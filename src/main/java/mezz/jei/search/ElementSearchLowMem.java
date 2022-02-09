@@ -6,7 +6,7 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IIngredientListElementInfo;
 import net.minecraft.core.NonNullList;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;

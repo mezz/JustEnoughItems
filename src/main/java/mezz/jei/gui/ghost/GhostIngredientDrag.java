@@ -3,7 +3,7 @@ package mezz.jei.gui.ghost;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;

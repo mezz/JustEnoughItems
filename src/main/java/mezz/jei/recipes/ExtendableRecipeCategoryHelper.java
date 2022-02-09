@@ -15,7 +15,7 @@ import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtension> {
 	private static final Logger LOGGER = LogManager.getLogger();

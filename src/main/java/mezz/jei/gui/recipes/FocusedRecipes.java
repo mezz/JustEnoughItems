@@ -4,7 +4,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class FocusedRecipes<T> {

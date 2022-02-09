@@ -1,6 +1,6 @@
 package mezz.jei.util;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.world.item.Item;

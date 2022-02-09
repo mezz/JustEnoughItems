@@ -18,7 +18,7 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipeCategory;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @JeiPlugin
 public class JeiInternalPlugin implements IModPlugin {

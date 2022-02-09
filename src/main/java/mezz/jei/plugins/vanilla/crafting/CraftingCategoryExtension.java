@@ -1,6 +1,6 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.common.util.Size2i;
