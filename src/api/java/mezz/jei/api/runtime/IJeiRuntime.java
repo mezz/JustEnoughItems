@@ -61,4 +61,11 @@ public interface IJeiRuntime {
 	 * The {@link IIngredientManager} has some useful functions related to recipe ingredients.
 	 */
 	IIngredientManager getIngredientManager();
+
+	/**
+	 * The {@link IIngredientVisibility} is provided by JEI and has some useful functions related to recipe ingredients.
+	 *
+	 * @since 9.3.0
+	 */
+	IIngredientVisibility getIngredientVisibility();
 }

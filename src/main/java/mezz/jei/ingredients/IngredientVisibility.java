@@ -4,10 +4,11 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
 
-public class IngredientVisibility  {
+public class IngredientVisibility implements IIngredientVisibility {
 	private final IngredientBlacklistInternal blacklist;
 	private final IWorldConfig worldConfig;
 	private final IEditModeConfig editModeConfig;
@@ -31,6 +32,7 @@ public class IngredientVisibility  {
 		return isIngredientVisible(typedIngredient, ingredientHelper);
 	}
 
+	@Override
 	public <V> boolean isIngredientVisible(IIngredientType<V> ingredientType, V ingredient) {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		return TypedIngredient.createTyped(ingredientManager, ingredientType, ingredient)
