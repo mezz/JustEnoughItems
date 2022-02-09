@@ -31,11 +31,6 @@ public class RecipeManager implements IRecipeManager {
 		this.ingredientManager = ingredientManager;
 	}
 
-	@Override
-	public <V> IFocus<V> createFocus(RecipeIngredientRole role, IIngredientType<V> ingredientType, V ingredient) {
-		return Focus.createFromApi(ingredientManager, role, ingredientType, ingredient);
-	}
-
 	@SuppressWarnings("removal")
 	@Override
 	public <V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient) {
@@ -123,7 +118,7 @@ public class RecipeManager implements IRecipeManager {
 		List<Focus<?>> checkedFocus = Focus.check(focus);
 		RecipeLayout<T> recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, checkedFocus, ingredientManager, modIdHelper, 0, 0);
 		Preconditions.checkNotNull(recipeLayout, "Recipe layout crashed during creation, see log.");
-		return recipeLayout;
+		return recipeLayout.getLegacyAdapter();
 	}
 
 	@Override

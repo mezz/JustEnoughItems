@@ -15,16 +15,10 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 
 /**
- * The IRecipeManager offers several functions for retrieving and handling recipes.
+ * The {@link IRecipeManager} offers several functions for retrieving and handling recipes.
  * Get the instance from {@link IJeiRuntime#getRecipeManager()}.
  */
 public interface IRecipeManager {
-	/**
-	 * Returns a new focus.
-	 * @since 9.3.0
-	 */
-	<V> IFocus<V> createFocus(RecipeIngredientRole role, IIngredientType<V> ingredientType, V ingredient);
-
 	/**
 	 * Returns a list of Recipe Categories for the focus.
 	 * @param focus an optional search focus to narrow the results on
@@ -138,7 +132,7 @@ public interface IRecipeManager {
 	/**
 	 * Returns a new focus.
 	 *
-	 * @deprecated Use {@link #createFocus(RecipeIngredientRole, IIngredientType, Object)} instead.
+	 * @deprecated Use {@link IJeiRuntime#createFocus(RecipeIngredientRole, IIngredientType, Object)} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	<V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient);

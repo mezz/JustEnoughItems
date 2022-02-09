@@ -78,7 +78,7 @@ public final class RecipeTransferUtil {
 		} catch (UnsupportedOperationException ignored) {
 			// old handlers do not support calling the new transferRecipe method.
 			// call the legacy method instead
-			return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeLayout, player, maxTransfer, doTransfer);
+			return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeLayout.getLegacyAdapter(), player, maxTransfer, doTransfer);
 		}
 	}
 

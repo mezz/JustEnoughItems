@@ -116,7 +116,7 @@ public class RecipeManagerInternal {
 		}
 	}
 
-	@SuppressWarnings({"deprecation", "removal"})
+	@SuppressWarnings({"removal"})
 	@Nullable
 	public static <T> IIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory) {
 		try {

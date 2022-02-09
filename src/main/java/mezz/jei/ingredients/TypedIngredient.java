@@ -1,5 +1,6 @@
 package mezz.jei.ingredients;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -11,6 +12,9 @@ import java.util.Optional;
 
 public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	private static <T> void assertIsValidIngredient(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, T ingredient) {
+		Preconditions.checkNotNull(ingredientType, "ingredientType");
+		Preconditions.checkNotNull(ingredient, "ingredient");
+
 		Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
 		if (!ingredientClass.isInstance(ingredient)) {
 			throw new IllegalArgumentException("Invalid ingredient found. " +

@@ -48,7 +48,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 		int y
 	) {
 		this.ingredientManager = ingredientManager;
-		this.rendererOverrides = new RendererOverrides(ingredientManager);
+		this.rendererOverrides = new RendererOverrides();
 		this.ingredients = new IngredientAcceptor(ingredientManager);
 		this.role = role;
 		this.xPos = x;

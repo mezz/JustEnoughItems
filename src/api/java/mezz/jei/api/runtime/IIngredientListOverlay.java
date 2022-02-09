@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The IItemListOverlay is JEI's gui that displays all the ingredients next to an open container gui.
+ * The {@link IIngredientListOverlay} is JEI's gui that displays all the ingredients next to an open container gui.
  * Use this interface to get information from and interact with it.
  * Get the instance from {@link IJeiRuntime#getIngredientListOverlay()}.
  */

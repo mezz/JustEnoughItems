@@ -103,7 +103,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		RecipeSlot recipeSlot = new RecipeSlot(this.ingredientManager, role, xPosition, yPosition, this.cycleOffset);
 		recipeSlot.setLegacyIngredientIndex(ingredientIndex);
 
-		RendererOverrides rendererOverrides = new RendererOverrides(ingredientManager);
+		RendererOverrides rendererOverrides = new RendererOverrides();
 		rendererOverrides.addOverride(this.ingredientType, legacyAdaptedIngredientRenderer);
 		recipeSlot.setRendererOverrides(rendererOverrides);
 

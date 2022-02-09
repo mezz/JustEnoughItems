@@ -38,9 +38,9 @@ public class RecipeSlots {
 		}
 	}
 
-	public Optional<RecipeSlot> getHoveredSlot(int xOffset, int yOffset, double mouseX, double mouseY) {
+	public Optional<RecipeSlot> getHoveredSlot(double recipeMouseX, double recipeMouseY) {
 		return slots.stream()
-			.filter(ingredient -> ingredient.isMouseOver(mouseX - xOffset, mouseY - yOffset))
+			.filter(ingredient -> ingredient.isMouseOver(recipeMouseX, recipeMouseY))
 			.findFirst();
 	}
 }

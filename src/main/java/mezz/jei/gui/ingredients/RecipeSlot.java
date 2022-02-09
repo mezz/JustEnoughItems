@@ -78,7 +78,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		int cycleOffset
 	) {
 		this.ingredientManager = ingredientManager;
-		this.rendererOverrides = new RendererOverrides(ingredientManager);
+		this.rendererOverrides = new RendererOverrides();
 		this.role = role;
 		this.rect = new Rect2i(xPos, yPos, 16, 16);
 		this.cycleTimer = new CycleTimer(cycleOffset);

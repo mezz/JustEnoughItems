@@ -11,13 +11,8 @@ import java.util.Optional;
 
 public class RendererOverrides {
 	private final Map<IIngredientType<?>, IIngredientRenderer<?>> overrides = new Object2ObjectArrayMap<>(0);
-	private final IIngredientManager ingredientManager;
 	private int width;
 	private int height;
-
-	public RendererOverrides(IIngredientManager ingredientManager) {
-		this.ingredientManager = ingredientManager;
-	}
 
 	public <T> void addOverride(IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer) {
 		int width = ingredientRenderer.getWidth();
