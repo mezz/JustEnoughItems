@@ -277,7 +277,14 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 				.ifPresent(ingredient -> drawIngredient(poseStack, ingredient));
 
 			if (overlay != null) {
-				overlay.draw(poseStack);
+				RenderSystem.enableBlend();
+
+				poseStack.pushPose();
+				{
+					poseStack.translate(0, 0, 200);
+					overlay.draw(poseStack);
+				}
+				poseStack.popPose();
 			}
 
 			RenderSystem.disableBlend();

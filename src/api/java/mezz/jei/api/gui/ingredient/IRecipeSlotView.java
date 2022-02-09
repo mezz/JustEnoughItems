@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 /**
  * Represents one drawn ingredient that is part of a recipe.
  * One recipe slot can contain multiple ingredients, displayed one after the other over time.
- * 
+ *
  * These ingredients may be different types, for example {@link VanillaTypes#ITEM} and {@link VanillaTypes#FLUID}
  * can be displayed in one recipe slot in rotation.
  *

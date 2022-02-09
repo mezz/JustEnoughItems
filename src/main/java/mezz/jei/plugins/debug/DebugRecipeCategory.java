@@ -135,15 +135,25 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 				.addIngredientsUnsafe(Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));
 
 		// FLUID type
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 90, 0)
-			.setFluidRenderer(16000, false, 16, 58)
-			.setOverlay(tankOverlay, -1, -1)
-			.setBackground(tankBackground, -1, -1)
-			.addIngredient(VanillaTypes.FLUID, new FluidStack(Fluids.WATER, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME)));
+		{
+			int capacityMb = 10 * FluidAttributes.BUCKET_VOLUME;
+			// random amount between half capacity and full
+			int amountMb = (capacityMb / 2) + (int) ((Math.random() * capacityMb) / 2);
+			builder.addSlot(RecipeIngredientRole.OUTPUT, 90, 0)
+				.setFluidRenderer(capacityMb, false, 16, 58)
+				.setOverlay(tankOverlay, -1, -1)
+				.setBackground(tankBackground, -1, -1)
+				.addIngredient(VanillaTypes.FLUID, new FluidStack(Fluids.WATER, amountMb));
+		}
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 24, 0)
-			.setFluidRenderer(2000, true, 12, 47)
-			.addIngredient(VanillaTypes.FLUID, new FluidStack(Fluids.LAVA, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME)));
+		{
+			int capacityMb = 2 * FluidAttributes.BUCKET_VOLUME;
+			// random amount between half capacity and full
+			int amountMb = (capacityMb / 2) + (int) ((Math.random() * capacityMb) / 2);
+			builder.addSlot(RecipeIngredientRole.INPUT, 24, 0)
+				.setFluidRenderer(capacityMb, true, 12, 47)
+				.addIngredient(VanillaTypes.FLUID, new FluidStack(Fluids.LAVA, amountMb));
+		}
 
 		// DEBUG type
 		builder.addSlot(RecipeIngredientRole.INPUT, 40, 0)
