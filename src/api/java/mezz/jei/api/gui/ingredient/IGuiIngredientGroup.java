@@ -37,6 +37,35 @@ import net.minecraft.world.item.crafting.Ingredient;
 @SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 @Deprecated(forRemoval = true, since = "9.3.0")
 public interface IGuiIngredientGroup<T> {
+
+	/**
+	 * Set all the ingredients in the group, based on the {@link IIngredients}
+	 * passed to {@link IRecipeCategory#setRecipe(IRecipeLayout, Object, IIngredients)}.
+	 *
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
+	 * In the new system, this is replaced by {@link IRecipeSlotBuilder#addIngredients(Ingredient)}.
+	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	void set(IIngredients ingredients);
+
+	/**
+	 * Set the ingredient at ingredientIndex to a rotating collection of ingredients.
+	 *
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
+	 * In the new system, this is replaced by {@link IRecipeSlotBuilder#addIngredients(IIngredientType, List)}.
+	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	void set(int ingredientIndex, @Nullable List<T> ingredients);
+
+	/**
+	 * Set the ingredient at ingredientIndex to a specific ingredient.
+	 *
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
+	 * In the new system, this is replaced by {@link IRecipeSlotBuilder#addIngredient(IIngredientType, Object)}.
+	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	void set(int ingredientIndex, @Nullable T ingredient);
+	
 	/**
 	 * Set a background image to draw behind the ingredient.
 	 * Some examples are slot background or tank background.
@@ -131,32 +160,4 @@ public interface IGuiIngredientGroup<T> {
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void setOverrideDisplayFocus(@Nullable IFocus<T> focus);
-
-	/**
-	 * Set all the ingredients in the group, based on the {@link IIngredients}
-	 * passed to {@link IRecipeCategory#setRecipe(IRecipeLayout, Object, IIngredients)}.
-	 *
-	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
-	 * In the new system, this is replaced by {@link IRecipeSlotBuilder#addIngredients(Ingredient)}.
-	 */
-	@Deprecated(forRemoval = true, since = "9.3.0")
-	void set(IIngredients ingredients);
-
-	/**
-	 * Set the ingredient at ingredientIndex to a rotating collection of ingredients.
-	 *
-	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
-	 * In the new system, this is replaced by {@link IRecipeSlotBuilder#addIngredients(IIngredientType, List)}.
-	 */
-	@Deprecated(forRemoval = true, since = "9.3.0")
-	void set(int ingredientIndex, @Nullable List<T> ingredients);
-
-	/**
-	 * Set the ingredient at ingredientIndex to a specific ingredient.
-	 *
-	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
-	 * In the new system, this is replaced by {@link IRecipeSlotBuilder#addIngredient(IIngredientType, Object)}.
-	 */
-	@Deprecated(forRemoval = true, since = "9.3.0")
-	void set(int ingredientIndex, @Nullable T ingredient);
 }
