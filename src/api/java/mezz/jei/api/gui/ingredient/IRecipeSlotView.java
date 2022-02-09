@@ -1,6 +1,7 @@
 package mezz.jei.api.gui.ingredient;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -15,6 +16,11 @@ import java.util.stream.Stream;
 
 /**
  * Represents one drawn ingredient that is part of a recipe.
+ * One recipe slot can contain multiple ingredients, displayed one after the other over time.
+ * 
+ * These ingredients may be different types, for example {@link VanillaTypes#ITEM} and {@link VanillaTypes#FLUID}
+ * can be displayed in one recipe slot in rotation.
+ *
  * Useful for implementing {@link IRecipeTransferHandler} and some other advanced cases.
  *
  * @since 9.3.0
@@ -31,7 +37,6 @@ public interface IRecipeSlotView {
 
 	/**
 	 * All ingredient variations that can be shown.
-	 * This list can contain multiple types of ingredient.
 	 *
 	 * @see #getIngredients(IIngredientType) to limit to one type of ingredient.
 	 *

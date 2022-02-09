@@ -65,7 +65,7 @@ public interface IGuiIngredientGroup<T> {
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void set(int ingredientIndex, @Nullable T ingredient);
-	
+
 	/**
 	 * Set a background image to draw behind the ingredient.
 	 * Some examples are slot background or tank background.
