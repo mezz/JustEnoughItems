@@ -171,7 +171,6 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @deprecated Use {@link #handleInput(Object, double, double, InputConstants.Key)}
 	 */
-	@SuppressWarnings({"DeprecatedIsStillUsed", "unused"})
 	@Deprecated(forRemoval = true, since = "8.3.0")
 	default boolean handleClick(T recipe, double mouseX, double mouseY, int mouseButton) {
 		return false;
@@ -183,7 +182,6 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @deprecated This is handled automatically by {@link #setRecipe(IRecipeLayoutBuilder, Object, List)} instead.
 	 */
-	@SuppressWarnings({"removal", "unused"})
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void setIngredients(T recipe, IIngredients ingredients) {
 
@@ -198,7 +196,6 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @deprecated Use {@link #setRecipe(IRecipeLayoutBuilder, Object, List)} instead.
 	 */
-	@SuppressWarnings({"unused", "removal"})
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void setRecipe(IRecipeLayout recipeLayout, T recipe, IIngredients ingredients) {
 
@@ -216,7 +213,6 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @deprecated Use {@link #draw(Object, IRecipeSlotsView, PoseStack, double, double)}
 	 */
-	@SuppressWarnings("unused")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void draw(T recipe, PoseStack stack, double mouseX, double mouseY) {
 
@@ -235,7 +231,6 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @deprecated Use {@link #getTooltipStrings(Object, IRecipeSlotsView, double, double)} instead.
 	 */
-	@SuppressWarnings("unused")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default List<Component> getTooltipStrings(T recipe, double mouseX, double mouseY) {
 		return Collections.emptyList();

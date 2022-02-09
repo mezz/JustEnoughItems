@@ -21,7 +21,6 @@ import java.util.List;
  *
  * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
  */
-@SuppressWarnings("removal")
 @Deprecated(forRemoval = true, since = "9.3.0")
 public interface IGuiFluidStackGroup extends IGuiIngredientGroup<FluidStack> {
 	/**

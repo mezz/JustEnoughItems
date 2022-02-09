@@ -33,7 +33,6 @@ public interface IRecipeCategoryExtension {
 	 * @see IDrawable for a simple class for drawing things.
 	 * @see IGuiHelper for useful functions.
 	 */
-	@SuppressWarnings("unused")
 	default void drawInfo(int recipeWidth, int recipeHeight, PoseStack stack, double mouseX, double mouseY) {
 
 	}
@@ -49,7 +48,6 @@ public interface IRecipeCategoryExtension {
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
 	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
 	 */
-	@SuppressWarnings("unused")
 	default List<Component> getTooltipStrings(double mouseX, double mouseY) {
 		return Collections.emptyList();
 	}
@@ -82,7 +80,6 @@ public interface IRecipeCategoryExtension {
 	 *
 	 * @deprecated Use {@link #handleInput(double, double, InputConstants.Key)}
 	 */
-	@SuppressWarnings({"unused", "DeprecatedIsStillUsed"})
 	@Deprecated(forRemoval = true, since = "8.3.0")
 	default boolean handleClick(double mouseX, double mouseY, int mouseButton) {
 		return false;
@@ -94,7 +91,6 @@ public interface IRecipeCategoryExtension {
 	 * @deprecated Subclasses of this interface should define their own methods of setting ingredients.
 	 * @see ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, List)
 	 */
-	@SuppressWarnings({"removal", "unused"})
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void setIngredients(IIngredients ingredients) {
 

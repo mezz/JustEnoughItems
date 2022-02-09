@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
  * @deprecated Use the new {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)},
  * which does not use this class.
  */
-@SuppressWarnings("removal")
 @Deprecated(forRemoval = true, since = "9.3.0")
 public interface IIngredients {
 	/**

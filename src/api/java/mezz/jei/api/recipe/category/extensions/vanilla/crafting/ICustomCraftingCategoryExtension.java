@@ -32,7 +32,6 @@ public interface ICustomCraftingCategoryExtension extends ICraftingCategoryExten
 	 *
 	 * @deprecated Use {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, List)} instead.
 	 */
-	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void setRecipe(IRecipeLayout recipeLayout, IIngredients ingredients);
 }

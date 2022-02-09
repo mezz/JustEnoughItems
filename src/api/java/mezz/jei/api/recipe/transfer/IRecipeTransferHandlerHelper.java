@@ -48,7 +48,6 @@ public interface IRecipeTransferHandlerHelper {
 	 *
 	 * @deprecated Use {@link #createUserErrorForMissingSlots(Component, Collection)} instead.
 	 */
-	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	IRecipeTransferError createUserErrorForSlots(Component tooltipMessage, Collection<Integer> missingItemIndexes);
 }

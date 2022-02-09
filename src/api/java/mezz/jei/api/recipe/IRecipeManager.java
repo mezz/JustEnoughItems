@@ -140,7 +140,6 @@ public interface IRecipeManager {
 	 *
 	 * @deprecated Use {@link #createFocus(RecipeIngredientRole, IIngredientType, Object)} instead.
 	 */
-	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	<V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient);
 

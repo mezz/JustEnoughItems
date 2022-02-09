@@ -12,7 +12,6 @@ import net.minecraft.network.chat.Component;
  *
  * @deprecated Use {@link IRecipeSlotTooltipCallback} instead.
  */
-@SuppressWarnings({"DeprecatedIsStillUsed", "removal"})
 @Deprecated(forRemoval = true, since = "9.3.0")
 @FunctionalInterface
 public interface ITooltipCallback<T> {

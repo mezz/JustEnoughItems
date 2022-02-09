@@ -34,7 +34,6 @@ import net.minecraft.world.item.crafting.Ingredient;
  * In the new system, this class is replaced by {@link IRecipeSlotBuilder},
  * which handles multiple ingredient types together.
  */
-@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 @Deprecated(forRemoval = true, since = "9.3.0")
 public interface IGuiIngredientGroup<T> {
 

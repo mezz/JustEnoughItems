@@ -84,7 +84,6 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	 * @return the size of a shaped recipe, or null for a shapeless recipe
 	 * @deprecated Use {@link #getWidth()} and {@link #getHeight()} instead.
 	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	@Nullable
 	default Size2i getSize() {

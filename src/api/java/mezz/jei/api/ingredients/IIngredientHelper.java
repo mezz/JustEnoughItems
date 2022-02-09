@@ -32,7 +32,6 @@ public interface IIngredientHelper<V> {
 	 *
 	 * @deprecated There isn't a good use for this anymore.
 	 */
-	@SuppressWarnings("unused")
 	@Deprecated(forRemoval = true, since = "9.2.0")
 	default IFocus<?> translateFocus(IFocus<V> focus, IFocusFactory focusFactory) {
 		return focus;
@@ -71,7 +70,6 @@ public interface IIngredientHelper<V> {
 	 * Return the modId of the mod that created this ingredient.
 	 * @deprecated Use {@link #getResourceLocation(Object)} instead.
 	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(forRemoval = true, since = "9.2.2")
 	String getModId(V ingredient);
 
@@ -96,7 +94,6 @@ public interface IIngredientHelper<V> {
 	 * Return the resource id of the given ingredient.
 	 * @deprecated Use {@link #getResourceLocation(Object)} instead.
 	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(forRemoval = true, since = "9.2.2")
 	String getResourceId(V ingredient);
 

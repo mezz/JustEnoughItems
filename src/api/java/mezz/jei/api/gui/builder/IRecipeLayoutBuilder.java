@@ -31,7 +31,6 @@ public interface IRecipeLayoutBuilder {
 	 * This automatic behavior was confusing and inconsistent with other ingredient types, so
 	 * this new method does not have a hidden automatic 1 pixel offset. Sorry!
 	 */
-	@SuppressWarnings("removal")
 	IRecipeSlotBuilder addSlot(RecipeIngredientRole recipeIngredientRole, int x, int y);
 
 	/**
