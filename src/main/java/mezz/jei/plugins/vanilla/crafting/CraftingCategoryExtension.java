@@ -11,7 +11,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.common.util.Size2i;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICraftingCategoryExtension {

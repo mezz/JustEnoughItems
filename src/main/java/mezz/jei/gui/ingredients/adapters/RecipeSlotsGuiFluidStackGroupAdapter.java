@@ -8,7 +8,7 @@ import mezz.jei.gui.ingredients.RecipeSlots;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
 import net.minecraftforge.fluids.FluidStack;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings({"removal", "deprecation"})
 public class RecipeSlotsGuiFluidStackGroupAdapter extends RecipeSlotsGuiIngredientGroupAdapter<FluidStack> implements IGuiFluidStackGroup {

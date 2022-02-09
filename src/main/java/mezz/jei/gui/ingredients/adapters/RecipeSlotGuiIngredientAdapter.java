@@ -6,7 +6,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.gui.ingredients.RecipeSlot;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 @SuppressWarnings("removal")

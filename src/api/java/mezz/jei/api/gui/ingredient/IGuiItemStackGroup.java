@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.api.gui.IRecipeLayout;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**

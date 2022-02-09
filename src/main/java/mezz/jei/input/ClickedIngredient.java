@@ -10,7 +10,7 @@ import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	private final ITypedIngredient<V> value;
