@@ -36,11 +36,10 @@ public class ColorThief {
 	 * @param ignoreWhite if <code>true</code>, white pixels are ignored
 	 * @return the palette as array of RGB arrays
 	 */
-	@Nullable
 	public static int[][] getPalette(NativeImage sourceImage, int colorCount, int quality, boolean ignoreWhite) {
 		MMCQ.CMap cmap = getColorMap(sourceImage, colorCount, quality, ignoreWhite);
 		if (cmap == null) {
-			return null;
+			return new int[0][0];
 		}
 		return cmap.palette();
 	}

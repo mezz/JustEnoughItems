@@ -13,8 +13,8 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
  * Useful for drawing miscellaneous things like in
  * {@link IRecipeCategory#draw(Object, IRecipeSlotsView, PoseStack, double, double)}.
  * {@link IRecipeCategory#getBackground()}
- * {@link IRecipeSlotBuilder#setBackground(IDrawable)}
- * {@link IRecipeSlotBuilder#setOverlay(IDrawable)}]
+ * {@link IRecipeSlotBuilder#setBackground(IDrawable, int, int)}
+ * {@link IRecipeSlotBuilder#setOverlay(IDrawable, int, int)}]
  * and anywhere else things are drawn on the screen.
  *
  * @see IGuiHelper for many functions to create IDrawables.

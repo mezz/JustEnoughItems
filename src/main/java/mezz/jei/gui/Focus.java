@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public final class Focus<V> implements IFocus<V> {
 	private final RecipeIngredientRole role;
@@ -108,7 +107,7 @@ public final class Focus<V> implements IFocus<V> {
 	public static List<Focus<?>> check(Collection<? extends IFocus<?>> focuses) {
 		return focuses.stream()
 			.filter(Objects::nonNull)
-			.map(Focus::checkOne)
-			.collect(Collectors.toUnmodifiableList());
+			.<Focus<?>>map(Focus::checkOne)
+			.toList();
 	}
 }
