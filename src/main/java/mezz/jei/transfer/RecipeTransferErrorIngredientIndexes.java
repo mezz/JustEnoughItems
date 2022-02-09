@@ -1,16 +1,13 @@
 package mezz.jei.transfer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.ingredient.IGuiIngredient;
-import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.gui.ingredients.RecipeSlot;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
 
-import java.util.Map;
 import java.util.Set;
 
-@Deprecated(forRemoval = true)
 public class RecipeTransferErrorIngredientIndexes extends RecipeTransferErrorTooltip {
 	private static final int HIGHLIGHT_COLOR = 0x66FF0000;
 
@@ -22,14 +19,21 @@ public class RecipeTransferErrorIngredientIndexes extends RecipeTransferErrorToo
 	}
 
 	@Override
-	public void showError(PoseStack poseStack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
-		IGuiItemStackGroup itemStackGroup = recipeLayout.getItemStacks();
-		Map<Integer, ? extends IGuiIngredient<ItemStack>> ingredients = itemStackGroup.getGuiIngredients();
-		for (Integer ingredientIndex : ingredientIndexes) {
-			IGuiIngredient<ItemStack> ingredient = ingredients.get(ingredientIndex);
-			ingredient.drawHighlight(poseStack, HIGHLIGHT_COLOR, recipeX, recipeY);
-		}
+	public void showError(PoseStack poseStack, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
+		poseStack.pushPose();
+		{
+			poseStack.translate(recipeX, recipeY, 0);
 
-		super.showError(poseStack, mouseX, mouseY, recipeLayout, recipeX, recipeY);
+			for (IRecipeSlotView slotView : recipeSlotsView.getSlotViews()) {
+				// casting this IRecipeSlotView to RecipeSlot is a hack for legacy support
+				if (slotView instanceof RecipeSlot recipeSlot) {
+					int legacyIngredientIndex = recipeSlot.getLegacyIngredientIndex();
+					if (ingredientIndexes.contains(legacyIngredientIndex)) {
+						recipeSlot.drawHighlight(poseStack, HIGHLIGHT_COLOR);
+					}
+				}
+			}
+		}
+		poseStack.popPose();
 	}
 }

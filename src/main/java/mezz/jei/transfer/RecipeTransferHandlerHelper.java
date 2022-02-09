@@ -30,6 +30,7 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 		return new RecipeTransferErrorMissingSlots(tooltipMessage, missingItemSlots);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	@Deprecated
 	public IRecipeTransferError createUserErrorForSlots(Component tooltipMessage, Collection<Integer> missingItemIndexes) {

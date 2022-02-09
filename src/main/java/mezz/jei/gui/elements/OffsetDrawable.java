@@ -36,21 +36,15 @@ public class OffsetDrawable implements IDrawable {
 
 	@Override
 	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
-		poseStack.pushPose();
-		{
-			poseStack.translate(this.xOffset + xOffset, this.yOffset + yOffset, 0);
-			this.drawable.draw(poseStack);
-		}
-		poseStack.popPose();
+		this.drawable.draw(
+			poseStack,
+			this.xOffset + xOffset,
+			this.yOffset + yOffset
+		);
 	}
 
 	@Override
 	public void draw(PoseStack poseStack) {
-		poseStack.pushPose();
-		{
-			poseStack.translate(this.xOffset, this.yOffset, 0);
-			this.drawable.draw(poseStack);
-		}
-		poseStack.popPose();
+		this.drawable.draw(poseStack, this.xOffset, this.yOffset);
 	}
 }

@@ -31,6 +31,7 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable DebugIngredient ingredient) {
 		if (ingredient != null) {

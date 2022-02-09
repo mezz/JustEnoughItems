@@ -2,6 +2,7 @@ package mezz.jei.transfer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import net.minecraft.network.chat.Component;
 
 import java.util.Collection;
@@ -17,7 +18,7 @@ public class RecipeTransferErrorMissingSlots extends RecipeTransferErrorTooltip 
 	}
 
 	@Override
-	public void showError(PoseStack poseStack, int mouseX, int mouseY, int recipeX, int recipeY) {
+	public void showError(PoseStack poseStack, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
 		poseStack.pushPose();
 		{
 			poseStack.translate(recipeX, recipeY, 0);
@@ -27,7 +28,5 @@ public class RecipeTransferErrorMissingSlots extends RecipeTransferErrorTooltip 
 			}
 		}
 		poseStack.popPose();
-
-		super.showError(poseStack, mouseX, mouseY, recipeX, recipeY);
 	}
 }

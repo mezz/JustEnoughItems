@@ -40,21 +40,27 @@ public interface IRecipeTransferError {
 	/**
 	 * Called on {@link Type#USER_FACING} errors.
 	 *
+	 * @implNote JEI also calls {@link #showError(PoseStack, int, int, IRecipeLayout, int, int)}
+	 * for backward compatibility.
+	 * If you implement this new method, leave the old one unimplemented.
+	 *
 	 * @since 9.3.0
 	 */
-	default void showError(PoseStack stack, int mouseX, int mouseY, int recipeX, int recipeY) {
+	default void showError(PoseStack poseStack, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
 
 	}
 
 	/**
 	 * Called on {@link Type#USER_FACING} errors.
 	 *
-	 * @deprecated Use {@link #showError(PoseStack, int, int, int, int)} instead.
+	 * @deprecated Use {@link #showError(PoseStack, int, int, IRecipeSlotsView, int, int)} instead.
 	 * {@link IRecipeLayout} is being phased-out.
+	 *
+	 * @implNote JEI still calls this old method for backward compatibility.
+	 * If you implement the new method, leave this one unimplemented.
 	 */
-	@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 	@Deprecated(forRemoval = true, since = "9.3.0")
-	default void showError(PoseStack stack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
+	default void showError(PoseStack poseStack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
 
 	}
 }
