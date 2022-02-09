@@ -52,29 +52,23 @@ public class BrewingRecipeUtil {
 	}
 
 	private int getBrewingSteps(String potionOutputUid, Set<String> previousSteps) {
-		Integer brewingSteps = brewingStepCache.get(potionOutputUid);
-		if (brewingSteps == null) {
-			previousSteps.add(potionOutputUid);
-			Collection<String> prevPotions = potionMap.get(potionOutputUid);
-			if (!prevPotions.isEmpty()) {
-				int minPrevSteps = Integer.MAX_VALUE;
-				for (String prevPotion : prevPotions) {
-					if (!previousSteps.contains(prevPotion)) {
-						int prevSteps = getBrewingSteps(prevPotion, previousSteps);
-						minPrevSteps = Math.min(minPrevSteps, prevSteps);
-					}
-				}
-				if (minPrevSteps < Integer.MAX_VALUE) {
-					brewingSteps = minPrevSteps + 1;
-					brewingStepCache.put(potionOutputUid, brewingSteps);
-				}
-			}
+		Integer cachedBrewingSteps = brewingStepCache.get(potionOutputUid);
+		if (cachedBrewingSteps != null) {
+			return cachedBrewingSteps;
 		}
 
-		if (brewingSteps == null) {
+		if (!previousSteps.add(potionOutputUid)) {
 			return Integer.MAX_VALUE;
-		} else {
-			return brewingSteps;
 		}
+
+		Collection<String> prevPotions = potionMap.get(potionOutputUid);
+		int minPrevSteps = prevPotions.stream()
+			.mapToInt(prevPotion -> getBrewingSteps(prevPotion, previousSteps))
+			.min()
+			.orElse(Integer.MAX_VALUE);
+
+		int brewingSteps = minPrevSteps == Integer.MAX_VALUE ? Integer.MAX_VALUE : minPrevSteps + 1;
+		brewingStepCache.put(potionOutputUid, brewingSteps);
+		return brewingSteps;
 	}
 }

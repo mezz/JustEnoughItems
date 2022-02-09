@@ -1,21 +1,23 @@
 package mezz.jei.ingredients;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Unmodifiable;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class IngredientManager implements IIngredientManager {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -24,7 +26,8 @@ public class IngredientManager implements IIngredientManager {
 	private final IngredientBlacklistInternal blacklist;
 
 	private final ImmutableMap<IIngredientType<?>, IngredientInfo<?>> ingredientsMap;
-	private final ImmutableList<IIngredientType<?>> registeredIngredientTypes;
+	@Unmodifiable
+	private final List<IIngredientType<?>> registeredIngredientTypes;
 
 	private final boolean enableDebugLogs;
 	private final ImmutableMap<Class<?>, IIngredientType<?>> ingredientTypeMap;
@@ -45,10 +48,9 @@ public class IngredientManager implements IIngredientManager {
 		}
 		this.ingredientsMap = ingredientsMapBuilder.build();
 
-		//noinspection UnstableApiUsage
 		this.registeredIngredientTypes = ingredientInfos.stream()
-			.map(IngredientInfo::getIngredientType)
-			.collect(ImmutableList.toImmutableList());
+			.<IIngredientType<?>>map(IngredientInfo::getIngredientType)
+			.toList();
 
 		this.enableDebugLogs = enableDebugLogs;
 		ImmutableMap.Builder<Class<?>, IIngredientType<?>> ingredientTypeBuilder = ImmutableMap.builder();
@@ -77,15 +79,6 @@ public class IngredientManager implements IIngredientManager {
 	public <V> V getIngredientByUid(IIngredientType<V> ingredientType, String uid) {
 		IngredientInfo<V> ingredientInfo = getIngredientInfo(ingredientType);
 		return ingredientInfo.getIngredientByUid(uid);
-	}
-
-	public <V> boolean isValidIngredient(V ingredient) {
-		try {
-			IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredient);
-			return ingredientHelper.isValidIngredient(ingredient);
-		} catch (RuntimeException ignored) {
-			return false;
-		}
 	}
 
 	@Override
@@ -138,27 +131,31 @@ public class IngredientManager implements IIngredientManager {
 
 		ingredientInfo.addIngredients(ingredients);
 
+		List<ITypedIngredient<V>> typedIngredients = ingredients.stream()
+			.map(i -> TypedIngredient.createTyped(this, ingredientType, i))
+			.map(Optional::orElseThrow)
+			.toList();
+
 		IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 
-		for (V ingredient : ingredients) {
-			List<IIngredientListElementInfo<V>> matchingElementInfos = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);
-			if (!matchingElementInfos.isEmpty()) {
-				for (IIngredientListElementInfo<V> matchingElementInfo : matchingElementInfos) {
-					IIngredientListElement<V> matchingElement = matchingElementInfo.getElement();
-					blacklist.removeIngredientFromBlacklist(matchingElement.getIngredient(), ingredientHelper);
-					ingredientFilter.updateHiddenState(matchingElement);
-				}
+		for (ITypedIngredient<V> value : typedIngredients) {
+			Optional<IIngredientListElementInfo<V>> matchingElementInfo = ingredientFilter.searchForMatchingElement(ingredientHelper, value);
+			if (matchingElementInfo.isPresent()) {
+				IIngredientListElement<V> matchingElement = matchingElementInfo.get().getElement();
+				ITypedIngredient<V> typedIngredient = matchingElement.getTypedIngredient();
+				blacklist.removeIngredientFromBlacklist(typedIngredient, ingredientHelper);
+				ingredientFilter.updateHiddenState(matchingElement);
 				if (enableDebugLogs) {
-					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(ingredient));
+					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
 				}
 			} else {
-				IIngredientListElement<V> element = IngredientListElementFactory.createOrderedElement(this, ingredientType, ingredient);
+				IIngredientListElement<V> element = IngredientListElementFactory.createOrderedElement(this, value);
 				IIngredientListElementInfo<V> info = IngredientListElementInfo.create(element, this, modIdHelper);
 				if (info != null) {
-					blacklist.removeIngredientFromBlacklist(ingredient, ingredientHelper);
+					blacklist.removeIngredientFromBlacklist(value, ingredientHelper);
 					ingredientFilter.addIngredient(info);
 					if (enableDebugLogs) {
-						LOGGER.debug("Added ingredient: {}", ingredientHelper.getErrorInfo(ingredient));
+						LOGGER.debug("Added ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
 					}
 				}
 			}
@@ -210,21 +207,24 @@ public class IngredientManager implements IIngredientManager {
 
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientType);
 
-		for (V ingredient : ingredients) {
-			List<IIngredientListElementInfo<V>> matchingElementInfos = ingredientFilter.findMatchingElements(ingredientHelper, ingredient);
-			if (matchingElementInfos.isEmpty()) {
+		ingredients.stream()
+			.map(i -> TypedIngredient.createTyped(this, ingredientType, i))
+			.flatMap(Optional::stream)
+			.forEach(typedIngredient -> {
+				Optional<IIngredientListElementInfo<V>> matchingElementInfo = ingredientFilter.searchForMatchingElement(ingredientHelper, typedIngredient);
+				if (matchingElementInfo.isEmpty()) {
+					String errorInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
+					LOGGER.error("Could not find a matching ingredient to remove: {}", errorInfo);
+				} else {
+					if (enableDebugLogs) {
+						LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
+					}
+					IIngredientListElement<V> matchingElement = matchingElementInfo.get().getElement();
+					blacklist.addIngredientToBlacklist(matchingElement.getTypedIngredient(), ingredientHelper);
+					matchingElement.setVisible(false);
+				}
+			});
 
-				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
-				LOGGER.error("Could not find any matching ingredients to remove: {}", errorInfo);
-			} else if (enableDebugLogs) {
-				LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(ingredient));
-			}
-			for (IIngredientListElementInfo<V> matchingElementInfo : matchingElementInfos) {
-				IIngredientListElement<V> matchingElement = matchingElementInfo.getElement();
-				blacklist.addIngredientToBlacklist(matchingElement.getIngredient(), ingredientHelper);
-				matchingElement.setVisible(false);
-			}
-		}
 		ingredientFilter.invalidateCache();
 	}
 

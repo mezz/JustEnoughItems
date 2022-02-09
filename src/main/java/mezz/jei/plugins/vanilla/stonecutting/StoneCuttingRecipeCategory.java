@@ -1,7 +1,9 @@
 package mezz.jei.plugins.vanilla.stonecutting;
 
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.ItemStack;
@@ -9,18 +11,15 @@ import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.config.Constants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 
-public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRecipe> {
-	private static final int inputSlot = 0;
-	private static final int outputSlot = 1;
+import java.util.List;
 
+public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRecipe> {
 	public static final int width = 82;
 	public static final int height = 34;
 
@@ -61,18 +60,12 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRe
 	}
 
 	@Override
-	public void setIngredients(StonecutterRecipe recipe, IIngredients ingredients) {
-		ingredients.setInputIngredients(recipe.getIngredients());
-		ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
-	}
+	public void setRecipe(IRecipeLayoutBuilder builder, StonecutterRecipe recipe, List<? extends IFocus<?>> focuses) {
+		builder.addSlot(RecipeIngredientRole.INPUT, 1, 9)
+			.addIngredients(recipe.getIngredients().get(0));
 
-	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, StonecutterRecipe recipe, IIngredients ingredients) {
-		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-		guiItemStacks.init(inputSlot, true, 0, 8);
-		guiItemStacks.init(outputSlot, false, 60, 8);
-
-		guiItemStacks.set(ingredients);
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 61,  9)
+			.addItemStack(recipe.getResultItem());
 	}
 
 	@Override

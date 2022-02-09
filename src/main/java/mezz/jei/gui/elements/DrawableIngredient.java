@@ -16,18 +16,28 @@ public class DrawableIngredient<V> implements IDrawable {
 
 	@Override
 	public int getWidth() {
-		return 16;
+		return this.ingredientRenderer.getWidth();
 	}
 
 	@Override
 	public int getHeight() {
-		return 16;
+		return this.ingredientRenderer.getHeight();
+	}
+
+	@Override
+	public void draw(PoseStack poseStack) {
+		RenderSystem.enableDepthTest();
+		this.ingredientRenderer.render(poseStack, ingredient);
+		RenderSystem.disableDepthTest();
 	}
 
 	@Override
 	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
-		RenderSystem.enableDepthTest();
-		this.ingredientRenderer.render(poseStack, xOffset, yOffset, ingredient);
-		RenderSystem.disableDepthTest();
+		poseStack.pushPose();
+		{
+			poseStack.translate(xOffset, yOffset, 0);
+			draw(poseStack);
+		}
+		poseStack.popPose();
 	}
 }

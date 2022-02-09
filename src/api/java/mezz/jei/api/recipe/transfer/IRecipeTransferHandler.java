@@ -2,6 +2,7 @@ package mezz.jei.api.recipe.transfer;
 
 import org.jetbrains.annotations.Nullable;
 
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -31,6 +32,22 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	Class<R> getRecipeClass();
 
 	/**
+	 * @param container   the container to act on
+	 * @param recipe      the raw recipe instance
+	 * @param recipeSlots the view of the recipe slots, with information about the ingredients
+	 * @param player      the player, to do the slot manipulation
+	 * @param maxTransfer if true, transfer as many items as possible. if false, transfer one set
+	 * @param doTransfer  if true, do the transfer. if false, check for errors but do not actually transfer the items
+	 * @return a recipe transfer error if the recipe can't be transferred. Return null on success.
+	 *
+	 * @since 9.3.0
+	 */
+	@Nullable
+	default IRecipeTransferError transferRecipe(C container, R recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
+		throw new UnsupportedOperationException("The new transferRecipe method has not been implemented on this recipe transfer handler");
+	}
+
+	/**
 	 * @param container    the container to act on
 	 * @param recipe       the raw recipe instance
 	 * @param recipeLayout the layout of the recipe, with information about the ingredients
@@ -39,8 +56,11 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	 * @param doTransfer   if true, do the transfer. if false, check for errors but do not actually transfer the items
 	 * @return a recipe transfer error if the recipe can't be transferred. Return null on success.
 	 *
-	 * @since JEI 7.1.3
+	 * @since 7.1.3
+	 *
+	 * @deprecated Use {@link #transferRecipe(AbstractContainerMenu, Object, IRecipeSlotsView, Player, boolean, boolean)} instead.
 	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
 	@Nullable
 	default IRecipeTransferError transferRecipe(C container, R recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
 		return null;

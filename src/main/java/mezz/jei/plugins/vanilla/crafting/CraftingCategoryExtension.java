@@ -1,15 +1,18 @@
 package mezz.jei.plugins.vanilla.crafting;
 
-import org.jetbrains.annotations.Nullable;
-
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.common.util.Size2i;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.resources.ResourceLocation;
 
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
+import org.jetbrains.annotations.Nullable;
+import java.util.List;
 
 public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICraftingCategoryExtension {
 	protected final T recipe;
@@ -19,9 +22,20 @@ public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICra
 	}
 
 	@Override
-	public void setIngredients(IIngredients ingredients) {
-		ingredients.setInputIngredients(recipe.getIngredients());
-		ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
+	public void setRecipe(
+		IRecipeLayoutBuilder builder,
+		ICraftingGridHelper craftingGridHelper,
+		List<? extends IFocus<?>> focuses
+	) {
+		List<List<ItemStack>> inputs = recipe.getIngredients().stream()
+			.map(ingredient -> List.of(ingredient.getItems()))
+			.toList();
+		ItemStack resultItem = recipe.getResultItem();
+
+		int width = getWidth();
+		int height = getHeight();
+		craftingGridHelper.setInputs(builder, VanillaTypes.ITEM, inputs, width, height);
+		craftingGridHelper.setOutputs(builder, VanillaTypes.ITEM, List.of(resultItem));
 	}
 
 	@Nullable
@@ -30,6 +44,7 @@ public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICra
 		return recipe.getId();
 	}
 
+	@SuppressWarnings("removal")
 	@Nullable
 	@Override
 	public Size2i getSize() {
@@ -37,5 +52,21 @@ public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICra
 			return new Size2i(shapedRecipe.getRecipeWidth(), shapedRecipe.getRecipeHeight());
 		}
 		return null;
+	}
+
+	@Override
+	public int getWidth() {
+		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
+			return shapedRecipe.getRecipeWidth();
+		}
+		return 0;
+	}
+
+	@Override
+	public int getHeight() {
+		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
+			return shapedRecipe.getRecipeHeight();
+		}
+		return 0;
 	}
 }

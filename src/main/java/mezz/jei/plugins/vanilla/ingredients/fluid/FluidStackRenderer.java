@@ -1,5 +1,6 @@
 package mezz.jei.plugins.vanilla.ingredients.fluid;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -31,16 +32,22 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 
 public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	private static final NumberFormat nf = NumberFormat.getIntegerInstance();
-	private static final int TEX_WIDTH = 16;
-	private static final int TEX_HEIGHT = 16;
+	private static final int TEXTURE_SIZE = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 
 	private final int capacityMb;
 	private final TooltipMode tooltipMode;
+	/**
+	 * we shouldn't draw an overlay like this anymore,
+	 * it is kept for backward compatibility for
+	 * {@link mezz.jei.api.gui.ingredient.IGuiFluidStackGroup}
+	 */
+	@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
+	@Nullable
+	@Deprecated
+	private final IDrawable overlay;
 	private final int width;
 	private final int height;
-	@Nullable
-	private final IDrawable overlay;
 
 	enum TooltipMode {
 		SHOW_AMOUNT,
@@ -49,14 +56,23 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	public FluidStackRenderer() {
-		this(FluidAttributes.BUCKET_VOLUME, TooltipMode.ITEM_LIST, TEX_WIDTH, TEX_HEIGHT, null);
+		this(FluidAttributes.BUCKET_VOLUME, TooltipMode.ITEM_LIST, 16, 16, null);
 	}
 
+	public FluidStackRenderer(int capacityMb, boolean showCapacity, int width, int height) {
+		this(capacityMb, showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT, width, height, null);
+	}
+
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated
 	public FluidStackRenderer(int capacityMb, boolean showCapacity, int width, int height, @Nullable IDrawable overlay) {
 		this(capacityMb, showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT, width, height, overlay);
 	}
 
-	public FluidStackRenderer(int capacityMb, TooltipMode tooltipMode, int width, int height, @Nullable IDrawable overlay) {
+	private FluidStackRenderer(int capacityMb, TooltipMode tooltipMode, int width, int height, @Nullable IDrawable overlay) {
+		Preconditions.checkArgument(capacityMb > 0, "capacity must be > 0");
+		Preconditions.checkArgument(width > 0, "width must be > 0");
+		Preconditions.checkArgument(height > 0, "height must be > 0");
 		this.capacityMb = capacityMb;
 		this.tooltipMode = tooltipMode;
 		this.width = width;
@@ -65,27 +81,35 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	}
 
 	@Override
-	public void render(PoseStack poseStack, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
+	public void render(PoseStack poseStack, FluidStack fluidStack) {
 		RenderSystem.enableBlend();
 
-		drawFluid(poseStack, xPosition, yPosition, fluidStack);
+		drawFluid(poseStack, 0, 0, width, height, fluidStack);
 
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 
 		if (overlay != null) {
 			poseStack.pushPose();
 			poseStack.translate(0, 0, 200);
-			overlay.draw(poseStack, xPosition, yPosition);
+			overlay.draw(poseStack);
 			poseStack.popPose();
 		}
 
 		RenderSystem.disableBlend();
 	}
 
-	private void drawFluid(PoseStack poseStack, final int xPosition, final int yPosition, @Nullable FluidStack fluidStack) {
-		if (fluidStack == null) {
-			return;
+	@SuppressWarnings("removal")
+	@Override
+	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable FluidStack ingredient) {
+		if (ingredient != null) {
+			stack.pushPose();
+			stack.translate(xPosition, yPosition, 0);
+			render(stack, ingredient);
+			stack.popPose();
 		}
+	}
+
+	private void drawFluid(PoseStack poseStack, final int xPosition, final int yPosition, final int width, final int height, FluidStack fluidStack) {
 		Fluid fluid = fluidStack.getFluid();
 		if (fluid == null) {
 			return;
@@ -113,22 +137,22 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		Matrix4f matrix = poseStack.last().pose();
 		setGLColorFromInt(color);
 
-		final int xTileCount = tiledWidth / TEX_WIDTH;
-		final int xRemainder = tiledWidth - (xTileCount * TEX_WIDTH);
-		final int yTileCount = scaledAmount / TEX_HEIGHT;
-		final int yRemainder = scaledAmount - (yTileCount * TEX_HEIGHT);
+		final int xTileCount = tiledWidth / TEXTURE_SIZE;
+		final int xRemainder = tiledWidth - (xTileCount * TEXTURE_SIZE);
+		final int yTileCount = scaledAmount / TEXTURE_SIZE;
+		final int yRemainder = scaledAmount - (yTileCount * TEXTURE_SIZE);
 
 		final int yStart = yPosition + tiledHeight;
 
 		for (int xTile = 0; xTile <= xTileCount; xTile++) {
 			for (int yTile = 0; yTile <= yTileCount; yTile++) {
-				int width = (xTile == xTileCount) ? xRemainder : TEX_WIDTH;
-				int height = (yTile == yTileCount) ? yRemainder : TEX_HEIGHT;
-				int x = xPosition + (xTile * TEX_WIDTH);
-				int y = yStart - ((yTile + 1) * TEX_HEIGHT);
+				int width = (xTile == xTileCount) ? xRemainder : TEXTURE_SIZE;
+				int height = (yTile == yTileCount) ? yRemainder : TEXTURE_SIZE;
+				int x = xPosition + (xTile * TEXTURE_SIZE);
+				int y = yStart - ((yTile + 1) * TEXTURE_SIZE);
 				if (width > 0 && height > 0) {
-					int maskTop = TEX_HEIGHT - height;
-					int maskRight = TEX_WIDTH - width;
+					int maskTop = TEXTURE_SIZE - height;
+					int maskRight = TEXTURE_SIZE - width;
 
 					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 100);
 				}
@@ -194,5 +218,15 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		}
 
 		return tooltip;
+	}
+
+	@Override
+	public int getWidth() {
+		return width;
+	}
+
+	@Override
+	public int getHeight() {
+		return height;
 	}
 }

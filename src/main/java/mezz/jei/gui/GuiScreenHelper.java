@@ -1,11 +1,14 @@
 package mezz.jei.gui;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.util.MathUtil;
@@ -141,30 +144,38 @@ public class GuiScreenHelper {
 		return null;
 	}
 
-	private <T> Optional<IClickedIngredient<? extends T>> createClickedIngredient(@Nullable T ingredient, AbstractContainerScreen<?> guiContainer) {
+	private <T> Optional<IClickedIngredient<?>> createClickedIngredient(@Nullable T ingredient, AbstractContainerScreen<?> guiContainer) {
 		if (ingredient == null) {
 			return Optional.empty();
 		}
-		if (!ingredientManager.isValidIngredient(ingredient)) {
-			return Optional.empty();
-		}
-		Rect2i area = null;
-		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
-		if (ingredient instanceof ItemStack itemStack) {
-			if (slotUnderMouse != null && ItemStack.matches(slotUnderMouse.getItem(), itemStack)) {
-				area = new Rect2i(
-					guiContainer.getGuiLeft() + slotUnderMouse.x,
-					guiContainer.getGuiTop() + slotUnderMouse.y,
-					16,
-					16
-				);
-			}
-		}
-		return ClickedIngredient.create(ingredient, area, false, false);
+		return TypedIngredient.create(ingredientManager, ingredient)
+			.map(typedIngredient -> {
+				Rect2i area = getSlotArea(typedIngredient, guiContainer);
+				return new ClickedIngredient<>(typedIngredient, area, false, false);
+			});
 	}
 
 	public Optional<IGuiClickableArea> getGuiClickableArea(AbstractContainerScreen<?> guiContainer, double guiMouseX, double guiMouseY) {
 		return this.guiContainerHandlers.getGuiClickableArea(guiContainer, guiMouseX, guiMouseY);
+	}
+
+	@Nullable
+	public static <T> Rect2i getSlotArea(ITypedIngredient<T> typedIngredient, AbstractContainerScreen<?> guiContainer) {
+		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
+		if (slotUnderMouse == null) {
+			return null;
+		}
+		return TypedIngredient.optionalCast(typedIngredient, VanillaTypes.ITEM)
+			.filter(i -> ItemStack.matches(slotUnderMouse.getItem(), i.getIngredient()))
+			.map(i ->
+				new Rect2i(
+					guiContainer.getGuiLeft() + slotUnderMouse.x,
+					guiContainer.getGuiTop() + slotUnderMouse.y,
+					16,
+					16
+				)
+			)
+			.orElse(null);
 	}
 
 }

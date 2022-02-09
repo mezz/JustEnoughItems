@@ -3,16 +3,19 @@ package mezz.jei.bookmarks;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.TypedIngredient;
 import net.minecraft.world.item.ItemStack;
 
 public class BookmarkList implements IIngredientGridSource {
-	private final List<Object> list = new LinkedList<>();
+	private final List<ITypedIngredient<?>> list = new LinkedList<>();
 	private final IngredientManager ingredientManager;
 	private final BookmarkConfig bookmarkConfig;
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
@@ -22,53 +25,60 @@ public class BookmarkList implements IIngredientGridSource {
 		this.bookmarkConfig = bookmarkConfig;
 	}
 
-	public <T> boolean add(T ingredient) {
-		if (contains(ingredient)) {
+	public <T> boolean add(ITypedIngredient<T> value) {
+		if (contains(value)) {
 			return false;
 		}
-		addToList(ingredient, true);
+		addToList(value, true);
 		notifyListenersOfChange();
 		bookmarkConfig.saveBookmarks(ingredientManager, list);
 		return true;
 	}
 
-	private <T> boolean contains(T ingredient) {
-		return indexOf(ingredient) >= 0;
+	private <T> boolean contains(ITypedIngredient<T> value) {
+		return indexOf(value) >= 0;
 	}
 
-	private <T> int indexOf(T ingredient) {
+	private <T> int indexOf(ITypedIngredient<T> value) {
 		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		ingredient = ingredientHelper.normalizeIngredient(ingredient);
-		String uniqueId = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+		Optional<ITypedIngredient<T>> normalized = TypedIngredient.normalize(ingredientManager, value);
+		if (normalized.isEmpty()) {
+			return -1;
+		}
+		value = normalized.get();
+
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
+		String uniqueId = ingredientHelper.getUniqueId(value.getIngredient(), UidContext.Ingredient);
 
 		for (int i = 0; i < list.size(); i++) {
-			Object existing = list.get(i);
-			if (equal(ingredientHelper, ingredient, uniqueId, existing)) {
+			ITypedIngredient<?> existing = list.get(i);
+			if (equal(ingredientHelper, value, uniqueId, existing)) {
 				return i;
 			}
 		}
 		return -1;
 	}
 
-	private static <T> boolean equal(IIngredientHelper<T> ingredientHelper, T a, String uidA, Object b) {
-		if (a == b) {
+	private static <T> boolean equal(IIngredientHelper<T> ingredientHelper, ITypedIngredient<T> a, String uidA, ITypedIngredient<?> b) {
+		if (a.getIngredient() == b.getIngredient()) {
 			return true;
 		}
-		if (!a.getClass().isInstance(b)) {
-			return false;
-		}
-		if (a instanceof ItemStack) {
-			return ItemStack.matches((ItemStack) a, (ItemStack) b);
+
+		if (a.getIngredient() instanceof ItemStack itemStackA && b.getIngredient() instanceof ItemStack itemStackB) {
+			return ItemStack.matches(itemStackA, itemStackB);
 		}
 
-		@SuppressWarnings("unchecked")
-		T castB = (T) b;
-		String uidB = ingredientHelper.getUniqueId(castB, UidContext.Ingredient);
-		return uidA.equals(uidB);
+		Optional<ITypedIngredient<T>> castB = TypedIngredient.optionalCast(b, a.getType());
+		if (castB.isPresent()) {
+			T ingredientB = castB.get().getIngredient();
+			String uidB = ingredientHelper.getUniqueId(ingredientB, UidContext.Ingredient);
+			return uidA.equals(uidB);
+		}
+
+		return false;
 	}
 
-	public <T> boolean remove(T ingredient) {
+	public <T> boolean remove(ITypedIngredient<T> ingredient) {
 		int index = indexOf(ingredient);
 		if (index < 0) {
 			return false;
@@ -80,19 +90,22 @@ public class BookmarkList implements IIngredientGridSource {
 		return true;
 	}
 
-	public <T> void addToList(T ingredient, boolean addToFront) {
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		ingredient = ingredientHelper.normalizeIngredient(ingredient);
+	public <T> void addToList(ITypedIngredient<T> value, boolean addToFront) {
+		Optional<ITypedIngredient<T>> result = TypedIngredient.normalize(ingredientManager, value);
+		if (result.isEmpty()) {
+			return;
+		}
+		value = result.get();
 
 		if (addToFront) {
-			list.add(0, ingredient);
+			list.add(0, value);
 		} else {
-			list.add(ingredient);
+			list.add(value);
 		}
 	}
 
 	@Override
-	public List<?> getIngredientList(String filterText) {
+	public List<ITypedIngredient<?>> getIngredientList(String filterText) {
 		return list;
 	}
 

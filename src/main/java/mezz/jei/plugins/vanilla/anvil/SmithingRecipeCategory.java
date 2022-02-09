@@ -2,11 +2,11 @@ package mezz.jei.plugins.vanilla.anvil;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.Constants;
 import net.minecraft.world.level.block.Blocks;
@@ -14,11 +14,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Arrays;
+import java.util.List;
+
 import net.minecraft.network.chat.Component;
 
 public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
-
 	private final IDrawable background;
 	private final IDrawable icon;
 
@@ -53,20 +53,15 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
 	}
 
 	@Override
-	public void setIngredients(UpgradeRecipe recipe, IIngredients ingredients) {
-		ingredients.setInputIngredients(Arrays.asList(recipe.base, recipe.addition));
-		ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
-	}
+	public void setRecipe(IRecipeLayoutBuilder builder, UpgradeRecipe recipe, List<? extends IFocus<?>> focuses) {
+		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
+			.addIngredients(recipe.base);
 
-	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, UpgradeRecipe recipe, IIngredients ingredients) {
-		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+		builder.addSlot(RecipeIngredientRole.INPUT, 50, 1)
+			.addIngredients(recipe.addition);
 
-		guiItemStacks.init(0, true, 0, 0);
-		guiItemStacks.init(1, true, 49, 0);
-		guiItemStacks.init(2, false, 107, 0);
-
-		guiItemStacks.set(ingredients);
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 1)
+			.addItemStack(recipe.getResultItem());
 	}
 
 	@Override

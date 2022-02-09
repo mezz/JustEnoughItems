@@ -7,8 +7,10 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
+import mezz.jei.util.TagUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -17,6 +19,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	private final StackHelper stackHelper;
@@ -61,6 +64,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		return StackHelper.getRegistryNameForStack(ingredient);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getModId(ItemStack ingredient) {
 		ErrorUtil.checkNotEmpty(ingredient);
@@ -93,6 +97,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		return ColorGetter.getColors(ingredient, 2);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getResourceId(ItemStack ingredient) {
 		ErrorUtil.checkNotEmpty(ingredient);
@@ -170,5 +175,10 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public String getErrorInfo(@Nullable ItemStack ingredient) {
 		return ErrorUtil.getItemStackInfo(ingredient);
+	}
+
+	@Override
+	public Optional<ResourceLocation> getTagEquivalent(Collection<ItemStack> ingredients) {
+		return TagUtil.getTagEquivalent(ingredients, ItemStack::getItem, ItemTags.getAllTags());
 	}
 }

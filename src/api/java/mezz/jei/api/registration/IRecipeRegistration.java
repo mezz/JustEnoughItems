@@ -33,7 +33,7 @@ public interface IRecipeRegistration {
 	 *                              New lines can be added with "\n" or by giving multiple descriptions.
 	 *                              Long lines are wrapped automatically.
 	 *                              Very long entries will span multiple pages automatically.
-	 * @since JEI 7.6.4
+	 * @since 7.6.4
 	 */
 	<T> void addIngredientInfo(T ingredient, IIngredientType<T> ingredientType, Component... descriptionComponents);
 
@@ -47,7 +47,7 @@ public interface IRecipeRegistration {
 	 *                              New lines can be added with "\n" or by giving multiple descriptions.
 	 *                              Long lines are wrapped automatically.
 	 *                              Very long entries will span multiple pages automatically.
-	 * @since JEI 7.6.4
+	 * @since 7.6.4
 	 */
 	<T> void addIngredientInfo(List<T> ingredients, IIngredientType<T> ingredientType, Component... descriptionComponents);
 }

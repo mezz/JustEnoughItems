@@ -1,14 +1,16 @@
 package mezz.jei.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+@Deprecated
 public class IngredientsForType<T> {
 	private final IIngredientType<T> ingredientType;
-	private List<List<T>> ingredients;
+	private List<@Nullable List<@Nullable T>> ingredients;
 
-	public IngredientsForType(IIngredientType<T> ingredientType, List<List<T>> ingredients) {
+	public IngredientsForType(IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> ingredients) {
 		this.ingredientType = ingredientType;
 		this.ingredients = ingredients;
 	}
@@ -17,11 +19,11 @@ public class IngredientsForType<T> {
 		return ingredientType;
 	}
 
-	public List<List<T>> getIngredients() {
+	public List<@Nullable List<@Nullable T>> getIngredients() {
 		return ingredients;
 	}
 
-	public void setIngredients(List<List<T>> ingredients) {
+	public void setIngredients(List<@Nullable List<@Nullable T>> ingredients) {
 		this.ingredients = ingredients;
 	}
 }

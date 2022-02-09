@@ -5,11 +5,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.List;
 
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.gui.TooltipRenderer;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -29,7 +29,7 @@ public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 	}
 
 	@Override
-	public void showError(PoseStack poseStack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
+	public void showError(PoseStack poseStack, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
 		TooltipRenderer.drawHoveringText(poseStack, message, mouseX, mouseY);
 	}
 }

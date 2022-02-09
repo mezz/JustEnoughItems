@@ -4,10 +4,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.TypedIngredient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
@@ -26,6 +28,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class BookmarkConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -50,18 +53,18 @@ public class BookmarkConfig {
 		this.jeiConfigurationDir = jeiConfigurationDir;
 	}
 
-	public void saveBookmarks(IIngredientManager ingredientManager, List<?> ingredientList) {
+	public void saveBookmarks(IIngredientManager ingredientManager, List<ITypedIngredient<?>> ingredientList) {
 		File file = getFile(jeiConfigurationDir);
 		if (file == null) {
 			return;
 		}
 
 		List<String> strings = new ArrayList<>();
-		for (Object ingredient : ingredientList) {
-			if (ingredient instanceof ItemStack stack) {
+		for (ITypedIngredient<?> typedIngredient : ingredientList) {
+			if (typedIngredient.getIngredient() instanceof ItemStack stack) {
 				strings.add(MARKER_STACK + stack.save(new CompoundTag()));
 			} else {
-				strings.add(MARKER_OTHER + getUid(ingredientManager, ingredient));
+				strings.add(MARKER_OTHER + getUid(ingredientManager, typedIngredient));
 			}
 		}
 
@@ -109,7 +112,12 @@ public class BookmarkConfig {
 					ItemStack itemStack = ItemStack.of(itemStackAsNbt);
 					if (!itemStack.isEmpty()) {
 						ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);
-						bookmarkList.addToList(normalized, false);
+						Optional<ITypedIngredient<ItemStack>> typedIngredient = TypedIngredient.createTyped(ingredientManager, VanillaTypes.ITEM, normalized);
+						if (typedIngredient.isEmpty()) {
+							LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
+						} else {
+							bookmarkList.addToList(typedIngredient.get(), false);
+						}
 					} else {
 						LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
 					}
@@ -118,11 +126,11 @@ public class BookmarkConfig {
 				}
 			} else if (ingredientJsonString.startsWith(MARKER_OTHER)) {
 				String uid = ingredientJsonString.substring(MARKER_OTHER.length());
-				Object ingredient = getUnknownIngredientByUid(ingredientManager, otherIngredientTypes, uid);
-				if (ingredient != null) {
-					IIngredientHelper<Object> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-					Object normalized = ingredientHelper.normalizeIngredient(ingredient);
-					bookmarkList.addToList(normalized, false);
+				Optional<ITypedIngredient<?>> typedIngredient = getNormalizedIngredientByUid(ingredientManager, otherIngredientTypes, uid);
+				if (typedIngredient.isEmpty()) {
+					LOGGER.error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);
+				} else {
+					bookmarkList.addToList(typedIngredient.get(), false);
 				}
 			} else {
 				LOGGER.error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);
@@ -131,19 +139,25 @@ public class BookmarkConfig {
 		bookmarkList.notifyListenersOfChange();
 	}
 
-	private static <T> String getUid(IIngredientManager ingredientManager, T ingredient) {
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		return ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+	private static <T> String getUid(IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
+		return ingredientHelper.getUniqueId(typedIngredient.getIngredient(), UidContext.Ingredient);
 	}
 
-	@Nullable
-	private static Object getUnknownIngredientByUid(IngredientManager ingredientManager, Collection<IIngredientType<?>> ingredientTypes, String uid) {
-		for (IIngredientType<?> ingredientType : ingredientTypes) {
-			Object ingredient = ingredientManager.getIngredientByUid(ingredientType, uid);
-			if (ingredient != null) {
-				return ingredient;
-			}
-		}
-		return null;
+	private static Optional<ITypedIngredient<?>> getNormalizedIngredientByUid(IngredientManager ingredientManager, Collection<IIngredientType<?>> ingredientTypes, String uid) {
+		return ingredientTypes.stream()
+			.map(t -> getNormalizedIngredientByUid(ingredientManager, t, uid))
+			.flatMap(Optional::stream)
+			.findFirst();
+	}
+
+	private static <T> Optional<ITypedIngredient<?>> getNormalizedIngredientByUid(IngredientManager ingredientManager, IIngredientType<T> ingredientType, String uid) {
+		T ingredient = ingredientManager.getIngredientByUid(ingredientType, uid);
+		return Optional.ofNullable(ingredient)
+			.map(i -> {
+				IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+				return ingredientHelper.normalizeIngredient(i);
+			})
+			.flatMap(i -> TypedIngredient.createTyped(ingredientManager, ingredientType, i));
 	}
 }

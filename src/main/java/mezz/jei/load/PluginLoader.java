@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableTable;
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -25,10 +26,11 @@ import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.IngredientVisibility;
 import mezz.jei.ingredients.ModIngredientRegistration;
-import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.ingredients.SubtypeManager;
 import mezz.jei.load.registration.AdvancedRegistration;
 import mezz.jei.load.registration.GuiHandlerRegistration;
@@ -41,8 +43,8 @@ import mezz.jei.load.registration.VanillaCategoryExtensionRegistration;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
-import mezz.jei.recipes.RecipeManagerInternal;
 import mezz.jei.recipes.RecipeManager;
+import mezz.jei.recipes.RecipeManagerInternal;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
 import mezz.jei.util.ErrorUtil;
@@ -113,12 +115,17 @@ public class PluginLoader {
 		return recipeTransferRegistration.getRecipeTransferHandlers();
 	}
 
-	public IRecipeManager createRecipeManager(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin, RecipeCategorySortingConfig recipeCategorySortingConfig) {
+	public IRecipeManager createRecipeManager(
+		List<IModPlugin> plugins,
+		VanillaPlugin vanillaPlugin,
+		RecipeCategorySortingConfig recipeCategorySortingConfig,
+		IngredientVisibility ingredientVisibility
+	) {
 		ImmutableList<IRecipeCategory<?>> recipeCategories = createRecipeCategories(plugins, vanillaPlugin);
 
-		RecipeCatalystRegistration recipeCatalystRegistration = new RecipeCatalystRegistration();
+		RecipeCatalystRegistration recipeCatalystRegistration = new RecipeCatalystRegistration(ingredientManager);
 		PluginCaller.callOnPlugins("Registering recipe catalysts", plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration));
-		ImmutableListMultimap<ResourceLocation, Object> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
+		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
 
 		AdvancedRegistration advancedRegistration = new AdvancedRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering advanced plugins", plugins, p -> p.registerAdvanced(advancedRegistration));
@@ -130,7 +137,8 @@ public class PluginLoader {
 			recipeCatalysts,
 			ingredientManager,
 			recipeManagerPlugins,
-			recipeCategorySortingConfig
+			recipeCategorySortingConfig,
+			ingredientVisibility
 		);
 		timer.stop();
 
@@ -138,18 +146,36 @@ public class PluginLoader {
 		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, vanillaRecipeFactory, recipeManagerInternal);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
-		return new RecipeManager(recipeManagerInternal, modIdHelper);
+		return new RecipeManager(recipeManagerInternal, modIdHelper, ingredientManager);
 	}
 
-	public IngredientFilter createIngredientFilter(IIngredientSorter ingredientSorter, IWorldConfig worldConfig, IEditModeConfig editModeConfig, IIngredientFilterConfig ingredientFilterConfig) {
+	public IngredientFilter createIngredientFilter(
+		IIngredientSorter ingredientSorter,
+		IngredientVisibility ingredientVisibility,
+		IIngredientFilterConfig ingredientFilterConfig
+	) {
 		timer.start("Building ingredient list");
 		NonNullList<IIngredientListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager);
 		timer.stop();
 		timer.start("Building ingredient filter");
-		IngredientFilter ingredientFilter = new IngredientFilter(blacklist, worldConfig, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager, ingredientSorter, ingredientList, modIdHelper);
+		IngredientFilter ingredientFilter = new IngredientFilter(
+			clientConfig,
+			ingredientFilterConfig,
+			ingredientManager,
+			ingredientSorter,
+			ingredientList,
+			modIdHelper,
+			ingredientVisibility
+		);
 		Internal.setIngredientFilter(ingredientFilter);
 		timer.stop();
 		return ingredientFilter;
+	}
+
+	public IngredientVisibility createIngredientVisibility(IWorldConfig worldConfig, IEditModeConfig editModeConfig) {
+		IngredientVisibility ingredientVisibility = new IngredientVisibility(blacklist, worldConfig, editModeConfig, ingredientManager);
+		Internal.setIngredientVisibility(ingredientVisibility);
+		return ingredientVisibility;
 	}
 
 	public IngredientManager getIngredientManager() {

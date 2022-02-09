@@ -10,7 +10,9 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class StringUtil {
 	private StringUtil() {
@@ -64,5 +66,12 @@ public final class StringUtil {
 			newLineTextAcceptor.addLinesTo(descriptionLinesExpanded);
 		}
 		return descriptionLinesExpanded;
+	}
+
+	public static String intsToString(Collection<Integer> indexes) {
+		return indexes.stream()
+			.sorted()
+			.map(i -> Integer.toString(i))
+			.collect(Collectors.joining(", "));
 	}
 }

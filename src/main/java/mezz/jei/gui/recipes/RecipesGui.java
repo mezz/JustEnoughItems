@@ -7,9 +7,11 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.KeyBindings;
@@ -18,9 +20,10 @@ import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
-import mezz.jei.gui.ingredients.GuiIngredient;
+import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.textures.Textures;
+import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
@@ -92,13 +95,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public RecipesGui(
 		IRecipeManager recipeManager,
 		RecipeTransferManager recipeTransferManager,
+		IIngredientManager ingredientManager,
 		IModIdHelper modIdHelper,
 		IClientConfig clientConfig
 	) {
 		super(new TextComponent("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;
 		this.clientConfig = clientConfig;
-		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, modIdHelper);
+		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, ingredientManager, modIdHelper);
 		this.recipeCatalysts = new RecipeCatalysts();
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
 		this.minecraft = Minecraft.getInstance();
@@ -243,7 +247,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			recipeLayout.drawRecipe(poseStack, mouseX, mouseY);
 		}
 
-		GuiIngredient<?> hoveredRecipeCatalyst = recipeCatalysts.draw(poseStack, mouseX, mouseY);
+		RecipeSlot hoveredRecipeCatalyst = recipeCatalysts.draw(poseStack, mouseX, mouseY);
 
 		recipeGuiTabs.draw(minecraft, poseStack, mouseX, mouseY);
 
@@ -292,12 +296,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	private static Optional<IClickedIngredient<?>> getRecipeLayoutIngredientUnderMouse(RecipeLayout<?> recipeLayout, double mouseX, double mouseY) {
-		return recipeLayout.getGuiIngredientUnderMouse(mouseX, mouseY)
+		return recipeLayout.getRecipeSlotUnderMouse(mouseX, mouseY)
 			.flatMap(clicked ->
-				Optional.ofNullable(clicked.getDisplayedIngredient())
-					.flatMap(displayedIngredient -> {
+				clicked.getDisplayedIngredient()
+					.map(displayedIngredient -> {
 						Rect2i area = absoluteClickedArea(recipeLayout, clicked.getRect());
-						return ClickedIngredient.create(displayedIngredient, area, false, true);
+						return new ClickedIngredient<>(displayedIngredient, area, false, true);
 					})
 			);
 	}
@@ -423,8 +427,16 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public <V> void show(IFocus<V> focus) {
-		Focus<V> checkedFocus = Focus.check(focus);
-		if (logic.setFocus(checkedFocus)) {
+		List<Focus<?>> checkedFocuses = Focus.check(focus);
+		if (logic.setFocus(checkedFocuses)) {
+			open();
+		}
+	}
+
+	@Override
+	public void show(List<IFocus<?>> focuses) {
+		List<Focus<?>> checkedFocuses = Focus.check(focuses);
+		if (logic.setFocus(checkedFocuses)) {
 			open();
 		}
 	}
@@ -443,12 +455,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public <T> T getIngredientUnderMouse(IIngredientType<T> ingredientType) {
 		double x = MouseUtil.getX();
 		double y = MouseUtil.getY();
-		Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
 
 		return getIngredientUnderMouse(x, y)
 			.map(IClickedIngredient::getValue)
-			.filter(ingredientClass::isInstance)
-			.map(ingredientClass::cast)
+			.flatMap(i -> TypedIngredient.optionalCast(i, ingredientType))
+			.map(ITypedIngredient::getIngredient)
 			.orElse(null);
 	}
 
@@ -501,7 +512,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		pageString = logic.getPageString();
 
-		List<Object> recipeCatalysts = logic.getRecipeCatalysts();
+		List<ITypedIngredient<?>> recipeCatalysts = logic.getRecipeCatalysts();
 		this.recipeCatalysts.updateLayout(recipeCatalysts, this);
 		recipeGuiTabs.initLayout(this);
 	}

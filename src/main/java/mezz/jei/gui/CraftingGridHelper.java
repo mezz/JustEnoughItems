@@ -1,9 +1,15 @@
 package mezz.jei.gui;
 
-import java.util.List;
-
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
 	private final int craftInputSlot1;
@@ -12,32 +18,67 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		this.craftInputSlot1 = craftInputSlot1;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <T> void setInputs(IGuiIngredientGroup<T> ingredientGroup, List<List<T>> inputs) {
-		int width, height;
-		if (inputs.size() > 4) {
-			width = height = 3;
-		} else if (inputs.size() > 1) {
-			width = height = 2;
-		} else {
-			width = height = 1;
-		}
-
+		int width;
+		int height;
+		width = height = getShapelessSize(inputs.size());
 		setInputs(ingredientGroup, inputs, width, height);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <T> void setInputs(IGuiIngredientGroup<T> ingredientGroup, List<List<T>> inputs, int width, int height) {
 		for (int i = 0; i < inputs.size(); i++) {
 			List<T> recipeItem = inputs.get(i);
 			int index = getCraftingIndex(i, width, height);
-
-			setInput(ingredientGroup, index, recipeItem);
+			ingredientGroup.set(craftInputSlot1 + index, recipeItem);
 		}
 	}
 
-	private <T> void setInput(IGuiIngredientGroup<T> guiIngredients, int inputIndex, List<T> input) {
-		guiIngredients.set(craftInputSlot1 + inputIndex, input);
+	@Override
+	public <T> void setInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height) {
+		if (width <= 0 || height <= 0) {
+			builder.setShapeless();
+			width = height = getShapelessSize(inputs.size());
+		}
+		List<IRecipeSlotBuilder> inputSlots = new ArrayList<>();
+		for (int y = 0; y < 3; ++y) {
+			for (int x = 0; x < 3; ++x) {
+				IRecipeSlotBuilder slot = builder.addSlot(RecipeIngredientRole.INPUT, x * 18 + 1, y * 18 + 1);
+				inputSlots.add(slot);
+			}
+		}
+
+		for (int i = 0; i < inputs.size(); i++) {
+			int index = getCraftingIndex(i, width, height);
+			IRecipeSlotBuilder slot = inputSlots.get(index);
+
+			@Nullable List<@Nullable T> ingredients = inputs.get(i);
+			if (ingredients != null) {
+				slot.addIngredients(ingredientType, ingredients);
+			}
+		}
+	}
+
+	@Override
+	public <T> void setOutputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, @Nullable List<@Nullable T> outputs) {
+		if (outputs == null) {
+			return;
+		}
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 95, 19)
+			.addIngredients(ingredientType, outputs);
+	}
+
+	private static int getShapelessSize(int total) {
+		if (total > 4) {
+			return 3;
+		} else if (total > 1) {
+			return 2;
+		} else {
+			return 1;
+		}
 	}
 
 	private static int getCraftingIndex(int i, int width, int height) {

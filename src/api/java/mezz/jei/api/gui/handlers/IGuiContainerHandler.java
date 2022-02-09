@@ -49,7 +49,7 @@ public interface IGuiContainerHandler<T extends AbstractContainerScreen<?>> {
 	 * Optionally, you can restrict what you return here based on the current mouse position.
 	 * @param guiMouseX the current X position of the mouse in gui-relative coordinates.
 	 * @param guiMouseY the current Y position of the mouse in gui-relative coordinates.
-	 * @since JEI version 6.0.1
+	 * @since 6.0.1
 	 */
 	default Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen, double guiMouseX, double guiMouseY) {
 		return Collections.emptyList();

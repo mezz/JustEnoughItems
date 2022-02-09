@@ -1,110 +1,83 @@
 package mezz.jei.recipes;
 
-import com.google.common.collect.ImmutableList;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.collect.ListMultiMap;
-import mezz.jei.collect.Table;
-import mezz.jei.ingredients.IngredientInformationUtil;
-import mezz.jei.ingredients.IngredientsForType;
+import mezz.jei.collect.SetMultiMap;
+import mezz.jei.ingredients.IIngredientSupplier;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * A RecipeMap efficiently links recipes, IRecipeCategory, and Ingredients.
  */
 public class RecipeMap {
-	private final Table<IRecipeCategory<?>, String, List<Object>> recipeTable = Table.hashBasedTable();
-	private final ListMultiMap<String, ResourceLocation> categoryUidMap = new ListMultiMap<>();
+	private final RecipeIngredientTable recipeTable = new RecipeIngredientTable();
+	private final SetMultiMap<String, ResourceLocation> ingredientUidToCategoryMap = new SetMultiMap<>();
+	private final SetMultiMap<String, ResourceLocation> categoryCatalystUidToRecipeCategoryMap = new SetMultiMap<>();
 	private final Comparator<ResourceLocation> recipeCategoryUidComparator;
 	private final IIngredientManager ingredientManager;
+	private final RecipeIngredientRole role;
 
-	public RecipeMap(Comparator<ResourceLocation> recipeCategoryUidComparator, IIngredientManager ingredientManager) {
+	public RecipeMap(Comparator<ResourceLocation> recipeCategoryUidComparator, IIngredientManager ingredientManager, RecipeIngredientRole role) {
 		this.recipeCategoryUidComparator = recipeCategoryUidComparator;
 		this.ingredientManager = ingredientManager;
+		this.role = role;
 	}
 
-	public <V> ImmutableList<ResourceLocation> getRecipeCategories(V ingredient) {
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-
-		Set<ResourceLocation> recipeCategories = new HashSet<>();
-
-		for (String key : IngredientInformationUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Recipe)) {
-			recipeCategories.addAll(categoryUidMap.get(key));
-		}
-
-		return ImmutableList.sortedCopyOf(recipeCategoryUidComparator, recipeCategories);
+	public List<ResourceLocation> getRecipeCategories(String ingredientUid) {
+		Collection<ResourceLocation> recipeCategoryUids = ingredientUidToCategoryMap.get(ingredientUid);
+		Collection<ResourceLocation> catalystRecipeCategoryUids = categoryCatalystUidToRecipeCategoryMap.get(ingredientUid);
+		return Stream.concat(recipeCategoryUids.stream(), catalystRecipeCategoryUids.stream())
+			.sorted(recipeCategoryUidComparator)
+			.toList();
 	}
 
-	public <V> void addRecipeCategory(IRecipeCategory<?> recipeCategory, V ingredient, IIngredientHelper<V> ingredientHelper) {
-		String key = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
-		List<ResourceLocation> recipeCategories = categoryUidMap.get(key);
+	public void addCatalystForCategory(IRecipeCategory<?> recipeCategory, String ingredientUid) {
 		ResourceLocation recipeCategoryUid = recipeCategory.getUid();
-		if (!recipeCategories.contains(recipeCategoryUid)) {
-			recipeCategories.add(recipeCategoryUid);
-		}
+		categoryCatalystUidToRecipeCategoryMap.put(ingredientUid, recipeCategoryUid);
 	}
 
-	public <T, V> ImmutableList<T> getRecipes(IRecipeCategory<T> recipeCategory, V ingredient) {
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-
-		Map<String, List<Object>> recipesForType = recipeTable.getRow(recipeCategory);
-
-		ImmutableList.Builder<T> listBuilder = ImmutableList.builder();
-		for (String key : IngredientInformationUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Recipe)) {
-			@SuppressWarnings("unchecked")
-			List<T> recipes = (List<T>) recipesForType.get(key);
-			if (recipes != null) {
-				listBuilder.addAll(recipes);
-			}
-		}
-		return listBuilder.build();
+	@UnmodifiableView
+	public <T> List<T> getRecipes(IRecipeCategory<T> recipeCategory, String ingredientUid) {
+		return recipeTable.get(recipeCategory, ingredientUid);
 	}
 
-	public <T> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, List<IngredientsForType<?>> ingredientsByType) {
-		for (IngredientsForType<?> ingredientsForType : ingredientsByType) {
-			addRecipe(recipe, recipeCategory, ingredientsForType);
-		}
+	public <T> boolean isCatalystForRecipeCategory(IRecipeCategory<T> recipeCategory, String ingredientUid) {
+		Collection<ResourceLocation> catalystCategories = categoryCatalystUidToRecipeCategoryMap.get(ingredientUid);
+		return catalystCategories.contains(recipeCategory.getUid());
 	}
 
-	private <T, V> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, IngredientsForType<V> ingredientsForType) {
-		IIngredientType<V> ingredientType = ingredientsForType.getIngredientType();
+	public <T> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientSupplier ingredientSupplier) {
+		ingredientSupplier.getIngredientTypes(this.role)
+			.forEach(ingredientType ->
+				addRecipe(recipe, recipeCategory, ingredientSupplier, ingredientType)
+			);
+	}
+
+	private <T, V> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientSupplier ingredientSupplier, IIngredientType<V> ingredientType) {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
-		Map<String, List<Object>> recipesForType = recipeTable.getRow(recipeCategory);
+		List<String> ingredientUids = ingredientSupplier.getIngredientStream(ingredientType, this.role)
+			.filter(ingredientHelper::isValidIngredient)
+			.map(i -> ingredientHelper.getUniqueId(i, UidContext.Recipe))
+			.distinct()
+			.toList();
 
-		Set<String> uniqueIds = new HashSet<>();
-
-		List<List<V>> ingredients = ingredientsForType.getIngredients();
-		for (List<V> slot : ingredients) {
-			for (V ingredient : slot) {
-				if (ingredient == null) {
-					continue;
-				}
-
-				String key = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
-				if (uniqueIds.contains(key)) {
-					continue;
-				} else {
-					uniqueIds.add(key);
-				}
-
-				@SuppressWarnings("unchecked")
-				List<T> recipes = (List<T>) recipesForType.computeIfAbsent(key, k -> new ArrayList<>());
-
-				recipes.add(recipe);
-
-				addRecipeCategory(recipeCategory, ingredient, ingredientHelper);
+		if (!ingredientUids.isEmpty()) {
+			ResourceLocation recipeCategoryUid = recipeCategory.getUid();
+			for (String uid : ingredientUids) {
+				ingredientUidToCategoryMap.put(uid, recipeCategoryUid);
 			}
+			recipeTable.add(recipe, recipeCategory, ingredientUids);
 		}
 	}
 }

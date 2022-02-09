@@ -1,103 +1,83 @@
 package mezz.jei.recipes;
 
-import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.resources.ResourceLocation;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMultimap;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.Focus;
-import mezz.jei.ingredients.IngredientInformationUtil;
 
 public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
-	private final ImmutableMultimap<String, ResourceLocation> categoriesForRecipeCatalystKeys;
 	private final IIngredientManager ingredientManager;
 	private final RecipeCategoryDataMap recipeCategoriesMap;
-	private final RecipeMap recipeInputMap;
-	private final RecipeMap recipeOutputMap;
-	private final Supplier<Stream<IRecipeCategory<?>>> visibleRecipeCategoriesSupplier;
+	private final EnumMap<RecipeIngredientRole, RecipeMap> recipeMaps;
 
 	public InternalRecipeManagerPlugin(
-		ImmutableMultimap<String, ResourceLocation> categoriesForRecipeCatalystKeys,
 		IIngredientManager ingredientManager,
 		RecipeCategoryDataMap recipeCategoriesMap,
-		RecipeMap recipeInputMap,
-		RecipeMap recipeOutputMap,
-		Supplier<Stream<IRecipeCategory<?>>> visibleRecipeCategoriesSupplier
+		EnumMap<RecipeIngredientRole, RecipeMap> recipeMaps
 	) {
-		this.categoriesForRecipeCatalystKeys = categoriesForRecipeCatalystKeys;
 		this.ingredientManager = ingredientManager;
 		this.recipeCategoriesMap = recipeCategoriesMap;
-		this.recipeInputMap = recipeInputMap;
-		this.recipeOutputMap = recipeOutputMap;
-		this.visibleRecipeCategoriesSupplier = visibleRecipeCategoriesSupplier;
+		this.recipeMaps = recipeMaps;
 	}
 
 	@Override
-	public <V> ImmutableList<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus) {
-		focus = Focus.check(focus);
-		V ingredient = focus.getValue();
+	public <V> List<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus) {
+		focus = Focus.checkOne(focus);
+		ITypedIngredient<V> ingredient = focus.getTypedValue();
+		RecipeIngredientRole role = focus.getRole();
+		RecipeMap recipeMap = this.recipeMaps.get(role);
+		IIngredientHelper<V> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredient.getType());
+		String ingredientUid = ingredientHelper.getUniqueId(ingredient.getIngredient(), UidContext.Recipe);
 
-		return switch (focus.getMode()) {
-			case INPUT -> recipeInputMap.getRecipeCategories(ingredient);
-			case OUTPUT -> recipeOutputMap.getRecipeCategories(ingredient);
-		};
-	}
-
-	private ImmutableList<ResourceLocation> getRecipeCategories() {
-		return visibleRecipeCategoriesSupplier.get()
-			.map(IRecipeCategory::getUid)
-			.collect(ImmutableList.toImmutableList());
-	}
-
-	@Override
-	public <T, V> ImmutableList<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
-		focus = Focus.check(focus);
-		V ingredient = focus.getValue();
-
-		if (focus.getMode() == IFocus.Mode.INPUT) {
-			return getInputRecipes(recipeCategory, ingredient);
-		} else {
-			return recipeOutputMap.getRecipes(recipeCategory, ingredient);
+		List<ResourceLocation> recipeCategories = recipeMap.getRecipeCategories(ingredientUid);
+		if (focus.getRole() == RecipeIngredientRole.INPUT) {
+			List<ResourceLocation> catalystRecipeCategories = this.recipeMaps.get(RecipeIngredientRole.CATALYST)
+				.getRecipeCategories(ingredientUid);
+			return Stream.concat(
+					recipeCategories.stream(),
+					catalystRecipeCategories.stream()
+				)
+				.distinct()
+				.toList();
 		}
+
+		return recipeCategories;
 	}
 
-	private <T, V> ImmutableList<T> getInputRecipes(IRecipeCategory<T> recipeCategory, V ingredient) {
-		final ImmutableList<T> recipes = recipeInputMap.getRecipes(recipeCategory, ingredient);
+	@Override
+	public <T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
+		focus = Focus.checkOne(focus);
+		ITypedIngredient<V> ingredient = focus.getTypedValue();
+		RecipeIngredientRole role = focus.getRole();
 
-		if (isCatalystIngredient(recipeCategory, ingredient)) {
-			RecipeCategoryData<T> categoryData = recipeCategoriesMap.get(recipeCategory);
-			List<T> recipesForCategory = categoryData.getRecipes();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient.getType());
+		String ingredientUid = ingredientHelper.getUniqueId(ingredient.getIngredient(), UidContext.Recipe);
+
+		RecipeMap recipeMap = this.recipeMaps.get(role);
+		List<T> recipes = recipeMap.getRecipes(recipeCategory, ingredientUid);
+		if (recipeMap.isCatalystForRecipeCategory(recipeCategory, ingredientUid)) {
+			List<T> recipesForCategory = getRecipes(recipeCategory);
 			return Stream.concat(recipes.stream(), recipesForCategory.stream())
 				.distinct()
-				.collect(ImmutableList.toImmutableList());
+				.toList();
 		}
-
 		return recipes;
-	}
-
-	private <T, V> boolean isCatalystIngredient(IRecipeCategory<T> recipeCategory, V ingredient) {
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		ResourceLocation recipeCategoryUid = recipeCategory.getUid();
-		List<String> ingredientUids = IngredientInformationUtil.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Recipe);
-		return ingredientUids.stream()
-			.map(categoriesForRecipeCatalystKeys::get)
-			.anyMatch(catalystCategories -> catalystCategories.contains(recipeCategoryUid));
 	}
 
 	@Override
 	public <T> List<T> getRecipes(IRecipeCategory<T> recipeCategory) {
 		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesMap.get(recipeCategory);
-		List<T> recipes = recipeCategoryData.getRecipes();
-		return Collections.unmodifiableList(recipes);
+		return recipeCategoryData.getRecipes();
 	}
 }

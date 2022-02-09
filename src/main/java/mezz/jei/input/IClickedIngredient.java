@@ -2,12 +2,13 @@ package mezz.jei.input;
 
 import org.jetbrains.annotations.Nullable;
 
+import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
 
 public interface IClickedIngredient<V> {
 
-	V getValue();
+	ITypedIngredient<V> getValue();
 
 	@Nullable
 	Rect2i getArea();

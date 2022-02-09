@@ -8,7 +8,6 @@ import mezz.jei.ingredients.PrefixedSearchable;
 import mezz.jei.search.suffixtree.GeneralizedSuffixTree;
 import net.minecraft.core.NonNullList;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -38,11 +37,10 @@ public class ElementSearch implements IElementSearch {
 		this.backgroundBuilder.start();
 	}
 
-	@Nullable
 	@Override
 	public IntSet getSearchResults(String token, PrefixInfo prefixInfo) {
 		if (token.isEmpty()) {
-			return null;
+			return IntSet.of();
 		}
 		final ISearchable searchable = this.prefixedSearchables.get(prefixInfo);
 		if (searchable != null && searchable.getMode() != SearchMode.DISABLED) {

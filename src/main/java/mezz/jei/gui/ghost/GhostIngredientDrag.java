@@ -114,7 +114,12 @@ public class GhostIngredientDrag<T> {
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		itemRenderer.blitOffset += 150.0F;
-		ingredientRenderer.render(poseStack, mouseX - 8, mouseY - 8, ingredient);
+		poseStack.pushPose();
+		{
+			poseStack.translate(mouseX - 8, mouseY - 8, 0);
+			ingredientRenderer.render(poseStack, ingredient);
+		}
+		poseStack.popPose();
 		itemRenderer.blitOffset -= 150.0F;
 	}
 

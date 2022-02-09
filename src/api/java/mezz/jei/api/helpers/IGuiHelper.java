@@ -1,14 +1,13 @@
 package mezz.jei.api.helpers;
 
-import mezz.jei.api.ingredients.IIngredientType;
-import net.minecraft.resources.ResourceLocation;
-
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.ingredients.IIngredientType;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Helps with the implementation of GUIs.
@@ -51,7 +50,7 @@ public interface IGuiHelper {
 
 	/**
 	 * Returns a 16x16 drawable for the given ingredient, matching the one JEI draws in the ingredient list.
-	 * @since JEI 9.1.1
+	 * @since 9.1.1
 	 */
 	<V> IDrawable createDrawableIngredient(IIngredientType<V> type, V ingredient);
 
@@ -72,8 +71,8 @@ public interface IGuiHelper {
 
 	/**
 	 * Returns a 16x16 drawable for the given ingredient, matching the one JEI draws in the ingredient list.
-	 * @deprecated since JEI 9.1.1. Use {@link #createDrawableIngredient(IIngredientType, Object)}
+	 * @deprecated Use {@link #createDrawableIngredient(IIngredientType, Object)}
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "9.1.1")
 	<V> IDrawable createDrawableIngredient(V ingredient);
 }

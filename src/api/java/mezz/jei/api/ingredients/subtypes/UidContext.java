@@ -11,7 +11,7 @@ import mezz.jei.api.registration.IRecipeTransferRegistration;
  * Subtype interpreters can use this context to return different subtypes for recipes and ingredients.
  * When implementing this, {@link #Ingredient} subtypes should be more specific than {@link #Recipe} subtypes.
  *
- * @since JEI 7.3.0
+ * @since 7.3.0
  */
 public enum UidContext {
 	/**

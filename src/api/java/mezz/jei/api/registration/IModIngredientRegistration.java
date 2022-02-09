@@ -22,7 +22,7 @@ public interface IModIngredientRegistration {
 	/**
 	 * Gets an {@link IColorHelper} to help in implementing {@link IIngredientHelper#getColors(Object)} for {@link IIngredientHelper}s that are being registered.
 	 *
-	 * @since JEI 7.6.3
+	 * @since 7.6.3
 	 */
 	IColorHelper getColorHelper();
 

@@ -44,11 +44,13 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 		return "JEI_debug_" + ingredient.getNumber();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getModId(DebugIngredient ingredient) {
 		return ModIds.JEI_ID;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getResourceId(DebugIngredient ingredient) {
 		return "debug_" + ingredient.getNumber();

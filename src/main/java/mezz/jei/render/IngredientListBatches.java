@@ -3,7 +3,7 @@ package mezz.jei.render;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.collect.ListMultiMap;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 
 public class IngredientListBatches {
@@ -18,8 +18,8 @@ public class IngredientListBatches {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> List<IngredientListElementRenderer<T>> get(IIngredientType<T> ingredientType) {
-		return (List<IngredientListElementRenderer<T>>) (Object) map.get(ingredientType);
+	public <T> Collection<IngredientListElementRenderer<T>> get(IIngredientType<T> ingredientType) {
+		return (Collection<IngredientListElementRenderer<T>>) (Object) map.get(ingredientType);
 	}
 
 	public void clear() {

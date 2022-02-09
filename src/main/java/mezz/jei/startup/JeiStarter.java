@@ -29,6 +29,7 @@ import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientFilterApi;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.IngredientVisibility;
 import mezz.jei.input.CombinedRecipeFocusSource;
 import mezz.jei.input.GuiContainerWrapper;
 import mezz.jei.input.InputEventHandler;
@@ -80,16 +81,17 @@ public class JeiStarter {
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
 		PluginLoader pluginLoader = new PluginLoader(plugins, textures, clientConfig, modIdHelper, debugMode);
 		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
-		IngredientFilter ingredientFilter = pluginLoader.createIngredientFilter(ingredientSorter, worldConfig, editModeConfig, ingredientFilterConfig);
+		IngredientVisibility ingredientVisibility = pluginLoader.createIngredientVisibility(worldConfig, editModeConfig);
+		IngredientFilter ingredientFilter = pluginLoader.createIngredientFilter(ingredientSorter, ingredientVisibility, ingredientFilterConfig);
 		BookmarkList bookmarkList = pluginLoader.createBookmarkList(bookmarkConfig);
-		IRecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, vanillaPlugin, recipeCategorySortingConfig);
+		IRecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, vanillaPlugin, recipeCategorySortingConfig, ingredientVisibility);
 		ImmutableTable<Class<?>, ResourceLocation, IRecipeTransferHandler<?, ?>> recipeTransferHandlers = pluginLoader.createRecipeTransferHandlers(plugins);
 		RecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
 		GuiScreenHelper guiScreenHelper = pluginLoader.createGuiScreenHelper(plugins);
-		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, modIdHelper, clientConfig);
+		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, ingredientManager, modIdHelper, clientConfig);
 
 		IngredientGrid ingredientListGrid = new IngredientGrid(ingredientManager, GridAlignment.LEFT, editModeConfig, ingredientFilterConfig, clientConfig, worldConfig, guiScreenHelper, recipesGui, modIdHelper);
 
@@ -103,7 +105,7 @@ public class JeiStarter {
 
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, worldConfig);
 
-		JeiRuntime jeiRuntime = new JeiRuntime(recipeManager, ingredientListOverlay, bookmarkOverlay, recipesGui, ingredientFilterApi, ingredientManager);
+		JeiRuntime jeiRuntime = new JeiRuntime(recipeManager, ingredientListOverlay, bookmarkOverlay, recipesGui, ingredientFilterApi, ingredientManager, ingredientVisibility);
 		Internal.setRuntime(jeiRuntime);
 		timer.stop();
 
@@ -118,7 +120,7 @@ public class JeiStarter {
 			recipesGui,
 			ingredientListOverlay,
 			leftAreaDispatcher,
-			new GuiContainerWrapper(guiScreenHelper)
+			new GuiContainerWrapper(ingredientManager, guiScreenHelper)
 		);
 
 		List<ICharTypedHandler> charTypedHandlers = List.of(
@@ -132,7 +134,7 @@ public class JeiStarter {
 			new FocusInputHandler(recipeFocusSource, recipesGui),
 			new BookmarkInputHandler(recipeFocusSource, bookmarkList),
 			new GlobalInputHandler(worldConfig),
-			new GuiAreaInputHandler(guiScreenHelper, recipesGui)
+			new GuiAreaInputHandler(ingredientManager, guiScreenHelper, recipesGui)
 		);
 		InputEventHandler inputEventHandler = new InputEventHandler(charTypedHandlers, userInputHandler);
 		Internal.setInputEventHandler(inputEventHandler);

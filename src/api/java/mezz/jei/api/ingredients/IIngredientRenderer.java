@@ -15,18 +15,23 @@ import net.minecraft.network.chat.Component;
 /**
  * Renders a type of ingredient in JEI's item list and recipes.
  *
- * If you have a new type of ingredient to add to JEI, you will have to implement this in order to use
+ * If you have a new type of ingredient to add to JEI,
+ * you will have to implement this to create a default renderer for
  * {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
  */
 public interface IIngredientRenderer<T> {
 	/**
 	 * Renders an ingredient at a specific location.
 	 *
-	 * @param xPosition  The x position to render the ingredient.
-	 * @param yPosition  The y position to render the ingredient.
-	 * @param ingredient the ingredient to render. May be null, some renderers (like fluid tanks) will render a
+	 * @param stack  The current {@link PoseStack} for rendering the ingredient.
+	 * @param ingredient the ingredient to render.
+	 *
+	 * @since 9.3.0
 	 */
-	void render(PoseStack stack, int xPosition, int yPosition, @Nullable T ingredient);
+	default void render(PoseStack stack, T ingredient) {
+		// if not implemented, this calls the old render function for backward compatibility
+		render(stack, 0, 0, ingredient);
+	}
 
 	/**
 	 * Get the tooltip text for this ingredient. JEI renders the tooltip based on this.
@@ -46,5 +51,38 @@ public interface IIngredientRenderer<T> {
 	 */
 	default Font getFontRenderer(Minecraft minecraft, T ingredient) {
 		return minecraft.font;
+	}
+
+	/**
+	 * Get the width of the ingredient drawn on screen by this renderer.
+	 *
+	 * @since 9.3.0
+	 */
+	default int getWidth() {
+		return 16;
+	}
+
+	/**
+	 * Get the height of the ingredient drawn on screen by this renderer.
+	 *
+	 * @since 9.3.0
+	 */
+	default int getHeight() {
+		return 16;
+	}
+
+	/**
+	 * Renders an ingredient at a specific location.
+	 *
+	 * @param xPosition  The x position to render the ingredient.
+	 * @param yPosition  The y position to render the ingredient.
+	 * @param ingredient the ingredient to render.
+	 *                   May be null, some renderers (like fluid tanks) will render an empty background.
+	 *
+	 * @deprecated Use {@link #render(PoseStack, Object)} instead.
+	 */
+	@Deprecated(forRemoval = true, since = "9.3.0")
+	default void render(PoseStack stack, int xPosition, int yPosition, @Nullable T ingredient) {
+
 	}
 }

@@ -1,9 +1,10 @@
 package mezz.jei.gui.ingredients;
 
-import org.jetbrains.annotations.Nullable;
-import java.util.List;
-
+import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.gui.screens.Screen;
+
+import java.util.List;
+import java.util.Optional;
 
 public class CycleTimer {
 	/* the amount of time in ms to display one thing before cycling to the next one */
@@ -18,10 +19,9 @@ public class CycleTimer {
 		this.drawTime = time;
 	}
 
-	@Nullable
-	public <T> T getCycledItem(List<T> list) {
+	public Optional<ITypedIngredient<?>> getCycledItem(List<Optional<ITypedIngredient<?>>> list) {
 		if (list.isEmpty()) {
-			return null;
+			return Optional.empty();
 		}
 		long index = ((drawTime - startTime) / cycleTime) % list.size();
 		return list.get(Math.toIntExact(index));

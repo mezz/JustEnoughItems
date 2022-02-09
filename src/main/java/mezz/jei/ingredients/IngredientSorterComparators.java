@@ -3,6 +3,7 @@ package mezz.jei.ingredients;
 import com.google.common.collect.Multimap;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
@@ -94,8 +95,7 @@ public class IngredientSorterComparators {
 	private Comparator<IIngredientListElementInfo<?>> getIngredientTypeComparator() {
 		Collection<IIngredientType<?>> ingredientTypes = this.ingredientManager.getRegisteredIngredientTypes();
 		Set<String> ingredientTypeStrings = ingredientTypes.stream()
-			.map(IIngredientType::getIngredientClass)
-			.map(IngredientTypeSortingConfig::getIngredientType)
+			.map(IngredientTypeSortingConfig::getIngredientTypeString)
 			.collect(Collectors.toSet());
 		return this.ingredientTypeSortingConfig.getComparatorFromMappedValues(ingredientTypeStrings);
 	}
@@ -313,8 +313,8 @@ public class IngredientSorterComparators {
 	}
 
 	public static <V> ItemStack getItemStack(IIngredientListElementInfo<V> ingredientInfo) {
-		V ingredient = ingredientInfo.getIngredient();
-		if (ingredient instanceof ItemStack itemStack) {
+		ITypedIngredient<V> ingredient = ingredientInfo.getTypedIngredient();
+		if (ingredient.getIngredient() instanceof ItemStack itemStack) {
 			return itemStack;
 		}
 		return ItemStack.EMPTY;

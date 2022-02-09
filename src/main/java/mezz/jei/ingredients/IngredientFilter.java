@@ -2,18 +2,16 @@ package mezz.jei.ingredients;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IClientConfig;
-import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
-import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.SearchMode;
 import mezz.jei.events.EditModeToggleEvent;
 import mezz.jei.events.EventBusHelper;
@@ -28,6 +26,7 @@ import mezz.jei.util.LoggedTimer;
 import mezz.jei.util.Translator;
 import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.Unmodifiable;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
@@ -37,21 +36,19 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class IngredientFilter implements IIngredientGridSource {
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
-	private final IngredientBlacklistInternal blacklist;
-	private final IWorldConfig worldConfig;
-	private final IEditModeConfig editModeConfig;
 	private final IIngredientManager ingredientManager;
 	private final IIngredientSorter sorter;
+	private final IngredientVisibility ingredientVisibility;
 	private final boolean debugMode;
 
 	private final IElementSearch elementSearch;
@@ -60,24 +57,21 @@ public class IngredientFilter implements IIngredientGridSource {
 
 	@Nullable
 	private String filterCached;
-	private List<?> ingredientListCached = Collections.emptyList();
+	private List<ITypedIngredient<?>> ingredientListCached = Collections.emptyList();
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
 	public IngredientFilter(
-		IngredientBlacklistInternal blacklist,
-		IWorldConfig worldConfig,
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
-		IEditModeConfig editModeConfig,
 		IIngredientManager ingredientManager,
 		IIngredientSorter sorter,
 		NonNullList<IIngredientListElement<?>> ingredients,
-		IModIdHelper modIdHelper) {
-		this.blacklist = blacklist;
-		this.worldConfig = worldConfig;
-		this.editModeConfig = editModeConfig;
+		IModIdHelper modIdHelper,
+		IngredientVisibility ingredientVisibility
+	) {
 		this.ingredientManager = ingredientManager;
 		this.sorter = sorter;
+		this.ingredientVisibility = ingredientVisibility;
 
 		if (clientConfig.isLowMemorySlowSearchEnabled()) {
 			this.elementSearch = new ElementSearchLowMem();
@@ -97,13 +91,17 @@ public class IngredientFilter implements IIngredientGridSource {
 			this.elementSearch.registerPrefix(prefixInfo);
 		}
 
-		EventBusHelper.registerWeakListener(this, EditModeToggleEvent.class, (ingredientFilter, editModeToggleEvent) -> {
-			ingredientFilter.updateHidden();
-		});
+		EventBusHelper.registerWeakListener(
+			this,
+			EditModeToggleEvent.class,
+			(ingredientFilter, editModeToggleEvent) -> ingredientFilter.updateHidden()
+		);
 
-		EventBusHelper.registerWeakListener(this, PlayerJoinedWorldEvent.class, (ingredientFilter, playerJoinedWorldEvent) -> {
-			ingredientFilter.updateHidden();
-		});
+		EventBusHelper.registerWeakListener(
+			this,
+			PlayerJoinedWorldEvent.class,
+			(ingredientFilter, playerJoinedWorldEvent) -> ingredientFilter.updateHidden()
+		);
 
 		ingredients.stream()
 			.map(i -> IngredientListElementInfo.create(i, ingredientManager, modIdHelper))
@@ -128,32 +126,23 @@ public class IngredientFilter implements IIngredientGridSource {
 		sorter.invalidateCache();
 	}
 
-	public <V> List<IIngredientListElementInfo<V>> findMatchingElements(IIngredientHelper<V> ingredientHelper, V ingredient) {
-		final String ingredientUid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-		final String displayName = ingredientHelper.getDisplayName(ingredient);
-		@SuppressWarnings("unchecked") final Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
+	public <V> Optional<IIngredientListElementInfo<V>> searchForMatchingElement(
+		IIngredientHelper<V> ingredientHelper,
+		ITypedIngredient<V> typedIngredient
+	) {
+		V ingredient = typedIngredient.getIngredient();
+		IIngredientType<V> type = typedIngredient.getType();
+		Function<ITypedIngredient<V>, String> uidFunction = (i) -> ingredientHelper.getUniqueId(i.getIngredient(), UidContext.Ingredient);
+		String ingredientUid = uidFunction.apply(typedIngredient);
+		String displayName = ingredientHelper.getDisplayName(ingredient);
+		String lowercaseDisplayName = Translator.toLowercaseWithLocale(displayName);
 
-		final List<IIngredientListElementInfo<V>> matchingElements = new ArrayList<>();
-		final IntSet matchingIndexes = this.elementSearch.getSearchResults(Translator.toLowercaseWithLocale(displayName), PrefixInfo.NO_PREFIX);
-		if (matchingIndexes == null) {
-			return matchingElements;
-		}
-		final IntIterator iterator = matchingIndexes.iterator();
-		while (iterator.hasNext()) {
-			int index = iterator.nextInt();
-			IIngredientListElementInfo<?> matchingElementInfo = this.elementSearch.get(index);
-			Object matchingIngredient = matchingElementInfo.getIngredient();
-			if (ingredientClass.isInstance(matchingIngredient)) {
-				V castMatchingIngredient = ingredientClass.cast(matchingIngredient);
-				String matchingUid = ingredientHelper.getUniqueId(castMatchingIngredient, UidContext.Ingredient);
-				if (ingredientUid.equals(matchingUid)) {
-					@SuppressWarnings("unchecked")
-					IIngredientListElementInfo<V> matchingElementInfoCast = (IIngredientListElementInfo<V>) matchingElementInfo;
-					matchingElements.add(matchingElementInfoCast);
-				}
-			}
-		}
-		return matchingElements;
+		IntSet matchingIndexes = this.elementSearch.getSearchResults(lowercaseDisplayName, PrefixInfo.NO_PREFIX);
+		return matchingIndexes.intStream()
+			.mapToObj(this.elementSearch::get)
+			.map(elementInfo -> checkForMatch(elementInfo, type, ingredientUid, uidFunction))
+			.flatMap(Optional::stream)
+			.findFirst();
 	}
 
 	public void modesChanged() {
@@ -174,8 +163,8 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	public <V> boolean updateHiddenState(IIngredientListElement<V> element) {
-		V ingredient = element.getIngredient();
-		boolean visible = isIngredientVisible(ingredient);
+		ITypedIngredient<V> typedIngredient = element.getTypedIngredient();
+		boolean visible = this.ingredientVisibility.isIngredientVisible(typedIngredient);
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			return true;
@@ -183,23 +172,8 @@ public class IngredientFilter implements IIngredientGridSource {
 		return false;
 	}
 
-	public <V> boolean isIngredientVisible(V ingredient) {
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		return isIngredientVisible(ingredient, ingredientHelper);
-	}
-
-	public <V> boolean isIngredientVisible(V ingredient, IIngredientHelper<V> ingredientHelper) {
-		if (blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper)) {
-			return false;
-		}
-		if (!ingredientHelper.isIngredientOnServer(ingredient)) {
-			return false;
-		}
-		return worldConfig.isEditModeEnabled() || !editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
-	}
-
 	@Override
-	public List<?> getIngredientList(String filterText) {
+	public List<ITypedIngredient<?>> getIngredientList(String filterText) {
 		filterText = filterText.toLowerCase();
 		if (!filterText.equals(filterCached)) {
 			//First step is to get the filtered unsorted list.
@@ -211,8 +185,8 @@ public class IngredientFilter implements IIngredientGridSource {
 			//Then we sort it.
 			ingredientListCached = ingredientList.stream()
 				.sorted(sorter.getComparator(this, this.ingredientManager))
-				.map(IIngredientListElementInfo::getIngredient)
-				.collect(Collectors.toList());
+				.<ITypedIngredient<?>>map(IIngredientListElementInfo::getTypedIngredient)
+				.toList();
 			if (debugMode) {
 				filterTimer.stop();
 				LogManager.getLogger().info("Filter has " + ingredientListCached.size() + " of " + ingredientList.size());
@@ -223,6 +197,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	//This is used to allow the sorting function to set all item's indexes, precomputing the master sort order.
+	@Unmodifiable
 	public List<IIngredientListElementInfo<?>> getIngredientListPreSort(Comparator<IIngredientListElementInfo<?>> directComparator) {
 		//First step is to get the full list.
 		List<IIngredientListElementInfo<?>> ingredientList = elementSearch.getAllIngredients();
@@ -233,7 +208,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		//Then we sort it.
 		List<IIngredientListElementInfo<?>> fullSortedList = ingredientList.stream()
 			.sorted(directComparator)
-			.collect(Collectors.toList());
+			.toList();
 		if (debugMode) {
 			filterTimer.stop();
 			LogManager.getLogger().info("Sort has " + ingredientList.size());
@@ -246,12 +221,12 @@ public class IngredientFilter implements IIngredientGridSource {
 		return Collections.unmodifiableSet(this.modNamesForSorting);
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> List<T> getFilteredIngredients(String filterText, IIngredientType<T> ingredientType) {
-		Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
-		List<?> ingredientList = getIngredientList(filterText);
-		return (List<T>) ingredientList.stream()
-			.filter(ingredientClass::isInstance)
+		List<ITypedIngredient<?>> ingredientList = getIngredientList(filterText);
+		return ingredientList.stream()
+			.map(i -> TypedIngredient.optionalCast(i, ingredientType))
+			.flatMap(Optional::stream)
+			.map(ITypedIngredient::getIngredient)
 			.toList();
 	}
 
@@ -295,56 +270,77 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	/**
-	 * Scans up and down the element list to find wildcard matches that touch the given element.
+	 * Scans up and down the element list to find matches that touch the given element.
 	 */
-	public <T> List<IIngredientListElementInfo<T>> getMatches(T ingredient, IIngredientHelper<T> ingredientHelper, Function<T, String> uidFunction) {
-		final String uid = uidFunction.apply(ingredient);
-		@SuppressWarnings("unchecked")
-		Class<? extends T> ingredientClass = (Class<? extends T>) ingredient.getClass();
-		List<IIngredientListElementInfo<T>> matchingElements = findMatchingElements(ingredientHelper, ingredient);
-		IntSet matchingIndexes = new IntOpenHashSet(50);
-		IntSet startingIndexes = new IntOpenHashSet(matchingElements.size());
-		for (IIngredientListElementInfo<?> matchingElement : matchingElements) {
-			int index = this.elementSearch.indexOf(matchingElement);
-			startingIndexes.add(index);
-			matchingIndexes.add(index);
+	public <T> List<IIngredientListElementInfo<T>> searchForWildcardMatches(
+		ITypedIngredient<T> typedIngredient,
+		IIngredientHelper<T> ingredientHelper,
+		Function<ITypedIngredient<T>, String> wildcardUidFunction
+	) {
+		IIngredientType<T> ingredientType = typedIngredient.getType();
+		Optional<IIngredientListElementInfo<T>> searchResult = searchForMatchingElement(ingredientHelper, typedIngredient);
+		if (searchResult.isEmpty()) {
+			return List.of();
 		}
 
-		IntIterator iterator = startingIndexes.iterator();
-		while (iterator.hasNext()) {
-			int startingIndex = iterator.nextInt();
-			for (int i = startingIndex - 1; i >= 0 && !matchingIndexes.contains(i); i--) {
-				IIngredientListElementInfo<?> info = this.elementSearch.get(i);
-				Object elementIngredient = info.getIngredient();
-				if (elementIngredient.getClass() != ingredientClass) {
-					break;
-				}
-				String elementWildcardId = uidFunction.apply(ingredientClass.cast(elementIngredient));
-				if (!uid.equals(elementWildcardId)) {
-					break;
-				}
-				matchingIndexes.add(i);
-				@SuppressWarnings("unchecked")
-				IIngredientListElementInfo<T> castInfo = (IIngredientListElementInfo<T>) info;
-				matchingElements.add(castInfo);
-			}
-			for (int i = startingIndex + 1; i < this.elementSearch.size() && !matchingIndexes.contains(i); i++) {
-				IIngredientListElementInfo<?> info = this.elementSearch.get(i);
-				Object elementIngredient = info.getIngredient();
-				if (elementIngredient.getClass() != ingredientClass) {
-					break;
-				}
-				String elementWildcardId = uidFunction.apply(ingredientClass.cast(elementIngredient));
-				if (!uid.equals(elementWildcardId)) {
-					break;
-				}
-				matchingIndexes.add(i);
-				@SuppressWarnings("unchecked")
-				IIngredientListElementInfo<T> castElement = (IIngredientListElementInfo<T>) info;
-				matchingElements.add(castElement);
+		final String wildcardUid = wildcardUidFunction.apply(typedIngredient);
+		{
+			String itemUid = ingredientHelper.getUniqueId(typedIngredient.getIngredient(), UidContext.Ingredient);
+			if (itemUid.equals(wildcardUid)) {
+				return List.of(searchResult.get());
 			}
 		}
+
+		IntSet matchingIndexes = new IntOpenHashSet();
+		List<IIngredientListElementInfo<T>> matchingElements = new ArrayList<>();
+
+		IIngredientListElementInfo<T> matchingElement = searchResult.get();
+		final int startingIndex = this.elementSearch.indexOf(matchingElement);
+		matchingIndexes.add(startingIndex);
+		matchingElements.add(matchingElement);
+
+		// scan down the list then up the list,
+		// adding matches until we find something that doesn't match or that we have already
+
+		for (int i = startingIndex - 1; i >= 0 && !matchingIndexes.contains(i); i--) {
+			IIngredientListElementInfo<?> info = this.elementSearch.get(i);
+			Optional<IIngredientListElementInfo<T>> match = checkForMatch(info, ingredientType, wildcardUid, wildcardUidFunction);
+			if (match.isEmpty()) {
+				break;
+			}
+			matchingIndexes.add(i);
+			matchingElements.add(match.get());
+		}
+
+		for (int i = startingIndex + 1; i < this.elementSearch.size() && !matchingIndexes.contains(i); i++) {
+			IIngredientListElementInfo<?> info = this.elementSearch.get(i);
+			Optional<IIngredientListElementInfo<T>> match = checkForMatch(info, ingredientType, wildcardUid, wildcardUidFunction);
+			if (match.isEmpty()) {
+				break;
+			}
+			matchingIndexes.add(i);
+			matchingElements.add(match.get());
+		}
 		return matchingElements;
+	}
+
+	private static <T> Optional<IIngredientListElementInfo<T>> checkForMatch(IIngredientListElementInfo<?> info, IIngredientType<T> ingredientType, String uid, Function<ITypedIngredient<T>, String> uidFunction) {
+		return optionalCast(info, ingredientType)
+			.filter(cast -> {
+				ITypedIngredient<T> typedIngredient = cast.getTypedIngredient();
+				String elementUid = uidFunction.apply(typedIngredient);
+				return uid.equals(elementUid);
+			});
+	}
+
+	private static <T> Optional<IIngredientListElementInfo<T>> optionalCast(IIngredientListElementInfo<?> info, IIngredientType<T> ingredientType) {
+		ITypedIngredient<?> typedIngredient = info.getTypedIngredient();
+		if (typedIngredient.getType() == ingredientType) {
+			@SuppressWarnings("unchecked")
+			IIngredientListElementInfo<T> cast = (IIngredientListElementInfo<T>) info;
+			return Optional.of(cast);
+		}
+		return Optional.empty();
 	}
 
 	@Nullable

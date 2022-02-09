@@ -9,6 +9,7 @@ import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.IngredientVisibility;
 import mezz.jei.input.InputEventHandler;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
@@ -28,6 +29,8 @@ public final class Internal {
 	private static ColorNamer colorNamer;
 	@Nullable
 	private static IngredientFilter ingredientFilter;
+	@Nullable
+	private static IngredientVisibility ingredientVisibility;
 	@Nullable
 	private static GuiEventHandler guiEventHandler;
 	@Nullable
@@ -79,6 +82,15 @@ public final class Internal {
 
 	public static void setIngredientManager(IngredientManager ingredientManager) {
 		Internal.ingredientManager = ingredientManager;
+	}
+
+	public static IngredientVisibility getIngredientVisibility() {
+		Preconditions.checkState(ingredientVisibility != null, "Ingredient Visibility has not been created yet.");
+		return ingredientVisibility;
+	}
+
+	public static void setIngredientVisibility(IngredientVisibility ingredientVisibility) {
+		Internal.ingredientVisibility = ingredientVisibility;
 	}
 
 	public static ColorNamer getColorNamer() {

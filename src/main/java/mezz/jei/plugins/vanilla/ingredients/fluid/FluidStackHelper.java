@@ -1,29 +1,31 @@
 package mezz.jei.plugins.vanilla.ingredients.fluid;
 
-import java.util.Collection;
-import org.jetbrains.annotations.Nullable;
-import java.util.Collections;
-
+import com.google.common.base.MoreObjects;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.helpers.IColorHelper;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.FluidStack;
+import mezz.jei.util.TagUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidStack;
 
-import com.google.common.base.MoreObjects;
-import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.api.ingredients.IIngredientHelper;
+import org.jetbrains.annotations.Nullable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	private final ISubtypeManager subtypeManager;
@@ -83,6 +85,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		return "fluid:" + registryName;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getModId(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
@@ -109,6 +112,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		return Collections.emptyList();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getResourceId(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
@@ -179,5 +183,10 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		}
 
 		return toStringHelper.toString();
+	}
+
+	@Override
+	public Optional<ResourceLocation> getTagEquivalent(Collection<FluidStack> ingredients) {
+		return TagUtil.getTagEquivalent(ingredients, FluidStack::getFluid, FluidTags.getAllTags());
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -38,8 +39,8 @@ public final class AnvilRecipeMaker {
 	private AnvilRecipeMaker() {
 	}
 
-	public static List<Object> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientManager ingredientManager) {
-		List<Object> recipes = new ArrayList<>();
+	public static List<IJeiAnvilRecipe> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientManager ingredientManager) {
+		List<IJeiAnvilRecipe> recipes = new ArrayList<>();
 		Stopwatch sw = Stopwatch.createStarted();
 		try {
 			getRepairRecipes(recipes, vanillaRecipeFactory);
@@ -60,26 +61,30 @@ public final class AnvilRecipeMaker {
 		return recipes;
 	}
 
-	private static void getBookEnchantmentRecipes(List<Object> recipes, IVanillaRecipeFactory vanillaRecipeFactory, IIngredientManager ingredientManager) {
+	private static void getBookEnchantmentRecipes(
+		List<IJeiAnvilRecipe> recipes,
+		IVanillaRecipeFactory vanillaRecipeFactory,
+		IIngredientManager ingredientManager
+	) {
 		Collection<ItemStack> ingredients = ingredientManager.getAllIngredients(VanillaTypes.ITEM);
 		Collection<Enchantment> enchantments = ForgeRegistries.ENCHANTMENTS.getValues();
-		for (ItemStack ingredient : ingredients) {
-			if (ingredient.isEnchantable()) {
-				for (Enchantment enchantment : enchantments) {
-					if (enchantment.canEnchant(ingredient)) {
+		ingredients.stream()
+			.filter(ItemStack::isEnchantable)
+			.forEach(ingredient ->
+				enchantments.stream()
+					.filter(enchantment -> enchantment.canEnchant(ingredient))
+					.forEach(enchantment -> {
 						try {
 							getBookEnchantmentRecipes(recipes, vanillaRecipeFactory, enchantment, ingredient);
 						} catch (RuntimeException e) {
-							String ingredientInfo = ErrorUtil.getIngredientInfo(ingredient);
+							String ingredientInfo = ErrorUtil.getIngredientInfo(ingredient, VanillaTypes.ITEM);
 							LOGGER.error("Failed to register book enchantment recipes for ingredient: {}", ingredientInfo, e);
 						}
-					}
-				}
-			}
-		}
+					})
+			);
 	}
 
-	private static void getBookEnchantmentRecipes(List<Object> recipes, IVanillaRecipeFactory vanillaRecipeFactory, Enchantment enchantment, ItemStack ingredient) {
+	private static void getBookEnchantmentRecipes(List<IJeiAnvilRecipe> recipes, IVanillaRecipeFactory vanillaRecipeFactory, Enchantment enchantment, ItemStack ingredient) {
 		Item item = ingredient.getItem();
 		List<ItemStack> perLevelBooks = Lists.newArrayList();
 		List<ItemStack> perLevelOutputs = Lists.newArrayList();
@@ -97,12 +102,12 @@ public final class AnvilRecipeMaker {
 			}
 		}
 		if (!perLevelBooks.isEmpty() && !perLevelOutputs.isEmpty()) {
-			Object anvilRecipe = vanillaRecipeFactory.createAnvilRecipe(ingredient, perLevelBooks, perLevelOutputs);
+			IJeiAnvilRecipe anvilRecipe = vanillaRecipeFactory.createAnvilRecipe(ingredient, perLevelBooks, perLevelOutputs);
 			recipes.add(anvilRecipe);
 		}
 	}
 
-	private static void getRepairRecipes(List<Object> recipes, IVanillaRecipeFactory vanillaRecipeFactory) {
+	private static void getRepairRecipes(List<IJeiAnvilRecipe> recipes, IVanillaRecipeFactory vanillaRecipeFactory) {
 		Map<Ingredient, List<ItemStack>> items = Maps.newHashMap();
 
 		Ingredient repairWoods = Tiers.WOOD.getRepairIngredient();
@@ -237,10 +242,10 @@ public final class AnvilRecipeMaker {
 				damaged3.setDamageValue(damaged3.getMaxDamage() * 2 / 4);
 
 				if (!repairMaterials.isEmpty()) {
-					Object repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(damaged1, repairMaterials, Collections.singletonList(damaged2));
+					IJeiAnvilRecipe repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(damaged1, repairMaterials, Collections.singletonList(damaged2));
 					recipes.add(repairWithMaterial);
 				}
-				Object repairWithSame = vanillaRecipeFactory.createAnvilRecipe(damaged2, Collections.singletonList(damaged2), Collections.singletonList(damaged3));
+				IJeiAnvilRecipe repairWithSame = vanillaRecipeFactory.createAnvilRecipe(damaged2, Collections.singletonList(damaged2), Collections.singletonList(damaged3));
 				recipes.add(repairWithSame);
 			}
 		}

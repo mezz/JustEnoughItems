@@ -5,10 +5,10 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
 import mezz.jei.util.ErrorUtil;
@@ -45,7 +45,7 @@ public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtensio
 
 	public <R extends T> W getRecipeExtension(R recipe) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
-		W recipeExtension = cache.computeIfAbsent(recipe, this::getRecipeExtensionUncached);
+		@Nullable W recipeExtension = cache.computeIfAbsent(recipe, this::getRecipeExtensionUncached);
 		if (recipeExtension == null) {
 			String recipeName = ErrorUtil.getNameForRecipe(recipe);
 			throw new RuntimeException("Failed to create recipe extension for recipe: " + recipeName);
@@ -53,10 +53,10 @@ public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtensio
 		return recipeExtension;
 	}
 
-	@Nullable
-	public <R extends T> W getRecipeExtensionOrNull(R recipe) {
+	public <R extends T> Optional<W> getOptionalRecipeExtension(R recipe) {
 		ErrorUtil.checkNotNull(recipe, "recipe");
-		return cache.computeIfAbsent(recipe, this::getRecipeExtensionUncached);
+		W result = cache.computeIfAbsent(recipe, this::getRecipeExtensionUncached);
+		return Optional.ofNullable(result);
 	}
 
 	@Nullable
@@ -103,8 +103,8 @@ public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtensio
 		}
 
 		List<Class<? extends T>> assignableClasses = assignableHandlers.stream()
-			.map(RecipeHandler::getRecipeClass)
-			.collect(Collectors.toList());
+			.<Class<? extends T>>map(RecipeHandler::getRecipeClass)
+			.toList();
 		LOGGER.warn("Found multiple matching recipe handlers for {}: {}", recipeClass, assignableClasses);
 		RecipeHandler<R, W> recipeHandler = assignableHandlers.get(0);
 		return recipeHandler.apply(recipe);

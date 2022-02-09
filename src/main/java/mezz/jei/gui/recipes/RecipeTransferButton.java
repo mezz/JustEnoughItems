@@ -2,6 +2,8 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.gui.ingredients.RecipeSlots;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.world.entity.player.Player;
@@ -19,14 +21,16 @@ import net.minecraft.network.chat.TranslatableComponent;
 import java.util.List;
 
 public class RecipeTransferButton extends GuiIconButtonSmall {
+	private static final int RECIPE_BUTTON_SIZE = 13;
+
 	private final RecipeLayout<?> recipeLayout;
 	@Nullable
 	private IRecipeTransferError recipeTransferError;
 	@Nullable
 	private IOnClickHandler onClickHandler;
 
-	public RecipeTransferButton(int xPos, int yPos, int width, int height, IDrawable icon, RecipeLayout<?> recipeLayout) {
-		super(xPos, yPos, width, height, icon, b -> {
+	public RecipeTransferButton(int xPos, int yPos, IDrawable icon, RecipeLayout<?> recipeLayout) {
+		super(xPos, yPos, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, icon, b -> {
 		});
 		this.recipeLayout = recipeLayout;
 	}
@@ -48,13 +52,17 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 		}
 	}
 
+	@SuppressWarnings("removal")
 	public void drawToolTip(PoseStack poseStack, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (recipeTransferError == null) {
 				TranslatableComponent tooltipTransfer = new TranslatableComponent("jei.tooltip.transfer");
 				TooltipRenderer.drawHoveringText(poseStack, List.of(tooltipTransfer), mouseX, mouseY);
 			} else {
-				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
+				RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
+				IRecipeSlotsView recipeSlotsView = recipeSlots.getView();
+				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeSlotsView, recipeLayout.getPosX(), recipeLayout.getPosY());
+				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeLayout.getLegacyAdapter(), recipeLayout.getPosX(), recipeLayout.getPosY());
 			}
 		}
 	}

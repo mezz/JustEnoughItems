@@ -3,18 +3,20 @@ package mezz.jei.util;
 import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import net.minecraft.world.item.ItemStack;
 
 public class MatchingIterable implements Iterable<ItemStackMatchable<ItemStack>> {
-	private final Iterable<ItemStack> list;
+	private final IRecipeSlotView recipeSlotView;
 
-	public MatchingIterable(Iterable<ItemStack> list) {
-		this.list = list;
+	public MatchingIterable(IRecipeSlotView recipeSlotView) {
+		this.recipeSlotView = recipeSlotView;
 	}
 
 	@Override
 	public Iterator<ItemStackMatchable<ItemStack>> iterator() {
-		Iterator<ItemStack> stacks = list.iterator();
+		Iterator<ItemStack> stacks = recipeSlotView.getIngredients(VanillaTypes.ITEM).iterator();
 		return new DelegateIterator<>(stacks) {
 			@Override
 			public ItemStackMatchable<ItemStack> next() {

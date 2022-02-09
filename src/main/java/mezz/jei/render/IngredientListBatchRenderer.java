@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ISlowRenderItem;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
@@ -33,6 +34,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -81,7 +83,7 @@ public class IngredientListBatchRenderer {
 		return slots;
 	}
 
-	public void set(final int startIndex, List<?> ingredientList) {
+	public void set(final int startIndex, List<ITypedIngredient<?>> ingredientList) {
 		renderItems2d.clear();
 		renderItems3d.clear();
 		renderOther.clear();
@@ -96,7 +98,7 @@ public class IngredientListBatchRenderer {
 				if (i >= ingredientList.size()) {
 					ingredientListSlot.clear();
 				} else {
-					Object ingredient = ingredientList.get(i);
+					ITypedIngredient<?> ingredient = ingredientList.get(i);
 					set(ingredientListSlot, ingredient);
 				}
 				i++;
@@ -104,10 +106,10 @@ public class IngredientListBatchRenderer {
 		}
 	}
 
-	private <V> void set(IngredientListSlot ingredientListSlot, V ingredient) {
+	private <V> void set(IngredientListSlot ingredientListSlot, ITypedIngredient<V> value) {
 		ingredientListSlot.clear();
 
-		if (ingredient instanceof ItemStack itemStack) {
+		if (value.getIngredient() instanceof ItemStack itemStack) {
 			Minecraft minecraft = Minecraft.getInstance();
 			ItemRenderer itemRenderer = minecraft.getItemRenderer();
 			BakedModel bakedModel;
@@ -125,7 +127,9 @@ public class IngredientListBatchRenderer {
 				!bakedModel.isLayered() &&
 				!(itemStack.getItem() instanceof ISlowRenderItem)
 			) {
-				IngredientListElementRenderer<ItemStack> renderer = new IngredientListElementRenderer<>(itemStack);
+				@SuppressWarnings("unchecked")
+				ITypedIngredient<ItemStack> castValue = (ITypedIngredient<ItemStack>) value;
+				IngredientListElementRenderer<ItemStack> renderer = new IngredientListElementRenderer<>(castValue);
 				ingredientListSlot.setIngredientRenderer(renderer);
 				if (bakedModel.usesBlockLight()) {
 					renderItems3d.add(renderer);
@@ -136,9 +140,9 @@ public class IngredientListBatchRenderer {
 			}
 		}
 
-		IngredientListElementRenderer<V> renderer = new IngredientListElementRenderer<>(ingredient);
+		IngredientListElementRenderer<V> renderer = new IngredientListElementRenderer<>(value);
 		ingredientListSlot.setIngredientRenderer(renderer);
-		IIngredientType<V> ingredientType = ingredientManager.getIngredientType(ingredient);
+		IIngredientType<V> ingredientType = value.getType();
 		renderOther.put(ingredientType, renderer);
 	}
 
@@ -244,12 +248,13 @@ public class IngredientListBatchRenderer {
 		IIngredientHelper<ItemStack> itemStackHelper,
 		IngredientListElementRenderer<ItemStack> slot
 	) {
-		ItemStack itemStack = slot.getIngredient();
+		ITypedIngredient<ItemStack> typedIngredient = slot.getTypedIngredient();
 		if (worldConfig.isEditModeEnabled()) {
-			renderEditMode(poseStack, slot.getArea(), slot.getPadding(), editModeConfig, itemStack, itemStackHelper);
+			renderEditMode(poseStack, slot.getArea(), slot.getPadding(), editModeConfig, typedIngredient, itemStackHelper);
 			RenderSystem.enableBlend();
 		}
 
+		ItemStack itemStack = typedIngredient.getIngredient();
 		Rect2i area = slot.getArea();
 		int padding = slot.getPadding();
 		try {
@@ -264,7 +269,7 @@ public class IngredientListBatchRenderer {
 	}
 
 	private static void renderOverlay(IIngredientRenderer<ItemStack> renderer, IngredientListElementRenderer<ItemStack> slot) {
-		ItemStack itemStack = slot.getIngredient();
+		ItemStack itemStack = slot.getTypedIngredient().getIngredient();
 		Rect2i area = slot.getArea();
 		int padding = slot.getPadding();
 		try {
@@ -278,7 +283,7 @@ public class IngredientListBatchRenderer {
 	}
 
 	private <T> void renderIngredientType(PoseStack poseStack, IIngredientType<T> ingredientType) {
-		List<IngredientListElementRenderer<T>> slots = renderOther.get(ingredientType);
+		Collection<IngredientListElementRenderer<T>> slots = renderOther.get(ingredientType);
 		IngredientInfo<T> ingredientInfo = ingredientManager.getIngredientInfo(ingredientType);
 		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
 		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
@@ -288,22 +293,31 @@ public class IngredientListBatchRenderer {
 	}
 
 	private <T> void renderIngredient(PoseStack poseStack, IngredientListElementRenderer<T> slot, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
-		T ingredient = slot.getIngredient();
+		ITypedIngredient<T> typedIngredient = slot.getTypedIngredient();
 		Rect2i area = slot.getArea();
-
+		int slotPadding = slot.getPadding();
 		if (worldConfig.isEditModeEnabled()) {
-			renderEditMode(poseStack, area, slot.getPadding(), editModeConfig, ingredient, ingredientHelper);
+			renderEditMode(poseStack, area, slotPadding, editModeConfig, typedIngredient, ingredientHelper);
 			RenderSystem.enableBlend();
 		}
+
+		T ingredient = typedIngredient.getIngredient();
 		try {
-			ingredientRenderer.render(poseStack, area.getX() + slot.getPadding(), area.getY() + slot.getPadding(), ingredient);
+			int xPosition = area.getX() + slotPadding;
+			int yPosition = area.getY() + slotPadding;
+			poseStack.pushPose();
+			{
+				poseStack.translate(xPosition, yPosition, 0);
+				ingredientRenderer.render(poseStack, ingredient);
+			}
+			poseStack.popPose();
 		} catch (RuntimeException | LinkageError e) {
 			throw ErrorUtil.createRenderIngredientException(e, ingredient);
 		}
 	}
 
-	private static <T> void renderEditMode(PoseStack poseStack, Rect2i area, int padding, IEditModeConfig editModeConfig, T ingredient, IIngredientHelper<T> ingredientHelper) {
-		if (editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
+	private static <T> void renderEditMode(PoseStack poseStack, Rect2i area, int padding, IEditModeConfig editModeConfig, ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
+		if (editModeConfig.isIngredientOnConfigBlacklist(typedIngredient, ingredientHelper)) {
 			GuiComponent.fill(poseStack, area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
 			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 		}

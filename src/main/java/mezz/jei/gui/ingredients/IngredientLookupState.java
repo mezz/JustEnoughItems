@@ -12,8 +12,7 @@ import java.util.List;
 
 public class IngredientLookupState {
 	private final IRecipeManager recipeManager;
-	@Nullable
-	private final Focus<?> focus;
+	private final List<Focus<?>> focuses;
 	private final ImmutableList<IRecipeCategory<?>> recipeCategories;
 
 	private int recipeCategoryIndex;
@@ -22,24 +21,23 @@ public class IngredientLookupState {
 	@Nullable
 	private FocusedRecipes<?> focusedRecipes;
 
-	public static IngredientLookupState createWithFocus(IRecipeManager recipeManager, @Nullable Focus<?> focus) {
-		List<IRecipeCategory<?>> recipeCategories = recipeManager.getRecipeCategories(focus, false);
-		return new IngredientLookupState(recipeManager, focus, recipeCategories);
+	public static IngredientLookupState createWithFocus(IRecipeManager recipeManager, List<Focus<?>> focuses) {
+		List<IRecipeCategory<?>> recipeCategories = recipeManager.getRecipeCategories(focuses, false);
+		return new IngredientLookupState(recipeManager, focuses, recipeCategories);
 	}
 
 	public static IngredientLookupState createWithCategories(IRecipeManager recipeManager, List<IRecipeCategory<?>> recipeCategories) {
-		return new IngredientLookupState(recipeManager, null, recipeCategories);
+		return new IngredientLookupState(recipeManager, List.of(), recipeCategories);
 	}
 
-	private IngredientLookupState(IRecipeManager recipeManager, @Nullable Focus<?> focus, List<IRecipeCategory<?>> recipeCategories) {
+	private IngredientLookupState(IRecipeManager recipeManager, List<Focus<?>> focuses, List<IRecipeCategory<?>> recipeCategories) {
 		this.recipeManager = recipeManager;
-		this.focus = focus;
+		this.focuses = focuses;
 		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 	}
 
-	@Nullable
-	public Focus<?> getFocus() {
-		return focus;
+	public List<Focus<?>> getFocuses() {
+		return focuses;
 	}
 
 	public ImmutableList<IRecipeCategory<?>> getRecipeCategories() {
@@ -95,7 +93,7 @@ public class IngredientLookupState {
 	public FocusedRecipes<?> getFocusedRecipes() {
 		if (focusedRecipes == null) {
 			final IRecipeCategory<?> recipeCategory = recipeCategories.get(recipeCategoryIndex);
-			focusedRecipes = FocusedRecipes.create(focus, recipeManager, recipeCategory);
+			focusedRecipes = FocusedRecipes.create(focuses, recipeManager, recipeCategory);
 		}
 		return focusedRecipes;
 	}

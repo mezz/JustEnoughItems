@@ -16,7 +16,7 @@ public interface IExtendableRecipeCategory<T, W extends IRecipeCategoryExtension
 	 * @param recipeClass      the class of recipes to handle
 	 * @param extensionFilter  a filter that returns true for instances of the recipe that can be handled by the extensionFactory
 	 * @param extensionFactory a factory that can turn recipes into recipe extensions
-	 * @since JEI 7.2.0
+	 * @since 7.2.0
 	 */
 	<R extends T> void addCategoryExtension(Class<? extends R> recipeClass, Predicate<R> extensionFilter, Function<R, ? extends W> extensionFactory);
 }

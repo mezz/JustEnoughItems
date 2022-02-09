@@ -1,6 +1,10 @@
 package mezz.jei.plugins.vanilla.brewing;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
@@ -8,27 +12,19 @@ import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.Constants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 
+import java.util.List;
+
 public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> {
-
-	private static final int brewPotionSlot1 = 0;
-	private static final int brewPotionSlot2 = 1;
-	private static final int brewPotionSlot3 = 2;
-	private static final int brewIngredientSlot = 3;
-	private static final int outputSlot = 4; // for display only
-
 	private final IDrawable background;
 	private final IDrawable icon;
 	private final IDrawable slotDrawable;
@@ -83,13 +79,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 	}
 
 	@Override
-	public void setIngredients(JeiBrewingRecipe recipe, IIngredients ingredients) {
-		ingredients.setInputLists(VanillaTypes.ITEM, recipe.getInputs());
-		ingredients.setOutput(VanillaTypes.ITEM, recipe.getPotionOutput());
-	}
-
-	@Override
-	public void draw(JeiBrewingRecipe recipe, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(JeiBrewingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		blazeHeat.draw(poseStack, 5, 30);
 		bubbles.draw(poseStack, 8, 0);
 		arrow.draw(poseStack, 42, 2);
@@ -102,18 +92,24 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, JeiBrewingRecipe recipe, IIngredients ingredients) {
-		IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
+	public void setRecipe(IRecipeLayoutBuilder builder, JeiBrewingRecipe recipe, List<? extends IFocus<?>> focuses) {
+		List<ItemStack> potionInputs = recipe.getPotionInputs();
 
-		itemStacks.init(brewPotionSlot1, true, 0, 36);
-		itemStacks.init(brewPotionSlot2, true, 23, 43);
-		itemStacks.init(brewPotionSlot3, true, 46, 36);
-		itemStacks.init(brewIngredientSlot, true, 23, 2);
-		itemStacks.init(outputSlot, false, 80, 2);
+		builder.addSlot(RecipeIngredientRole.INPUT, 1, 37)
+			.addItemStacks(potionInputs);
 
-		itemStacks.setBackground(outputSlot, slotDrawable);
+		builder.addSlot(RecipeIngredientRole.INPUT, 24, 44)
+			.addItemStacks(potionInputs);
 
-		itemStacks.set(ingredients);
+		builder.addSlot(RecipeIngredientRole.INPUT, 47, 37)
+			.addItemStacks(potionInputs);
+
+		builder.addSlot(RecipeIngredientRole.INPUT, 24, 3)
+			.addItemStacks(recipe.getIngredients());
+
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 81, 3)
+			.addItemStack(recipe.getPotionOutput())
+			.setBackground(slotDrawable, -1, -1);
 	}
 
 	private static class BrewingBubblesTickTimer implements ITickTimer {

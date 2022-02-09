@@ -5,9 +5,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.UserInput;
@@ -35,7 +36,7 @@ public class GhostIngredientDragManager {
 	@Nullable
 	private GhostIngredientDrag<?> ghostIngredientDrag;
 	@Nullable
-	private Object hoveredIngredient;
+	private ITypedIngredient<?> hoveredIngredient;
 	@Nullable
 	private List<IGhostIngredientHandler.Target<Object>> hoveredIngredientTargets;
 
@@ -66,8 +67,8 @@ public class GhostIngredientDragManager {
 			this.ghostIngredientDrag.drawTargets(poseStack, mouseX, mouseY);
 		} else {
 			Optional<IClickedIngredient<?>> elementUnderMouse = this.source.getIngredientUnderMouse(mouseX, mouseY);
-			Object hovered = elementUnderMouse.map(IClickedIngredient::getValue).orElse(null);
-			if (!Objects.equals(hovered, this.hoveredIngredient)) {
+			ITypedIngredient<?> hovered = elementUnderMouse.map(IClickedIngredient::getValue).orElse(null);
+			if (!equals(hovered, this.hoveredIngredient)) {
 				this.hoveredIngredient = hovered;
 				this.hoveredIngredientTargets = null;
 				Screen currentScreen = minecraft.screen;
@@ -84,6 +85,16 @@ public class GhostIngredientDragManager {
 		}
 	}
 
+	private static boolean equals(@Nullable ITypedIngredient<?> a, @Nullable ITypedIngredient<?> b) {
+		if (a == b) {
+			return true;
+		}
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.getIngredient() == b.getIngredient();
+	}
+
 	public void stopDrag() {
 		if (this.ghostIngredientDrag != null) {
 			this.ghostIngredientDrag.stop();
@@ -98,12 +109,15 @@ public class GhostIngredientDragManager {
 		if (handler == null) {
 			return false;
 		}
-		V ingredient = clicked.getValue();
+		ITypedIngredient<V> value = clicked.getValue();
+		V ingredient = value.getIngredient();
+		IIngredientType<V> type = value.getType();
+
 		List<IGhostIngredientHandler.Target<V>> targets = handler.getTargets(currentScreen, ingredient, true);
 		if (targets.isEmpty()) {
 			return false;
 		}
-		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
+		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
 		Rect2i clickedArea = clicked.getArea();
 		this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, input.getMouseX(), input.getMouseY(), clickedArea);
 		return true;

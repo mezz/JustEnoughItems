@@ -1,7 +1,9 @@
 package mezz.jei.transfer;
 
 import java.util.Collection;
+import java.util.Set;
 
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.util.ErrorUtil;
@@ -21,10 +23,20 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	}
 
 	@Override
-	public IRecipeTransferError createUserErrorForSlots(Component tooltipMessage, Collection<Integer> missingItemSlots) {
+	public IRecipeTransferError createUserErrorForMissingSlots(Component tooltipMessage, Collection<IRecipeSlotView> missingItemSlots) {
 		ErrorUtil.checkNotNull(tooltipMessage, "tooltipMessage");
 		ErrorUtil.checkNotEmpty(missingItemSlots, "missingItemSlots");
 
-		return new RecipeTransferErrorSlots(tooltipMessage, missingItemSlots);
+		return new RecipeTransferErrorMissingSlots(tooltipMessage, missingItemSlots);
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	@Deprecated
+	public IRecipeTransferError createUserErrorForSlots(Component tooltipMessage, Collection<Integer> missingItemIndexes) {
+		ErrorUtil.checkNotNull(tooltipMessage, "tooltipMessage");
+		ErrorUtil.checkNotEmpty(missingItemIndexes, "missingItemIndexes");
+
+		return new RecipeTransferErrorIngredientIndexes(tooltipMessage, Set.copyOf(missingItemIndexes));
 	}
 }

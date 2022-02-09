@@ -1,30 +1,27 @@
 package mezz.jei.plugins.jei.info;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-
-import java.util.Collections;
-import java.util.List;
-
-import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.plugins.jei.JeiInternalPlugin;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.locale.Language;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.textures.Textures;
+import net.minecraft.client.Minecraft;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 
-@SuppressWarnings("rawtypes")
+import java.util.List;
+
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe> {
 	public static final int recipeWidth = 160;
 	public static final int recipeHeight = 125;
@@ -33,14 +30,12 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	private final IDrawable background;
 	private final IDrawable icon;
 	private final IDrawable slotBackground;
-	private final JeiInternalPlugin jeiPlugin;
 	private final Component localizedName;
 
-	public IngredientInfoRecipeCategory(IGuiHelper guiHelper, Textures textures, JeiInternalPlugin jeiPlugin) {
+	public IngredientInfoRecipeCategory(IGuiHelper guiHelper, Textures textures) {
 		this.background = guiHelper.createBlankDrawable(recipeWidth, recipeHeight);
 		this.icon = textures.getInfoIcon();
 		this.slotBackground = guiHelper.getSlotDrawable();
-		this.jeiPlugin = jeiPlugin;
 		this.localizedName = new TranslatableComponent("gui.jei.category.itemInformation");
 	}
 
@@ -70,23 +65,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	public void setIngredients(IngredientInfoRecipe recipe, IIngredients ingredients) {
-		setIngredientsTyped((IngredientInfoRecipe<?>) recipe, ingredients);
-	}
-
-	private static <T> void setIngredientsTyped(IngredientInfoRecipe<T> recipe, IIngredients ingredients) {
-		IIngredientType<T> ingredientType = recipe.getIngredientType();
-		List<List<T>> recipeIngredients = Collections.singletonList(recipe.getIngredients());
-		ingredients.setInputLists(ingredientType, recipeIngredients);
-		ingredients.setOutputLists(ingredientType, recipeIngredients);
-	}
-
-	@Override
-	public void draw(IngredientInfoRecipe recipe, PoseStack poseStack, double mouseX, double mouseY) {
-		drawTyped(poseStack, (IngredientInfoRecipe<?>) recipe);
-	}
-
-	private <T> void drawTyped(PoseStack poseStack, IngredientInfoRecipe<T> recipe) {
+	public void draw(IngredientInfoRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		int xPos = 0;
 		int yPos = slotBackground.getHeight() + 4;
 
@@ -98,21 +77,21 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, IngredientInfoRecipe recipe, IIngredients ingredients) {
-		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+	public void setRecipe(IRecipeLayoutBuilder builder, IngredientInfoRecipe recipe, List<? extends IFocus<?>> focuses) {
+		int xPos = (recipeWidth - 16) / 2;
 
-		int xPos = (recipeWidth - 18) / 2;
-		guiItemStacks.init(0, true, xPos, 0);
-		guiItemStacks.setBackground(0, slotBackground);
-		guiItemStacks.set(ingredients);
+		IRecipeSlotBuilder inputSlotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, xPos, 1)
+			.setBackground(slotBackground, -1, -1);
 
-		IIngredientManager ingredientManager = jeiPlugin.ingredientManager;
-		if (ingredientManager != null) {
-			for (IIngredientType<?> type : ingredientManager.getRegisteredIngredientTypes()) {
-				IGuiIngredientGroup<?> group = recipeLayout.getIngredientsGroup(type);
-				group.init(0, true, xPos + 1, 1);
-				group.set(ingredients);
-			}
+		IIngredientAcceptor<?> outputSlotBuilder = builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT);
+
+		for (ITypedIngredient<?> typedIngredient : recipe.getIngredients()) {
+			addIngredient(typedIngredient, inputSlotBuilder);
+			addIngredient(typedIngredient, outputSlotBuilder);
 		}
+	}
+
+	private static <T> void addIngredient(ITypedIngredient<T> typedIngredient, IIngredientAcceptor<?> slotBuilder) {
+		slotBuilder.addIngredient(typedIngredient.getType(), typedIngredient.getIngredient());
 	}
 }
