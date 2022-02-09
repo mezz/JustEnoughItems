@@ -34,18 +34,7 @@ public final class StringUtil {
 		return new TextComponent(truncatedTextString + "...");
 	}
 
-	public static List<FormattedText> splitLines(FormattedText line, int width) {
-		if (width <= 0) {
-			return List.of(line);
-		}
-
-		Minecraft minecraft = Minecraft.getInstance();
-		Font font = minecraft.font;
-		StringSplitter splitter = font.getSplitter();
-		return splitter.splitLines(line, width, Style.EMPTY);
-	}
-
-	public static List<FormattedText> splitLines(List<? extends FormattedText> lines, int width) {
+	public static List<FormattedText> splitLines(List<FormattedText> lines, int width) {
 		if (width <= 0) {
 			return List.copyOf(lines);
 		}

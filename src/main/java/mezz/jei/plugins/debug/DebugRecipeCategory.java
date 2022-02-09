@@ -129,7 +129,8 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	public void setRecipe(IRecipeLayoutBuilder builder, DebugRecipe recipe, List<? extends IFocus<?>> focuses) {
 		// ITEM type
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 70, 0)
-				.addItemStack(new ItemStack(Items.WATER_BUCKET));
+			.addItemStack(new ItemStack(Items.WATER_BUCKET))
+			.addItemStack(new ItemStack(Items.BUNDLE));
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 110, 0)
 				.addIngredientsUnsafe(Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));

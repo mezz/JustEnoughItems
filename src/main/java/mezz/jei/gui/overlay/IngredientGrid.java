@@ -10,7 +10,6 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.color.ColorNamer;
-import mezz.jei.config.Constants;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
@@ -21,8 +20,8 @@ import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.IngredientInfo;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
@@ -33,14 +32,12 @@ import mezz.jei.render.IngredientListSlot;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.GiveMode;
 import mezz.jei.util.MathUtil;
-import mezz.jei.util.StringUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;
@@ -188,11 +185,11 @@ public class IngredientGrid implements IRecipeFocusSource {
 		IngredientInfo<T> ingredientInfo = ingredientManager.getIngredientInfo(ingredientType);
 		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
 
-		List<FormattedText> tooltip = getTooltip(ingredientFilterConfig, worldConfig, ingredient, ingredientInfo);
+		List<Component> tooltip = getTooltip(ingredientFilterConfig, worldConfig, ingredient, ingredientInfo);
 		TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, ingredient, ingredientRenderer);
 	}
 
-	private <T> List<FormattedText> getTooltip(
+	private <T> List<Component> getTooltip(
 		IIngredientFilterConfig ingredientFilterConfig,
 		IWorldConfig worldConfig,
 		T ingredient,
@@ -201,29 +198,20 @@ public class IngredientGrid implements IRecipeFocusSource {
 		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
 		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
 		List<Component> ingredientTooltipSafe = IngredientRenderHelper.getIngredientTooltipSafe(ingredient, ingredientRenderer, ingredientHelper, modIdHelper);
-		List<FormattedText> tooltip = new ArrayList<>(ingredientTooltipSafe);
-
-		Minecraft minecraft = Minecraft.getInstance();
-		int maxWidth = Constants.MAX_TOOLTIP_WIDTH;
-		for (FormattedText tooltipLine : tooltip) {
-			int width = minecraft.font.width(tooltipLine);
-			if (width > maxWidth) {
-				maxWidth = width;
-			}
-		}
+		List<Component> tooltip = new ArrayList<>(ingredientTooltipSafe);
 
 		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
-			addColorSearchInfoToTooltip(tooltip, maxWidth, ingredient, ingredientInfo);
+			addColorSearchInfoToTooltip(tooltip, ingredient, ingredientInfo);
 		}
 
 		if (worldConfig.isEditModeEnabled()) {
-			addEditModeInfoToTooltip(tooltip, maxWidth);
+			addEditModeInfoToTooltip(tooltip);
 		}
 
 		return tooltip;
 	}
 
-	public static <T> void addColorSearchInfoToTooltip(List<FormattedText> tooltip, int maxWidth, T ingredient, IngredientInfo<T> ingredientInfo) {
+	public static <T> void addColorSearchInfoToTooltip(List<Component> tooltip, T ingredient, IngredientInfo<T> ingredientInfo) {
 		ColorNamer colorNamer = Internal.getColorNamer();
 
 		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
@@ -233,13 +221,12 @@ public class IngredientGrid implements IRecipeFocusSource {
 			String colorNamesString = Joiner.on(", ").join(colorNames);
 			Component colorTranslation = new TranslatableComponent("jei.tooltip.item.colors", colorNamesString)
 				.withStyle(ChatFormatting.GRAY);
-			List<FormattedText> lines = StringUtil.splitLines(colorTranslation, maxWidth);
-			tooltip.addAll(lines);
+			tooltip.add(colorTranslation);
 		}
 	}
 
-	public static void addEditModeInfoToTooltip(List<FormattedText> tooltip, int maxWidth) {
-		List<FormattedText> lines = List.of(
+	public static void addEditModeInfoToTooltip(List<Component> tooltip) {
+		List<Component> lines = List.of(
 			TextComponent.EMPTY,
 			new TranslatableComponent("gui.jei.editMode.description")
 				.withStyle(ChatFormatting.DARK_GREEN),
@@ -252,7 +239,6 @@ public class IngredientGrid implements IRecipeFocusSource {
 				KeyBindings.toggleWildcardHideIngredient.getTranslatedKeyMessage()
 			).withStyle(ChatFormatting.GRAY)
 		);
-		lines = StringUtil.splitLines(lines, maxWidth);
 		tooltip.addAll(lines);
 	}
 
