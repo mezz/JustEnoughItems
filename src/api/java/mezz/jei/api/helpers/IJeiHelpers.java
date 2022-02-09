@@ -3,7 +3,8 @@ package mezz.jei.api.helpers;
 import mezz.jei.api.IModPlugin;
 
 /**
- * IJeiHelpers provides helpers and tools for addon mods.
+ * {@link IJeiHelpers} provides helpers and tools for addon mods.
+ *
  * An instance is passed to your {@link IModPlugin}'s registration methods.
  */
 public interface IJeiHelpers {

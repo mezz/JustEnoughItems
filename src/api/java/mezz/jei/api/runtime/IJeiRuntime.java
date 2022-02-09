@@ -7,8 +7,6 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 
-import java.util.Optional;
-
 /**
  * Gives access to JEI functions that are available once everything has loaded.
  * The IJeiRuntime instance is passed to your mod plugin in {@link IModPlugin#onRuntimeAvailable(IJeiRuntime)}.
@@ -63,7 +61,8 @@ public interface IJeiRuntime {
 	IIngredientManager getIngredientManager();
 
 	/**
-	 * The {@link IIngredientVisibility} is provided by JEI and has some useful functions related to recipe ingredients.
+	 * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
+	 * ingredients based on what is visible in JEI.
 	 *
 	 * @since 9.3.0
 	 */

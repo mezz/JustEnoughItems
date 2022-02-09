@@ -9,7 +9,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.registration.IRecipeRegistration;
 
 /**
- * Allows creation of vanilla recipes.
+ * The {@link IVanillaRecipeFactory} allows creation of vanilla recipes.
  * Get the instance from {@link IJeiHelpers#getStackHelper()}.
  *
  * Use {@link IRecipeRegistration#addRecipes(Collection, net.minecraft.resources.ResourceLocation)} to add the recipe.

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.recipes.RecipeManagerInternal;
 import net.minecraft.resources.ResourceLocation;
 
@@ -20,17 +21,19 @@ import net.minecraft.network.chat.Component;
 public class RecipeRegistration implements IRecipeRegistration {
 	private final IJeiHelpers jeiHelpers;
 	private final IIngredientManager ingredientManager;
+	private final IIngredientVisibility ingredientVisibility;
 	private final IVanillaRecipeFactory vanillaRecipeFactory;
 	private final RecipeManagerInternal recipeManager;
 
 	public RecipeRegistration(
 		IJeiHelpers jeiHelpers,
 		IIngredientManager ingredientManager,
-		IVanillaRecipeFactory vanillaRecipeFactory,
+		IIngredientVisibility ingredientVisibility, IVanillaRecipeFactory vanillaRecipeFactory,
 		RecipeManagerInternal recipeManager
 	) {
 		this.jeiHelpers = jeiHelpers;
 		this.ingredientManager = ingredientManager;
+		this.ingredientVisibility = ingredientVisibility;
 		this.vanillaRecipeFactory = vanillaRecipeFactory;
 		this.recipeManager = recipeManager;
 	}
@@ -48,6 +51,11 @@ public class RecipeRegistration implements IRecipeRegistration {
 	@Override
 	public IVanillaRecipeFactory getVanillaRecipeFactory() {
 		return vanillaRecipeFactory;
+	}
+
+	@Override
+	public IIngredientVisibility getIngredientVisibility() {
+		return ingredientVisibility;
 	}
 
 	@Override

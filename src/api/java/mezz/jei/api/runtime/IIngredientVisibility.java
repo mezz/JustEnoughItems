@@ -2,10 +2,15 @@ package mezz.jei.api.runtime;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.registration.IRecipeRegistration;
 
 /**
- * The {@link IIngredientManager} is provided by JEI and has some useful functions related to recipe ingredients.
- * An instance is passed to your plugin in {@link IModPlugin#registerRecipes} and it is accessible from
+ * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
+ * ingredients based on what is visible in JEI.
+ *
+ * An instance available during {@link IModPlugin#registerRecipes}
+ * from {@link IRecipeRegistration#getIngredientVisibility()}
+ * and it is accessible at runtime from
  * {@link IJeiRuntime#getIngredientVisibility()}.
  *
  * @since JEI 9.3.0

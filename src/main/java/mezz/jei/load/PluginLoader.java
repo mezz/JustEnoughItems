@@ -143,7 +143,7 @@ public class PluginLoader {
 		timer.stop();
 
 		VanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory(ingredientManager);
-		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, vanillaRecipeFactory, recipeManagerInternal);
+		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, ingredientVisibility, vanillaRecipeFactory, recipeManagerInternal);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
 		return new RecipeManager(recipeManagerInternal, modIdHelper, ingredientManager);

@@ -3,6 +3,7 @@ package mezz.jei.api.registration;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.runtime.IIngredientVisibility;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.helpers.IJeiHelpers;
@@ -12,11 +13,28 @@ import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.network.chat.Component;
 
 public interface IRecipeRegistration {
+	/**
+	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
+	 */
 	IJeiHelpers getJeiHelpers();
 
+	/**
+	 * The {@link IIngredientManager} has some useful functions related to recipe ingredients.
+	 */
 	IIngredientManager getIngredientManager();
 
+	/**
+	 * The {@link IVanillaRecipeFactory} allows creation of vanilla recipes.
+	 */
 	IVanillaRecipeFactory getVanillaRecipeFactory();
+
+	/**
+	 * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
+	 * ingredients based on what is visible in JEI.
+	 *
+	 * @since 9.3.1
+	 */
+	IIngredientVisibility getIngredientVisibility();
 
 	/**
 	 * Add the recipes provided by your plugin.
