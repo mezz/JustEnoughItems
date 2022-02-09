@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.item.crafting.IRecipe;
 
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -15,6 +16,8 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+
+import javax.annotation.Nullable;
 
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
@@ -130,5 +133,19 @@ public interface IRecipeCategory<T> {
 	 */
 	default boolean isHandled(T recipe) {
 		return true;
+	}
+
+	/**
+	 * Returns the registry name of the recipe, or null if there is none.
+	 * With advanced tooltips enabled, this may be shown on the output ingredient.
+	 *
+	 * @since JEI 7.11.0
+	 */
+	@Nullable
+	default ResourceLocation getRegistryName(T recipe) {
+		if (recipe instanceof IRecipe) {
+			return ((IRecipe<?>) recipe).getId();
+		}
+		return null;
 	}
 }
