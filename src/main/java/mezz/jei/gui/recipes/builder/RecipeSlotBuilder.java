@@ -35,9 +35,9 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	private final int xPos;
 	private final int yPos;
 	@Nullable
-	private OffsetDrawable background;
+	private IDrawable background;
 	@Nullable
-	private OffsetDrawable overlay;
+	private IDrawable overlay;
 	@Nullable
 	private String slotName;
 
@@ -76,14 +76,14 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	@Override
 	public IRecipeSlotBuilder setBackground(IDrawable background, int xOffset, int yOffset) {
 		ErrorUtil.checkNotNull(background, "background");
-		this.background = new OffsetDrawable(background, xOffset, yOffset);
+		this.background = OffsetDrawable.create(background, xOffset, yOffset);
 		return this;
 	}
 
 	@Override
 	public IRecipeSlotBuilder setOverlay(IDrawable overlay, int xOffset, int yOffset) {
 		ErrorUtil.checkNotNull(overlay, "overlay");
-		this.overlay = new OffsetDrawable(overlay, xOffset, yOffset);
+		this.overlay = OffsetDrawable.create(overlay, xOffset, yOffset);
 		return this;
 	}
 
