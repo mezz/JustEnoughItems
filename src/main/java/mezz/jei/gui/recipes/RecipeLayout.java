@@ -117,7 +117,12 @@ public class RecipeLayout<R> {
 
 		if (index >= 0) {
 			IDrawable icon = Internal.getTextures().getRecipeTransfer();
-			this.recipeTransferButton = new RecipeTransferButton(0, 0, icon, this);
+			IDrawable background = recipeCategory.getBackground();
+			int width = background.getWidth();
+			int height = background.getHeight();
+			int buttonX = width + RECIPE_BORDER_PADDING + 2;
+			int buttonY = height - RecipeTransferButton.RECIPE_BUTTON_SIZE;
+			this.recipeTransferButton = new RecipeTransferButton(buttonX, buttonY, icon, this);
 		} else {
 			this.recipeTransferButton = null;
 		}

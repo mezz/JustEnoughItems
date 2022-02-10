@@ -21,7 +21,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import java.util.List;
 
 public class RecipeTransferButton extends GuiIconButtonSmall {
-	private static final int RECIPE_BUTTON_SIZE = 13;
+	public static final int RECIPE_BUTTON_SIZE = 13;
 
 	private final RecipeLayout<?> recipeLayout;
 	@Nullable
