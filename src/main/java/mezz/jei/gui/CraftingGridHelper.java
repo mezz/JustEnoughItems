@@ -21,10 +21,8 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	@SuppressWarnings("removal")
 	@Override
 	public <T> void setInputs(IGuiIngredientGroup<T> ingredientGroup, List<List<T>> inputs) {
-		int width;
-		int height;
-		width = height = getShapelessSize(inputs.size());
-		setInputs(ingredientGroup, inputs, width, height);
+		int size = getShapelessSize(inputs.size());
+		setInputs(ingredientGroup, inputs, size, size);
 	}
 
 	@SuppressWarnings("removal")
@@ -41,8 +39,8 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	public <T> void setInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height) {
 		if (width <= 0 || height <= 0) {
 			builder.setShapeless();
-			width = height = getShapelessSize(inputs.size());
 		}
+
 		List<IRecipeSlotBuilder> inputSlots = new ArrayList<>();
 		for (int y = 0; y < 3; ++y) {
 			for (int x = 0; x < 3; ++x) {
@@ -51,9 +49,21 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 			}
 		}
 
+		setInputs(inputSlots, ingredientType, inputs, width, height);
+	}
+
+	@Override
+	public <T> void setInputs(List<IRecipeSlotBuilder> slotBuilders, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height) {
+		if (width <= 0 || height <= 0) {
+			width = height = getShapelessSize(inputs.size());
+		}
+		if (slotBuilders.size() < width * height) {
+			throw new IllegalArgumentException(String.format("There are not enough slots (%s) to hold a recipe of this size. (%sx%s)", slotBuilders.size(), width, height));
+		}
+
 		for (int i = 0; i < inputs.size(); i++) {
 			int index = getCraftingIndex(i, width, height);
-			IRecipeSlotBuilder slot = inputSlots.get(index);
+			IRecipeSlotBuilder slot = slotBuilders.get(index);
 
 			@Nullable List<@Nullable T> ingredients = inputs.get(i);
 			if (ingredients != null) {
