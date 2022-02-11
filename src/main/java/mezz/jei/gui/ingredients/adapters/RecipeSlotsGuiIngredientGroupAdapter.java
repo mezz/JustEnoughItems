@@ -83,11 +83,15 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	public Map<Integer, RecipeSlotGuiIngredientAdapter<T>> getGuiIngredients() {
 		List<RecipeSlot> slots = this.recipeSlots.getSlots();
 		if (guiIngredientsCache.size() < slots.size()) {
-			for (RecipeSlot recipeSlot : slots) {
-				int legacyIngredientIndex = recipeSlot.getLegacyIngredientIndex();
-				if (!guiIngredientsCache.containsKey(legacyIngredientIndex)) {
+			for (int i = 0; i < slots.size(); i++) {
+				RecipeSlot recipeSlot = slots.get(i);
+				int index = recipeSlot.getLegacyIngredientIndex();
+				if (index == -1) {
+					index = i;
+				}
+				if (!guiIngredientsCache.containsKey(index)) {
 					RecipeSlotGuiIngredientAdapter<T> adapter = new RecipeSlotGuiIngredientAdapter<>(recipeSlot, this.ingredientType);
-					guiIngredientsCache.put(legacyIngredientIndex, adapter);
+					guiIngredientsCache.put(index, adapter);
 				}
 			}
 		}
