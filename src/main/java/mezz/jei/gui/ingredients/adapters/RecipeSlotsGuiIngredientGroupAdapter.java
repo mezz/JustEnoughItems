@@ -37,7 +37,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	private final RecipeSlots recipeSlots;
 	private final IIngredientManager ingredientManager;
 	private final IIngredientType<T> ingredientType;
-	private final Map<Integer, RecipeSlotGuiIngredientAdapter<T>> guiIngredients = new Int2ObjectArrayMap<>();
+	private final Map<Integer, RecipeSlotGuiIngredientAdapter<T>> guiIngredientsCache = new Int2ObjectArrayMap<>();
 	/**
 	 * For backward compatibility with {@link IGuiIngredientGroup},
 	 * we keep "per-recipe" tooltip callbacks here.
@@ -65,7 +65,8 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	}
 
 	private Optional<RecipeSlot> getSlot(int guiIngredientIndex) {
-		RecipeSlotGuiIngredientAdapter<T> adapter = this.guiIngredients.get(guiIngredientIndex);
+		Map<Integer, RecipeSlotGuiIngredientAdapter<T>> guiIngredients = getGuiIngredients();
+		RecipeSlotGuiIngredientAdapter<T> adapter = guiIngredients.get(guiIngredientIndex);
 		return Optional.ofNullable(adapter)
 			.map(RecipeSlotGuiIngredientAdapter::getRecipeSlot);
 	}
@@ -79,8 +80,18 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	}
 
 	@Override
-	public Map<Integer, ? extends IGuiIngredient<T>> getGuiIngredients() {
-		return guiIngredients;
+	public Map<Integer, RecipeSlotGuiIngredientAdapter<T>> getGuiIngredients() {
+		List<RecipeSlot> slots = this.recipeSlots.getSlots();
+		if (guiIngredientsCache.size() < slots.size()) {
+			for (RecipeSlot recipeSlot : slots) {
+				int legacyIngredientIndex = recipeSlot.getLegacyIngredientIndex();
+				if (!guiIngredientsCache.containsKey(legacyIngredientIndex)) {
+					RecipeSlotGuiIngredientAdapter<T> adapter = new RecipeSlotGuiIngredientAdapter<>(recipeSlot, this.ingredientType);
+					guiIngredientsCache.put(legacyIngredientIndex, adapter);
+				}
+			}
+		}
+		return Collections.unmodifiableMap(guiIngredientsCache);
 	}
 
 	@Override
@@ -108,7 +119,6 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		recipeSlot.setRendererOverrides(rendererOverrides);
 
 		this.recipeSlots.addSlot(recipeSlot);
-		this.guiIngredients.put(ingredientIndex, new RecipeSlotGuiIngredientAdapter<>(recipeSlot, this.ingredientType));
 	}
 
 	@Override
@@ -140,10 +150,11 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		int inputIndex = 0;
 		int outputIndex = 0;
 
+		Map<Integer, ? extends IGuiIngredient<T>> guiIngredients = getGuiIngredients();
 		List<Integer> slotIndexes = new ArrayList<>(guiIngredients.keySet());
 		Collections.sort(slotIndexes);
 		for (int slotIndex : slotIndexes) {
-			IGuiIngredient<?> guiIngredient = this.guiIngredients.get(slotIndex);
+			IGuiIngredient<?> guiIngredient = guiIngredients.get(slotIndex);
 			if (guiIngredient.isInput()) {
 				if (inputIndex < inputs.size()) {
 					@Nullable List<@Nullable T> input = inputs.get(inputIndex);
