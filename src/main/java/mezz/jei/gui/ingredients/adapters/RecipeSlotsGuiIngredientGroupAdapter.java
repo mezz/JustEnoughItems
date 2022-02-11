@@ -45,6 +45,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	private final List<IRecipeSlotTooltipCallback> legacyTooltipCallbacks = new ArrayList<>();
 
 	private final int cycleOffset;
+	private final int slotOffset;
 	/**
 	 * If focus is set and any of the guiIngredients contains focus
 	 * they will only display focus instead of rotating through all their values.
@@ -56,12 +57,14 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		RecipeSlots recipeSlots,
 		IIngredientManager ingredientManager,
 		IIngredientType<T> ingredientType,
-		int cycleOffset
+		int cycleOffset,
+		int slotOffset
 	) {
 		this.recipeSlots = recipeSlots;
 		this.ingredientManager = ingredientManager;
 		this.ingredientType = ingredientType;
 		this.cycleOffset = cycleOffset;
+		this.slotOffset = slotOffset;
 	}
 
 	private Optional<RecipeSlot> getSlot(int guiIngredientIndex) {
@@ -87,7 +90,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 				RecipeSlot recipeSlot = slots.get(i);
 				int index = recipeSlot.getLegacyIngredientIndex();
 				if (index == -1) {
-					index = i;
+					index = i + slotOffset;
 				}
 				if (!guiIngredientsCache.containsKey(index)) {
 					RecipeSlotGuiIngredientAdapter<T> adapter = new RecipeSlotGuiIngredientAdapter<>(recipeSlot, this.ingredientType);

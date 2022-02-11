@@ -11,8 +11,8 @@ import net.minecraft.world.item.ItemStack;
 public class RecipeSlotsGuiItemStackGroupAdapter extends RecipeSlotsGuiIngredientGroupAdapter<ItemStack> implements IGuiItemStackGroup {
 	private static final ItemStackRenderer renderer = new ItemStackRenderer();
 
-	public RecipeSlotsGuiItemStackGroupAdapter(RecipeSlots recipeSlots, IIngredientManager ingredientManager, int cycleOffset) {
-		super(recipeSlots, ingredientManager, VanillaTypes.ITEM, cycleOffset);
+	public RecipeSlotsGuiItemStackGroupAdapter(RecipeSlots recipeSlots, IIngredientManager ingredientManager, int cycleOffset, int slotOffset) {
+		super(recipeSlots, ingredientManager, VanillaTypes.ITEM, cycleOffset, slotOffset);
 	}
 
 	@Override
