@@ -85,16 +85,15 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	@Override
 	public Map<Integer, RecipeSlotGuiIngredientAdapter<T>> getGuiIngredients() {
 		List<RecipeSlot> slots = this.recipeSlots.getSlots();
-		if (guiIngredientsCache.size() < slots.size()) {
-			for (int i = 0; i < slots.size(); i++) {
-				RecipeSlot recipeSlot = slots.get(i);
-				int index = recipeSlot.getLegacyIngredientIndex();
-				if (index == -1) {
-					index = i + slotOffset;
-				}
-				if (!guiIngredientsCache.containsKey(index)) {
+		if (guiIngredientsCache.isEmpty()) {
+			// Support for the case where we are reading from this legacy adapter,
+			// but the recipe slots were set by the modern RecipeSlots methods.
+			int index = slotOffset;
+			for (RecipeSlot recipeSlot : slots) {
+				if (recipeSlot.getIngredients(this.ingredientType).findAny().isPresent()) {
 					RecipeSlotGuiIngredientAdapter<T> adapter = new RecipeSlotGuiIngredientAdapter<>(recipeSlot, this.ingredientType);
 					guiIngredientsCache.put(index, adapter);
+					index++;
 				}
 			}
 		}
@@ -117,7 +116,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	}
 
 	private void addSlot(int ingredientIndex, RecipeIngredientRole role, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xInset, int yInset) {
-		LegacyAdaptedIngredientRenderer<T> legacyAdaptedIngredientRenderer = new LegacyAdaptedIngredientRenderer<>(ingredientRenderer, width, height, xInset, yInset);
+		IIngredientRenderer<T> legacyAdaptedIngredientRenderer = LegacyAdaptedIngredientRenderer.create(ingredientRenderer, width, height, xInset, yInset);
 		RecipeSlot recipeSlot = new RecipeSlot(this.ingredientManager, role, xPosition, yPosition, this.cycleOffset);
 		recipeSlot.setLegacyIngredientIndex(ingredientIndex);
 
@@ -126,6 +125,9 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		recipeSlot.setRendererOverrides(rendererOverrides);
 
 		this.recipeSlots.addSlot(recipeSlot);
+
+		RecipeSlotGuiIngredientAdapter<T> adapter = new RecipeSlotGuiIngredientAdapter<>(recipeSlot, this.ingredientType);
+		this.guiIngredientsCache.put(ingredientIndex, adapter);
 	}
 
 	@Override

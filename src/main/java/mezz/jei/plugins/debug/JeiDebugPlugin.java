@@ -69,7 +69,8 @@ public class JeiDebugPlugin implements IModPlugin {
 			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 			registration.addRecipeCategories(
-				new DebugRecipeCategory(guiHelper)
+				new DebugRecipeCategory(guiHelper),
+				new LegacyDebugRecipeCategory(guiHelper)
 			);
 		}
 	}
@@ -127,6 +128,11 @@ public class JeiDebugPlugin implements IModPlugin {
 				new DebugRecipe(),
 				new DebugRecipe()
 			), DebugRecipeCategory.UID);
+
+			registration.addRecipes(Arrays.asList(
+				new DebugRecipe(),
+				new DebugRecipe()
+			), LegacyDebugRecipeCategory.UID);
 		}
 	}
 
