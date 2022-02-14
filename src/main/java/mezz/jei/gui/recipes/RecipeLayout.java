@@ -169,9 +169,17 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 			int height = categoryBackground.getHeight() + (2 * RECIPE_BORDER_PADDING);
 			recipeBorder.draw(matrixStack, -RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING, width, height);
 			background.draw(matrixStack);
-			recipeCategory.draw(recipe, matrixStack, recipeMouseX, recipeMouseY);
-			// drawExtras and drawInfo often render text which messes with the color, this clears it
-			RenderSystem.color4f(1, 1, 1, 1);
+
+			// defensive push/pop to protect against recipe categories changing the last pose
+			matrixStack.pushPose();
+			{
+				recipeCategory.draw(recipe, matrixStack, recipeMouseX, recipeMouseY);
+
+				// drawExtras and drawInfo often render text which messes with the color, this clears it
+				RenderSystem.color4f(1, 1, 1, 1);
+			}
+			matrixStack.popPose();
+
 			if (shapelessIcon != null) {
 				shapelessIcon.draw(matrixStack, background.getWidth());
 			}
