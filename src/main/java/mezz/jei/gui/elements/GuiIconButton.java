@@ -69,8 +69,10 @@ public class GuiIconButton extends Button {
 			double xOffset = x + (width - icon.getWidth()) / 2.0;
 			double yOffset = y + (height - icon.getHeight()) / 2.0;
 			poseStack.pushPose();
-			poseStack.translate(xOffset, yOffset, 0);
-			icon.draw(poseStack);
+			{
+				poseStack.translate(xOffset, yOffset, 0);
+				icon.draw(poseStack);
+			}
 			poseStack.popPose();
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}

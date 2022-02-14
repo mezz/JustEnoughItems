@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.runtime.IIngredientManager;
 
 import java.util.Map;
 import java.util.Optional;

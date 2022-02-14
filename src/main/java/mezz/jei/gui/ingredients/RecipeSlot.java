@@ -161,14 +161,14 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		T value = typedIngredient.getIngredient();
 
-		try {
-			poseStack.pushPose();
-			{
-				poseStack.translate(xOffset, yOffset, 0);
-				drawHighlight(poseStack, 0x7FFFFFFF);
-			}
-			poseStack.popPose();
+		poseStack.pushPose();
+		{
+			poseStack.translate(xOffset, yOffset, 0);
+			drawHighlight(poseStack, 0x7FFFFFFF);
+		}
+		poseStack.popPose();
 
+		try {
 			IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 			List<Component> tooltip = getTooltip(value, ingredientType, ingredientRenderer);
 			TooltipRenderer.drawHoveringText(poseStack, tooltip, xOffset + mouseX, yOffset + mouseY, value, ingredientRenderer);

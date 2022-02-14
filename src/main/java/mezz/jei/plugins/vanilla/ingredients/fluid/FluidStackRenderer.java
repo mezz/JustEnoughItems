@@ -84,17 +84,18 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	public void render(PoseStack poseStack, FluidStack fluidStack) {
 		RenderSystem.enableBlend();
 
-		drawFluid(poseStack, 0, 0, width, height, fluidStack);
+		drawFluid(poseStack, width, height, fluidStack);
 
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 
 		if (overlay != null) {
 			poseStack.pushPose();
-			poseStack.translate(0, 0, 200);
-			overlay.draw(poseStack);
+			{
+				poseStack.translate(0, 0, 200);
+				overlay.draw(poseStack);
+			}
 			poseStack.popPose();
 		}
-
 		RenderSystem.disableBlend();
 	}
 
@@ -103,13 +104,15 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable FluidStack ingredient) {
 		if (ingredient != null) {
 			stack.pushPose();
-			stack.translate(xPosition, yPosition, 0);
-			render(stack, ingredient);
+			{
+				stack.translate(xPosition, yPosition, 0);
+				render(stack, ingredient);
+			}
 			stack.popPose();
 		}
 	}
 
-	private void drawFluid(PoseStack poseStack, final int xPosition, final int yPosition, final int width, final int height, FluidStack fluidStack) {
+	private void drawFluid(PoseStack poseStack, final int width, final int height, FluidStack fluidStack) {
 		Fluid fluid = fluidStack.getFluid();
 		if (fluid == null) {
 			return;
@@ -129,10 +132,10 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			scaledAmount = height;
 		}
 
-		drawTiledSprite(poseStack, xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
+		drawTiledSprite(poseStack, width, height, fluidColor, scaledAmount, fluidStillSprite);
 	}
 
-	private static void drawTiledSprite(PoseStack poseStack, final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
+	private static void drawTiledSprite(PoseStack poseStack, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		Matrix4f matrix = poseStack.last().pose();
 		setGLColorFromInt(color);
@@ -142,13 +145,13 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		final int yTileCount = scaledAmount / TEXTURE_SIZE;
 		final int yRemainder = scaledAmount - (yTileCount * TEXTURE_SIZE);
 
-		final int yStart = yPosition + tiledHeight;
+		final int yStart = tiledHeight;
 
 		for (int xTile = 0; xTile <= xTileCount; xTile++) {
 			for (int yTile = 0; yTile <= yTileCount; yTile++) {
 				int width = (xTile == xTileCount) ? xRemainder : TEXTURE_SIZE;
 				int height = (yTile == yTileCount) ? yRemainder : TEXTURE_SIZE;
-				int x = xPosition + (xTile * TEXTURE_SIZE);
+				int x = (xTile * TEXTURE_SIZE);
 				int y = yStart - ((yTile + 1) * TEXTURE_SIZE);
 				if (width > 0 && height > 0) {
 					int maskTop = TEXTURE_SIZE - height;

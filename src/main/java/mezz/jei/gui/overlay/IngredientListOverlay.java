@@ -196,8 +196,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public void drawOnForeground(Minecraft minecraft, PoseStack poseStack, AbstractContainerScreen<?> gui, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			poseStack.pushPose();
-			poseStack.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
-			this.ghostIngredientDragManager.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
+			{
+				poseStack.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
+				this.ghostIngredientDragManager.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
+			}
 			poseStack.popPose();
 		}
 	}

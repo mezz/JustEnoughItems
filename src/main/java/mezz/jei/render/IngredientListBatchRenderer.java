@@ -260,8 +260,10 @@ public class IngredientListBatchRenderer {
 		try {
 			BakedModel bakedModel = itemRenderer.getModel(itemStack, null, null, 0);
 			poseStack.pushPose();
-			poseStack.translate((area.getX() + padding) / 16D, (area.getY() + padding) / -16D, 0);
-			itemRenderer.render(itemStack, ItemTransforms.TransformType.GUI, false, poseStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
+			{
+				poseStack.translate((area.getX() + padding) / 16D, (area.getY() + padding) / -16D, 0);
+				itemRenderer.render(itemStack, ItemTransforms.TransformType.GUI, false, poseStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
+			}
 			poseStack.popPose();
 		} catch (RuntimeException | LinkageError e) {
 			throw ErrorUtil.createRenderIngredientException(e, itemStack);
@@ -338,11 +340,13 @@ public class IngredientListBatchRenderer {
 		//but before we draw the batch of items as the batch is drawn against the MVM
 		PoseStack modelViewStack = RenderSystem.getModelViewStack();
 		modelViewStack.pushPose();
-		modelViewStack.translate(16, 0, 100 + itemRenderer.blitOffset);
-		modelViewStack.scale(16, -16, 16);
-		modelViewStack.translate(-0.5, -0.5, -0.5);
-		RenderSystem.applyModelViewMatrix();
-		buffer.endBatch();
+		{
+			modelViewStack.translate(16, 0, 100 + itemRenderer.blitOffset);
+			modelViewStack.scale(16, -16, 16);
+			modelViewStack.translate(-0.5, -0.5, -0.5);
+			RenderSystem.applyModelViewMatrix();
+			buffer.endBatch();
+		}
 		modelViewStack.popPose();
 		RenderSystem.applyModelViewMatrix();
 	}

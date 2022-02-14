@@ -13,13 +13,20 @@ import java.util.List;
 
 @SuppressWarnings("removal")
 public class LegacyAdaptedIngredientRenderer<T> implements IIngredientRenderer<T> {
+	public static <T> IIngredientRenderer<T> create(IIngredientRenderer<T> original, int width, int height, int xOffset, int yOffset) {
+		if (xOffset == 0 && yOffset == 0 && original.getWidth() == width && original.getHeight() == height) {
+			return original;
+		}
+		return new LegacyAdaptedIngredientRenderer<>(original, width, height, xOffset, yOffset);
+	}
+
 	private final IIngredientRenderer<T> original;
 	private final int xOffset;
 	private final int yOffset;
 	private final int width;
 	private final int height;
 
-	public LegacyAdaptedIngredientRenderer(IIngredientRenderer<T> original, int width, int height, int xOffset, int yOffset) {
+	private LegacyAdaptedIngredientRenderer(IIngredientRenderer<T> original, int width, int height, int xOffset, int yOffset) {
 		Preconditions.checkArgument(width > 0, "width must be > 0");
 		Preconditions.checkArgument(height > 0, "height must be > 0");
 		this.original = original;
@@ -32,8 +39,10 @@ public class LegacyAdaptedIngredientRenderer<T> implements IIngredientRenderer<T
 	@Override
 	public void render(PoseStack stack, T ingredient) {
 		stack.pushPose();
-		stack.translate(xOffset, yOffset, 0);
-		original.render(stack, ingredient);
+		{
+			stack.translate(xOffset, yOffset, 0);
+			original.render(stack, ingredient);
+		}
 		stack.popPose();
 	}
 
