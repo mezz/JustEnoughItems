@@ -68,9 +68,9 @@ public class BookmarkList implements IIngredientGridSource {
 			return ItemStack.matches(itemStackA, itemStackB);
 		}
 
-		Optional<ITypedIngredient<T>> castB = TypedIngredient.optionalCast(b, a.getType());
-		if (castB.isPresent()) {
-			T ingredientB = castB.get().getIngredient();
+		Optional<T> filteredB = b.getIngredient(a.getType());
+		if (filteredB.isPresent()) {
+			T ingredientB = filteredB.get();
 			String uidB = ingredientHelper.getUniqueId(ingredientB, UidContext.Ingredient);
 			return uidA.equals(uidB);
 		}

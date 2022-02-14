@@ -76,15 +76,6 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return TypedIngredient.createTyped(ingredientManager, value.getType(), ingredient);
 	}
 
-	public static <T, V> Optional<ITypedIngredient<V>> optionalCast(ITypedIngredient<T> value, IIngredientType<V> ingredientType) {
-		if (value.getType() == ingredientType) {
-			@SuppressWarnings("unchecked")
-			ITypedIngredient<V> cast = (ITypedIngredient<V>) value;
-			return Optional.of(cast);
-		}
-		return Optional.empty();
-	}
-
 	private final IIngredientType<T> ingredientType;
 	private final T ingredient;
 
@@ -93,6 +84,7 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		this.ingredient = ingredient;
 	}
 
+	@Override
 	public <V> Optional<V> getIngredient(IIngredientType<V> ingredientType) {
 		if (this.ingredientType == ingredientType) {
 			@SuppressWarnings("unchecked")

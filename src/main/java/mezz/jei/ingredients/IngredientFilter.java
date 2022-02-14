@@ -224,9 +224,8 @@ public class IngredientFilter implements IIngredientGridSource {
 	public <T> List<T> getFilteredIngredients(String filterText, IIngredientType<T> ingredientType) {
 		List<ITypedIngredient<?>> ingredientList = getIngredientList(filterText);
 		return ingredientList.stream()
-			.map(i -> TypedIngredient.optionalCast(i, ingredientType))
+			.map(i -> i.getIngredient(ingredientType))
 			.flatMap(Optional::stream)
-			.map(ITypedIngredient::getIngredient)
 			.toList();
 	}
 

@@ -165,8 +165,8 @@ public class GuiScreenHelper {
 		if (slotUnderMouse == null) {
 			return null;
 		}
-		return TypedIngredient.optionalCast(typedIngredient, VanillaTypes.ITEM)
-			.filter(i -> ItemStack.matches(slotUnderMouse.getItem(), i.getIngredient()))
+		return typedIngredient.getIngredient(VanillaTypes.ITEM)
+			.filter(i -> ItemStack.matches(slotUnderMouse.getItem(), i))
 			.map(i ->
 				new Rect2i(
 					guiContainer.getGuiLeft() + slotUnderMouse.x,

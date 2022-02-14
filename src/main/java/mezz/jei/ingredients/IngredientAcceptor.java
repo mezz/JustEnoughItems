@@ -74,9 +74,8 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	public <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
 		return this.ingredients.stream()
 			.flatMap(Optional::stream)
-			.map(i -> TypedIngredient.optionalCast(i, ingredientType))
-			.flatMap(Optional::stream)
-			.map(ITypedIngredient::getIngredient);
+			.map(i -> i.getIngredient(ingredientType))
+			.flatMap(Optional::stream);
 	}
 
 	public Stream<IIngredientType<?>> getIngredientTypes() {

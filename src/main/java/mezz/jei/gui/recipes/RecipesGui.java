@@ -23,7 +23,6 @@ import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.textures.Textures;
-import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
@@ -458,8 +457,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		return getIngredientUnderMouse(x, y)
 			.map(IClickedIngredient::getValue)
-			.flatMap(i -> TypedIngredient.optionalCast(i, ingredientType))
-			.map(ITypedIngredient::getIngredient)
+			.flatMap(i -> i.getIngredient(ingredientType))
 			.orElse(null);
 	}
 

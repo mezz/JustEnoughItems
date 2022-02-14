@@ -182,7 +182,8 @@ public class IngredientFilterTest {
 
 		IIngredientListElement<?> element = baseList.get(0);
 		ITypedIngredient<?> typedIngredient = element.getTypedIngredient();
-		ITypedIngredient<TestIngredient> blacklistedIngredient = TypedIngredient.optionalCast(typedIngredient, TestIngredient.TYPE).orElseThrow();
+		@SuppressWarnings("unchecked")
+		ITypedIngredient<TestIngredient> blacklistedIngredient = (ITypedIngredient<TestIngredient>) typedIngredient;
 		TestIngredientHelper testIngredientHelper = new TestIngredientHelper();
 		editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, blacklistedIngredient, IngredientBlacklistType.ITEM, testIngredientHelper);
 

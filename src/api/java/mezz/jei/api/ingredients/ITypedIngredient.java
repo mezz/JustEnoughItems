@@ -1,5 +1,7 @@
 package mezz.jei.api.ingredients;
 
+import java.util.Optional;
+
 /**
  * Ingredient with type information, for type safety.
  * These ingredients are validated by JEI, and only contain valid types and ingredients.
@@ -21,4 +23,11 @@ public interface ITypedIngredient<T> {
 	 * @since 9.3.0
 	 */
 	T getIngredient();
+
+	/**
+	 * @return the ingredient wrapped by this instance, only if it matches the given type.
+	 *
+	 * @since 9.3.3
+	 */
+	<V> Optional<V> getIngredient(IIngredientType<V> ingredientType);
 }

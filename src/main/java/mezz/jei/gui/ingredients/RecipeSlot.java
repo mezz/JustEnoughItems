@@ -118,9 +118,8 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	@Override
 	public <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
 		return getAllIngredients()
-			.map(i -> TypedIngredient.optionalCast(i, ingredientType))
-			.flatMap(Optional::stream)
-			.map(ITypedIngredient::getIngredient);
+			.map(i -> i.getIngredient(ingredientType))
+			.flatMap(Optional::stream);
 	}
 
 	@Override
@@ -131,8 +130,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	@Override
 	public <T> Optional<T> getDisplayedIngredient(IIngredientType<T> ingredientType) {
 		return getDisplayedIngredient()
-			.flatMap(i -> TypedIngredient.optionalCast(i, ingredientType))
-			.map(ITypedIngredient::getIngredient);
+			.flatMap(i -> i.getIngredient(ingredientType));
 	}
 
 	@Override
