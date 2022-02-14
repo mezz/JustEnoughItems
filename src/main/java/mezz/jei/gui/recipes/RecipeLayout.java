@@ -154,10 +154,18 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			int height = categoryBackground.getHeight() + (2 * RECIPE_BORDER_PADDING);
 			recipeBorder.draw(minecraft, -RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING, width, height);
 			background.draw(minecraft);
-			recipeCategory.drawExtras(minecraft);
-			recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);
-			// drawExtras and drawInfo often render text which messes with the color, this clears it
-			GlStateManager.color(1, 1, 1, 1);
+
+			// defensive push/pop to protect against recipe categories changing the last matrix
+			GlStateManager.pushMatrix();
+			{
+				recipeCategory.drawExtras(minecraft);
+				recipeWrapper.drawInfo(minecraft, background.getWidth(), background.getHeight(), recipeMouseX, recipeMouseY);
+
+				// drawExtras and drawInfo often render text which messes with the color, this clears it
+				GlStateManager.color(1, 1, 1, 1);
+			}
+			GlStateManager.popMatrix();
+
 			if (shapelessIcon != null) {
 				shapelessIcon.draw(minecraft, background.getWidth());
 			}
