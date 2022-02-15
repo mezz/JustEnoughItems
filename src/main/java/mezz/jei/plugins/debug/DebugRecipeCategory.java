@@ -13,7 +13,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -126,7 +126,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, DebugRecipe recipe, List<? extends IFocus<?>> focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, DebugRecipe recipe, IFocusGroup focuses) {
 		// ITEM type
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 70, 0)
 			.addItemStack(new ItemStack(Items.WATER_BUCKET))

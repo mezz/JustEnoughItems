@@ -8,51 +8,29 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.Focus;
 import mezz.jei.gui.elements.OffsetDrawable;
 import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.ingredients.RecipeSlots;
-import mezz.jei.gui.ingredients.RendererOverrides;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.IngredientAcceptor;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
 import mezz.jei.util.ErrorUtil;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotSource {
-	private final IIngredientManager ingredientManager;
-	private final RecipeIngredientRole role;
 	private final IngredientAcceptor ingredients;
-	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>(0);
-	private final RendererOverrides rendererOverrides;
-	private final int xPos;
-	private final int yPos;
-	@Nullable
-	private IDrawable background;
-	@Nullable
-	private IDrawable overlay;
-	@Nullable
-	private String slotName;
+	private final RecipeSlot recipeSlot;
 
-	public RecipeSlotBuilder(
-		IIngredientManager ingredientManager,
-		RecipeIngredientRole role,
-		int x,
-		int y
-	) {
-		this.ingredientManager = ingredientManager;
-		this.rendererOverrides = new RendererOverrides();
+	public RecipeSlotBuilder(IIngredientManager ingredientManager, RecipeIngredientRole role, int x, int y, int ingredientCycleOffset) {
 		this.ingredients = new IngredientAcceptor(ingredientManager);
-		this.role = role;
-		this.xPos = x;
-		this.yPos = y;
+		this.recipeSlot = new RecipeSlot(ingredientManager, role, x, y, ingredientCycleOffset);
 	}
 
 	@Override
@@ -76,14 +54,18 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	@Override
 	public IRecipeSlotBuilder setBackground(IDrawable background, int xOffset, int yOffset) {
 		ErrorUtil.checkNotNull(background, "background");
-		this.background = OffsetDrawable.create(background, xOffset, yOffset);
+
+		IDrawable offsetBackground = OffsetDrawable.create(background, xOffset, yOffset);
+		this.recipeSlot.setBackground(offsetBackground);
 		return this;
 	}
 
 	@Override
 	public IRecipeSlotBuilder setOverlay(IDrawable overlay, int xOffset, int yOffset) {
 		ErrorUtil.checkNotNull(overlay, "overlay");
-		this.overlay = OffsetDrawable.create(overlay, xOffset, yOffset);
+
+		IDrawable offsetOverlay = OffsetDrawable.create(overlay, xOffset, yOffset);
+		this.recipeSlot.setOverlay(offsetOverlay);
 		return this;
 	}
 
@@ -92,7 +74,8 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 		Preconditions.checkArgument(capacityMb > 0, "capacityMb must be > 0");
 
 		FluidStackRenderer fluidStackRenderer = new FluidStackRenderer(capacityMb, showCapacity, width, height);
-		return setCustomRenderer(VanillaTypes.FLUID, fluidStackRenderer);
+		this.recipeSlot.addRenderOverride(VanillaTypes.FLUID, fluidStackRenderer);
+		return this;
 	}
 
 	@Override
@@ -103,7 +86,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(ingredientRenderer, "ingredientRenderer");
 
-		this.rendererOverrides.addOverride(ingredientType, ingredientRenderer);
+		this.recipeSlot.addRenderOverride(ingredientType, ingredientRenderer);
 		return this;
 	}
 
@@ -111,49 +94,33 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	public IRecipeSlotBuilder addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
 		ErrorUtil.checkNotNull(tooltipCallback, "tooltipCallback");
 
-		this.tooltipCallbacks.add(tooltipCallback);
+		this.recipeSlot.addTooltipCallback(tooltipCallback);
 		return this;
 	}
 
 	@Override
 	public IRecipeSlotBuilder setSlotName(String slotName) {
-		this.slotName = slotName;
+		ErrorUtil.checkNotNull(slotName, "slotName");
+
+		this.recipeSlot.setSlotName(slotName);
 		return this;
 	}
 
 	@Override
-	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, List<Focus<?>> focuses) {
+	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, IFocusGroup focuses) {
 		RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
 
-		RecipeSlot recipeSlot = new RecipeSlot(
-			this.ingredientManager,
-			this.role,
-			this.xPos,
-			this.yPos,
-			recipeLayout.getIngredientCycleOffset()
-		);
-
 		List<Optional<ITypedIngredient<?>>> allIngredients = this.ingredients.getAllIngredients();
-
-		recipeSlot.set(allIngredients, focuses);
-		if (this.background != null) {
-			recipeSlot.setBackground(this.background);
-		}
-		if (this.overlay != null) {
-			recipeSlot.setOverlay(this.overlay);
-		}
-		if (this.slotName != null) {
-			recipeSlot.setSlotName(this.slotName);
-		}
-		this.tooltipCallbacks.forEach(recipeSlot::addTooltipCallback);
-		recipeSlot.setRendererOverrides(this.rendererOverrides);
+		RecipeIngredientRole role = recipeSlot.getRole();
+		List<ITypedIngredient<?>> focusMatches = this.ingredients.getMatches(focuses, role);
+		recipeSlot.set(allIngredients, focusMatches);
 
 		recipeSlots.addSlot(recipeSlot);
 	}
 
 	@Override
 	public RecipeIngredientRole getRole() {
-		return role;
+		return recipeSlot.getRole();
 	}
 
 	@Override

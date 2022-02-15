@@ -10,7 +10,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.config.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -19,8 +19,6 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.level.block.Block;
-
-import java.util.List;
 
 import static mezz.jei.api.recipe.RecipeIngredientRole.INPUT;
 import static mezz.jei.api.recipe.RecipeIngredientRole.OUTPUT;
@@ -107,7 +105,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, T recipe, List<? extends IFocus<?>> focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {
 		builder.addSlot(INPUT, 1, 1)
 			.addIngredients(recipe.getIngredients().get(0));
 

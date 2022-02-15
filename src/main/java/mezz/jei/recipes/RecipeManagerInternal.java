@@ -4,12 +4,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
-import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import mezz.jei.ingredients.IIngredientSupplier;
 import mezz.jei.ingredients.IngredientManager;
@@ -121,8 +122,8 @@ public class RecipeManagerInternal {
 	public static <T> IIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory) {
 		try {
 			IIngredientManager ingredientManager = Internal.getIngredientManager();
-			RecipeLayoutBuilder builder = new RecipeLayoutBuilder(ingredientManager);
-			recipeCategory.setRecipe(builder, recipe, List.of());
+			RecipeLayoutBuilder builder = new RecipeLayoutBuilder(ingredientManager, 0);
+			recipeCategory.setRecipe(builder, recipe, FocusGroup.EMPTY);
 			if (builder.isUsed()) {
 				return builder;
 			}
@@ -156,7 +157,7 @@ public class RecipeManagerInternal {
 		}
 	}
 
-	private boolean isCategoryHidden(IRecipeCategory<?> recipeCategory, List<Focus<?>> focuses) {
+	private boolean isCategoryHidden(IRecipeCategory<?> recipeCategory, IFocusGroup focuses) {
 		// hide the category if it has been explicitly hidden
 		if (hiddenRecipeCategoryUids.contains(recipeCategory.getUid())) {
 			return true;
@@ -174,10 +175,10 @@ public class RecipeManagerInternal {
 		return visibleRecipes.findAny().isEmpty();
 	}
 
-	public Stream<IRecipeCategory<?>> getRecipeCategoriesStream(Collection<ResourceLocation> recipeCategoryUids, List<Focus<?>> focuses, boolean includeHidden) {
+	public Stream<IRecipeCategory<?>> getRecipeCategoriesStream(Collection<ResourceLocation> recipeCategoryUids, IFocusGroup focuses, boolean includeHidden) {
 		if (recipeCategoryUids.isEmpty() && focuses.isEmpty() && !includeHidden) {
 			if (this.recipeCategoriesVisibleCache == null) {
-				this.recipeCategoriesVisibleCache = getRecipeCategoriesStreamUncached(List.of(), List.of(), false)
+				this.recipeCategoriesVisibleCache = getRecipeCategoriesStreamUncached(recipeCategoryUids, focuses, includeHidden)
 					.collect(ImmutableList.toImmutableList());
 			}
 			return this.recipeCategoriesVisibleCache.stream();
@@ -186,7 +187,7 @@ public class RecipeManagerInternal {
 		return getRecipeCategoriesStreamUncached(recipeCategoryUids, focuses, includeHidden);
 	}
 
-	private Stream<IRecipeCategory<?>> getRecipeCategoriesStreamUncached(Collection<ResourceLocation> recipeCategoryUids, List<Focus<?>> focuses, boolean includeHidden) {
+	private Stream<IRecipeCategory<?>> getRecipeCategoriesStreamUncached(Collection<ResourceLocation> recipeCategoryUids, IFocusGroup focuses, boolean includeHidden) {
 		Stream<IRecipeCategory<?>> categoryStream;
 		if (focuses.isEmpty()) {
 			if (recipeCategoryUids.isEmpty()) {
@@ -202,8 +203,7 @@ public class RecipeManagerInternal {
 		} else {
 			// focus => get all recipe categories from plugins with the focus
 			Stream<ResourceLocation> uidStream = this.plugins.stream()
-				.flatMap(p -> focuses.stream().flatMap(focus -> p.getRecipeCategoryUids(focus).stream())
-				)
+				.flatMap(p -> getPluginRecipeCategoryUidStream(p, focuses))
 				.distinct();
 
 			// non-empty recipeCategoryUids => narrow the results to just ones in recipeCategoryUids
@@ -223,7 +223,7 @@ public class RecipeManagerInternal {
 		return categoryStream.sorted(this.recipeCategoryComparator);
 	}
 
-	public <T> Stream<T> getRecipesStream(IRecipeCategory<T> recipeCategory, List<Focus<?>> focuses, boolean includeHidden) {
+	public <T> Stream<T> getRecipesStream(IRecipeCategory<T> recipeCategory, IFocusGroup focuses, boolean includeHidden) {
 		Stream<T> recipes = this.plugins.stream()
 			.flatMap(p -> getPluginRecipeStream(p, recipeCategory, focuses));
 
@@ -238,9 +238,19 @@ public class RecipeManagerInternal {
 		return recipes;
 	}
 
-	private static <T> Stream<T> getPluginRecipeStream(IRecipeManagerPlugin plugin, IRecipeCategory<T> recipeCategory, List<Focus<?>> focuses) {
+	private static Stream<ResourceLocation> getPluginRecipeCategoryUidStream(IRecipeManagerPlugin plugin, IFocusGroup focuses) {
+		List<IFocus<?>> allFocuses = focuses.getAllFocuses();
+		return allFocuses.stream()
+			.flatMap(focus -> {
+				List<ResourceLocation> recipeCategoryUids = plugin.getRecipeCategoryUids(focus);
+				return recipeCategoryUids.stream();
+			});
+	}
+
+	private static <T> Stream<T> getPluginRecipeStream(IRecipeManagerPlugin plugin, IRecipeCategory<T> recipeCategory, IFocusGroup focuses) {
 		if (!focuses.isEmpty()) {
-			return focuses.stream()
+			List<IFocus<?>> allFocuses = focuses.getAllFocuses();
+			return allFocuses.stream()
 				.flatMap(focus -> {
 					List<T> recipes = plugin.getRecipes(recipeCategory, focus);
 					return recipes.stream();

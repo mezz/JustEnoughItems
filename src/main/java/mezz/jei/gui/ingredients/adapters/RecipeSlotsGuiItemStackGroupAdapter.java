@@ -8,6 +8,7 @@ import mezz.jei.gui.ingredients.RecipeSlots;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
 import net.minecraft.world.item.ItemStack;
 
+@SuppressWarnings("removal")
 public class RecipeSlotsGuiItemStackGroupAdapter extends RecipeSlotsGuiIngredientGroupAdapter<ItemStack> implements IGuiItemStackGroup {
 	private static final ItemStackRenderer renderer = new ItemStackRenderer();
 

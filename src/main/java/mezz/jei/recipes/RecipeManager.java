@@ -6,6 +6,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -53,7 +54,7 @@ public class RecipeManager implements IRecipeManager {
 	@Nullable
 	public IRecipeCategory<?> getRecipeCategory(ResourceLocation recipeCategoryUid, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		return internal.getRecipeCategoriesStream(List.of(recipeCategoryUid), List.of(), includeHidden)
+		return internal.getRecipeCategoriesStream(List.of(recipeCategoryUid), FocusGroup.EMPTY, includeHidden)
 			.findFirst()
 			.orElse(null);
 	}
@@ -61,21 +62,21 @@ public class RecipeManager implements IRecipeManager {
 	@Override
 	public <V> List<IRecipeCategory<?>> getRecipeCategories(Collection<ResourceLocation> recipeCategoryUids, @Nullable IFocus<V> focus, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategoryUids, "recipeCategoryUids");
-		List<Focus<?>> internalFocus = Focus.checkNullable(focus);
+		IFocusGroup internalFocus = FocusGroup.createFromNullable(focus);
 		return internal.getRecipeCategoriesStream(recipeCategoryUids, internalFocus, includeHidden)
 			.collect(Collectors.toList());
 	}
 
 	@Override
 	public <V> List<IRecipeCategory<?>> getRecipeCategories(@Nullable IFocus<V> focus, boolean includeHidden) {
-		List<Focus<?>> internalFocus = Focus.checkNullable(focus);
+		IFocusGroup internalFocus = FocusGroup.createFromNullable(focus);
 		return internal.getRecipeCategoriesStream(List.of(), internalFocus, includeHidden)
 			.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<IRecipeCategory<?>> getRecipeCategories(Collection<? extends IFocus<?>> focus, boolean includeHidden) {
-		List<Focus<?>> internalFocus = Focus.check(focus);
+		IFocusGroup internalFocus = FocusGroup.create(focus);
 		return internal.getRecipeCategoriesStream(List.of(), internalFocus, includeHidden)
 			.collect(Collectors.toList());
 	}
@@ -84,7 +85,7 @@ public class RecipeManager implements IRecipeManager {
 	@Override
 	public <T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		List<Focus<?>> internalFocus = Focus.checkNullable(focus);
+		IFocusGroup internalFocus = FocusGroup.createFromNullable(focus);
 		return internal.getRecipesStream(recipeCategory, internalFocus, includeHidden)
 			.collect(Collectors.toList());
 	}
@@ -92,7 +93,7 @@ public class RecipeManager implements IRecipeManager {
 	@Override
 	public <T> List<T> getRecipes(IRecipeCategory<T> recipeCategory, List<? extends IFocus<?>> focuses, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		List<Focus<?>> internalFocus = Focus.check(focuses);
+		IFocusGroup internalFocus = FocusGroup.create(focuses);
 		return internal.getRecipesStream(recipeCategory, internalFocus, includeHidden)
 			.collect(Collectors.toList());
 	}
@@ -114,9 +115,9 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocus<?> focus) {
-		List<Focus<?>> checkedFocus = Focus.check(focus);
-		RecipeLayout<T> recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, checkedFocus, ingredientManager, modIdHelper, 0, 0);
+	public <T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus) {
+		IFocusGroup focusGroup = FocusGroup.createFromNullable(focus);
+		RecipeLayout<T> recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, focusGroup, ingredientManager, modIdHelper, 0, 0);
 		Preconditions.checkNotNull(recipeLayout, "Recipe layout crashed during creation, see log.");
 		return recipeLayout.getLegacyAdapter();
 	}

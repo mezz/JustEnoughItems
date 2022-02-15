@@ -39,20 +39,7 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 		RecipeMap recipeMap = this.recipeMaps.get(role);
 		IIngredientHelper<V> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredient.getType());
 		String ingredientUid = ingredientHelper.getUniqueId(ingredient.getIngredient(), UidContext.Recipe);
-
-		List<ResourceLocation> recipeCategories = recipeMap.getRecipeCategories(ingredientUid);
-		if (focus.getRole() == RecipeIngredientRole.INPUT) {
-			List<ResourceLocation> catalystRecipeCategories = this.recipeMaps.get(RecipeIngredientRole.CATALYST)
-				.getRecipeCategories(ingredientUid);
-			return Stream.concat(
-					recipeCategories.stream(),
-					catalystRecipeCategories.stream()
-				)
-				.distinct()
-				.toList();
-		}
-
-		return recipeCategories;
+		return recipeMap.getRecipeCategories(ingredientUid);
 	}
 
 	@Override

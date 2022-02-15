@@ -16,6 +16,7 @@ public enum RecipeIngredientRole {
 	OUTPUT,
 	/**
 	 * Catalysts are ingredients that are necessary for crafting, but are not consumed.
+	 * These are treated similarly to {@link #INPUT}.
 	 * Examples may be a crafting table, a furnace, or an ingredient that sits in the crafting grid but is not used up.
 	 */
 	CATALYST,

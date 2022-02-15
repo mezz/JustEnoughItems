@@ -1,7 +1,10 @@
 package mezz.jei.render;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
+
+import java.util.Optional;
 
 public class IngredientListElementRenderer<T> {
 	private static final Rect2i DEFAULT_AREA = new Rect2i(0, 0, 16, 16);
@@ -32,5 +35,14 @@ public class IngredientListElementRenderer<T> {
 
 	public int getPadding() {
 		return padding;
+	}
+
+	public <V> Optional<IngredientListElementRenderer<V>> checkedCast(IIngredientType<V> ingredientType) {
+		if (ingredient.getType() == ingredientType) {
+			@SuppressWarnings("unchecked")
+			IngredientListElementRenderer<V> castElement = (IngredientListElementRenderer<V>) this;
+			return Optional.of(castElement);
+		}
+		return Optional.empty();
 	}
 }

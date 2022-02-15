@@ -3,11 +3,11 @@ package mezz.jei.gui.recipes;
 import java.util.List;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocusGroup;
 import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.gui.Focus;
 
 public interface IRecipeGuiLogic {
 
@@ -31,7 +31,7 @@ public interface IRecipeGuiLogic {
 
 	void nextPage();
 
-	boolean setFocus(List<Focus<?>> focuses);
+	boolean setFocus(IFocusGroup focuses);
 
 	boolean back();
 

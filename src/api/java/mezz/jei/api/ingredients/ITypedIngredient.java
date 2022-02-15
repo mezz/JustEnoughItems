@@ -26,6 +26,7 @@ public interface ITypedIngredient<T> {
 
 	/**
 	 * @return the ingredient wrapped by this instance, only if it matches the given type.
+	 * This is useful when handling a wildcard generic instance of `ITypedIngredient<?>`.
 	 *
 	 * @since 9.3.3
 	 */

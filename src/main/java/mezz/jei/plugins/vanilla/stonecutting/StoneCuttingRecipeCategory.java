@@ -2,7 +2,7 @@ package mezz.jei.plugins.vanilla.stonecutting;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.world.level.block.Blocks;
@@ -16,8 +16,6 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.config.Constants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
-
-import java.util.List;
 
 public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRecipe> {
 	public static final int width = 82;
@@ -60,7 +58,7 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRe
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, StonecutterRecipe recipe, List<? extends IFocus<?>> focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, StonecutterRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 9)
 			.addIngredients(recipe.getIngredients().get(0));
 

@@ -4,9 +4,9 @@ import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.IIngredientSupplier;
 
@@ -17,19 +17,21 @@ import java.util.stream.Stream;
 public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSupplier {
 	private final List<IRecipeLayoutSlotSource> slots = new ArrayList<>();
 	private final IIngredientManager ingredientManager;
+	private final int ingredientCycleOffset;
 	private boolean shapeless = false;
 	private int recipeTransferX = -1;
 	private int recipeTransferY = -1;
 	private int shapelessX = -1;
 	private int shapelessY = -1;
 
-	public RecipeLayoutBuilder(IIngredientManager ingredientManager) {
+	public RecipeLayoutBuilder(IIngredientManager ingredientManager, int ingredientCycleOffset) {
 		this.ingredientManager = ingredientManager;
+		this.ingredientCycleOffset = ingredientCycleOffset;
 	}
 
 	@Override
 	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role, int x, int y) {
-		RecipeSlotBuilder slotBuilder = new RecipeSlotBuilder(ingredientManager, role, x, y);
+		RecipeSlotBuilder slotBuilder = new RecipeSlotBuilder(ingredientManager, role, x, y, ingredientCycleOffset);
 		this.slots.add(slotBuilder);
 		return slotBuilder;
 	}
@@ -67,7 +69,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		return !this.slots.isEmpty();
 	}
 
-	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, List<Focus<?>> focuses) {
+	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, IFocusGroup focuses) {
 		if (this.shapeless) {
 			if (this.shapelessX >= 0 && this.shapelessY >= 0) {
 				recipeLayout.setShapeless(this.shapelessX, this.shapelessY);

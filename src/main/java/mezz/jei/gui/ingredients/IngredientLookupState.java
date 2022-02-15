@@ -2,17 +2,18 @@ package mezz.jei.gui.ingredients;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.FocusedRecipes;
 
+import mezz.jei.recipes.FocusGroup;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class IngredientLookupState {
 	private final IRecipeManager recipeManager;
-	private final List<Focus<?>> focuses;
+	private final IFocusGroup focuses;
 	private final ImmutableList<IRecipeCategory<?>> recipeCategories;
 
 	private int recipeCategoryIndex;
@@ -21,22 +22,22 @@ public class IngredientLookupState {
 	@Nullable
 	private FocusedRecipes<?> focusedRecipes;
 
-	public static IngredientLookupState createWithFocus(IRecipeManager recipeManager, List<Focus<?>> focuses) {
-		List<IRecipeCategory<?>> recipeCategories = recipeManager.getRecipeCategories(focuses, false);
+	public static IngredientLookupState createWithFocus(IRecipeManager recipeManager, IFocusGroup focuses) {
+		List<IRecipeCategory<?>> recipeCategories = recipeManager.getRecipeCategories(focuses.getAllFocuses(), false);
 		return new IngredientLookupState(recipeManager, focuses, recipeCategories);
 	}
 
 	public static IngredientLookupState createWithCategories(IRecipeManager recipeManager, List<IRecipeCategory<?>> recipeCategories) {
-		return new IngredientLookupState(recipeManager, List.of(), recipeCategories);
+		return new IngredientLookupState(recipeManager, FocusGroup.EMPTY, recipeCategories);
 	}
 
-	private IngredientLookupState(IRecipeManager recipeManager, List<Focus<?>> focuses, List<IRecipeCategory<?>> recipeCategories) {
+	private IngredientLookupState(IRecipeManager recipeManager, IFocusGroup focuses, List<IRecipeCategory<?>> recipeCategories) {
 		this.recipeManager = recipeManager;
 		this.focuses = focuses;
 		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
 	}
 
-	public List<Focus<?>> getFocuses() {
+	public IFocusGroup getFocuses() {
 		return focuses;
 	}
 

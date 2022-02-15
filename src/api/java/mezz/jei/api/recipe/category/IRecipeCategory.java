@@ -13,6 +13,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
@@ -23,7 +24,7 @@ import java.util.List;
 
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
- * Handles setting up the GUI for its recipe category in {@link #setRecipe(IRecipeLayoutBuilder, Object, List)}.
+ * Handles setting up the GUI for its recipe category in {@link #setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}.
  * Also draws elements that are common to all recipes in the category like the background.
  */
 public interface IRecipeCategory<T> {
@@ -68,9 +69,12 @@ public interface IRecipeCategory<T> {
 	/**
 	 * Sets all the recipe's ingredients by filling out an instance of {@link IRecipeLayoutBuilder}.
 	 * This is used by JEI for lookups, to figure out what ingredients are inputs and outputs for a recipe.
+	 *
+	 * @since 9.4.0
 	 */
-	default void setRecipe(IRecipeLayoutBuilder builder, T recipe, List<? extends IFocus<?>> focuses) {
-
+	default void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {
+		// if this new method is not implemented, call the legacy method
+		setRecipe(builder, recipe, focuses.getAllFocuses());
 	}
 
 	/**
@@ -180,10 +184,22 @@ public interface IRecipeCategory<T> {
 	 * Sets all the recipe's ingredients by filling out an instance of {@link IIngredients}.
 	 * This is used by JEI for lookups, to figure out what ingredients are inputs and outputs for a recipe.
 	 *
-	 * @deprecated This is handled automatically by {@link #setRecipe(IRecipeLayoutBuilder, Object, List)} instead.
+	 * @deprecated This is handled automatically by {@link #setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void setIngredients(T recipe, IIngredients ingredients) {
+
+	}
+
+	/**
+	 * Sets all the recipe's ingredients by filling out an instance of {@link IRecipeLayoutBuilder}.
+	 * This is used by JEI for lookups, to figure out what ingredients are inputs and outputs for a recipe.
+	 *
+	 * @since 9.3.0
+	 * @deprecated use {@link #setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)} instead.
+	 */
+	@Deprecated(forRemoval = true, since = "9.4.0")
+	default void setRecipe(IRecipeLayoutBuilder builder, T recipe, List<? extends IFocus<?>> focuses) {
 
 	}
 
@@ -194,7 +210,7 @@ public interface IRecipeCategory<T> {
 	 * @param recipe        the recipe, for extra information.
 	 * @param ingredients   the ingredients, already set earlier by {@link IRecipeCategory#setIngredients}
 	 *
-	 * @deprecated Use {@link #setRecipe(IRecipeLayoutBuilder, Object, List)} instead.
+	 * @deprecated Use {@link #setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void setRecipe(IRecipeLayout recipeLayout, T recipe, IIngredients ingredients) {

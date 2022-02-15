@@ -9,7 +9,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.textures.Textures;
@@ -19,8 +19,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.List;
 
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe> {
 	public static final int recipeWidth = 160;
@@ -77,7 +75,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, IngredientInfoRecipe recipe, List<? extends IFocus<?>> focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, IngredientInfoRecipe recipe, IFocusGroup focuses) {
 		int xPos = (recipeWidth - 16) / 2;
 
 		IRecipeSlotBuilder inputSlotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, xPos, 1)

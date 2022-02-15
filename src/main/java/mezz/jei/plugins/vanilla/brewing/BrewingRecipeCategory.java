@@ -3,7 +3,7 @@ package mezz.jei.plugins.vanilla.brewing;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
@@ -92,7 +92,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, JeiBrewingRecipe recipe, List<? extends IFocus<?>> focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, JeiBrewingRecipe recipe, IFocusGroup focuses) {
 		List<ItemStack> potionInputs = recipe.getPotionInputs();
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 37)

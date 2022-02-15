@@ -3,12 +3,13 @@ package mezz.jei.gui.recipes;
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.IngredientLookupState;
+import mezz.jei.recipes.FocusGroup;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -44,11 +45,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		this.stateListener = stateListener;
 		this.ingredientManager = ingredientManager;
 		this.modIdHelper = modIdHelper;
-		this.state = IngredientLookupState.createWithFocus(recipeManager, List.of());
+		this.state = IngredientLookupState.createWithFocus(recipeManager, FocusGroup.EMPTY);
 	}
 
 	@Override
-	public boolean setFocus(List<Focus<?>> focuses) {
+	public boolean setFocus(IFocusGroup focuses) {
 		IngredientLookupState state = IngredientLookupState.createWithFocus(recipeManager, focuses);
 		ImmutableList<IRecipeCategory<?>> recipeCategories = state.getRecipeCategories();
 		if (recipeCategories.isEmpty()) {
@@ -113,7 +114,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	public boolean setCategoryFocus() {
 		IRecipeCategory<?> recipeCategory = getSelectedRecipeCategory();
 
-		final IngredientLookupState state = IngredientLookupState.createWithFocus(recipeManager, List.of());
+		final IngredientLookupState state = IngredientLookupState.createWithFocus(recipeManager, FocusGroup.EMPTY);
 		state.setRecipeCategory(recipeCategory);
 		setState(state, true);
 

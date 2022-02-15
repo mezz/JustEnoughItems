@@ -4,6 +4,7 @@ import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
@@ -26,18 +27,15 @@ import java.util.List;
  */
 public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	/**
-	 * Override the default {@link IRecipeCategory#setRecipe} behavior.
+	 * Override the default {@link IRecipeCategory} behavior.
 	 *
-	 * @see IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)
+	 * @see IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)
 	 *
-	 * @since 9.3.0
+	 * @since 9.4.0
 	 */
-	default void setRecipe(
-		IRecipeLayoutBuilder recipeLayoutBuilder,
-		ICraftingGridHelper craftingGridHelper,
-		List<? extends IFocus<?>> focuses
-	) {
-
+	default void setRecipe(IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
+		// if this new method is not implemented, call the legacy method
+		setRecipe(builder, craftingGridHelper, focuses.getAllFocuses());
 	}
 
 	/**
@@ -78,6 +76,23 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 			return 0;
 		}
 		return size.height;
+	}
+
+	/**
+	 * Override the default {@link IRecipeCategory} behavior.
+	 *
+	 * @see IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)
+	 *
+	 * @since 9.3.0
+	 * @deprecated use {@link #setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, IFocusGroup)}
+	 */
+	@Deprecated(forRemoval = true, since = "9.4.0")
+	default void setRecipe(
+		IRecipeLayoutBuilder builder,
+		ICraftingGridHelper craftingGridHelper,
+		List<? extends IFocus<?>> focuses
+	) {
+
 	}
 
 	/**

@@ -5,10 +5,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.RecipeSlot;
@@ -50,7 +50,7 @@ public class RecipeLayout<R> {
 
 
 	@Nullable
-	public static <T> RecipeLayout<T> create(int index, IRecipeCategory<T> recipeCategory, T recipe, List<Focus<?>> focuses, IIngredientManager ingredientManager, IModIdHelper modIdHelper, int posX, int posY) {
+	public static <T> RecipeLayout<T> create(int index, IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, IIngredientManager ingredientManager, IModIdHelper modIdHelper, int posX, int posY) {
 		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, focuses, ingredientManager, posX, posY);
 		if (
 			recipeLayout.setRecipeLayout(recipeCategory, recipe, ingredientManager, focuses) ||
@@ -69,9 +69,9 @@ public class RecipeLayout<R> {
 		IRecipeCategory<R> recipeCategory,
 		R recipe,
 		IIngredientManager ingredientManager,
-		List<Focus<?>> focuses
+		IFocusGroup focuses
 	) {
-		RecipeLayoutBuilder builder = new RecipeLayoutBuilder(ingredientManager);
+		RecipeLayoutBuilder builder = new RecipeLayoutBuilder(ingredientManager, this.ingredientCycleOffset);
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
 			if (builder.isUsed()) {
@@ -102,7 +102,7 @@ public class RecipeLayout<R> {
 		int index,
 		IRecipeCategory<R> recipeCategory,
 		R recipe,
-		List<Focus<?>> focuses,
+		IFocusGroup focuses,
 		IIngredientManager ingredientManager,
 		int posX,
 		int posY
@@ -283,9 +283,5 @@ public class RecipeLayout<R> {
 
 	public RecipeLayoutLegacyAdapter<R> getLegacyAdapter() {
 		return this.legacyAdapter;
-	}
-
-	public int getIngredientCycleOffset() {
-		return ingredientCycleOffset;
 	}
 }

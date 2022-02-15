@@ -11,13 +11,10 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.ingredients.IngredientVisibility;
-import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.MathUtil;
@@ -62,7 +59,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	private List<Optional<ITypedIngredient<?>>> allIngredients = List.of();
 
 	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
-	private RendererOverrides rendererOverrides;
+	private final RendererOverrides rendererOverrides;
 	@Nullable
 	private IDrawable background;
 	@Nullable
@@ -75,13 +72,13 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		RecipeIngredientRole role,
 		int xPos,
 		int yPos,
-		int cycleOffset
+		int ingredientCycleOffset
 	) {
 		this.ingredientManager = ingredientManager;
 		this.rendererOverrides = new RendererOverrides();
 		this.role = role;
 		this.rect = new Rect2i(xPos, yPos, 16, 16);
-		this.cycleTimer = new CycleTimer(cycleOffset);
+		this.cycleTimer = new CycleTimer(ingredientCycleOffset);
 	}
 
 	public void setLegacyIngredientIndex(int legacyIngredientIndex) {
@@ -90,16 +87,6 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 	public int getLegacyIngredientIndex() {
 		return legacyIngredientIndex;
-	}
-
-	public void setRendererOverrides(RendererOverrides rendererOverrides) {
-		this.rendererOverrides = rendererOverrides;
-		this.rect = new Rect2i(
-			this.rect.getX(),
-			this.rect.getY(),
-			rendererOverrides.getIngredientWidth(),
-			rendererOverrides.getIngredientHeight()
-		);
 	}
 
 	@Override
@@ -203,12 +190,11 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		this.overlay = overlay;
 	}
 
-	public void set(List<Optional<ITypedIngredient<?>>> ingredients, List<Focus<?>> focuses) {
+	public void set(List<Optional<ITypedIngredient<?>>> ingredients, List<ITypedIngredient<?>> focusMatches) {
 		this.allIngredients = List.copyOf(ingredients);
 
-		List<ITypedIngredient<?>> matches = getMatches(focuses);
-		if (!matches.isEmpty()) {
-			this.displayIngredients = matches.stream()
+		if (!focusMatches.isEmpty()) {
+			this.displayIngredients = focusMatches.stream()
 				.<Optional<ITypedIngredient<?>>>map(Optional::of)
 				.toList();
 		} else {
@@ -220,34 +206,22 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		}
 	}
 
-	private List<ITypedIngredient<?>> getMatches(List<Focus<?>> focuses) {
-		return focuses.stream()
-			.map(this::getMatch)
-			.flatMap(Optional::stream)
-			.toList();
-	}
-
-	private <T> Optional<ITypedIngredient<?>> getMatch(Focus<T> focus) {
-		if (this.getRole() != focus.getRole()) {
-			return Optional.empty();
-		}
-		ITypedIngredient<T> focusValue = focus.getTypedValue();
-		IIngredientType<T> ingredientType = focusValue.getType();
-		List<T> typedIngredients = getIngredients(ingredientType).toList();
-		if (typedIngredients.isEmpty()) {
-			return Optional.empty();
-		}
-		IIngredientHelper<T> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredientType);
-		T match = ingredientHelper.getMatch(typedIngredients, focusValue.getIngredient(), UidContext.Ingredient);
-		return TypedIngredient.create(this.ingredientManager, ingredientType, match);
-	}
-
 	public boolean isMouseOver(double recipeMouseX, double recipeMouseY) {
 		return MathUtil.contains(this.rect, recipeMouseX, recipeMouseY);
 	}
 
 	public void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
 		this.tooltipCallbacks.add(tooltipCallback);
+	}
+
+	public <T> void addRenderOverride(IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer) {
+		this.rendererOverrides.addOverride(ingredientType, ingredientRenderer);
+		this.rect = new Rect2i(
+			this.rect.getX(),
+			this.rect.getY(),
+			rendererOverrides.getIngredientWidth(),
+			rendererOverrides.getIngredientHeight()
+		);
 	}
 
 	private <T> IIngredientRenderer<T> getIngredientRenderer(IIngredientType<T> ingredientType) {

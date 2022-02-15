@@ -23,6 +23,7 @@ import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.textures.Textures;
+import mezz.jei.recipes.FocusFactory;
 import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
@@ -88,7 +89,8 @@ public class PluginLoader {
 
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(ingredientManager, textures);
-		jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper);
+		FocusFactory focusFactory = new FocusFactory(ingredientManager);
+		jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory);
 		Internal.setHelpers(jeiHelpers);
 	}
 

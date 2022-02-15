@@ -3,7 +3,7 @@ package mezz.jei.plugins.vanilla.crafting;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -22,11 +22,7 @@ public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICra
 	}
 
 	@Override
-	public void setRecipe(
-		IRecipeLayoutBuilder builder,
-		ICraftingGridHelper craftingGridHelper,
-		List<? extends IFocus<?>> focuses
-	) {
+	public void setRecipe(IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
 		List<List<ItemStack>> inputs = recipe.getIngredients().stream()
 			.map(ingredient -> List.of(ingredient.getItems()))
 			.toList();

@@ -7,7 +7,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.util.Translator;
@@ -18,8 +18,6 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-
-import java.util.List;
 
 public class CompostableRecipeCategory implements IRecipeCategory<CompostableRecipe> {
 	public static final int width = 120;
@@ -63,7 +61,7 @@ public class CompostableRecipeCategory implements IRecipeCategory<CompostableRec
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, CompostableRecipe recipe, List<? extends IFocus<?>> focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, CompostableRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.addItemStacks(recipe.getInputs());
 	}

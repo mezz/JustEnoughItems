@@ -16,7 +16,6 @@ import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.ingredients.IngredientManager;
-import mezz.jei.ingredients.IngredientTypeHelper;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -153,7 +152,7 @@ public class IngredientListBatchRenderer {
 
 	public <T> Optional<IngredientListElementRenderer<T>> getHovered(double mouseX, double mouseY, IIngredientType<T> ingredientType) {
 		return getHoveredStream(mouseX, mouseY)
-			.map(ingredientRenderer -> IngredientTypeHelper.checkedCast(ingredientRenderer, ingredientType))
+			.map(ingredientRenderer -> ingredientRenderer.checkedCast(ingredientType))
 			.flatMap(Optional::stream)
 			.findFirst();
 	}

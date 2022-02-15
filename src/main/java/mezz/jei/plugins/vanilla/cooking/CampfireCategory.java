@@ -7,14 +7,12 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.config.Constants;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.level.block.Blocks;
-
-import java.util.List;
 
 public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRecipe> {
 	private final IDrawable background;
@@ -50,7 +48,7 @@ public class CampfireCategory extends AbstractCookingCategory<CampfireCookingRec
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, CampfireCookingRecipe recipe, List<? extends IFocus<?>> focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, CampfireCookingRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.addIngredients(recipe.getIngredients().get(0));
 

@@ -3,7 +3,6 @@ package mezz.jei.render;
 import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.ingredients.IngredientTypeHelper;
 import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.util.MathUtil;
@@ -28,7 +27,8 @@ public class IngredientListSlot {
 	}
 
 	public <T> Optional<IngredientListElementRenderer<T>> getIngredientRenderer(IIngredientType<T> ingredientType) {
-		return IngredientTypeHelper.checkedCast(ingredientRenderer, ingredientType);
+		return getIngredientRenderer()
+			.flatMap(i -> i.checkedCast(ingredientType));
 	}
 
 	public void clear() {

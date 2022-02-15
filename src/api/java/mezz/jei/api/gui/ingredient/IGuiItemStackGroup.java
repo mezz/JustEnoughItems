@@ -1,6 +1,7 @@
 package mezz.jei.api.gui.ingredient;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.world.item.ItemStack;
@@ -8,7 +9,6 @@ import net.minecraft.world.item.ItemStack;
 import mezz.jei.api.gui.IRecipeLayout;
 
 import org.jetbrains.annotations.Nullable;
-import java.util.List;
 
 /**
  * IGuiItemStackGroup displays ItemStacks in a gui.
@@ -17,7 +17,7 @@ import java.util.List;
  *
  * Get an instance from {@link IRecipeLayout#getItemStacks()}.
  *
- * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+ * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}
  */
 @Deprecated(forRemoval = true, since = "9.3.0")
 public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
@@ -25,7 +25,7 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 	/**
 	 * Initialize the itemStack at slotIndex.
 	 *
-	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}
 	 * and {@link IRecipeLayoutBuilder#addSlot(RecipeIngredientRole, int, int)}
 	 *
 	 * @apiNote for legacy reasons, this method adds a padding and offset of 1 pixel on all sides, so that an 18x18 slot texture will center a 16x16 item.

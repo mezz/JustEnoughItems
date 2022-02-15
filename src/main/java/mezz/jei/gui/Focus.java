@@ -4,19 +4,18 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.util.ErrorUtil;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-public final class Focus<V> implements IFocus<V> {
+public final class Focus<V> implements IFocus<V>, IFocusGroup {
 	private final RecipeIngredientRole role;
 	private final ITypedIngredient<V> value;
 
@@ -52,6 +51,16 @@ public final class Focus<V> implements IFocus<V> {
 		return role;
 	}
 
+	@Override
+	public <T> Optional<IFocus<T>> checkedCast(IIngredientType<T> ingredientType) {
+		if (value.getType() == ingredientType) {
+			@SuppressWarnings("unchecked")
+			Focus<T> cast = (Focus<T>) this;
+			return Optional.of(cast);
+		}
+		return Optional.empty();
+	}
+
 	/**
 	 * Make sure any IFocus coming in through API calls is validated and turned into JEI's Focus.
 	 */
@@ -68,12 +77,6 @@ public final class Focus<V> implements IFocus<V> {
 		return createFromApi(ingredientManager, focus.getRole(), ingredientType, value);
 	}
 
-	@SuppressWarnings("removal")
-	public static <V> Focus<V> createFromLegacyApi(IIngredientManager ingredientManager, IFocus.Mode mode, V value) {
-		IIngredientType<V> ingredientType = ingredientManager.getIngredientType(value);
-		return createFromApi(ingredientManager, mode.toRole(), ingredientType, value);
-	}
-
 	public static <V> Focus<V> createFromApi(IIngredientManager ingredientManager, RecipeIngredientRole role, IIngredientType<V> ingredientType, V value) {
 		Optional<ITypedIngredient<V>> typedIngredient = TypedIngredient.createTyped(ingredientManager, ingredientType, value)
 			.flatMap(i -> TypedIngredient.deepCopy(ingredientManager, i));
@@ -84,30 +87,34 @@ public final class Focus<V> implements IFocus<V> {
 		return new Focus<>(role, typedIngredient.get());
 	}
 
-	/**
-	 * Make sure any IFocus coming in through API calls is validated and turned into JEI's Focus.
-	 */
-	public static <V> List<Focus<?>> check(IFocus<V> focus) {
-		return List.of(checkOne(focus));
+	@Override
+	public boolean isEmpty() {
+		return false;
 	}
 
-	/**
-	 * Make sure any IFocus coming in through API calls is validated and turned into JEI's Focus.
-	 */
-	public static <V> List<Focus<?>> checkNullable(@Nullable IFocus<V> focus) {
-		if (focus == null) {
-			return List.of();
+	@Override
+	public List<IFocus<?>> getAllFocuses() {
+		return List.of(this);
+	}
+
+	@Override
+	public Stream<IFocus<?>> getFocuses(RecipeIngredientRole role) {
+		if (role == this.role) {
+			return Stream.of(this);
 		}
-		return check(focus);
+		return Stream.empty();
 	}
 
-	/**
-	 * Make sure any IFocus coming in through API calls is validated and turned into JEI's Focus.
-	 */
-	public static List<Focus<?>> check(Collection<? extends IFocus<?>> focuses) {
-		return focuses.stream()
-			.filter(Objects::nonNull)
-			.<Focus<?>>map(Focus::checkOne)
-			.toList();
+	@Override
+	public <T> Stream<IFocus<T>> getFocuses(IIngredientType<T> ingredientType) {
+		return checkedCast(ingredientType).stream();
+	}
+
+	@Override
+	public <T> Stream<IFocus<T>> getFocuses(IIngredientType<T> ingredientType, RecipeIngredientRole role) {
+		if (role == this.role) {
+			return getFocuses(ingredientType);
+		}
+		return Stream.empty();
 	}
 }

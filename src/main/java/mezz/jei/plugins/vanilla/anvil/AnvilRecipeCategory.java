@@ -7,7 +7,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.Constants;
@@ -20,7 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 
 import org.jetbrains.annotations.Nullable;
-import java.util.List;
+
 import java.util.Optional;
 
 public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
@@ -62,7 +62,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, AnvilRecipe recipe, List<? extends IFocus<?>> focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, AnvilRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.addItemStacks(recipe.getLeftInputs())
 			.setSlotName(leftSlotName);

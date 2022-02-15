@@ -1,5 +1,6 @@
 package mezz.jei.api.runtime;
 
+import mezz.jei.api.recipe.IFocusFactory;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
@@ -8,7 +9,6 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IRecipeManager;
 
 /**
  * JEI's gui for displaying recipes. Use this interface to open recipes.
@@ -19,7 +19,7 @@ public interface IRecipesGui {
 	 * Show recipes for an {@link IFocus}.
 	 * Opens the {@link IRecipesGui} if recipes are found and the gui is closed.
 	 *
-	 * @see IRecipeManager#createFocus(RecipeIngredientRole, IIngredientType, Object)
+	 * @see IFocusFactory#createFocus(RecipeIngredientRole, IIngredientType, Object)
 	 */
 	<V> void show(IFocus<V> focus);
 
@@ -27,7 +27,7 @@ public interface IRecipesGui {
 	 * Show recipes for multiple {@link IFocus}.
 	 * Opens the {@link IRecipesGui} if recipes are found and the gui is closed.
 	 *
-	 * @see IRecipeManager#createFocus(RecipeIngredientRole, IIngredientType, Object)
+	 * @see IFocusFactory#createFocus(RecipeIngredientRole, IIngredientType, Object)
 	 *
 	 * @since 9.3.0
 	 */

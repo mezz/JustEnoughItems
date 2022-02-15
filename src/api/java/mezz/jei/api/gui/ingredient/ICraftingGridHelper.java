@@ -5,6 +5,7 @@ import java.util.List;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
  * This places smaller recipes in the grid in a consistent way.
  *
  * This is passed to plugins that implement
- * {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, List)}
+ * {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, IFocusGroup)}
  * to help them override the default behavior.
  */
 public interface ICraftingGridHelper {

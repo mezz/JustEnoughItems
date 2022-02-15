@@ -19,7 +19,6 @@ import mezz.jei.ingredients.IngredientVisibility;
 import mezz.jei.ingredients.ModIngredientRegistration;
 import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.ingredients.SubtypeManager;
-import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.load.registration.SubtypeRegistration;
 import mezz.jei.test.lib.TestClientConfig;
 import mezz.jei.test.lib.TestIngredient;

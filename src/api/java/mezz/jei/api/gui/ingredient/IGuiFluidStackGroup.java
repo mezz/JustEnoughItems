@@ -1,5 +1,6 @@
 package mezz.jei.api.gui.ingredient;
 
+import mezz.jei.api.recipe.IFocusGroup;
 import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -10,8 +11,6 @@ import net.minecraftforge.fluids.FluidStack;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 
-import java.util.List;
-
 /**
  * IGuiFluidStackGroup displays one or more {@link FluidStack} in a gui.
  *
@@ -19,7 +18,7 @@ import java.util.List;
  *
  * Get an instance from {@link IRecipeLayout#getFluidStacks()}.
  *
- * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}
+ * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}
  */
 @Deprecated(forRemoval = true, since = "9.3.0")
 public interface IGuiFluidStackGroup extends IGuiIngredientGroup<FluidStack> {

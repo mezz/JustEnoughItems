@@ -1,13 +1,12 @@
 package mezz.jei.api.gui.builder;
 
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 
-import java.util.List;
-
 /**
  * A builder passed to plugins that implement
- * {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, List)}.
+ * {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}.
  *
  * Plugins add slot locations and ingredients to JEI using this interface.
  *

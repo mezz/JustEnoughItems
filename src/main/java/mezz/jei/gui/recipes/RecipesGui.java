@@ -9,13 +9,13 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.KeyBindings;
-import mezz.jei.gui.Focus;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
@@ -29,6 +29,7 @@ import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.MouseUtil;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.recipes.FocusGroup;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.transfer.RecipeTransferUtil;
@@ -426,7 +427,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public <V> void show(IFocus<V> focus) {
-		List<Focus<?>> checkedFocuses = Focus.check(focus);
+		IFocusGroup checkedFocuses = FocusGroup.create(focus);
 		if (logic.setFocus(checkedFocuses)) {
 			open();
 		}
@@ -434,7 +435,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public void show(List<IFocus<?>> focuses) {
-		List<Focus<?>> checkedFocuses = Focus.check(focuses);
+		IFocusGroup checkedFocuses = FocusGroup.create(focuses);
 		if (logic.setFocus(checkedFocuses)) {
 			open();
 		}

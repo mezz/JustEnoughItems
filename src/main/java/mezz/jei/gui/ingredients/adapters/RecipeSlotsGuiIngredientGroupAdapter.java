@@ -6,19 +6,21 @@ import mezz.jei.api.gui.ingredient.IGuiIngredient;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.ITooltipCallback;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.Focus;
 import mezz.jei.gui.ingredients.LegacyTooltipAdapter;
 import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.ingredients.RecipeSlots;
-import mezz.jei.gui.ingredients.RendererOverrides;
 import mezz.jei.ingredients.TypedIngredient;
+import mezz.jei.recipes.FocusGroup;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @SuppressWarnings({"removal"})
@@ -50,8 +53,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	 * If focus is set and any of the guiIngredients contains focus
 	 * they will only display focus instead of rotating through all their values.
 	 */
-	@Nullable
-	private Focus<T> focus;
+	private IFocusGroup focuses = FocusGroup.EMPTY;
 
 	public RecipeSlotsGuiIngredientGroupAdapter(
 		RecipeSlots recipeSlots,
@@ -119,10 +121,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		IIngredientRenderer<T> legacyAdaptedIngredientRenderer = LegacyAdaptedIngredientRenderer.create(ingredientRenderer, width, height, xInset, yInset);
 		RecipeSlot recipeSlot = new RecipeSlot(this.ingredientManager, role, xPosition, yPosition, this.cycleOffset);
 		recipeSlot.setLegacyIngredientIndex(ingredientIndex);
-
-		RendererOverrides rendererOverrides = new RendererOverrides();
-		rendererOverrides.addOverride(this.ingredientType, legacyAdaptedIngredientRenderer);
-		recipeSlot.setRendererOverrides(rendererOverrides);
+		recipeSlot.addRenderOverride(this.ingredientType, legacyAdaptedIngredientRenderer);
 
 		this.recipeSlots.addSlot(recipeSlot);
 
@@ -132,11 +131,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 
 	@Override
 	public void setOverrideDisplayFocus(@Nullable IFocus<T> focus) {
-		if (focus == null) {
-			this.focus = null;
-		} else {
-			this.focus = Focus.checkOne(focus);
-		}
+		this.focuses = FocusGroup.createFromNullable(focus);
 	}
 
 	@Override
@@ -204,12 +199,8 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		getSlot(slotIndex)
 			.ifPresent(recipeSlot -> {
 				List<Optional<ITypedIngredient<?>>> typedIngredients = getTypedIngredients(ingredients);
-				if (focus != null) {
-					recipeSlot.set(typedIngredients, List.of(focus));
-				} else {
-					recipeSlot.set(typedIngredients, List.of());
-				}
-
+				List<ITypedIngredient<?>> focusMatches = getMatches(focuses, recipeSlot.getRole(), ingredients);
+				recipeSlot.set(typedIngredients, focusMatches);
 				this.legacyTooltipCallbacks.forEach(recipeSlot::addTooltipCallback);
 			});
 	}
@@ -221,6 +212,27 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		return ingredients.stream()
 			.map(i -> TypedIngredient.create(ingredientManager, ingredientType, i))
 			.toList();
+	}
+
+	private List<ITypedIngredient<?>> getMatches(IFocusGroup focuses, RecipeIngredientRole role, @Nullable List<@Nullable T> ingredients) {
+		return focuses.getFocuses(ingredientType, role)
+			.map(focus -> getMatch(focus, ingredients))
+			.flatMap(Optional::stream)
+			.toList();
+	}
+
+	private Optional<ITypedIngredient<?>> getMatch(IFocus<T> focus, @Nullable List<@Nullable T> ingredients) {
+		if (ingredients == null || ingredients.isEmpty()) {
+			return Optional.empty();
+		}
+		List<T> nonnullIngredients = ingredients.stream().filter(Objects::nonNull).toList();
+		if (nonnullIngredients.isEmpty()) {
+			return Optional.empty();
+		}
+		ITypedIngredient<T> focusValue = focus.getTypedValue();
+		IIngredientHelper<T> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredientType);
+		T match = ingredientHelper.getMatch(nonnullIngredients, focusValue.getIngredient(), UidContext.Ingredient);
+		return TypedIngredient.create(this.ingredientManager, ingredientType, match);
 	}
 
 }

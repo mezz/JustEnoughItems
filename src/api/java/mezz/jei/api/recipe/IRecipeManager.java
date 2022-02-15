@@ -81,7 +81,7 @@ public interface IRecipeManager {
 	 * @param recipe         the specific recipe to draw.
 	 * @param focus          the focus of the recipe layout.
 	 */
-	<T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocus<?> focus);
+	<T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus);
 
 	/**
 	 * Hides a recipe so that it will not be displayed.
@@ -132,7 +132,7 @@ public interface IRecipeManager {
 	/**
 	 * Returns a new focus.
 	 *
-	 * @deprecated Use {@link IJeiRuntime#createFocus(RecipeIngredientRole, IIngredientType, Object)} instead.
+	 * @deprecated Use {@link IFocusFactory#createFocus(RecipeIngredientRole, IIngredientType, Object)} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	<V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient);

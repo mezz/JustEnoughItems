@@ -8,7 +8,7 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.Textures;
@@ -18,8 +18,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.List;
 
 public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 	private final IDrawableStatic background;
@@ -69,7 +67,7 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, FuelRecipe recipe, List<? extends IFocus<?>> focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, FuelRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 17)
 			.addItemStacks(recipe.getInputs());
 	}

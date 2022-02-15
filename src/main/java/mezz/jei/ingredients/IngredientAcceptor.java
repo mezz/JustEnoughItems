@@ -2,8 +2,13 @@ package mezz.jei.ingredients;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.util.ErrorUtil;
 import org.jetbrains.annotations.Nullable;
@@ -85,5 +90,24 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	@UnmodifiableView
 	public List<Optional<ITypedIngredient<?>>> getAllIngredients() {
 		return Collections.unmodifiableList(this.ingredients);
+	}
+
+	public List<ITypedIngredient<?>> getMatches(IFocusGroup focuses, RecipeIngredientRole role) {
+		return focuses.getFocuses(role)
+			.map(this::getMatch)
+			.<ITypedIngredient<?>>flatMap(Optional::stream)
+			.toList();
+	}
+
+	private <T> Optional<ITypedIngredient<T>> getMatch(IFocus<T> focus) {
+		ITypedIngredient<T> focusValue = focus.getTypedValue();
+		IIngredientType<T> ingredientType = focusValue.getType();
+		List<T> typedIngredients = getIngredients(ingredientType).toList();
+		if (typedIngredients.isEmpty()) {
+			return Optional.empty();
+		}
+		IIngredientHelper<T> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredientType);
+		T match = ingredientHelper.getMatch(typedIngredients, focusValue.getIngredient(), UidContext.Ingredient);
+		return TypedIngredient.createTyped(this.ingredientManager, ingredientType, match);
 	}
 }
