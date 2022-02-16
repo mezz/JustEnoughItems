@@ -51,7 +51,6 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	private final List<IRecipeSlotTooltipCallback> legacyTooltipCallbacks = new ArrayList<>();
 
 	private final int cycleOffset;
-	private final int slotOffset;
 	/**
 	 * If focus is set and any of the guiIngredients contains focus
 	 * they will only display focus instead of rotating through all their values.
@@ -62,14 +61,12 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		RecipeSlots recipeSlots,
 		IIngredientManager ingredientManager,
 		IIngredientType<T> ingredientType,
-		int cycleOffset,
-		int slotOffset
+		int cycleOffset
 	) {
 		this.recipeSlots = recipeSlots;
 		this.ingredientManager = ingredientManager;
 		this.ingredientType = ingredientType;
 		this.cycleOffset = cycleOffset;
-		this.slotOffset = slotOffset;
 	}
 
 	private Optional<RecipeSlot> getSlot(int guiIngredientIndex) {
@@ -90,15 +87,14 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	@Override
 	public Map<Integer, RecipeSlotGuiIngredientAdapter<T>> getGuiIngredients() {
 		List<RecipeSlot> slots = this.recipeSlots.getSlots();
-		if (guiIngredientsCache.isEmpty()) {
+		if (guiIngredientsCache.size() < slots.size()) {
 			// Support for the case where we are reading from this legacy adapter,
 			// but the recipe slots were set by the modern RecipeSlots methods.
-			int index = slotOffset;
 			for (RecipeSlot recipeSlot : slots) {
-				if (recipeSlot.getIngredients(this.ingredientType).findAny().isPresent()) {
+				int index = recipeSlot.getLegacyIngredientIndex();
+				if (!guiIngredientsCache.containsKey(index)) {
 					RecipeSlotGuiIngredientAdapter<T> adapter = new RecipeSlotGuiIngredientAdapter<>(recipeSlot, this.ingredientType);
 					guiIngredientsCache.put(index, adapter);
-					index++;
 				}
 			}
 		}
@@ -120,16 +116,15 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		addSlot(ingredientIndex, role, ingredientRenderer, xPosition, yPosition, width, height, xInset, yInset);
 	}
 
-	private void addSlot(int ingredientIndex, RecipeIngredientRole role, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xInset, int yInset) {
+	private void addSlot(int legacyIngredientIndex, RecipeIngredientRole role, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xInset, int yInset) {
 		IIngredientRenderer<T> legacyAdaptedIngredientRenderer = LegacyAdaptedIngredientRenderer.create(ingredientRenderer, width, height, xInset, yInset);
-		RecipeSlot recipeSlot = new RecipeSlot(this.ingredientManager, role, xPosition, yPosition, this.cycleOffset);
-		recipeSlot.setLegacyIngredientIndex(ingredientIndex);
+		RecipeSlot recipeSlot = new RecipeSlot(this.ingredientManager, role, xPosition, yPosition, this.cycleOffset, legacyIngredientIndex);
 		recipeSlot.addRenderOverride(this.ingredientType, legacyAdaptedIngredientRenderer);
 
 		this.recipeSlots.addSlot(recipeSlot);
 
 		RecipeSlotGuiIngredientAdapter<T> adapter = new RecipeSlotGuiIngredientAdapter<>(recipeSlot, this.ingredientType);
-		this.guiIngredientsCache.put(ingredientIndex, adapter);
+		this.guiIngredientsCache.put(legacyIngredientIndex, adapter);
 	}
 
 	@Override

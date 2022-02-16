@@ -96,8 +96,8 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 
 		int width = recipeExtension.getWidth();
 		int height = recipeExtension.getHeight();
-		craftingGridHelper.setInputs(builder, VanillaTypes.ITEM, inputs, width, height);
 		craftingGridHelper.setOutputs(builder, VanillaTypes.ITEM, outputs.get(0));
+		craftingGridHelper.setInputs(builder, VanillaTypes.ITEM, inputs, width, height);
 	}
 
 	@Override

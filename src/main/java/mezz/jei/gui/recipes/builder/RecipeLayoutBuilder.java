@@ -29,6 +29,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 	private int recipeTransferY = -1;
 	private int shapelessX = -1;
 	private int shapelessY = -1;
+	private int legacyIngredientIndex = 0;
 
 	public RecipeLayoutBuilder(IIngredientManager ingredientManager, int ingredientCycleOffset) {
 		this.ingredientManager = ingredientManager;
@@ -37,7 +38,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 
 	@Override
 	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role, int x, int y) {
-		RecipeSlotBuilder slotBuilder = new RecipeSlotBuilder(ingredientManager, role, x, y, ingredientCycleOffset);
+		RecipeSlotBuilder slotBuilder = new RecipeSlotBuilder(ingredientManager, role, x, y, ingredientCycleOffset, legacyIngredientIndex++);
 		this.slots.add(slotBuilder);
 		return slotBuilder;
 	}

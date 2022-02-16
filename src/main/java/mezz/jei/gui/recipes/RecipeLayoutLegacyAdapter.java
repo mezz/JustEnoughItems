@@ -19,7 +19,6 @@ import mezz.jei.gui.ingredients.adapters.RecipeSlotsGuiIngredientGroupAdapter;
 import mezz.jei.gui.ingredients.adapters.RecipeSlotsGuiItemStackGroupAdapter;
 import mezz.jei.ingredients.Ingredients;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,8 +49,7 @@ public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayou
 		RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
 
 		IFocus<ItemStack> itemStackFocus = focuses.getFocuses(VanillaTypes.ITEM).findFirst().orElse(null);
-		int slotOffset = this.recipeLayout.getRecipe() instanceof CraftingRecipe ? 1 : 0;
-		this.guiItemStackGroup = new RecipeSlotsGuiItemStackGroupAdapter(recipeSlots, ingredientManager, ingredientCycleOffset, slotOffset);
+		this.guiItemStackGroup = new RecipeSlotsGuiItemStackGroupAdapter(recipeSlots, ingredientManager, ingredientCycleOffset);
 		this.guiItemStackGroup.setOverrideDisplayFocus(itemStackFocus);
 
 		IFocus<FluidStack> fluidStackFocus = focuses.getFocuses(VanillaTypes.FLUID).findFirst().orElse(null);
@@ -121,8 +119,7 @@ public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayou
 			this.recipeLayout.getRecipeSlots(),
 			this.ingredientManager,
 			ingredientType,
-			this.ingredientCycleOffset,
-			0
+			this.ingredientCycleOffset
 		);
 		IFocus<V> focus = getFocus(ingredientType);
 		adapter.setOverrideDisplayFocus(focus);
