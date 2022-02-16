@@ -93,10 +93,17 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 		recipeExtension.setIngredients(ingredients);
 		List<@Nullable List<@Nullable ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
 		List<@Nullable List<@Nullable ItemStack>> outputs = ingredients.getOutputs(VanillaTypes.ITEM);
+		List<@Nullable ItemStack> output;
+		if (outputs.isEmpty()) {
+			output = List.of();
+		} else {
+			output = outputs.get(0);
+		}
+
 
 		int width = recipeExtension.getWidth();
 		int height = recipeExtension.getHeight();
-		craftingGridHelper.setOutputs(builder, VanillaTypes.ITEM, outputs.get(0));
+		craftingGridHelper.setOutputs(builder, VanillaTypes.ITEM, output);
 		craftingGridHelper.setInputs(builder, VanillaTypes.ITEM, inputs, width, height);
 	}
 

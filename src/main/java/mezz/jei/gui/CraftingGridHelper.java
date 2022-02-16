@@ -74,11 +74,10 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 
 	@Override
 	public <T> void setOutputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, @Nullable List<@Nullable T> outputs) {
-		if (outputs == null) {
-			return;
+		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 95, 19);
+		if (outputs != null) {
+			outputSlot.addIngredients(ingredientType, outputs);
 		}
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 95, 19)
-			.addIngredients(ingredientType, outputs);
 	}
 
 	private static int getShapelessSize(int total) {
