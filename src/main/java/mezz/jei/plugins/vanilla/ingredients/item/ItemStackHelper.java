@@ -33,17 +33,6 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		return VanillaTypes.ITEM;
 	}
 
-	@Nullable
-	@Override
-	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch, UidContext context) {
-		for (ItemStack stack : ingredients) {
-			if (stackHelper.isEquivalent(toMatch, stack, context)) {
-				return stack;
-			}
-		}
-		return null;
-	}
-
 	@Override
 	public String getDisplayName(ItemStack ingredient) {
 		Component displayNameTextComponent = ingredient.getHoverName();

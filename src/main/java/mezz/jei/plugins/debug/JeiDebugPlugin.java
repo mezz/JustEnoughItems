@@ -70,6 +70,7 @@ public class JeiDebugPlugin implements IModPlugin {
 			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 			registration.addRecipeCategories(
 				new DebugRecipeCategory(guiHelper),
+				new DebugFocusRecipeCategory(guiHelper),
 				new LegacyDebugRecipeCategory(guiHelper)
 			);
 		}
@@ -124,12 +125,16 @@ public class JeiDebugPlugin implements IModPlugin {
 				)
 			);
 
-			registration.addRecipes(Arrays.asList(
+			registration.addRecipes(List.of(
 				new DebugRecipe(),
 				new DebugRecipe()
 			), DebugRecipeCategory.UID);
 
-			registration.addRecipes(Arrays.asList(
+			registration.addRecipes(List.of(
+				new DebugRecipe()
+			), DebugFocusRecipeCategory.UID);
+
+			registration.addRecipes(List.of(
 				new DebugRecipe(),
 				new DebugRecipe()
 			), LegacyDebugRecipeCategory.UID);

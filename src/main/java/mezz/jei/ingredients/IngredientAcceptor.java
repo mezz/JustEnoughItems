@@ -1,6 +1,8 @@
 package mezz.jei.ingredients;
 
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -19,7 +21,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class IngredientAcceptor implements IIngredientAcceptor<IngredientAcceptor> {
@@ -92,22 +96,37 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 		return Collections.unmodifiableList(this.ingredients);
 	}
 
-	public List<ITypedIngredient<?>> getMatches(IFocusGroup focuses, RecipeIngredientRole role) {
-		return focuses.getFocuses(role)
+	public IntSet getMatches(IFocusGroup focusGroup, RecipeIngredientRole role) {
+		int[] matches = focusGroup.getFocuses(role)
 			.map(this::getMatch)
-			.<ITypedIngredient<?>>flatMap(Optional::stream)
-			.toList();
+			.flatMapToInt(OptionalInt::stream)
+			.distinct()
+			.toArray();
+		return new IntArraySet(matches);
 	}
 
-	private <T> Optional<ITypedIngredient<T>> getMatch(IFocus<T> focus) {
+	private <T> OptionalInt getMatch(IFocus<T> focus) {
+		List<Optional<ITypedIngredient<?>>> ingredients = getAllIngredients();
+		if (ingredients.isEmpty()) {
+			return OptionalInt.empty();
+		}
+
 		ITypedIngredient<T> focusValue = focus.getTypedValue();
 		IIngredientType<T> ingredientType = focusValue.getType();
-		List<T> typedIngredients = getIngredients(ingredientType).toList();
-		if (typedIngredients.isEmpty()) {
-			return Optional.empty();
-		}
+		T focusIngredient = focusValue.getIngredient();
 		IIngredientHelper<T> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredientType);
-		T match = ingredientHelper.getMatch(typedIngredients, focusValue.getIngredient(), UidContext.Ingredient);
-		return TypedIngredient.createTyped(this.ingredientManager, ingredientType, match);
+		String focusUid = ingredientHelper.getUniqueId(focusIngredient, UidContext.Ingredient);
+
+		return IntStream.range(0, ingredients.size())
+			.filter(i ->
+				ingredients.get(i)
+					.flatMap(typedIngredient -> typedIngredient.getIngredient(ingredientType))
+					.map(ingredient -> {
+						String uniqueId = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+						return focusUid.equals(uniqueId);
+					})
+					.orElse(false)
+			)
+			.findFirst();
 	}
 }

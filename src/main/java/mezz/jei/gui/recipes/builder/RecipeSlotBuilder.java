@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes.builder;
 
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -107,12 +108,10 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	}
 
 	@Override
-	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, IFocusGroup focuses) {
+	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, IntSet focusMatches) {
 		RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
 
 		List<Optional<ITypedIngredient<?>>> allIngredients = this.ingredients.getAllIngredients();
-		RecipeIngredientRole role = recipeSlot.getRole();
-		List<ITypedIngredient<?>> focusMatches = this.ingredients.getMatches(focuses, role);
 		recipeSlot.set(allIngredients, focusMatches);
 
 		recipeSlots.addSlot(recipeSlot);
@@ -126,6 +125,17 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	@Override
 	public <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
 		return this.ingredients.getIngredients(ingredientType);
+	}
+
+	@Override
+	public int getIngredientCount() {
+		return this.ingredients.getAllIngredients().size();
+	}
+
+	@Override
+	public IntSet getMatches(IFocusGroup focuses) {
+		RecipeIngredientRole role = recipeSlot.getRole();
+		return this.ingredients.getMatches(focuses, role);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.world.item.ItemStack;
@@ -42,9 +43,18 @@ public interface IIngredientHelper<V> {
 	 * Used for finding a specific focused ingredient in a recipe.
 	 * Return null if there is no match.
 	 * @since 7.3.0
+	 *
+	 * @deprecated use {@link #getUniqueId(Object, UidContext)} and compare those instead.
 	 */
 	@Nullable
-	V getMatch(Iterable<V> ingredients, V ingredientToMatch, UidContext context);
+	@Deprecated(forRemoval = true, since = "9.4.1")
+	default V getMatch(Iterable<V> ingredients, V ingredientToMatch, UidContext context) {
+		String uid = getUniqueId(ingredientToMatch, context);
+		return StreamSupport.stream(ingredients.spliterator(), false)
+			.filter(i -> getUniqueId(i, context).equals(uid))
+			.findFirst()
+			.orElse(null);
+	}
 
 	/**
 	 * Display name used for searching. Normally this is the first line of the tooltip.

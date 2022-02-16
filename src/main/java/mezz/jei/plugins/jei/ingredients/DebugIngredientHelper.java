@@ -19,21 +19,6 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 		return DebugIngredient.TYPE;
 	}
 
-	@Nullable
-	@Override
-	public DebugIngredient getMatch(Iterable<DebugIngredient> ingredients, DebugIngredient ingredientToMatch, UidContext context) {
-		for (DebugIngredient debugIngredient : ingredients) {
-			if (debugIngredient.getNumber() == ingredientToMatch.getNumber()) {
-				String keyLhs = getUniqueId(ingredientToMatch, context);
-				String keyRhs = getUniqueId(debugIngredient, context);
-				if (keyLhs.equals(keyRhs)) {
-					return debugIngredient;
-				}
-			}
-		}
-		return null;
-	}
-
 	@Override
 	public String getDisplayName(DebugIngredient ingredient) {
 		return "JEI Debug Item #" + ingredient.getNumber();

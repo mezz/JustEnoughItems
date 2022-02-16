@@ -1,5 +1,7 @@
 package mezz.jei.gui.recipes.builder;
 
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -11,11 +13,15 @@ import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.IIngredientSupplier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSupplier {
 	private final List<IRecipeLayoutSlotSource> slots = new ArrayList<>();
+	private final List<List<IRecipeLayoutSlotSource>> focusLinkedSlots = new ArrayList<>();
 	private final IIngredientManager ingredientManager;
 	private final int ingredientCycleOffset;
 	private boolean shapeless = false;
@@ -61,12 +67,35 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		this.shapelessY = posY;
 	}
 
+	@Override
+	public void createFocusLink(IRecipeSlotBuilder... slots) {
+		List<IRecipeLayoutSlotSource> builders = Arrays.stream(slots)
+			.map(IRecipeLayoutSlotSource.class::cast)
+			.toList();
+
+		// The focus-linked slots should have the same number of ingredients.
+		// Users can technically add more ingredients to the slots later,
+		// but it's probably not worth the effort of enforcing this very strictly.
+		IntSummaryStatistics stats = builders.stream()
+			.mapToInt(IRecipeLayoutSlotSource::getIngredientCount)
+			.summaryStatistics();
+		if (stats.getMin() != stats.getMax()) {
+			throw new IllegalArgumentException(
+				"All slots must have the same number of ingredients in order to create a focus link. " +
+					String.format("slot stats: %s", stats)
+			);
+		}
+
+		this.slots.removeAll(builders);
+		this.focusLinkedSlots.add(builders);
+	}
+
 	/**
 	 * Returns `true` if this builder has been used,
 	 * useful for detecting when plugins use the builder or need legacy support.
 	 */
 	public boolean isUsed() {
-		return !this.slots.isEmpty();
+		return !this.slots.isEmpty() || !this.focusLinkedSlots.isEmpty();
 	}
 
 	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, IFocusGroup focuses) {
@@ -82,13 +111,31 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		}
 
 		for (IRecipeLayoutSlotSource slot : this.slots) {
-			slot.setRecipeLayout(recipeLayout, focuses);
+			IntSet focusMatches = slot.getMatches(focuses);
+			slot.setRecipeLayout(recipeLayout, focusMatches);
 		}
+
+		for (List<IRecipeLayoutSlotSource> slots : this.focusLinkedSlots) {
+			IntSet focusMatches = new IntArraySet();
+			for (IRecipeLayoutSlotSource slot : slots) {
+				focusMatches.addAll(slot.getMatches(focuses));
+			}
+			for (IRecipeLayoutSlotSource slot : slots) {
+				slot.setRecipeLayout(recipeLayout, focusMatches);
+			}
+		}
+	}
+
+	private Stream<IRecipeLayoutSlotSource> slotStream() {
+		return Stream.concat(
+			this.slots.stream(),
+			this.focusLinkedSlots.stream().flatMap(Collection::stream)
+		);
 	}
 
 	@Override
 	public Stream<? extends IIngredientType<?>> getIngredientTypes(RecipeIngredientRole role) {
-		return this.slots.stream()
+		return slotStream()
 			.filter(slot -> slot.getRole() == role)
 			.flatMap(IRecipeLayoutSlotSource::getIngredientTypes)
 			.distinct();
@@ -96,7 +143,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 
 	@Override
 	public <T> Stream<T> getIngredientStream(IIngredientType<T> ingredientType, RecipeIngredientRole role) {
-		return this.slots.stream()
+		return slotStream()
 			.filter(slot -> slot.getRole() == role)
 			.flatMap(slot -> slot.getIngredients(ingredientType));
 	}

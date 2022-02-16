@@ -13,21 +13,6 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 		return TestIngredient.TYPE;
 	}
 
-	@Nullable
-	@Override
-	public TestIngredient getMatch(Iterable<TestIngredient> ingredients, TestIngredient ingredientToMatch, UidContext context) {
-		for (TestIngredient ingredient : ingredients) {
-			if (ingredient.getNumber() == ingredientToMatch.getNumber()) {
-				String keyLhs = getUniqueId(ingredientToMatch, context);
-				String keyRhs = getUniqueId(ingredient, context);
-				if (keyLhs.equals(keyRhs)) {
-					return ingredient;
-				}
-			}
-		}
-		return null;
-	}
-
 	@Override
 	public String getDisplayName(TestIngredient ingredient) {
 		return "Test Ingredient Display Name " + ingredient;

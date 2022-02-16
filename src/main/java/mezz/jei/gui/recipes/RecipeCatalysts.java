@@ -2,7 +2,7 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import mezz.jei.recipes.FocusGroup;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +94,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 			yPos,
 			0
 		);
-		recipeSlot.set(List.of(Optional.of(typedIngredient)), List.of(typedIngredient));
+		recipeSlot.set(List.of(Optional.of(typedIngredient)), IntSet.of(0));
 		return recipeSlot;
 	}
 

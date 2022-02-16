@@ -1,6 +1,8 @@
 package mezz.jei.gui.ingredients.adapters;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IGuiIngredient;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
@@ -30,8 +32,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.stream.IntStream;
 
 @SuppressWarnings({"removal"})
 public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGroup<T> {
@@ -199,7 +202,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		getSlot(slotIndex)
 			.ifPresent(recipeSlot -> {
 				List<Optional<ITypedIngredient<?>>> typedIngredients = getTypedIngredients(ingredients);
-				List<ITypedIngredient<?>> focusMatches = getMatches(focuses, recipeSlot.getRole(), ingredients);
+				IntSet focusMatches = getMatches(focuses, recipeSlot.getRole(), typedIngredients);
 				recipeSlot.set(typedIngredients, focusMatches);
 				this.legacyTooltipCallbacks.forEach(recipeSlot::addTooltipCallback);
 			});
@@ -214,25 +217,36 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 			.toList();
 	}
 
-	private List<ITypedIngredient<?>> getMatches(IFocusGroup focuses, RecipeIngredientRole role, @Nullable List<@Nullable T> ingredients) {
-		return focuses.getFocuses(ingredientType, role)
+	private IntSet getMatches(IFocusGroup focuses, RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients) {
+		int[] matches = focuses.getFocuses(ingredientType, role)
 			.map(focus -> getMatch(focus, ingredients))
-			.flatMap(Optional::stream)
-			.toList();
+			.flatMapToInt(OptionalInt::stream)
+			.distinct()
+			.toArray();
+		return new IntArraySet(matches);
 	}
 
-	private Optional<ITypedIngredient<?>> getMatch(IFocus<T> focus, @Nullable List<@Nullable T> ingredients) {
-		if (ingredients == null || ingredients.isEmpty()) {
-			return Optional.empty();
-		}
-		List<T> nonnullIngredients = ingredients.stream().filter(Objects::nonNull).toList();
-		if (nonnullIngredients.isEmpty()) {
-			return Optional.empty();
+	private OptionalInt getMatch(IFocus<T> focus, List<Optional<ITypedIngredient<?>>> ingredients) {
+		if (ingredients.isEmpty()) {
+			return OptionalInt.empty();
 		}
 		ITypedIngredient<T> focusValue = focus.getTypedValue();
+		T focusIngredient = focusValue.getIngredient();
+
 		IIngredientHelper<T> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredientType);
-		T match = ingredientHelper.getMatch(nonnullIngredients, focusValue.getIngredient(), UidContext.Ingredient);
-		return TypedIngredient.create(this.ingredientManager, ingredientType, match);
+		String focusUid = ingredientHelper.getUniqueId(focusIngredient, UidContext.Ingredient);
+
+		return IntStream.range(0, ingredients.size())
+			.filter(i ->
+				ingredients.get(i)
+					.flatMap(typedIngredient -> typedIngredient.getIngredient(ingredientType))
+					.map(ingredient -> {
+						String uniqueId = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+						return focusUid.equals(uniqueId);
+					})
+					.orElse(false)
+			)
+			.findFirst();
 	}
 
 }

@@ -1,5 +1,6 @@
 package mezz.jei.gui.recipes.builder;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -45,13 +46,23 @@ public class InvisibleRecipeLayoutSlotSource implements IRecipeLayoutSlotSource,
 	}
 
 	@Override
-	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, IFocusGroup focuses) {
+	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, IntSet focusedIndexes) {
 		// invisible, don't set the layout
 	}
 
 	@Override
 	public <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
 		return this.ingredients.getIngredients(ingredientType);
+	}
+
+	@Override
+	public IntSet getMatches(IFocusGroup focuses) {
+		return this.ingredients.getMatches(focuses, role);
+	}
+
+	@Override
+	public int getIngredientCount() {
+		return this.ingredients.getAllIngredients().size();
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package mezz.jei.gui.ingredients;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
@@ -190,12 +191,13 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		this.overlay = overlay;
 	}
 
-	public void set(List<Optional<ITypedIngredient<?>>> ingredients, List<ITypedIngredient<?>> focusMatches) {
+	public void set(List<Optional<ITypedIngredient<?>>> ingredients, IntSet focusMatches) {
 		this.allIngredients = List.copyOf(ingredients);
 
 		if (!focusMatches.isEmpty()) {
-			this.displayIngredients = focusMatches.stream()
-				.<Optional<ITypedIngredient<?>>>map(Optional::of)
+			this.displayIngredients = focusMatches.intStream()
+				.filter(i -> i < this.allIngredients.size())
+				.mapToObj(i -> this.allIngredients.get(i))
 				.toList();
 		} else {
 			IngredientVisibility ingredientVisibility = Internal.getIngredientVisibility();
