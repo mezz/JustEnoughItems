@@ -57,6 +57,7 @@ public final class KeyBindings {
 	// internal only, unregistered and can't be changed because they match vanilla Minecraft hard-coded keys:
 	public static final KeyMapping escapeKey;
 	public static final KeyMapping leftClick;
+	public static final KeyMapping rightClick;
 	public static final List<KeyMapping> enterKey;
 
 	static InputConstants.Key getKey(int key) {
@@ -121,6 +122,7 @@ public final class KeyBindings {
 
 		escapeKey = new KeyMapping("key.jei.internal.escape.key", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_ESCAPE), jeiHiddenInternalCategoryName);
 		leftClick = new KeyMapping("key.jei.internal.left.click", KeyConflictContext.GUI, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT, jeiHiddenInternalCategoryName);
+		rightClick = new KeyMapping("key.jei.internal.right.click", KeyConflictContext.GUI, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT, jeiHiddenInternalCategoryName);
 		enterKey = List.of(
 			new KeyMapping("key.jei.internal.enter.key", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_ENTER), jeiHiddenInternalCategoryName),
 			new KeyMapping("key.jei.internal.enter.key2", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_KP_ENTER), jeiHiddenInternalCategoryName)

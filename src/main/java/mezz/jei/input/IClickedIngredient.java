@@ -19,5 +19,5 @@ public interface IClickedIngredient<V> {
 	 * Some GUIs (like vanilla) shouldn't allow JEI to click to set the focus,
 	 * it would conflict with their normal behavior.
 	 */
-	boolean canSetFocusWithMouse();
+	boolean canOverrideVanillaClickHandler();
 }

@@ -16,15 +16,15 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	private final ITypedIngredient<V> value;
 	@Nullable
 	private final Rect2i area;
-	private final boolean canSetFocusWithMouse;
+	private final boolean canOverrideVanillaClickHandler;
 	private final boolean allowsCheating;
 
-	public ClickedIngredient(ITypedIngredient<V> value, @Nullable Rect2i area, boolean allowsCheating, boolean canSetFocusWithMouse) {
+	public ClickedIngredient(ITypedIngredient<V> value, @Nullable Rect2i area, boolean allowsCheating, boolean canOverrideVanillaClickHandler) {
 		ErrorUtil.checkNotNull(value, "value");
 		this.value = value;
 		this.area = area;
 		this.allowsCheating = allowsCheating;
-		this.canSetFocusWithMouse = canSetFocusWithMouse;
+		this.canOverrideVanillaClickHandler = canOverrideVanillaClickHandler;
 	}
 
 	@Override
@@ -49,8 +49,8 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	}
 
 	@Override
-	public boolean canSetFocusWithMouse() {
-		return this.canSetFocusWithMouse;
+	public boolean canOverrideVanillaClickHandler() {
+		return this.canOverrideVanillaClickHandler;
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 			.add("value", ingredientHelper.getUniqueId(value.getIngredient(), UidContext.Ingredient))
 			.add("area", area)
 			.add("allowsCheating", allowsCheating)
-			.add("canSetFocusWithMouse", canSetFocusWithMouse)
+			.add("canOverrideVanillaClickHandler", canOverrideVanillaClickHandler)
 			.toString();
 	}
 }
