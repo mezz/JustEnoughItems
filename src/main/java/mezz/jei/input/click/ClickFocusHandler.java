@@ -24,7 +24,7 @@ public class ClickFocusHandler implements IMouseHandler {
 	@Override
 	@Nullable
 	public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-		IClickedIngredient<?> clicked = inputHandler.getFocusUnderMouseForClick(mouseX, mouseY);
+		IClickedIngredient<?> clicked = inputHandler.getFocusUnderMouseForClick(mouseX, mouseY, mouseButton);
 		if (clicked == null) {
 			return null;
 		}

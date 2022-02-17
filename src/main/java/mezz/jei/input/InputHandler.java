@@ -190,9 +190,9 @@ public class InputHandler {
 	}
 
 	@Nullable
-	public IClickedIngredient<?> getFocusUnderMouseForClick(double mouseX, double mouseY) {
+	public IClickedIngredient<?> getFocusUnderMouseForClick(double mouseX, double mouseY, int mouseButton) {
 		for (IShowsRecipeFocuses gui : showsRecipeFocuses) {
-			if (gui.canSetFocusWithMouse()) {
+			if (!isConflictingVanillaMouseButton(mouseButton) || gui.canSetFocusWithMouse()) {
 				IClickedIngredient<?> clicked = gui.getIngredientUnderMouse(mouseX, mouseY);
 				if (clicked != null) {
 					return clicked;
@@ -200,6 +200,10 @@ public class InputHandler {
 			}
 		}
 		return null;
+	}
+
+	private static boolean isConflictingVanillaMouseButton(int mouseButton) {
+		return mouseButton <= 2;
 	}
 
 	@Nullable
