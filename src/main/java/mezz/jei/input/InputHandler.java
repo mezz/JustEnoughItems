@@ -223,7 +223,7 @@ public class InputHandler {
 			if (!worldConfig.isEditModeEnabled()) {
 				return null;
 			}
-			IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
+			IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY, mouseButton);
 			if (clicked == null) {
 				return null;
 			}
