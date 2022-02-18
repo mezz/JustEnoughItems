@@ -30,6 +30,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isFastItemRenderingEnabled() {
+		return false;
+	}
+
+	@Override
 	public boolean isCheatToHotbarUsingHotkeysEnabled() {
 		return false;
 	}
