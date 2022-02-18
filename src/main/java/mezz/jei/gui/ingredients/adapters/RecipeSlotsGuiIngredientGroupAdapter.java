@@ -56,6 +56,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	 * they will only display focus instead of rotating through all their values.
 	 */
 	private IFocusGroup focuses = FocusGroup.EMPTY;
+	private boolean slotsCreatedWithLegacyInit = false;
 
 	public RecipeSlotsGuiIngredientGroupAdapter(
 		RecipeSlots recipeSlots,
@@ -87,7 +88,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	@Override
 	public Map<Integer, RecipeSlotGuiIngredientAdapter<T>> getGuiIngredients() {
 		List<RecipeSlot> slots = this.recipeSlots.getSlots();
-		if (guiIngredientsCache.size() < slots.size()) {
+		if (!this.slotsCreatedWithLegacyInit) {
 			// Support for the case where we are reading from this legacy adapter,
 			// but the recipe slots were set by the modern RecipeSlots methods.
 			for (RecipeSlot recipeSlot : slots) {
@@ -125,6 +126,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 
 		RecipeSlotGuiIngredientAdapter<T> adapter = new RecipeSlotGuiIngredientAdapter<>(recipeSlot, this.ingredientType);
 		this.guiIngredientsCache.put(legacyIngredientIndex, adapter);
+		this.slotsCreatedWithLegacyInit = true;
 	}
 
 	@Override
