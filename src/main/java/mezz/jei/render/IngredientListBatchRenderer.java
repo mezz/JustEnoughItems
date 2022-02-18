@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.config.IClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemModelMesher;
@@ -38,12 +39,14 @@ public class IngredientListBatchRenderer {
 	private final List<IngredientListElementRenderer<?>> renderOther = new ArrayList<>();
 	private final IEditModeConfig editModeConfig;
 	private final IWorldConfig worldConfig;
+	private final IClientConfig clientConfig;
 
 	private int blocked = 0;
 
-	public IngredientListBatchRenderer(IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
+	public IngredientListBatchRenderer(IEditModeConfig editModeConfig, IWorldConfig worldConfig, IClientConfig clientConfig) {
 		this.editModeConfig = editModeConfig;
 		this.worldConfig = worldConfig;
+		this.clientConfig = clientConfig;
 	}
 
 	public void clear() {
@@ -150,8 +153,27 @@ public class IngredientListBatchRenderer {
 	/**
 	 * renders all ItemStacks
 	 */
+	public void render(Minecraft minecraft, MatrixStack stack) {
+		if (clientConfig.isFastItemRenderingEnabled()) {
+			// optimized batch rendering
+			renderBatchedItemStacks(minecraft, stack);
+		} else {
+			for (IngredientListElementRenderer<ItemStack> slot : renderItems3d) {
+				slot.renderSlow(stack, editModeConfig, worldConfig);
+			}
+			for (IngredientListElementRenderer<ItemStack> slot : renderItems2d) {
+				slot.renderSlow(stack, editModeConfig, worldConfig);
+			}
+		}
+
+		// other rendering
+		for (IngredientListElementRenderer<?> slot : renderOther) {
+			slot.renderSlow(stack, editModeConfig, worldConfig);
+		}
+	}
+
 	@SuppressWarnings("deprecation")
-	public void render(Minecraft minecraft, MatrixStack matrixStack) {
+	private void renderBatchedItemStacks(Minecraft minecraft, MatrixStack stack) {
 		RenderHelper.turnBackOn();
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
@@ -171,7 +193,7 @@ public class IngredientListBatchRenderer {
 		// 3d Items
 		RenderSystem.enableLighting();
 		for (ItemStackFastRenderer slot : renderItems3d) {
-			slot.renderItemAndEffectIntoGUI(buffer, matrixStack, editModeConfig, worldConfig);
+			slot.renderItemAndEffectIntoGUI(buffer, stack, editModeConfig, worldConfig);
 		}
 		buffer.endBatch();
 
@@ -179,7 +201,7 @@ public class IngredientListBatchRenderer {
 		RenderSystem.disableLighting();
 		RenderHelper.setupForFlatItems();
 		for (ItemStackFastRenderer slot : renderItems2d) {
-			slot.renderItemAndEffectIntoGUI(buffer, matrixStack, editModeConfig, worldConfig);
+			slot.renderItemAndEffectIntoGUI(buffer, stack, editModeConfig, worldConfig);
 		}
 		buffer.endBatch();
 		RenderHelper.setupFor3DItems();
@@ -204,12 +226,6 @@ public class IngredientListBatchRenderer {
 		}
 
 		RenderSystem.disableLighting();
-
-		// other rendering
-		for (IngredientListElementRenderer<?> slot : renderOther) {
-			slot.renderSlow(matrixStack, editModeConfig, worldConfig);
-		}
-
 		RenderHelper.turnOff();
 	}
 }

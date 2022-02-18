@@ -12,6 +12,8 @@ public interface IClientConfig {
 
 	boolean isLowMemorySlowSearchEnabled();
 
+	boolean isFastItemRenderingEnabled();
+
 	boolean isCheatToHotbarUsingHotkeysEnabled();
 
 	GiveMode getGiveMode();

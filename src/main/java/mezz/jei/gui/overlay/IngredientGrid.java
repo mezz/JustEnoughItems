@@ -68,7 +68,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	) {
 		this.alignment = alignment;
 		this.recipesGui = recipesGui;
-		this.guiIngredientSlots = new IngredientListBatchRenderer(editModeConfig, worldConfig);
+		this.guiIngredientSlots = new IngredientListBatchRenderer(editModeConfig, worldConfig, clientConfig);
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
