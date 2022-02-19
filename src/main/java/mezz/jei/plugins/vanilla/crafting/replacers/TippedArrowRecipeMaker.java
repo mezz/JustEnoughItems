@@ -18,20 +18,20 @@ public final class TippedArrowRecipeMaker {
 
 	public static Stream<CraftingRecipe> createRecipes() {
 		String group = "jei.tipped.arrow";
+		ItemStack arrowStack = new ItemStack(Items.ARROW);
+		Ingredient arrowIngredient = Ingredient.of(arrowStack);
+
 		return ForgeRegistries.POTIONS.getValues().stream()
 			.map(potion -> {
-				ItemStack arrowStack = new ItemStack(Items.ARROW);
-				ItemStack lingeringPotion = PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), potion);
-				Ingredient arrowIngredient = Ingredient.of(arrowStack);
-				Ingredient potionIngredient = new NBTIngredient(lingeringPotion) {
-				};
+				ItemStack input = PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), potion);
+				ItemStack output = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, 8), potion);
+
+				Ingredient potionIngredient = new NBTIngredient(input) {};
 				NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY,
 					arrowIngredient, arrowIngredient, arrowIngredient,
 					arrowIngredient, potionIngredient, arrowIngredient,
 					arrowIngredient, arrowIngredient, arrowIngredient
 				);
-				ItemStack output = new ItemStack(Items.TIPPED_ARROW, 8);
-				PotionUtils.setPotion(output, potion);
 				ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + output.getDescriptionId());
 				return new ShapedRecipe(id, group, 3, 3, inputs, output);
 			});
