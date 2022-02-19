@@ -287,13 +287,13 @@ public class VanillaPlugin implements IModPlugin {
 	 * If a special recipe we know how to replace is not present (because it has been removed),
 	 * we do not replace it.
 	 */
-	private static List<CraftingRecipe> replaceSpecialCraftingRecipes(List<CraftingRecipe> validRecipes) {
+	private static List<CraftingRecipe> replaceSpecialCraftingRecipes(List<CraftingRecipe> unhandledCraftingRecipes) {
 		Map<Class<? extends CraftingRecipe>, Supplier<Stream<CraftingRecipe>>> replacers = new IdentityHashMap<>();
 		replacers.put(TippedArrowRecipe.class, TippedArrowRecipeMaker::createRecipes);
 		replacers.put(ShulkerBoxColoring.class, ShulkerBoxColoringRecipeMaker::createRecipes);
 		replacers.put(SuspiciousStewRecipe.class, SuspiciousStewRecipeMaker::createRecipes);
 
-		return validRecipes.parallelStream()
+		return unhandledCraftingRecipes.stream()
 			.map(CraftingRecipe::getClass)
 			.distinct()
 			.filter(replacers::containsKey)
