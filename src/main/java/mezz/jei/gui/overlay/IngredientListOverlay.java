@@ -10,7 +10,7 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
-import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
@@ -56,7 +56,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public IngredientListOverlay(
 		IIngredientGridSource ingredientGridSource,
-		IngredientManager ingredientManager,
+		RegisteredIngredients registeredIngredients,
 		GuiScreenHelper guiScreenHelper,
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
@@ -74,7 +74,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			}
 		});
 		this.configButton = ConfigButton.create(this, worldConfig);
-		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, ingredientManager, worldConfig);
+		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, registeredIngredients, worldConfig);
 		this.searchField.setFocused(false);
 	}
 

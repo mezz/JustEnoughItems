@@ -19,6 +19,4 @@ public interface IElementSearch {
 	IntSet getSearchResults(String token, PrefixInfo prefixInfo);
 
 	void registerPrefix(PrefixInfo prefixInfo);
-
-	void start();
 }

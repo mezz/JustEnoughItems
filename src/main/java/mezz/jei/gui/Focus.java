@@ -6,8 +6,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.util.ErrorUtil;
 
@@ -71,15 +70,16 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 		ErrorUtil.checkNotNull(focus, "focus");
 		@SuppressWarnings("removal")  // call the old function in case they don't implement the new getTypedValue yet
 		V value = focus.getValue();
+		ErrorUtil.checkNotNull(value, "focus value");
 
-		IngredientManager ingredientManager = Internal.getIngredientManager();
-		IIngredientType<V> ingredientType = ingredientManager.getIngredientType(value);
-		return createFromApi(ingredientManager, focus.getRole(), ingredientType, value);
+		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+		IIngredientType<V> ingredientType = registeredIngredients.getIngredientType(value);
+		return createFromApi(registeredIngredients, focus.getRole(), ingredientType, value);
 	}
 
-	public static <V> Focus<V> createFromApi(IIngredientManager ingredientManager, RecipeIngredientRole role, IIngredientType<V> ingredientType, V value) {
-		Optional<ITypedIngredient<V>> typedIngredient = TypedIngredient.createTyped(ingredientManager, ingredientType, value)
-			.flatMap(i -> TypedIngredient.deepCopy(ingredientManager, i));
+	public static <V> Focus<V> createFromApi(RegisteredIngredients registeredIngredients, RecipeIngredientRole role, IIngredientType<V> ingredientType, V value) {
+		Optional<ITypedIngredient<V>> typedIngredient = TypedIngredient.createTyped(registeredIngredients, ingredientType, value)
+			.flatMap(i -> TypedIngredient.deepCopy(registeredIngredients, i));
 
 		if (typedIngredient.isEmpty()) {
 			throw new IllegalArgumentException("Focus value is invalid: " + ErrorUtil.getIngredientInfo(value, ingredientType));

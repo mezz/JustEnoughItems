@@ -21,7 +21,7 @@ import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.IngredientInfo;
-import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
@@ -56,7 +56,7 @@ public class IngredientGrid implements IRecipeFocusSource {
 	private static final int INGREDIENT_PADDING = 1;
 	public static final int INGREDIENT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
 	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
-	private final IngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final GridAlignment alignment;
 	private final RecipesGui recipesGui;
 	private final IModIdHelper modIdHelper;
@@ -69,7 +69,7 @@ public class IngredientGrid implements IRecipeFocusSource {
 	private final IWorldConfig worldConfig;
 
 	public IngredientGrid(
-		IngredientManager ingredientManager,
+		RegisteredIngredients registeredIngredients,
 		GridAlignment alignment,
 		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
@@ -79,11 +79,11 @@ public class IngredientGrid implements IRecipeFocusSource {
 		RecipesGui recipesGui,
 		IModIdHelper modIdHelper
 	) {
-		this.ingredientManager = ingredientManager;
+		this.registeredIngredients = registeredIngredients;
 		this.alignment = alignment;
 		this.recipesGui = recipesGui;
 		this.modIdHelper = modIdHelper;
-		this.guiIngredientSlots = new IngredientListBatchRenderer(clientConfig, editModeConfig, worldConfig, ingredientManager);
+		this.guiIngredientSlots = new IngredientListBatchRenderer(clientConfig, editModeConfig, worldConfig, registeredIngredients);
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
@@ -182,7 +182,7 @@ public class IngredientGrid implements IRecipeFocusSource {
 	private <T> void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig, ITypedIngredient<T> value) {
 		IIngredientType<T> ingredientType = value.getType();
 		T ingredient = value.getIngredient();
-		IngredientInfo<T> ingredientInfo = ingredientManager.getIngredientInfo(ingredientType);
+		IngredientInfo<T> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
 		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
 
 		List<Component> tooltip = getTooltip(ingredientFilterConfig, worldConfig, ingredient, ingredientInfo);

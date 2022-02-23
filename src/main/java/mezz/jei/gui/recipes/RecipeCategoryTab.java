@@ -8,7 +8,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
 import net.minecraft.client.Minecraft;
@@ -81,8 +81,8 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	private static <T> void renderIngredient(PoseStack poseStack, int iconX, int iconY, ITypedIngredient<T> ingredient) {
-		IngredientManager ingredientManager = Internal.getIngredientManager();
-		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient.getType());
+		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+		IIngredientRenderer<T> ingredientRenderer = registeredIngredients.getIngredientRenderer(ingredient.getType());
 		poseStack.pushPose();
 		{
 			poseStack.translate(iconX, iconY, 0);

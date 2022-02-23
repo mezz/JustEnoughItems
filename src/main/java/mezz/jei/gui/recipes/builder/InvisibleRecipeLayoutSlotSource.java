@@ -5,9 +5,9 @@ import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.IngredientAcceptor;
+import mezz.jei.ingredients.RegisteredIngredients;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -17,8 +17,8 @@ public class InvisibleRecipeLayoutSlotSource implements IRecipeLayoutSlotSource,
 	private final IngredientAcceptor ingredients;
 	private final RecipeIngredientRole role;
 
-	public InvisibleRecipeLayoutSlotSource(IIngredientManager ingredientManager, RecipeIngredientRole role) {
-		this.ingredients = new IngredientAcceptor(ingredientManager);
+	public InvisibleRecipeLayoutSlotSource(RegisteredIngredients registeredIngredients, RecipeIngredientRole role) {
+		this.ingredients = new IngredientAcceptor(registeredIngredients);
 		this.role = role;
 	}
 

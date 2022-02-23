@@ -9,13 +9,12 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.config.SearchMode;
 import mezz.jei.events.EditModeToggleEvent;
-import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.PlayerJoinedWorldEvent;
+import mezz.jei.events.RuntimeEventSubscriptions;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.search.ElementSearch;
@@ -46,7 +45,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
-	private final IIngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final IIngredientSorter sorter;
 	private final IngredientVisibility ingredientVisibility;
 	private final boolean debugMode;
@@ -63,13 +62,13 @@ public class IngredientFilter implements IIngredientGridSource {
 	public IngredientFilter(
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
-		IIngredientManager ingredientManager,
+		RegisteredIngredients registeredIngredients,
 		IIngredientSorter sorter,
 		NonNullList<IIngredientListElement<?>> ingredients,
 		IModIdHelper modIdHelper,
 		IngredientVisibility ingredientVisibility
 	) {
-		this.ingredientManager = ingredientManager;
+		this.registeredIngredients = registeredIngredients;
 		this.sorter = sorter;
 		this.ingredientVisibility = ingredientVisibility;
 
@@ -81,32 +80,25 @@ public class IngredientFilter implements IIngredientGridSource {
 		this.debugMode = clientConfig.isDebugModeEnabled();
 
 		this.prefixInfos.put('@', new PrefixInfo(config::getModNameSearchMode, IIngredientListElementInfo::getModNameStrings));
-		this.prefixInfos.put('#', new PrefixInfo(config::getTooltipSearchMode, e -> e.getTooltipStrings(config, ingredientManager)));
-		this.prefixInfos.put('$', new PrefixInfo(config::getTagSearchMode, e -> e.getTagStrings(ingredientManager)));
-		this.prefixInfos.put('%', new PrefixInfo(config::getCreativeTabSearchMode, e -> e.getCreativeTabsStrings(ingredientManager)));
-		this.prefixInfos.put('^', new PrefixInfo(config::getColorSearchMode, e -> e.getColorStrings(ingredientManager)));
+		this.prefixInfos.put('#', new PrefixInfo(config::getTooltipSearchMode, e -> e.getTooltipStrings(config, registeredIngredients)));
+		this.prefixInfos.put('$', new PrefixInfo(config::getTagSearchMode, e -> e.getTagStrings(registeredIngredients)));
+		this.prefixInfos.put('%', new PrefixInfo(config::getCreativeTabSearchMode, e -> e.getCreativeTabsStrings(registeredIngredients)));
+		this.prefixInfos.put('^', new PrefixInfo(config::getColorSearchMode, e -> e.getColorStrings(registeredIngredients)));
 		this.prefixInfos.put('&', new PrefixInfo(config::getResourceLocationSearchMode, element -> Collections.singleton(element.getResourceLocation().toString())));
 
 		for (PrefixInfo prefixInfo : this.prefixInfos.values()) {
 			this.elementSearch.registerPrefix(prefixInfo);
 		}
 
-		EventBusHelper.registerWeakListener(
-			this,
-			EditModeToggleEvent.class,
-			(ingredientFilter, editModeToggleEvent) -> ingredientFilter.updateHidden()
-		);
-
-		EventBusHelper.registerWeakListener(
-			this,
-			PlayerJoinedWorldEvent.class,
-			(ingredientFilter, playerJoinedWorldEvent) -> ingredientFilter.updateHidden()
-		);
-
 		ingredients.stream()
-			.map(i -> IngredientListElementInfo.create(i, ingredientManager, modIdHelper))
+			.map(i -> IngredientListElementInfo.create(i, registeredIngredients, modIdHelper))
 			.filter(Objects::nonNull)
 			.forEach(this::addIngredient);
+	}
+
+	public void register(RuntimeEventSubscriptions subscriptions) {
+		subscriptions.register(EditModeToggleEvent.class, event -> this.updateHidden());
+		subscriptions.register(PlayerJoinedWorldEvent.class, event -> this.updateHidden());
 	}
 
 	public <V> void addIngredient(IIngredientListElementInfo<V> info) {
@@ -145,11 +137,6 @@ public class IngredientFilter implements IIngredientGridSource {
 			.findFirst();
 	}
 
-	public void modesChanged() {
-		this.elementSearch.start();
-		this.filterCached = null;
-	}
-
 	public void updateHidden() {
 		boolean changed = false;
 		for (IIngredientListElementInfo<?> info : this.elementSearch.getAllIngredients()) {
@@ -184,7 +171,7 @@ public class IngredientFilter implements IIngredientGridSource {
 			}
 			//Then we sort it.
 			ingredientListCached = ingredientList.stream()
-				.sorted(sorter.getComparator(this, this.ingredientManager))
+				.sorted(sorter.getComparator(this, this.registeredIngredients))
 				.<ITypedIngredient<?>>map(IIngredientListElementInfo::getTypedIngredient)
 				.toList();
 			if (debugMode) {

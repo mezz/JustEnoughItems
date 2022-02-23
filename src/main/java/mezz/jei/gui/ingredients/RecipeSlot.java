@@ -13,8 +13,8 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.IngredientVisibility;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
@@ -38,7 +38,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int MAX_DISPLAYED_INGREDIENTS = 100;
 
-	private final IIngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final int legacyIngredientIndex;
 	private final RecipeIngredientRole role;
 	private final CycleTimer cycleTimer;
@@ -69,14 +69,14 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	private String slotName;
 
 	public RecipeSlot(
-		IIngredientManager ingredientManager,
+		RegisteredIngredients registeredIngredients,
 		RecipeIngredientRole role,
 		int xPos,
 		int yPos,
 		int ingredientCycleOffset,
 		int legacyIngredientIndex
 	) {
-		this.ingredientManager = ingredientManager;
+		this.registeredIngredients = registeredIngredients;
 		this.legacyIngredientIndex = legacyIngredientIndex;
 		this.rendererOverrides = new RendererOverrides();
 		this.role = role;
@@ -165,7 +165,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 	private <T> List<Component> getTooltip(T value, IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer) {
 		IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 		List<Component> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
 		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onTooltip(this, tooltip);
@@ -227,7 +227,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	private <T> IIngredientRenderer<T> getIngredientRenderer(IIngredientType<T> ingredientType) {
 		return Optional.of(rendererOverrides)
 			.flatMap(r -> r.getIngredientRenderer(ingredientType))
-			.orElseGet(() -> ingredientManager.getIngredientRenderer(ingredientType));
+			.orElseGet(() -> registeredIngredients.getIngredientRenderer(ingredientType));
 	}
 
 	public void draw(PoseStack poseStack) {

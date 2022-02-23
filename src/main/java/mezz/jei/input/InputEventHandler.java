@@ -1,7 +1,7 @@
 package mezz.jei.input;
 
 import mezz.jei.config.KeyBindings;
-import mezz.jei.events.EventBusHelper;
+import mezz.jei.events.RuntimeEventSubscriptions;
 import mezz.jei.input.mouse.ICharTypedHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.util.ReflectionUtil;
@@ -20,19 +20,19 @@ public class InputEventHandler {
 		this.inputHandler = inputHandler;
 	}
 
-	public void registerToEventBus() {
-		EventBusHelper.registerWeakListener(this, ScreenEvent.InitScreenEvent.class, InputEventHandler::onInitGuiEvent);
+	public void register(RuntimeEventSubscriptions subscriptions) {
+		subscriptions.register(ScreenEvent.InitScreenEvent.class, this::onInitGuiEvent);
 
-		EventBusHelper.registerWeakListener(this, ScreenEvent.KeyboardKeyPressedEvent.Pre.class, InputEventHandler::onKeyboardKeyPressedEvent);
-		EventBusHelper.registerWeakListener(this, ScreenEvent.KeyboardKeyPressedEvent.Post.class, InputEventHandler::onKeyboardKeyPressedEvent);
+		subscriptions.register(ScreenEvent.KeyboardKeyPressedEvent.Pre.class, this::onKeyboardKeyPressedEvent);
+		subscriptions.register(ScreenEvent.KeyboardKeyPressedEvent.Post.class, this::onKeyboardKeyPressedEvent);
 
-		EventBusHelper.registerWeakListener(this, ScreenEvent.KeyboardCharTypedEvent.Pre.class, InputEventHandler::onKeyboardCharTypedEvent);
-		EventBusHelper.registerWeakListener(this, ScreenEvent.KeyboardCharTypedEvent.Post.class, InputEventHandler::onKeyboardCharTypedEvent);
+		subscriptions.register(ScreenEvent.KeyboardCharTypedEvent.Pre.class, this::onKeyboardCharTypedEvent);
+		subscriptions.register(ScreenEvent.KeyboardCharTypedEvent.Post.class, this::onKeyboardCharTypedEvent);
 
-		EventBusHelper.registerWeakListener(this, ScreenEvent.MouseClickedEvent.Pre.class, InputEventHandler::onGuiMouseClickedEvent);
-		EventBusHelper.registerWeakListener(this, ScreenEvent.MouseReleasedEvent.Pre.class, InputEventHandler::onGuiMouseReleasedEvent);
+		subscriptions.register(ScreenEvent.MouseClickedEvent.Pre.class, this::onGuiMouseClickedEvent);
+		subscriptions.register(ScreenEvent.MouseReleasedEvent.Pre.class, this::onGuiMouseReleasedEvent);
 
-		EventBusHelper.registerWeakListener(this, ScreenEvent.MouseScrollEvent.Pre.class, InputEventHandler::onGuiMouseScrollEvent);
+		subscriptions.register(ScreenEvent.MouseScrollEvent.Pre.class, this::onGuiMouseScrollEvent);
 	}
 
 	public void onInitGuiEvent(ScreenEvent.InitScreenEvent event) {
@@ -130,5 +130,4 @@ public class InputEventHandler {
 		EditBox textField = ReflectionUtil.getFieldWithClass(screen, EditBox.class);
 		return textField != null && textField.isActive() && textField.isFocused();
 	}
-
 }

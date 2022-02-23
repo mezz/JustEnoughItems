@@ -23,14 +23,14 @@ import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.IClickedIngredient;
 import net.minecraft.world.item.ItemStack;
 
 public class GhostIngredientDragManager {
 	private final IRecipeFocusSource source;
 	private final GuiScreenHelper guiScreenHelper;
-	private final IngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final IWorldConfig worldConfig;
 	private final List<GhostIngredientReturning<?>> ghostIngredientsReturning = new ArrayList<>();
 	@Nullable
@@ -40,10 +40,10 @@ public class GhostIngredientDragManager {
 	@Nullable
 	private List<IGhostIngredientHandler.Target<Object>> hoveredIngredientTargets;
 
-	public GhostIngredientDragManager(IRecipeFocusSource source, GuiScreenHelper guiScreenHelper, IngredientManager ingredientManager, IWorldConfig worldConfig) {
+	public GhostIngredientDragManager(IRecipeFocusSource source, GuiScreenHelper guiScreenHelper, RegisteredIngredients registeredIngredients, IWorldConfig worldConfig) {
 		this.source = source;
 		this.guiScreenHelper = guiScreenHelper;
-		this.ingredientManager = ingredientManager;
+		this.registeredIngredients = registeredIngredients;
 		this.worldConfig = worldConfig;
 	}
 
@@ -117,7 +117,7 @@ public class GhostIngredientDragManager {
 		if (targets.isEmpty()) {
 			return false;
 		}
-		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
+		IIngredientRenderer<V> ingredientRenderer = registeredIngredients.getIngredientRenderer(type);
 		Rect2i clickedArea = clicked.getArea();
 		this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, input.getMouseX(), input.getMouseY(), clickedArea);
 		return true;

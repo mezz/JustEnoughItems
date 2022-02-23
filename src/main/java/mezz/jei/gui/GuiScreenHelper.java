@@ -7,7 +7,7 @@ import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GuiScreenHelper {
-	private final IngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final List<IGlobalGuiHandler> globalGuiHandlers;
 	private final GuiContainerHandlers guiContainerHandlers;
 	private final Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers;
@@ -38,13 +38,13 @@ public class GuiScreenHelper {
 	private Set<Rect2i> guiExclusionAreas = Collections.emptySet();
 
 	public GuiScreenHelper(
-		IngredientManager ingredientManager,
+		RegisteredIngredients registeredIngredients,
 		List<IGlobalGuiHandler> globalGuiHandlers,
 		GuiContainerHandlers guiContainerHandlers,
 		Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers,
 		Map<Class<?>, IScreenHandler<?>> guiScreenHandlers
 	) {
-		this.ingredientManager = ingredientManager;
+		this.registeredIngredients = registeredIngredients;
 		this.globalGuiHandlers = globalGuiHandlers;
 		this.guiContainerHandlers = guiContainerHandlers;
 		this.ghostIngredientHandlers = ghostIngredientHandlers;
@@ -148,7 +148,7 @@ public class GuiScreenHelper {
 		if (ingredient == null) {
 			return Optional.empty();
 		}
-		return TypedIngredient.create(ingredientManager, ingredient)
+		return TypedIngredient.create(registeredIngredients, ingredient)
 			.map(typedIngredient -> {
 				Rect2i area = getSlotArea(typedIngredient, guiContainer);
 				return new ClickedIngredient<>(typedIngredient, area, false, false);

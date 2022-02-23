@@ -5,9 +5,9 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.collect.SetMultiMap;
 import mezz.jei.ingredients.IIngredientSupplier;
+import mezz.jei.ingredients.RegisteredIngredients;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -24,12 +24,12 @@ public class RecipeMap {
 	private final SetMultiMap<String, ResourceLocation> ingredientUidToCategoryMap = new SetMultiMap<>();
 	private final SetMultiMap<String, ResourceLocation> categoryCatalystUidToRecipeCategoryMap = new SetMultiMap<>();
 	private final Comparator<ResourceLocation> recipeCategoryUidComparator;
-	private final IIngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final RecipeIngredientRole role;
 
-	public RecipeMap(Comparator<ResourceLocation> recipeCategoryUidComparator, IIngredientManager ingredientManager, RecipeIngredientRole role) {
+	public RecipeMap(Comparator<ResourceLocation> recipeCategoryUidComparator, RegisteredIngredients registeredIngredients, RecipeIngredientRole role) {
 		this.recipeCategoryUidComparator = recipeCategoryUidComparator;
-		this.ingredientManager = ingredientManager;
+		this.registeredIngredients = registeredIngredients;
 		this.role = role;
 	}
 
@@ -64,7 +64,7 @@ public class RecipeMap {
 	}
 
 	private <T, V> void addRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientSupplier ingredientSupplier, IIngredientType<V> ingredientType) {
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 
 		List<String> ingredientUids = ingredientSupplier.getIngredientStream(ingredientType, this.role)
 			.filter(ingredientHelper::isValidIngredient)

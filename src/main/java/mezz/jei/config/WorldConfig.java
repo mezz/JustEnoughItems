@@ -4,10 +4,12 @@ import mezz.jei.config.forge.Configuration;
 import mezz.jei.config.forge.Property;
 import mezz.jei.events.BookmarkOverlayToggleEvent;
 import mezz.jei.events.EditModeToggleEvent;
-import mezz.jei.events.EventBusHelper;
+import mezz.jei.events.PermanentEventSubscriptions;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import mezz.jei.util.Translator;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -21,6 +23,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	private static final String worldCategory = "world";
 	private final WorldConfigValues defaultValues = new WorldConfigValues();
 	private final WorldConfigValues values = new WorldConfigValues();
+	private final File jeiConfigurationDir;
 	@Nullable
 	private Configuration worldConfig;
 
@@ -35,7 +38,12 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	}
 
 	public WorldConfig(File jeiConfigurationDir) {
-		worldConfig = getConfiguration(jeiConfigurationDir);
+		this.worldConfig = getConfiguration(jeiConfigurationDir);
+		this.jeiConfigurationDir = jeiConfigurationDir;
+	}
+
+	public void register(PermanentEventSubscriptions subscriptions) {
+		subscriptions.register(WorldEvent.Save.class, event -> onWorldSave());
 	}
 
 	@Override
@@ -108,7 +116,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 				}
 			}
 
-			EventBusHelper.post(new BookmarkOverlayToggleEvent(values.bookmarkOverlayEnabled));
+			MinecraftForge.EVENT_BUS.post(new BookmarkOverlayToggleEvent(values.bookmarkOverlayEnabled));
 		}
 	}
 
@@ -163,12 +171,12 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 
 			if (worldConfig.hasChanged()) {
 				worldConfig.save();
-				EventBusHelper.post(new EditModeToggleEvent(values.editModeEnabled));
+				MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.editModeEnabled));
 			}
 		}
 	}
 
-	public void onWorldSave() {
+	private void onWorldSave() {
 		try {
 			saveFilterText();
 		} catch (RuntimeException e) {
@@ -176,7 +184,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 		}
 	}
 
-	public void syncWorldConfig(File jeiConfigurationDir) {
+	public void syncWorldConfig() {
 		worldConfig = getConfiguration(jeiConfigurationDir);
 		if (worldConfig == null) {
 			return;
@@ -198,7 +206,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 		property.setComment(Translator.translateToLocal("config.jei.mode.editEnabled.comment"));
 		values.editModeEnabled = property.getBoolean();
 		if (property.hasChanged()) {
-			EventBusHelper.post(new EditModeToggleEvent(values.editModeEnabled));
+			MinecraftForge.EVENT_BUS.post(new EditModeToggleEvent(values.editModeEnabled));
 		}
 
 		property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);

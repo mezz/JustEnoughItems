@@ -1,10 +1,8 @@
 package mezz.jei.ingredients;
 
 import com.google.common.collect.Multimap;
-import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -33,18 +31,18 @@ import java.util.stream.Collectors;
 
 public class IngredientSorterComparators {
 	private final IngredientFilter ingredientFilter;
-	private final IIngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final ModNameSortingConfig modNameSortingConfig;
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
 
 	public IngredientSorterComparators(
 		IngredientFilter ingredientFilter,
-		IIngredientManager ingredientManager,
+		RegisteredIngredients registeredIngredients,
 		ModNameSortingConfig modNameSortingConfig,
 		IngredientTypeSortingConfig ingredientTypeSortingConfig
 	) {
 		this.ingredientFilter = ingredientFilter;
-		this.ingredientManager = ingredientManager;
+		this.registeredIngredients = registeredIngredients;
 		this.modNameSortingConfig = modNameSortingConfig;
 		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
 	}
@@ -93,7 +91,7 @@ public class IngredientSorterComparators {
 	}
 
 	private Comparator<IIngredientListElementInfo<?>> getIngredientTypeComparator() {
-		Collection<IIngredientType<?>> ingredientTypes = this.ingredientManager.getRegisteredIngredientTypes();
+		Collection<IIngredientType<?>> ingredientTypes = this.registeredIngredients.getIngredientTypes();
 		Set<String> ingredientTypeStrings = ingredientTypes.stream()
 			.map(IngredientTypeSortingConfig::getIngredientTypeString)
 			.collect(Collectors.toSet());
@@ -106,11 +104,11 @@ public class IngredientSorterComparators {
 		return maxDamage.reversed();
 	}
 
-	private static Comparator<IIngredientListElementInfo<?>> getTagComparator() {
+	private Comparator<IIngredientListElementInfo<?>> getTagComparator() {
 		Comparator<IIngredientListElementInfo<?>> isTagged =
-			Comparator.comparing(IngredientSorterComparators::hasTag);
+			Comparator.comparing(this::hasTag);
 		Comparator<IIngredientListElementInfo<?>> tag =
-			Comparator.comparing(IngredientSorterComparators::getTagForSorting);
+			Comparator.comparing(this::getTagForSorting);
 		return isTagged.reversed().thenComparing(tag);
 	}
 
@@ -259,9 +257,8 @@ public class IngredientSorterComparators {
 		return 0;
 	}
 
-	private static String getTagForSorting(IIngredientListElementInfo<?> elementInfo) {
-		IIngredientManager ingredientManager = Internal.getIngredientManager();
-		Collection<ResourceLocation> tagIds = elementInfo.getTagIds(ingredientManager);
+	private String getTagForSorting(IIngredientListElementInfo<?> elementInfo) {
+		Collection<ResourceLocation> tagIds = elementInfo.getTagIds(registeredIngredients);
 
 		String bestTag = "";
 		int maxTagSize = 0;
@@ -288,7 +285,7 @@ public class IngredientSorterComparators {
 		return values.size();
 	}
 
-	private static boolean hasTag(IIngredientListElementInfo<?> elementInfo) {
+	private boolean hasTag(IIngredientListElementInfo<?> elementInfo) {
 		return !getTagForSorting(elementInfo).isEmpty();
 	}
 

@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.Rect2i;
 import mezz.jei.Internal;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.textures.Textures;
-import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
@@ -82,13 +82,13 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	}
 
 	private <T> RecipeSlot createSlot(ITypedIngredient<T> typedIngredient, int index, int maxIngredientsPerColumn) {
-		IngredientManager ingredientManager = Internal.getIngredientManager();
+		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
 		int column = index / maxIngredientsPerColumn;
 		int row = index % maxIngredientsPerColumn;
 		int xPos = left + borderSize + (column * ingredientSize) + ingredientBorderSize;
 		int yPos = top + borderSize + (row * ingredientSize) + ingredientBorderSize;
 		RecipeSlot recipeSlot = new RecipeSlot(
-			ingredientManager,
+			registeredIngredients,
 			RecipeIngredientRole.CATALYST,
 			xPos,
 			yPos,

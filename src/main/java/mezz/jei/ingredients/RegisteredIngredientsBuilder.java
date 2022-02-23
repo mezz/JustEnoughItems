@@ -17,12 +17,12 @@ import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.util.ErrorUtil;
 
-public class ModIngredientRegistration implements IModIngredientRegistration {
+public class RegisteredIngredientsBuilder implements IModIngredientRegistration {
 	private final List<IngredientInfo<?>> ingredientInfos = new ArrayList<>();
 	private final Set<IIngredientType<?>> registeredIngredientSet = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final ISubtypeManager subtypeManager;
 
-	public ModIngredientRegistration(ISubtypeManager subtypeManager) {
+	public RegisteredIngredientsBuilder(ISubtypeManager subtypeManager) {
 		this.subtypeManager = subtypeManager;
 	}
 
@@ -58,7 +58,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 		return ColorGetter.INSTANCE;
 	}
 
-	public List<IngredientInfo<?>> getIngredientInfos() {
-		return ingredientInfos;
+	public RegisteredIngredients build() {
+		return new RegisteredIngredients(ingredientInfos);
 	}
 }

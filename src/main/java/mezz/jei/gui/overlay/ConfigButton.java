@@ -1,19 +1,27 @@
 package mezz.jei.gui.overlay;
 
 import mezz.jei.Internal;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.config.IWorldConfig;
-import mezz.jei.config.JEIClientConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.UserInput;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraftforge.client.ConfigGuiHandler;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ConfigButton extends GuiIconToggleButton {
 	public static ConfigButton create(IngredientListOverlay parent, IWorldConfig worldConfig) {
@@ -78,11 +86,36 @@ public class ConfigButton extends GuiIconToggleButton {
 				if (input.is(KeyBindings.toggleCheatModeConfigButton)) {
 					worldConfig.toggleCheatItemsEnabled();
 				} else {
-					JEIClientConfig.openSettings();
+					openSettings();
 				}
 			}
 			return true;
 		}
 		return false;
+	}
+
+	private static void openSettings() {
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.player == null) {
+			return;
+		}
+
+		Optional<Screen> configScreen = ModList.get()
+			.getModContainerById(ModIds.JEI_ID)
+			.map(ModContainer::getModInfo)
+			.flatMap(ConfigGuiHandler::getGuiFactoryFor)
+			.map(f -> f.apply(mc, mc.screen));
+
+		if (configScreen.isPresent()) {
+			mc.setScreen(configScreen.get());
+		} else {
+			ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/configured");
+			Style style = Style.EMPTY
+				.setUnderlined(true)
+				.withClickEvent(clickEvent);
+			MutableComponent message = new TranslatableComponent("jei.message.configured");
+			message = message.setStyle(style);
+			mc.player.displayClientMessage(message, false);
+		}
 	}
 }

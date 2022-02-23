@@ -10,9 +10,9 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeLayout;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.resources.ResourceLocation;
 
@@ -24,20 +24,22 @@ import java.util.stream.Collectors;
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
 	private final IModIdHelper modIdHelper;
-	private final IIngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 
-	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, IIngredientManager ingredientManager) {
+	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, RegisteredIngredients registeredIngredients) {
 		this.internal = internal;
 		this.modIdHelper = modIdHelper;
-		this.ingredientManager = ingredientManager;
+		this.registeredIngredients = registeredIngredients;
 	}
 
 	@SuppressWarnings("removal")
 	@Override
 	public <V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient) {
+		ErrorUtil.checkNotNull(mode, "mode");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		RecipeIngredientRole role = mode.toRole();
-		IIngredientType<V> ingredientType = ingredientManager.getIngredientType(ingredient);
-		return Focus.createFromApi(ingredientManager, role, ingredientType, ingredient);
+		IIngredientType<V> ingredientType = registeredIngredients.getIngredientType(ingredient);
+		return Focus.createFromApi(registeredIngredients, role, ingredientType, ingredient);
 	}
 
 	@Override
@@ -116,8 +118,10 @@ public class RecipeManager implements IRecipeManager {
 
 	@Override
 	public <T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus) {
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+		ErrorUtil.checkNotNull(recipe, "recipe");
 		IFocusGroup focusGroup = FocusGroup.createFromNullable(focus);
-		RecipeLayout<T> recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, focusGroup, ingredientManager, modIdHelper, 0, 0);
+		RecipeLayout<T> recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, focusGroup, registeredIngredients, modIdHelper, 0, 0);
 		Preconditions.checkNotNull(recipeLayout, "Recipe layout crashed during creation, see log.");
 		return recipeLayout.getLegacyAdapter();
 	}

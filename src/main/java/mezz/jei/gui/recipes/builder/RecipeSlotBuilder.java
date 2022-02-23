@@ -11,12 +11,12 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.elements.OffsetDrawable;
 import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.ingredients.RecipeSlots;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.IngredientAcceptor;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
 import mezz.jei.util.ErrorUtil;
 import org.jetbrains.annotations.Nullable;
@@ -29,9 +29,9 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	private final IngredientAcceptor ingredients;
 	private final RecipeSlot recipeSlot;
 
-	public RecipeSlotBuilder(IIngredientManager ingredientManager, RecipeIngredientRole role, int x, int y, int ingredientCycleOffset, int legacyIngredientIndex) {
-		this.ingredients = new IngredientAcceptor(ingredientManager);
-		this.recipeSlot = new RecipeSlot(ingredientManager, role, x, y, ingredientCycleOffset, legacyIngredientIndex);
+	public RecipeSlotBuilder(RegisteredIngredients registeredIngredients, RecipeIngredientRole role, int x, int y, int ingredientCycleOffset, int legacyIngredientIndex) {
+		this.ingredients = new IngredientAcceptor(registeredIngredients);
+		this.recipeSlot = new RecipeSlot(registeredIngredients, role, x, y, ingredientCycleOffset, legacyIngredientIndex);
 	}
 
 	@Override

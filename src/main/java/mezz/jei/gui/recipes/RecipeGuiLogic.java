@@ -7,8 +7,8 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.ingredients.IngredientLookupState;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.recipes.FocusGroup;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.util.MathUtil;
@@ -26,7 +26,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeManager recipeManager;
 	private final RecipeTransferManager recipeTransferManager;
 	private final IRecipeLogicStateListener stateListener;
-	private final IIngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final IModIdHelper modIdHelper;
 
 	private boolean initialState = true;
@@ -37,13 +37,13 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		IRecipeManager recipeManager,
 		RecipeTransferManager recipeTransferManager,
 		IRecipeLogicStateListener stateListener,
-		IIngredientManager ingredientManager,
+		RegisteredIngredients registeredIngredients,
 		IModIdHelper modIdHelper
 	) {
 		this.recipeManager = recipeManager;
 		this.recipeTransferManager = recipeTransferManager;
 		this.stateListener = stateListener;
-		this.ingredientManager = ingredientManager;
+		this.registeredIngredients = registeredIngredients;
 		this.modIdHelper = modIdHelper;
 		this.state = IngredientLookupState.createWithFocus(recipeManager, FocusGroup.EMPTY);
 	}
@@ -179,7 +179,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		for (int recipeIndex = firstRecipeIndex; recipeIndex < recipes.size() && recipeLayouts.size() < state.getRecipesPerPage(); recipeIndex++) {
 			T recipe = recipes.get(recipeIndex);
 			int index = recipeWidgetIndex++;
-			RecipeLayout<T> recipeLayout = RecipeLayout.create(index, recipeCategory, recipe, state.getFocuses(), ingredientManager, modIdHelper, posX, recipePosY);
+			RecipeLayout<T> recipeLayout = RecipeLayout.create(index, recipeCategory, recipe, state.getFocuses(), registeredIngredients, modIdHelper, posX, recipePosY);
 			if (recipeLayout == null) {
 				recipes.remove(recipeIndex);
 				recipeManager.hideRecipe(recipe, recipeCategory.getUid());

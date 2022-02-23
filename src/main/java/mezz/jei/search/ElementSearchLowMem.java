@@ -76,11 +76,6 @@ public class ElementSearchLowMem implements IElementSearch {
 	}
 
 	@Override
-	public void start() {
-		// noop
-	}
-
-	@Override
 	public void registerPrefix(PrefixInfo prefixInfo) {
 		// noop
 	}

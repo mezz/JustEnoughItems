@@ -3,13 +3,13 @@ package mezz.jei.plugins.vanilla;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.ingredients.RegisteredIngredients;
 import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipe;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeUtil;
 import mezz.jei.plugins.vanilla.brewing.JeiBrewingRecipe;
@@ -18,8 +18,8 @@ import mezz.jei.util.ErrorUtil;
 public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	private final BrewingRecipeUtil brewingRecipeUtil;
 
-	public VanillaRecipeFactory(IIngredientManager ingredientManager) {
-		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM);
+	public VanillaRecipeFactory(RegisteredIngredients registeredIngredients) {
+		IIngredientHelper<ItemStack> ingredientHelper = registeredIngredients.getIngredientHelper(VanillaTypes.ITEM);
 		this.brewingRecipeUtil = new BrewingRecipeUtil(ingredientHelper);
 	}
 

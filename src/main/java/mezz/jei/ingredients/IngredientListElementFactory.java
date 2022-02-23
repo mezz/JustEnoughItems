@@ -9,7 +9,6 @@ import net.minecraft.core.NonNullList;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,21 +20,21 @@ public final class IngredientListElementFactory {
 	private IngredientListElementFactory() {
 	}
 
-	public static NonNullList<IIngredientListElement<?>> createBaseList(IIngredientManager ingredientManager) {
+	public static NonNullList<IIngredientListElement<?>> createBaseList(RegisteredIngredients registeredIngredients) {
 		NonNullList<IIngredientListElement<?>> ingredientListElements = NonNullList.create();
 
-		for (IIngredientType<?> ingredientType : ingredientManager.getRegisteredIngredientTypes()) {
-			addToBaseList(ingredientListElements, ingredientManager, ingredientType);
+		for (IIngredientType<?> ingredientType : registeredIngredients.getIngredientTypes()) {
+			addToBaseList(ingredientListElements, registeredIngredients, ingredientType);
 		}
 
 		return ingredientListElements;
 	}
 
-	public static <V> List<IIngredientListElement<V>> createList(IIngredientManager ingredientManager, IIngredientType<V> ingredientType, Collection<V> ingredients) {
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+	public static <V> List<IIngredientListElement<V>> createList(RegisteredIngredients registeredIngredients, IIngredientType<V> ingredientType, Collection<V> ingredients) {
+		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 
 		return ingredients.stream()
-			.map(i -> TypedIngredient.createTyped(ingredientManager, ingredientType, i))
+			.map(i -> TypedIngredient.createTyped(registeredIngredients, ingredientType, i))
 			.flatMap(Optional::stream)
 			.map(typedIngredient -> {
 				int orderIndex = ORDER_TRACKER.getOrderIndex(typedIngredient, ingredientHelper);
@@ -44,20 +43,21 @@ public final class IngredientListElementFactory {
 			.toList();
 	}
 
-	public static <V> IIngredientListElement<V> createOrderedElement(IIngredientManager ingredientManager, ITypedIngredient<V> typedIngredient) {
+	public static <V> IIngredientListElement<V> createOrderedElement(RegisteredIngredients registeredIngredients, ITypedIngredient<V> typedIngredient) {
 		IIngredientType<V> type = typedIngredient.getType();
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(type);
+		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(type);
 		int orderIndex = ORDER_TRACKER.getOrderIndex(typedIngredient, ingredientHelper);
 		return new IngredientListElement<>(typedIngredient, orderIndex);
 	}
 
-	private static <V> void addToBaseList(NonNullList<IIngredientListElement<?>> baseList, IIngredientManager ingredientManager, IIngredientType<V> ingredientType) {
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+	private static <V> void addToBaseList(NonNullList<IIngredientListElement<?>> baseList, RegisteredIngredients registeredIngredients, IIngredientType<V> ingredientType) {
+		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 
-		Collection<V> ingredients = ingredientManager.getAllIngredients(ingredientType);
+		IngredientInfo<V> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
+		Collection<V> ingredients = ingredientInfo.getAllIngredients();
 		LOGGER.debug("Registering ingredients: " + ingredientType.getIngredientClass().getSimpleName());
 		ingredients.stream()
-			.map(i -> TypedIngredient.createTyped(ingredientManager, ingredientType, i))
+			.map(i -> TypedIngredient.createTyped(registeredIngredients, ingredientType, i))
 			.flatMap(Optional::stream)
 			.forEach(typedIngredient -> {
 				int orderIndex = ORDER_TRACKER.getOrderIndex(typedIngredient, ingredientHelper);

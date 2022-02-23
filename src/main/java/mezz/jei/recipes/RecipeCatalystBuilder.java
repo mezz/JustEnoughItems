@@ -9,15 +9,15 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 
 public class RecipeCatalystBuilder {
 	private final ImmutableListMultimap.Builder<IRecipeCategory<?>, ITypedIngredient<?>> recipeCategoryCatalystsBuilder = ImmutableListMultimap.builder();
-	private final IngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final RecipeMap recipeCatalystMap;
 
-	public RecipeCatalystBuilder(IngredientManager ingredientManager, RecipeMap recipeCatalystMap) {
-		this.ingredientManager = ingredientManager;
+	public RecipeCatalystBuilder(RegisteredIngredients registeredIngredients, RecipeMap recipeCatalystMap) {
+		this.registeredIngredients = registeredIngredients;
 		this.recipeCatalystMap = recipeCatalystMap;
 	}
 
@@ -31,7 +31,7 @@ public class RecipeCatalystBuilder {
 	private <T> void addCategoryCatalyst(ITypedIngredient<T> catalystIngredient, IRecipeCategory<?> recipeCategory) {
 		IIngredientType<T> ingredientType = catalystIngredient.getType();
 		T ingredient = catalystIngredient.getIngredient();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 		String ingredientUid = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
 		recipeCatalystMap.addCatalystForCategory(recipeCategory, ingredientUid);
 	}

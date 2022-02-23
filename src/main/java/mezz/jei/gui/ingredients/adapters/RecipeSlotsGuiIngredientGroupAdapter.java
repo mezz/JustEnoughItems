@@ -17,10 +17,10 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.ingredients.LegacyTooltipAdapter;
 import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.ingredients.RecipeSlots;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.recipes.FocusGroup;
 import mezz.jei.util.ErrorUtil;
@@ -41,7 +41,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final RecipeSlots recipeSlots;
-	private final IIngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final IIngredientType<T> ingredientType;
 	private final Map<Integer, RecipeSlotGuiIngredientAdapter<T>> guiIngredientsCache = new Int2ObjectArrayMap<>();
 	/**
@@ -60,12 +60,12 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 
 	public RecipeSlotsGuiIngredientGroupAdapter(
 		RecipeSlots recipeSlots,
-		IIngredientManager ingredientManager,
+		RegisteredIngredients registeredIngredients,
 		IIngredientType<T> ingredientType,
 		int cycleOffset
 	) {
 		this.recipeSlots = recipeSlots;
-		this.ingredientManager = ingredientManager;
+		this.registeredIngredients = registeredIngredients;
 		this.ingredientType = ingredientType;
 		this.cycleOffset = cycleOffset;
 	}
@@ -105,7 +105,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	@Override
 	public void init(int ingredientIndex, boolean input, int xPosition, int yPosition) {
 		RecipeIngredientRole role = input ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT;
-		IIngredientRenderer<T> ingredientRenderer = this.ingredientManager.getIngredientRenderer(this.ingredientType);
+		IIngredientRenderer<T> ingredientRenderer = this.registeredIngredients.getIngredientRenderer(this.ingredientType);
 		addSlot(ingredientIndex, role, ingredientRenderer, xPosition, yPosition, 16, 16, 0, 0);
 	}
 
@@ -119,7 +119,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 
 	private void addSlot(int legacyIngredientIndex, RecipeIngredientRole role, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xInset, int yInset) {
 		IIngredientRenderer<T> legacyAdaptedIngredientRenderer = LegacyAdaptedIngredientRenderer.create(ingredientRenderer, width, height, xInset, yInset);
-		RecipeSlot recipeSlot = new RecipeSlot(this.ingredientManager, role, xPosition, yPosition, this.cycleOffset, legacyIngredientIndex);
+		RecipeSlot recipeSlot = new RecipeSlot(this.registeredIngredients, role, xPosition, yPosition, this.cycleOffset, legacyIngredientIndex);
 		recipeSlot.addRenderOverride(this.ingredientType, legacyAdaptedIngredientRenderer);
 
 		this.recipeSlots.addSlot(recipeSlot);
@@ -210,7 +210,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 			return List.of();
 		}
 		return ingredients.stream()
-			.map(i -> TypedIngredient.create(ingredientManager, ingredientType, i))
+			.map(i -> TypedIngredient.create(registeredIngredients, ingredientType, i))
 			.toList();
 	}
 
@@ -230,7 +230,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		ITypedIngredient<T> focusValue = focus.getTypedValue();
 		T focusIngredient = focusValue.getIngredient();
 
-		IIngredientHelper<T> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredientType);
+		IIngredientHelper<T> ingredientHelper = this.registeredIngredients.getIngredientHelper(ingredientType);
 		String focusUid = ingredientHelper.getUniqueId(focusIngredient, UidContext.Ingredient);
 
 		return IntStream.range(0, ingredients.size())

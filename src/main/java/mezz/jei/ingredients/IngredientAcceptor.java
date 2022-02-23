@@ -11,7 +11,6 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.util.ErrorUtil;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -27,7 +26,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class IngredientAcceptor implements IIngredientAcceptor<IngredientAcceptor> {
-	private final IIngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	/**
 	 * A list of ingredients, including "blank" ingredients represented by {@link Optional#empty()}.
 	 * Blank ingredients are drawn as "nothing" in a rotation of ingredients, but aren't considered in lookups.
@@ -35,8 +34,8 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	private final List<Optional<ITypedIngredient<?>>> ingredients = new ArrayList<>();
 	private final Set<IIngredientType<?>> types = new HashSet<>();
 
-	public IngredientAcceptor(IIngredientManager ingredientManager) {
-		this.ingredientManager = ingredientManager;
+	public IngredientAcceptor(RegisteredIngredients registeredIngredients) {
+		this.registeredIngredients = registeredIngredients;
 	}
 
 	@Override
@@ -44,7 +43,7 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		for (Object ingredient : ingredients) {
-			Optional<ITypedIngredient<?>> typedIngredient = TypedIngredient.create(this.ingredientManager, ingredient);
+			Optional<ITypedIngredient<?>> typedIngredient = TypedIngredient.create(this.registeredIngredients, ingredient);
 			typedIngredient.ifPresent(i -> this.types.add(i.getType()));
 
 			this.ingredients.add(typedIngredient);
@@ -75,7 +74,7 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	}
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
-		Optional<ITypedIngredient<?>> typedIngredient = TypedIngredient.create(this.ingredientManager, ingredientType, ingredient);
+		Optional<ITypedIngredient<?>> typedIngredient = TypedIngredient.create(this.registeredIngredients, ingredientType, ingredient);
 		typedIngredient.ifPresent(i -> this.types.add(i.getType()));
 		this.ingredients.add(typedIngredient);
 	}
@@ -114,7 +113,7 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 		ITypedIngredient<T> focusValue = focus.getTypedValue();
 		IIngredientType<T> ingredientType = focusValue.getType();
 		T focusIngredient = focusValue.getIngredient();
-		IIngredientHelper<T> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredientType);
+		IIngredientHelper<T> ingredientHelper = this.registeredIngredients.getIngredientHelper(ingredientType);
 		String focusUid = ingredientHelper.getUniqueId(focusIngredient, UidContext.Ingredient);
 
 		return IntStream.range(0, ingredients.size())

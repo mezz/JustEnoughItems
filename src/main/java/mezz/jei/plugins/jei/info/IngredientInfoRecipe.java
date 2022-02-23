@@ -2,7 +2,7 @@ package mezz.jei.plugins.jei.info;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.util.MathUtil;
 import mezz.jei.util.StringUtil;
@@ -20,13 +20,13 @@ public class IngredientInfoRecipe {
 	private final List<ITypedIngredient<?>> ingredients;
 
 	public static <T> List<IngredientInfoRecipe> create(
-		IIngredientManager ingredientManager,
+		RegisteredIngredients registeredIngredients,
 		List<T> ingredients,
 		IIngredientType<T> ingredientType,
 		Component... descriptionComponents
 	) {
 		List<ITypedIngredient<?>> typedIngredients = ingredients.stream()
-			.map(i -> TypedIngredient.create(ingredientManager, ingredientType, i))
+			.map(i -> TypedIngredient.create(registeredIngredients, ingredientType, i))
 			.flatMap(Optional::stream)
 			.toList();
 

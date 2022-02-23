@@ -1,10 +1,7 @@
 package mezz.jei.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-
-import java.time.Duration;
-import java.util.Collections;
-
+import mezz.jei.events.RuntimeEventSubscriptions;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -15,7 +12,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
-import mezz.jei.events.EventBusHelper;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.input.MouseUtil;
@@ -23,6 +19,9 @@ import mezz.jei.util.LimitedLogger;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.time.Duration;
+import java.util.Collections;
 
 public class GuiEventHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -43,13 +42,13 @@ public class GuiEventHandler {
 		this.ingredientListOverlay = ingredientListOverlay;
 	}
 
-	public void registerToEventBus() {
-		EventBusHelper.registerWeakListener(this, ScreenEvent.InitScreenEvent.Post.class, GuiEventHandler::onGuiInit);
-		EventBusHelper.registerWeakListener(this, ScreenOpenEvent.class, GuiEventHandler::onGuiOpen);
-		EventBusHelper.registerWeakListener(this, ScreenEvent.BackgroundDrawnEvent.class, GuiEventHandler::onDrawBackgroundEventPost);
-		EventBusHelper.registerWeakListener(this, ContainerScreenEvent.DrawForeground.class, GuiEventHandler::onDrawForegroundEvent);
-		EventBusHelper.registerWeakListener(this, ScreenEvent.DrawScreenEvent.Post.class, GuiEventHandler::onDrawScreenEventPost);
-		EventBusHelper.registerWeakListener(this, TickEvent.ClientTickEvent.class, GuiEventHandler::onClientTick);
+	public void register(RuntimeEventSubscriptions subscriptions) {
+		subscriptions.register(ScreenEvent.InitScreenEvent.Post.class, this::onGuiInit);
+		subscriptions.register(ScreenOpenEvent.class, this::onGuiOpen);
+		subscriptions.register(ScreenEvent.BackgroundDrawnEvent.class, this::onDrawBackgroundEventPost);
+		subscriptions.register(ContainerScreenEvent.DrawForeground.class, this::onDrawForegroundEvent);
+		subscriptions.register(ScreenEvent.DrawScreenEvent.Post.class, this::onDrawScreenEventPost);
+		subscriptions.register(TickEvent.ClientTickEvent.class, this::onClientTick);
 	}
 
 	public void onGuiInit(ScreenEvent.InitScreenEvent.Post event) {

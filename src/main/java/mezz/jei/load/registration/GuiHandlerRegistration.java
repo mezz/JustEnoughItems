@@ -7,7 +7,7 @@ import java.util.Map;
 
 import mezz.jei.gui.GuiContainerHandlers;
 import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -71,7 +71,7 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 		this.ghostIngredientHandlers.put(guiClass, handler);
 	}
 
-	public GuiScreenHelper createGuiScreenHelper(IngredientManager ingredientManager) {
-		return new GuiScreenHelper(ingredientManager, globalGuiHandlers, guiContainerHandlers, ghostIngredientHandlers, guiScreenHandlers);
+	public GuiScreenHelper createGuiScreenHelper(RegisteredIngredients registeredIngredients) {
+		return new GuiScreenHelper(registeredIngredients, globalGuiHandlers, guiContainerHandlers, ghostIngredientHandlers, guiScreenHandlers);
 	}
 }

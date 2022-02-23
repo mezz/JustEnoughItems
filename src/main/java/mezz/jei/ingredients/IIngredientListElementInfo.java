@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import net.minecraft.resources.ResourceLocation;
@@ -20,15 +19,15 @@ public interface IIngredientListElementInfo<V> {
 	Set<String> getModNameStrings();
 
 	@Unmodifiable
-	List<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager);
+	List<String> getTooltipStrings(IIngredientFilterConfig config, RegisteredIngredients registeredIngredients);
 
-	Collection<String> getTagStrings(IIngredientManager ingredientManager);
+	Collection<String> getTagStrings(RegisteredIngredients registeredIngredients);
 
-	Collection<ResourceLocation> getTagIds(IIngredientManager ingredientManager);
+	Collection<ResourceLocation> getTagIds(RegisteredIngredients registeredIngredients);
 
-	Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager);
+	Collection<String> getCreativeTabsStrings(RegisteredIngredients registeredIngredients);
 
-	Collection<String> getColorStrings(IIngredientManager ingredientManager);
+	Collection<String> getColorStrings(RegisteredIngredients registeredIngredients);
 
 	ResourceLocation getResourceLocation();
 

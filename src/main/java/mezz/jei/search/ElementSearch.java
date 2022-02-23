@@ -3,7 +3,6 @@ package mezz.jei.search;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.config.SearchMode;
 import mezz.jei.ingredients.IIngredientListElementInfo;
-import mezz.jei.ingredients.IngredientFilterBackgroundBuilder;
 import mezz.jei.ingredients.PrefixedSearchable;
 import mezz.jei.search.suffixtree.GeneralizedSuffixTree;
 import net.minecraft.core.NonNullList;
@@ -17,7 +16,6 @@ import java.util.Map;
 public class ElementSearch implements IElementSearch {
 	private final GeneralizedSuffixTree noPrefixSearchable;
 	private final Map<PrefixInfo, PrefixedSearchable<GeneralizedSuffixTree>> prefixedSearchables = new IdentityHashMap<>();
-	private final IngredientFilterBackgroundBuilder backgroundBuilder;
 	private final CombinedSearchables combinedSearchables = new CombinedSearchables();
 	/**
 	 * indexed list of ingredients for use with the suffix trees
@@ -28,13 +26,7 @@ public class ElementSearch implements IElementSearch {
 	public ElementSearch() {
 		this.elementInfoList = NonNullList.create();
 		this.noPrefixSearchable = new GeneralizedSuffixTree();
-		this.backgroundBuilder = new IngredientFilterBackgroundBuilder(prefixedSearchables, elementInfoList);
 		this.combinedSearchables.addSearchable(noPrefixSearchable);
-	}
-
-	@Override
-	public void start() {
-		this.backgroundBuilder.start();
 	}
 
 	@Override

@@ -10,18 +10,18 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.gui.overlay.IIngredientGridSource;
-import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.TypedIngredient;
 import net.minecraft.world.item.ItemStack;
 
 public class BookmarkList implements IIngredientGridSource {
 	private final List<ITypedIngredient<?>> list = new LinkedList<>();
-	private final IngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final BookmarkConfig bookmarkConfig;
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
-	public BookmarkList(IngredientManager ingredientManager, BookmarkConfig bookmarkConfig) {
-		this.ingredientManager = ingredientManager;
+	public BookmarkList(RegisteredIngredients registeredIngredients, BookmarkConfig bookmarkConfig) {
+		this.registeredIngredients = registeredIngredients;
 		this.bookmarkConfig = bookmarkConfig;
 	}
 
@@ -31,7 +31,7 @@ public class BookmarkList implements IIngredientGridSource {
 		}
 		addToList(value, true);
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(ingredientManager, list);
+		bookmarkConfig.saveBookmarks(registeredIngredients, list);
 		return true;
 	}
 
@@ -41,13 +41,13 @@ public class BookmarkList implements IIngredientGridSource {
 
 	private <T> int indexOf(ITypedIngredient<T> value) {
 		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
-		Optional<ITypedIngredient<T>> normalized = TypedIngredient.normalize(ingredientManager, value);
+		Optional<ITypedIngredient<T>> normalized = TypedIngredient.normalize(registeredIngredients, value);
 		if (normalized.isEmpty()) {
 			return -1;
 		}
 		value = normalized.get();
 
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
+		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
 		String uniqueId = ingredientHelper.getUniqueId(value.getIngredient(), UidContext.Ingredient);
 
 		for (int i = 0; i < list.size(); i++) {
@@ -86,12 +86,12 @@ public class BookmarkList implements IIngredientGridSource {
 
 		list.remove(index);
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(ingredientManager, list);
+		bookmarkConfig.saveBookmarks(registeredIngredients, list);
 		return true;
 	}
 
 	public <T> void addToList(ITypedIngredient<T> value, boolean addToFront) {
-		Optional<ITypedIngredient<T>> result = TypedIngredient.normalize(ingredientManager, value);
+		Optional<ITypedIngredient<T>> result = TypedIngredient.normalize(registeredIngredients, value);
 		if (result.isEmpty()) {
 			return;
 		}

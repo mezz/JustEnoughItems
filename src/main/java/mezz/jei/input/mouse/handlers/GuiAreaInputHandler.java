@@ -1,9 +1,9 @@
 package mezz.jei.input.mouse.handlers;
 
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.recipes.FocusFactory;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
@@ -19,8 +19,8 @@ public class GuiAreaInputHandler implements IUserInputHandler {
 	private final GuiScreenHelper guiScreenHelper;
 	private final RecipesGui recipesGui;
 
-	public GuiAreaInputHandler(IIngredientManager ingredientManager, GuiScreenHelper guiScreenHelper, RecipesGui recipesGui) {
-		this.focusFactory = new FocusFactory(ingredientManager);
+	public GuiAreaInputHandler(RegisteredIngredients registeredIngredients, GuiScreenHelper guiScreenHelper, RecipesGui recipesGui) {
+		this.focusFactory = new FocusFactory(registeredIngredients);
 		this.guiScreenHelper = guiScreenHelper;
 		this.recipesGui = recipesGui;
 	}

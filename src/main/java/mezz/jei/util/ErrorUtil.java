@@ -31,9 +31,8 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IWorldConfig;
-import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,7 +59,8 @@ public final class ErrorUtil {
 		String recipeName = getNameForRecipe(recipe);
 		recipeInfoBuilder.append(recipeName).append(" {");
 
-		IIngredientSupplier ingredientSupplier = RecipeManagerInternal.getIngredientSupplier(recipe, recipeCategory);
+		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+		IIngredientSupplier ingredientSupplier = RecipeManagerInternal.getIngredientSupplier(recipe, recipeCategory, registeredIngredients);
 		if (ingredientSupplier == null) {
 			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
 			return recipeInfoBuilder.toString();
@@ -94,7 +94,7 @@ public final class ErrorUtil {
 
 	private static <T> String getIngredientInfo(IIngredientType<T> ingredientType, RecipeIngredientRole role, IIngredientSupplier ingredients) {
 		List<T> ingredientList = ingredients.getIngredientStream(ingredientType, role).toList();
-		IIngredientHelper<T> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredientType);
+		IIngredientHelper<T> ingredientHelper = Internal.getRegisteredIngredients().getIngredientHelper(ingredientType);
 
 		Stream<String> stringStream = ingredientList.stream()
 			.map(ingredientHelper::getErrorInfo);
@@ -128,8 +128,8 @@ public final class ErrorUtil {
 	}
 
 	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType) {
-		IngredientManager ingredientManager = Internal.getIngredientManager();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 		return ingredientHelper.getErrorInfo(ingredient);
 	}
 
@@ -291,9 +291,9 @@ public final class ErrorUtil {
 	}
 
 	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient) {
-		IIngredientManager ingredientManager = Internal.getIngredientManager();
-		IIngredientType<T> ingredientType = ingredientManager.getIngredientType(ingredient);
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+		IIngredientType<T> ingredientType = registeredIngredients.getIngredientType(ingredient);
+		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 
 		CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering ingredient");
 		CrashReportCategory ingredientCategory = crashreport.addCategory("Ingredient being rendered");

@@ -3,8 +3,8 @@ package mezz.jei.gui.ingredients.adapters;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.ingredients.RecipeSlots;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings({"removal", "deprecation"})
 public class RecipeSlotsGuiFluidStackGroupAdapter extends RecipeSlotsGuiIngredientGroupAdapter<FluidStack> implements IGuiFluidStackGroup {
-	public RecipeSlotsGuiFluidStackGroupAdapter(RecipeSlots recipeSlots, IIngredientManager ingredientManager, int cycleOffset) {
-		super(recipeSlots, ingredientManager, VanillaTypes.FLUID, cycleOffset);
+	public RecipeSlotsGuiFluidStackGroupAdapter(RecipeSlots recipeSlots, RegisteredIngredients registeredIngredients, int cycleOffset) {
+		super(recipeSlots, registeredIngredients, VanillaTypes.FLUID, cycleOffset);
 	}
 
 	@Override

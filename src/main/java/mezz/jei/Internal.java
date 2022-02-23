@@ -1,19 +1,14 @@
 package mezz.jei;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.google.common.base.Preconditions;
 import mezz.jei.color.ColorNamer;
-import mezz.jei.events.EventBusHelper;
-import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.IngredientVisibility;
-import mezz.jei.input.InputEventHandler;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
-import mezz.jei.startup.JeiReloadListener;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * For JEI internal use only, these are normally accessed from the API.
@@ -24,7 +19,7 @@ public final class Internal {
 	@Nullable
 	private static JeiRuntime runtime;
 	@Nullable
-	private static IngredientManager ingredientManager;
+	private static RegisteredIngredients registeredIngredients;
 	@Nullable
 	private static ColorNamer colorNamer;
 	@Nullable
@@ -32,13 +27,7 @@ public final class Internal {
 	@Nullable
 	private static IngredientVisibility ingredientVisibility;
 	@Nullable
-	private static GuiEventHandler guiEventHandler;
-	@Nullable
-	private static InputEventHandler inputEventHandler;
-	@Nullable
 	private static Textures textures;
-	@Nullable
-	private static JeiReloadListener reloadListener;
 
 	private Internal() {
 
@@ -67,21 +56,17 @@ public final class Internal {
 		return runtime;
 	}
 
-	public static void setRuntime(JeiRuntime runtime) {
-		JeiRuntime jeiRuntime = Internal.runtime;
-		if (jeiRuntime != null) {
-			jeiRuntime.close();
-		}
+	public static void setRuntime(@Nullable JeiRuntime runtime) {
 		Internal.runtime = runtime;
 	}
 
-	public static IngredientManager getIngredientManager() {
-		Preconditions.checkState(ingredientManager != null, "Ingredient Manager has not been created yet.");
-		return ingredientManager;
+	public static RegisteredIngredients getRegisteredIngredients() {
+		Preconditions.checkState(registeredIngredients != null, "RegisteredIngredients has not been created yet.");
+		return registeredIngredients;
 	}
 
-	public static void setIngredientManager(IngredientManager ingredientManager) {
-		Internal.ingredientManager = ingredientManager;
+	public static void setIngredientManager(RegisteredIngredients registeredIngredients) {
+		Internal.registeredIngredients = registeredIngredients;
 	}
 
 	public static IngredientVisibility getIngredientVisibility() {
@@ -108,38 +93,6 @@ public final class Internal {
 	}
 
 	public static void setIngredientFilter(IngredientFilter ingredientFilter) {
-		if (Internal.ingredientFilter != null) {
-			EventBusHelper.unregister(Internal.ingredientFilter);
-		}
 		Internal.ingredientFilter = ingredientFilter;
-		EventBusHelper.register(ingredientFilter);
-	}
-
-	public static void setGuiEventHandler(GuiEventHandler guiEventHandler) {
-		if (Internal.guiEventHandler != null) {
-			EventBusHelper.unregister(Internal.guiEventHandler);
-		}
-
-		Internal.guiEventHandler = guiEventHandler;
-		guiEventHandler.registerToEventBus();
-	}
-
-	public static void setInputEventHandler(InputEventHandler inputEventHandler) {
-		if (Internal.inputEventHandler != null) {
-			EventBusHelper.unregister(Internal.inputEventHandler);
-		}
-
-		Internal.inputEventHandler = inputEventHandler;
-		inputEventHandler.registerToEventBus();
-	}
-
-	@Nullable
-	public static JeiReloadListener getReloadListener() {
-		return reloadListener;
-	}
-
-	public static void setReloadListener(JeiReloadListener listener) {
-		Preconditions.checkState(reloadListener == null, "Reload Listener has already been assigned.");
-		reloadListener = listener;
 	}
 }

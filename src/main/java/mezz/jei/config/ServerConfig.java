@@ -2,7 +2,6 @@ package mezz.jei.config;
 
 import com.google.common.base.Preconditions;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 
@@ -17,8 +16,7 @@ public final class ServerConfig implements IServerConfig {
 	private final ForgeConfigSpec.BooleanValue enableCheatModeForCreative;
 	private final ForgeConfigSpec.BooleanValue enableCheatModeForGive;
 
-	public static void register(IEventBus modEventBus, ModLoadingContext modLoadingContext) {
-		modEventBus.register(ServerConfig.class);
+	public static void register(ModLoadingContext modLoadingContext) {
 		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 		instance = new ServerConfig(builder);
 		ForgeConfigSpec config = builder.build();

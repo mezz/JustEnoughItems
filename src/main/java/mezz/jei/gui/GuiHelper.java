@@ -1,6 +1,7 @@
 package mezz.jei.gui;
 
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.ingredients.RegisteredIngredients;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.ITickTimer;
@@ -11,7 +12,6 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.elements.DrawableAnimated;
 import mezz.jei.gui.elements.DrawableBlank;
 import mezz.jei.gui.elements.DrawableBuilder;
@@ -20,11 +20,11 @@ import mezz.jei.gui.textures.Textures;
 import mezz.jei.util.ErrorUtil;
 
 public class GuiHelper implements IGuiHelper {
-	private final IIngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final IDrawableStatic slotDrawable;
 
-	public GuiHelper(IIngredientManager ingredientManager, Textures textures) {
-		this.ingredientManager = ingredientManager;
+	public GuiHelper(RegisteredIngredients registeredIngredients, Textures textures) {
+		this.registeredIngredients = registeredIngredients;
 		this.slotDrawable = textures.getSlotDrawable();
 	}
 
@@ -54,7 +54,7 @@ public class GuiHelper implements IGuiHelper {
 	public <V> IDrawable createDrawableIngredient(IIngredientType<V> type, V ingredient) {
 		ErrorUtil.checkNotNull(type, "type");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
+		IIngredientRenderer<V> ingredientRenderer = registeredIngredients.getIngredientRenderer(type);
 		return new DrawableIngredient<>(ingredient, ingredientRenderer);
 	}
 
@@ -62,7 +62,8 @@ public class GuiHelper implements IGuiHelper {
 	@Override
 	public <V> IDrawable createDrawableIngredient(V ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
+		IIngredientType<V> ingredientType = registeredIngredients.getIngredientType(ingredient);
+		IIngredientRenderer<V> ingredientRenderer = registeredIngredients.getIngredientRenderer(ingredientType);
 		return new DrawableIngredient<>(ingredient, ingredientRenderer);
 	}
 

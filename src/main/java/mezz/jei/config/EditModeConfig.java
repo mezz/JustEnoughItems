@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.ingredients.IIngredientListElementInfo;
 import mezz.jei.ingredients.IngredientFilter;
 import org.apache.commons.io.IOUtils;
@@ -69,13 +68,13 @@ public class EditModeConfig implements IEditModeConfig {
 	}
 
 	@Override
-	public <V> void addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, IIngredientManager ingredientManager, ITypedIngredient<V> typedIngredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
-		if (addIngredientToConfigBlacklist(ingredientFilter, typedIngredient, blacklistType, ingredientHelper)) {
+	public <V> void addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, ITypedIngredient<V> typedIngredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
+		if (addIngredientToConfigBlacklistInternal(ingredientFilter, typedIngredient, blacklistType, ingredientHelper)) {
 			saveBlacklist();
 		}
 	}
 
-	private <V> boolean addIngredientToConfigBlacklist(
+	private <V> boolean addIngredientToConfigBlacklistInternal(
 		IngredientFilter ingredientFilter,
 		ITypedIngredient<V> typedIngredient,
 		IngredientBlacklistType blacklistType,
@@ -136,7 +135,6 @@ public class EditModeConfig implements IEditModeConfig {
 	@Override
 	public <V> void removeIngredientFromConfigBlacklist(
 		IngredientFilter ingredientFilter,
-		IIngredientManager ingredientManager,
 		ITypedIngredient<V> typedIngredient,
 		IngredientBlacklistType blacklistType,
 		IIngredientHelper<V> ingredientHelper

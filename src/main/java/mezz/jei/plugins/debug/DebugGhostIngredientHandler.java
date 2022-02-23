@@ -3,6 +3,8 @@ package mezz.jei.plugins.debug;
 import java.util.ArrayList;
 import java.util.List;
 
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.ingredients.RegisteredIngredients;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
@@ -14,8 +16,6 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
-
 public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> implements IGhostIngredientHandler<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
@@ -24,7 +24,9 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 		List<Target<I>> targets = new ArrayList<>();
 		targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(0, 0, 20, 20)));
 		if (doStart) {
-			IIngredientHelper<I> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredient);
+			RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+			IIngredientType<I> ingredientType = registeredIngredients.getIngredientType(ingredient);
+			IIngredientHelper<I> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 			LOGGER.info("Ghost Ingredient Handling Starting with {}", ingredientHelper.getErrorInfo(ingredient));
 			targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(20, 20, 20, 20)));
 		}
@@ -62,7 +64,9 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 
 		@Override
 		public void accept(I ingredient) {
-			IIngredientHelper<I> ingredientHelper = Internal.getIngredientManager().getIngredientHelper(ingredient);
+			RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+			IIngredientType<I> ingredientType = registeredIngredients.getIngredientType(ingredient);
+			IIngredientHelper<I> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 			LOGGER.info("{}: {}", message, ingredientHelper.getErrorInfo(ingredient));
 		}
 	}

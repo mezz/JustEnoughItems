@@ -12,7 +12,6 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.KeyBindings;
@@ -23,6 +22,7 @@ import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.textures.Textures;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
@@ -95,14 +95,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public RecipesGui(
 		IRecipeManager recipeManager,
 		RecipeTransferManager recipeTransferManager,
-		IIngredientManager ingredientManager,
+		RegisteredIngredients registeredIngredients,
 		IModIdHelper modIdHelper,
 		IClientConfig clientConfig
 	) {
 		super(new TextComponent("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;
 		this.clientConfig = clientConfig;
-		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, ingredientManager, modIdHelper);
+		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, registeredIngredients, modIdHelper);
 		this.recipeCatalysts = new RecipeCatalysts();
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
 		this.minecraft = Minecraft.getInstance();

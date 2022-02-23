@@ -2,26 +2,24 @@ package mezz.jei.recipes;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
-import mezz.jei.Internal;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import mezz.jei.ingredients.IIngredientSupplier;
-import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.IngredientVisibility;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -38,6 +36,7 @@ public class RecipeManagerInternal {
 	private final ImmutableList<IRecipeCategory<?>> recipeCategories;
 	private final Set<ResourceLocation> hiddenRecipeCategoryUids = new HashSet<>();
 	private final IngredientVisibility ingredientVisibility;
+	private final RegisteredIngredients registeredIngredients;
 	private @Nullable ImmutableList<IRecipeCategory<?>> recipeCategoriesVisibleCache = null;
 	private final RecipeCategoryDataMap recipeCategoriesDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
@@ -47,11 +46,12 @@ public class RecipeManagerInternal {
 	public RecipeManagerInternal(
 		ImmutableList<IRecipeCategory<?>> recipeCategories,
 		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
-		IngredientManager ingredientManager,
+		RegisteredIngredients registeredIngredients,
 		ImmutableList<IRecipeManagerPlugin> plugins,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		IngredientVisibility ingredientVisibility
 	) {
+		this.registeredIngredients = registeredIngredients;
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 		this.ingredientVisibility = ingredientVisibility;
 
@@ -62,14 +62,14 @@ public class RecipeManagerInternal {
 
 		this.recipeMaps = new EnumMap<>(RecipeIngredientRole.class);
 		for (RecipeIngredientRole role : RecipeIngredientRole.values()) {
-			RecipeMap recipeMap = new RecipeMap(recipeCategoryUidComparator, ingredientManager, role);
+			RecipeMap recipeMap = new RecipeMap(recipeCategoryUidComparator, registeredIngredients, role);
 			this.recipeMaps.put(role, recipeMap);
 		}
 
 		this.recipeCategoryComparator = Comparator.comparing(IRecipeCategory::getUid, recipeCategoryUidComparator);
 		this.recipeCategories = ImmutableList.sortedCopyOf(this.recipeCategoryComparator, recipeCategories);
 
-		RecipeCatalystBuilder recipeCatalystBuilder = new RecipeCatalystBuilder(ingredientManager, this.recipeMaps.get(RecipeIngredientRole.CATALYST));
+		RecipeCatalystBuilder recipeCatalystBuilder = new RecipeCatalystBuilder(registeredIngredients, this.recipeMaps.get(RecipeIngredientRole.CATALYST));
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
 			ResourceLocation recipeCategoryUid = recipeCategory.getUid();
 			if (recipeCatalysts.containsKey(recipeCategoryUid)) {
@@ -81,7 +81,7 @@ public class RecipeManagerInternal {
 		this.recipeCategoriesDataMap = new RecipeCategoryDataMap(recipeCategories, recipeCategoryCatalystsMap);
 
 		IRecipeManagerPlugin internalRecipeManagerPlugin = new InternalRecipeManagerPlugin(
-			ingredientManager,
+			registeredIngredients,
 			recipeCategoriesDataMap,
 			recipeMaps
 		);
@@ -103,7 +103,7 @@ public class RecipeManagerInternal {
 				if (hiddenRecipes.contains(recipe) || !recipeCategory.isHandled(recipe)) {
 					return false;
 				}
-				IIngredientSupplier ingredientSupplier = getIngredientSupplier(recipe, recipeCategory);
+				IIngredientSupplier ingredientSupplier = getIngredientSupplier(recipe, recipeCategory, registeredIngredients);
 				if (ingredientSupplier == null) {
 					return false;
 				}
@@ -119,10 +119,9 @@ public class RecipeManagerInternal {
 
 	@SuppressWarnings({"removal"})
 	@Nullable
-	public static <T> IIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory) {
+	public static <T> IIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory, RegisteredIngredients registeredIngredients) {
 		try {
-			IIngredientManager ingredientManager = Internal.getIngredientManager();
-			RecipeLayoutBuilder builder = new RecipeLayoutBuilder(ingredientManager, 0);
+			RecipeLayoutBuilder builder = new RecipeLayoutBuilder(registeredIngredients, 0);
 			recipeCategory.setRecipe(builder, recipe, FocusGroup.EMPTY);
 			if (builder.isUsed()) {
 				return builder;

@@ -1,8 +1,8 @@
 package mezz.jei.input;
 
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.GuiScreenHelper;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.TypedIngredient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -13,11 +13,11 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Optional;
 
 public class GuiContainerWrapper implements IRecipeFocusSource {
-	private final IIngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final GuiScreenHelper guiScreenHelper;
 
-	public GuiContainerWrapper(IIngredientManager ingredientManager, GuiScreenHelper guiScreenHelper) {
-		this.ingredientManager = ingredientManager;
+	public GuiContainerWrapper(RegisteredIngredients registeredIngredients, GuiScreenHelper guiScreenHelper) {
+		this.registeredIngredients = registeredIngredients;
 		this.guiScreenHelper = guiScreenHelper;
 	}
 
@@ -35,7 +35,7 @@ public class GuiContainerWrapper implements IRecipeFocusSource {
 		return Optional.ofNullable(guiContainer.getSlotUnderMouse())
 			.flatMap(slot -> {
 				ItemStack stack = slot.getItem();
-				return TypedIngredient.createTyped(this.ingredientManager, VanillaTypes.ITEM, stack)
+				return TypedIngredient.createTyped(this.registeredIngredients, VanillaTypes.ITEM, stack)
 					.map(typedIngredient -> {
 						Rect2i slotArea = new Rect2i(slot.x, slot.y, 16, 16);
 						return new ClickedIngredient<>(typedIngredient, slotArea, false, false);

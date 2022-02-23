@@ -8,9 +8,9 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.IIngredientSupplier;
+import mezz.jei.ingredients.RegisteredIngredients;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSupplier {
 	private final List<IRecipeLayoutSlotSource> slots = new ArrayList<>();
 	private final List<List<IRecipeLayoutSlotSource>> focusLinkedSlots = new ArrayList<>();
-	private final IIngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final int ingredientCycleOffset;
 	private boolean shapeless = false;
 	private int recipeTransferX = -1;
@@ -31,21 +31,21 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 	private int shapelessY = -1;
 	private int legacyIngredientIndex = 0;
 
-	public RecipeLayoutBuilder(IIngredientManager ingredientManager, int ingredientCycleOffset) {
-		this.ingredientManager = ingredientManager;
+	public RecipeLayoutBuilder(RegisteredIngredients registeredIngredients, int ingredientCycleOffset) {
+		this.registeredIngredients = registeredIngredients;
 		this.ingredientCycleOffset = ingredientCycleOffset;
 	}
 
 	@Override
 	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role, int x, int y) {
-		RecipeSlotBuilder slotBuilder = new RecipeSlotBuilder(ingredientManager, role, x, y, ingredientCycleOffset, legacyIngredientIndex++);
+		RecipeSlotBuilder slotBuilder = new RecipeSlotBuilder(registeredIngredients, role, x, y, ingredientCycleOffset, legacyIngredientIndex++);
 		this.slots.add(slotBuilder);
 		return slotBuilder;
 	}
 
 	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
-		InvisibleRecipeLayoutSlotSource slot = new InvisibleRecipeLayoutSlotSource(this.ingredientManager, role);
+		InvisibleRecipeLayoutSlotSource slot = new InvisibleRecipeLayoutSlotSource(this.registeredIngredients, role);
 		this.slots.add(slot);
 		return slot;
 	}

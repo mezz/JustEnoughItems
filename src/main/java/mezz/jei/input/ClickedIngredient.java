@@ -5,7 +5,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
@@ -41,8 +41,8 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	@Override
 	public ItemStack getCheatItemStack() {
 		if (allowsCheating) {
-			IIngredientManager ingredientManager = Internal.getIngredientManager();
-			IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
+			RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+			IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
 			return ingredientHelper.getCheatItemStack(value.getIngredient());
 		}
 		return ItemStack.EMPTY;
@@ -55,8 +55,8 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 
 	@Override
 	public String toString() {
-		IIngredientManager ingredientManager = Internal.getIngredientManager();
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
+		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
 		return MoreObjects.toStringHelper(ClickedIngredient.class)
 			.add("value", ingredientHelper.getUniqueId(value.getIngredient(), UidContext.Ingredient))
 			.add("area", area)

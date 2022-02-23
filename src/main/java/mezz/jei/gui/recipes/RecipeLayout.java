@@ -8,14 +8,13 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.ingredients.RecipeSlots;
 import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.UserInput;
-import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
@@ -35,7 +34,7 @@ public class RecipeLayout<R> {
 
 	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);
 	private final IRecipeCategory<R> recipeCategory;
-	private final IIngredientManager ingredientManager;
+	private final RegisteredIngredients registeredIngredients;
 	private final RecipeSlots recipeSlots;
 	private final RecipeLayoutLegacyAdapter<R> legacyAdapter;
 	private final R recipe;
@@ -48,12 +47,11 @@ public class RecipeLayout<R> {
 	private int posX;
 	private int posY;
 
-
 	@Nullable
-	public static <T> RecipeLayout<T> create(int index, IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, IIngredientManager ingredientManager, IModIdHelper modIdHelper, int posX, int posY) {
-		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, focuses, ingredientManager, posX, posY);
+	public static <T> RecipeLayout<T> create(int index, IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, RegisteredIngredients registeredIngredients, IModIdHelper modIdHelper, int posX, int posY) {
+		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, focuses, registeredIngredients, posX, posY);
 		if (
-			recipeLayout.setRecipeLayout(recipeCategory, recipe, ingredientManager, focuses) ||
+			recipeLayout.setRecipeLayout(recipeCategory, recipe, registeredIngredients, focuses) ||
 			recipeLayout.getLegacyAdapter().setRecipeLayout(recipeCategory, recipe)
 		) {
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
@@ -68,10 +66,10 @@ public class RecipeLayout<R> {
 	private boolean setRecipeLayout(
 		IRecipeCategory<R> recipeCategory,
 		R recipe,
-		IIngredientManager ingredientManager,
+		RegisteredIngredients registeredIngredients,
 		IFocusGroup focuses
 	) {
-		RecipeLayoutBuilder builder = new RecipeLayoutBuilder(ingredientManager, this.ingredientCycleOffset);
+		RecipeLayoutBuilder builder = new RecipeLayoutBuilder(registeredIngredients, this.ingredientCycleOffset);
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
 			if (builder.isUsed()) {
@@ -91,7 +89,7 @@ public class RecipeLayout<R> {
 			.toList();
 
 		if (!outputSlots.isEmpty()) {
-			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName, modIdHelper, recipeLayout.ingredientManager);
+			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName, modIdHelper, recipeLayout.registeredIngredients);
 			for (RecipeSlot outputSlot : outputSlots) {
 				outputSlot.addTooltipCallback(callback);
 			}
@@ -103,16 +101,12 @@ public class RecipeLayout<R> {
 		IRecipeCategory<R> recipeCategory,
 		R recipe,
 		IFocusGroup focuses,
-		IIngredientManager ingredientManager,
+		RegisteredIngredients registeredIngredients,
 		int posX,
 		int posY
 	) {
-		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		ErrorUtil.checkNotNull(recipe, "recipe");
-		ErrorUtil.checkNotNull(ingredientManager, "ingredientManager");
-		ErrorUtil.checkNotNull(focuses, "focuses");
 		this.recipeCategory = recipeCategory;
-		this.ingredientManager = ingredientManager;
+		this.registeredIngredients = registeredIngredients;
 		this.recipeSlots = new RecipeSlots();
 
 		if (index >= 0) {
@@ -131,7 +125,7 @@ public class RecipeLayout<R> {
 
 		this.recipe = recipe;
 		this.recipeBorder = Internal.getTextures().getRecipeBackground();
-		this.legacyAdapter = new RecipeLayoutLegacyAdapter<>(this, ingredientManager, focuses, ingredientCycleOffset);
+		this.legacyAdapter = new RecipeLayoutLegacyAdapter<>(this, registeredIngredients, focuses, ingredientCycleOffset);
 	}
 
 	public void setPosition(int posX, int posY) {
