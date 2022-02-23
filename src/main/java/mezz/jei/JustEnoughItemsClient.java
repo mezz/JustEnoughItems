@@ -12,7 +12,6 @@ import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 public class JustEnoughItemsClient {
 	private final NetworkHandler networkHandler;
 	private final PermanentEventSubscriptions subscriptions;
-	private final JEIClientConfigs jeiClientConfigs = new JEIClientConfigs();
 
 	public JustEnoughItemsClient(NetworkHandler networkHandler, PermanentEventSubscriptions subscriptions) {
 		this.networkHandler = networkHandler;
@@ -20,11 +19,12 @@ public class JustEnoughItemsClient {
 	}
 
 	public void register() {
+		JEIClientConfigs jeiClientConfigs = new JEIClientConfigs();
 		jeiClientConfigs.register(subscriptions);
-		subscriptions.register(RegisterClientReloadListenersEvent.class, event -> this.onRegisterReloadListenerEvent(event, subscriptions));
+		subscriptions.register(RegisterClientReloadListenersEvent.class, event -> this.onRegisterReloadListenerEvent(event, jeiClientConfigs));
 	}
 
-	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event, PermanentEventSubscriptions subscriptions) {
+	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event, JEIClientConfigs jeiClientConfigs) {
 		// Add the Sprite uploader reload listener
 		Minecraft minecraft = Minecraft.getInstance();
 		JeiSpriteUploader spriteUploader = new JeiSpriteUploader(minecraft.textureManager);
