@@ -2,11 +2,13 @@ package mezz.jei.input.mouse.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.config.KeyBindings;
+import mezz.jei.events.DebugRestartJeiEvent;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.TextHistory;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Optional;
 
@@ -54,6 +56,10 @@ public class TextFieldInputHandler implements IUserInputHandler {
 
 		if (input.is(KeyBindings.nextSearch)) {
 			return handleNavigateHistory(input, TextHistory.Direction.NEXT);
+		}
+
+		if (input.is(KeyBindings.reloadJeiOverTextFilter)) {
+			MinecraftForge.EVENT_BUS.post(new DebugRestartJeiEvent());
 		}
 
 		// If we can handle this input as a typed char,

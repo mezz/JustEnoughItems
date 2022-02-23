@@ -16,6 +16,7 @@ import mezz.jei.config.WorldConfig;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
+import mezz.jei.events.DebugRestartJeiEvent;
 import mezz.jei.events.PermanentEventSubscriptions;
 import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.events.RuntimeEventSubscriptions;
@@ -88,6 +89,7 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 	public void register(PermanentEventSubscriptions subscriptions) {
 		this.worldConfig.register(subscriptions);
 		this.startEventObserver.register(subscriptions);
+		subscriptions.register(DebugRestartJeiEvent.class, this::onRestartJeiEvent);
 
 		subscriptions.register(ClientPlayerNetworkEvent.LoggedOutEvent.class, event -> {
 			if (event.getPlayer() != null) {
@@ -126,6 +128,15 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {
+		restartJei();
+	}
+
+	private void onRestartJeiEvent(DebugRestartJeiEvent event) {
+		LOGGER.warn("Restarting JEI from DebugRestartJeiEvent", new Throwable("Restarting JEI from DebugRestartJeiEvent"));
+		restartJei();
+	}
+
+	private void restartJei() {
 		if (!this.runtimeSubscriptions.isEmpty()) {
 			this.runtimeSubscriptions.clear();
 			this.jeiStarter.start(this.runtimeSubscriptions);

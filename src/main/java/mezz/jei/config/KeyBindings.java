@@ -60,6 +60,9 @@ public final class KeyBindings {
 	public static final KeyMapping rightClick;
 	public static final List<KeyMapping> enterKey;
 
+	// debug only
+	public static final KeyMapping reloadJeiOverTextFilter;
+
 	static InputConstants.Key getKey(int key) {
 		return InputConstants.Type.KEYSYM.getOrCreate(key);
 	}
@@ -127,6 +130,8 @@ public final class KeyBindings {
 			new KeyMapping("key.jei.internal.enter.key", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_ENTER), jeiHiddenInternalCategoryName),
 			new KeyMapping("key.jei.internal.enter.key2", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_KP_ENTER), jeiHiddenInternalCategoryName)
 		);
+
+		reloadJeiOverTextFilter = new KeyMapping("key.jei.internal.debug.reload", KeyConflictContext.GUI, KeyModifier.SHIFT, getKey(GLFW.GLFW_KEY_F12), jeiHiddenInternalCategoryName);
 	}
 
 	private KeyBindings() {
