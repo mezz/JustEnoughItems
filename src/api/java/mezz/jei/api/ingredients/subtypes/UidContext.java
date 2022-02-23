@@ -1,6 +1,7 @@
 package mezz.jei.api.ingredients.subtypes;
 
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -31,7 +32,7 @@ public enum UidContext {
 	 * This is a secondary context and should be less specific than {@link #Ingredient}, to allow for broader matches in recipes.
 	 *
 	 * Used for:
-	 * recipe lookups (see {@link IRecipeCategory#setIngredients(Object, IIngredients)})
+	 * recipe lookups (see {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)})
 	 * recipe catalysts (see {@link IRecipeCatalystRegistration})
 	 * recipe transfer (since JEI 7.4.0) (see {@link IRecipeTransferRegistration}
 	 */
