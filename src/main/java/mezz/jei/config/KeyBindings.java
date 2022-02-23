@@ -16,6 +16,7 @@ public final class KeyBindings {
 	private static final String overlaysCategoryName = Translator.translateToLocal("jei.key.category.overlays");
 	private static final String mouseHoverCategoryName = Translator.translateToLocal("jei.key.category.mouse.hover");
 	private static final String cheatModeCategoryName = Translator.translateToLocal("jei.key.category.cheat.mode");
+	private static final String hoverConfigButtonCategoryName = Translator.translateToLocal("jei.key.category.hover.config.button");
 	private static final String editModeCategoryName = Translator.translateToLocal("jei.key.category.edit.mode");
 	private static final String recipeCategoryName = Translator.translateToLocal("jei.key.category.recipe.gui");
 	private static final String searchCategoryName = Translator.translateToLocal("jei.key.category.search");
@@ -24,8 +25,9 @@ public final class KeyBindings {
 	public static final KeyMapping toggleOverlay;
 	public static final KeyMapping focusSearch;
 	public static final KeyMapping toggleCheatMode;
-	public static final KeyMapping toggleCheatModeConfigButton;
 	public static final KeyMapping toggleEditMode;
+
+	public static final KeyMapping toggleCheatModeConfigButton;
 
 	public static final KeyMapping recipeBack;
 	public static final KeyMapping previousCategory;
@@ -99,11 +101,13 @@ public final class KeyBindings {
 
 			// Cheat Mode
 			toggleCheatMode = new KeyMapping("key.jei.toggleCheatMode", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), cheatModeCategoryName),
-			toggleCheatModeConfigButton = new KeyMapping("key.jei.toggleCheatModeConfigButton", JeiConflictContexts.JEI_GUI_HOVER_CONFIG_BUTTON, KeyModifier.CONTROL, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT, cheatModeCategoryName),
 			cheatOneItem1 = new KeyMapping("key.jei.cheatOneItem", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT, cheatModeCategoryName),
 			cheatOneItem2 = new KeyMapping("key.jei.cheatOneItem2", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT, cheatModeCategoryName),
 			cheatItemStack1 = new KeyMapping("key.jei.cheatItemStack", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, KeyModifier.SHIFT, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT, cheatModeCategoryName),
 			cheatItemStack2 = new KeyMapping("key.jei.cheatItemStack2", JeiConflictContexts.JEI_GUI_HOVER_CHEAT_MODE, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_MIDDLE, cheatModeCategoryName),
+
+			// Hovering over config button
+			toggleCheatModeConfigButton = new KeyMapping("key.jei.toggleCheatModeConfigButton", JeiConflictContexts.JEI_GUI_HOVER_CONFIG_BUTTON, KeyModifier.CONTROL, InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT, hoverConfigButtonCategoryName),
 
 			// Edit Mode
 			toggleEditMode = new KeyMapping("key.jei.toggleEditMode", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), editModeCategoryName),
