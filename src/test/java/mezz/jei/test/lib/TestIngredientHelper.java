@@ -1,7 +1,8 @@
 package mezz.jei.test.lib;
 
 import org.jetbrains.annotations.Nullable;
-import java.util.Collections;
+
+import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -36,7 +37,7 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 
 	@Override
 	public Iterable<Integer> getColors(TestIngredient ingredient) {
-		return Collections.singleton(0xFF000000);
+		return List.of(0xFF000000);
 	}
 
 	@SuppressWarnings("removal")

@@ -18,7 +18,7 @@ public final class MathUtil {
 		Rect2i crop(Rect2i original, Rect2i intersecting);
 	}
 
-	private static final List<Rectangle2dCropper> rectangle2dCroppers = Arrays.asList(
+	private static final List<Rectangle2dCropper> rectangle2dCroppers = List.of(
 		MathUtil::cropTop,
 		MathUtil::cropBottom,
 		MathUtil::cropLeft,

@@ -12,7 +12,7 @@ public class CombinedRecipeFocusSource {
 	private final List<IRecipeFocusSource> handlers;
 
 	public CombinedRecipeFocusSource(IRecipeFocusSource... handlers) {
-		this.handlers = Arrays.asList(handlers);
+		this.handlers = List.of(handlers);
 	}
 
 	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(UserInput input) {

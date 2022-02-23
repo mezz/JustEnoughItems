@@ -38,7 +38,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private static final GiveMode defaultGiveMode = GiveMode.MOUSE_PICKUP;
 	private static final boolean defaultCenterSearchBar = false;
 
-	public static final List<IngredientSortStage> ingredientSorterStagesDefault = Arrays.asList(
+	public static final List<IngredientSortStage> ingredientSorterStagesDefault = List.of(
 		IngredientSortStage.MOD_NAME,
 		IngredientSortStage.INGREDIENT_TYPE,
 		IngredientSortStage.CREATIVE_MENU,
@@ -102,7 +102,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 		builder.push("sorting");
 		{
-			builder.comment(String.format("Sorting order for the ingredient list. Valid stages: %s", Arrays.asList(IngredientSortStage.values())));
+			builder.comment(String.format("Sorting order for the ingredient list. Valid stages: %s", List.of(IngredientSortStage.values())));
 			List<String> defaults = ingredientSorterStagesDefault.stream()
 				.map(Enum::name)
 				.toList();

@@ -21,7 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
-import java.util.Collections;
+import java.util.List;
 
 public class GuiEventHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -110,7 +110,7 @@ public class GuiEventHandler {
 				.map(IGuiClickableArea::getTooltipStrings)
 				.ifPresent(tooltipStrings -> {
 					if (tooltipStrings.isEmpty()) {
-						tooltipStrings = Collections.singletonList(new TranslatableComponent("jei.tooltip.show.recipes"));
+						tooltipStrings = List.of(new TranslatableComponent("jei.tooltip.show.recipes"));
 					}
 					TooltipRenderer.drawHoveringText(poseStack, tooltipStrings, event.getMouseX(), event.getMouseY());
 				});

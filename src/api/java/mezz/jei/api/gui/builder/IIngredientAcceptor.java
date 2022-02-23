@@ -48,7 +48,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 * @since 9.3.0
 	 */
 	default THIS addIngredients(Ingredient ingredient) {
-		return addIngredients(VanillaTypes.ITEM, Arrays.asList(ingredient.getItems()));
+		return addIngredients(VanillaTypes.ITEM, List.of(ingredient.getItems()));
 	}
 
 	/**

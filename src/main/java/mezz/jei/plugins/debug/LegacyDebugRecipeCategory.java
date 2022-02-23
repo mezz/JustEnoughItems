@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientType;
@@ -106,15 +105,15 @@ public class LegacyDebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		FluidStack water = new FluidStack(Fluids.WATER, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME));
 		FluidStack lava = new FluidStack(Fluids.LAVA, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME));
 
-		ingredients.setInputs(VanillaTypes.FLUID, Arrays.asList(water, lava));
+		ingredients.setInputs(VanillaTypes.FLUID, List.of(water, lava));
 
 		ingredients.setInput(VanillaTypes.ITEM, new ItemStack(Items.STICK));
 
-		ingredients.setInputLists(DebugIngredient.TYPE, Collections.singletonList(
-			Arrays.asList(new DebugIngredient(0), new DebugIngredient(1))
+		ingredients.setInputLists(DebugIngredient.TYPE, List.of(
+			List.of(new DebugIngredient(0), new DebugIngredient(1))
 		));
 
-		ingredients.setOutputs(DebugIngredient.TYPE, Arrays.asList(
+		ingredients.setOutputs(DebugIngredient.TYPE, List.of(
 			new DebugIngredient(2),
 			new DebugIngredient(3)
 		));

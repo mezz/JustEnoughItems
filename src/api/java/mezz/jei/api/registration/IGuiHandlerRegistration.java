@@ -1,7 +1,7 @@
 package mezz.jei.api.registration;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -56,7 +56,7 @@ public interface IGuiHandlerRegistration {
 			@Override
 			public Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen, double mouseX, double mouseY) {
 				IGuiClickableArea clickableArea = IGuiClickableArea.createBasic(xPos, yPos, width, height, recipeCategoryUids);
-				return Collections.singleton(clickableArea);
+				return List.of(clickableArea);
 			}
 		});
 	}

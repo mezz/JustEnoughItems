@@ -5,12 +5,12 @@ import mezz.jei.ingredients.IIngredientListElementInfo;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 public class PrefixInfo {
 	public static final PrefixInfo NO_PREFIX = new PrefixInfo(
 		() -> SearchMode.ENABLED,
-		i -> Collections.singleton(i.getName())
+		i -> List.of(i.getName())
 	);
 	private final IModeGetter modeGetter;
 	private final IStringsGetter stringsGetter;

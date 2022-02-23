@@ -81,7 +81,7 @@ public class JeiDebugPlugin implements IModPlugin {
 		JeiDebugPlugin.ingredientManager = registration.getIngredientManager();
 
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
-			registration.addIngredientInfo(Arrays.asList(
+			registration.addIngredientInfo(List.of(
 				new ItemStack(Blocks.OAK_DOOR),
 				new ItemStack(Blocks.SPRUCE_DOOR),
 				new ItemStack(Blocks.BIRCH_DOOR),
@@ -149,7 +149,7 @@ public class JeiDebugPlugin implements IModPlugin {
 				public List<Rect2i> getGuiExtraAreas(BrewingStandScreen containerScreen) {
 					int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
 					int size = 25 + widthMovement;
-					return Collections.singletonList(
+					return List.of(
 						new Rect2i(containerScreen.getGuiLeft() + containerScreen.getXSize(), containerScreen.getGuiTop() + 40, size, size)
 					);
 				}

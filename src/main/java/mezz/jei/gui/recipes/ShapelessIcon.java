@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 
 import org.jetbrains.annotations.Nullable;
-import java.util.Collections;
+
 import java.util.List;
 
 public class ShapelessIcon {
@@ -44,7 +44,7 @@ public class ShapelessIcon {
 	@Nullable
 	public List<Component> getTooltipStrings(int mouseX, int mouseY) {
 		if (hoverChecker.checkHover(mouseX, mouseY)) {
-			return Collections.singletonList(new TranslatableComponent("jei.tooltip.shapeless.recipe"));
+			return List.of(new TranslatableComponent("jei.tooltip.shapeless.recipe"));
 		}
 		return null;
 	}

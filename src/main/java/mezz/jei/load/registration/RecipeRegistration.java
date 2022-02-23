@@ -1,7 +1,6 @@
 package mezz.jei.load.registration;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.api.runtime.IIngredientVisibility;
@@ -77,7 +76,7 @@ public class RecipeRegistration implements IRecipeRegistration {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(descriptionComponents, "descriptionComponents");
 
-		addIngredientInfo(Collections.singletonList(ingredient), ingredientType, descriptionComponents);
+		addIngredientInfo(List.of(ingredient), ingredientType, descriptionComponents);
 	}
 
 	@Override

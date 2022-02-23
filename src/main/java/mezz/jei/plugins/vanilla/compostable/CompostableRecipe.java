@@ -2,7 +2,6 @@ package mezz.jei.plugins.vanilla.compostable;
 
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Collections;
 import java.util.List;
 
 public class CompostableRecipe {
@@ -10,7 +9,7 @@ public class CompostableRecipe {
 	private final float chance;
 
 	public CompostableRecipe(ItemStack input, float chance) {
-		this.inputs = Collections.singletonList(input);
+		this.inputs = List.of(input);
 		this.chance = chance;
 	}
 

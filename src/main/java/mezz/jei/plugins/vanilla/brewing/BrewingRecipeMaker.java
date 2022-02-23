@@ -3,7 +3,6 @@ package mezz.jei.plugins.vanilla.brewing;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -134,7 +133,7 @@ public class BrewingRecipeMaker {
 					}
 				}
 
-				IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(Collections.singletonList(potionReagent), potionInput.copy(), potionOutput);
+				IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(List.of(potionReagent), potionInput.copy(), potionOutput);
 				if (!recipes.contains(recipe) && !disabledRecipes.contains(recipe)) {
 					if (BrewingRecipeRegistry.hasOutput(potionInput, potionReagent)) {
 						recipes.add(recipe);
@@ -156,7 +155,7 @@ public class BrewingRecipeMaker {
 					Ingredient inputIngredient = brewingRecipe.getInput();
 					ItemStack output = brewingRecipe.getOutput();
 					ItemStack[] inputs = inputIngredient.getItems();
-					IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(Arrays.asList(ingredients), Arrays.asList(inputs), output);
+					IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(List.of(ingredients), List.of(inputs), output);
 					recipes.add(recipe);
 				}
 			} else if (!(iBrewingRecipe instanceof VanillaBrewingRecipe)) {

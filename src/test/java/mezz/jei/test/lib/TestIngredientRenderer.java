@@ -11,7 +11,7 @@ import java.util.List;
 class TestIngredientRenderer implements IIngredientRenderer<TestIngredient> {
 	@Override
 	public List<Component> getTooltip(TestIngredient ingredient, TooltipFlag tooltipFlag) {
-		return Arrays.asList(
+		return List.of(
 			new TextComponent("Test Ingredient Tooltip " + ingredient),
 			new TextComponent("Test ingredient tooltip " + ingredient + " line 2")
 		);

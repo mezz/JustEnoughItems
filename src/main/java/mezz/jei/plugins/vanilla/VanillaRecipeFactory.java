@@ -1,6 +1,5 @@
 package mezz.jei.plugins.vanilla;
 
-import java.util.Collections;
 import java.util.List;
 
 import mezz.jei.ingredients.RegisteredIngredients;
@@ -29,7 +28,7 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotNull(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 
-		return new AnvilRecipe(Collections.singletonList(leftInput), rightInputs, outputs);
+		return new AnvilRecipe(List.of(leftInput), rightInputs, outputs);
 	}
 
 	@Override
@@ -47,7 +46,7 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotEmpty(potionInput, "potionInput");
 		ErrorUtil.checkNotEmpty(potionOutput, "potionOutput");
 
-		List<ItemStack> potionInputs = Collections.singletonList(potionInput);
+		List<ItemStack> potionInputs = List.of(potionInput);
 		return new JeiBrewingRecipe(ingredients, potionInputs, potionOutput, brewingRecipeUtil);
 	}
 

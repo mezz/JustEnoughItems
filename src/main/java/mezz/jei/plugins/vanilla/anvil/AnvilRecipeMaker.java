@@ -2,7 +2,6 @@ package mezz.jei.plugins.vanilla.anvil;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -89,7 +88,7 @@ public final class AnvilRecipeMaker {
 		List<ItemStack> perLevelBooks = Lists.newArrayList();
 		List<ItemStack> perLevelOutputs = Lists.newArrayList();
 		for (int level = 1; level <= enchantment.getMaxLevel(); level++) {
-			Map<Enchantment, Integer> enchMap = Collections.singletonMap(enchantment, level);
+			Map<Enchantment, Integer> enchMap = Map.of(enchantment, level);
 
 			ItemStack bookEnchant = ENCHANTED_BOOK.copy();
 			EnchantmentHelper.setEnchantments(enchMap, bookEnchant);
@@ -242,10 +241,10 @@ public final class AnvilRecipeMaker {
 				damaged3.setDamageValue(damaged3.getMaxDamage() * 2 / 4);
 
 				if (!repairMaterials.isEmpty()) {
-					IJeiAnvilRecipe repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(damaged1, repairMaterials, Collections.singletonList(damaged2));
+					IJeiAnvilRecipe repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(damaged1, repairMaterials, List.of(damaged2));
 					recipes.add(repairWithMaterial);
 				}
-				IJeiAnvilRecipe repairWithSame = vanillaRecipeFactory.createAnvilRecipe(damaged2, Collections.singletonList(damaged2), Collections.singletonList(damaged3));
+				IJeiAnvilRecipe repairWithSame = vanillaRecipeFactory.createAnvilRecipe(damaged2, List.of(damaged2), List.of(damaged3));
 				recipes.add(repairWithSame);
 			}
 		}

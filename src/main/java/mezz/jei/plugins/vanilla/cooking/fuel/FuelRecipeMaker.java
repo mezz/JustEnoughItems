@@ -2,7 +2,6 @@ package mezz.jei.plugins.vanilla.cooking.fuel;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import net.minecraftforge.common.ForgeHooks;
@@ -29,7 +28,7 @@ public final class FuelRecipeMaker {
 		for (ItemStack stack : allItemStacks) {
 			int burnTime = getBurnTime(stack);
 			if (burnTime > 0) {
-				fuelRecipes.add(new FuelRecipe(guiHelper, Collections.singleton(stack), burnTime));
+				fuelRecipes.add(new FuelRecipe(guiHelper, List.of(stack), burnTime));
 			}
 		}
 		return fuelRecipes;
