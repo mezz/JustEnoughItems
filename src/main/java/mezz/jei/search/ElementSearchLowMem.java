@@ -74,9 +74,4 @@ public class ElementSearchLowMem implements IElementSearch {
 	public List<IListElementInfo<?>> getAllIngredients() {
 		return Collections.unmodifiableList(this.elementInfoList);
 	}
-
-	@Override
-	public void registerPrefix(PrefixInfo prefixInfo) {
-		// noop
-	}
 }

@@ -17,6 +17,4 @@ public interface IElementSearch {
 	List<IListElementInfo<?>> getAllIngredients();
 
 	IntSet getSearchResults(String token, PrefixInfo prefixInfo);
-
-	void registerPrefix(PrefixInfo prefixInfo);
 }

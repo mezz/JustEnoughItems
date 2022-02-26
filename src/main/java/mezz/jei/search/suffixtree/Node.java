@@ -15,13 +15,14 @@
  */
 package mezz.jei.search.suffixtree;
 
+import it.unimi.dsi.fastutil.chars.Char2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.util.SubString;
 import org.jetbrains.annotations.Nullable;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
-import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Represents a node of the generalized suffix tree graph
@@ -60,20 +61,20 @@ class Node {
 	 * Creates a new Node
 	 */
 	Node() {
-		edges = new Char2ObjectOpenHashMap<>();
+		edges = new Char2ObjectArrayMap<>(1);
 		suffix = null;
-		data = new IntArrayList(0);
+		data = new IntArrayList(1);
 	}
 
 	/**
 	 * Gets data from the payload of both this node and its children, the string representation
 	 * of the path to this node is a substring of the one of the children nodes.
 	 */
-	void getData(final IntSet ret) {
-		ret.addAll(data);
-
-		for (Edge e : edges.values()) {
-			e.getDest().getData(ret);
+	public void getData(IntSet results) {
+		results.addAll(this.data);
+		for (Edge edge : edges.values()) {
+			Node dest = edge.getDest();
+			dest.getData(results);
 		}
 	}
 
@@ -81,9 +82,9 @@ class Node {
 	 * Adds the given <tt>index</tt> to the set of indexes associated with <tt>this</tt>
 	 * returns false if this node already contains the ref
 	 */
-	boolean addRef(int index) {
+	void addRef(int index) {
 		if (contains(index)) {
-			return false;
+			return;
 		}
 
 		addIndex(index);
@@ -98,8 +99,6 @@ class Node {
 				break;
 			}
 		}
-
-		return true;
 	}
 
 	/**
@@ -112,12 +111,21 @@ class Node {
 		return data.contains(index);
 	}
 
-	void addEdge(char ch, Edge e) {
-		edges.put(ch, e);
+	void addEdge(Edge edge) {
+		edges.put(edge.charAt(0), edge);
 	}
 
 	@Nullable
 	Edge getEdge(char ch) {
+		return edges.get(ch);
+	}
+
+	@Nullable
+	Edge getEdge(SubString string) {
+		if (string.isEmpty()) {
+			return null;
+		}
+		char ch = string.charAt(0);
 		return edges.get(ch);
 	}
 

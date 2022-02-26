@@ -1,7 +1,6 @@
 package mezz.jei.ingredients;
 
-import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
-import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -11,7 +10,6 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IIngredientFilterConfig;
-import mezz.jei.config.SearchMode;
 import mezz.jei.events.EditModeToggleEvent;
 import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.events.RuntimeEventSubscriptions;
@@ -21,15 +19,19 @@ import mezz.jei.search.ElementSearch;
 import mezz.jei.search.ElementSearchLowMem;
 import mezz.jei.search.IElementSearch;
 import mezz.jei.search.PrefixInfo;
+import mezz.jei.search.PrefixInfos;
 import mezz.jei.util.LoggedTimer;
+import mezz.jei.util.Pair;
 import mezz.jei.util.Translator;
 import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -40,8 +42,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class IngredientFilter implements IIngredientGridSource {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
@@ -51,7 +55,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	private final boolean debugMode;
 
 	private final IElementSearch elementSearch;
-	private final Char2ObjectMap<PrefixInfo> prefixInfos = new Char2ObjectOpenHashMap<>();
+	private final PrefixInfos prefixInfos;
 	private final Set<String> modNamesForSorting = new HashSet<>();
 
 	@Nullable
@@ -71,29 +75,21 @@ public class IngredientFilter implements IIngredientGridSource {
 		this.registeredIngredients = registeredIngredients;
 		this.sorter = sorter;
 		this.ingredientVisibility = ingredientVisibility;
+		this.prefixInfos = new PrefixInfos(registeredIngredients, config);
 
 		if (clientConfig.isLowMemorySlowSearchEnabled()) {
 			this.elementSearch = new ElementSearchLowMem();
 		} else {
-			this.elementSearch = new ElementSearch();
+			this.elementSearch = new ElementSearch(this.prefixInfos);
 		}
 		this.debugMode = clientConfig.isDebugModeEnabled();
 
-		this.prefixInfos.put('@', new PrefixInfo(config::getModNameSearchMode, IListElementInfo::getModNameStrings));
-		this.prefixInfos.put('#', new PrefixInfo(config::getTooltipSearchMode, e -> e.getTooltipStrings(config, registeredIngredients)));
-		this.prefixInfos.put('$', new PrefixInfo(config::getTagSearchMode, e -> e.getTagStrings(registeredIngredients)));
-		this.prefixInfos.put('%', new PrefixInfo(config::getCreativeTabSearchMode, e -> e.getCreativeTabsStrings(registeredIngredients)));
-		this.prefixInfos.put('^', new PrefixInfo(config::getColorSearchMode, e -> e.getColorStrings(registeredIngredients)));
-		this.prefixInfos.put('&', new PrefixInfo(config::getResourceLocationSearchMode, element -> List.of(element.getResourceLocation().toString())));
-
-		for (PrefixInfo prefixInfo : this.prefixInfos.values()) {
-			this.elementSearch.registerPrefix(prefixInfo);
-		}
-
+		LOGGER.info("Adding {} ingredients", ingredients.size());
 		ingredients.stream()
 			.map(i -> ListElementInfo.create(i, registeredIngredients, modIdHelper))
 			.filter(Objects::nonNull)
 			.forEach(this::addIngredient);
+		LOGGER.info("Added {} ingredients", ingredients.size());
 	}
 
 	public void register(RuntimeEventSubscriptions subscriptions) {
@@ -163,21 +159,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	public List<ITypedIngredient<?>> getIngredientList(String filterText) {
 		filterText = filterText.toLowerCase();
 		if (!filterText.equals(filterCached)) {
-			//First step is to get the filtered unsorted list.
-			List<IListElementInfo<?>> ingredientList = getIngredientListUncached(filterText);
-			LoggedTimer filterTimer = new LoggedTimer();
-			if (debugMode) {
-				filterTimer.start("Filtering and Sorting: " + filterText);
-			}
-			//Then we sort it.
-			ingredientListCached = ingredientList.stream()
-				.sorted(sorter.getComparator(this, this.registeredIngredients))
-				.<ITypedIngredient<?>>map(IListElementInfo::getTypedIngredient)
-				.toList();
-			if (debugMode) {
-				filterTimer.stop();
-				LogManager.getLogger().info("Filter has " + ingredientListCached.size() + " of " + ingredientList.size());
-			}
+			ingredientListCached = getIngredientListUncached(filterText);
 			filterCached = filterText;
 		}
 		return ingredientListCached;
@@ -216,43 +198,24 @@ public class IngredientFilter implements IIngredientGridSource {
 			.toList();
 	}
 
-	private List<IListElementInfo<?>> getIngredientListUncached(String filterText) {
-		String[] filters = filterText.split("\\|");
-
-		IntSet matches = null;
-
-		for (String filter : filters) {
-			IntSet elements = getElements(filter);
-			if (elements != null) {
-				if (matches == null) {
-					matches = elements;
-				} else {
-					matches.addAll(elements);
-				}
-			}
+	private List<ITypedIngredient<?>> getIngredientListUncached(String filterText) {
+		Stream<IListElementInfo<?>> elementInfoStream;
+		if (filterText.isEmpty()) {
+			elementInfoStream = this.elementSearch.getAllIngredients().parallelStream();
+		} else {
+			String[] filters = filterText.split("\\|");
+			elementInfoStream = Arrays.stream(filters)
+				.map(this::getSearchResults)
+				.flatMapToInt(IntSet::intStream)
+				.distinct()
+				.mapToObj(this.elementSearch::get);
 		}
 
-		if (matches == null) {
-			return this.elementSearch.getAllIngredients()
-				.parallelStream()
-				.filter(info -> {
-					IListElement<?> element = info.getElement();
-					return element.isVisible();
-				})
-				.toList();
-		}
-
-		List<IListElementInfo<?>> matchingIngredients = new ArrayList<>();
-		int[] matchesList = matches.toIntArray();
-		Arrays.sort(matchesList);
-		for (int match : matchesList) {
-			IListElementInfo<?> info = this.elementSearch.get(match);
-			IListElement<?> element = info.getElement();
-			if (element.isVisible()) {
-				matchingIngredients.add(info);
-			}
-		}
-		return matchingIngredients;
+		return elementInfoStream
+			.filter(info -> info.getElement().isVisible())
+			.sorted(sorter.getComparator(this, this.registeredIngredients))
+			.<ITypedIngredient<?>>map(IListElementInfo::getTypedIngredient)
+			.toList();
 	}
 
 	/**
@@ -329,12 +292,15 @@ public class IngredientFilter implements IIngredientGridSource {
 		return Optional.empty();
 	}
 
-	@Nullable
-	private IntSet getElements(String filterText) {
+	private IntSet getSearchResults(String filterText) {
+		if (filterText.isEmpty()) {
+			return IntSet.of();
+		}
 		Matcher filterMatcher = FILTER_SPLIT_PATTERN.matcher(filterText);
 
-		IntSet matches = null;
-		IntSet removeMatches = null;
+		List<String> tokens = new ArrayList<>();
+		List<String> removalTokens = new ArrayList<>();
+
 		while (filterMatcher.find()) {
 			String token = filterMatcher.group(1);
 			final boolean remove = token.startsWith("-");
@@ -342,68 +308,71 @@ public class IngredientFilter implements IIngredientGridSource {
 				token = token.substring(1);
 			}
 			token = QUOTE_PATTERN.matcher(token).replaceAll("");
-
-			IntSet searchResults = getSearchResults(token);
-			if (searchResults != null) {
-				if (remove) {
-					if (removeMatches == null) {
-						removeMatches = searchResults;
-					} else {
-						removeMatches.addAll(searchResults);
-					}
-				} else {
-					if (matches == null) {
-						matches = searchResults;
-					} else {
-						matches = intersection(matches, searchResults);
-					}
-					if (matches.isEmpty()) {
-						break;
-					}
-				}
+			if (token.isEmpty()) {
+				continue;
+			}
+			if (remove) {
+				removalTokens.add(token);
+			} else {
+				tokens.add(token);
 			}
 		}
 
-		if (matches != null && removeMatches != null) {
-			matches.removeAll(removeMatches);
+		List<IntSet> resultsPerToken = tokens.stream()
+			.map(this::getSearchResultsForToken)
+			.toList();
+		IntSet results = intersection(resultsPerToken);
+		if (results.isEmpty()) {
+			return results;
 		}
 
-		return matches;
+		if (!removalTokens.isEmpty()) {
+			int[] resultsToRemoveArray = removalTokens.stream()
+				.map(this::getSearchResultsForToken)
+				.flatMapToInt(IntSet::intStream)
+				.distinct()
+				.toArray();
+			IntSet resultsToRemove = new IntArraySet(resultsToRemoveArray);
+			results.removeAll(resultsToRemove);
+		}
+		return results;
 	}
 
 	/**
 	 * Gets the appropriate search tree for the given token, based on if the token has a prefix.
 	 */
-	@Nullable
-	private IntSet getSearchResults(String token) {
-		if (token.isEmpty()) {
-			return null;
-		}
-		final char firstChar = token.charAt(0);
-		final PrefixInfo prefixInfo = this.prefixInfos.get(firstChar);
-		if (prefixInfo != null && prefixInfo.getMode() != SearchMode.DISABLED) {
-			token = token.substring(1);
-			if (token.isEmpty()) {
-				return null;
-			}
-			return this.elementSearch.getSearchResults(token, prefixInfo);
-		} else {
-			return this.elementSearch.getSearchResults(token, PrefixInfo.NO_PREFIX);
-		}
+	private IntSet getSearchResultsForToken(String token) {
+		final Pair<String, PrefixInfo> result = this.prefixInfos.parseToken(token);
+		token = result.first();
+		PrefixInfo prefixInfo = result.second();
+		return this.elementSearch.getSearchResults(token, prefixInfo);
 	}
 
 	/**
-	 * Efficiently get the elements contained in both sets.
-	 * Note that this implementation will alter the original sets.
+	 * Get the elements that are contained in every set.
 	 */
-	private static IntSet intersection(IntSet set1, IntSet set2) {
-		if (set1.size() > set2.size()) {
-			set2.retainAll(set1);
-			return set2;
-		} else {
-			set1.retainAll(set2);
-			return set1;
+	private static IntSet intersection(Collection<IntSet> sets) {
+		if (sets.size() == 0) {
+			return new IntOpenHashSet();
 		}
+		if (sets.size() == 1) {
+			return sets.iterator().next();
+		}
+
+		IntSet smallestSet = sets.stream()
+			.min(Comparator.comparing(Set::size))
+			.map(IntOpenHashSet::new)
+			.orElseGet(IntOpenHashSet::new);
+
+		for (IntSet set : sets) {
+			if (set != smallestSet) {
+				smallestSet.retainAll(set);
+				if (smallestSet.isEmpty()) {
+					break;
+				}
+			}
+		}
+		return smallestSet;
 	}
 
 	@Override

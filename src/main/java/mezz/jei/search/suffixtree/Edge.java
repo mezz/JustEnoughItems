@@ -15,36 +15,24 @@
  */
 package mezz.jei.search.suffixtree;
 
+import mezz.jei.util.SubString;
+
 /**
  * Represents an Edge in the Suffix Tree.
  * It has a label and a destination Node
  * <p>
  * Edited by mezz:
- * - formatting
+ * - optimized with SubString
  */
-class Edge {
-	private String label;
+public class Edge extends SubString {
 	private final Node dest;
 
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
+	public Edge(SubString subString, Node dest) {
+		super(subString);
+		this.dest = dest;
 	}
 
 	public Node getDest() {
 		return dest;
-	}
-
-	public Edge(String label, Node dest) {
-		this.label = label;
-		this.dest = dest;
-	}
-
-	@Override
-	public String toString() {
-		return "Edge: " + label;
 	}
 }

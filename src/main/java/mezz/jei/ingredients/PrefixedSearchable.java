@@ -30,8 +30,8 @@ public class PrefixedSearchable<T extends ISearchable> implements ISearchable {
 	}
 
 	@Override
-	public IntSet search(String word) {
-		return searchable.search(word);
+	public void addSearchResults(String token, IntSet results) {
+		searchable.addSearchResults(token, results);
 	}
 
 }
