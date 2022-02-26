@@ -3,7 +3,6 @@ package mezz.jei.input;
 import mezz.jei.config.KeyBindings;
 import net.minecraft.client.Minecraft;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
