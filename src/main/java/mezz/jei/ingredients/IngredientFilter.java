@@ -368,7 +368,7 @@ public class IngredientFilter implements IIngredientGridSource {
 				break;
 			}
 		}
-		return smallestSet;
+		return results;
 	}
 
 	@Override
