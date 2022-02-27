@@ -40,6 +40,7 @@ import java.util.stream.IntStream;
  * - only allow full searches
  * - add nullable/nonnull annotations
  * - formatting
+ * - refactored and optimized
  */
 class Node<T> {
 

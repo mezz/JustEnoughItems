@@ -60,6 +60,7 @@ import java.util.Set;
  * - only allow full searches
  * - add nullable/nonnull annotations
  * - formatting
+ * - refactored and optimized
  */
 public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 	/**
