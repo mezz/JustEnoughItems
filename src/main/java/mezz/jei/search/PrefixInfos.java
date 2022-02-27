@@ -33,7 +33,7 @@ public class PrefixInfos {
 			'$',
 			config::getTagSearchMode,
 			e -> e.getTagStrings(registeredIngredients),
-			GeneralizedSuffixTree::new
+			LimitedStringStorage::new
 		));
 		addPrefix(new PrefixInfo(
 			'%',
