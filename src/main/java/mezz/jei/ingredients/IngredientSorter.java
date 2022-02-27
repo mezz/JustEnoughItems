@@ -8,8 +8,8 @@ import java.util.Comparator;
 import java.util.List;
 
 public final class IngredientSorter implements IIngredientSorter {
-	private static final Comparator<IIngredientListElementInfo<?>> PRE_SORTED =
-		Comparator.comparing(IIngredientListElementInfo::getSortedIndex);
+	private static final Comparator<IListElementInfo<?>> PRE_SORTED =
+		Comparator.comparing(IListElementInfo::getSortedIndex);
 
 	private final IClientConfig clientConfig;
 	private final ModNameSortingConfig modNameSortingConfig;
@@ -30,21 +30,21 @@ public final class IngredientSorter implements IIngredientSorter {
 
 		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
 
-		Comparator<IIngredientListElementInfo<?>> completeComparator = comparators.getComparator(ingredientSorterStages);
+		Comparator<IListElementInfo<?>> completeComparator = comparators.getComparator(ingredientSorterStages);
 
 		// Get all of the items sorted with our custom comparator.
-		List<IIngredientListElementInfo<?>> results = ingredientFilter.getIngredientListPreSort(completeComparator);
+		List<IListElementInfo<?>> results = ingredientFilter.getIngredientListPreSort(completeComparator);
 
 		// Go through all of the items and set their sorted index.
 		for (int i = 0, resultsSize = results.size(); i < resultsSize; i++) {
-			IIngredientListElementInfo<?> element = results.get(i);
+			IListElementInfo<?> element = results.get(i);
 			element.setSortedIndex(i);
 		}
 		this.isCacheValid = true;
 	}
 
 	@Override
-	public Comparator<IIngredientListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, RegisteredIngredients registeredIngredients) {
+	public Comparator<IListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, RegisteredIngredients registeredIngredients) {
 		if (!this.isCacheValid) {
 			doPreSort(ingredientFilter, registeredIngredients);
 		}

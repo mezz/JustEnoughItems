@@ -9,8 +9,8 @@ import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.IngredientBlacklistType;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.ingredients.IIngredientListElementInfo;
+import mezz.jei.gui.ingredients.IListElement;
+import mezz.jei.ingredients.IListElementInfo;
 import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
@@ -55,7 +55,7 @@ public class IngredientFilterTest {
 	@Nullable
 	private IngredientVisibility ingredientVisibility;
 	@Nullable
-	private NonNullList<IIngredientListElement<?>> baseList;
+	private NonNullList<IListElement<?>> baseList;
 	@Nullable
 	private IEditModeConfig editModeConfig;
 
@@ -82,7 +82,7 @@ public class IngredientFilterTest {
 		IWorldConfig worldConfig = new TestWorldConfig();
 
 		TestIngredientFilterConfig ingredientFilterConfig = new TestIngredientFilterConfig();
-		IIngredientSorter ingredientListSorter = (a, b) -> Comparator.comparing(IIngredientListElementInfo::getModNameForSorting);
+		IIngredientSorter ingredientListSorter = (a, b) -> Comparator.comparing(IListElementInfo::getModNameForSorting);
 		this.ingredientVisibility = new IngredientVisibility(blacklist, worldConfig, editModeConfig, registeredIngredients);
 		this.ingredientFilter = new IngredientFilter(
 			clientConfig,
@@ -157,7 +157,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(baseList);
 		Assertions.assertNotNull(editModeConfig);
 
-		IIngredientListElement<?> element = baseList.get(0);
+		IListElement<?> element = baseList.get(0);
 		ITypedIngredient<?> typedIngredient = element.getTypedIngredient();
 		@SuppressWarnings("unchecked")
 		ITypedIngredient<TestIngredient> blacklistedIngredient = (ITypedIngredient<TestIngredient>) typedIngredient;
@@ -195,7 +195,7 @@ public class IngredientFilterTest {
 		IIngredientManager ingredientManager,
 		List<TestIngredient> ingredientsToAdd
 	) {
-		List<IIngredientListElement<TestIngredient>> listToAdd = IngredientListElementFactory.createList(registeredIngredients, TestIngredient.TYPE, ingredientsToAdd);
+		List<IListElement<TestIngredient>> listToAdd = IngredientListElementFactory.createList(registeredIngredients, TestIngredient.TYPE, ingredientsToAdd);
 		Assertions.assertEquals(EXTRA_INGREDIENT_COUNT, listToAdd.size());
 
 		ingredientManager.addIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToAdd);
@@ -225,7 +225,7 @@ public class IngredientFilterTest {
 		IIngredientManager ingredientManager,
 		List<TestIngredient> ingredientsToRemove
 	) {
-		List<IIngredientListElement<TestIngredient>> listToRemove = IngredientListElementFactory.createList(registeredIngredients, TestIngredient.TYPE, ingredientsToRemove);
+		List<IListElement<TestIngredient>> listToRemove = IngredientListElementFactory.createList(registeredIngredients, TestIngredient.TYPE, ingredientsToRemove);
 		Assertions.assertEquals(EXTRA_INGREDIENT_COUNT, listToRemove.size());
 
 		ingredientManager.removeIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToRemove);

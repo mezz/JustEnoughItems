@@ -2,7 +2,7 @@ package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 
-public interface IIngredientListElement<V> {
+public interface IListElement<V> {
 	ITypedIngredient<V> getTypedIngredient();
 
 	int getOrderIndex();

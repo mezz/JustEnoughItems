@@ -1,7 +1,7 @@
 package mezz.jei.search;
 
 import mezz.jei.config.SearchMode;
-import mezz.jei.ingredients.IIngredientListElementInfo;
+import mezz.jei.ingredients.IListElementInfo;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -25,14 +25,14 @@ public class PrefixInfo {
 	}
 
 	@Unmodifiable
-	public Collection<String> getStrings(IIngredientListElementInfo<?> element) {
+	public Collection<String> getStrings(IListElementInfo<?> element) {
 		return this.stringsGetter.getStrings(element);
 	}
 
 	@FunctionalInterface
 	public interface IStringsGetter {
 		@Unmodifiable
-		Collection<String> getStrings(IIngredientListElementInfo<?> element);
+		Collection<String> getStrings(IListElementInfo<?> element);
 	}
 
 	@FunctionalInterface

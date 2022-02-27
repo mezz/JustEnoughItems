@@ -22,7 +22,7 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.recipes.FocusFactory;
@@ -94,7 +94,7 @@ public class PluginLoader {
 		Internal.setIngredientVisibility(this.ingredientVisibility);
 
 		this.timer.start("Building ingredient list");
-		NonNullList<IIngredientListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(this.registeredIngredients);
+		NonNullList<IListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(this.registeredIngredients);
 		this.timer.stop();
 
 		this.timer.start("Building ingredient filter");

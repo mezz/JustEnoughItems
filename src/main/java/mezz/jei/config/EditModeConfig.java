@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.ingredients.IIngredientListElementInfo;
+import mezz.jei.ingredients.IListElementInfo;
 import mezz.jei.ingredients.IngredientFilter;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -125,9 +125,9 @@ public class EditModeConfig implements IEditModeConfig {
 			}
 		}
 
-		List<IIngredientListElementInfo<V>> wildcardMatches = ingredientFilter.searchForWildcardMatches(typedIngredient, ingredientHelper, wildcardUidFunction);
+		List<IListElementInfo<V>> wildcardMatches = ingredientFilter.searchForWildcardMatches(typedIngredient, ingredientHelper, wildcardUidFunction);
 		return wildcardMatches.stream()
-			.map(IIngredientListElementInfo::getTypedIngredient)
+			.map(IListElementInfo::getTypedIngredient)
 			.map(itemUidFunction)
 			.collect(Collectors.toSet());
 	}

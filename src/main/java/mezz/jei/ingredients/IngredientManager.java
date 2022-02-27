@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IClientConfig;
-import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -104,9 +104,9 @@ public class IngredientManager implements IIngredientManager {
 		IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 
 		for (ITypedIngredient<V> value : typedIngredients) {
-			Optional<IIngredientListElementInfo<V>> matchingElementInfo = ingredientFilter.searchForMatchingElement(ingredientHelper, value);
+			Optional<IListElementInfo<V>> matchingElementInfo = ingredientFilter.searchForMatchingElement(ingredientHelper, value);
 			if (matchingElementInfo.isPresent()) {
-				IIngredientListElement<V> matchingElement = matchingElementInfo.get().getElement();
+				IListElement<V> matchingElement = matchingElementInfo.get().getElement();
 				ITypedIngredient<V> typedIngredient = matchingElement.getTypedIngredient();
 				blacklist.removeIngredientFromBlacklist(typedIngredient, ingredientHelper);
 				ingredientFilter.updateHiddenState(matchingElement);
@@ -114,8 +114,8 @@ public class IngredientManager implements IIngredientManager {
 					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
 				}
 			} else {
-				IIngredientListElement<V> element = IngredientListElementFactory.createOrderedElement(this.registeredIngredients, value);
-				IIngredientListElementInfo<V> info = IngredientListElementInfo.create(element, this.registeredIngredients, modIdHelper);
+				IListElement<V> element = IngredientListElementFactory.createOrderedElement(this.registeredIngredients, value);
+				IListElementInfo<V> info = ListElementInfo.create(element, this.registeredIngredients, modIdHelper);
 				if (info != null) {
 					blacklist.removeIngredientFromBlacklist(value, ingredientHelper);
 					ingredientFilter.addIngredient(info);
@@ -160,7 +160,7 @@ public class IngredientManager implements IIngredientManager {
 			.map(i -> TypedIngredient.createTyped(this.registeredIngredients, ingredientType, i))
 			.flatMap(Optional::stream)
 			.forEach(typedIngredient -> {
-				Optional<IIngredientListElementInfo<V>> matchingElementInfo = ingredientFilter.searchForMatchingElement(ingredientHelper, typedIngredient);
+				Optional<IListElementInfo<V>> matchingElementInfo = ingredientFilter.searchForMatchingElement(ingredientHelper, typedIngredient);
 				if (matchingElementInfo.isEmpty()) {
 					String errorInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
 					LOGGER.error("Could not find a matching ingredient to remove: {}", errorInfo);
@@ -168,7 +168,7 @@ public class IngredientManager implements IIngredientManager {
 					if (clientConfig.isDebugModeEnabled()) {
 						LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
 					}
-					IIngredientListElement<V> matchingElement = matchingElementInfo.get().getElement();
+					IListElement<V> matchingElement = matchingElementInfo.get().getElement();
 					blacklist.addIngredientToBlacklist(matchingElement.getTypedIngredient(), ingredientHelper);
 					matchingElement.setVisible(false);
 				}

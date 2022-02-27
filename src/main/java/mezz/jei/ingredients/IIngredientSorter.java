@@ -7,7 +7,7 @@ public interface IIngredientSorter {
 	default void doPreSort(IngredientFilter ingredientFilter, RegisteredIngredients registeredIngredients) {
 	}
 
-	Comparator<IIngredientListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, RegisteredIngredients registeredIngredients);
+	Comparator<IListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, RegisteredIngredients registeredIngredients);
 
 	default void invalidateCache() {
 	}

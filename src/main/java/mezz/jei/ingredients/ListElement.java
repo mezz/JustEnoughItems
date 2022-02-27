@@ -1,14 +1,14 @@
 package mezz.jei.ingredients;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.ingredients.IListElement;
 
-public class IngredientListElement<V> implements IIngredientListElement<V> {
+public class ListElement<V> implements IListElement<V> {
 	private final ITypedIngredient<V> ingredient;
 	private final int orderIndex;
 	private boolean visible = true;
 
-	public IngredientListElement(ITypedIngredient<V> ingredient, int orderIndex) {
+	public ListElement(ITypedIngredient<V> ingredient, int orderIndex) {
 		this.ingredient = ingredient;
 		this.orderIndex = orderIndex;
 	}

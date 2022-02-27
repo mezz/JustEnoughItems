@@ -2,8 +2,8 @@ package mezz.jei.search;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.ingredients.IIngredientListElementInfo;
+import mezz.jei.gui.ingredients.IListElement;
+import mezz.jei.ingredients.IListElementInfo;
 import net.minecraft.core.NonNullList;
 
 import java.util.Collection;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class ElementSearchLowMem implements IElementSearch {
-	private final NonNullList<IIngredientListElementInfo<?>> elementInfoList;
+	private final NonNullList<IListElementInfo<?>> elementInfoList;
 
 	public ElementSearchLowMem() {
 		this.elementInfoList = NonNullList.create();
@@ -27,7 +27,7 @@ public class ElementSearchLowMem implements IElementSearch {
 		int[] results = IntStream.range(0, elementInfoList.size())
 			.parallel()
 			.filter(i -> {
-				IIngredientListElementInfo<?> elementInfo = elementInfoList.get(i);
+				IListElementInfo<?> elementInfo = elementInfoList.get(i);
 				return matches(token, prefixInfo, elementInfo);
 			})
 			.toArray();
@@ -35,8 +35,8 @@ public class ElementSearchLowMem implements IElementSearch {
 		return new IntArraySet(results);
 	}
 
-	private static boolean matches(String word, PrefixInfo prefixInfo, IIngredientListElementInfo<?> elementInfo) {
-		IIngredientListElement<?> element = elementInfo.getElement();
+	private static boolean matches(String word, PrefixInfo prefixInfo, IListElementInfo<?> elementInfo) {
+		IListElement<?> element = elementInfo.getElement();
 		if (element.isVisible()) {
 			Collection<String> strings = prefixInfo.getStrings(elementInfo);
 			for (String string : strings) {
@@ -49,19 +49,19 @@ public class ElementSearchLowMem implements IElementSearch {
 	}
 
 	@Override
-	public <V> void add(IIngredientListElementInfo<V> info) {
+	public <V> void add(IListElementInfo<V> info) {
 		this.elementInfoList.add(info);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <V> IIngredientListElementInfo<V> get(int index) {
-		IIngredientListElementInfo<?> info = this.elementInfoList.get(index);
-		return (IIngredientListElementInfo<V>) info;
+	public <V> IListElementInfo<V> get(int index) {
+		IListElementInfo<?> info = this.elementInfoList.get(index);
+		return (IListElementInfo<V>) info;
 	}
 
 	@Override
-	public <V> int indexOf(IIngredientListElementInfo<V> ingredient) {
+	public <V> int indexOf(IListElementInfo<V> ingredient) {
 		return this.elementInfoList.indexOf(ingredient);
 	}
 
@@ -71,7 +71,7 @@ public class ElementSearchLowMem implements IElementSearch {
 	}
 
 	@Override
-	public List<IIngredientListElementInfo<?>> getAllIngredients() {
+	public List<IListElementInfo<?>> getAllIngredients() {
 		return Collections.unmodifiableList(this.elementInfoList);
 	}
 

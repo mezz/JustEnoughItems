@@ -6,11 +6,11 @@ import java.util.Set;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.config.IIngredientFilterConfig;
-import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.ingredients.IListElement;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Unmodifiable;
 
-public interface IIngredientListElementInfo<V> {
+public interface IListElementInfo<V> {
 
 	String getName();
 
@@ -31,7 +31,7 @@ public interface IIngredientListElementInfo<V> {
 
 	ResourceLocation getResourceLocation();
 
-	IIngredientListElement<V> getElement();
+	IListElement<V> getElement();
 
 	ITypedIngredient<V> getTypedIngredient();
 

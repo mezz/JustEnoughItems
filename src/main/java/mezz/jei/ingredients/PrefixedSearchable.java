@@ -20,7 +20,7 @@ public class PrefixedSearchable<T extends ISearchable> implements ISearchable {
 		return searchable;
 	}
 
-	public Collection<String> getStrings(IIngredientListElementInfo<?> element) {
+	public Collection<String> getStrings(IListElementInfo<?> element) {
 		return prefixInfo.getStrings(element);
 	}
 

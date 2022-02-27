@@ -2,7 +2,7 @@ package mezz.jei.search;
 
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.config.SearchMode;
-import mezz.jei.ingredients.IIngredientListElementInfo;
+import mezz.jei.ingredients.IListElementInfo;
 import mezz.jei.ingredients.PrefixedSearchable;
 import mezz.jei.search.suffixtree.GeneralizedSuffixTree;
 import net.minecraft.core.NonNullList;
@@ -21,7 +21,7 @@ public class ElementSearch implements IElementSearch {
 	 * indexed list of ingredients for use with the suffix trees
 	 * includes all elements (even hidden ones) for use when rebuilding
 	 */
-	private final NonNullList<IIngredientListElementInfo<?>> elementInfoList;
+	private final NonNullList<IListElementInfo<?>> elementInfoList;
 
 	public ElementSearch() {
 		this.elementInfoList = NonNullList.create();
@@ -43,7 +43,7 @@ public class ElementSearch implements IElementSearch {
 	}
 
 	@Override
-	public <V> void add(IIngredientListElementInfo<V> info) {
+	public <V> void add(IListElementInfo<V> info) {
 		int index = this.elementInfoList.size();
 		this.elementInfoList.add(info);
 
@@ -68,12 +68,12 @@ public class ElementSearch implements IElementSearch {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <V> IIngredientListElementInfo<V> get(int index) {
-		return (IIngredientListElementInfo<V>) this.elementInfoList.get(index);
+	public <V> IListElementInfo<V> get(int index) {
+		return (IListElementInfo<V>) this.elementInfoList.get(index);
 	}
 
 	@Override
-	public <V> int indexOf(IIngredientListElementInfo<V> ingredient) {
+	public <V> int indexOf(IListElementInfo<V> ingredient) {
 		return this.elementInfoList.indexOf(ingredient);
 	}
 
@@ -83,7 +83,7 @@ public class ElementSearch implements IElementSearch {
 	}
 
 	@Override
-	public List<IIngredientListElementInfo<?>> getAllIngredients() {
+	public List<IListElementInfo<?>> getAllIngredients() {
 		return Collections.unmodifiableList(this.elementInfoList);
 	}
 

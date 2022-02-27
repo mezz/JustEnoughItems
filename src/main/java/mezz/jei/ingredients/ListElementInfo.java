@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.config.IIngredientFilterConfig;
-import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.util.Translator;
 import net.minecraft.resources.ResourceLocation;
 
@@ -24,11 +24,11 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class IngredientListElementInfo<V> implements IIngredientListElementInfo<V> {
+public class ListElementInfo<V> implements IListElementInfo<V> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
 
-	private final IIngredientListElement<V> element;
+	private final IListElement<V> element;
 	private final String displayName;
 	private final List<String> modIds;
 	private final List<String> modNames;
@@ -36,11 +36,11 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	private Integer sortedIndex;
 
 	@Nullable
-	public static <V> IIngredientListElementInfo<V> create(IIngredientListElement<V> element, RegisteredIngredients registeredIngredients, IModIdHelper modIdHelper) {
+	public static <V> IListElementInfo<V> create(IListElement<V> element, RegisteredIngredients registeredIngredients, IModIdHelper modIdHelper) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
 		try {
-			return new IngredientListElementInfo<>(element, ingredientHelper, modIdHelper);
+			return new ListElementInfo<>(element, ingredientHelper, modIdHelper);
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
@@ -52,7 +52,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 		}
 	}
 
-	protected IngredientListElementInfo(IIngredientListElement<V> element, IIngredientHelper<V> ingredientHelper, IModIdHelper modIdHelper) {
+	protected ListElementInfo(IListElement<V> element, IIngredientHelper<V> ingredientHelper, IModIdHelper modIdHelper) {
 		this.element = element;
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		V ingredient = value.getIngredient();
@@ -153,7 +153,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 	}
 
 	@Override
-	public IIngredientListElement<V> getElement() {
+	public IListElement<V> getElement() {
 		return element;
 	}
 

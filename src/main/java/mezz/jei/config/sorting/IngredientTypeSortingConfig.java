@@ -4,17 +4,17 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.config.sorting.serializers.SortingSerializers;
-import mezz.jei.ingredients.IIngredientListElementInfo;
+import mezz.jei.ingredients.IListElementInfo;
 
 import java.io.File;
 import java.util.Comparator;
 
-public class IngredientTypeSortingConfig extends MappedSortingConfig<IIngredientListElementInfo<?>, String> {
+public class IngredientTypeSortingConfig extends MappedSortingConfig<IListElementInfo<?>, String> {
 	public IngredientTypeSortingConfig(File file) {
 		super(file, SortingSerializers.STRING, IngredientTypeSortingConfig::getIngredientTypeString);
 	}
 
-	public static String getIngredientTypeString(IIngredientListElementInfo<?> info) {
+	public static String getIngredientTypeString(IListElementInfo<?> info) {
 		ITypedIngredient<?> typedIngredient = info.getTypedIngredient();
 		return getIngredientTypeString(typedIngredient.getType());
 	}

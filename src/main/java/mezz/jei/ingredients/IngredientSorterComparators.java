@@ -5,7 +5,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
-import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.gui.ingredients.IListElement;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
@@ -47,14 +47,14 @@ public class IngredientSorterComparators {
 		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
 	}
 
-	public Comparator<IIngredientListElementInfo<?>> getComparator(List<IngredientSortStage> ingredientSorterStages) {
+	public Comparator<IListElementInfo<?>> getComparator(List<IngredientSortStage> ingredientSorterStages) {
 		return ingredientSorterStages.stream()
 			.map(this::getComparator)
 			.reduce(Comparator::thenComparing)
 			.orElseGet(this::getDefault);
 	}
 
-	public Comparator<IIngredientListElementInfo<?>> getComparator(IngredientSortStage ingredientSortStage) {
+	public Comparator<IListElementInfo<?>> getComparator(IngredientSortStage ingredientSortStage) {
 		return switch (ingredientSortStage) {
 			case ALPHABETICAL -> getAlphabeticalComparator();
 			case CREATIVE_MENU -> getCreativeMenuComparator();
@@ -68,29 +68,29 @@ public class IngredientSorterComparators {
 		};
 	}
 
-	public Comparator<IIngredientListElementInfo<?>> getDefault() {
+	public Comparator<IListElementInfo<?>> getDefault() {
 		return getModNameComparator()
 			.thenComparing(getIngredientTypeComparator())
 			.thenComparing(getCreativeMenuComparator());
 	}
 
-	private static Comparator<IIngredientListElementInfo<?>> getCreativeMenuComparator() {
+	private static Comparator<IListElementInfo<?>> getCreativeMenuComparator() {
 		return Comparator.comparingInt(o -> {
-			IIngredientListElement<?> element = o.getElement();
+			IListElement<?> element = o.getElement();
 			return element.getOrderIndex();
 		});
 	}
 
-	private static Comparator<IIngredientListElementInfo<?>> getAlphabeticalComparator() {
-		return Comparator.comparing(IIngredientListElementInfo::getName);
+	private static Comparator<IListElementInfo<?>> getAlphabeticalComparator() {
+		return Comparator.comparing(IListElementInfo::getName);
 	}
 
-	private Comparator<IIngredientListElementInfo<?>> getModNameComparator() {
+	private Comparator<IListElementInfo<?>> getModNameComparator() {
 		Set<String> modNames = this.ingredientFilter.getModNamesForSorting();
 		return this.modNameSortingConfig.getComparatorFromMappedValues(modNames);
 	}
 
-	private Comparator<IIngredientListElementInfo<?>> getIngredientTypeComparator() {
+	private Comparator<IListElementInfo<?>> getIngredientTypeComparator() {
 		Collection<IIngredientType<?>> ingredientTypes = this.registeredIngredients.getIngredientTypes();
 		Set<String> ingredientTypeStrings = ingredientTypes.stream()
 			.map(IngredientTypeSortingConfig::getIngredientTypeString)
@@ -98,26 +98,26 @@ public class IngredientSorterComparators {
 		return this.ingredientTypeSortingConfig.getComparatorFromMappedValues(ingredientTypeStrings);
 	}
 
-	private static Comparator<IIngredientListElementInfo<?>> getMaxDurabilityComparator() {
-		Comparator<IIngredientListElementInfo<?>> maxDamage =
+	private static Comparator<IListElementInfo<?>> getMaxDurabilityComparator() {
+		Comparator<IListElementInfo<?>> maxDamage =
 			Comparator.comparing(o -> getItemStack(o).getMaxDamage());
 		return maxDamage.reversed();
 	}
 
-	private Comparator<IIngredientListElementInfo<?>> getTagComparator() {
-		Comparator<IIngredientListElementInfo<?>> isTagged =
+	private Comparator<IListElementInfo<?>> getTagComparator() {
+		Comparator<IListElementInfo<?>> isTagged =
 			Comparator.comparing(this::hasTag);
-		Comparator<IIngredientListElementInfo<?>> tag =
+		Comparator<IListElementInfo<?>> tag =
 			Comparator.comparing(this::getTagForSorting);
 		return isTagged.reversed().thenComparing(tag);
 	}
 
-	private static Comparator<IIngredientListElementInfo<?>> getToolsComparator() {
-		Comparator<IIngredientListElementInfo<?>> toolType =
+	private static Comparator<IListElementInfo<?>> getToolsComparator() {
+		Comparator<IListElementInfo<?>> toolType =
 			Comparator.comparing(o -> getToolClass(getItemStack(o)));
-		Comparator<IIngredientListElementInfo<?>> tier =
+		Comparator<IListElementInfo<?>> tier =
 			Comparator.comparing(o -> getTier(getItemStack(o)));
-		Comparator<IIngredientListElementInfo<?>> maxDamage =
+		Comparator<IListElementInfo<?>> maxDamage =
 			Comparator.comparing(o -> getToolDurability(getItemStack(o)));
 
 		return toolType.reversed() // Sort non-tools after the tools.
@@ -125,14 +125,14 @@ public class IngredientSorterComparators {
 			.thenComparing(maxDamage.reversed());
 	}
 
-	private static Comparator<IIngredientListElementInfo<?>> getWeaponDamageComparator() {
-		Comparator<IIngredientListElementInfo<?>> isWeaponComp =
+	private static Comparator<IListElementInfo<?>> getWeaponDamageComparator() {
+		Comparator<IListElementInfo<?>> isWeaponComp =
 			Comparator.comparing(o -> isWeapon(getItemStack(o)));
-		Comparator<IIngredientListElementInfo<?>> attackDamage =
+		Comparator<IListElementInfo<?>> attackDamage =
 			Comparator.comparing(o -> getWeaponDamage(getItemStack(o)));
-		Comparator<IIngredientListElementInfo<?>> attackSpeed =
+		Comparator<IListElementInfo<?>> attackSpeed =
 			Comparator.comparing(o -> getWeaponSpeed(getItemStack(o)));
-		Comparator<IIngredientListElementInfo<?>> maxDamage =
+		Comparator<IListElementInfo<?>> maxDamage =
 			Comparator.comparing(o -> getWeaponDurability(getItemStack(o)));
 		return isWeaponComp.reversed()
 			.thenComparing(attackDamage.reversed())
@@ -140,16 +140,16 @@ public class IngredientSorterComparators {
 			.thenComparing(maxDamage.reversed());
 	}
 
-	private static Comparator<IIngredientListElementInfo<?>> getArmorComparator() {
-		Comparator<IIngredientListElementInfo<?>> isArmorComp =
+	private static Comparator<IListElementInfo<?>> getArmorComparator() {
+		Comparator<IListElementInfo<?>> isArmorComp =
 			Comparator.comparing(o -> isArmor(getItemStack(o)));
-		Comparator<IIngredientListElementInfo<?>> armorSlot =
+		Comparator<IListElementInfo<?>> armorSlot =
 			Comparator.comparing(o -> getArmorSlotIndex(getItemStack(o)));
-		Comparator<IIngredientListElementInfo<?>> armorDamage =
+		Comparator<IListElementInfo<?>> armorDamage =
 			Comparator.comparing(o -> getArmorDamageReduce(getItemStack(o)));
-		Comparator<IIngredientListElementInfo<?>> armorToughness =
+		Comparator<IListElementInfo<?>> armorToughness =
 			Comparator.comparing(o -> getArmorToughness(getItemStack(o)));
-		Comparator<IIngredientListElementInfo<?>> maxDamage =
+		Comparator<IListElementInfo<?>> maxDamage =
 			Comparator.comparing(o -> getArmorDurability(getItemStack(o)));
 		return isArmorComp.reversed()
 			.thenComparing(armorSlot.reversed())
@@ -257,7 +257,7 @@ public class IngredientSorterComparators {
 		return 0;
 	}
 
-	private String getTagForSorting(IIngredientListElementInfo<?> elementInfo) {
+	private String getTagForSorting(IListElementInfo<?> elementInfo) {
 		Collection<ResourceLocation> tagIds = elementInfo.getTagIds(registeredIngredients);
 
 		String bestTag = "";
@@ -285,7 +285,7 @@ public class IngredientSorterComparators {
 		return values.size();
 	}
 
-	private boolean hasTag(IIngredientListElementInfo<?> elementInfo) {
+	private boolean hasTag(IListElementInfo<?> elementInfo) {
 		return !getTagForSorting(elementInfo).isEmpty();
 	}
 
@@ -309,7 +309,7 @@ public class IngredientSorterComparators {
 		return ToolAction.getActions();
 	}
 
-	public static <V> ItemStack getItemStack(IIngredientListElementInfo<V> ingredientInfo) {
+	public static <V> ItemStack getItemStack(IListElementInfo<V> ingredientInfo) {
 		ITypedIngredient<V> ingredient = ingredientInfo.getTypedIngredient();
 		if (ingredient.getIngredient() instanceof ItemStack itemStack) {
 			return itemStack;
