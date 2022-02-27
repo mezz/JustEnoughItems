@@ -66,7 +66,7 @@ public class GeneralizedSuffixTree<T> implements ISearchable<T> {
 	/**
 	 * The root of the suffix tree
 	 */
-	private final Node<T> root = new Node<>();
+	private final RootNode<T> root = new RootNode<>();
 	/**
 	 * The last leaf that was added during the update operation
 	 */
