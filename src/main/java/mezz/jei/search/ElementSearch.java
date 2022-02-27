@@ -70,8 +70,10 @@ public class ElementSearch implements IElementSearch {
 	public void logStatistics() {
 		for (Map.Entry<PrefixInfo, PrefixedSearchable> e : this.prefixedSearchables.entrySet()) {
 			PrefixInfo prefixInfo = e.getKey();
-			ISearchStorage<IListElementInfo<?>> storage = e.getValue().getSearchStorage();
-			LOGGER.info("ElementSearch {} Storage Stats: {}", prefixInfo, storage.statistics());
+			if (prefixInfo.getMode() != SearchMode.DISABLED) {
+				ISearchStorage<IListElementInfo<?>> storage = e.getValue().getSearchStorage();
+				LOGGER.info("ElementSearch {} Storage Stats: {}", prefixInfo, storage.statistics());
+			}
 		}
 	}
 }
