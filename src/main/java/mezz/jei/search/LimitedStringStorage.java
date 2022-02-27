@@ -13,8 +13,8 @@ import java.util.Set;
  * when there are many values for each key.
  *
  * It stores a map of keys to a set of values.
- * The set value is shared the internal {@link GeneralizedSuffixTree} to index and find the sets of values.
- * Sets are modified directly when values with the same key are added.
+ * The set values are shared with the internal {@link GeneralizedSuffixTree} to index and find them.
+ * The sets values are modified directly when values with the same key are added.
  */
 public class LimitedStringStorage<T> implements ISearchStorage<T> {
 	private final SetMultiMap<String, T> multiMap = new SetMultiMap<>(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
