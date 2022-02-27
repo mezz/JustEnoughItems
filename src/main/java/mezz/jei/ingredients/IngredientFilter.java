@@ -163,6 +163,8 @@ public class IngredientFilter implements IIngredientGridSource {
 	//This is used to allow the sorting function to set all item's indexes, precomputing the master sort order.
 	@Unmodifiable
 	public List<IListElementInfo<?>> getIngredientListPreSort(Comparator<IListElementInfo<?>> directComparator) {
+		this.elementSearch.logStatistics();
+
 		return this.elementSearch.getAllIngredients()
 			.stream()
 			.sorted(directComparator)

@@ -2,8 +2,8 @@ package mezz.jei.search;
 
 import mezz.jei.config.SearchMode;
 import mezz.jei.ingredients.IListElementInfo;
-import mezz.jei.ingredients.PrefixedSearchable;
-import mezz.jei.search.suffixtree.GeneralizedSuffixTree;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -12,13 +12,15 @@ import java.util.Map;
 import java.util.Set;
 
 public class ElementSearch implements IElementSearch {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final Map<PrefixInfo, PrefixedSearchable> prefixedSearchables = new IdentityHashMap<>();
 	private final CombinedSearchables<IListElementInfo<?>> combinedSearchables = new CombinedSearchables<>();
 
 	public ElementSearch(PrefixInfos prefixInfos) {
 		for (PrefixInfo prefixInfo : prefixInfos.allPrefixInfos()) {
-			GeneralizedSuffixTree<IListElementInfo<?>> searchable = new GeneralizedSuffixTree<>();
-			var prefixedSearchable = new PrefixedSearchable(searchable, prefixInfo);
+			ISearchStorage<IListElementInfo<?>> storage = prefixInfo.createStorage();
+			var prefixedSearchable = new PrefixedSearchable(storage, prefixInfo);
 			this.prefixedSearchables.put(prefixInfo, prefixedSearchable);
 			this.combinedSearchables.addSearchable(prefixedSearchable);
 		}
@@ -47,7 +49,7 @@ public class ElementSearch implements IElementSearch {
 			SearchMode searchMode = prefixedSearchable.getMode();
 			if (searchMode != SearchMode.DISABLED) {
 				Collection<String> strings = prefixedSearchable.getStrings(info);
-				GeneralizedSuffixTree<IListElementInfo<?>> searchable = prefixedSearchable.getSearchable();
+				ISearchStorage<IListElementInfo<?>> searchable = prefixedSearchable.getSearchStorage();
 				for (String string : strings) {
 					searchable.put(string, info);
 				}
@@ -60,5 +62,14 @@ public class ElementSearch implements IElementSearch {
 		Set<IListElementInfo<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
 		this.prefixedSearchables.get(PrefixInfo.NO_PREFIX).getAllElements(results);
 		return results;
+	}
+
+	@Override
+	public void logStatistics() {
+		for (Map.Entry<PrefixInfo, PrefixedSearchable> e : this.prefixedSearchables.entrySet()) {
+			PrefixInfo prefixInfo = e.getKey();
+			ISearchStorage<IListElementInfo<?>> storage = e.getValue().getSearchStorage();
+			LOGGER.info("ElementSearch {} Storage Stats: {}", prefixInfo, storage.statistics());
+		}
 	}
 }

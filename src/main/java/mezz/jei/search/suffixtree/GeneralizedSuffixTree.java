@@ -15,11 +15,10 @@
  */
 package mezz.jei.search.suffixtree;
 
+import mezz.jei.search.ISearchStorage;
 import mezz.jei.util.Pair;
 import mezz.jei.util.SubString;
 import org.jetbrains.annotations.Nullable;
-
-import mezz.jei.search.ISearchable;
 
 import java.util.Set;
 
@@ -62,7 +61,7 @@ import java.util.Set;
  * - add nullable/nonnull annotations
  * - formatting
  */
-public class GeneralizedSuffixTree<T> implements ISearchable<T> {
+public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 	/**
 	 * The root of the suffix tree
 	 */
@@ -140,6 +139,7 @@ public class GeneralizedSuffixTree<T> implements ISearchable<T> {
 	 * @param key   the string key that will be added to the index
 	 * @param value the value that will be added
 	 */
+	@Override
 	public void put(String key, T value) {
 		// reset activeLeaf
 		activeLeaf = root;
@@ -372,4 +372,8 @@ public class GeneralizedSuffixTree<T> implements ISearchable<T> {
 		return subString.shorten(1);
 	}
 
+	@Override
+	public String statistics() {
+		return "GeneralizedSuffixTree: " + this.root.nodeSizeStats();
+	}
 }

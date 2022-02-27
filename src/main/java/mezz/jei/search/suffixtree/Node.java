@@ -112,7 +112,7 @@ class Node<T> {
 	 * @param value the value to look for
 	 * @return true <tt>this</tt> contains a reference to index
 	 */
-	private boolean contains(T value) {
+	protected boolean contains(T value) {
 		return data.contains(value);
 	}
 

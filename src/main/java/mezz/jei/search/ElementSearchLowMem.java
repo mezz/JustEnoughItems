@@ -3,6 +3,8 @@ package mezz.jei.search;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.ingredients.IListElementInfo;
 import net.minecraft.core.NonNullList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -11,6 +13,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ElementSearchLowMem implements IElementSearch {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final NonNullList<IListElementInfo<?>> elementInfoList;
 
 	public ElementSearchLowMem() {
@@ -49,5 +53,10 @@ public class ElementSearchLowMem implements IElementSearch {
 	@Override
 	public List<IListElementInfo<?>> getAllIngredients() {
 		return Collections.unmodifiableList(this.elementInfoList);
+	}
+
+	@Override
+	public void logStatistics() {
+		LOGGER.info("ElementSearchLowMem Element Count: {}", this.elementInfoList.size());
 	}
 }

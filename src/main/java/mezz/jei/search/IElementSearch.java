@@ -8,13 +8,9 @@ import java.util.Set;
 public interface IElementSearch {
 	void add(IListElementInfo<?> info);
 
-//	IIngredientListElementInfo<?> get(int index);
-//
-//	int indexOf(IIngredientListElementInfo<?> ingredient);
-//
-//	int size();
-
 	Collection<IListElementInfo<?>> getAllIngredients();
 
 	Set<IListElementInfo<?>> getSearchResults(String token, PrefixInfo prefixInfo);
+
+	void logStatistics();
 }
