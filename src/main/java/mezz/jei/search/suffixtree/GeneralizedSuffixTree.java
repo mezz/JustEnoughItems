@@ -15,12 +15,13 @@
  */
 package mezz.jei.search.suffixtree;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.util.Pair;
 import mezz.jei.util.SubString;
 import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.search.ISearchable;
+
+import java.util.Set;
 
 /**
  * A Generalized Suffix Tree, based on the Ukkonen's paper "On-line construction of suffix trees"
@@ -61,15 +62,15 @@ import mezz.jei.search.ISearchable;
  * - add nullable/nonnull annotations
  * - formatting
  */
-public class GeneralizedSuffixTree implements ISearchable {
+public class GeneralizedSuffixTree<T> implements ISearchable<T> {
 	/**
 	 * The root of the suffix tree
 	 */
-	private final Node root = new Node();
+	private final Node<T> root = new Node<>();
 	/**
 	 * The last leaf that was added during the update operation
 	 */
-	private Node activeLeaf = root;
+	private Node<T> activeLeaf = root;
 
 	/**
 	 * Searches for the given word within the GST.
@@ -81,13 +82,18 @@ public class GeneralizedSuffixTree implements ISearchable {
 	 * @param results the indexes associated with the input <tt>word</tt>
 	 */
 	@Override
-	public void addSearchResults(String word, IntSet results) {
-		Node tmpNode = searchNode(root, word);
+	public void getSearchResults(String word, Set<T> results) {
+		Node<T> tmpNode = searchNode(root, word);
 		if (tmpNode == null) {
 			return;
 		}
 
 		tmpNode.getData(results);
+	}
+
+	@Override
+	public void getAllElements(Set<T> results) {
+		root.getData(results);
 	}
 
 	/**
@@ -98,13 +104,13 @@ public class GeneralizedSuffixTree implements ISearchable {
 	 * Returns the tree node (if present) that corresponds to the given string.
 	 */
 	@Nullable
-	private static Node searchNode(final Node root, final String word) {
-		Node currentNode = root;
+	private static <T> Node<T> searchNode(final Node<T> root, final String word) {
+		Node<T> currentNode = root;
 		SubString wordSubString = new SubString(word);
 
 		while (!wordSubString.isEmpty()) {
 			// follow the edge corresponding to this char
-			Edge currentEdge = currentNode.getEdge(wordSubString);
+			Edge<T> currentEdge = currentNode.getEdge(wordSubString);
 			if (currentEdge == null) {
 				// there is no edge starting with this char
 				return null;
@@ -132,13 +138,13 @@ public class GeneralizedSuffixTree implements ISearchable {
 	 * Adds the specified <tt>index</tt> to the GST under the given <tt>key</tt>.
 	 *
 	 * @param key   the string key that will be added to the index
-	 * @param index the value that will be added to the index
+	 * @param value the value that will be added
 	 */
-	public void put(String key, int index) {
+	public void put(String key, T value) {
 		// reset activeLeaf
 		activeLeaf = root;
 
-		Node s = root;
+		Node<T> s = root;
 
 		// proceed with tree construction (closely related to procedure in Ukkonen's paper)
 		SubString text = new SubString(key, 0, 0);
@@ -146,7 +152,7 @@ public class GeneralizedSuffixTree implements ISearchable {
 		for (int i = 0; i < key.length(); i++) {
 			// line 6, line 7: update the tree with the new transitions due to this new char
 			SubString rest = new SubString(key, i);
-			Pair<Node, SubString> active = update(s, text, key.charAt(i), rest, index);
+			Pair<Node<T>, SubString> active = update(s, text, key.charAt(i), rest, value);
 
 			s = active.first();
 			text = active.second();
@@ -177,33 +183,33 @@ public class GeneralizedSuffixTree implements ISearchable {
 	 * true/false depending on whether (stringPart + t) is contained in the subtree starting in inputNode
 	 * the last node that can be reached by following the path denoted by stringPart starting from inputNode
 	 */
-	private static Pair<Boolean, Node> testAndSplit(
-		Node startNode,
+	private static <T> Pair<Boolean, Node<T>> testAndSplit(
+		Node<T> startNode,
 		SubString searchString,
 		final char t,
 		final SubString remainder,
-		final int value
+		final T value
 	) {
 		assert !remainder.isEmpty();
 		assert remainder.charAt(0) == t;
 
 		// descend the tree as far as possible
-		Pair<Node, SubString> canonizeResult = canonize(startNode, searchString);
+		Pair<Node<T>, SubString> canonizeResult = canonize(startNode, searchString);
 		startNode = canonizeResult.first();
 		searchString = canonizeResult.second();
 
 		if (!searchString.isEmpty()) {
-			Edge g = startNode.getEdge(searchString);
+			Edge<T> g = startNode.getEdge(searchString);
 			assert g != null;
 			// must see whether "searchString" is substring of the label of an edge
 			if (g.length() > searchString.length() && g.charAt(searchString.length()) == t) {
 				return new Pair<>(true, startNode);
 			}
-			Node newNode = splitNode(startNode, g, searchString);
+			Node<T> newNode = splitNode(startNode, g, searchString);
 			return new Pair<>(false, newNode);
 		}
 
-		Edge e = startNode.getEdge(remainder);
+		Edge<T> e = startNode.getEdge(remainder);
 		if (e == null) {
 			// if there is no t-transition from s
 			return new Pair<>(false, startNode);
@@ -212,11 +218,11 @@ public class GeneralizedSuffixTree implements ISearchable {
 		if (e.startsWith(remainder)) {
 			if (e.length() == remainder.length()) {
 				// update payload of destination node
-				Node dest = e.getDest();
+				Node<T> dest = e.getDest();
 				dest.addRef(value);
 				return new Pair<>(true, startNode);
 			} else {
-				Node newNode = splitNode(startNode, e, remainder);
+				Node<T> newNode = splitNode(startNode, e, remainder);
 				newNode.addRef(value);
 				return new Pair<>(false, startNode);
 			}
@@ -225,7 +231,7 @@ public class GeneralizedSuffixTree implements ISearchable {
 		}
 	}
 
-	private static Node splitNode(Node s, Edge e, SubString splitFirstPart) {
+	private static <T> Node<T> splitNode(Node<T> s, Edge<T> e, SubString splitFirstPart) {
 		assert e == s.getEdge(splitFirstPart);
 		assert e.startsWith(splitFirstPart);
 
@@ -233,11 +239,11 @@ public class GeneralizedSuffixTree implements ISearchable {
 		SubString splitSecondPart = e.substring(splitFirstPart.length());
 
 		// build a new node r in between s and e.dest
-		Node r = new Node();
+		Node<T> r = new Node<>();
 		// replace e with new first part pointing to r
-		s.addEdge(new Edge(splitFirstPart, r));
+		s.addEdge(new Edge<>(splitFirstPart, r));
 		// r is the new node sitting in between s and the original destination
-		r.addEdge(new Edge(splitSecondPart, e.getDest()));
+		r.addEdge(new Edge<>(splitSecondPart, e.getDest()));
 
 		return r;
 	}
@@ -248,14 +254,14 @@ public class GeneralizedSuffixTree implements ISearchable {
 	 * a prefix of input and remainder will be string that must be
 	 * appended to the concatenation of labels from s to n to get input.
 	 */
-	private static Pair<Node, SubString> canonize(final Node s, final SubString input) {
-		Node currentNode = s;
+	private static <T> Pair<Node<T>, SubString> canonize(final Node<T> s, final SubString input) {
+		Node<T> currentNode = s;
 
 		// descend the tree as long as a proper label is found
 		SubString remainder = input;
 
 		while (!remainder.isEmpty()) {
-			Edge nextEdge = currentNode.getEdge(remainder);
+			Edge<T> nextEdge = currentNode.getEdge(remainder);
 			if (nextEdge == null || !nextEdge.isPrefix(remainder)) {
 				break;
 			}
@@ -280,14 +286,14 @@ public class GeneralizedSuffixTree implements ISearchable {
 	 * @param s          the node to start from
 	 * @param stringPart the string to add to the tree
 	 * @param rest       the rest of the string
-	 * @param value      the value to add to the index
+	 * @param value      the value to add
 	 */
-	private Pair<Node, SubString> update(
-		Node s,
+	private Pair<Node<T>, SubString> update(
+		Node<T> s,
 		final SubString stringPart,
 		final char newChar,
 		final SubString rest,
-		final int value
+		final T value
 	) {
 		assert !rest.isEmpty();
 		assert rest.charAt(0) == newChar;
@@ -295,27 +301,27 @@ public class GeneralizedSuffixTree implements ISearchable {
 		SubString k = stringPart.append(newChar);
 
 		// line 1
-		Node oldRoot = root;
+		Node<T> oldRoot = root;
 
 		// line 1b
-		Pair<Boolean, Node> ret = testAndSplit(s, stringPart, newChar, rest, value);
-		Node r = ret.second();
+		Pair<Boolean, Node<T>> ret = testAndSplit(s, stringPart, newChar, rest, value);
+		Node<T> r = ret.second();
 		boolean endpoint = ret.first();
 
-		Node leaf;
+		Node<T> leaf;
 		// line 2
 		while (!endpoint) {
 			// line 3
-			Edge tempEdge = r.getEdge(newChar);
+			Edge<T> tempEdge = r.getEdge(newChar);
 			if (tempEdge != null) {
 				// such a node is already present. This is one of the main differences from Ukkonen's case:
 				// the tree can contain deeper nodes at this stage because different strings were added by previous iterations.
 				leaf = tempEdge.getDest();
 			} else {
 				// must build a new leaf
-				leaf = new Node();
+				leaf = new Node<>();
 				leaf.addRef(value);
-				r.addEdge(new Edge(rest, leaf));
+				r.addEdge(new Edge<>(rest, leaf));
 			}
 
 			// update suffix link for newly created leaf
@@ -338,7 +344,7 @@ public class GeneralizedSuffixTree implements ISearchable {
 				// this is a special case to handle what is referred to as node _|_ on the paper
 				k = k.substring(1);
 			} else {
-				Pair<Node, SubString> canonized = canonize(s.getSuffix(), safeCutLastChar(k));
+				Pair<Node<T>, SubString> canonized = canonize(s.getSuffix(), safeCutLastChar(k));
 				char nextChar = k.charAt(k.length() - 1);
 				s = canonized.first();
 				k = canonized.second().append(nextChar);

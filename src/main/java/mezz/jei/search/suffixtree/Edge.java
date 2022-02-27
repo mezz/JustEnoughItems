@@ -24,15 +24,15 @@ import mezz.jei.util.SubString;
  * Edited by mezz:
  * - optimized with SubString
  */
-public class Edge extends SubString {
-	private final Node dest;
+public class Edge<T> extends SubString {
+	private final Node<T> dest;
 
-	public Edge(SubString subString, Node dest) {
+	public Edge(SubString subString, Node<T> dest) {
 		super(subString);
 		this.dest = dest;
 	}
 
-	public Node getDest() {
+	public Node<T> getDest() {
 		return dest;
 	}
 }

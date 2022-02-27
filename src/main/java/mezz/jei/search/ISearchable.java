@@ -1,10 +1,13 @@
 package mezz.jei.search;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.config.SearchMode;
 
-public interface ISearchable {
-	void addSearchResults(String token, IntSet results);
+import java.util.Set;
+
+public interface ISearchable<T> {
+	void getSearchResults(String token, Set<T> results);
+
+	void getAllElements(Set<T> results);
 
 	default SearchMode getMode() {
 		return SearchMode.ENABLED;

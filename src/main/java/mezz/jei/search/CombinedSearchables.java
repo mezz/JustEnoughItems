@@ -2,23 +2,32 @@ package mezz.jei.search;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.config.SearchMode;
 
-public class CombinedSearchables implements ISearchable {
-	private final List<ISearchable> searchables = new ArrayList<>();
+public class CombinedSearchables<T> implements ISearchable<T> {
+	private final List<ISearchable<T>> searchables = new ArrayList<>();
 
 	@Override
-	public void addSearchResults(String word, IntSet results) {
-		for (ISearchable searchable : this.searchables) {
+	public void getSearchResults(String word, Set<T> results) {
+		for (ISearchable<T> searchable : this.searchables) {
 			if (searchable.getMode() == SearchMode.ENABLED) {
-				searchable.addSearchResults(word, results);
+				searchable.getSearchResults(word, results);
 			}
 		}
 	}
 
-	public void addSearchable(ISearchable searchable) {
+	@Override
+	public void getAllElements(Set<T> results) {
+		for (ISearchable<T> searchable : this.searchables) {
+			if (searchable.getMode() == SearchMode.ENABLED) {
+				searchable.getAllElements(results);
+			}
+		}
+	}
+
+	public void addSearchable(ISearchable<T> searchable) {
 		this.searchables.add(searchable);
 	}
 }

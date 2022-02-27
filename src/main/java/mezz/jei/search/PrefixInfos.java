@@ -8,6 +8,7 @@ import mezz.jei.ingredients.IListElementInfo;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.util.Pair;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -23,8 +24,10 @@ public class PrefixInfos {
 		this.map.put('&', new PrefixInfo(config::getResourceLocationSearchMode, element -> List.of(element.getResourceLocation().toString())));
 	}
 
-	public Collection<PrefixInfo> values() {
-		return map.values();
+	public Collection<PrefixInfo> allPrefixInfos() {
+		Collection<PrefixInfo> values = new ArrayList<>(map.values());
+		values.add(PrefixInfo.NO_PREFIX);
+		return values;
 	}
 
 	public Pair<String, PrefixInfo> parseToken(String token) {

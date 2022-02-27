@@ -12,7 +12,7 @@ public class GeneralizedSuffixTreeTest {
 
 	private static Set<Integer> search(GeneralizedSuffixTree tree, String word) {
 		IntSet results = new IntOpenHashSet();
-		tree.addSearchResults(word, results);
+		tree.getSearchResults(word, results);
 		return results;
 	}
 

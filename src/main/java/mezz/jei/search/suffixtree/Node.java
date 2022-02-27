@@ -16,13 +16,14 @@
 package mezz.jei.search.suffixtree;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.util.SubString;
 import org.jetbrains.annotations.Nullable;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a node of the generalized suffix tree graph
@@ -36,18 +37,18 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * - add nullable/nonnull annotations
  * - formatting
  */
-class Node {
+class Node<T> {
 
 	/**
 	 * The payload array used to store the data (indexes) associated with this node.
 	 * In this case, it is used to store all property indexes.
 	 */
-	private final IntList data;
+	private final List<T> data;
 
 	/**
 	 * The set of edges starting from this node
 	 */
-	private final Char2ObjectMap<Edge> edges;
+	private final Char2ObjectMap<Edge<T>> edges;
 
 	/**
 	 * The suffix link as described in Ukkonen's paper.
@@ -55,7 +56,7 @@ class Node {
 	 * is the node denoted by the path that corresponds to str without the first char.
 	 */
 	@Nullable
-	private Node suffix;
+	private Node<T> suffix;
 
 	/**
 	 * Creates a new Node
@@ -63,17 +64,17 @@ class Node {
 	Node() {
 		edges = new Char2ObjectArrayMap<>(1);
 		suffix = null;
-		data = new IntArrayList(1);
+		data = new ArrayList<>(1);
 	}
 
 	/**
 	 * Gets data from the payload of both this node and its children, the string representation
 	 * of the path to this node is a substring of the one of the children nodes.
 	 */
-	public void getData(IntSet results) {
+	public void getData(Set<T> results) {
 		results.addAll(this.data);
-		for (Edge edge : edges.values()) {
-			Node dest = edge.getDest();
+		for (Edge<T> edge : edges.values()) {
+			Node<T> dest = edge.getDest();
 			dest.getData(results);
 		}
 	}
@@ -82,18 +83,18 @@ class Node {
 	 * Adds the given <tt>index</tt> to the set of indexes associated with <tt>this</tt>
 	 * returns false if this node already contains the ref
 	 */
-	void addRef(int index) {
-		if (contains(index)) {
+	void addRef(T value) {
+		if (contains(value)) {
 			return;
 		}
 
-		addIndex(index);
+		addValue(value);
 
 		// add this reference to all the suffixes as well
-		Node iter = this.suffix;
+		Node<T> iter = this.suffix;
 		while (iter != null) {
-			if (!iter.contains(index)) {
-				iter.addIndex(index);
+			if (!iter.contains(value)) {
+				iter.addValue(value);
 				iter = iter.suffix;
 			} else {
 				break;
@@ -104,24 +105,24 @@ class Node {
 	/**
 	 * Tests whether a node contains a reference to the given index.
 	 *
-	 * @param index the index to look for
+	 * @param value the value to look for
 	 * @return true <tt>this</tt> contains a reference to index
 	 */
-	private boolean contains(int index) {
-		return data.contains(index);
+	private boolean contains(T value) {
+		return data.contains(value);
 	}
 
-	void addEdge(Edge edge) {
+	void addEdge(Edge<T> edge) {
 		edges.put(edge.charAt(0), edge);
 	}
 
 	@Nullable
-	Edge getEdge(char ch) {
+	Edge<T> getEdge(char ch) {
 		return edges.get(ch);
 	}
 
 	@Nullable
-	Edge getEdge(SubString string) {
+	Edge<T> getEdge(SubString string) {
 		if (string.isEmpty()) {
 			return null;
 		}
@@ -130,16 +131,16 @@ class Node {
 	}
 
 	@Nullable
-	Node getSuffix() {
+	Node<T> getSuffix() {
 		return suffix;
 	}
 
-	void setSuffix(Node suffix) {
+	void setSuffix(Node<T> suffix) {
 		this.suffix = suffix;
 	}
 
-	private void addIndex(int index) {
-		data.add(index);
+	private void addValue(T value) {
+		data.add(value);
 	}
 
 	@Override

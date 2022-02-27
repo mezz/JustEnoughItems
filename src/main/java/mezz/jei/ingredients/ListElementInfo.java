@@ -33,7 +33,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final ResourceLocation resourceLocation;
-	private Integer sortedIndex;
+	private int sortedIndex = Integer.MAX_VALUE;
 
 	@Nullable
 	public static <V> IListElementInfo<V> create(IListElement<V> element, RegisteredIngredients registeredIngredients, IModIdHelper modIdHelper) {
@@ -69,7 +69,6 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 			.toList();
 		String displayName = IngredientInformationUtil.getDisplayName(ingredient, ingredientHelper);
 		this.displayNameLowercase = Translator.toLowercaseWithLocale(displayName);
-		this.sortedIndex = -1;
 	}
 
 	@Override
@@ -171,6 +170,5 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	public int getSortedIndex() {
 		return sortedIndex;
 	}
-
 
 }
