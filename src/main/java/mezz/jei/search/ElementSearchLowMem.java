@@ -22,11 +22,13 @@ public class ElementSearchLowMem implements IElementSearch {
 	}
 
 	@Override
-	public Set<IListElementInfo<?>> getSearchResults(String token, PrefixInfo prefixInfo) {
+	public Set<IListElementInfo<?>> getSearchResults(PrefixInfos.TokenInfo tokenInfo) {
+		String token = tokenInfo.token();
 		if (token.isEmpty()) {
 			return Set.of();
 		}
 
+		PrefixInfo prefixInfo = tokenInfo.prefixInfo();
 		return this.elementInfoList.stream()
 			.filter(elementInfo -> matches(token, prefixInfo, elementInfo))
 			.collect(Collectors.toSet());

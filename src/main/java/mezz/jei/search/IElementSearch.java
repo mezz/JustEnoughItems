@@ -10,7 +10,7 @@ public interface IElementSearch {
 
 	Collection<IListElementInfo<?>> getAllIngredients();
 
-	Set<IListElementInfo<?>> getSearchResults(String token, PrefixInfo prefixInfo);
+	Set<IListElementInfo<?>> getSearchResults(PrefixInfos.TokenInfo tokenInfo);
 
 	void logStatistics();
 }

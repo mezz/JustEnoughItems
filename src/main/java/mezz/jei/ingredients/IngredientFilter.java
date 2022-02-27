@@ -19,7 +19,6 @@ import mezz.jei.search.ElementSearchLowMem;
 import mezz.jei.search.IElementSearch;
 import mezz.jei.search.PrefixInfo;
 import mezz.jei.search.PrefixInfos;
-import mezz.jei.util.Pair;
 import mezz.jei.util.Translator;
 import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
@@ -121,7 +120,8 @@ public class IngredientFilter implements IIngredientGridSource {
 		String displayName = ingredientHelper.getDisplayName(ingredient);
 		String lowercaseDisplayName = Translator.toLowercaseWithLocale(displayName);
 
-		return this.elementSearch.getSearchResults(lowercaseDisplayName, PrefixInfo.NO_PREFIX)
+		PrefixInfos.TokenInfo tokenInfo = new PrefixInfos.TokenInfo(lowercaseDisplayName, PrefixInfo.NO_PREFIX);
+		return this.elementSearch.getSearchResults(tokenInfo)
 			.stream()
 			.map(elementInfo -> checkForMatch(elementInfo, type, ingredientUid, uidFunction))
 			.flatMap(Optional::stream)
@@ -184,13 +184,18 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	private List<ITypedIngredient<?>> getIngredientListUncached(String filterText) {
+		String[] filters = filterText.split("\\|");
+		List<SearchTokens> searchTokens = Arrays.stream(filters)
+			.map(this::parseSearchTokens)
+			.filter(s -> !s.toSearch.isEmpty())
+			.toList();
+
 		Stream<IListElementInfo<?>> elementInfoStream;
-		if (filterText.isEmpty()) {
+		if (searchTokens.isEmpty()) {
 			elementInfoStream = this.elementSearch.getAllIngredients()
 				.parallelStream();
 		} else {
-			String[] filters = filterText.split("\\|");
-			elementInfoStream = Arrays.stream(filters)
+			elementInfoStream = searchTokens.stream()
 				.map(this::getSearchResults)
 				.flatMap(Set::stream)
 				.distinct();
@@ -295,43 +300,46 @@ public class IngredientFilter implements IIngredientGridSource {
 		return Optional.empty();
 	}
 
-	private Set<IListElementInfo<?>> getSearchResults(String filterText) {
+	private record SearchTokens(List<PrefixInfos.TokenInfo> toSearch, List<PrefixInfos.TokenInfo> toRemove) {}
+
+	private SearchTokens parseSearchTokens(String filterText) {
+		SearchTokens searchTokens = new SearchTokens(new ArrayList<>(), new ArrayList<>());
+
 		if (filterText.isEmpty()) {
-			return Set.of();
+			return searchTokens;
 		}
 		Matcher filterMatcher = FILTER_SPLIT_PATTERN.matcher(filterText);
-
-		List<String> tokens = new ArrayList<>();
-		List<String> removalTokens = new ArrayList<>();
-
 		while (filterMatcher.find()) {
-			String token = filterMatcher.group(1);
-			final boolean remove = token.startsWith("-");
+			String string = filterMatcher.group(1);
+			final boolean remove = string.startsWith("-");
 			if (remove) {
-				token = token.substring(1);
+				string = string.substring(1);
 			}
-			token = QUOTE_PATTERN.matcher(token).replaceAll("");
-			if (token.isEmpty()) {
+			string = QUOTE_PATTERN.matcher(string).replaceAll("");
+			if (string.isEmpty()) {
 				continue;
 			}
-			if (remove) {
-				removalTokens.add(token);
-			} else {
-				tokens.add(token);
-			}
+			this.prefixInfos.parseToken(string)
+				.ifPresent(result -> {
+					if (remove) {
+						searchTokens.toRemove.add(result);
+					} else {
+						searchTokens.toSearch.add(result);
+					}
+				});
 		}
+		return searchTokens;
+	}
 
-		List<Set<IListElementInfo<?>>> resultsPerToken = tokens.stream()
-			.map(this::getSearchResultsForToken)
+	private Set<IListElementInfo<?>> getSearchResults(SearchTokens searchTokens) {
+		List<Set<IListElementInfo<?>>> resultsPerToken = searchTokens.toSearch.stream()
+			.map(this.elementSearch::getSearchResults)
 			.toList();
 		Set<IListElementInfo<?>> results = intersection(resultsPerToken);
-		if (results.isEmpty()) {
-			return results;
-		}
 
-		if (!removalTokens.isEmpty()) {
-			for (String token : removalTokens) {
-				Set<IListElementInfo<?>> resultsToRemove = this.getSearchResultsForToken(token);
+		if (!results.isEmpty() && !searchTokens.toRemove.isEmpty()) {
+			for (PrefixInfos.TokenInfo tokenInfo : searchTokens.toRemove) {
+				Set<IListElementInfo<?>> resultsToRemove = this.elementSearch.getSearchResults(tokenInfo);
 				results.removeAll(resultsToRemove);
 				if (results.isEmpty()) {
 					break;
@@ -339,16 +347,7 @@ public class IngredientFilter implements IIngredientGridSource {
 			}
 		}
 		return results;
-	}
 
-	/**
-	 * Gets the appropriate search tree for the given token, based on if the token has a prefix.
-	 */
-	private Set<IListElementInfo<?>> getSearchResultsForToken(String token) {
-		final Pair<String, PrefixInfo> result = this.prefixInfos.parseToken(token);
-		token = result.first();
-		PrefixInfo prefixInfo = result.second();
-		return this.elementSearch.getSearchResults(token, prefixInfo);
 	}
 
 	/**

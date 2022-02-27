@@ -7,11 +7,11 @@ import mezz.jei.config.SearchMode;
 import mezz.jei.ingredients.IListElementInfo;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.search.suffixtree.GeneralizedSuffixTree;
-import mezz.jei.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class PrefixInfos {
 	private final Char2ObjectMap<PrefixInfo> map = new Char2ObjectOpenHashMap<>();
@@ -65,15 +65,20 @@ public class PrefixInfos {
 		return values;
 	}
 
-	public Pair<String, PrefixInfo> parseToken(String token) {
+	public record TokenInfo(String token, PrefixInfo prefixInfo) {}
+
+	public Optional<TokenInfo> parseToken(String token) {
 		if (token.isEmpty()) {
-			return new Pair<>(token, PrefixInfo.NO_PREFIX);
+			return Optional.empty();
 		}
 		char firstChar = token.charAt(0);
 		PrefixInfo prefixInfo = map.get(firstChar);
 		if (prefixInfo == null || prefixInfo.getMode() == SearchMode.DISABLED) {
-			return new Pair<>(token, PrefixInfo.NO_PREFIX);
+			return Optional.of(new TokenInfo(token, PrefixInfo.NO_PREFIX));
 		}
-		return new Pair<>(token.substring(1), prefixInfo);
+		if (token.length() == 1) {
+			return Optional.empty();
+		}
+		return Optional.of(new TokenInfo(token.substring(1), prefixInfo));
 	}
 }
