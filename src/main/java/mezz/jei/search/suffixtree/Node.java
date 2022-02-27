@@ -16,14 +16,18 @@
 package mezz.jei.search.suffixtree;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectArrayMap;
+import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import mezz.jei.util.SubString;
 import org.jetbrains.annotations.Nullable;
 
-import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
-
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * Represents a node of the generalized suffix tree graph
@@ -43,7 +47,7 @@ class Node<T> {
 	 * The payload array used to store the data (indexes) associated with this node.
 	 * In this case, it is used to store all property indexes.
 	 */
-	private final List<T> data;
+	private Collection<T> data;
 
 	/**
 	 * The set of edges starting from this node
@@ -64,7 +68,7 @@ class Node<T> {
 	Node() {
 		edges = new Char2ObjectArrayMap<>(1);
 		suffix = null;
-		data = new ArrayList<>(1);
+		data = List.of();
 	}
 
 	/**
@@ -139,12 +143,44 @@ class Node<T> {
 		this.suffix = suffix;
 	}
 
-	private void addValue(T value) {
-		data.add(value);
+	protected void addValue(T value) {
+		data = switch (data.size()) {
+			case 0 -> List.of(value);
+			case 1 -> List.of(data.iterator().next(), value);
+			case 2 -> {
+				List<T> newData = new ArrayList<>(2);
+				newData.addAll(data);
+				newData.add(value);
+				yield newData;
+			}
+			case 16 -> {
+				// "upgrade" data to a Set once it's getting bigger,
+				// to improve its `contains` performance.
+				Collection<T> newData = Collections.newSetFromMap(new IdentityHashMap<>());
+				newData.addAll(data);
+				newData.add(value);
+				yield newData;
+			}
+			default -> {
+				data.add(value);
+				yield data;
+			}
+		};
 	}
 
 	@Override
 	public String toString() {
 		return "Node: size:" + data.size() + " Edges: " + edges;
+	}
+
+	public IntSummaryStatistics nodeSizeStats() {
+		return nodeSizes().summaryStatistics();
+	}
+
+	private IntStream nodeSizes() {
+		return IntStream.concat(
+			IntStream.of(data.size()),
+			edges.values().stream().flatMapToInt(e -> e.getDest().nodeSizes())
+		);
 	}
 }
