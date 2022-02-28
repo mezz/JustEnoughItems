@@ -8,6 +8,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.RecipeSlot;
@@ -17,8 +18,10 @@ import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.UserInput;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -225,7 +228,40 @@ public class RecipeLayout<R> {
 	}
 
 	public boolean handleInput(UserInput input) {
-		return recipeCategory.handleInput(recipe, input.getMouseX() - posX, input.getMouseY() - posY, input.getKey());
+		if (!isMouseOver(input.getMouseX(), input.getMouseY())) {
+			return false;
+		}
+
+		double recipeMouseX = input.getMouseX() - posX;
+		double recipeMouseY = input.getMouseY() - posY;
+		if (recipeCategory.handleInput(recipe, recipeMouseX, recipeMouseY, input.getKey())) {
+			return true;
+		}
+
+		if (input.is(KeyBindings.copyRecipeId)) {
+			return handleCopyRecipeId();
+		}
+		return false;
+	}
+
+	private boolean handleCopyRecipeId() {
+		Minecraft minecraft = Minecraft.getInstance();
+		LocalPlayer player = minecraft.player;
+		ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
+		if (registryName == null) {
+			TranslatableComponent message = new TranslatableComponent("jei.message.copy.recipe.id.failure");
+			if (player != null) {
+				player.displayClientMessage(message, false);
+			}
+			return false;
+		}
+		String recipeId = registryName.toString();
+		minecraft.keyboardHandler.setClipboard(recipeId);
+		TranslatableComponent message = new TranslatableComponent("jei.message.copy.recipe.id.success", recipeId);
+		if (player != null) {
+			player.displayClientMessage(message, false);
+		}
+		return true;
 	}
 
 	public void moveRecipeTransferButton(int posX, int posY) {

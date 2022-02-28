@@ -20,6 +20,7 @@ public final class KeyBindings {
 	private static final String editModeCategoryName = Translator.translateToLocal("jei.key.category.edit.mode");
 	private static final String recipeCategoryName = Translator.translateToLocal("jei.key.category.recipe.gui");
 	private static final String searchCategoryName = Translator.translateToLocal("jei.key.category.search");
+	private static final String devToolsCategoryName = Translator.translateToLocal("jei.key.category.dev.tools");
 	private static final String jeiHiddenInternalCategoryName = "jei.key.category.hidden.internal";
 
 	public static final KeyMapping toggleOverlay;
@@ -53,6 +54,8 @@ public final class KeyBindings {
 	public static final KeyMapping hoveredClearSearchBar;
 	public static final KeyMapping previousSearch;
 	public static final KeyMapping nextSearch;
+
+	public static final KeyMapping copyRecipeId;
 
 	private static final List<KeyMapping> allBindings;
 
@@ -119,7 +122,10 @@ public final class KeyBindings {
 			previousRecipePage = new KeyMapping("key.jei.previousRecipePage", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_PAGE_UP), recipeCategoryName),
 			nextRecipePage = new KeyMapping("key.jei.nextRecipePage", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_PAGE_DOWN), recipeCategoryName),
 			previousCategory = new KeyMapping("key.jei.previousCategory", KeyConflictContext.GUI, KeyModifier.SHIFT, getKey(GLFW.GLFW_KEY_PAGE_UP), recipeCategoryName),
-			nextCategory = new KeyMapping("key.jei.nextCategory", KeyConflictContext.GUI, KeyModifier.SHIFT, getKey(GLFW.GLFW_KEY_PAGE_DOWN), recipeCategoryName)
+			nextCategory = new KeyMapping("key.jei.nextCategory", KeyConflictContext.GUI, KeyModifier.SHIFT, getKey(GLFW.GLFW_KEY_PAGE_DOWN), recipeCategoryName),
+
+			// Dev Tools
+			copyRecipeId = new KeyMapping("key.jei.copy.recipe.id", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), devToolsCategoryName)
 		);
 
 		showRecipe = List.of(showRecipe1, showRecipe2);
