@@ -10,9 +10,12 @@ import java.util.Map;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
@@ -268,6 +271,23 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 
 	public boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
 		return recipeWrapper.handleClick(minecraft, mouseX - posX, mouseY - posY, mouseButton);
+	}
+
+	public boolean handleCopyRecipeId() {
+		Minecraft minecraft = Minecraft.getMinecraft();
+		EntityPlayerSP player = minecraft.player;
+		if (recipeId == null) {
+			if (player != null) {
+				player.sendMessage(new TextComponentTranslation("jei.message.copy.recipe.id.failure"));
+			}
+			return false;
+		}
+		String recipeIdString = recipeId.toString();
+		GuiScreen.setClipboardString(recipeIdString);
+		if (player != null) {
+			player.sendMessage(new TextComponentTranslation("jei.message.copy.recipe.id.success", recipeIdString));
+		}
+		return true;
 	}
 
 	@Override
