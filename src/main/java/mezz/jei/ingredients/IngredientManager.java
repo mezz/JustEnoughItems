@@ -114,7 +114,7 @@ public class IngredientManager implements IIngredientManager {
 					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
 				}
 			} else {
-				IListElement<V> element = IngredientListElementFactory.createOrderedElement(this.registeredIngredients, value);
+				IListElement<V> element = IngredientListElementFactory.createOrderedElement(value);
 				IListElementInfo<V> info = ListElementInfo.create(element, this.registeredIngredients, modIdHelper);
 				if (info != null) {
 					blacklist.removeIngredientFromBlacklist(value, ingredientHelper);
