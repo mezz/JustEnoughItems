@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class IngredientManager implements IIngredientManager {
@@ -78,11 +79,10 @@ public class IngredientManager implements IIngredientManager {
 		}
 	}
 
-	@Nullable
-	public <V> V getIngredientByUid(IIngredientType<V> ingredientType, String uid) {
+	public <V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String uid) {
 		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
 		if (registeredIngredient == null) {
-			return null;
+			return Optional.empty();
 		} else {
 			IngredientSet<V> ingredients = registeredIngredient.getIngredientSet();
 			return ingredients.getByUid(uid);
@@ -172,7 +172,7 @@ public class IngredientManager implements IIngredientManager {
 					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(ingredient));
 				}
 			} else {
-				IIngredientListElement<V> element = IngredientListElementFactory.createOrderedElement(this, ingredientType, ingredient);
+				IIngredientListElement<V> element = IngredientListElementFactory.createOrderedElement(ingredient);
 				IIngredientListElementInfo<V> info = IngredientListElementInfo.create(element, this, modIdHelper);
 				if (info != null) {
 					blacklist.removeIngredientFromBlacklist(ingredient, ingredientHelper);

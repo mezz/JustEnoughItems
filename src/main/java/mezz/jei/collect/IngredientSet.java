@@ -1,16 +1,16 @@
 package mezz.jei.collect;
 
-import javax.annotation.Nullable;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
-
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 
 public class IngredientSet<V> extends AbstractSet<V> {
 	public static <V> IngredientSet<V> create(IIngredientHelper<V> ingredientHelper, UidContext context) {
@@ -59,9 +59,8 @@ public class IngredientSet<V> extends AbstractSet<V> {
 		return ingredients.containsKey(uid);
 	}
 
-	@Nullable
-	public V getByUid(String uid) {
-		return ingredients.get(uid);
+	public Optional<V> getByUid(String uid) {
+		return Optional.ofNullable(ingredients.get(uid));
 	}
 
 	@Override

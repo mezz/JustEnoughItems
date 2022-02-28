@@ -1,107 +1,83 @@
 package mezz.jei.search;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
+import com.google.common.collect.ImmutableSet;
 import mezz.jei.config.SearchMode;
 import mezz.jei.ingredients.IIngredientListElementInfo;
-import mezz.jei.ingredients.IngredientFilterBackgroundBuilder;
-import mezz.jei.ingredients.PrefixedSearchable;
-import mezz.jei.search.suffixtree.GeneralizedSuffixTree;
-import net.minecraft.util.NonNullList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ElementSearch implements IElementSearch {
-	private final GeneralizedSuffixTree noPrefixSearchable;
-	private final Map<PrefixInfo, PrefixedSearchable<GeneralizedSuffixTree>> prefixedSearchables = new IdentityHashMap<>();
-	private final IngredientFilterBackgroundBuilder backgroundBuilder;
-	private final CombinedSearchables combinedSearchables = new CombinedSearchables();
-	/**
-	 * indexed list of ingredients for use with the suffix trees
-	 * includes all elements (even hidden ones) for use when rebuilding
-	 */
-	private final NonNullList<IIngredientListElementInfo<?>> elementInfoList;
+	private static final Logger LOGGER = LogManager.getLogger();
 
-	public ElementSearch() {
-		this.elementInfoList = NonNullList.create();
-		this.noPrefixSearchable = new GeneralizedSuffixTree();
-		this.backgroundBuilder = new IngredientFilterBackgroundBuilder(prefixedSearchables, elementInfoList);
-		this.combinedSearchables.addSearchable(noPrefixSearchable);
+	private final Map<PrefixInfo<IIngredientListElementInfo<?>>, PrefixedSearchable<IIngredientListElementInfo<?>>> prefixedSearchables = new IdentityHashMap<>();
+	private final CombinedSearchables<IIngredientListElementInfo<?>> combinedSearchables = new CombinedSearchables<>();
+
+	public ElementSearch(ElementPrefixParser elementPrefixParser) {
+		for (PrefixInfo<IIngredientListElementInfo<?>> prefixInfo : elementPrefixParser.allPrefixInfos()) {
+			ISearchStorage<IIngredientListElementInfo<?>> storage = prefixInfo.createStorage();
+			PrefixedSearchable<IIngredientListElementInfo<?>> prefixedSearchable = new PrefixedSearchable<>(storage, prefixInfo);
+			this.prefixedSearchables.put(prefixInfo, prefixedSearchable);
+			this.combinedSearchables.addSearchable(prefixedSearchable);
+		}
 	}
 
 	@Override
-	public void start() {
-		this.backgroundBuilder.start();
-	}
-
-	@Nullable
-	@Override
-	public IntSet getSearchResults(String token, PrefixInfo prefixInfo) {
+	public Set<IIngredientListElementInfo<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo) {
+		String token = tokenInfo.token();
 		if (token.isEmpty()) {
-			return null;
+			return ImmutableSet.of();
 		}
-		final ISearchable searchable = this.prefixedSearchables.get(prefixInfo);
-		if (searchable != null && searchable.getMode() != SearchMode.DISABLED) {
-			return searchable.search(token);
-		} else {
-			return combinedSearchables.search(token);
+
+		Set<IIngredientListElementInfo<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
+
+		PrefixInfo<IIngredientListElementInfo<?>> prefixInfo = tokenInfo.prefixInfo();
+		if (prefixInfo == ElementPrefixParser.NO_PREFIX) {
+			combinedSearchables.getSearchResults(token, results);
+			return results;
 		}
+		final ISearchable<IIngredientListElementInfo<?>> searchable = this.prefixedSearchables.get(prefixInfo);
+		if (searchable == null || searchable.getMode() == SearchMode.DISABLED) {
+			combinedSearchables.getSearchResults(token, results);
+			return results;
+		}
+		searchable.getSearchResults(token, results);
+		return results;
 	}
 
 	@Override
-	public <V> void add(IIngredientListElementInfo<V> info) {
-		int index = this.elementInfoList.size();
-		this.elementInfoList.add(info);
-
-		{
-			Collection<String> strings = PrefixInfo.NO_PREFIX.getStrings(info);
-			for (String string : strings) {
-				this.noPrefixSearchable.put(string, index);
-			}
-		}
-
-		for (PrefixedSearchable<GeneralizedSuffixTree> prefixedSearchable : this.prefixedSearchables.values()) {
+	public void add(IIngredientListElementInfo<?> info) {
+		for (PrefixedSearchable<IIngredientListElementInfo<?>> prefixedSearchable : this.prefixedSearchables.values()) {
 			SearchMode searchMode = prefixedSearchable.getMode();
 			if (searchMode != SearchMode.DISABLED) {
 				Collection<String> strings = prefixedSearchable.getStrings(info);
-				GeneralizedSuffixTree searchable = prefixedSearchable.getSearchable();
+				ISearchStorage<IIngredientListElementInfo<?>> searchable = prefixedSearchable.getSearchStorage();
 				for (String string : strings) {
-					searchable.put(string, index);
+					searchable.put(string, info);
 				}
 			}
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <V> IIngredientListElementInfo<V> get(int index) {
-		return (IIngredientListElementInfo<V>) this.elementInfoList.get(index);
+	public Set<IIngredientListElementInfo<?>> getAllIngredients() {
+		Set<IIngredientListElementInfo<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
+		this.prefixedSearchables.get(ElementPrefixParser.NO_PREFIX).getAllElements(results);
+		return results;
 	}
 
 	@Override
-	public <V> int indexOf(IIngredientListElementInfo<V> ingredient) {
-		return this.elementInfoList.indexOf(ingredient);
-	}
-
-	@Override
-	public int size() {
-		return this.elementInfoList.size();
-	}
-
-	@Override
-	public List<IIngredientListElementInfo<?>> getAllIngredients() {
-		return Collections.unmodifiableList(this.elementInfoList);
-	}
-
-	@Override
-	public void registerPrefix(PrefixInfo prefixInfo) {
-		final GeneralizedSuffixTree searchable = new GeneralizedSuffixTree();
-		final PrefixedSearchable<GeneralizedSuffixTree> prefixedSearchable = new PrefixedSearchable<>(searchable, prefixInfo);
-		this.prefixedSearchables.put(prefixInfo, prefixedSearchable);
-		this.combinedSearchables.addSearchable(prefixedSearchable);
+	public void logStatistics() {
+		this.prefixedSearchables.forEach((prefixInfo, value) -> {
+			if (prefixInfo.getMode() != SearchMode.DISABLED) {
+				ISearchStorage<IIngredientListElementInfo<?>> storage = value.getSearchStorage();
+				LOGGER.info("ElementSearch {} Storage Stats: {}", prefixInfo, storage.statistics());
+			}
+		});
 	}
 }

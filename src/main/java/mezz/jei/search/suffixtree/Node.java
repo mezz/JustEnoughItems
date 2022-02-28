@@ -17,11 +17,21 @@ package mezz.jei.search.suffixtree;
 
 import javax.annotation.Nullable;
 
+
+import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
+import it.unimi.dsi.fastutil.chars.Char2ObjectMaps;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.util.SubString;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.IntSummaryStatistics;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * Represents a node of the generalized suffix tree graph
@@ -34,19 +44,20 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * - only allow full searches
  * - add nullable/nonnull annotations
  * - formatting
+ * - refactored and optimized
  */
-class Node {
+class Node<T> {
 
 	/**
 	 * The payload array used to store the data (indexes) associated with this node.
 	 * In this case, it is used to store all property indexes.
 	 */
-	private final IntList data;
+	private Collection<T> data;
 
 	/**
 	 * The set of edges starting from this node
 	 */
-	private final Char2ObjectMap<Edge> edges;
+	private Char2ObjectMap<Edge<T>> edges;
 
 	/**
 	 * The suffix link as described in Ukkonen's paper.
@@ -54,26 +65,26 @@ class Node {
 	 * is the node denoted by the path that corresponds to str without the first char.
 	 */
 	@Nullable
-	private Node suffix;
+	private Node<T> suffix;
 
 	/**
 	 * Creates a new Node
 	 */
 	Node() {
-		edges = new Char2ObjectOpenHashMap<>();
+		edges = Char2ObjectMaps.emptyMap();
+		data = Collections.emptyList();
 		suffix = null;
-		data = new IntArrayList(0);
 	}
 
 	/**
 	 * Gets data from the payload of both this node and its children, the string representation
 	 * of the path to this node is a substring of the one of the children nodes.
 	 */
-	void getData(final IntSet ret) {
-		ret.addAll(data);
-
-		for (Edge e : edges.values()) {
-			e.getDest().getData(ret);
+	public void getData(Set<T> results) {
+		results.addAll(this.data);
+		for (Edge<T> edge : edges.values()) {
+			Node<T> dest = edge.getDest();
+			dest.getData(results);
 		}
 	}
 
@@ -81,61 +92,129 @@ class Node {
 	 * Adds the given <tt>index</tt> to the set of indexes associated with <tt>this</tt>
 	 * returns false if this node already contains the ref
 	 */
-	boolean addRef(int index) {
-		if (contains(index)) {
-			return false;
+	void addRef(T value) {
+		if (contains(value)) {
+			return;
 		}
 
-		addIndex(index);
+		addValue(value);
 
 		// add this reference to all the suffixes as well
-		Node iter = this.suffix;
+		Node<T> iter = this.suffix;
 		while (iter != null) {
-			if (!iter.contains(index)) {
-				iter.addIndex(index);
+			if (!iter.contains(value)) {
+				iter.addValue(value);
 				iter = iter.suffix;
 			} else {
 				break;
 			}
 		}
-
-		return true;
 	}
 
 	/**
 	 * Tests whether a node contains a reference to the given index.
 	 *
-	 * @param index the index to look for
+	 * @param value the value to look for
 	 * @return true <tt>this</tt> contains a reference to index
 	 */
-	private boolean contains(int index) {
-		return data.contains(index);
+	protected boolean contains(T value) {
+		return data.contains(value);
 	}
 
-	void addEdge(char ch, Edge e) {
-		edges.put(ch, e);
+	void addEdge(Edge<T> edge) {
+		char firstChar = edge.charAt(0);
+
+		int size = edges.size();
+		if (size == 0) {
+			edges = Char2ObjectMaps.singleton(firstChar, edge);
+		} else if (size == 1) {
+			Char2ObjectMap<Edge<T>> newEdges = new Char2ObjectOpenHashMap<>(edges);
+			newEdges.put(firstChar, edge);
+			edges = newEdges;
+		} else {
+			edges.put(firstChar, edge);
+		}
 	}
 
 	@Nullable
-	Edge getEdge(char ch) {
+	Edge<T> getEdge(char ch) {
 		return edges.get(ch);
 	}
 
 	@Nullable
-	Node getSuffix() {
+	Edge<T> getEdge(SubString string) {
+		if (string.isEmpty()) {
+			return null;
+		}
+		char ch = string.charAt(0);
+		return edges.get(ch);
+	}
+
+	@Nullable
+	Node<T> getSuffix() {
 		return suffix;
 	}
 
-	void setSuffix(Node suffix) {
+	void setSuffix(Node<T> suffix) {
 		this.suffix = suffix;
 	}
 
-	private void addIndex(int index) {
-		data.add(index);
+	protected void addValue(T value) {
+		if (data.size() == 0) {
+			data = ImmutableList.of(value);
+		} else if (data.size() == 1) {
+			data = ImmutableList.of(data.iterator().next(), value);
+		} else if (data.size() == 2) {
+			List<T> newData = new ArrayList<>(4);
+			newData.addAll(data);
+			newData.add(value);
+			data = newData;
+		} else if (data.size() == 16) {
+			// "upgrade" data to a Set once it's getting bigger,
+			// to improve its `contains` performance.
+			Collection<T> newData = Collections.newSetFromMap(new IdentityHashMap<>());
+			newData.addAll(data);
+			newData.add(value);
+			data = newData;
+		} else {
+			data.add(value);
+		}
 	}
 
 	@Override
 	public String toString() {
 		return "Node: size:" + data.size() + " Edges: " + edges.toString();
+	}
+
+	public IntSummaryStatistics nodeSizeStats() {
+		return nodeSizes().summaryStatistics();
+	}
+
+	private IntStream nodeSizes() {
+		return IntStream.concat(
+			IntStream.of(data.size()),
+			edges.values().stream().flatMapToInt(e -> e.getDest().nodeSizes())
+		);
+	}
+
+	public String nodeEdgeStats() {
+		IntSummaryStatistics edgeCounts = nodeEdgeCounts().summaryStatistics();
+		IntSummaryStatistics edgeLengths = nodeEdgeLengths().summaryStatistics();
+		return "Edge counts: " + edgeCounts +
+			"\nEdge lengths: " + edgeLengths;
+	}
+
+	private IntStream nodeEdgeCounts() {
+		return IntStream.concat(
+			IntStream.of(edges.size()),
+			edges.values().stream().map(Edge::getDest).flatMapToInt(Node::nodeEdgeCounts)
+		);
+	}
+
+	private IntStream nodeEdgeLengths() {
+		return IntStream.concat(
+			edges.values().stream().mapToInt(Edge::length),
+			edges.values().stream().map(Edge::getDest).flatMapToInt(Node::nodeEdgeLengths)
+		);
 	}
 }

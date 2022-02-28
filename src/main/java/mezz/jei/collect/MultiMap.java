@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableMultimap;
 
@@ -50,6 +51,16 @@ public class MultiMap<K, V, T extends Collection<V>> {
 
 	public Set<K> keySet() {
 		return map.keySet();
+	}
+
+	public Collection<V> allValues() {
+		return this.map.values().stream()
+			.flatMap(Collection::stream)
+			.collect(Collectors.toList());
+	}
+
+	public void clear() {
+		map.clear();
 	}
 
 	public ImmutableMultimap<K, V> toImmutable() {

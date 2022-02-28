@@ -1,26 +1,17 @@
 package mezz.jei.search;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.ingredients.IIngredientListElementInfo;
 
-import javax.annotation.Nullable;
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
 
 public interface IElementSearch {
-	<V> void add(IIngredientListElementInfo<V> info);
+	void add(IIngredientListElementInfo<?> info);
 
-	<V> IIngredientListElementInfo<V> get(int index);
+	Collection<IIngredientListElementInfo<?>> getAllIngredients();
 
-	<V> int indexOf(IIngredientListElementInfo<V> ingredient);
+	Set<IIngredientListElementInfo<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo);
 
-	int size();
-
-	List<IIngredientListElementInfo<?>> getAllIngredients();
-
-	@Nullable
-	IntSet getSearchResults(String token, PrefixInfo prefixInfo);
-
-	void registerPrefix(PrefixInfo prefixInfo);
-
-	void start();
+	@SuppressWarnings("unused") // used for debugging
+	void logStatistics();
 }

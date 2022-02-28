@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.ingredients.subtypes.UidContext;
@@ -111,9 +112,9 @@ public class BookmarkConfig {
 	@Nullable
 	private Object getUnknownIngredientByUid(IngredientManager ingredientManager, Collection<IIngredientType<?>> ingredientTypes, String uid) {
 		for (IIngredientType<?> ingredientType : ingredientTypes) {
-			Object ingredient = ingredientManager.getIngredientByUid(ingredientType, uid);
-			if (ingredient != null) {
-				return ingredient;
+			Optional<?> ingredient = ingredientManager.getIngredientByUid(ingredientType, uid);
+			if (ingredient.isPresent()) {
+				return ingredient.get();
 			}
 		}
 		return null;

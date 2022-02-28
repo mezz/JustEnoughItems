@@ -1,39 +1,51 @@
 package mezz.jei.search;
 
 import mezz.jei.config.SearchMode;
-import mezz.jei.ingredients.IIngredientListElementInfo;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.function.Supplier;
 
-public class PrefixInfo {
-	public static final PrefixInfo NO_PREFIX = new PrefixInfo(
-		() -> SearchMode.ENABLED,
-		i -> Collections.singleton(i.getName())
-	);
+public class PrefixInfo<T> {
+	private final char prefix;
 	private final IModeGetter modeGetter;
-	private final IStringsGetter stringsGetter;
+	private final IStringsGetter<T> stringsGetter;
+	private final Supplier<ISearchStorage<T>> storageSupplier;
 
-	public PrefixInfo(IModeGetter modeGetter, IStringsGetter stringsGetter) {
+	public PrefixInfo(char prefix, IModeGetter modeGetter, IStringsGetter<T> stringsGetter, Supplier<ISearchStorage<T>> storageSupplier) {
+		this.prefix = prefix;
 		this.modeGetter = modeGetter;
 		this.stringsGetter = stringsGetter;
+		this.storageSupplier = storageSupplier;
+	}
+
+	public char getPrefix() {
+		return prefix;
 	}
 
 	public SearchMode getMode() {
 		return modeGetter.getMode();
 	}
 
-	public Collection<String> getStrings(IIngredientListElementInfo<?> element) {
+	public ISearchStorage<T> createStorage() {
+		return this.storageSupplier.get();
+	}
+
+	public Collection<String> getStrings(T element) {
 		return this.stringsGetter.getStrings(element);
 	}
 
 	@FunctionalInterface
-	public interface IStringsGetter {
-		Collection<String> getStrings(IIngredientListElementInfo<?> element);
+	public interface IStringsGetter<T> {
+		Collection<String> getStrings(T element);
 	}
 
 	@FunctionalInterface
 	public interface IModeGetter {
 		SearchMode getMode();
+	}
+
+	@Override
+	public String toString() {
+		return "PrefixInfo{" + prefix + '}';
 	}
 }
