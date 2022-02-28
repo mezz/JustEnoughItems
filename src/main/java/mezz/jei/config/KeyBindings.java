@@ -29,6 +29,7 @@ public final class KeyBindings {
 	public static final KeyBinding nextCategory;
 	public static final KeyBinding bookmark;
 	public static final KeyBinding toggleBookmarkOverlay;
+	public static final KeyBinding copyRecipeId;
 	private static final List<KeyBinding> allBindings;
 
 	static InputMappings.Input getKey(int key) {
@@ -49,7 +50,8 @@ public final class KeyBindings {
 			previousCategory = new KeyBinding("key.jei.previousCategory", KeyConflictContext.GUI, KeyModifier.SHIFT, getKey(GLFW.GLFW_KEY_PAGE_UP), categoryName),
 			nextCategory = new KeyBinding("key.jei.nextCategory", KeyConflictContext.GUI, KeyModifier.SHIFT, getKey(GLFW.GLFW_KEY_PAGE_DOWN), categoryName),
 			bookmark = new KeyBinding("key.jei.bookmark", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_A), categoryName),
-			toggleBookmarkOverlay = new KeyBinding("key.jei.toggleBookmarkOverlay", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), categoryName)
+			toggleBookmarkOverlay = new KeyBinding("key.jei.toggleBookmarkOverlay", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), categoryName),
+			copyRecipeId = new KeyBinding("key.jei.copy.recipe.id", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), categoryName)
 		);
 	}
 

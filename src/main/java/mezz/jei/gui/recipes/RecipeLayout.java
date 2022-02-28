@@ -23,6 +23,7 @@ import mezz.jei.ingredients.Ingredients;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.item.ItemStack;
@@ -265,6 +266,26 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 			}
 		}
 		return null;
+	}
+
+	public boolean handleCopyRecipeId() {
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientPlayerEntity player = minecraft.player;
+		ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
+		if (registryName == null) {
+			TranslationTextComponent message = new TranslationTextComponent("jei.message.copy.recipe.id.failure");
+			if (player != null) {
+				player.displayClientMessage(message, false);
+			}
+			return false;
+		}
+		String recipeId = registryName.toString();
+		minecraft.keyboardHandler.setClipboard(recipeId);
+		TranslationTextComponent message = new TranslationTextComponent("jei.message.copy.recipe.id.success", recipeId);
+		if (player != null) {
+			player.displayClientMessage(message, false);
+		}
+		return true;
 	}
 
 	public boolean handleClick(double mouseX, double mouseY, int mouseButton) {

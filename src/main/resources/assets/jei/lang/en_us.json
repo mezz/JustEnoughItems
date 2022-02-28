@@ -53,6 +53,7 @@
   "key.jei.nextCategory": "Next Recipe Category",
   "key.jei.bookmark": "Add/Remove Bookmark",
   "key.jei.toggleBookmarkOverlay": "Show/Hide Bookmarked Ingredients",
+  "key.jei.copy.recipe.id": "Copy Recipe ID to Clipboard",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Hide Ingredients Mode:",
@@ -79,6 +80,8 @@
 
   "_comment": "Messages",
   "jei.message.configured": "Install the \"Configured\" mod to access the in-game config",
+  "jei.message.copy.recipe.id.success": "Copied Recipe ID to clipboard: %s",
+  "jei.message.copy.recipe.id.failure": "Failed to Copy Recipe ID to clipboard, the Recipe ID is unknown",
 
   "_comment": "Key Names",
   "key.jei.ctrl": "CTRL",
