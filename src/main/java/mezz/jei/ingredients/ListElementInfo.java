@@ -29,11 +29,11 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
 
 	private final IListElement<V> element;
-	private final String displayName;
+	private final String displayNameLowercase;
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final ResourceLocation resourceLocation;
-	private Integer sortedIndex;
+	private int sortedIndex = Integer.MAX_VALUE;
 
 	@Nullable
 	public static <V> IListElementInfo<V> create(IListElement<V> element, RegisteredIngredients registeredIngredients, IModIdHelper modIdHelper) {
@@ -67,13 +67,13 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		this.modNames = this.modIds.stream()
 			.map(modIdHelper::getModNameForModId)
 			.toList();
-		this.displayName = IngredientInformationUtil.getDisplayName(ingredient, ingredientHelper);
-		this.sortedIndex = -1;
+		String displayName = IngredientInformationUtil.getDisplayName(ingredient, ingredientHelper);
+		this.displayNameLowercase = Translator.toLowercaseWithLocale(displayName);
 	}
 
 	@Override
 	public String getName() {
-		return Translator.toLowercaseWithLocale(this.displayName);
+		return this.displayNameLowercase;
 	}
 
 	@Override
@@ -106,7 +106,6 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		String modName = this.modNames.get(0);
 		String modId = this.modIds.get(0);
 		String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
-		String displayNameLowercase = Translator.toLowercaseWithLocale(this.displayName);
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientRenderer<V> ingredientRenderer = registeredIngredients.getIngredientRenderer(value.getType());
 		ImmutableSet<String> toRemove = ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceLocation.getPath());
@@ -171,6 +170,5 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	public int getSortedIndex() {
 		return sortedIndex;
 	}
-
 
 }

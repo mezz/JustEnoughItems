@@ -58,6 +58,12 @@ public class MultiMap<K, V, T extends Collection<V>> {
 		return map.keySet();
 	}
 
+	public Collection<V> allValues() {
+		return this.map.values().stream()
+			.flatMap(Collection::stream)
+			.toList();
+	}
+
 	public void clear() {
 		map.clear();
 	}
