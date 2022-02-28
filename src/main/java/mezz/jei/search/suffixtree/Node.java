@@ -15,8 +15,9 @@
  */
 package mezz.jei.search.suffixtree;
 
-import it.unimi.dsi.fastutil.chars.Char2ObjectArrayMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
+import it.unimi.dsi.fastutil.chars.Char2ObjectMaps;
+import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import mezz.jei.util.SubString;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,7 +54,7 @@ class Node<T> {
 	/**
 	 * The set of edges starting from this node
 	 */
-	private final Char2ObjectMap<Edge<T>> edges;
+	private Char2ObjectMap<Edge<T>> edges;
 
 	/**
 	 * The suffix link as described in Ukkonen's paper.
@@ -67,9 +68,9 @@ class Node<T> {
 	 * Creates a new Node
 	 */
 	Node() {
-		edges = new Char2ObjectArrayMap<>(1);
-		suffix = null;
+		edges = Char2ObjectMaps.emptyMap();
 		data = List.of();
+		suffix = null;
 	}
 
 	/**
@@ -118,7 +119,17 @@ class Node<T> {
 	}
 
 	void addEdge(Edge<T> edge) {
-		edges.put(edge.charAt(0), edge);
+		char firstChar = edge.charAt(0);
+
+		switch (edges.size()) {
+			case 0 -> edges = Char2ObjectMaps.singleton(firstChar, edge);
+			case 1 -> {
+				Char2ObjectMap<Edge<T>> newEdges = new Char2ObjectOpenHashMap<>(edges);
+				newEdges.put(firstChar, edge);
+				edges = newEdges;
+			}
+			default -> edges.put(firstChar, edge);
+		}
 	}
 
 	@Nullable
@@ -145,14 +156,14 @@ class Node<T> {
 	}
 
 	protected void addValue(T value) {
-		data = switch (data.size()) {
-			case 0 -> List.of(value);
-			case 1 -> List.of(data.iterator().next(), value);
+		switch (data.size()) {
+			case 0 -> data = List.of(value);
+			case 1 -> data = List.of(data.iterator().next(), value);
 			case 2 -> {
-				List<T> newData = new ArrayList<>(2);
+				List<T> newData = new ArrayList<>(4);
 				newData.addAll(data);
 				newData.add(value);
-				yield newData;
+				data = newData;
 			}
 			case 16 -> {
 				// "upgrade" data to a Set once it's getting bigger,
@@ -160,13 +171,10 @@ class Node<T> {
 				Collection<T> newData = Collections.newSetFromMap(new IdentityHashMap<>());
 				newData.addAll(data);
 				newData.add(value);
-				yield newData;
+				data = newData;
 			}
-			default -> {
-				data.add(value);
-				yield data;
-			}
-		};
+			default -> data.add(value);
+		}
 	}
 
 	@Override
@@ -182,6 +190,27 @@ class Node<T> {
 		return IntStream.concat(
 			IntStream.of(data.size()),
 			edges.values().stream().flatMapToInt(e -> e.getDest().nodeSizes())
+		);
+	}
+
+	public String nodeEdgeStats() {
+		IntSummaryStatistics edgeCounts = nodeEdgeCounts().summaryStatistics();
+		IntSummaryStatistics edgeLengths = nodeEdgeLengths().summaryStatistics();
+		return "Edge counts: " + edgeCounts +
+			"\nEdge lengths: " + edgeLengths;
+	}
+
+	private IntStream nodeEdgeCounts() {
+		return IntStream.concat(
+			IntStream.of(edges.size()),
+			edges.values().stream().map(Edge::getDest).flatMapToInt(Node::nodeEdgeCounts)
+		);
+	}
+
+	private IntStream nodeEdgeLengths() {
+		return IntStream.concat(
+			edges.values().stream().mapToInt(Edge::length),
+			edges.values().stream().map(Edge::getDest).flatMapToInt(Node::nodeEdgeLengths)
 		);
 	}
 }

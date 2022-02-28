@@ -46,6 +46,26 @@ public class SubStringTest {
 	}
 
 	@Test
+	public void testRegionMatchesWithZeroLength() {
+		String string = "abcdefg";
+
+		// make sure we follow the same rules as regular strings
+		Assertions.assertTrue(string.regionMatches(0, "", 0, 0));
+		Assertions.assertTrue("".regionMatches(0, string, 0, 0));
+
+		SubString subString = new SubString(string);
+		for (int start = 0; start < string.length(); start++) {
+			Assertions.assertTrue(subString.regionMatches(start, string, start, 0));
+			Assertions.assertTrue(subString.regionMatches(start, "", 0, 0));
+		}
+
+		SubString emptySubString = new SubString(string, 0, 0);
+		for (int start = 0; start < string.length(); start++) {
+			Assertions.assertTrue(emptySubString.regionMatches(start, string, start, 0));
+		}
+	}
+
+	@Test
 	public void testRegionMatchesSameSubString() {
 		String string = "abcdefg";
 		SubString subString = new SubString(string);

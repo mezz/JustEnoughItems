@@ -235,6 +235,7 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 	private static <T> Node<T> splitNode(Node<T> s, Edge<T> e, SubString splitFirstPart) {
 		assert e == s.getEdge(splitFirstPart);
 		assert e.startsWith(splitFirstPart);
+		assert e.length() > splitFirstPart.length();
 
 		// need to split the edge
 		SubString splitSecondPart = e.substring(splitFirstPart.length());
@@ -375,6 +376,8 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 
 	@Override
 	public String statistics() {
-		return "GeneralizedSuffixTree: " + this.root.nodeSizeStats();
+		return "GeneralizedSuffixTree:" +
+			"\nNode size stats: \n" + this.root.nodeSizeStats() +
+			"\nNode edge stats: \n" + this.root.nodeEdgeStats();
 	}
 }
