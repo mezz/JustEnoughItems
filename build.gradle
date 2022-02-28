@@ -70,7 +70,7 @@ dependencies {
 }
 
 minecraft {
-	mappings channel: 'official', version: project.minecraft_version
+	mappings channel: project.mapping_channel, version: project.mapping_version
 
 	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
