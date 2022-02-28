@@ -33,15 +33,19 @@ public class ElementSearch implements IElementSearch {
 			return Set.of();
 		}
 
-		PrefixInfo prefixInfo = tokenInfo.prefixInfo();
-		final ISearchable<IListElementInfo<?>> searchable = this.prefixedSearchables.get(prefixInfo);
-
 		Set<IListElementInfo<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
-		if (searchable != null && searchable.getMode() != SearchMode.DISABLED) {
-			searchable.getSearchResults(token, results);
-		} else {
+
+		PrefixInfo prefixInfo = tokenInfo.prefixInfo();
+		if (prefixInfo == PrefixInfo.NO_PREFIX) {
 			combinedSearchables.getSearchResults(token, results);
+			return results;
 		}
+		final ISearchable<IListElementInfo<?>> searchable = this.prefixedSearchables.get(prefixInfo);
+		if (searchable == null || searchable.getMode() == SearchMode.DISABLED) {
+			combinedSearchables.getSearchResults(token, results);
+			return results;
+		}
+		searchable.getSearchResults(token, results);
 		return results;
 	}
 
