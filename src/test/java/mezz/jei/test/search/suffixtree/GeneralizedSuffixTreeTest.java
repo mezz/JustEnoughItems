@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class GeneralizedSuffixTreeTest {
 
-	private static Set<Integer> search(GeneralizedSuffixTree tree, String word) {
+	private static Set<Integer> search(GeneralizedSuffixTree<Integer> tree, String word) {
 		IntSet results = new IntOpenHashSet();
 		tree.getSearchResults(word, results);
 		return results;
@@ -18,7 +18,7 @@ public class GeneralizedSuffixTreeTest {
 
 	@Test
 	public void testSearch() {
-		GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
+		GeneralizedSuffixTree<Integer> tree = new GeneralizedSuffixTree<>();
 
 		tree.put("a", 0);
 		Assertions.assertEquals(Set.of(0), search(tree, "a"));
@@ -97,7 +97,7 @@ public class GeneralizedSuffixTreeTest {
 
 	@Test
 	public void testPuttingSameString() {
-		GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
+		GeneralizedSuffixTree<Integer> tree = new GeneralizedSuffixTree<>();
 
 		tree.put("ab", 0);
 		Assertions.assertEquals(Set.of(0), search(tree, "a"));
@@ -112,7 +112,7 @@ public class GeneralizedSuffixTreeTest {
 
 	@Test
 	public void testPuttingShorterString() {
-		GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
+		GeneralizedSuffixTree<Integer> tree = new GeneralizedSuffixTree<>();
 
 		tree.put("ab", 0);
 		Assertions.assertEquals(Set.of(0), search(tree, "a"));
@@ -127,7 +127,7 @@ public class GeneralizedSuffixTreeTest {
 
 	@Test
 	public void testNonMatchingSearches() {
-		GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
+		GeneralizedSuffixTree<Integer> tree = new GeneralizedSuffixTree<>();
 
 		tree.put("ab", 0);
 		Assertions.assertEquals(Set.of(), search(tree, ""));
@@ -139,7 +139,7 @@ public class GeneralizedSuffixTreeTest {
 
 	@Test
 	public void testIndexWorksOutOfOrder() {
-		GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
+		GeneralizedSuffixTree<Integer> tree = new GeneralizedSuffixTree<>();
 
 		tree.put("ab", 10);
 		Assertions.assertEquals(Set.of(10), search(tree, "a"));
