@@ -11,10 +11,10 @@ import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.TagUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -143,7 +143,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public Collection<ResourceLocation> getTags(FluidStack ingredient) {
-		return ingredient.getFluid().getTags();
+		return TagUtil.getTags(ingredient.getFluid().builtInRegistryHolder());
 	}
 
 	@Override
@@ -172,6 +172,6 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public Optional<ResourceLocation> getTagEquivalent(Collection<FluidStack> ingredients) {
-		return TagUtil.getTagEquivalent(ingredients, FluidStack::getFluid, FluidTags.getAllTags());
+		return TagUtil.getTagEquivalent(ingredients, FluidStack::getFluid, Registry.FLUID::getTags);
 	}
 }

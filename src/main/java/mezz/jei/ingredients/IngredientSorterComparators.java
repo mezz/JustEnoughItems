@@ -6,10 +6,10 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.gui.ingredients.IListElement;
+import net.minecraft.core.HolderSet.ListBacked;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.TagCollection;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -279,10 +279,10 @@ public class IngredientSorterComparators {
 		if (tagId.toString().equals("itemfilters:check_nbt")) {
 			return 0;
 		}
-		TagCollection<Item> allTags = ItemTags.getAllTags();
-		Tag<Item> tags = allTags.getTagOrEmpty(tagId);
-		List<Item> values = tags.getValues();
-		return values.size();
+		TagKey<Item> tagKey = TagKey.create(Registry.ITEM_REGISTRY, tagId);
+		return Registry.ITEM.getTag(tagKey)
+			.map(ListBacked::size)
+			.orElse(0);
 	}
 
 	private boolean hasTag(IListElementInfo<?> elementInfo) {
