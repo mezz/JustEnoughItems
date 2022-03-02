@@ -16,6 +16,7 @@ import mezz.jei.config.Constants;
 import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.recipes.ExtendableRecipeCategoryHelper;
+import mezz.jei.util.ErrorUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -135,16 +136,22 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 
 	@Override
 	public <R extends CraftingRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
+		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
+		ErrorUtil.checkNotNull(extensionFactory, "extensionFactory");
 		extendableHelper.addRecipeExtensionFactory(recipeClass, null, extensionFactory);
 	}
 
 	@Override
 	public <R extends CraftingRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Predicate<R> extensionFilter, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
+		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
+		ErrorUtil.checkNotNull(extensionFilter, "extensionFilter");
+		ErrorUtil.checkNotNull(extensionFactory, "extensionFactory");
 		extendableHelper.addRecipeExtensionFactory(recipeClass, extensionFilter, extensionFactory);
 	}
 
 	@Override
 	public ResourceLocation getRegistryName(CraftingRecipe recipe) {
+		ErrorUtil.checkNotNull(recipe, "recipe");
 		return this.extendableHelper.getOptionalRecipeExtension(recipe)
 			.flatMap(extension -> Optional.ofNullable(extension.getRegistryName()))
 			.orElseGet(recipe::getId);
