@@ -259,19 +259,11 @@ public class IngredientSorterComparators {
 
 	private String getTagForSorting(IListElementInfo<?> elementInfo) {
 		Collection<ResourceLocation> tagIds = elementInfo.getTagIds(registeredIngredients);
-
-		String bestTag = "";
-		int maxTagSize = 0;
-		//Group things by the most popular tag it has.
-		for (ResourceLocation tagId : tagIds) {
-			int thisTagSize = tagCount(tagId);
-			if (thisTagSize > maxTagSize) {
-				bestTag = tagId.getPath();
-				maxTagSize = thisTagSize;
-			}
-		}
-
-		return bestTag;
+		// Choose the most popular tag it has.
+		return tagIds.stream()
+			.max(Comparator.comparing(IngredientSorterComparators::tagCount))
+			.map(ResourceLocation::getPath)
+			.orElse("");
 	}
 
 	private static int tagCount(ResourceLocation tagId) {
