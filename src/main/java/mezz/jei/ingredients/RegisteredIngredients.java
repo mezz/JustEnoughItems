@@ -22,13 +22,13 @@ public class RegisteredIngredients {
 	/** for looking up types by ingredient class */
 	private final Map<Class<?>, IIngredientType<?>> classToType;
 
-	public RegisteredIngredients(List<IngredientInfo<?>> ingredientInfoList) {
+	public RegisteredIngredients(List<RawIngredientInfo<?>> ingredientInfoList) {
 		this.orderedTypes = ingredientInfoList.stream()
-			.<IIngredientType<?>>map(IngredientInfo::getIngredientType)
+			.<IIngredientType<?>>map(RawIngredientInfo::getIngredientType)
 			.toList();
 
 		this.typeToInfo = ingredientInfoList.stream()
-			.collect(Collectors.toUnmodifiableMap(IngredientInfo::getIngredientType, Function.identity()));
+			.collect(Collectors.toUnmodifiableMap(RawIngredientInfo::getIngredientType, IngredientInfo::new));
 
 		this.classToType = this.orderedTypes.stream()
 			.collect(Collectors.toMap(IIngredientType::getIngredientClass, Function.identity()));

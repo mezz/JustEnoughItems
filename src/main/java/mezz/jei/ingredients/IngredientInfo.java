@@ -1,27 +1,44 @@
 package mezz.jei.ingredients;
 
+import mezz.jei.api.ingredients.IExtractableIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.collect.AbstractIngredientSet;
 import mezz.jei.collect.IngredientSet;
+import mezz.jei.collect.StackSet;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
 
 public class IngredientInfo<T> {
 	private final IIngredientType<T> ingredientType;
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
-	private final IngredientSet<T> ingredientSet;
+	private final AbstractIngredientSet<T> ingredientSet;
+
+	public IngredientInfo(RawIngredientInfo<T> info) {
+		this(
+			info.getIngredientType(),
+			info.getAllIngredients(),
+			info.getIngredientHelper(),
+			info.getIngredientRenderer()
+		);
+	}
 
 	public IngredientInfo(IIngredientType<T> ingredientType, Collection<T> ingredients, IIngredientHelper<T> ingredientHelper, IIngredientRenderer<T> ingredientRenderer) {
 		this.ingredientType = ingredientType;
 		this.ingredientHelper = ingredientHelper;
 		this.ingredientRenderer = ingredientRenderer;
 
-		this.ingredientSet = IngredientSet.create(ingredientHelper, UidContext.Ingredient);
+		if (ingredientHelper instanceof IExtractableIngredientHelper<T, ?> extractableIngredientHelper) {
+			this.ingredientSet = new StackSet<>(extractableIngredientHelper);
+		} else {
+			this.ingredientSet = IngredientSet.create(ingredientHelper, UidContext.Ingredient);
+		}
 		this.ingredientSet.addAll(ingredients);
 	}
 
@@ -37,8 +54,8 @@ public class IngredientInfo<T> {
 		return ingredientRenderer;
 	}
 
-	public Collection<T> getAllIngredients() {
-		return Collections.unmodifiableCollection(ingredientSet);
+	public Set<T> getAllIngredients() {
+		return Collections.unmodifiableSet(ingredientSet);
 	}
 
 	public void addIngredients(Collection<T> ingredients) {
@@ -49,8 +66,7 @@ public class IngredientInfo<T> {
 		this.ingredientSet.removeAll(ingredients);
 	}
 
-	@Nullable
-	public T getIngredientByUid(String uid) {
+	public Optional<T> getIngredientByUid(String uid) {
 		return ingredientSet.getByUid(uid);
 	}
 }

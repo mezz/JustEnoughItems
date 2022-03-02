@@ -64,7 +64,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		IIngredientFilterConfig config,
 		RegisteredIngredients registeredIngredients,
 		IIngredientSorter sorter,
-		NonNullList<IListElement<?>> ingredients,
+		List<IListElement<?>> ingredients,
 		IModIdHelper modIdHelper,
 		IngredientVisibility ingredientVisibility
 	) {

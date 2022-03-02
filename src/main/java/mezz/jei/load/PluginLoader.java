@@ -25,6 +25,7 @@ import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.ingredients.RawIngredientInfo;
 import mezz.jei.recipes.FocusFactory;
 import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
@@ -87,6 +88,7 @@ public class PluginLoader {
 
 		RegisteredIngredientsBuilder registeredIngredientsBuilder = new RegisteredIngredientsBuilder(subtypeManager);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(registeredIngredientsBuilder));
+		List<RawIngredientInfo<?>> rawIngredientInfos = registeredIngredientsBuilder.getRawIngredientInfos();
 		this.registeredIngredients = registeredIngredientsBuilder.build();
 		Internal.setIngredientManager(this.registeredIngredients);
 
@@ -94,7 +96,7 @@ public class PluginLoader {
 		Internal.setIngredientVisibility(this.ingredientVisibility);
 
 		this.timer.start("Building ingredient list");
-		NonNullList<IListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(this.registeredIngredients);
+		List<IListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(rawIngredientInfos);
 		this.timer.stop();
 
 		this.timer.start("Building ingredient filter");

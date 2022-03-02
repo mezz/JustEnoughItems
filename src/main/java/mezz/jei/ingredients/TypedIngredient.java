@@ -63,6 +63,14 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return Optional.of(typedIngredient);
 	}
 
+	public static <T> Optional<ITypedIngredient<T>> createTypedUnchecked(IIngredientType<T> ingredientType, @Nullable T ingredient) {
+		if (isBlankIngredient(ingredient)) {
+			return Optional.empty();
+		}
+		TypedIngredient<T> typedIngredient = new TypedIngredient<>(ingredientType, ingredient);
+		return Optional.of(typedIngredient);
+	}
+
 	public static <T> Optional<ITypedIngredient<T>> normalize(RegisteredIngredients registeredIngredients, ITypedIngredient<T> value) {
 		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
 		T ingredient = ingredientHelper.normalizeIngredient(value.getIngredient());

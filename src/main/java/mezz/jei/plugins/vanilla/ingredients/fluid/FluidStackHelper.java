@@ -3,6 +3,7 @@ package mezz.jei.plugins.vanilla.ingredients.fluid;
 import com.google.common.base.MoreObjects;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
+import mezz.jei.api.ingredients.IExtractableIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
@@ -27,7 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-public class FluidStackHelper implements IIngredientHelper<FluidStack> {
+public class FluidStackHelper implements IIngredientHelper<FluidStack>, IExtractableIngredientHelper<FluidStack, Fluid> {
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
 
@@ -173,5 +174,10 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	@Override
 	public Optional<ResourceLocation> getTagEquivalent(Collection<FluidStack> ingredients) {
 		return TagUtil.getTagEquivalent(ingredients, FluidStack::getFluid, FluidTags.getAllTags());
+	}
+
+	@Override
+	public Fluid extractImmutablePart(FluidStack ingredient) {
+		return ingredient.getFluid();
 	}
 }

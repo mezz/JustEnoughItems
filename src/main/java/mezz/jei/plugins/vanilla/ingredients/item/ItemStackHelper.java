@@ -1,6 +1,7 @@
 package mezz.jei.plugins.vanilla.ingredients.item;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IExtractableIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
-public class ItemStackHelper implements IIngredientHelper<ItemStack> {
+public class ItemStackHelper implements IIngredientHelper<ItemStack>, IExtractableIngredientHelper<ItemStack, Item> {
 	private final StackHelper stackHelper;
 
 	public ItemStackHelper(StackHelper stackHelper) {
@@ -164,6 +165,11 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public String getErrorInfo(@Nullable ItemStack ingredient) {
 		return ErrorUtil.getItemStackInfo(ingredient);
+	}
+
+	@Override
+	public Item extractImmutablePart(ItemStack ingredient) {
+		return ingredient.getItem();
 	}
 
 	@Override

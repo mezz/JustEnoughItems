@@ -153,8 +153,7 @@ public class BookmarkConfig {
 
 	private static <T> Optional<ITypedIngredient<?>> getNormalizedIngredientByUid(RegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, String uid) {
 		IngredientInfo<T> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
-		T ingredient = ingredientInfo.getIngredientByUid(uid);
-		return Optional.ofNullable(ingredient)
+		return ingredientInfo.getIngredientByUid(uid)
 			.map(i -> {
 				IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 				return ingredientHelper.normalizeIngredient(i);
