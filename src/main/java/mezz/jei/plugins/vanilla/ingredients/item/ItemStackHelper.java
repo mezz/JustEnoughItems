@@ -8,9 +8,9 @@ import mezz.jei.color.ColorGetter;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
 import mezz.jei.util.TagUtil;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -145,7 +145,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public Collection<ResourceLocation> getTags(ItemStack ingredient) {
-		return ingredient.getItem().getTags();
+		return TagUtil.getTags(ingredient.getTags());
 	}
 
 	@Override
@@ -168,6 +168,6 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public Optional<ResourceLocation> getTagEquivalent(Collection<ItemStack> ingredients) {
-		return TagUtil.getTagEquivalent(ingredients, ItemStack::getItem, ItemTags.getAllTags());
+		return TagUtil.getTagEquivalent(ingredients, ItemStack::getItem, Registry.ITEM::getTags);
 	}
 }
