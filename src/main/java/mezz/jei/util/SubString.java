@@ -89,4 +89,8 @@ public class SubString {
 			string.substring(this.offset, this.offset + this.length) +
 			"\"\nBacking string: \"" + string + "\"";
 	}
+
+	public String commit() {
+		return string.substring(offset, offset + length);
+	}
 }

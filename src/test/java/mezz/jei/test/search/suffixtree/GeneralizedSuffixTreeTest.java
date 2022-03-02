@@ -6,6 +6,8 @@ import mezz.jei.search.suffixtree.GeneralizedSuffixTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.Set;
 
 public class GeneralizedSuffixTreeTest {
@@ -151,4 +153,21 @@ public class GeneralizedSuffixTreeTest {
 		Assertions.assertEquals(Set.of(10), search(tree, "b"));
 		Assertions.assertEquals(Set.of(10), search(tree, "ab"));
 	}
+
+//	@Test
+//	public void testPrintedTree() {
+//		GeneralizedSuffixTree<String> tree = new GeneralizedSuffixTree<>();
+//		tree.put("java", "java");
+//		tree.put("jei", "jei");
+//		tree.put("test", "test");
+//		tree.put("best", "best");
+//		tree.put("bestest", "bestest");
+//		tree.put("tester", "tester");
+//		tree.put("er", "er");
+//
+//		FileWriter fileWriter = Assertions.assertDoesNotThrow(() -> new FileWriter("TestGeneralizedSuffixTree.dot"));
+//		try (PrintWriter out = new PrintWriter(fileWriter)) {
+//			tree.printTree(out, false);
+//		}
+//	}
 }

@@ -21,6 +21,7 @@ import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import mezz.jei.util.SubString;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -212,5 +213,65 @@ class Node<T> {
 			edges.values().stream().mapToInt(Edge::length),
 			edges.values().stream().map(Edge::getDest).flatMapToInt(Node::nodeEdgeLengths)
 		);
+	}
+
+	public void printTree(PrintWriter out, boolean includeSuffixLinks) {
+		out.println("digraph {");
+		out.println("\trankdir = LR;");
+		out.println("\tordering = out;");
+		out.println("\tedge [arrowsize=0.4,fontsize=10]");
+		out.println("\t" + nodeId(this) + " [label=\"\",style=filled,fillcolor=lightgrey,shape=circle,width=.1,height=.1];");
+		out.println("//------leaves------");
+		printLeaves(out);
+		out.println("//------internal nodes------");
+		printInternalNodes(this, out);
+		out.println("//------edges------");
+		printEdges(out);
+		if (includeSuffixLinks) {
+			out.println("//------suffix links------");
+			printSLinks(out);
+		}
+		out.println("}");
+	}
+
+	private void printLeaves(PrintWriter out) {
+		if (edges.size() == 0) {
+			out.println("\t" + nodeId(this) + " [label=\"" + data + "\",shape=point,style=filled,fillcolor=lightgrey,shape=circle,width=.07,height=.07]");
+		} else {
+			for (Edge<T> edge : edges.values()) {
+				edge.getDest().printLeaves(out);
+			}
+		}
+	}
+
+	private void printInternalNodes(Node<T> root, PrintWriter out) {
+		if (this != root && edges.size() > 0) {
+			out.println("\t" + nodeId(this) + " [label=\"" + data + "\",style=filled,fillcolor=lightgrey,shape=circle,width=.07,height=.07]");
+		}
+
+		for (Edge<T> edge : edges.values()) {
+			edge.getDest().printInternalNodes(root, out);
+		}
+	}
+
+	private void printEdges(PrintWriter out) {
+		for (Edge<T> edge : edges.values()) {
+			Node<T> child = edge.getDest();
+			out.println("\t" + nodeId(this) + " -> " + nodeId(child) + " [label=\"" + edge.commit() + "\",weight=10]");
+			child.printEdges(out);
+		}
+	}
+
+	private void printSLinks(PrintWriter out) {
+		if (suffix != null) {
+			out.println("\t" + nodeId(this) + " -> " + nodeId(suffix) + " [label=\"\",weight=0,style=dotted]");
+		}
+		for (Edge<T> edge : edges.values()) {
+			edge.getDest().printSLinks(out);
+		}
+	}
+
+	private static <T> String nodeId(Node<T> node) {
+		return "node" + Integer.toHexString(node.hashCode()).toUpperCase();
 	}
 }

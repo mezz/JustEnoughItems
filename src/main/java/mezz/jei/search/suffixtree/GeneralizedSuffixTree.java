@@ -20,6 +20,7 @@ import mezz.jei.util.Pair;
 import mezz.jei.util.SubString;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.PrintWriter;
 import java.util.Set;
 
 /**
@@ -379,5 +380,14 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 		return "GeneralizedSuffixTree:" +
 			"\nNode size stats: \n" + this.root.nodeSizeStats() +
 			"\nNode edge stats: \n" + this.root.nodeEdgeStats();
+	}
+
+	/**
+	 * Print the tree for use by graphviz.
+	 * To view, run the command: `dot -Tpng -O <filename>.dot`
+	 */
+	@SuppressWarnings("unused") // used for debugging
+	public void printTree(PrintWriter out, boolean includeSuffixLinks) {
+		root.printTree(out, includeSuffixLinks);
 	}
 }
