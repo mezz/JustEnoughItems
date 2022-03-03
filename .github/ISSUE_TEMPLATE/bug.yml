@@ -1,0 +1,95 @@
+name: Bug report
+description: >-
+  Thanks for the report!   
+  Please use this template when you have encountered a bug in JEI.  
+  If the issue seems to affect only one mod, please report to them first instead of here.
+title: '[Bug]: '
+body:
+  - type: textarea
+    id: repro_steps
+    attributes:
+      label: Steps to Reproduce the Bug
+      description: Please explain what we need to do to cause the bug.
+      placeholder: >-
+        Example:  
+        
+        1. Hold Shift   
+        2. Click the anvil in the JEI ingredient list on the left side.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: >-
+        Please explain what should happen when you follow the steps, if the bug
+        were fixed.
+      placeholder: >-
+        Example:  
+        Following the steps to reproduce the bug, JEI should just show
+        the anvil recipe.
+    validations:
+      required: true
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual Behavior
+      description: >-
+        Please briefly explain what actually happens when you follow the steps,
+        because of the bug.
+      placeholder: >-
+        Example:  
+        Nothing happens, the anvil recipe isn't shown.
+    validations:
+      required: true
+  - type: input
+    id: modpack_url
+    attributes:
+      label: Mod Pack URL (Optional)
+      description: >-
+        If you're playing with a mod pack, please include a link to it here.
+      placeholder: http://www.Biggest-Modpack-Ever.com
+  - type: input
+    id: modpack_version
+    attributes:
+      label: Mod Pack Version (Optional)
+      description: >-
+        If you're playing with a mod pack, please include its version here.
+      placeholder: 0.0.1 Alpha
+  - type: textarea
+    id: notes
+    attributes:
+      label: Extra Notes (Optional)
+      description: >-
+        Optionally, please include anything else you'd like to say about the bug.
+      placeholder: >-
+        Example:  
+        You can work around this bug for now by avoiding holding shift.
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: >-
+        In order to diagnose a bug, we will need to see your `latest.log`.  
+
+        To share your `latest.log` here, please follow these steps:
+
+
+        1. If you don't have it already, find your `latest.log` file.  
+
+        a. [Find your minecraft
+        folder](https://stickypiston.co/account/knowledgebase/130/How-do-I-find-my-Minecraft-Folder.html)   
+
+        b. In the minecraft folder, go into the `logs` folder and find the
+        `latest.log` file.
+
+        1. Create a Gist from the `latest.log`, and copy the url.  
+
+        [Click here for instructions on creating a
+        Gist](https://gist.github.com/mezz/c3f0931344d81afd366e0d85a8ed1031)
+  - type: input
+    id: crashlog
+    attributes:
+      label: latest.log
+      description: Please paste the url to the gist containing your `latest.log` file.
+      placeholder: https://gist.github.com/<your_user_name>/<gist_id>

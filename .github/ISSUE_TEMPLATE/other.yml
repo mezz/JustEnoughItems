@@ -1,0 +1,18 @@
+name: Other
+description: >-
+  Please use this template when the other templates don't seem to match what you need.  
+  If you have a question, please ask in the [JEI Discord](https://discord.gg/sCQcWU2) instead.
+title: '[Other]: '
+body:
+  - type: input
+    id: other
+    attributes:
+      label: Other
+      placeholder: >-
+        Example:  
+        Hey, I don't know where else to put this but...   
+        I was visiting my family in Canada and my older brother showed me this short video clip he took
+        of his city's mayor playing Modded Minecraft but he didn't know any of the JEI hotkeys,
+        check it out! <link>
+    validations:
+      required: true

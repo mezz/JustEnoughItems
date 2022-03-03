@@ -1,0 +1,17 @@
+name: Suggestion
+description: >-
+  Please use this template when you want to suggest a feature for JEI.  
+  Thanks for the suggestion!
+title: '[Suggestion]: '
+body:
+  - type: input
+    id: suggestion
+    attributes:
+      label: Suggestion
+      placeholder: >-
+        Example:  
+        Please add support for the new StoneCutter recipes that were recently introduced in the vanilla game.  
+        You can find out about them here: https://minecraft.fandom.com/wiki/Stonecutter
+        JEI already supports most kinds of vanilla recipes so I think this would be a good addition.
+    validations:
+      required: true
