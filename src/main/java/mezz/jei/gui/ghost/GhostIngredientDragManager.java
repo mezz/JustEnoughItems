@@ -66,8 +66,10 @@ public class GhostIngredientDragManager {
 		if (this.ghostIngredientDrag != null) {
 			this.ghostIngredientDrag.drawTargets(poseStack, mouseX, mouseY);
 		} else {
-			Optional<IClickedIngredient<?>> elementUnderMouse = this.source.getIngredientUnderMouse(mouseX, mouseY);
-			ITypedIngredient<?> hovered = elementUnderMouse.map(IClickedIngredient::getValue).orElse(null);
+			ITypedIngredient<?> hovered = this.source.getIngredientUnderMouse(mouseX, mouseY)
+				.map(IClickedIngredient::getTypedIngredient)
+				.findFirst()
+				.orElse(null);
 			if (!equals(hovered, this.hoveredIngredient)) {
 				this.hoveredIngredient = hovered;
 				this.hoveredIngredientTargets = null;
@@ -109,7 +111,7 @@ public class GhostIngredientDragManager {
 		if (handler == null) {
 			return false;
 		}
-		ITypedIngredient<V> value = clicked.getValue();
+		ITypedIngredient<V> value = clicked.getTypedIngredient();
 		V ingredient = value.getIngredient();
 		IIngredientType<V> type = value.getType();
 
@@ -140,6 +142,7 @@ public class GhostIngredientDragManager {
 			}
 
 			return source.getIngredientUnderMouse(input.getMouseX(), input.getMouseY())
+				.findFirst()
 				.flatMap(clicked -> {
 					ItemStack mouseItem = player.containerMenu.getCarried();
 					if (mouseItem.isEmpty() &&

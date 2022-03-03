@@ -114,7 +114,7 @@ public class GuiScreenHelper {
 		}
 	}
 
-	public <T extends AbstractContainerScreen<?>> Optional<IClickedIngredient<?>> getPluginsIngredientUnderMouse(T guiContainer, double mouseX, double mouseY) {
+	public <T extends AbstractContainerScreen<?>> Stream<IClickedIngredient<?>> getPluginsIngredientUnderMouse(T guiContainer, double mouseX, double mouseY) {
 		return Stream.concat(
 				this.guiContainerHandlers.getActiveGuiHandlerStream(guiContainer)
 					.map(a -> a.getIngredientUnderMouse(guiContainer, mouseX, mouseY)),
@@ -122,8 +122,7 @@ public class GuiScreenHelper {
 					.map(a -> a.getIngredientUnderMouse(mouseX, mouseY))
 			)
 			.map(i -> createClickedIngredient(i, guiContainer))
-			.flatMap(Optional::stream)
-			.findFirst();
+			.flatMap(Optional::stream);
 	}
 
 	@Nullable

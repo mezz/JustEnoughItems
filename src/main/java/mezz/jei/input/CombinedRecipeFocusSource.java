@@ -4,7 +4,6 @@ import mezz.jei.config.KeyBindings;
 import net.minecraft.client.Minecraft;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 public class CombinedRecipeFocusSource {
@@ -14,19 +13,18 @@ public class CombinedRecipeFocusSource {
 		this.handlers = List.of(handlers);
 	}
 
-	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(UserInput input) {
+	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(UserInput input) {
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
 
 		Stream<IClickedIngredient<?>> stream = handlers.stream()
-			.map(handler -> handler.getIngredientUnderMouse(mouseX, mouseY))
-			.flatMap(Optional::stream);
+			.flatMap(handler -> handler.getIngredientUnderMouse(mouseX, mouseY));
 
 		if (isConflictingVanillaMouseButton(input)) {
 			stream = stream.filter(IClickedIngredient::canOverrideVanillaClickHandler);
 		}
 
-		return stream.findFirst();
+		return stream;
 	}
 
 	/**

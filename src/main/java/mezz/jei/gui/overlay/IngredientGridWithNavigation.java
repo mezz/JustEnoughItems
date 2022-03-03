@@ -18,7 +18,7 @@ import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
-import mezz.jei.input.mouse.handlers.DeleteItemInputHandler;
+import mezz.jei.util.CheatUtil;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.ImmutableRect2i;
 import mezz.jei.util.MathUtil;
@@ -113,7 +113,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	/**
-	 * @return true if there is enough space for this in the given availableArea
+	 * @return true if there is enough space for the grid in the given availableArea
 	 */
 	private boolean updateGridBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, boolean navigationEnabled) {
 		final ImmutableRect2i gridArea;
@@ -190,21 +190,17 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	public IUserInputHandler createInputHandler() {
 		return new CombinedInputHandler(
 			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.worldConfig, clientConfig, this::isMouseOver),
-			new DeleteItemInputHandler(this.ingredientGrid),
+			this.ingredientGrid.getInputHandler(),
 			this.navigation.createInputHandler()
 		);
 	}
 
 	@Override
-	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY);
 	}
 
-	public <T> Optional<ITypedIngredient<T>> getIngredientUnderMouse(IIngredientType<T> ingredientType) {
-		return this.ingredientGrid.getIngredientUnderMouse(ingredientType);
-	}
-
-	public <T> Stream<ITypedIngredient<T>> getVisibleIngredients(IIngredientType<T> ingredientType) {
+	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
 		return this.ingredientGrid.getVisibleIngredients(ingredientType);
 	}
 
@@ -364,8 +360,9 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			}
 
 			return this.focusSource.getIngredientUnderMouse(mouseX, mouseY)
-				.map(IClickedIngredient::getCheatItemStack)
+				.map(CheatUtil::getCheatItemStack)
 				.filter(i -> !i.isEmpty())
+				.findFirst()
 				.map(itemStack -> {
 					CommandUtil.setHotbarStack(itemStack, hotbarSlot);
 					return this;

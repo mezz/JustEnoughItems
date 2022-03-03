@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * The area drawn on left side of the {@link RecipesGui} that shows which items can craft the current recipe category.
@@ -124,18 +125,17 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		return null;
 	}
 
-	private Optional<RecipeSlot> getHovered(double mouseX, double mouseY) {
+	private Stream<RecipeSlot> getHovered(double mouseX, double mouseY) {
 		return this.recipeSlots.stream()
-			.filter(recipeSlot -> recipeSlot.isMouseOver(mouseX, mouseY))
-			.findFirst();
+			.filter(recipeSlot -> recipeSlot.isMouseOver(mouseX, mouseY));
 	}
 
 	@Override
-	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return getHovered(mouseX, mouseY)
-			.flatMap(hovered ->
-				hovered.getDisplayedIngredient()
-					.map(displayedIngredient -> new ClickedIngredient<>(displayedIngredient, hovered.getRect(), false, true))
-			);
+			.map(recipeSlot ->
+				recipeSlot.getDisplayedIngredient()
+					.map(i -> new ClickedIngredient<>(i, recipeSlot.getRect(), false, true)))
+			.flatMap(Optional::stream);
 	}
 }

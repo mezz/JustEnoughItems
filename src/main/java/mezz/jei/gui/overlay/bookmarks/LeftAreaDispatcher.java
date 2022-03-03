@@ -17,6 +17,7 @@ import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class LeftAreaDispatcher implements IRecipeFocusSource {
 	private static final int SCREEN_EDGE_PADDING = 7;
@@ -72,11 +73,11 @@ public class LeftAreaDispatcher implements IRecipeFocusSource {
 	}
 
 	@Override
-	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (canShow) {
 			return contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
-		return Optional.empty();
+		return Stream.empty();
 	}
 
 	public IUserInputHandler createInputHandler() {

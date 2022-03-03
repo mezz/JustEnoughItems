@@ -97,11 +97,13 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 
 		final int width = columns * ingredientWidth;
 		final int height = rows * ingredientHeight;
+
 		final int x = switch (getHorizontalAlignment()) {
 			case LEFT -> availableArea.getX();
 			case CENTER -> availableArea.getX() + ((availableArea.getWidth() - width) / 2);
 			case RIGHT -> availableArea.getX() + (availableArea.getWidth() - width);
 		};
+
 		final int y = switch (getVerticalAlignment()) {
 			case TOP -> availableArea.getY();
 			case CENTER -> availableArea.getY() + ((availableArea.getHeight() - height) / 2);

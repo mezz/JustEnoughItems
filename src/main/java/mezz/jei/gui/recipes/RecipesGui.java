@@ -53,6 +53,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSource, IRecipeLogicStateListener {
 	private static final int borderPadding = 6;
@@ -273,19 +274,20 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isOpen()) {
-			return recipeCatalysts.getIngredientUnderMouse(mouseX, mouseY)
-				.or(() -> getRecipeLayoutsIngredientUnderMouse(mouseX, mouseY));
+			return Stream.concat(
+				recipeCatalysts.getIngredientUnderMouse(mouseX, mouseY),
+				getRecipeLayoutsIngredientUnderMouse(mouseX, mouseY)
+			);
 		}
-		return Optional.empty();
+		return Stream.empty();
 	}
 
-	private Optional<IClickedIngredient<?>> getRecipeLayoutsIngredientUnderMouse(double mouseX, double mouseY) {
+	private Stream<IClickedIngredient<?>> getRecipeLayoutsIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.recipeLayouts.stream()
 			.map(recipeLayout -> getRecipeLayoutIngredientUnderMouse(recipeLayout, mouseX, mouseY))
-			.flatMap(Optional::stream)
-			.findFirst();
+			.flatMap(Optional::stream);
 	}
 
 	private static Optional<IClickedIngredient<?>> getRecipeLayoutIngredientUnderMouse(RecipeLayout<?> recipeLayout, double mouseX, double mouseY) {
@@ -447,8 +449,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		double y = MouseUtil.getY();
 
 		return getIngredientUnderMouse(x, y)
-			.map(IClickedIngredient::getValue)
-			.flatMap(i -> i.getIngredient(ingredientType))
+			.map(IClickedIngredient::getTypedIngredient)
+			.flatMap(i -> i.getIngredient(ingredientType).stream())
+			.findFirst()
 			.orElse(null);
 	}
 

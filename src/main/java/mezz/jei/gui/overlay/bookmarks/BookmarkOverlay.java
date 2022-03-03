@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IBookmarkOverlay {
 	private static final int INNER_PADDING = 2;
@@ -115,28 +116,33 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 	}
 
 	@Override
-	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
-		return Optional.empty();
+		return Stream.empty();
 	}
 
 	@Override
 	public Optional<ITypedIngredient<?>> getIngredientUnderMouse() {
-		return getIngredientUnderMouse(MouseUtil.getX(), MouseUtil.getY())
-			.map(IClickedIngredient::getValue);
+		double mouseX = MouseUtil.getX();
+		double mouseY = MouseUtil.getY();
+		return getIngredientUnderMouse(mouseX, mouseY)
+			.<ITypedIngredient<?>>map(IClickedIngredient::getTypedIngredient)
+			.findFirst();
 	}
 
 	@Nullable
 	@Override
 	public <T> T getIngredientUnderMouse(IIngredientType<T> ingredientType) {
-		if (isListDisplayed()) {
-			return this.contents.getIngredientUnderMouse(ingredientType)
-				.map(ITypedIngredient::getIngredient)
-				.orElse(null);
-		}
-		return null;
+		double mouseX = MouseUtil.getX();
+		double mouseY = MouseUtil.getY();
+		return getIngredientUnderMouse(mouseX, mouseY)
+			.map(IClickedIngredient::getTypedIngredient)
+			.map(i -> i.getIngredient(ingredientType))
+			.flatMap(Optional::stream)
+			.findFirst()
+			.orElse(null);
 	}
 
 	@Override

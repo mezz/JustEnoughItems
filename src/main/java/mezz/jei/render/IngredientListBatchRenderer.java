@@ -35,7 +35,6 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 public class IngredientListBatchRenderer {
@@ -143,25 +142,6 @@ public class IngredientListBatchRenderer {
 		ingredientListSlot.setIngredientRenderer(renderer);
 		IIngredientType<V> ingredientType = value.getType();
 		renderOther.put(ingredientType, renderer);
-	}
-
-	public Optional<IngredientListElementRenderer<?>> getHovered(double mouseX, double mouseY) {
-		return getHoveredStream(mouseX, mouseY)
-			.findFirst();
-	}
-
-	public <T> Optional<IngredientListElementRenderer<T>> getHovered(double mouseX, double mouseY, IIngredientType<T> ingredientType) {
-		return getHoveredStream(mouseX, mouseY)
-			.map(ingredientRenderer -> ingredientRenderer.checkedCast(ingredientType))
-			.flatMap(Optional::stream)
-			.findFirst();
-	}
-
-	private Stream<IngredientListElementRenderer<?>> getHoveredStream(double mouseX, double mouseY) {
-		return slots.stream()
-			.filter(s -> s.isMouseOver(mouseX, mouseY))
-			.map(IngredientListSlot::getIngredientRenderer)
-			.flatMap(Optional::stream);
 	}
 
 	/**

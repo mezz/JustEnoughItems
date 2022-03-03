@@ -6,8 +6,6 @@ import mezz.jei.search.suffixtree.GeneralizedSuffixTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.Set;
 
 public class GeneralizedSuffixTreeTest {

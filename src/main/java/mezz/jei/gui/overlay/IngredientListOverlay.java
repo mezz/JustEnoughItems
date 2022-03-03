@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFocusSource, ICharTypedHandler {
 	private static final int SCREEN_EDGE_PADDING = 7;
@@ -225,11 +226,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	@Override
-	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
-		return Optional.empty();
+		return Stream.empty();
 	}
 
 	public IUserInputHandler createInputHandler() {
@@ -267,8 +268,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	@Override
 	public Optional<ITypedIngredient<?>> getIngredientUnderMouse() {
 		if (isListDisplayed()) {
-			return this.contents.getIngredientUnderMouse(MouseUtil.getX(), MouseUtil.getY())
-				.map(IClickedIngredient::getValue);
+			double mouseX = MouseUtil.getX();
+			double mouseY = MouseUtil.getY();
+			return this.contents.getIngredientUnderMouse(mouseX, mouseY)
+				.<ITypedIngredient<?>>map(IClickedIngredient::getTypedIngredient)
+				.findFirst();
 		}
 		return Optional.empty();
 	}
@@ -277,8 +281,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	@Override
 	public <T> T getIngredientUnderMouse(IIngredientType<T> ingredientType) {
 		if (isListDisplayed()) {
-			return this.contents.getIngredientUnderMouse(ingredientType)
-				.map(ITypedIngredient::getIngredient)
+			double mouseX = MouseUtil.getX();
+			double mouseY = MouseUtil.getY();
+			return this.contents.getIngredientUnderMouse(mouseX, mouseY)
+				.map(IClickedIngredient::getTypedIngredient)
+				.map(i -> i.getIngredient(ingredientType))
+				.flatMap(Optional::stream)
+				.findFirst()
 				.orElse(null);
 		}
 		return null;
@@ -288,7 +297,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
 		if (isListDisplayed()) {
 			return this.contents.getVisibleIngredients(ingredientType)
-				.map(ITypedIngredient::getIngredient)
 				.toList();
 		}
 		return Collections.emptyList();

@@ -1,6 +1,6 @@
 package mezz.jei.render;
 
-import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.util.ImmutableRect2i;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,9 +22,9 @@ public class IngredientListSlot {
 		return Optional.ofNullable(ingredientRenderer);
 	}
 
-	public <T> Optional<IngredientListElementRenderer<T>> getIngredientRenderer(IIngredientType<T> ingredientType) {
+	public Optional<ITypedIngredient<?>> getTypedIngredient() {
 		return getIngredientRenderer()
-			.flatMap(i -> i.checkedCast(ingredientType));
+			.map(IngredientListElementRenderer::getTypedIngredient);
 	}
 
 	public void clear() {
