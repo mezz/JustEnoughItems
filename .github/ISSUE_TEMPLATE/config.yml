@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: JEI's Discord
+  - name: Questions
     url: https://discord.gg/sCQcWU2
-    about: Please ask and answer questions here.
+    about: Please ask questions on JEI's Discord.
+  - name: Developer Help
+    url: https://discord.gg/sCQcWU2
+    about: Get help with developing your JEI Plugin on JEI's Discord.

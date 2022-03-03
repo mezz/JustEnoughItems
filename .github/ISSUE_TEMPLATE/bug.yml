@@ -1,6 +1,5 @@
 name: Bug report
 description: >-
-  Thanks for the report!   
   Please use this template when you have encountered a bug in JEI.  
   If the issue seems to affect only one mod, please report to them first instead of here.
 title: '[Bug]: '
@@ -70,6 +69,8 @@ body:
   - type: markdown
     attributes:
       value: >-
+        ## Sharing your `latest.log`
+
         In order to diagnose a bug, we will need to see your `latest.log`.  
 
         To share your `latest.log` here, please follow these steps:

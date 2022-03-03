@@ -1,6 +1,5 @@
 name: Crash report
 description: >-
-  Thanks for the report!  
   Please use this template when JEI has caused your game client to crash.  
   If the issue seems to affect only one mod, please report to them first instead of here.
 title: '[Crash]: '
@@ -46,6 +45,8 @@ body:
   - type: markdown
     attributes:
       value: >-
+        ## Sharing your Crash Report
+        
         In order to diagnose a crash, we will need to see your client crash
         report.  
 

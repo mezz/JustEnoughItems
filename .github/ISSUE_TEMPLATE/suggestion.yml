@@ -1,10 +1,9 @@
 name: Suggestion
 description: >-
   Please use this template when you want to suggest a feature for JEI.  
-  Thanks for the suggestion!
 title: '[Suggestion]: '
 body:
-  - type: input
+  - type: textarea
     id: suggestion
     attributes:
       label: Suggestion

@@ -1,10 +1,9 @@
 name: Other
 description: >-
   Please use this template when the other templates don't seem to match what you need.  
-  If you have a question, please ask in the [JEI Discord](https://discord.gg/sCQcWU2) instead.
 title: '[Other]: '
 body:
-  - type: input
+  - type: textarea
     id: other
     attributes:
       label: Other
