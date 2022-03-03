@@ -105,8 +105,7 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 			return;
 		}
 		if (!this.runtimeSubscriptions.isEmpty()) {
-			LOGGER.error("Failed to start JEI, it is already running.");
-			return;
+			stopJei();
 		}
 		this.worldConfig.syncWorldConfig();
 		this.modIdFormattingConfig.checkForModNameFormatOverride();
