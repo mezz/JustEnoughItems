@@ -2,7 +2,6 @@ package mezz.jei.render;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.util.ImmutableRect2i;
-import mezz.jei.util.MathUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -14,10 +13,9 @@ public class IngredientListSlot {
 	@Nullable
 	private IngredientListElementRenderer<?> ingredientRenderer;
 
-	public IngredientListSlot(int xPosition, int yPosition, int padding) {
+	public IngredientListSlot(int xPosition, int yPosition, int width, int height, int padding) {
+		this.area = new ImmutableRect2i(xPosition, yPosition, width, height);
 		this.padding = padding;
-		final int size = 16 + (2 * padding);
-		this.area = new ImmutableRect2i(xPosition, yPosition, size, size);
 	}
 
 	public Optional<IngredientListElementRenderer<?>> getIngredientRenderer() {
@@ -34,7 +32,7 @@ public class IngredientListSlot {
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return (this.ingredientRenderer != null) && MathUtil.contains(area, mouseX, mouseY);
+		return (this.ingredientRenderer != null) && area.contains(mouseX, mouseY);
 	}
 
 	public void setIngredientRenderer(IngredientListElementRenderer<?> ingredientRenderer) {

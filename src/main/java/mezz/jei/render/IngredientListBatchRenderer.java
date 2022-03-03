@@ -78,8 +78,8 @@ public class IngredientListBatchRenderer {
 		slots.add(ingredientListSlot);
 	}
 
-	public List<IngredientListSlot> getAllGuiIngredientSlots() {
-		return slots;
+	public Stream<IngredientListSlot> getAllGuiIngredientSlots() {
+		return slots.stream();
 	}
 
 	public void set(final int startIndex, List<ITypedIngredient<?>> ingredientList) {

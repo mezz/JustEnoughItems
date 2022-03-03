@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IBookmarkOverlay {
+	private static final int INNER_PADDING = 2;
 	private static final int BUTTON_SIZE = 20;
 
 	// areas
@@ -95,7 +96,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 	}
 
 	public boolean updateBounds(Set<ImmutableRect2i> guiExclusionAreas) {
-		ImmutableRect2i availableContentsArea = parentArea.cropBottom(BUTTON_SIZE);
+		ImmutableRect2i availableContentsArea = parentArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
 		boolean contentsHasRoom = this.contents.updateBounds(availableContentsArea, guiExclusionAreas);
 
 		ImmutableRect2i contentsArea = this.contents.getBackgroundArea();

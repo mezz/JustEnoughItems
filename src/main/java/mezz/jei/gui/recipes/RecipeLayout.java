@@ -17,7 +17,6 @@ import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.UserInput;
 import mezz.jei.util.ImmutableRect2i;
-import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -217,7 +216,7 @@ public class RecipeLayout<R> {
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		final IDrawable background = recipeCategory.getBackground();
 		final ImmutableRect2i backgroundRect = new ImmutableRect2i(posX, posY, background.getWidth(), background.getHeight());
-		return MathUtil.contains(backgroundRect, mouseX, mouseY) ||
+		return backgroundRect.contains(mouseX, mouseY) ||
 			(recipeTransferButton != null && recipeTransferButton.isMouseOver(mouseX, mouseY));
 	}
 

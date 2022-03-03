@@ -19,7 +19,6 @@ import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.ImmutableRect2i;
-import mezz.jei.util.MathUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
@@ -206,7 +205,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	}
 
 	public boolean isMouseOver(double recipeMouseX, double recipeMouseY) {
-		return MathUtil.contains(this.rect, recipeMouseX, recipeMouseY);
+		return this.rect.contains(recipeMouseX, recipeMouseY);
 	}
 
 	public void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {

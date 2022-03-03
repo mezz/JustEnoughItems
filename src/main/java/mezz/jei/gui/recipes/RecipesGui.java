@@ -260,7 +260,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		if (minecraft != null && minecraft.screen == this) {
-			if (MathUtil.contains(this.area, mouseX, mouseY)) {
+			if (this.area.contains(mouseX, mouseY)) {
 				return true;
 			}
 			for (RecipeLayout<?> recipeLayout : this.recipeLayouts) {

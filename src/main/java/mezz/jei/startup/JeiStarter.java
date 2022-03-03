@@ -122,7 +122,6 @@ public final class JeiStarter {
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
 		GuiScreenHelper guiScreenHelper = pluginLoader.createGuiScreenHelper(plugins);
-		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, registeredIngredients, modIdHelper, clientConfig);
 
 		IngredientGrid ingredientListGrid = new IngredientGrid(
 			registeredIngredients,
@@ -132,7 +131,6 @@ public final class JeiStarter {
 			clientConfig,
 			worldConfig,
 			guiScreenHelper,
-			recipesGui,
 			modIdHelper
 		);
 
@@ -164,7 +162,6 @@ public final class JeiStarter {
 			clientConfig,
 			worldConfig,
 			guiScreenHelper,
-			recipesGui,
 			modIdHelper
 		);
 
@@ -191,6 +188,8 @@ public final class JeiStarter {
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, worldConfig);
 		IIngredientManager ingredientManager = pluginLoader.getIngredientManager();
 		IngredientVisibility ingredientVisibility = pluginLoader.getIngredientVisibility();
+
+		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, registeredIngredients, modIdHelper, clientConfig);
 
 		JeiRuntime jeiRuntime = new JeiRuntime(
 			recipeManager,

@@ -1,8 +1,10 @@
 package mezz.jei.config;
 
+import mezz.jei.gui.overlay.BackgroundType;
 import mezz.jei.gui.overlay.HorizontalAlignment;
 import mezz.jei.gui.overlay.NavigationVisibility;
 import mezz.jei.gui.overlay.VerticalAlignment;
+import mezz.jei.util.ImmutableRect2i;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class IngredientGridConfig implements IIngredientGridConfig {
@@ -19,6 +21,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private final ForgeConfigSpec.EnumValue<HorizontalAlignment> horizontalAlignment;
 	private final ForgeConfigSpec.EnumValue<VerticalAlignment> verticalAlignment;
 	private final ForgeConfigSpec.EnumValue<NavigationVisibility> buttonNavigationVisibility;
+	private final ForgeConfigSpec.EnumValue<BackgroundType> backgroundType;
 
 	public IngredientGridConfig(String categoryName, ForgeConfigSpec.Builder builder, HorizontalAlignment defaultHorizontalAlignment) {
 		builder.push(categoryName);
@@ -37,6 +40,9 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 
 			builder.comment("Visibility of the top page buttons. Use AUTO_HIDE to only show it when there are multiple pages.");
 			buttonNavigationVisibility = builder.defineEnum("ButtonNavigationVisibility", NavigationVisibility.ENABLED);
+
+			builder.comment("The type of background drawn behind the gui.");
+			backgroundType = builder.defineEnum("BackgroundType", BackgroundType.NONE);
 		}
 		builder.pop();
 	}
@@ -62,6 +68,11 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	}
 
 	@Override
+	public BackgroundType getBackgroundType() {
+		return backgroundType.get();
+	}
+
+	@Override
 	public int getMaxColumns() {
 		return maxColumns.get();
 	}
@@ -74,5 +85,29 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	@Override
 	public NavigationVisibility getButtonNavigationVisibility() {
 		return buttonNavigationVisibility.get();
+	}
+
+	@Override
+	public ImmutableRect2i calculateBounds(ImmutableRect2i availableArea, int ingredientWidth, int ingredientHeight) {
+		final int columns = Math.min(availableArea.getWidth() / ingredientWidth, getMaxColumns());
+		final int rows = Math.min(availableArea.getHeight() / ingredientHeight, getMaxRows());
+		if (rows < getMinRows() || columns < getMinColumns()) {
+			return ImmutableRect2i.EMPTY;
+		}
+
+		final int width = columns * ingredientWidth;
+		final int height = rows * ingredientHeight;
+		final int x = switch (getHorizontalAlignment()) {
+			case LEFT -> availableArea.getX();
+			case CENTER -> availableArea.getX() + ((availableArea.getWidth() - width) / 2);
+			case RIGHT -> availableArea.getX() + (availableArea.getWidth() - width);
+		};
+		final int y = switch (getVerticalAlignment()) {
+			case TOP -> availableArea.getY();
+			case CENTER -> availableArea.getY() + ((availableArea.getHeight() - height) / 2);
+			case BOTTOM -> availableArea.getY() + (availableArea.getHeight() - height);
+		};
+
+		return new ImmutableRect2i(x, y, width, height);
 	}
 }

@@ -19,7 +19,6 @@ import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.input.mouse.handlers.DeleteItemInputHandler;
-import mezz.jei.render.IngredientListElementRenderer;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.ImmutableRect2i;
 import mezz.jei.util.MathUtil;
@@ -39,7 +38,6 @@ import java.util.stream.Stream;
  */
 public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private static final int NAVIGATION_HEIGHT = 20;
-	private static final int SCREEN_EDGE_PADDING = 7;
 	private static final int BORDER_PADDING = 5;
 	private static final int INNER_PADDING = 2;
 
@@ -92,7 +90,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		if (firstItemIndex >= ingredientList.size()) {
 			firstItemIndex = 0;
 		}
-		this.ingredientGrid.guiIngredientSlots.set(firstItemIndex, ingredientList);
+		this.ingredientGrid.set(firstItemIndex, ingredientList);
 		this.navigation.updatePageNumber();
 	}
 
@@ -114,17 +112,19 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		return MathUtil.cropToAvoidIntersection(intersectsNavigationArea, availableArea, maxWidth, maxHeight);
 	}
 
+	/**
+	 * @return true if there is enough space for this in the given availableArea
+	 */
 	private boolean updateGridBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, boolean navigationEnabled) {
 		final ImmutableRect2i gridArea;
 		if (navigationEnabled) {
 			gridArea = cropToAvoidNavigationArea(availableArea, guiExclusionAreas, this.ingredientGrid.maxWidth(), this.ingredientGrid.maxHeight())
 				.toMutable()
-				.insetByPadding(SCREEN_EDGE_PADDING)
 				.cropTop(NAVIGATION_HEIGHT + INNER_PADDING)
 				.insetByPadding(INNER_PADDING)
 				.toImmutable();
 		} else {
-			gridArea = availableArea.insetByPadding(SCREEN_EDGE_PADDING + INNER_PADDING);
+			gridArea = availableArea.insetByPadding(INNER_PADDING);
 		}
 		return this.ingredientGrid.updateBounds(gridArea, guiExclusionAreas);
 	}
@@ -143,8 +143,10 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			return false;
 		}
 
-		this.slotBackgroundArea = this.ingredientGrid.getArea()
-			.expandByPadding(INNER_PADDING);
+		this.slotBackgroundArea = this.ingredientGrid.getArea();
+		if (gridConfig.getBackgroundType() != BackgroundType.NONE) {
+			this.slotBackgroundArea = this.slotBackgroundArea.expandByPadding(INNER_PADDING);
+		}
 
 		ImmutableRect2i navigationArea = ImmutableRect2i.EMPTY;
 		if (navigationEnabled) {
@@ -154,8 +156,10 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		}
 		this.navigation.updateBounds(navigationArea);
 
-		this.backgroundArea = MathUtil.union(this.slotBackgroundArea, navigationArea)
-			.expandByPadding(BORDER_PADDING);
+		this.backgroundArea = MathUtil.union(this.slotBackgroundArea, navigationArea);
+		if (gridConfig.getBackgroundType() != BackgroundType.NONE) {
+			this.backgroundArea = this.backgroundArea.expandByPadding(BORDER_PADDING);
+		}
 
 		return true;
 	}
@@ -165,8 +169,10 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-		background.draw(poseStack, this.backgroundArea);
-		slotBackground.draw(poseStack, this.slotBackgroundArea);
+		if (gridConfig.getBackgroundType() != BackgroundType.NONE) {
+			background.draw(poseStack, this.backgroundArea);
+			slotBackground.draw(poseStack, this.slotBackgroundArea);
+		}
 
 		this.ingredientGrid.draw(minecraft, poseStack, mouseX, mouseY);
 		this.navigation.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
@@ -177,7 +183,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return MathUtil.contains(this.backgroundArea, mouseX, mouseY) &&
+		return this.backgroundArea.contains(mouseX, mouseY) &&
 			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
@@ -199,10 +205,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public <T> Stream<ITypedIngredient<T>> getVisibleIngredients(IIngredientType<T> ingredientType) {
-		return this.ingredientGrid.guiIngredientSlots.getAllGuiIngredientSlots().stream()
-			.map(slot -> slot.getIngredientRenderer(ingredientType))
-			.flatMap(Optional::stream)
-			.map(IngredientListElementRenderer::getTypedIngredient);
+		return this.ingredientGrid.getVisibleIngredients(ingredientType);
 	}
 
 	private class IngredientGridPaged implements IPaged {

@@ -21,7 +21,6 @@ import mezz.jei.input.mouse.handlers.CheatInputHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.input.mouse.handlers.NullInputHandler;
 import mezz.jei.input.mouse.handlers.ProxyInputHandler;
-import mezz.jei.util.MathUtil;
 import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -34,7 +33,8 @@ import java.util.Optional;
 import java.util.Set;
 
 public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFocusSource, ICharTypedHandler {
-	private static final int BORDER_PADDING = 2;
+	private static final int SCREEN_EDGE_PADDING = 7;
+	private static final int INNER_PADDING = 2;
 	private static final int BUTTON_SIZE = 20;
 	private static final int SEARCH_HEIGHT = 20;
 
@@ -90,7 +90,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		int guiRight = GuiProperties.getGuiRight(guiProperties);
 		return screenRectangle
 			.cropLeft(guiRight)
-			.insetByPadding(BORDER_PADDING);
+			.insetByPadding(SCREEN_EDGE_PADDING);
 	}
 
 	public void updateScreen(@Nullable Screen guiScreen, boolean exclusionAreasChanged) {
@@ -154,7 +154,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (searchBarCentered) {
 			return this.displayArea;
 		}
-		return this.displayArea.cropBottom(SEARCH_HEIGHT + BORDER_PADDING);
+		return this.displayArea.cropBottom(SEARCH_HEIGHT + INNER_PADDING);
 	}
 
 	private ImmutableRect2i getSearchAndConfigArea(boolean searchBarCentered, IGuiProperties guiProperties) {
@@ -215,7 +215,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			if (this.clientConfig.isCenterSearchBarEnabled() && searchField.isMouseOver(mouseX, mouseY)) {
 				return true;
 			}
-			return MathUtil.contains(displayArea, mouseX, mouseY) &&
+			return displayArea.contains(mouseX, mouseY) &&
 				!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 		}
 		if (this.guiProperties != null) {

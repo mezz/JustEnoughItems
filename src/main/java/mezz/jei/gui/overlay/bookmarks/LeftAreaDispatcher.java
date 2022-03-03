@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class LeftAreaDispatcher implements IRecipeFocusSource {
-	private static final int BORDER_PADDING = 2;
+	private static final int SCREEN_EDGE_PADDING = 7;
 
 	private final ILeftAreaContent contents;
 	private final GuiScreenHelper guiScreenHelper;
@@ -67,7 +67,7 @@ public class LeftAreaDispatcher implements IRecipeFocusSource {
 
 	private static Optional<ImmutableRect2i> makeDisplayArea(IGuiProperties guiProperties) {
 		return new MutableRect2i(0, 0, guiProperties.getGuiLeft(), guiProperties.getScreenHeight())
-			.insetByPadding(BORDER_PADDING)
+			.insetByPadding(SCREEN_EDGE_PADDING)
 			.toImmutableSafe();
 	}
 

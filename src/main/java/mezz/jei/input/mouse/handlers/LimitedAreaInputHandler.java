@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.util.ImmutableRect2i;
-import mezz.jei.util.MathUtil;
 import net.minecraft.client.gui.screens.Screen;
 
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +27,7 @@ public class LimitedAreaInputHandler implements IUserInputHandler {
 
 	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
-		if (MathUtil.contains(this.area, input.getMouseX(), input.getMouseY())) {
+		if (this.area.contains(input.getMouseX(), input.getMouseY())) {
 			return this.handler.handleUserInput(screen, input)
 				.map(handled -> this);
 		}
@@ -42,7 +41,7 @@ public class LimitedAreaInputHandler implements IUserInputHandler {
 
 	@Override
 	public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-		if (MathUtil.contains(this.area, mouseX, mouseY)) {
+		if (this.area.contains(mouseX, mouseY)) {
 			return this.handler.handleMouseScrolled(mouseX, mouseY, scrollDelta);
 		}
 		return false;
@@ -50,7 +49,7 @@ public class LimitedAreaInputHandler implements IUserInputHandler {
 
 	@Override
 	public Optional<IUserInputHandler> handleDragStart(Screen screen, UserInput input) {
-		if (MathUtil.contains(this.area, input.getMouseX(), input.getMouseY())) {
+		if (this.area.contains(input.getMouseX(), input.getMouseY())) {
 			return this.handler.handleDragStart(screen, input)
 				.map(handled -> this);
 		}
@@ -59,7 +58,7 @@ public class LimitedAreaInputHandler implements IUserInputHandler {
 
 	@Override
 	public Optional<IUserInputHandler> handleDragComplete(Screen screen, UserInput input) {
-		if (MathUtil.contains(this.area, input.getMouseX(), input.getMouseY())) {
+		if (this.area.contains(input.getMouseX(), input.getMouseY())) {
 			return this.handler.handleDragComplete(screen, input)
 				.map(handled -> this);
 		}

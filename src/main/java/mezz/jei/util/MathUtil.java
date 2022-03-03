@@ -70,7 +70,7 @@ public final class MathUtil {
 	 * Crop the given "rect" to avoid "intersecting" while maximizing the available content space.
 	 */
 	private static ImmutableRect2i bestCrop(ImmutableRect2i rect, ImmutableRect2i intersecting, int maxWidth, int maxHeight) {
-		if (contentArea(rect, maxWidth, maxHeight) == 0) {
+		if (rect.isEmpty() || maxHeight == 0 || maxWidth == 0) {
 			return rect;
 		}
 		return rectangle2dCroppers.stream()
@@ -88,17 +88,21 @@ public final class MathUtil {
 	}
 
 	private static ImmutableRect2i cropTop(ImmutableRect2i original, ImmutableRect2i intersecting) {
-		int maxY = original.getY() + original.getHeight();
 		int newY = intersecting.getY() + intersecting.getHeight();
-		if (maxY < newY) {
+		int cropTopAmount = newY - original.getY();
+		if (cropTopAmount < 0) {
 			return ImmutableRect2i.EMPTY;
 		}
-		return new ImmutableRect2i(
-			original.getX(),
-			newY,
-			original.getWidth(),
-			maxY - newY
-		);
+		return original.cropTop(cropTopAmount);
+	}
+
+	private static ImmutableRect2i cropLeft(ImmutableRect2i original, ImmutableRect2i intersecting) {
+		int newX = intersecting.getX() + intersecting.getWidth();
+		int cropLeftAmount = newX - original.getX();
+		if (cropLeftAmount < 0) {
+			return ImmutableRect2i.EMPTY;
+		}
+		return original.cropLeft(cropLeftAmount);
 	}
 
 	private static ImmutableRect2i cropBottom(ImmutableRect2i original, ImmutableRect2i intersecting) {
@@ -106,12 +110,7 @@ public final class MathUtil {
 		if (newHeight < 0) {
 			return ImmutableRect2i.EMPTY;
 		}
-		return new ImmutableRect2i(
-			original.getX(),
-			original.getY(),
-			original.getWidth(),
-			newHeight
-		);
+		return original.keepTop(newHeight);
 	}
 
 	private static ImmutableRect2i cropRight(ImmutableRect2i original, ImmutableRect2i intersecting) {
@@ -119,31 +118,12 @@ public final class MathUtil {
 		if (newWidth < 0) {
 			return ImmutableRect2i.EMPTY;
 		}
-		return new ImmutableRect2i(
-			original.getX(),
-			original.getY(),
-			newWidth,
-			original.getHeight()
-		);
-	}
-
-	private static ImmutableRect2i cropLeft(ImmutableRect2i original, ImmutableRect2i intersecting) {
-		int maxX = original.getX() + original.getWidth();
-		int newX = intersecting.getX() + intersecting.getWidth();
-		if (maxX < newX) {
-			return ImmutableRect2i.EMPTY;
-		}
-		return new ImmutableRect2i(
-			newX,
-			original.getY(),
-			maxX - newX,
-			original.getHeight()
-		);
+		return original.keepLeft(newWidth);
 	}
 
 	public static boolean contains(Collection<ImmutableRect2i> areas, double x, double y) {
 		for (ImmutableRect2i guiArea : areas) {
-			if (contains(guiArea, x, y)) {
+			if (guiArea.contains(x, y)) {
 				return true;
 			}
 		}
@@ -151,13 +131,6 @@ public final class MathUtil {
 	}
 
 	public static boolean contains(Rect2i rect, double x, double y) {
-		return x >= rect.getX() &&
-			y >= rect.getY() &&
-			x < rect.getX() + rect.getWidth() &&
-			y < rect.getY() + rect.getHeight();
-	}
-
-	public static boolean contains(ImmutableRect2i rect, double x, double y) {
 		return x >= rect.getX() &&
 			y >= rect.getY() &&
 			x < rect.getX() + rect.getWidth() &&
