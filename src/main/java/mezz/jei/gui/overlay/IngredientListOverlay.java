@@ -67,14 +67,15 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.worldConfig = worldConfig;
 
 		this.searchField = new GuiTextFieldFilter(ingredientGridSource);
+		ingredientGridSource.addListener(() -> {
+			this.searchField.setValue(worldConfig.getFilterText());
+			updateBounds(true);
+		});
+		this.searchField.setValue(worldConfig.getFilterText());
 		this.searchField.setResponder(text -> {
 			if (this.worldConfig.setFilterText(text)) {
 				updateBounds(true);
 			}
-		});
-		ingredientGridSource.addListener(() -> {
-			this.searchField.setValue(worldConfig.getFilterText());
-			updateBounds(true);
 		});
 
 		this.configButton = ConfigButton.create(this, worldConfig);
