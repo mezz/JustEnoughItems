@@ -1,6 +1,7 @@
 package mezz.jei.startup;
 
 import mezz.jei.events.PermanentEventSubscriptions;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -22,30 +23,59 @@ public class StartEventObserver {
 
 	private final Set<Class<? extends Event>> observedEvents = new HashSet<>();
 	private final Runnable start;
+	private final Runnable restart;
+	private boolean started = false;
+	private boolean enabled = false;
 
-	public StartEventObserver(Runnable start) {
+	public StartEventObserver(Runnable start, Runnable restart) {
 		this.start = start;
+		this.restart = restart;
 	}
 
 	public void register(PermanentEventSubscriptions subscriptions) {
 		requiredEvents
 			.forEach(eventClass -> subscriptions.register(eventClass, this::onEvent));
+
+		subscriptions.register(ClientPlayerNetworkEvent.LoggedInEvent.class, event -> {
+			if (event.getPlayer() != null) {
+				this.enabled = true;
+				this.started = false;
+				this.observedEvents.clear();
+			}
+		});
+
+		subscriptions.register(ClientPlayerNetworkEvent.LoggedOutEvent.class, event -> {
+			if (event.getPlayer() != null) {
+				this.enabled = false;
+				this.started = false;
+				this.observedEvents.clear();
+			}
+		});
 	}
 
 	/**
 	 * Observe an event and start JEI if we have observed all the required events.
 	 */
 	private <T extends Event> void onEvent(T event) {
+		if (!enabled) {
+			return;
+		}
 		Class<? extends Event> eventClass = event.getClass();
-		if (requiredEvents.contains(eventClass)) {
-			this.observedEvents.add(eventClass);
+		if (!requiredEvents.contains(eventClass)) {
+			return;
+		}
+		if (!this.observedEvents.add(eventClass)) {
+			return;
 		}
 		if (this.observedEvents.containsAll(requiredEvents)) {
-			start.run();
+			if (!started) {
+				start.run();
+				started = true;
+			} else {
+				restart.run();
+			}
+			this.observedEvents.clear();
 		}
 	}
 
-	public void reset() {
-		this.observedEvents.clear();
-	}
 }

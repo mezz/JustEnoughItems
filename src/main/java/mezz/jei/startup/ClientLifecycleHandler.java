@@ -18,7 +18,6 @@ import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.events.DebugRestartJeiEvent;
 import mezz.jei.events.PermanentEventSubscriptions;
-import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.events.RuntimeEventSubscriptions;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.ForgeModIdHelper;
@@ -44,7 +43,7 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 	private final JeiStarter jeiStarter;
 	private final WorldConfig worldConfig;
 	private final ModIdFormattingConfig modIdFormattingConfig;
-	private final StartEventObserver startEventObserver = new StartEventObserver(this::startJei);
+	private final StartEventObserver startEventObserver = new StartEventObserver(this::startJei, this::restartJei);
 	private final RuntimeEventSubscriptions runtimeSubscriptions;
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures, JEIClientConfigs jeiClientConfigs) {
@@ -89,6 +88,7 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 	public void register(PermanentEventSubscriptions subscriptions) {
 		this.worldConfig.register(subscriptions);
 		this.startEventObserver.register(subscriptions);
+
 		subscriptions.register(DebugRestartJeiEvent.class, this::onRestartJeiEvent);
 
 		subscriptions.register(ClientPlayerNetworkEvent.LoggedOutEvent.class, event -> {
@@ -105,22 +105,21 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 			return;
 		}
 		if (!this.runtimeSubscriptions.isEmpty()) {
-			stopJei();
+			LOGGER.error("Failed to start JEI, it is already running.");
+			return;
 		}
 		this.worldConfig.syncWorldConfig();
 		this.modIdFormattingConfig.checkForModNameFormatOverride();
 
-		this.runtimeSubscriptions.clear();
 		this.jeiStarter.start(this.runtimeSubscriptions);
-
-		MinecraftForge.EVENT_BUS.post(new PlayerJoinedWorldEvent());
 	}
 
 	private void stopJei() {
 		if (this.runtimeSubscriptions.isEmpty()) {
 			LOGGER.error("Tried to stop JEI but it is not running.");
+		} else {
+			LOGGER.info("Stopping JEI");
 		}
-		this.startEventObserver.reset();
 		this.runtimeSubscriptions.clear();
 		Internal.setRuntime(null);
 	}
@@ -137,6 +136,7 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 
 	private void restartJei() {
 		if (!this.runtimeSubscriptions.isEmpty()) {
+			LOGGER.info("Restarting JEI");
 			this.runtimeSubscriptions.clear();
 			this.jeiStarter.start(this.runtimeSubscriptions);
 		}

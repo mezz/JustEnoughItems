@@ -10,7 +10,6 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.events.EditModeToggleEvent;
-import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.events.RuntimeEventSubscriptions;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
@@ -89,7 +88,6 @@ public class IngredientFilter implements IIngredientGridSource {
 
 	public void register(RuntimeEventSubscriptions subscriptions) {
 		subscriptions.register(EditModeToggleEvent.class, event -> this.updateHidden());
-		subscriptions.register(PlayerJoinedWorldEvent.class, event -> this.updateHidden());
 	}
 
 	public <V> void addIngredient(IListElementInfo<V> info) {
