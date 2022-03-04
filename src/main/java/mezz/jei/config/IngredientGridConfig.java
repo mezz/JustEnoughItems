@@ -3,7 +3,6 @@ package mezz.jei.config;
 import mezz.jei.gui.overlay.HorizontalAlignment;
 import mezz.jei.gui.overlay.NavigationVisibility;
 import mezz.jei.gui.overlay.VerticalAlignment;
-import mezz.jei.util.ImmutableRect2i;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class IngredientGridConfig implements IIngredientGridConfig {
@@ -84,31 +83,5 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	@Override
 	public NavigationVisibility getButtonNavigationVisibility() {
 		return buttonNavigationVisibility.get();
-	}
-
-	@Override
-	public ImmutableRect2i calculateBounds(ImmutableRect2i availableArea, int ingredientWidth, int ingredientHeight) {
-		final int columns = Math.min(availableArea.getWidth() / ingredientWidth, getMaxColumns());
-		final int rows = Math.min(availableArea.getHeight() / ingredientHeight, getMaxRows());
-		if (rows < getMinRows() || columns < getMinColumns()) {
-			return ImmutableRect2i.EMPTY;
-		}
-
-		final int width = columns * ingredientWidth;
-		final int height = rows * ingredientHeight;
-
-		final int x = switch (getHorizontalAlignment()) {
-			case LEFT -> availableArea.getX();
-			case CENTER -> availableArea.getX() + ((availableArea.getWidth() - width) / 2);
-			case RIGHT -> availableArea.getX() + (availableArea.getWidth() - width);
-		};
-
-		final int y = switch (getVerticalAlignment()) {
-			case TOP -> availableArea.getY();
-			case CENTER -> availableArea.getY() + ((availableArea.getHeight() - height) / 2);
-			case BOTTOM -> availableArea.getY() + (availableArea.getHeight() - height);
-		};
-
-		return new ImmutableRect2i(x, y, width, height);
 	}
 }

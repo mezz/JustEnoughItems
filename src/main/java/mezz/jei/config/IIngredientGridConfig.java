@@ -14,6 +14,4 @@ public interface IIngredientGridConfig {
 	HorizontalAlignment getHorizontalAlignment();
 	VerticalAlignment getVerticalAlignment();
 	NavigationVisibility getButtonNavigationVisibility();
-
-	ImmutableRect2i calculateBounds(ImmutableRect2i availableArea, int ingredientWidth, int ingredientHeight);
 }

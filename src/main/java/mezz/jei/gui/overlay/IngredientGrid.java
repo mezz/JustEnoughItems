@@ -86,7 +86,7 @@ public class IngredientGrid implements IRecipeFocusSource {
 	public boolean updateBounds(ImmutableRect2i availableArea, Collection<ImmutableRect2i> exclusionAreas) {
 		this.guiIngredientSlots.clear();
 
-		this.area = this.gridConfig.calculateBounds(availableArea, INGREDIENT_WIDTH, INGREDIENT_HEIGHT);
+		this.area = calculateBounds(this.gridConfig, availableArea, INGREDIENT_WIDTH, INGREDIENT_HEIGHT);
 		if (this.area.isEmpty()) {
 			return false;
 		}
@@ -102,6 +102,31 @@ public class IngredientGrid implements IRecipeFocusSource {
 		}
 
 		return true;
+	}
+
+	private static ImmutableRect2i calculateBounds(IIngredientGridConfig config, ImmutableRect2i availableArea, int ingredientWidth, int ingredientHeight) {
+		final int columns = Math.min(availableArea.getWidth() / ingredientWidth, config.getMaxColumns());
+		final int rows = Math.min(availableArea.getHeight() / ingredientHeight, config.getMaxRows());
+		if (rows < config.getMinRows() || columns < config.getMinColumns()) {
+			return ImmutableRect2i.EMPTY;
+		}
+
+		final int width = columns * ingredientWidth;
+		final int height = rows * ingredientHeight;
+
+		final int x = switch (config.getHorizontalAlignment()) {
+			case LEFT -> availableArea.getX();
+			case CENTER -> availableArea.getX() + ((availableArea.getWidth() - width) / 2);
+			case RIGHT -> availableArea.getX() + (availableArea.getWidth() - width);
+		};
+
+		final int y = switch (config.getVerticalAlignment()) {
+			case TOP -> availableArea.getY();
+			case CENTER -> availableArea.getY() + ((availableArea.getHeight() - height) / 2);
+			case BOTTOM -> availableArea.getY() + (availableArea.getHeight() - height);
+		};
+
+		return new ImmutableRect2i(x, y, width, height);
 	}
 
 	public ImmutableRect2i getArea() {
