@@ -43,6 +43,13 @@ public interface IJeiRuntime {
 	IBookmarkOverlay getBookmarkOverlay();
 
 	/**
+	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
+	 *
+	 * @since 9.4.2
+	 */
+	IJeiHelpers getJeiHelpers();
+
+	/**
 	 * The {@link IIngredientManager} has some useful functions related to recipe ingredients.
 	 */
 	IIngredientManager getIngredientManager();

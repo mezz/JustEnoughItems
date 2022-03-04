@@ -49,6 +49,7 @@ import mezz.jei.load.PluginLoader;
 import mezz.jei.plugins.jei.JeiInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.recipes.RecipeTransferManager;
+import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.LoggedTimer;
@@ -112,6 +113,7 @@ public final class JeiStarter {
 			editModeConfig,
 			filterTextSource
 		);
+		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 
 		RegisteredIngredients registeredIngredients = pluginLoader.getRegisteredIngredients();
 
@@ -202,7 +204,8 @@ public final class JeiStarter {
 			ingredientFilterApi,
 			registeredIngredients,
 			ingredientManager,
-			ingredientVisibility
+			ingredientVisibility,
+			jeiHelpers
 		);
 		Internal.setRuntime(jeiRuntime);
 		timer.stop();

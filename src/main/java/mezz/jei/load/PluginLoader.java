@@ -194,6 +194,10 @@ public class PluginLoader {
 		return ingredientManager;
 	}
 
+	public JeiHelpers getJeiHelpers() {
+		return jeiHelpers;
+	}
+
 	public BookmarkList createBookmarkList(BookmarkConfig bookmarkConfig) {
 		timer.start("Building bookmarks");
 		BookmarkList bookmarkList = new BookmarkList(registeredIngredients, bookmarkConfig);
