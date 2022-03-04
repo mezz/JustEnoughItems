@@ -3,15 +3,12 @@ package mezz.jei.input;
 import com.google.common.base.MoreObjects;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.ImmutableRect2i;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	private final ITypedIngredient<V> value;
@@ -47,16 +44,6 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	@Override
 	public boolean allowsCheating() {
 		return allowsCheating;
-	}
-
-	@Override
-	public <T> Optional<IClickedIngredient<T>> checkedCast(IIngredientType<T> ingredientType) {
-		if (this.value.getIngredient() == ingredientType) {
-			@SuppressWarnings("unchecked")
-			IClickedIngredient<T> cast = (IClickedIngredient<T>) this;
-			return Optional.of(cast);
-		}
-		return Optional.empty();
 	}
 
 	@Override

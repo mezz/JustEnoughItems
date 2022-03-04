@@ -1,11 +1,8 @@
 package mezz.jei.render;
 
-import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.util.ImmutableRect2i;
-
-import java.util.Optional;
 
 public class IngredientListElementRenderer<T> implements IClickedIngredient<T> {
 	private static final ImmutableRect2i DEFAULT_AREA = new ImmutableRect2i(0, 0, 16, 16);
@@ -48,15 +45,5 @@ public class IngredientListElementRenderer<T> implements IClickedIngredient<T> {
 
 	public int getPadding() {
 		return padding;
-	}
-
-	@Override
-	public <V> Optional<IngredientListElementRenderer<V>> checkedCast(IIngredientType<V> ingredientType) {
-		if (ingredient.getType() == ingredientType) {
-			@SuppressWarnings("unchecked")
-			IngredientListElementRenderer<V> castElement = (IngredientListElementRenderer<V>) this;
-			return Optional.of(castElement);
-		}
-		return Optional.empty();
 	}
 }
