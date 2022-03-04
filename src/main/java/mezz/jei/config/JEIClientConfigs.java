@@ -1,6 +1,7 @@
 package mezz.jei.config;
 
 import mezz.jei.events.PermanentEventSubscriptions;
+import mezz.jei.gui.overlay.HorizontalAlignment;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
@@ -10,6 +11,9 @@ public class JEIClientConfigs {
 	private final ClientConfig clientConfig;
 	private final IngredientFilterConfig filterConfig;
 	private final ModIdFormattingConfig modNameFormat;
+	private final IngredientGridConfig ingredientListConfig;
+	private final IngredientGridConfig bookmarkListConfig;
+
 	private final ForgeConfigSpec config;
 
 	public JEIClientConfigs() {
@@ -18,6 +22,8 @@ public class JEIClientConfigs {
 		clientConfig = new ClientConfig(builder);
 		filterConfig = new IngredientFilterConfig(builder);
 		modNameFormat = new ModIdFormattingConfig(builder);
+		ingredientListConfig = new IngredientGridConfig("IngredientList", builder, HorizontalAlignment.RIGHT);
+		bookmarkListConfig = new IngredientGridConfig("BookmarkList", builder, HorizontalAlignment.LEFT);
 		config = builder.build();
 	}
 
@@ -34,7 +40,6 @@ public class JEIClientConfigs {
 		}
 
 		clientConfig.reload();
-		filterConfig.reload();
 		modNameFormat.reload();
 	}
 
@@ -44,6 +49,14 @@ public class JEIClientConfigs {
 
 	public IngredientFilterConfig getFilterConfig() {
 		return filterConfig;
+	}
+
+	public IngredientGridConfig getIngredientListConfig() {
+		return ingredientListConfig;
+	}
+
+	public IngredientGridConfig getBookmarkListConfig() {
+		return bookmarkListConfig;
 	}
 
 	public ModIdFormattingConfig getModNameFormat() {

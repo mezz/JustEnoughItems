@@ -1,34 +1,30 @@
 package mezz.jei.render;
 
+import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.util.ImmutableRect2i;
 import org.jetbrains.annotations.Nullable;
-
-import mezz.jei.api.ingredients.IIngredientType;
-import net.minecraft.client.renderer.Rect2i;
-
-import mezz.jei.util.MathUtil;
 
 import java.util.Optional;
 
 public class IngredientListSlot {
-	private final Rect2i area;
+	private final ImmutableRect2i area;
 	private final int padding;
 	private boolean blocked = false;
 	@Nullable
 	private IngredientListElementRenderer<?> ingredientRenderer;
 
-	public IngredientListSlot(int xPosition, int yPosition, int padding) {
+	public IngredientListSlot(int xPosition, int yPosition, int width, int height, int padding) {
+		this.area = new ImmutableRect2i(xPosition, yPosition, width, height);
 		this.padding = padding;
-		final int size = 16 + (2 * padding);
-		this.area = new Rect2i(xPosition, yPosition, size, size);
 	}
 
 	public Optional<IngredientListElementRenderer<?>> getIngredientRenderer() {
 		return Optional.ofNullable(ingredientRenderer);
 	}
 
-	public <T> Optional<IngredientListElementRenderer<T>> getIngredientRenderer(IIngredientType<T> ingredientType) {
+	public Optional<ITypedIngredient<?>> getTypedIngredient() {
 		return getIngredientRenderer()
-			.flatMap(i -> i.checkedCast(ingredientType));
+			.map(IngredientListElementRenderer::getTypedIngredient);
 	}
 
 	public void clear() {
@@ -36,7 +32,7 @@ public class IngredientListSlot {
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return (this.ingredientRenderer != null) && MathUtil.contains(area, mouseX, mouseY);
+		return (this.ingredientRenderer != null) && area.contains(mouseX, mouseY);
 	}
 
 	public void setIngredientRenderer(IngredientListElementRenderer<?> ingredientRenderer) {
@@ -45,7 +41,7 @@ public class IngredientListSlot {
 		ingredientRenderer.setPadding(padding);
 	}
 
-	public Rect2i getArea() {
+	public ImmutableRect2i getArea() {
 		return area;
 	}
 

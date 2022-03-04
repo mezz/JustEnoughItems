@@ -50,6 +50,7 @@ public class EditInputHandler implements IUserInputHandler {
 
 	private Optional<IUserInputHandler> handle(UserInput input, IngredientBlacklistType blacklistType) {
 		return focusSource.getIngredientUnderMouse(input)
+			.findFirst()
 			.map(clicked -> {
 				if (!input.isSimulate()) {
 					execute(clicked, blacklistType);
@@ -59,7 +60,7 @@ public class EditInputHandler implements IUserInputHandler {
 	}
 
 	private <V> void execute(IClickedIngredient<V> clicked, IngredientBlacklistType blacklistType) {
-		ITypedIngredient<V> typedIngredient = clicked.getValue();
+		ITypedIngredient<V> typedIngredient = clicked.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(typedIngredient.getType());
 
 		if (editModeConfig.isIngredientOnConfigBlacklist(typedIngredient, ingredientHelper)) {

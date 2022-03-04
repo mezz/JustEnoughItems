@@ -34,15 +34,14 @@ import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.transfer.RecipeTransferUtil;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.ImmutableRect2i;
 import mezz.jei.util.MathUtil;
-import mezz.jei.util.Rectangle2dBuilder;
 import mezz.jei.util.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -54,6 +53,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSource, IRecipeLogicStateListener {
 	private static final int borderPadding = 6;
@@ -87,8 +87,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Nullable
 	private Screen parentScreen;
-	private Rect2i area = new Rect2i(0, 0, 0, 0);
-	private Rect2i titleArea = new Rect2i(0, 0, 0, 0);
+	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
+	private ImmutableRect2i titleArea = ImmutableRect2i.EMPTY;
 
 	private boolean init = false;
 
@@ -116,20 +116,20 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		nextPage = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowNext, b -> logic.nextPage());
 		previousPage = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowPrevious, b -> logic.previousPage());
 
-		background = textures.getGuiBackground();
+		background = textures.getRecipeGuiBackground();
 	}
 
-	private static void drawCenteredStringWithShadow(PoseStack poseStack, Font font, String string, Rect2i area) {
-		Rect2i textArea = MathUtil.centerTextArea(area, font, string);
+	private static void drawCenteredStringWithShadow(PoseStack poseStack, Font font, String string, ImmutableRect2i area) {
+		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, string);
 		font.drawShadow(poseStack, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 
-	private static void drawCenteredStringWithShadow(PoseStack poseStack, Font font, Component text, Rect2i area) {
-		Rect2i textArea = MathUtil.centerTextArea(area, font, text);
+	private static void drawCenteredStringWithShadow(PoseStack poseStack, Font font, Component text, ImmutableRect2i area) {
+		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, text);
 		font.drawShadow(poseStack, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 
-	public Rect2i getArea() {
+	public ImmutableRect2i getArea() {
 		return this.area;
 	}
 
@@ -161,7 +161,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		final int guiLeft = (this.width - xSize) / 2;
 		final int guiTop = RecipeGuiTab.TAB_HEIGHT + 21 + (extraSpace / 2);
 
-		this.area = new Rect2i(guiLeft, guiTop, xSize, ySize);
+		this.area = new ImmutableRect2i(guiLeft, guiTop, xSize, ySize);
 
 		final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
 		final int leftButtonX = guiLeft + borderPadding;
@@ -180,15 +180,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		previousPage.y = pageButtonTop;
 
 		this.headerHeight = (pageButtonTop + buttonHeight) - guiTop;
-		int titleX = previousRecipeCategory.x + previousRecipeCategory.getWidth();
-		this.titleArea = new Rectangle2dBuilder(
-			titleX,
-			recipeClassButtonTop,
-			nextRecipeCategory.x - titleX,
-			titleHeight
-		)
-			.insetByPadding(innerPadding)
-			.build();
+		this.titleArea = MathUtil.union(previousRecipeCategory.getArea(), nextRecipeCategory.getArea())
+			.cropLeft(previousRecipeCategory.getWidth() + innerPadding)
+			.cropRight(nextRecipeCategory.getWidth() + innerPadding);
 
 		this.addRenderableWidget(nextRecipeCategory);
 		this.addRenderableWidget(previousRecipeCategory);
@@ -231,7 +225,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		drawCenteredStringWithShadow(poseStack, font, title, titleArea);
 
-		Rect2i pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
+		ImmutableRect2i pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
 		drawCenteredStringWithShadow(poseStack, font, pageString, pageArea);
 
 		nextRecipeCategory.render(poseStack, mouseX, mouseY, partialTicks);
@@ -267,7 +261,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		if (minecraft != null && minecraft.screen == this) {
-			if (MathUtil.contains(this.area, mouseX, mouseY)) {
+			if (this.area.contains(mouseX, mouseY)) {
 				return true;
 			}
 			for (RecipeLayout<?> recipeLayout : this.recipeLayouts) {
@@ -280,19 +274,20 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isOpen()) {
-			return recipeCatalysts.getIngredientUnderMouse(mouseX, mouseY)
-				.or(() -> getRecipeLayoutsIngredientUnderMouse(mouseX, mouseY));
+			return Stream.concat(
+				recipeCatalysts.getIngredientUnderMouse(mouseX, mouseY),
+				getRecipeLayoutsIngredientUnderMouse(mouseX, mouseY)
+			);
 		}
-		return Optional.empty();
+		return Stream.empty();
 	}
 
-	private Optional<IClickedIngredient<?>> getRecipeLayoutsIngredientUnderMouse(double mouseX, double mouseY) {
+	private Stream<IClickedIngredient<?>> getRecipeLayoutsIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.recipeLayouts.stream()
 			.map(recipeLayout -> getRecipeLayoutIngredientUnderMouse(recipeLayout, mouseX, mouseY))
-			.flatMap(Optional::stream)
-			.findFirst();
+			.flatMap(Optional::stream);
 	}
 
 	private static Optional<IClickedIngredient<?>> getRecipeLayoutIngredientUnderMouse(RecipeLayout<?> recipeLayout, double mouseX, double mouseY) {
@@ -300,7 +295,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			.flatMap(clicked ->
 				clicked.getDisplayedIngredient()
 					.map(displayedIngredient -> {
-						Rect2i area = absoluteClickedArea(recipeLayout, clicked.getRect());
+						ImmutableRect2i area = absoluteClickedArea(recipeLayout, clicked.getRect());
 						return new ClickedIngredient<>(displayedIngredient, area, false, true);
 					})
 			);
@@ -309,11 +304,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	/**
 	 * Converts from relative recipeLayout coordinates to absolute screen coordinates
 	 */
-	private static Rect2i absoluteClickedArea(RecipeLayout<?> recipeLayout, Rect2i area) {
-		return new Rectangle2dBuilder(area)
-			.addX(recipeLayout.getPosX())
-			.addY(recipeLayout.getPosY())
-			.build();
+	private static ImmutableRect2i absoluteClickedArea(RecipeLayout<?> recipeLayout, ImmutableRect2i area) {
+		return area.addOffset(recipeLayout.getPosX(), recipeLayout.getPosY());
 	}
 
 	@Override
@@ -457,8 +449,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		double y = MouseUtil.getY();
 
 		return getIngredientUnderMouse(x, y)
-			.map(IClickedIngredient::getValue)
-			.flatMap(i -> i.getIngredient(ingredientType))
+			.map(IClickedIngredient::getTypedIngredient)
+			.flatMap(i -> i.getIngredient(ingredientType).stream())
+			.findFirst()
 			.orElse(null);
 	}
 
@@ -497,7 +490,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		if (font.width(title) > availableTitleWidth) {
 			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, font);
 		}
-		Rect2i titleStringArea = MathUtil.centerTextArea(this.titleArea, font, title);
+		ImmutableRect2i titleStringArea = MathUtil.centerTextArea(this.titleArea, font, title);
 		titleHoverChecker.updateBounds(titleStringArea);
 
 		int spacingY = recipeBackground.getHeight() + recipeSpacing;

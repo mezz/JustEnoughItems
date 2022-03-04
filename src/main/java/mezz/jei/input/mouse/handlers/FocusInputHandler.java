@@ -37,10 +37,11 @@ public class FocusInputHandler implements IUserInputHandler {
 
 	private Optional<IUserInputHandler> handleShow(UserInput input, List<RecipeIngredientRole> roles) {
 		return focusSource.getIngredientUnderMouse(input)
+			.findFirst()
 			.map(clicked -> {
 				if (!input.isSimulate()) {
 					List<IFocus<?>> focuses = roles.stream()
-						.<IFocus<?>>map(role -> new Focus<>(role, clicked.getValue()))
+						.<IFocus<?>>map(role -> new Focus<>(role, clicked.getTypedIngredient()))
 						.toList();
 					recipesGui.show(focuses);
 				}

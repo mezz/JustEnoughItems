@@ -7,19 +7,17 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.util.ErrorUtil;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.item.ItemStack;
-
+import mezz.jei.util.ImmutableRect2i;
 import org.jetbrains.annotations.Nullable;
 
 public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	private final ITypedIngredient<V> value;
 	@Nullable
-	private final Rect2i area;
+	private final ImmutableRect2i area;
 	private final boolean canOverrideVanillaClickHandler;
 	private final boolean allowsCheating;
 
-	public ClickedIngredient(ITypedIngredient<V> value, @Nullable Rect2i area, boolean allowsCheating, boolean canOverrideVanillaClickHandler) {
+	public ClickedIngredient(ITypedIngredient<V> value, @Nullable ImmutableRect2i area, boolean allowsCheating, boolean canOverrideVanillaClickHandler) {
 		ErrorUtil.checkNotNull(value, "value");
 		this.value = value;
 		this.area = area;
@@ -28,29 +26,24 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	}
 
 	@Override
-	public ITypedIngredient<V> getValue() {
+	public ITypedIngredient<V> getTypedIngredient() {
 		return value;
 	}
 
 	@Nullable
 	@Override
-	public Rect2i getArea() {
+	public ImmutableRect2i getArea() {
 		return area;
-	}
-
-	@Override
-	public ItemStack getCheatItemStack() {
-		if (allowsCheating) {
-			RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
-			IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
-			return ingredientHelper.getCheatItemStack(value.getIngredient());
-		}
-		return ItemStack.EMPTY;
 	}
 
 	@Override
 	public boolean canOverrideVanillaClickHandler() {
 		return this.canOverrideVanillaClickHandler;
+	}
+
+	@Override
+	public boolean allowsCheating() {
+		return allowsCheating;
 	}
 
 	@Override

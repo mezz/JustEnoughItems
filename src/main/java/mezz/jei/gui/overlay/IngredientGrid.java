@@ -1,93 +1,71 @@
 package mezz.jei.gui.overlay;
 
-import com.google.common.base.Joiner;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.Internal;
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.color.ColorNamer;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.config.IIngredientGridConfig;
 import mezz.jei.config.IWorldConfig;
-import mezz.jei.config.KeyBindings;
-import mezz.jei.config.SearchMode;
 import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
-import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.ingredients.RegisteredIngredients;
-import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
-import mezz.jei.input.MouseUtil;
+import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.input.mouse.handlers.DeleteItemInputHandler;
 import mezz.jei.render.IngredientListBatchRenderer;
 import mezz.jei.render.IngredientListElementRenderer;
 import mezz.jei.render.IngredientListSlot;
-import mezz.jei.render.IngredientRenderHelper;
-import mezz.jei.util.GiveMode;
+import mezz.jei.util.ImmutableRect2i;
 import mezz.jei.util.MathUtil;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
+ * It does not draw a background or have external padding, those are left up to a higher-level element.
  */
 public class IngredientGrid implements IRecipeFocusSource {
 	private static final int INGREDIENT_PADDING = 1;
 	public static final int INGREDIENT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
 	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
-	private final RegisteredIngredients registeredIngredients;
-	private final GridAlignment alignment;
-	private final RecipesGui recipesGui;
-	private final IModIdHelper modIdHelper;
-	private final GuiScreenHelper guiScreenHelper;
 
-	private Rect2i area = new Rect2i(0, 0, 0, 0);
-	protected final IngredientListBatchRenderer guiIngredientSlots;
-	private final IIngredientFilterConfig ingredientFilterConfig;
-	private final IClientConfig clientConfig;
-	private final IWorldConfig worldConfig;
+	private final IIngredientGridConfig gridConfig;
+	private final GuiScreenHelper guiScreenHelper;
+	private final IngredientListBatchRenderer guiIngredientSlots;
+	private final DeleteItemInputHandler deleteItemHandler;
+	private final IngredientGridTooltipHelper tooltipHelper;
+	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
 	public IngredientGrid(
 		RegisteredIngredients registeredIngredients,
-		GridAlignment alignment,
+		IIngredientGridConfig gridConfig,
 		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
 		GuiScreenHelper guiScreenHelper,
-		RecipesGui recipesGui,
 		IModIdHelper modIdHelper
 	) {
-		this.registeredIngredients = registeredIngredients;
-		this.alignment = alignment;
-		this.recipesGui = recipesGui;
-		this.modIdHelper = modIdHelper;
-		this.guiIngredientSlots = new IngredientListBatchRenderer(clientConfig, editModeConfig, worldConfig, registeredIngredients);
-		this.ingredientFilterConfig = ingredientFilterConfig;
-		this.clientConfig = clientConfig;
-		this.worldConfig = worldConfig;
+		this.gridConfig = gridConfig;
 		this.guiScreenHelper = guiScreenHelper;
+		this.guiIngredientSlots = new IngredientListBatchRenderer(clientConfig, editModeConfig, worldConfig, registeredIngredients);
+		this.tooltipHelper = new IngredientGridTooltipHelper(registeredIngredients, ingredientFilterConfig, worldConfig, modIdHelper);
+		this.deleteItemHandler = new DeleteItemInputHandler(this, worldConfig, clientConfig);
+	}
+
+	public IUserInputHandler getInputHandler() {
+		return deleteItemHandler;
 	}
 
 	public int size() {
@@ -95,51 +73,63 @@ public class IngredientGrid implements IRecipeFocusSource {
 	}
 
 	public int maxWidth() {
-		final int columns = this.clientConfig.getMaxColumns();
-		final int ingredientsWidth = columns * INGREDIENT_WIDTH;
-		final int minWidth = this.clientConfig.getMinColumns() * INGREDIENT_WIDTH;
-		return Math.max(ingredientsWidth, minWidth);
+		return this.gridConfig.getMaxColumns() * INGREDIENT_WIDTH;
 	}
 
-	public boolean updateBounds(Rect2i availableArea, Collection<Rect2i> exclusionAreas) {
-		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, this.clientConfig.getMaxColumns());
-		final int rows = availableArea.getHeight() / INGREDIENT_HEIGHT;
+	public int maxHeight() {
+		return this.gridConfig.getMaxRows() * INGREDIENT_HEIGHT;
+	}
 
-		final int ingredientsWidth = columns * INGREDIENT_WIDTH;
-		final int minWidth = this.clientConfig.getMinColumns() * INGREDIENT_WIDTH;
-		final int width = Math.max(ingredientsWidth, minWidth);
-		final int height = rows * INGREDIENT_HEIGHT;
-		final int x;
-		if (alignment == GridAlignment.LEFT) {
-			x = availableArea.getX() + (availableArea.getWidth() - width);
-		} else {
-			x = availableArea.getX();
-		}
-		final int y = availableArea.getY() + (availableArea.getHeight() - height) / 2;
-		final int xOffset = x + Math.max(0, (width - ingredientsWidth) / 2);
-
-		this.area = new Rect2i(x, y, width, height);
+	/**
+	 * @return true if there is enough space for this in the given availableArea
+	 */
+	public boolean updateBounds(ImmutableRect2i availableArea, Collection<ImmutableRect2i> exclusionAreas) {
 		this.guiIngredientSlots.clear();
 
-		if (rows == 0 || columns < this.clientConfig.getMinColumns()) {
+		this.area = calculateBounds(this.gridConfig, availableArea, INGREDIENT_WIDTH, INGREDIENT_HEIGHT);
+		if (this.area.isEmpty()) {
 			return false;
 		}
 
-		for (int row = 0; row < rows; row++) {
-			int y1 = y + (row * INGREDIENT_HEIGHT);
-			for (int column = 0; column < columns; column++) {
-				int x1 = xOffset + (column * INGREDIENT_WIDTH);
-				IngredientListSlot ingredientListSlot = new IngredientListSlot(x1, y1, INGREDIENT_PADDING);
-				Rect2i stackArea = ingredientListSlot.getArea();
+		for (int y = this.area.getY(); y < this.area.getY() + this.area.getHeight(); y += INGREDIENT_HEIGHT) {
+			for (int x = this.area.getX(); x < this.area.getX() + this.area.getWidth(); x += INGREDIENT_WIDTH) {
+				IngredientListSlot ingredientListSlot = new IngredientListSlot(x, y, INGREDIENT_WIDTH, INGREDIENT_HEIGHT, INGREDIENT_PADDING);
+				ImmutableRect2i stackArea = ingredientListSlot.getArea();
 				final boolean blocked = MathUtil.intersects(exclusionAreas, stackArea);
 				ingredientListSlot.setBlocked(blocked);
 				this.guiIngredientSlots.add(ingredientListSlot);
 			}
 		}
+
 		return true;
 	}
 
-	public Rect2i getArea() {
+	private static ImmutableRect2i calculateBounds(IIngredientGridConfig config, ImmutableRect2i availableArea, int ingredientWidth, int ingredientHeight) {
+		final int columns = Math.min(availableArea.getWidth() / ingredientWidth, config.getMaxColumns());
+		final int rows = Math.min(availableArea.getHeight() / ingredientHeight, config.getMaxRows());
+		if (rows < config.getMinRows() || columns < config.getMinColumns()) {
+			return ImmutableRect2i.EMPTY;
+		}
+
+		final int width = columns * ingredientWidth;
+		final int height = rows * ingredientHeight;
+
+		final int x = switch (config.getHorizontalAlignment()) {
+			case LEFT -> availableArea.getX();
+			case CENTER -> availableArea.getX() + ((availableArea.getWidth() - width) / 2);
+			case RIGHT -> availableArea.getX() + (availableArea.getWidth() - width);
+		};
+
+		final int y = switch (config.getVerticalAlignment()) {
+			case TOP -> availableArea.getY();
+			case CENTER -> availableArea.getY() + ((availableArea.getHeight() - height) / 2);
+			case BOTTOM -> availableArea.getY() + (availableArea.getHeight() - height);
+		};
+
+		return new ImmutableRect2i(x, y, width, height);
+	}
+
+	public ImmutableRect2i getArea() {
 		return area;
 	}
 
@@ -148,17 +138,24 @@ public class IngredientGrid implements IRecipeFocusSource {
 
 		guiIngredientSlots.render(minecraft, poseStack);
 
-		if (!shouldDeleteItemOnClick(minecraft, mouseX, mouseY) && isMouseOver(mouseX, mouseY)) {
-			guiIngredientSlots.getHovered(mouseX, mouseY)
-				.map(IngredientListElementRenderer::getArea)
-				.ifPresent(area -> drawHighlight(poseStack, area));
+		if (isMouseOver(mouseX, mouseY)) {
+			if (!this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
+				guiIngredientSlots.getAllGuiIngredientSlots()
+					.filter(s -> s.isMouseOver(mouseX, mouseY))
+					.map(IngredientListSlot::getIngredientRenderer)
+					.flatMap(Optional::stream)
+					.map(IngredientListElementRenderer::getArea)
+					.findFirst()
+					.ifPresent(area -> drawHighlight(poseStack, area));
+			}
 		}
 	}
 
 	/**
-	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlight(PoseStack, int, int, int)} but with a custom area width and height
+	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlight(PoseStack, int, int, int)}
+	 * but with a custom area width and height
 	 */
-	public static void drawHighlight(PoseStack poseStack, Rect2i area) {
+	public static void drawHighlight(PoseStack poseStack, ImmutableRect2i area) {
 		RenderSystem.disableDepthTest();
 		RenderSystem.colorMask(true, true, true, false);
 		GuiComponent.fill(poseStack, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF);
@@ -168,119 +165,41 @@ public class IngredientGrid implements IRecipeFocusSource {
 
 	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
-			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
-				TranslatableComponent deleteItem = new TranslatableComponent("jei.tooltip.delete.item");
-				TooltipRenderer.drawHoveringText(poseStack, List.of(deleteItem), mouseX, mouseY);
+			if (this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
+				this.deleteItemHandler.drawTooltips(poseStack, mouseX, mouseY);
 			} else {
-				guiIngredientSlots.getHovered(mouseX, mouseY)
-					.map(IngredientListElementRenderer::getTypedIngredient)
-					.ifPresent(ingredient -> drawTooltip(poseStack, mouseX, mouseY, ingredientFilterConfig, worldConfig, ingredient));
+				guiIngredientSlots.getAllGuiIngredientSlots()
+					.filter(s -> s.isMouseOver(mouseX, mouseY))
+					.map(IngredientListSlot::getTypedIngredient)
+					.flatMap(Optional::stream)
+					.findFirst()
+					.ifPresent(ingredient -> tooltipHelper.drawTooltip(poseStack, mouseX, mouseY, ingredient));
 			}
 		}
 	}
 
-	private <T> void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, IIngredientFilterConfig ingredientFilterConfig, IWorldConfig worldConfig, ITypedIngredient<T> value) {
-		IIngredientType<T> ingredientType = value.getType();
-		T ingredient = value.getIngredient();
-		IngredientInfo<T> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
-		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
-
-		List<Component> tooltip = getTooltip(ingredientFilterConfig, worldConfig, ingredient, ingredientInfo);
-		TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, ingredient, ingredientRenderer);
-	}
-
-	private <T> List<Component> getTooltip(
-		IIngredientFilterConfig ingredientFilterConfig,
-		IWorldConfig worldConfig,
-		T ingredient,
-		IngredientInfo<T> ingredientInfo
-	) {
-		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
-		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
-		List<Component> ingredientTooltipSafe = IngredientRenderHelper.getIngredientTooltipSafe(ingredient, ingredientRenderer, ingredientHelper, modIdHelper);
-		List<Component> tooltip = new ArrayList<>(ingredientTooltipSafe);
-
-		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
-			addColorSearchInfoToTooltip(tooltip, ingredient, ingredientInfo);
-		}
-
-		if (worldConfig.isEditModeEnabled()) {
-			addEditModeInfoToTooltip(tooltip);
-		}
-
-		return tooltip;
-	}
-
-	public static <T> void addColorSearchInfoToTooltip(List<Component> tooltip, T ingredient, IngredientInfo<T> ingredientInfo) {
-		ColorNamer colorNamer = Internal.getColorNamer();
-
-		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
-		Iterable<Integer> colors = ingredientHelper.getColors(ingredient);
-		Collection<String> colorNames = colorNamer.getColorNames(colors, false);
-		if (!colorNames.isEmpty()) {
-			String colorNamesString = Joiner.on(", ").join(colorNames);
-			Component colorTranslation = new TranslatableComponent("jei.tooltip.item.colors", colorNamesString)
-				.withStyle(ChatFormatting.GRAY);
-			tooltip.add(colorTranslation);
-		}
-	}
-
-	public static void addEditModeInfoToTooltip(List<Component> tooltip) {
-		List<Component> lines = List.of(
-			TextComponent.EMPTY,
-			new TranslatableComponent("gui.jei.editMode.description")
-				.withStyle(ChatFormatting.DARK_GREEN),
-			new TranslatableComponent(
-				"gui.jei.editMode.description.hide",
-				KeyBindings.toggleHideIngredient.getTranslatedKeyMessage()
-			).withStyle(ChatFormatting.GRAY),
-			new TranslatableComponent(
-				"gui.jei.editMode.description.hide.wild",
-				KeyBindings.toggleWildcardHideIngredient.getTranslatedKeyMessage()
-			).withStyle(ChatFormatting.GRAY)
-		);
-		tooltip.addAll(lines);
-	}
-
-	public boolean shouldDeleteItemOnClick(Minecraft minecraft, double mouseX, double mouseY) {
-		if (!worldConfig.isDeleteItemsInCheatModeActive()) {
-			return false;
-		}
-		Player player = minecraft.player;
-		if (player == null) {
-			return false;
-		}
-		ItemStack itemStack = player.containerMenu.getCarried();
-		if (itemStack.isEmpty()) {
-			return false;
-		}
-		if (this.recipesGui.isOpen()) {
-			return false;
-		}
-		GiveMode giveMode = this.clientConfig.getGiveMode();
-		if (giveMode == GiveMode.MOUSE_PICKUP) {
-			return getIngredientUnderMouse(mouseX, mouseY)
-				.map(IClickedIngredient::getCheatItemStack)
-				.map(i -> !ItemHandlerHelper.canItemStacksStack(itemStack, i))
-				.orElse(false);
-		}
-		return true;
-	}
-
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return MathUtil.contains(area, mouseX, mouseY) &&
+		return area.contains(mouseX, mouseY) &&
 			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
-	public <T> Optional<ITypedIngredient<T>> getIngredientUnderMouse(IIngredientType<T> ingredientType) {
-		return this.guiIngredientSlots.getHovered(MouseUtil.getX(), MouseUtil.getY(), ingredientType)
-			.map(IngredientListElementRenderer::getTypedIngredient);
-	}
-
 	@Override
-	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
-		return guiIngredientSlots.getHovered(mouseX, mouseY)
-			.map(hovered -> new ClickedIngredient<>(hovered.getTypedIngredient(), hovered.getArea(), true, true));
+	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		return guiIngredientSlots.getAllGuiIngredientSlots()
+			.filter(s -> s.isMouseOver(mouseX, mouseY))
+			.map(IngredientListSlot::getIngredientRenderer)
+			.flatMap(Optional::stream);
 	}
 
+	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
+		return this.guiIngredientSlots.getAllGuiIngredientSlots()
+			.map(IngredientListSlot::getTypedIngredient)
+			.flatMap(Optional::stream)
+			.map(i -> i.getIngredient(ingredientType))
+			.flatMap(Optional::stream);
+	}
+
+	public void set(int firstItemIndex, List<ITypedIngredient<?>> ingredientList) {
+		this.guiIngredientSlots.set(firstItemIndex, ingredientList);
+	}
 }

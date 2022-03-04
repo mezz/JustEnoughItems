@@ -28,10 +28,6 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	@Nullable
 	private static IClientConfig instance;
 
-	private static final int minNumColumns = 4;
-	private static final int defaultNumColumns = 9;
-	private static final int largestNumColumns = 100;
-
 	private static final int minRecipeGuiHeight = 175;
 	private static final int defaultRecipeGuiHeight = 350;
 
@@ -57,7 +53,6 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private final ForgeConfigSpec.BooleanValue fastItemRenderingEnabled;
 	private final ForgeConfigSpec.BooleanValue cheatToHotbarUsingHotkeysEnabled;
 	private final ForgeConfigSpec.EnumValue<GiveMode> giveMode;
-	private final ForgeConfigSpec.IntValue maxColumns;
 	private final ForgeConfigSpec.IntValue maxRecipeGuiHeight;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> searchColorsCfg;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> ingredientSorterStagesCfg;
@@ -84,9 +79,6 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 			
 			builder.comment("How items should be handed to you");
 			giveMode = builder.defineEnum("GiveMode", defaultGiveMode);
-
-			builder.comment("Max number of columns shown");
-			maxColumns = builder.defineInRange("MaxColumns", defaultNumColumns, minNumColumns, largestNumColumns);
 
 			builder.comment("Max. recipe gui height");
 			maxRecipeGuiHeight = builder.defineInRange("RecipeGuiHeight", defaultRecipeGuiHeight, minRecipeGuiHeight, Integer.MAX_VALUE);
@@ -160,16 +152,6 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	@Override
 	public GiveMode getGiveMode() {
 		return giveMode.get();
-	}
-
-	@Override
-	public int getMinColumns() {
-		return minNumColumns;
-	}
-
-	@Override
-	public int getMaxColumns() {
-		return maxColumns.get();
 	}
 
 	@Override

@@ -1,33 +1,35 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.input.mouse.handlers.CombinedInputHandler;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Rect2i;
-
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.IPaged;
+import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.input.mouse.handlers.CombinedInputHandler;
+import mezz.jei.util.ImmutableRect2i;
 import mezz.jei.util.MathUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The area drawn on top and bottom of the {@link RecipesGui} that show the recipe categories.
  */
 public class RecipeGuiTabs implements IPaged {
+	private static final int TAB_GUI_OVERLAP = 3;
+	private static final int TAB_HORIZONTAL_INSET = 2;
+	private static final int NAVIGATION_HEIGHT = 20;
+
 	private final IRecipeGuiLogic recipeGuiLogic;
 	private final List<RecipeGuiTab> tabs = new ArrayList<>();
 	private final PageNavigation pageNavigation;
 	private IUserInputHandler inputHandler;
-	private Rect2i area = new Rect2i(0, 0, 0, 0);
+	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
 	private int pageCount = 1;
 	private int pageNumber = 0;
@@ -40,45 +42,37 @@ public class RecipeGuiTabs implements IPaged {
 	}
 
 	public void initLayout(RecipesGui recipesGui) {
-		ImmutableList<IRecipeCategory<?>> categories = recipeGuiLogic.getRecipeCategories();
-		if (!categories.isEmpty()) {
-			int totalWidth = 0;
-			categoriesPerPage = 0;
-
-			Rect2i recipeArea = recipesGui.getArea();
-			for (int i = 0; i < categories.size(); i++) {
-				if (totalWidth + RecipeGuiTab.TAB_WIDTH <= (recipeArea.getWidth() - 4)) {
-					totalWidth += RecipeGuiTab.TAB_WIDTH;
-					categoriesPerPage++;
-				} else {
-					break;
-				}
-			}
-
-			this.area = new Rect2i(
-				recipeArea.getX() + 2,
-				recipeArea.getY() - RecipeGuiTab.TAB_HEIGHT + 3, // overlaps the recipe gui slightly
-				totalWidth,
-				RecipeGuiTab.TAB_HEIGHT
-			);
-
-			pageCount = MathUtil.divideCeil(categories.size(), categoriesPerPage);
-
-			IRecipeCategory<?> currentCategory = recipeGuiLogic.getSelectedRecipeCategory();
-			int categoryIndex = categories.indexOf(currentCategory);
-			pageNumber = categoryIndex / categoriesPerPage;
-
-			int navHeight = 20;
-			Rect2i navigationArea = new Rect2i(
-				this.area.getX(),
-				this.area.getY() - (2 + navHeight),
-				this.area.getWidth(),
-				navHeight
-			);
-			pageNavigation.updateBounds(navigationArea);
-
-			updateLayout();
+		ImmutableList<IRecipeCategory<?>> categories = this.recipeGuiLogic.getRecipeCategories();
+		if (categories.isEmpty()) {
+			return;
 		}
+
+		final ImmutableRect2i tabsArea = recipesGui.getArea()
+			.keepTop(RecipeGuiTab.TAB_HEIGHT)
+			// move up above the recipe area and overlap the recipe gui
+			.moveUp(RecipeGuiTab.TAB_HEIGHT - TAB_GUI_OVERLAP)
+			// inset to avoid the recipe gui corners
+			.cropLeft(TAB_HORIZONTAL_INSET)
+			.cropRight(TAB_HORIZONTAL_INSET);
+
+		categoriesPerPage = Math.min(tabsArea.getWidth() / RecipeGuiTab.TAB_WIDTH, categories.size());
+		final int tabsWidth = categoriesPerPage * RecipeGuiTab.TAB_WIDTH;
+
+		this.area = tabsArea.keepLeft(tabsWidth);
+
+		pageCount = MathUtil.divideCeil(categories.size(), categoriesPerPage);
+
+		IRecipeCategory<?> currentCategory = recipeGuiLogic.getSelectedRecipeCategory();
+		int categoryIndex = categories.indexOf(currentCategory);
+		pageNumber = categoryIndex / categoriesPerPage;
+
+		ImmutableRect2i navigationArea = tabsArea
+			.keepTop(NAVIGATION_HEIGHT)
+			.moveUp(2 + NAVIGATION_HEIGHT); // move up and add a little padding
+
+		pageNavigation.updateBounds(navigationArea);
+
+		updateLayout();
 	}
 
 	private void updateLayout() {
@@ -105,7 +99,7 @@ public class RecipeGuiTabs implements IPaged {
 		inputHandlers.add(this.pageNavigation.createInputHandler());
 		this.inputHandler = new CombinedInputHandler(inputHandlers);
 
-		pageNavigation.updatePageState();
+		pageNavigation.updatePageNumber();
 	}
 
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {

@@ -7,6 +7,7 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.util.CheatUtil;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.GiveAmount;
 import net.minecraft.client.gui.screens.Screen;
@@ -46,9 +47,10 @@ public class CheatInputHandler implements IUserInputHandler {
 
     private Optional<IUserInputHandler> handleGive(UserInput input, GiveAmount giveAmount) {
         return showsRecipeFocuses.getIngredientUnderMouse(input.getMouseX(), input.getMouseY())
+            .findFirst()
             .map(clicked -> {
                 if (!input.isSimulate()) {
-                    ItemStack itemStack = clicked.getCheatItemStack();
+                    ItemStack itemStack = CheatUtil.getCheatItemStack(clicked);
                     if (!itemStack.isEmpty()) {
                         CommandUtil.giveStack(itemStack, giveAmount, clientConfig);
                     }

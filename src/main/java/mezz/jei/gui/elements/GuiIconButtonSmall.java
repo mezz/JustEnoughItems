@@ -2,13 +2,13 @@ package mezz.jei.gui.elements;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.gui.textures.Textures;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.TextComponent;
 
 /**
@@ -22,8 +22,8 @@ public class GuiIconButtonSmall extends Button {
 		this.icon = icon;
 	}
 
-	public Rect2i getArea() {
-		return new Rect2i(x, y, width, height);
+	public ImmutableRect2i getArea() {
+		return new ImmutableRect2i(x, y, width, height);
 	}
 
 	@Override

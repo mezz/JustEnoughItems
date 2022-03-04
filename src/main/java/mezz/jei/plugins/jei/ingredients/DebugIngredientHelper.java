@@ -1,17 +1,11 @@
 package mezz.jei.plugins.jei.ingredients;
 
-import org.jetbrains.annotations.Nullable;
-
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.ChatFormatting;
-
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.util.CommandUtilServer;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient> {
 	@Override
@@ -43,10 +37,6 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 
 	@Override
 	public ItemStack getCheatItemStack(DebugIngredient ingredient) {
-		LocalPlayer player = Minecraft.getInstance().player;
-		if (player != null) {
-			CommandUtilServer.writeChatMessage(player, "Debug ingredients cannot be cheated", ChatFormatting.RED);
-		}
 		return ItemStack.EMPTY;
 	}
 

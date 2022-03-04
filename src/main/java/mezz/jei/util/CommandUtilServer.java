@@ -149,7 +149,7 @@ public final class CommandUtilServer {
 			giveCount = itemStack.getCount();
 		}
 
-		if (sender instanceof ServerPlayer serverPlayerEntity) {
+		if (giveCount > 0 && sender instanceof ServerPlayer serverPlayerEntity) {
 			itemStackCopy.setCount(giveCount);
 			notifyGive(serverPlayerEntity, itemStackCopy);
 			containerMenu.broadcastChanges();

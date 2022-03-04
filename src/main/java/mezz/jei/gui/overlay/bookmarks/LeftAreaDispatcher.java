@@ -9,22 +9,21 @@ import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.NullInputHandler;
 import mezz.jei.input.mouse.handlers.ProxyInputHandler;
+import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
-
 import org.jetbrains.annotations.Nullable;
-import java.util.Optional;
+
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class LeftAreaDispatcher implements IRecipeFocusSource {
-	private static final int BORDER_PADDING = 2;
+	private static final int BORDER_MARGIN = 6;
 
 	private final ILeftAreaContent contents;
 	private final GuiScreenHelper guiScreenHelper;
 	@Nullable
 	private IGuiProperties guiProperties;
-	private Rect2i displayArea = new Rect2i(0, 0, 0, 0);
 	private boolean canShow = false;
 
 	public LeftAreaDispatcher(GuiScreenHelper guiScreenHelper, ILeftAreaContent contents) {
@@ -51,29 +50,37 @@ public class LeftAreaDispatcher implements IRecipeFocusSource {
 			guiProperties = null;
 		} else {
 			if (forceUpdate || !GuiProperties.areEqual(guiProperties, currentGuiProperties)) {
-				Set<Rect2i> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
+				Set<ImmutableRect2i> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
 				guiProperties = currentGuiProperties;
-				makeDisplayArea(guiProperties);
-				contents.updateBounds(displayArea, guiExclusionAreas);
+				ImmutableRect2i displayArea = makeDisplayArea(guiProperties);
+				if (displayArea.isEmpty()) {
+					canShow = false;
+				} else {
+					contents.updateBounds(displayArea, guiExclusionAreas);
+					canShow = true;
+				}
+			} else {
+				canShow = true;
 			}
-			canShow = true;
 		}
 	}
 
-	private void makeDisplayArea(IGuiProperties guiProperties) {
-		final int x = BORDER_PADDING;
-		final int y = BORDER_PADDING;
-		int width = guiProperties.getGuiLeft() - x - BORDER_PADDING;
-		final int height = guiProperties.getScreenHeight() - y - BORDER_PADDING;
-		displayArea = new Rect2i(x, y, width, height);
+	private static ImmutableRect2i makeDisplayArea(IGuiProperties guiProperties) {
+		int guiLeft = guiProperties.getGuiLeft();
+		int screenHeight = guiProperties.getScreenHeight();
+		if (guiLeft <= 2 * BORDER_MARGIN || screenHeight < 2 * BORDER_MARGIN) {
+			return ImmutableRect2i.EMPTY;
+		}
+		return new ImmutableRect2i(0, 0, guiLeft, screenHeight)
+			.insetBy(BORDER_MARGIN);
 	}
 
 	@Override
-	public Optional<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (canShow) {
 			return contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
-		return Optional.empty();
+		return Stream.empty();
 	}
 
 	public IUserInputHandler createInputHandler() {

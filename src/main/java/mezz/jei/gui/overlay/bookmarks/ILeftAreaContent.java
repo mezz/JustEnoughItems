@@ -5,8 +5,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Set;
 
 import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Rect2i;
 
 import mezz.jei.input.IRecipeFocusSource;
 
@@ -16,7 +16,7 @@ public interface ILeftAreaContent extends IRecipeFocusSource {
 
 	void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY);
 
-	void updateBounds(Rect2i area, Set<Rect2i> guiExclusionAreas);
+	boolean updateBounds(ImmutableRect2i area, Set<ImmutableRect2i> guiExclusionAreas);
 
 	IUserInputHandler createInputHandler();
 }

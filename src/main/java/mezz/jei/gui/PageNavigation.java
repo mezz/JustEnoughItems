@@ -3,16 +3,16 @@ package mezz.jei.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.util.ImmutableRect2i;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.gui.GuiComponent;
 
 import mezz.jei.Internal;
 import mezz.jei.gui.elements.GuiIconButton;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.IPaged;
-import net.minecraft.util.Tuple;
 
 public class PageNavigation {
 	private final IPaged paged;
@@ -20,9 +20,7 @@ public class PageNavigation {
 	private final GuiIconButton backButton;
 	private final boolean hideOnSinglePage;
 	private String pageNumDisplayString = "1/1";
-	private int pageNumDisplayX;
-	private int pageNumDisplayY;
-	private Rect2i area = new Rect2i(0, 0, 0, 0);
+	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
 	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
 		this.paged = paged;
@@ -32,31 +30,42 @@ public class PageNavigation {
 		this.hideOnSinglePage = hideOnSinglePage;
 	}
 
-	public void updateBounds(Rect2i area) {
+	private boolean isVisible() {
+		if (area.isEmpty()) {
+			return false;
+		}
+		return !hideOnSinglePage || this.paged.hasNext() || this.paged.hasPrevious();
+	}
+
+	public void updateBounds(ImmutableRect2i area) {
 		this.area = area;
 		int buttonSize = area.getHeight();
 
-		Tuple<Rect2i, Rect2i> result = MathUtil.splitX(area, buttonSize);
-		this.backButton.updateBounds(result.getA());
+		ImmutableRect2i backArea = area.keepLeft(buttonSize);
+		this.backButton.updateBounds(backArea);
 
-		result = MathUtil.splitXRight(area, buttonSize);
-		this.nextButton.updateBounds(result.getB());
+		ImmutableRect2i nextArea = area.keepRight(buttonSize);
+		this.nextButton.updateBounds(nextArea);
 	}
 
-	public void updatePageState() {
+	public void updatePageNumber() {
 		int pageNum = this.paged.getPageNumber();
 		int pageCount = this.paged.getPageCount();
-		Minecraft minecraft = Minecraft.getInstance();
-		Font fontRenderer = minecraft.font;
-		this.pageNumDisplayString = (pageNum + 1) + "/" + pageCount;
-		Rect2i centerArea = MathUtil.centerTextArea(this.area, fontRenderer, this.pageNumDisplayString);
-		this.pageNumDisplayX = centerArea.getX();
-		this.pageNumDisplayY = centerArea.getY();
+		this.pageNumDisplayString = String.format("%d/%d", pageNum + 1, pageCount);
 	}
 
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-		if (!hideOnSinglePage || this.paged.hasNext() || this.paged.hasPrevious()) {
-			minecraft.font.drawShadow(poseStack, pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, 0xFFFFFFFF);
+		if (isVisible()) {
+			GuiComponent.fill(poseStack,
+				backButton.x + backButton.getWidth(),
+				backButton.y,
+				nextButton.x,
+				nextButton.y + nextButton.getHeight(),
+				0x30000000);
+
+			Font font = minecraft.font;
+			ImmutableRect2i centerArea = MathUtil.centerTextArea(this.area, font, this.pageNumDisplayString);
+			font.drawShadow(poseStack, pageNumDisplayString, centerArea.getX(), centerArea.getY(), 0xFFFFFFFF);
 			nextButton.render(poseStack, mouseX, mouseY, partialTicks);
 			backButton.render(poseStack, mouseX, mouseY, partialTicks);
 		}

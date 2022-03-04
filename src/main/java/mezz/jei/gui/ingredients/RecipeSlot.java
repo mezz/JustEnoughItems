@@ -14,14 +14,13 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.IngredientVisibility;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.MathUtil;
+import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
@@ -42,8 +41,8 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	private final int legacyIngredientIndex;
 	private final RecipeIngredientRole role;
 	private final CycleTimer cycleTimer;
-
-	private Rect2i rect;
+	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
+	private final RendererOverrides rendererOverrides;
 
 	/**
 	 * Displayed ingredients, taking focus into account.
@@ -59,8 +58,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	@Unmodifiable
 	private List<Optional<ITypedIngredient<?>>> allIngredients = List.of();
 
-	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
-	private final RendererOverrides rendererOverrides;
+	private ImmutableRect2i rect;
 	@Nullable
 	private IDrawable background;
 	@Nullable
@@ -80,7 +78,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		this.legacyIngredientIndex = legacyIngredientIndex;
 		this.rendererOverrides = new RendererOverrides();
 		this.role = role;
-		this.rect = new Rect2i(xPos, yPos, 16, 16);
+		this.rect = new ImmutableRect2i(xPos, yPos, 16, 16);
 		this.cycleTimer = new CycleTimer(ingredientCycleOffset);
 	}
 
@@ -207,7 +205,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	}
 
 	public boolean isMouseOver(double recipeMouseX, double recipeMouseY) {
-		return MathUtil.contains(this.rect, recipeMouseX, recipeMouseY);
+		return this.rect.contains(recipeMouseX, recipeMouseY);
 	}
 
 	public void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
@@ -216,7 +214,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 	public <T> void addRenderOverride(IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer) {
 		this.rendererOverrides.addOverride(ingredientType, ingredientRenderer);
-		this.rect = new Rect2i(
+		this.rect = new ImmutableRect2i(
 			this.rect.getX(),
 			this.rect.getY(),
 			rendererOverrides.getIngredientWidth(),
@@ -281,7 +279,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 			.ifPresent(typedIngredient -> drawTooltip(poseStack, xOffset, yOffset, mouseX, mouseY, typedIngredient));
 	}
 
-	public Rect2i getRect() {
+	public ImmutableRect2i getRect() {
 		return this.rect;
 	}
 

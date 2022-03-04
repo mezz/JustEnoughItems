@@ -1,19 +1,17 @@
 package mezz.jei.input;
 
-import org.jetbrains.annotations.Nullable;
-
 import mezz.jei.api.ingredients.ITypedIngredient;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.item.ItemStack;
+import mezz.jei.util.ImmutableRect2i;
+import org.jetbrains.annotations.Nullable;
 
 public interface IClickedIngredient<V> {
 
-	ITypedIngredient<V> getValue();
+	ITypedIngredient<V> getTypedIngredient();
 
 	@Nullable
-	Rect2i getArea();
+	ImmutableRect2i getArea();
 
-	ItemStack getCheatItemStack();
+	boolean allowsCheating();
 
 	/**
 	 * Some GUIs (like vanilla) shouldn't allow JEI to click to set the focus,

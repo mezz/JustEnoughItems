@@ -28,10 +28,11 @@ public class BookmarkInputHandler implements IUserInputHandler {
 
 	private Optional<IUserInputHandler> handleBookmark(UserInput input) {
 		return focusSource.getIngredientUnderMouse(input)
+			.findFirst()
 			.flatMap(clicked -> {
 				if (input.isSimulate() ||
-					bookmarkList.remove(clicked.getValue()) ||
-					bookmarkList.add(clicked.getValue())
+					bookmarkList.remove(clicked.getTypedIngredient()) ||
+					bookmarkList.add(clicked.getTypedIngredient())
 				) {
 					return Optional.of(LimitedAreaInputHandler.create(this, clicked.getArea()));
 				}

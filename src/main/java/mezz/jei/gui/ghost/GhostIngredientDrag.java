@@ -9,6 +9,7 @@ import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.input.UserInput;
+import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
@@ -32,7 +33,7 @@ public class GhostIngredientDrag<T> {
 	private final double mouseStartX;
 	private final double mouseStartY;
 	@Nullable
-	private final Rect2i origin;
+	private final ImmutableRect2i origin;
 
 	public GhostIngredientDrag(
 		IGhostIngredientHandler<?> handler,
@@ -41,7 +42,7 @@ public class GhostIngredientDrag<T> {
 		T ingredient,
 		double mouseX,
 		double mouseY,
-		@Nullable Rect2i origin
+		@Nullable ImmutableRect2i origin
 	) {
 		this.handler = handler;
 		this.targets = targets;
@@ -62,7 +63,7 @@ public class GhostIngredientDrag<T> {
 		final double centerX;
 		final double centerY;
 
-		Rect2i origin = drag.getOrigin();
+		ImmutableRect2i origin = drag.getOrigin();
 		if (origin != null) {
 			centerX = origin.getX() + (origin.getWidth() / 2.0);
 			centerY = origin.getY() + (origin.getHeight() / 2.0);
@@ -168,7 +169,7 @@ public class GhostIngredientDrag<T> {
 	}
 
 	@Nullable
-	public Rect2i getOrigin() {
+	public ImmutableRect2i getOrigin() {
 		return origin;
 	}
 }

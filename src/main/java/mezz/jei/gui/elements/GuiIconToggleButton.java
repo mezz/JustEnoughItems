@@ -6,8 +6,8 @@ import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public abstract class GuiIconToggleButton {
 		this.hoverChecker.updateBounds(this.button);
 	}
 
-	public void updateBounds(Rect2i area) {
+	public void updateBounds(ImmutableRect2i area) {
 		this.button.setWidth(area.getWidth());
 		this.button.setHeight(area.getHeight());
 		this.button.x = area.getX();

@@ -8,9 +8,9 @@ import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.TextFieldInputHandler;
+import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.TextComponent;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class GuiTextFieldFilter extends EditBox {
 		this.background = Internal.getTextures().getSearchBackground();
 	}
 
-	public void updateBounds(Rect2i area) {
+	public void updateBounds(ImmutableRect2i area) {
 		this.x = area.getX();
 		this.y = area.getY();
 		this.width = area.getWidth();
