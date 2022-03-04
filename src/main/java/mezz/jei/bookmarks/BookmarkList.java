@@ -18,7 +18,7 @@ public class BookmarkList implements IIngredientGridSource {
 	private final List<ITypedIngredient<?>> list = new LinkedList<>();
 	private final RegisteredIngredients registeredIngredients;
 	private final BookmarkConfig bookmarkConfig;
-	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
+	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 
 	public BookmarkList(RegisteredIngredients registeredIngredients, BookmarkConfig bookmarkConfig) {
 		this.registeredIngredients = registeredIngredients;
@@ -105,7 +105,7 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	@Override
-	public List<ITypedIngredient<?>> getIngredientList(String filterText) {
+	public List<ITypedIngredient<?>> getIngredientList() {
 		return list;
 	}
 
@@ -114,13 +114,13 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	@Override
-	public void addListener(IIngredientGridSource.Listener listener) {
+	public void addSourceListChangedListener(SourceListChangedListener listener) {
 		listeners.add(listener);
 	}
 
 	public void notifyListenersOfChange() {
-		for (IIngredientGridSource.Listener listener : listeners) {
-			listener.onChange();
+		for (SourceListChangedListener listener : listeners) {
+			listener.onSourceListChanged();
 		}
 	}
 }

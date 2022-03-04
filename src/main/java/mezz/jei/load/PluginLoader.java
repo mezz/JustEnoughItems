@@ -23,6 +23,7 @@ import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.ingredients.IListElement;
+import mezz.jei.gui.overlay.IFilterTextSource;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.recipes.FocusFactory;
@@ -74,7 +75,8 @@ public class PluginLoader {
 		IIngredientSorter ingredientSorter,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IWorldConfig worldConfig,
-		IEditModeConfig editModeConfig
+		IEditModeConfig editModeConfig,
+		IFilterTextSource filterTextSource
 	) {
 		this.timer = new LoggedTimer();
 		this.modIdHelper = modIdHelper;
@@ -99,6 +101,7 @@ public class PluginLoader {
 
 		this.timer.start("Building ingredient filter");
 		this.ingredientFilter = new IngredientFilter(
+			filterTextSource,
 			clientConfig,
 			ingredientFilterConfig,
 			registeredIngredients,

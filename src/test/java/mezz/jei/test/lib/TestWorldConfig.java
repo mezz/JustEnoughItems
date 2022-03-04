@@ -57,19 +57,4 @@ public class TestWorldConfig implements IWorldConfig {
 	public void setBookmarkEnabled(boolean value) {
 		throw new UnsupportedOperationException();
 	}
-
-	@Override
-	public String getFilterText() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean setFilterText(String filterText) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void saveFilterText() {
-		throw new UnsupportedOperationException();
-	}
 }

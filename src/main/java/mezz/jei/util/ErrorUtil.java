@@ -1,57 +1,49 @@
 package mezz.jei.util;
 
-import org.jetbrains.annotations.Nullable;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Stream;
-
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.config.ClientConfig;
-import mezz.jei.ingredients.IIngredientSupplier;
-import mezz.jei.recipes.RecipeManagerInternal;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.CrashReport;
-import net.minecraft.CrashReportCategory;
-import net.minecraft.ReportedException;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
-
 import mezz.jei.Internal;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.config.ClientConfig;
+import mezz.jei.ingredients.IIngredientSupplier;
 import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.recipes.RecipeManagerInternal;
+import net.minecraft.CrashReport;
+import net.minecraft.CrashReportCategory;
+import net.minecraft.ReportedException;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
 
 public final class ErrorUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
 	@Nullable
 	private static IModIdHelper modIdHelper;
-	@Nullable
-	private static IWorldConfig worldConfig;
 
 	private ErrorUtil() {
 	}
 
 	public static void setModIdHelper(IModIdHelper modIdHelper) {
 		ErrorUtil.modIdHelper = modIdHelper;
-	}
-
-	public static void setWorldConfig(IWorldConfig worldConfig) {
-		ErrorUtil.worldConfig = worldConfig;
 	}
 
 	public static <T> String getInfoFromRecipe(T recipe, IRecipeCategory<T> recipeCategory) {
@@ -312,10 +304,6 @@ public final class ErrorUtil {
 		jeiCategory.setDetail("Unique Id (for Blacklist)", () -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
 		jeiCategory.setDetail("Ingredient Type", () -> ingredientType.getIngredientClass().toString());
 		jeiCategory.setDetail("Error Info", () -> ingredientHelper.getErrorInfo(ingredient));
-		if (worldConfig != null) {
-			jeiCategory.setDetail("Filter Text", () -> worldConfig.getFilterText());
-			jeiCategory.setDetail("Edit Mode Enabled", () -> Boolean.toString(worldConfig.isEditModeEnabled()));
-		}
 		jeiCategory.setDetail("Debug Mode Enabled", () -> Boolean.toString(ClientConfig.getInstance().isDebugModeEnabled()));
 
 		throw new ReportedException(crashreport);

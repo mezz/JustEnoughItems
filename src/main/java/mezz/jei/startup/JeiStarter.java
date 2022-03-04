@@ -19,6 +19,8 @@ import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.events.RuntimeEventSubscriptions;
 import mezz.jei.gui.GuiEventHandler;
 import mezz.jei.gui.GuiScreenHelper;
+import mezz.jei.gui.overlay.FilterTextSource;
+import mezz.jei.gui.overlay.IFilterTextSource;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
@@ -98,6 +100,7 @@ public final class JeiStarter {
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
 		ClientConfig clientConfig = clientConfigs.getClientConfig();
 		IngredientFilterConfig ingredientFilterConfig = clientConfigs.getFilterConfig();
+		IFilterTextSource filterTextSource = new FilterTextSource();
 		PluginLoader pluginLoader = new PluginLoader(
 			plugins,
 			textures,
@@ -106,7 +109,8 @@ public final class JeiStarter {
 			ingredientSorter,
 			ingredientFilterConfig,
 			worldConfig,
-			editModeConfig
+			editModeConfig,
+			filterTextSource
 		);
 
 		RegisteredIngredients registeredIngredients = pluginLoader.getRegisteredIngredients();
@@ -136,7 +140,6 @@ public final class JeiStarter {
 
 		IngredientGridWithNavigation ingredientListGridNavigation = new IngredientGridWithNavigation(
 			ingredientFilter,
-			worldConfig,
 			guiScreenHelper,
 			ingredientListGrid,
 			worldConfig,
@@ -147,6 +150,7 @@ public final class JeiStarter {
 		);
 		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(
 			ingredientFilter,
+			filterTextSource,
 			registeredIngredients,
 			guiScreenHelper,
 			ingredientListGridNavigation,
@@ -167,7 +171,6 @@ public final class JeiStarter {
 
 		IngredientGridWithNavigation bookmarkListGridNavigation = new IngredientGridWithNavigation(
 			bookmarkList,
-			() -> "",
 			guiScreenHelper,
 			bookmarkListGrid,
 			worldConfig,
@@ -185,7 +188,7 @@ public final class JeiStarter {
 			guiScreenHelper
 		);
 
-		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, worldConfig);
+		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
 		IIngredientManager ingredientManager = pluginLoader.getIngredientManager();
 		IngredientVisibility ingredientVisibility = pluginLoader.getIngredientVisibility();
 

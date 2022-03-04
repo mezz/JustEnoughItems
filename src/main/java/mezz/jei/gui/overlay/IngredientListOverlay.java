@@ -55,6 +55,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public IngredientListOverlay(
 		IIngredientGridSource ingredientGridSource,
+		IFilterTextSource filterTextSource,
 		RegisteredIngredients registeredIngredients,
 		GuiScreenHelper guiScreenHelper,
 		IngredientGridWithNavigation contents,
@@ -66,21 +67,15 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
 
-		this.searchField = new GuiTextFieldFilter(ingredientGridSource);
-		ingredientGridSource.addListener(() -> {
-			this.searchField.setValue(worldConfig.getFilterText());
-			updateBounds(true);
-		});
-		this.searchField.setValue(worldConfig.getFilterText());
-		this.searchField.setResponder(text -> {
-			if (this.worldConfig.setFilterText(text)) {
-				updateBounds(true);
-			}
-		});
+		this.searchField = new GuiTextFieldFilter();
+		this.searchField.setValue(filterTextSource.getFilterText());
+		this.searchField.setFocused(false);
+		this.searchField.setResponder(filterTextSource::setFilterText);
+
+		ingredientGridSource.addSourceListChangedListener(() -> updateBounds(true));
 
 		this.configButton = ConfigButton.create(this, worldConfig);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, registeredIngredients, worldConfig);
-		this.searchField.setFocused(false);
 	}
 
 	public boolean isListDisplayed() {
@@ -96,7 +91,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	public void updateScreen(@Nullable Screen guiScreen, boolean exclusionAreasChanged) {
-		final boolean wasDisplayed = isListDisplayed();
 		IGuiProperties guiProperties = guiScreenHelper.getGuiProperties(guiScreen);
 		if (guiProperties == null) {
 			if (this.guiProperties != null) {
@@ -110,10 +104,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 				updateNewScreen(guiProperties, guiPropertiesChanged);
 			}
 		}
-
-		if (wasDisplayed && !isListDisplayed()) {
-			worldConfig.saveFilterText();
-		}
 	}
 
 	private void updateNewScreen(IGuiProperties guiProperties, boolean guiPropertiesChanged) {
@@ -125,7 +115,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		updateBounds(false);
 	}
 
-	private void updateBounds(boolean filterChanged) {
+	private void updateBounds(boolean resetToFirstPage) {
 		if (this.guiProperties == null) {
 			return;
 		}
@@ -139,11 +129,14 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		final ImmutableRect2i searchArea = searchAndConfigArea.cropRight(BUTTON_SIZE);
 		final ImmutableRect2i configButtonArea = searchAndConfigArea.keepRight(BUTTON_SIZE);
 
+		int searchTextColor = this.contents.isEmpty() ? 0xFFFF0000 : 0xFFFFFFFF;
+		this.searchField.setTextColor(searchTextColor);
 		this.searchField.updateBounds(searchArea);
+
 		this.configButton.updateBounds(configButtonArea);
 
 		if (this.hasRoom) {
-			this.contents.updateLayout(filterChanged);
+			this.contents.updateLayout(resetToFirstPage);
 		}
 	}
 

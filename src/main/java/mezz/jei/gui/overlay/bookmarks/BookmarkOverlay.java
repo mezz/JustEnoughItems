@@ -58,7 +58,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 		this.worldConfig = worldConfig;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, textures, worldConfig);
 		this.contents = contents;
-		bookmarkList.addListener(() -> {
+		bookmarkList.addSourceListChangedListener(() -> {
 			worldConfig.setBookmarkEnabled(!bookmarkList.isEmpty());
 			Set<ImmutableRect2i> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
 			this.hasRoom = updateBounds(guiExclusionAreas);

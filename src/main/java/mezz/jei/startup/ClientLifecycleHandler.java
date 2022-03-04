@@ -40,7 +40,6 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final JeiStarter jeiStarter;
-	private final WorldConfig worldConfig;
 	private final ModIdFormattingConfig modIdFormattingConfig;
 	private final StartEventObserver startEventObserver = new StartEventObserver(this::startJei, this::restartJei);
 	private final RuntimeEventSubscriptions runtimeSubscriptions;
@@ -60,9 +59,8 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 
 		IIngredientSorter ingredientSorter = createIngredientSorter(clientConfig, jeiConfigurationDir);
 
-		this.worldConfig = new WorldConfig(jeiConfigurationDir);
-		networkHandler.createClientPacketHandler(this.worldConfig);
-		ErrorUtil.setWorldConfig(this.worldConfig);
+		WorldConfig worldConfig = new WorldConfig();
+		networkHandler.createClientPacketHandler(worldConfig);
 
 		List<IModPlugin> plugins = AnnotatedInstanceUtil.getModPlugins();
 
@@ -73,7 +71,7 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 			textures,
 			jeiClientConfigs,
 			editModeConfig,
-			this.worldConfig,
+			worldConfig,
 			bookmarkConfig,
 			modIdHelper,
 			recipeCategorySortingConfig,
@@ -82,7 +80,6 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 	}
 
 	public void register(PermanentEventSubscriptions subscriptions) {
-		this.worldConfig.register(subscriptions);
 		this.startEventObserver.register(subscriptions);
 
 		subscriptions.register(DebugRestartJeiEvent.class, this::onRestartJeiEvent);
@@ -104,7 +101,6 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 			LOGGER.error("Failed to start JEI, it is already running.");
 			return;
 		}
-		this.worldConfig.syncWorldConfig();
 		this.modIdFormattingConfig.checkForModNameFormatOverride();
 
 		this.jeiStarter.start(this.runtimeSubscriptions);

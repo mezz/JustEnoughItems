@@ -2,36 +2,33 @@ package mezz.jei.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientFilter;
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.gui.overlay.IFilterTextSource;
 import mezz.jei.util.ErrorUtil;
 
 import java.util.List;
 
 public class IngredientFilterApi implements IIngredientFilter {
 	private final IngredientFilter ingredientFilter;
-	private final IWorldConfig worldConfig;
+	private final IFilterTextSource filterTextSource;
 
-	public IngredientFilterApi(IngredientFilter ingredientFilter, IWorldConfig worldConfig) {
+	public IngredientFilterApi(IngredientFilter ingredientFilter, IFilterTextSource filterTextSource) {
 		this.ingredientFilter = ingredientFilter;
-		this.worldConfig = worldConfig;
+		this.filterTextSource = filterTextSource;
 	}
 
 	@Override
 	public String getFilterText() {
-		return worldConfig.getFilterText();
+		return filterTextSource.getFilterText();
 	}
 
 	@Override
 	public void setFilterText(String filterText) {
 		ErrorUtil.checkNotNull(filterText, "filterText");
-		if (worldConfig.setFilterText(filterText)) {
-			ingredientFilter.notifyListenersOfChange();
-		}
+		filterTextSource.setFilterText(filterText);
 	}
 
 	@Override
 	public <T> List<T> getFilteredIngredients(IIngredientType<T> ingredientType) {
-		String filterText = worldConfig.getFilterText();
-		return ingredientFilter.getFilteredIngredients(filterText, ingredientType);
+		return ingredientFilter.getFilteredIngredients(ingredientType);
 	}
 }

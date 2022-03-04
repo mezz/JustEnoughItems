@@ -1,6 +1,6 @@
 package mezz.jei.config;
 
-public interface IWorldConfig extends IFilterTextSource {
+public interface IWorldConfig {
 	boolean isOverlayEnabled();
 
 	void toggleOverlayEnabled();
@@ -22,11 +22,4 @@ public interface IWorldConfig extends IFilterTextSource {
 	void toggleBookmarkEnabled();
 
 	void setBookmarkEnabled(boolean value);
-
-	@Override
-	String getFilterText();
-
-	boolean setFilterText(String filterText);
-
-	void saveFilterText();
 }

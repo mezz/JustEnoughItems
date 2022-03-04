@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface IIngredientGridSource {
 	@Unmodifiable
-	List<ITypedIngredient<?>> getIngredientList(String filterText);
+	List<ITypedIngredient<?>> getIngredientList();
 
-	void addListener(Listener listener);
+	void addSourceListChangedListener(SourceListChangedListener listener);
 
-	interface Listener {
-		void onChange();
+	interface SourceListChangedListener {
+		void onSourceListChanged();
 	}
 }

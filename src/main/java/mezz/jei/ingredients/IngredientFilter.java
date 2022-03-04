@@ -12,6 +12,7 @@ import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.events.EditModeToggleEvent;
 import mezz.jei.events.RuntimeEventSubscriptions;
 import mezz.jei.gui.ingredients.IListElement;
+import mezz.jei.gui.overlay.IFilterTextSource;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.search.ElementSearch;
 import mezz.jei.search.ElementSearchLowMem;
@@ -45,6 +46,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
+	private final IFilterTextSource filterTextSource;
 	private final RegisteredIngredients registeredIngredients;
 	private final IIngredientSorter sorter;
 	private final IngredientVisibility ingredientVisibility;
@@ -54,11 +56,11 @@ public class IngredientFilter implements IIngredientGridSource {
 	private final Set<String> modNamesForSorting = new HashSet<>();
 
 	@Nullable
-	private String filterCached;
-	private List<ITypedIngredient<?>> ingredientListCached = Collections.emptyList();
-	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
+	private List<ITypedIngredient<?>> ingredientListCached;
+	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 
 	public IngredientFilter(
+		IFilterTextSource filterTextSource,
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
 		RegisteredIngredients registeredIngredients,
@@ -67,6 +69,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		IModIdHelper modIdHelper,
 		IngredientVisibility ingredientVisibility
 	) {
+		this.filterTextSource = filterTextSource;
 		this.registeredIngredients = registeredIngredients;
 		this.sorter = sorter;
 		this.ingredientVisibility = ingredientVisibility;
@@ -84,6 +87,11 @@ public class IngredientFilter implements IIngredientGridSource {
 			.filter(Objects::nonNull)
 			.forEach(this::addIngredient);
 		LOGGER.info("Added {} ingredients", ingredients.size());
+
+		this.filterTextSource.addListener(filterText -> {
+			ingredientListCached = null;
+			notifyListenersOfChange();
+		});
 	}
 
 	public void register(RuntimeEventSubscriptions subscriptions) {
@@ -103,7 +111,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	public void invalidateCache() {
-		this.filterCached = null;
+		ingredientListCached = null;
 		sorter.invalidateCache();
 	}
 
@@ -133,7 +141,7 @@ public class IngredientFilter implements IIngredientGridSource {
 			changed |= updateHiddenState(element);
 		}
 		if (changed) {
-			this.filterCached = null;
+			ingredientListCached = null;
 			notifyListenersOfChange();
 		}
 	}
@@ -149,11 +157,11 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	@Override
-	public List<ITypedIngredient<?>> getIngredientList(String filterText) {
+	public List<ITypedIngredient<?>> getIngredientList() {
+		String filterText = this.filterTextSource.getFilterText();
 		filterText = filterText.toLowerCase();
-		if (!filterText.equals(filterCached)) {
+		if (ingredientListCached == null) {
 			ingredientListCached = getIngredientListUncached(filterText);
-			filterCached = filterText;
 		}
 		return ingredientListCached;
 	}
@@ -171,9 +179,8 @@ public class IngredientFilter implements IIngredientGridSource {
 		return Collections.unmodifiableSet(this.modNamesForSorting);
 	}
 
-	public <T> List<T> getFilteredIngredients(String filterText, IIngredientType<T> ingredientType) {
-		List<ITypedIngredient<?>> ingredientList = getIngredientList(filterText);
-		return ingredientList.stream()
+	public <T> List<T> getFilteredIngredients(IIngredientType<T> ingredientType) {
+		return getIngredientList().stream()
 			.map(i -> i.getIngredient(ingredientType))
 			.flatMap(Optional::stream)
 			.toList();
@@ -230,7 +237,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		List<ITypedIngredient<T>> matchingElements = new ArrayList<>();
 
 		IListElementInfo<T> matchingElement = searchResult.get();
-		List<ITypedIngredient<?>> ingredientList = this.getIngredientList("");
+		List<ITypedIngredient<?>> ingredientList = this.getIngredientListUncached("");
 		final int startingIndex = ingredientList.indexOf(matchingElement.getTypedIngredient());
 		matchingIndexes.add(startingIndex);
 		matchingElements.add(matchingElement.getTypedIngredient());
@@ -369,13 +376,13 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	@Override
-	public void addListener(IIngredientGridSource.Listener listener) {
+	public void addSourceListChangedListener(SourceListChangedListener listener) {
 		listeners.add(listener);
 	}
 
-	public void notifyListenersOfChange() {
-		for (IIngredientGridSource.Listener listener : listeners) {
-			listener.onChange();
+	private void notifyListenersOfChange() {
+		for (SourceListChangedListener listener : listeners) {
+			listener.onSourceListChanged();
 		}
 	}
 }

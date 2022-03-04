@@ -21,18 +21,16 @@ public class GuiTextFieldFilter extends EditBox {
 	private static final TextHistory history = new TextHistory();
 
 	private final HoverChecker hoverChecker;
-	private final IIngredientGridSource ingredientSource;
 	private final DrawableNineSliceTexture background;
 
 	private boolean previousKeyboardRepeatEnabled;
 
-	public GuiTextFieldFilter(IIngredientGridSource ingredientSource) {
+	public GuiTextFieldFilter() {
 		// TODO narrator string
 		super(Minecraft.getInstance().font, 0, 0, 0, 0, TextComponent.EMPTY);
 
 		setMaxLength(maxSearchLength);
 		this.hoverChecker = new HoverChecker();
-		this.ingredientSource = ingredientSource;
 
 		this.background = Internal.getTextures().getSearchBackground();
 	}
@@ -50,12 +48,6 @@ public class GuiTextFieldFilter extends EditBox {
 	public void setValue(String filterText) {
 		if (!filterText.equals(getValue())) {
 			super.setValue(filterText);
-		}
-		List<?> ingredientList = ingredientSource.getIngredientList(filterText);
-		if (ingredientList.size() == 0) {
-			setTextColor(0xFFFF0000);
-		} else {
-			setTextColor(0xFFFFFFFF);
 		}
 	}
 

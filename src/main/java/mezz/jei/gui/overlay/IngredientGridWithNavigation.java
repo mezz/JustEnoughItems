@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.config.IClientConfig;
-import mezz.jei.config.IFilterTextSource;
 import mezz.jei.config.IIngredientGridConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
@@ -26,6 +25,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,7 +46,6 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private final PageNavigation navigation;
 	private final GuiScreenHelper guiScreenHelper;
 	private final IIngredientGridConfig gridConfig;
-	private final IFilterTextSource filterTextSource;
 	private final IWorldConfig worldConfig;
 	private final IClientConfig clientConfig;
 	private final IngredientGrid ingredientGrid;
@@ -59,7 +58,6 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public IngredientGridWithNavigation(
 		IIngredientGridSource ingredientSource,
-		IFilterTextSource filterTextSource,
 		GuiScreenHelper guiScreenHelper,
 		IngredientGrid ingredientGrid,
 		IWorldConfig worldConfig,
@@ -68,7 +66,6 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		DrawableNineSliceTexture background,
 		DrawableNineSliceTexture slotBackground
 	) {
-		this.filterTextSource = filterTextSource;
 		this.worldConfig = worldConfig;
 		this.clientConfig = clientConfig;
 		this.ingredientGrid = ingredientGrid;
@@ -79,14 +76,15 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.navigation = new PageNavigation(this.pageDelegate, false);
 		this.background = background;
 		this.slotBackground = slotBackground;
+
+		this.ingredientSource.addSourceListChangedListener(() -> updateLayout(true));
 	}
 
 	public void updateLayout(boolean resetToFirstPage) {
 		if (resetToFirstPage) {
 			firstItemIndex = 0;
 		}
-		String filterText = filterTextSource.getFilterText();
-		List<ITypedIngredient<?>> ingredientList = ingredientSource.getIngredientList(filterText);
+		List<ITypedIngredient<?>> ingredientList = ingredientSource.getIngredientList();
 		if (firstItemIndex >= ingredientList.size()) {
 			firstItemIndex = 0;
 		}
@@ -208,11 +206,14 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		return this.ingredientGrid.getVisibleIngredients(ingredientType);
 	}
 
+	public boolean isEmpty() {
+		return this.ingredientSource.getIngredientList().isEmpty();
+	}
+
 	private class IngredientGridPaged implements IPaged {
 		@Override
 		public boolean nextPage() {
-			String filterText = filterTextSource.getFilterText();
-			final int itemsCount = ingredientSource.getIngredientList(filterText).size();
+			final int itemsCount = ingredientSource.getIngredientList().size();
 			if (itemsCount > 0) {
 				firstItemIndex += ingredientGrid.size();
 				if (firstItemIndex >= itemsCount) {
@@ -235,8 +236,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 				updateLayout(false);
 				return false;
 			}
-			String filterText = filterTextSource.getFilterText();
-			final int itemsCount = ingredientSource.getIngredientList(filterText).size();
+			final int itemsCount = ingredientSource.getIngredientList().size();
 
 			int pageNum = firstItemIndex / itemsPerPage;
 			if (pageNum == 0) {
@@ -256,24 +256,21 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 		@Override
 		public boolean hasNext() {
-			String filterText = filterTextSource.getFilterText();
 			// true if there is more than one page because this wraps around
 			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientSource.getIngredientList(filterText).size() > itemsPerPage;
+			return itemsPerPage > 0 && ingredientSource.getIngredientList().size() > itemsPerPage;
 		}
 
 		@Override
 		public boolean hasPrevious() {
-			String filterText = filterTextSource.getFilterText();
 			// true if there is more than one page because this wraps around
 			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientSource.getIngredientList(filterText).size() > itemsPerPage;
+			return itemsPerPage > 0 && ingredientSource.getIngredientList().size() > itemsPerPage;
 		}
 
 		@Override
 		public int getPageCount() {
-			String filterText = filterTextSource.getFilterText();
-			final int itemCount = ingredientSource.getIngredientList(filterText).size();
+			final int itemCount = ingredientSource.getIngredientList().size();
 			final int stacksPerPage = ingredientGrid.size();
 			if (stacksPerPage == 0) {
 				return 1;

@@ -3,6 +3,7 @@ package mezz.jei.api.gui.ingredient;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.recipe.IFocusGroup;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 
