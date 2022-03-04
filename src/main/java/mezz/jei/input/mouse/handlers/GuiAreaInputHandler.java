@@ -4,11 +4,10 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.ingredients.RegisteredIngredients;
-import mezz.jei.recipes.FocusFactory;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.recipes.FocusFactory;
 import mezz.jei.util.ImmutableRect2i;
-import mezz.jei.util.MutableRect2i;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
@@ -37,9 +36,8 @@ public class GuiAreaInputHandler implements IUserInputHandler {
 							clickableArea.onClick(focusFactory, recipesGui);
 						}
 
-						ImmutableRect2i screenArea = new MutableRect2i(clickableArea.getArea())
-							.addOffset(guiContainer.getGuiLeft(), guiContainer.getGuiTop())
-							.toImmutable();
+						ImmutableRect2i screenArea = new ImmutableRect2i(clickableArea.getArea())
+							.addOffset(guiContainer.getGuiLeft(), guiContainer.getGuiTop());
 						return LimitedAreaInputHandler.create(this, screenArea);
 					});
 			}

@@ -119,33 +119,37 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		final ImmutableRect2i gridArea;
 		if (navigationEnabled) {
 			gridArea = cropToAvoidNavigationArea(availableArea, guiExclusionAreas, this.ingredientGrid.maxWidth(), this.ingredientGrid.maxHeight())
-				.toMutable()
 				.cropTop(NAVIGATION_HEIGHT + INNER_PADDING)
-				.insetByPadding(INNER_PADDING)
-				.toImmutable();
+				.insetBy(INNER_PADDING);
 		} else {
-			gridArea = availableArea.insetByPadding(INNER_PADDING);
+			gridArea = availableArea.insetBy(INNER_PADDING);
 		}
 		return this.ingredientGrid.updateBounds(gridArea, guiExclusionAreas);
 	}
 
 	public boolean updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas) {
+		ImmutableRect2i availableGridArea;
+		if (gridConfig.drawBackground()) {
+			availableGridArea = availableArea.insetBy(BORDER_PADDING + INNER_PADDING);
+		} else {
+			availableGridArea = availableArea;
+		}
 		final boolean navigationEnabled =
 			switch (this.gridConfig.getButtonNavigationVisibility()) {
 				case ENABLED -> true;
 				case DISABLED -> false;
 				case AUTO_HIDE ->
-					updateGridBounds(availableArea, guiExclusionAreas, false) &&
+					updateGridBounds(availableGridArea, guiExclusionAreas, false) &&
 						this.pageDelegate.getPageCount() > 1;
 			};
-		final boolean gridHasRoom = updateGridBounds(availableArea, guiExclusionAreas, navigationEnabled);
+		final boolean gridHasRoom = updateGridBounds(availableGridArea, guiExclusionAreas, navigationEnabled);
 		if (!gridHasRoom) {
 			return false;
 		}
 
 		this.slotBackgroundArea = this.ingredientGrid.getArea();
-		if (gridConfig.getBackgroundType() != BackgroundType.NONE) {
-			this.slotBackgroundArea = this.slotBackgroundArea.expandByPadding(INNER_PADDING);
+		if (gridConfig.drawBackground()) {
+			this.slotBackgroundArea = this.slotBackgroundArea.expandBy(INNER_PADDING);
 		}
 
 		ImmutableRect2i navigationArea = ImmutableRect2i.EMPTY;
@@ -157,8 +161,8 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.navigation.updateBounds(navigationArea);
 
 		this.backgroundArea = MathUtil.union(this.slotBackgroundArea, navigationArea);
-		if (gridConfig.getBackgroundType() != BackgroundType.NONE) {
-			this.backgroundArea = this.backgroundArea.expandByPadding(BORDER_PADDING);
+		if (gridConfig.drawBackground()) {
+			this.backgroundArea = this.backgroundArea.expandBy(BORDER_PADDING);
 		}
 
 		return true;
@@ -169,7 +173,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-		if (gridConfig.getBackgroundType() != BackgroundType.NONE) {
+		if (gridConfig.drawBackground()) {
 			background.draw(poseStack, this.backgroundArea);
 			slotBackground.draw(poseStack, this.slotBackgroundArea);
 		}

@@ -93,18 +93,18 @@ public class ImmutableRect2i {
 		return new ImmutableRect2i(this.x, this.y - y, this.width, this.height);
 	}
 
-	public ImmutableRect2i insetByPadding(@Nonnegative int padding) {
-		if (padding == 0) {
+	public ImmutableRect2i insetBy(@Nonnegative int amount) {
+		if (amount == 0) {
 			return this;
 		}
-		return new ImmutableRect2i(this.x + padding, this.y + padding, this.width - (padding * 2), this.height - (padding * 2));
+		return new ImmutableRect2i(this.x + amount, this.y + amount, this.width - (amount * 2), this.height - (amount * 2));
 	}
 
-	public ImmutableRect2i expandByPadding(@Nonnegative int padding) {
-		if (padding == 0) {
+	public ImmutableRect2i expandBy(@Nonnegative int amount) {
+		if (amount == 0) {
 			return this;
 		}
-		return new ImmutableRect2i(this.x - padding, this.y - padding, this.width + (padding * 2), this.height + (padding * 2));
+		return new ImmutableRect2i(this.x - amount, this.y - amount, this.width + (amount * 2), this.height + (amount * 2));
 	}
 
 	public ImmutableRect2i cropRight(@Nonnegative int amount) {
@@ -171,10 +171,6 @@ public class ImmutableRect2i {
 
 	public ImmutableRect2i matchWidthAndX(ImmutableRect2i rect) {
 		return new ImmutableRect2i(rect.getX(), this.y, rect.getWidth(), this.height);
-	}
-
-	public MutableRect2i toMutable() {
-		return new MutableRect2i(this);
 	}
 
 	@Override

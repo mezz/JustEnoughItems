@@ -10,17 +10,15 @@ import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.NullInputHandler;
 import mezz.jei.input.mouse.handlers.ProxyInputHandler;
 import mezz.jei.util.ImmutableRect2i;
-import mezz.jei.util.MutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-
 import org.jetbrains.annotations.Nullable;
-import java.util.Optional;
+
 import java.util.Set;
 import java.util.stream.Stream;
 
 public class LeftAreaDispatcher implements IRecipeFocusSource {
-	private static final int SCREEN_EDGE_PADDING = 7;
+	private static final int BORDER_MARGIN = 6;
 
 	private final ILeftAreaContent contents;
 	private final GuiScreenHelper guiScreenHelper;
@@ -54,22 +52,27 @@ public class LeftAreaDispatcher implements IRecipeFocusSource {
 			if (forceUpdate || !GuiProperties.areEqual(guiProperties, currentGuiProperties)) {
 				Set<ImmutableRect2i> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
 				guiProperties = currentGuiProperties;
-				canShow = makeDisplayArea(guiProperties)
-					.map(displayArea -> {
-						contents.updateBounds(displayArea, guiExclusionAreas);
-						return true;
-					})
-					.orElse(false);
+				ImmutableRect2i displayArea = makeDisplayArea(guiProperties);
+				if (displayArea.isEmpty()) {
+					canShow = false;
+				} else {
+					contents.updateBounds(displayArea, guiExclusionAreas);
+					canShow = true;
+				}
 			} else {
 				canShow = true;
 			}
 		}
 	}
 
-	private static Optional<ImmutableRect2i> makeDisplayArea(IGuiProperties guiProperties) {
-		return new MutableRect2i(0, 0, guiProperties.getGuiLeft(), guiProperties.getScreenHeight())
-			.insetByPadding(SCREEN_EDGE_PADDING)
-			.toImmutableSafe();
+	private static ImmutableRect2i makeDisplayArea(IGuiProperties guiProperties) {
+		int guiLeft = guiProperties.getGuiLeft();
+		int screenHeight = guiProperties.getScreenHeight();
+		if (guiLeft <= 2 * BORDER_MARGIN || screenHeight < 2 * BORDER_MARGIN) {
+			return ImmutableRect2i.EMPTY;
+		}
+		return new ImmutableRect2i(0, 0, guiLeft, screenHeight)
+			.insetBy(BORDER_MARGIN);
 	}
 
 	@Override

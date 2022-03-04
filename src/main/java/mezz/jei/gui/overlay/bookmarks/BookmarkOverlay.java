@@ -102,11 +102,10 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 
 		ImmutableRect2i contentsArea = this.contents.getBackgroundArea();
 
-		ImmutableRect2i bookmarkButtonArea = parentArea.toMutable()
+		ImmutableRect2i bookmarkButtonArea = parentArea
 			.matchWidthAndX(contentsArea)
 			.keepBottom(BUTTON_SIZE)
-			.keepLeft(BUTTON_SIZE)
-			.toImmutable();
+			.keepLeft(BUTTON_SIZE);
 		this.bookmarkButton.updateBounds(bookmarkButtonArea);
 
 		if (contentsHasRoom) {

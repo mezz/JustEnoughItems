@@ -1,6 +1,5 @@
 package mezz.jei.config;
 
-import mezz.jei.gui.overlay.BackgroundType;
 import mezz.jei.gui.overlay.HorizontalAlignment;
 import mezz.jei.gui.overlay.NavigationVisibility;
 import mezz.jei.gui.overlay.VerticalAlignment;
@@ -21,7 +20,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private final ForgeConfigSpec.EnumValue<HorizontalAlignment> horizontalAlignment;
 	private final ForgeConfigSpec.EnumValue<VerticalAlignment> verticalAlignment;
 	private final ForgeConfigSpec.EnumValue<NavigationVisibility> buttonNavigationVisibility;
-	private final ForgeConfigSpec.EnumValue<BackgroundType> backgroundType;
+	private final ForgeConfigSpec.BooleanValue drawBackground;
 
 	public IngredientGridConfig(String categoryName, ForgeConfigSpec.Builder builder, HorizontalAlignment defaultHorizontalAlignment) {
 		builder.push(categoryName);
@@ -41,8 +40,8 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 			builder.comment("Visibility of the top page buttons. Use AUTO_HIDE to only show it when there are multiple pages.");
 			buttonNavigationVisibility = builder.defineEnum("ButtonNavigationVisibility", NavigationVisibility.ENABLED);
 
-			builder.comment("The type of background drawn behind the gui.");
-			backgroundType = builder.defineEnum("BackgroundType", BackgroundType.NONE);
+			builder.comment("Set to true to draw a background texture behind the gui.");
+			drawBackground = builder.define("DrawBackground", false);
 		}
 		builder.pop();
 	}
@@ -68,8 +67,8 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	}
 
 	@Override
-	public BackgroundType getBackgroundType() {
-		return backgroundType.get();
+	public boolean drawBackground() {
+		return drawBackground.get();
 	}
 
 	@Override

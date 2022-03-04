@@ -34,10 +34,10 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFocusSource, ICharTypedHandler {
-	private static final int SCREEN_EDGE_PADDING = 7;
+	private static final int BORDER_MARGIN = 6;
 	private static final int INNER_PADDING = 2;
 	private static final int BUTTON_SIZE = 20;
-	private static final int SEARCH_HEIGHT = 20;
+	private static final int SEARCH_HEIGHT = BUTTON_SIZE;
 
 	private final GuiIconToggleButton configButton;
 	private final IngredientGridWithNavigation contents;
@@ -92,7 +92,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		int guiRight = GuiProperties.getGuiRight(guiProperties);
 		return screenRectangle
 			.cropLeft(guiRight)
-			.insetByPadding(SCREEN_EDGE_PADDING);
+			.insetBy(BORDER_MARGIN);
 	}
 
 	public void updateScreen(@Nullable Screen guiScreen, boolean exclusionAreasChanged) {

@@ -48,14 +48,12 @@ public class RecipeGuiTabs implements IPaged {
 		}
 
 		final ImmutableRect2i tabsArea = recipesGui.getArea()
-			.toMutable()
 			.keepTop(RecipeGuiTab.TAB_HEIGHT)
-			.moveUp(RecipeGuiTab.TAB_HEIGHT) // move up above the recipe area
-			.moveDown(TAB_GUI_OVERLAP) // overlap the recipe gui
+			// move up above the recipe area and overlap the recipe gui
+			.moveUp(RecipeGuiTab.TAB_HEIGHT - TAB_GUI_OVERLAP)
 			// inset to avoid the recipe gui corners
 			.cropLeft(TAB_HORIZONTAL_INSET)
-			.cropRight(TAB_HORIZONTAL_INSET)
-			.toImmutable();
+			.cropRight(TAB_HORIZONTAL_INSET);
 
 		categoriesPerPage = Math.min(tabsArea.getWidth() / RecipeGuiTab.TAB_WIDTH, categories.size());
 		final int tabsWidth = categoriesPerPage * RecipeGuiTab.TAB_WIDTH;
