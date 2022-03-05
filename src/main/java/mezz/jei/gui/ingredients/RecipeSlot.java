@@ -146,7 +146,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		poseStack.pushPose();
 		{
 			poseStack.translate(xOffset, yOffset, 0);
-			drawHighlight(poseStack, 0x7FFFFFFF);
+			drawHighlight(poseStack, 0x80FFFFFF);
 		}
 		poseStack.popPose();
 

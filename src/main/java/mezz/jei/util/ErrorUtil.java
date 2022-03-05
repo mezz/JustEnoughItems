@@ -10,7 +10,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.ClientConfig;
 import mezz.jei.ingredients.IIngredientSupplier;
 import mezz.jei.ingredients.RegisteredIngredients;
-import mezz.jei.recipes.RecipeManagerInternal;
+import mezz.jei.recipes.IngredientSupplierHelper;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
@@ -52,7 +52,7 @@ public final class ErrorUtil {
 		recipeInfoBuilder.append(recipeName).append(" {");
 
 		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
-		IIngredientSupplier ingredientSupplier = RecipeManagerInternal.getIngredientSupplier(recipe, recipeCategory, registeredIngredients);
+		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, registeredIngredients);
 		if (ingredientSupplier == null) {
 			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
 			return recipeInfoBuilder.toString();

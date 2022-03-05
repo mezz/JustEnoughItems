@@ -9,11 +9,9 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
-import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import mezz.jei.ingredients.IIngredientSupplier;
-import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.IngredientVisibility;
-import mezz.jei.ingredients.Ingredients;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -34,14 +32,16 @@ public class RecipeManagerInternal {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final ImmutableList<IRecipeCategory<?>> recipeCategories;
-	private final Set<ResourceLocation> hiddenRecipeCategoryUids = new HashSet<>();
 	private final IngredientVisibility ingredientVisibility;
 	private final RegisteredIngredients registeredIngredients;
-	private @Nullable ImmutableList<IRecipeCategory<?>> recipeCategoriesVisibleCache = null;
 	private final RecipeCategoryDataMap recipeCategoriesDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
 	private final EnumMap<RecipeIngredientRole, RecipeMap> recipeMaps;
 	private final List<RecipeManagerPluginSafeWrapper> plugins = new ArrayList<>();
+	private final Set<ResourceLocation> hiddenRecipeCategoryUids = new HashSet<>();
+
+	@Nullable
+	private ImmutableList<IRecipeCategory<?>> recipeCategoriesVisibleCache = null;
 
 	public RecipeManagerInternal(
 		ImmutableList<IRecipeCategory<?>> recipeCategories,
@@ -51,8 +51,9 @@ public class RecipeManagerInternal {
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		IngredientVisibility ingredientVisibility
 	) {
-		this.registeredIngredients = registeredIngredients;
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
+
+		this.registeredIngredients = registeredIngredients;
 		this.ingredientVisibility = ingredientVisibility;
 
 		Collection<ResourceLocation> recipeCategoryResourceLocations = recipeCategories.stream()
@@ -92,7 +93,7 @@ public class RecipeManagerInternal {
 	}
 
 	public <T> void addRecipes(Collection<T> recipes, ResourceLocation recipeCategoryUid) {
-		LOGGER.debug("Loading recipes: " + recipeCategoryUid);
+		LOGGER.debug("Adding recipes: " + recipeCategoryUid);
 
 		RecipeCategoryData<T> recipeCategoryData = recipeCategoriesDataMap.get(recipes, recipeCategoryUid);
 		IRecipeCategory<T> recipeCategory = recipeCategoryData.getRecipeCategory();
@@ -103,7 +104,7 @@ public class RecipeManagerInternal {
 				if (hiddenRecipes.contains(recipe) || !recipeCategory.isHandled(recipe)) {
 					return false;
 				}
-				IIngredientSupplier ingredientSupplier = getIngredientSupplier(recipe, recipeCategory, registeredIngredients);
+				IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, registeredIngredients);
 				if (ingredientSupplier == null) {
 					return false;
 				}
@@ -115,32 +116,6 @@ public class RecipeManagerInternal {
 			recipeCategoryData.addRecipes(addedRecipes);
 			recipeCategoriesVisibleCache = null;
 		}
-	}
-
-	@SuppressWarnings({"removal"})
-	@Nullable
-	public static <T> IIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory, RegisteredIngredients registeredIngredients) {
-		try {
-			RecipeLayoutBuilder builder = new RecipeLayoutBuilder(registeredIngredients, 0);
-			recipeCategory.setRecipe(builder, recipe, FocusGroup.EMPTY);
-			if (builder.isUsed()) {
-				return builder;
-			}
-		} catch (RuntimeException | LinkageError e) {
-			String recipeName = ErrorUtil.getNameForRecipe(recipe);
-			LOGGER.error("Found a broken recipe, failed to setRecipe with RecipeLayoutBuilder: {}\n", recipeName, e);
-		}
-
-		try {
-			Ingredients ingredients = new Ingredients();
-			recipeCategory.setIngredients(recipe, ingredients);
-			return ingredients;
-		} catch (RuntimeException | LinkageError e) {
-			String recipeName = ErrorUtil.getNameForRecipe(recipe);
-			LOGGER.error("Found a broken recipe, failed to set Ingredients: {}\n", recipeName, e);
-		}
-
-		return null;
 	}
 
 	private <T> boolean addRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientSupplier ingredientSupplier) {
@@ -240,20 +215,16 @@ public class RecipeManagerInternal {
 	private static Stream<ResourceLocation> getPluginRecipeCategoryUidStream(IRecipeManagerPlugin plugin, IFocusGroup focuses) {
 		List<IFocus<?>> allFocuses = focuses.getAllFocuses();
 		return allFocuses.stream()
-			.flatMap(focus -> {
-				List<ResourceLocation> recipeCategoryUids = plugin.getRecipeCategoryUids(focus);
-				return recipeCategoryUids.stream();
-			});
+			.map(plugin::getRecipeCategoryUids)
+			.flatMap(List::stream);
 	}
 
 	private static <T> Stream<T> getPluginRecipeStream(IRecipeManagerPlugin plugin, IRecipeCategory<T> recipeCategory, IFocusGroup focuses) {
 		if (!focuses.isEmpty()) {
 			List<IFocus<?>> allFocuses = focuses.getAllFocuses();
 			return allFocuses.stream()
-				.flatMap(focus -> {
-					List<T> recipes = plugin.getRecipes(recipeCategory, focus);
-					return recipes.stream();
-				});
+				.map(focus -> plugin.getRecipes(recipeCategory, focus))
+				.flatMap(List::stream);
 		}
 		return plugin.getRecipes(recipeCategory).stream();
 	}
