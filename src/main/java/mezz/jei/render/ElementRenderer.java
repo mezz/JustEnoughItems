@@ -4,14 +4,16 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.util.ImmutableRect2i;
 
-public class IngredientListElementRenderer<T> implements IClickedIngredient<T> {
+import javax.annotation.Nonnull;
+
+public class ElementRenderer<T> implements IClickedIngredient<T> {
 	private static final ImmutableRect2i DEFAULT_AREA = new ImmutableRect2i(0, 0, 16, 16);
 
 	private final ITypedIngredient<T> ingredient;
 	private ImmutableRect2i area = DEFAULT_AREA;
 	private int padding;
 
-	public IngredientListElementRenderer(ITypedIngredient<T> ingredient) {
+	public ElementRenderer(ITypedIngredient<T> ingredient) {
 		this.ingredient = ingredient;
 	}
 
@@ -29,6 +31,7 @@ public class IngredientListElementRenderer<T> implements IClickedIngredient<T> {
 	}
 
 	@Override
+	@Nonnull
 	public ImmutableRect2i getArea() {
 		return area;
 	}

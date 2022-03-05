@@ -17,8 +17,8 @@ import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.DeleteItemInputHandler;
-import mezz.jei.render.IngredientListBatchRenderer;
-import mezz.jei.render.IngredientListElementRenderer;
+import mezz.jei.render.IngredientListRenderer;
+import mezz.jei.render.ElementRenderer;
 import mezz.jei.render.IngredientListSlot;
 import mezz.jei.util.ImmutableRect2i;
 import mezz.jei.util.MathUtil;
@@ -42,7 +42,7 @@ public class IngredientGrid implements IRecipeFocusSource {
 
 	private final IIngredientGridConfig gridConfig;
 	private final GuiScreenHelper guiScreenHelper;
-	private final IngredientListBatchRenderer guiIngredientSlots;
+	private final IngredientListRenderer ingredientListRenderer;
 	private final DeleteItemInputHandler deleteItemHandler;
 	private final IngredientGridTooltipHelper tooltipHelper;
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
@@ -59,7 +59,7 @@ public class IngredientGrid implements IRecipeFocusSource {
 	) {
 		this.gridConfig = gridConfig;
 		this.guiScreenHelper = guiScreenHelper;
-		this.guiIngredientSlots = new IngredientListBatchRenderer(clientConfig, editModeConfig, worldConfig, registeredIngredients);
+		this.ingredientListRenderer = new IngredientListRenderer(editModeConfig, worldConfig, registeredIngredients);
 		this.tooltipHelper = new IngredientGridTooltipHelper(registeredIngredients, ingredientFilterConfig, worldConfig, modIdHelper);
 		this.deleteItemHandler = new DeleteItemInputHandler(this, worldConfig, clientConfig);
 	}
@@ -69,7 +69,7 @@ public class IngredientGrid implements IRecipeFocusSource {
 	}
 
 	public int size() {
-		return this.guiIngredientSlots.size();
+		return this.ingredientListRenderer.size();
 	}
 
 	public int maxWidth() {
@@ -84,7 +84,7 @@ public class IngredientGrid implements IRecipeFocusSource {
 	 * @return true if there is enough space for this in the given availableArea
 	 */
 	public boolean updateBounds(ImmutableRect2i availableArea, Collection<ImmutableRect2i> exclusionAreas) {
-		this.guiIngredientSlots.clear();
+		this.ingredientListRenderer.clear();
 
 		this.area = calculateBounds(this.gridConfig, availableArea, INGREDIENT_WIDTH, INGREDIENT_HEIGHT);
 		if (this.area.isEmpty()) {
@@ -97,7 +97,7 @@ public class IngredientGrid implements IRecipeFocusSource {
 				ImmutableRect2i stackArea = ingredientListSlot.getArea();
 				final boolean blocked = MathUtil.intersects(exclusionAreas, stackArea);
 				ingredientListSlot.setBlocked(blocked);
-				this.guiIngredientSlots.add(ingredientListSlot);
+				this.ingredientListRenderer.add(ingredientListSlot);
 			}
 		}
 
@@ -136,15 +136,15 @@ public class IngredientGrid implements IRecipeFocusSource {
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		RenderSystem.disableBlend();
 
-		guiIngredientSlots.render(minecraft, poseStack);
+		ingredientListRenderer.render(poseStack);
 
 		if (isMouseOver(mouseX, mouseY)) {
 			if (!this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
-				guiIngredientSlots.getAllGuiIngredientSlots()
+				ingredientListRenderer.getSlots()
 					.filter(s -> s.isMouseOver(mouseX, mouseY))
 					.map(IngredientListSlot::getIngredientRenderer)
 					.flatMap(Optional::stream)
-					.map(IngredientListElementRenderer::getArea)
+					.map(ElementRenderer::getArea)
 					.findFirst()
 					.ifPresent(area -> drawHighlight(poseStack, area));
 			}
@@ -168,7 +168,7 @@ public class IngredientGrid implements IRecipeFocusSource {
 			if (this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				this.deleteItemHandler.drawTooltips(poseStack, mouseX, mouseY);
 			} else {
-				guiIngredientSlots.getAllGuiIngredientSlots()
+				ingredientListRenderer.getSlots()
 					.filter(s -> s.isMouseOver(mouseX, mouseY))
 					.map(IngredientListSlot::getTypedIngredient)
 					.flatMap(Optional::stream)
@@ -185,14 +185,14 @@ public class IngredientGrid implements IRecipeFocusSource {
 
 	@Override
 	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
-		return guiIngredientSlots.getAllGuiIngredientSlots()
+		return ingredientListRenderer.getSlots()
 			.filter(s -> s.isMouseOver(mouseX, mouseY))
 			.map(IngredientListSlot::getIngredientRenderer)
 			.flatMap(Optional::stream);
 	}
 
 	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
-		return this.guiIngredientSlots.getAllGuiIngredientSlots()
+		return this.ingredientListRenderer.getSlots()
 			.map(IngredientListSlot::getTypedIngredient)
 			.flatMap(Optional::stream)
 			.map(i -> i.getIngredient(ingredientType))
@@ -200,6 +200,6 @@ public class IngredientGrid implements IRecipeFocusSource {
 	}
 
 	public void set(int firstItemIndex, List<ITypedIngredient<?>> ingredientList) {
-		this.guiIngredientSlots.set(firstItemIndex, ingredientList);
+		this.ingredientListRenderer.set(firstItemIndex, ingredientList);
 	}
 }
