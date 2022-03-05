@@ -1,9 +1,7 @@
 package mezz.jei.config;
 
-import mezz.jei.events.BookmarkOverlayToggleEvent;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
-import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.glfw.GLFW;
 
 public class WorldConfig implements IWorldConfig {
@@ -37,7 +35,6 @@ public class WorldConfig implements IWorldConfig {
 	public void setBookmarkEnabled(boolean value) {
 		if (this.bookmarkOverlayEnabled != value) {
 			this.bookmarkOverlayEnabled = value;
-			MinecraftForge.EVENT_BUS.post(new BookmarkOverlayToggleEvent(value));
 		}
 	}
 
