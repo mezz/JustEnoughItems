@@ -8,6 +8,9 @@ import net.minecraft.world.item.Item;
  *
  * This is useful for baked models that use ASM and do not use {@link BakedModel#isCustomRenderer}.
  * If your model does not use ASM it should work fine, please report a bug instead of using this interface.
+ *
+ * @deprecated Rendering optimizations have been completely removed from JEI, so this is no longer necessary.
  */
+@Deprecated(forRemoval = true, since = "9.4.3")
 public interface ISlowRenderItem {
 }
