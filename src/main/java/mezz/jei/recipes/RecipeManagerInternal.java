@@ -30,7 +30,8 @@ import java.util.stream.Stream;
 public class RecipeManagerInternal {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final ImmutableList<IRecipeCategory<?>> recipeCategories;
+	@Unmodifiable
+	private final List<IRecipeCategory<?>> recipeCategories;
 	private final IngredientVisibility ingredientVisibility;
 	private final RegisteredIngredients registeredIngredients;
 	private final RecipeTypeDataMap recipeTypeDataMap;
@@ -44,10 +45,10 @@ public class RecipeManagerInternal {
 	private List<IRecipeCategory<?>> recipeCategoriesVisibleCache = null;
 
 	public RecipeManagerInternal(
-		ImmutableList<IRecipeCategory<?>> recipeCategories,
+		List<IRecipeCategory<?>> recipeCategories,
 		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
 		RegisteredIngredients registeredIngredients,
-		ImmutableList<IRecipeManagerPlugin> plugins,
+		List<IRecipeManagerPlugin> plugins,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		IngredientVisibility ingredientVisibility
 	) {
@@ -68,7 +69,9 @@ public class RecipeManagerInternal {
 		}
 
 		this.recipeCategoryComparator = Comparator.comparing(IRecipeCategory::getRecipeType, recipeTypeComparator);
-		this.recipeCategories = ImmutableList.sortedCopyOf(this.recipeCategoryComparator, recipeCategories);
+		this.recipeCategories = recipeCategories.stream()
+			.sorted(this.recipeCategoryComparator)
+			.toList();
 
 		RecipeCatalystBuilder recipeCatalystBuilder = new RecipeCatalystBuilder(registeredIngredients, this.recipeMaps.get(RecipeIngredientRole.CATALYST));
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
@@ -232,7 +235,7 @@ public class RecipeManagerInternal {
 
 	public <T> Stream<ITypedIngredient<?>> getRecipeCatalystStream(RecipeType<T> recipeType, boolean includeHidden) {
 		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipeType);
-		ImmutableList<ITypedIngredient<?>> catalysts = recipeTypeData.getRecipeCategoryCatalysts();
+		List<ITypedIngredient<?>> catalysts = recipeTypeData.getRecipeCategoryCatalysts();
 		if (includeHidden) {
 			return catalysts.stream();
 		}

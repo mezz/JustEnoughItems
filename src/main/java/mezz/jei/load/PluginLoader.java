@@ -1,6 +1,5 @@
 package mezz.jei.load;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.Internal;
@@ -25,14 +24,13 @@ import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.overlay.IFilterTextSource;
 import mezz.jei.gui.textures.Textures;
-import mezz.jei.ingredients.IngredientManager;
-import mezz.jei.recipes.FocusFactory;
 import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.IngredientVisibility;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.RegisteredIngredientsBuilder;
 import mezz.jei.ingredients.SubtypeManager;
 import mezz.jei.load.registration.AdvancedRegistration;
@@ -46,6 +44,7 @@ import mezz.jei.load.registration.VanillaCategoryExtensionRegistration;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
+import mezz.jei.recipes.FocusFactory;
 import mezz.jei.recipes.RecipeManager;
 import mezz.jei.recipes.RecipeManagerInternal;
 import mezz.jei.runtime.JeiHelpers;
@@ -55,6 +54,7 @@ import mezz.jei.util.LoggedTimer;
 import mezz.jei.util.StackHelper;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -121,7 +121,8 @@ public class PluginLoader {
 		Internal.setHelpers(jeiHelpers);
 	}
 
-	private ImmutableList<IRecipeCategory<?>> createRecipeCategories(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin) {
+	@Unmodifiable
+	private List<IRecipeCategory<?>> createRecipeCategories(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin) {
 		RecipeCategoryRegistration recipeCategoryRegistration = new RecipeCategoryRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering categories", plugins, p -> p.registerCategories(recipeCategoryRegistration));
 		CraftingRecipeCategory craftingCategory = vanillaPlugin.getCraftingCategory();
@@ -149,7 +150,7 @@ public class PluginLoader {
 		VanillaPlugin vanillaPlugin,
 		RecipeCategorySortingConfig recipeCategorySortingConfig
 	) {
-		ImmutableList<IRecipeCategory<?>> recipeCategories = createRecipeCategories(plugins, vanillaPlugin);
+		List<IRecipeCategory<?>> recipeCategories = createRecipeCategories(plugins, vanillaPlugin);
 
 		RecipeCatalystRegistration recipeCatalystRegistration = new RecipeCatalystRegistration(registeredIngredients);
 		PluginCaller.callOnPlugins("Registering recipe catalysts", plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration));
@@ -157,7 +158,7 @@ public class PluginLoader {
 
 		AdvancedRegistration advancedRegistration = new AdvancedRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering advanced plugins", plugins, p -> p.registerAdvanced(advancedRegistration));
-		ImmutableList<IRecipeManagerPlugin> recipeManagerPlugins = advancedRegistration.getRecipeManagerPlugins();
+		List<IRecipeManagerPlugin> recipeManagerPlugins = advancedRegistration.getRecipeManagerPlugins();
 
 		timer.start("Building recipe registry");
 		RecipeManagerInternal recipeManagerInternal = new RecipeManagerInternal(

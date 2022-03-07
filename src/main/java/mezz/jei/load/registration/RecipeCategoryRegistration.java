@@ -1,18 +1,18 @@
 package mezz.jei.load.registration;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.util.ErrorUtil;
+import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 	private final List<IRecipeCategory<?>> recipeCategories = new ArrayList<>();
@@ -45,7 +45,8 @@ public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 		return jeiHelpers;
 	}
 
-	public ImmutableList<IRecipeCategory<?>> getRecipeCategories() {
-		return ImmutableList.copyOf(recipeCategories);
+	@Unmodifiable
+	public List<IRecipeCategory<?>> getRecipeCategories() {
+		return List.copyOf(recipeCategories);
 	}
 }

@@ -1,6 +1,5 @@
 package mezz.jei.recipes;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeType;
@@ -25,7 +24,7 @@ public class RecipeTypeDataMap {
 				Collectors.toUnmodifiableMap(
 					recipeCategory -> recipeCategory.getRecipeType().getUid(),
 					recipeCategory -> {
-						ImmutableList<ITypedIngredient<?>> catalysts = recipeCategoryCatalystsMap.get(recipeCategory);
+						List<ITypedIngredient<?>> catalysts = recipeCategoryCatalystsMap.get(recipeCategory);
 						return new RecipeTypeData<>(recipeCategory, catalysts);
 					}
 				)

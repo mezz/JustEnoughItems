@@ -23,12 +23,7 @@ public class ListMultiMap<K, V> extends MultiMap<K, V, List<V>> {
 	@Override
 	public ImmutableListMultimap<K, V> toImmutable() {
 		ImmutableListMultimap.Builder<K, V> builder = ImmutableListMultimap.builder();
-		for (Map.Entry<K, List<V>> entry : map.entrySet()) {
-			K key = entry.getKey();
-			for (V value : entry.getValue()) {
-				builder.put(key, value);
-			}
-		}
+		map.forEach(builder::putAll);
 		return builder.build();
 	}
 }

@@ -1,26 +1,25 @@
 package mezz.jei.load.registration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import mezz.jei.gui.GuiContainerHandlers;
-import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.ingredients.RegisteredIngredients;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.gui.GuiContainerHandlers;
+import mezz.jei.gui.GuiScreenHelper;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.util.ErrorUtil;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 	private final GuiContainerHandlers guiContainerHandlers = new GuiContainerHandlers();
@@ -58,7 +57,8 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 		this.guiScreenHandlers.put(guiClass, handler);
 	}
 
-	private static final List<Class<? extends Screen>> ghostIngredientGuiBlacklist = ImmutableList.of(
+	@Unmodifiable
+	private static final List<Class<? extends Screen>> ghostIngredientGuiBlacklist = List.of(
 		Screen.class, InventoryScreen.class, CreativeModeInventoryScreen.class
 	);
 
