@@ -304,6 +304,7 @@ tasks.named<Test>("test") {
 	include("mezz/jei/config/**")
 	include("mezz/jei/test/**")
 	include("mezz/jei/gui/recipes/**")
+	include("mezz/jei/plugins/vanilla/anvil/**")
 	exclude("mezz/jei/test/lib/**")
 	outputs.upToDateWhen { false }
 	testLogging {
