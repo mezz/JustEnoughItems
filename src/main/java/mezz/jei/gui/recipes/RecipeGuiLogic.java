@@ -190,9 +190,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			int index = recipeWidgetIndex++;
 			RecipeLayout<T> recipeLayout = RecipeLayout.create(index, recipeCategory, recipe, state.getFocuses(), registeredIngredients, modIdHelper, posX, recipePosY);
 			if (recipeLayout == null) {
-				recipes.remove(recipeIndex);
 				brokenRecipes.add(recipe);
-				recipeIndex--;
 			} else {
 				recipeLayouts.add(recipeLayout);
 				recipePosY += spacingY;
