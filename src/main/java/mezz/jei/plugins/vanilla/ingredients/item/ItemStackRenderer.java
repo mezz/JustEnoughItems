@@ -37,8 +37,8 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			Minecraft minecraft = Minecraft.getInstance();
 			FontRenderer font = getFontRenderer(minecraft, ingredient);
 			ItemRenderer itemRenderer = minecraft.getItemRenderer();
-			itemRenderer.renderAndDecorateItem(null, ingredient, xPosition, yPosition);
-			itemRenderer.renderGuiItemDecorations(font, ingredient, xPosition, yPosition, null);
+			itemRenderer.renderAndDecorateFakeItem(ingredient, xPosition, yPosition);
+			itemRenderer.renderGuiItemDecorations(font, ingredient, xPosition, yPosition);
 			RenderSystem.disableBlend();
 			RenderHelper.turnOff();
 			RenderSystem.popMatrix();
