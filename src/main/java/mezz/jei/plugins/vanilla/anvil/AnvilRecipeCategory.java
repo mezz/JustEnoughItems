@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -23,6 +24,7 @@ import net.minecraft.world.level.block.Blocks;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 
 public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
@@ -72,16 +74,30 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, IJeiAnvilRecipe recipe, IFocusGroup focuses) {
-		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
-			.addItemStacks(recipe.getLeftInputs())
+		List<ItemStack> leftInputs = recipe.getLeftInputs();
+		List<ItemStack> rightInputs = recipe.getRightInputs();
+		List<ItemStack> outputs = recipe.getOutputs();
+
+		IRecipeSlotBuilder leftInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
+			.addItemStacks(leftInputs)
 			.setSlotName(leftSlotName);
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 50, 1)
-			.addItemStacks(recipe.getRightInputs())
+		IRecipeSlotBuilder rightInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 50, 1)
+			.addItemStacks(rightInputs)
 			.setSlotName(rightSlotName);
 
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 1)
-			.addItemStacks(recipe.getOutputs());
+		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 1)
+			.addItemStacks(outputs);
+
+		if (leftInputs.size() == rightInputs.size()) {
+			if (leftInputs.size() == outputs.size()) {
+				builder.createFocusLink(leftInputSlot, rightInputSlot, outputSlot);
+			}
+		} else if (leftInputs.size() == outputs.size() && rightInputs.size() == 1) {
+			builder.createFocusLink(leftInputSlot, outputSlot);
+		} else if (rightInputs.size() == outputs.size() && leftInputs.size() == 1) {
+			builder.createFocusLink(rightInputSlot, outputSlot);
+		}
 	}
 
 	@Override
