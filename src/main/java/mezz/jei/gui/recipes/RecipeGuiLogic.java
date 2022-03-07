@@ -188,6 +188,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		List<RecipeLayout> recipeLayouts = new ArrayList<>();
 
 		IRecipeCategory recipeCategory = getSelectedRecipeCategory();
+		List<IRecipeWrapper> brokenRecipes = new ArrayList<>();
 
 		int recipeWidgetIndex = 0;
 		int recipePosY = posY;
@@ -197,13 +198,15 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			@SuppressWarnings("unchecked")
 			RecipeLayout recipeLayout = RecipeLayout.create(recipeWidgetIndex++, recipeCategory, recipeWrapper, state.getFocus(), posX, recipePosY);
 			if (recipeLayout == null) {
-				recipes.remove(recipeIndex);
-				recipeRegistry.hideRecipe(recipeWrapper, recipeCategory.getUid());
-				recipeIndex--;
+				brokenRecipes.add(recipeWrapper);
 			} else {
 				recipeLayouts.add(recipeLayout);
 				recipePosY += spacingY;
 			}
+		}
+
+		for (IRecipeWrapper recipeWrapper : brokenRecipes) {
+			recipeRegistry.hideRecipe(recipeWrapper, recipeCategory.getUid());
 		}
 
 		return recipeLayouts;
