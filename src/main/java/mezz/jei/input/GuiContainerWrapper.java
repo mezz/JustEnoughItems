@@ -9,8 +9,10 @@ import mezz.jei.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class GuiContainerWrapper implements IRecipeFocusSource {
@@ -30,20 +32,21 @@ public class GuiContainerWrapper implements IRecipeFocusSource {
 		}
 		return Stream.concat(
 			guiScreenHelper.getPluginsIngredientUnderMouse(guiContainer, mouseX, mouseY),
-			getSlotIngredientUnderMouse(guiContainer)
+			getSlotIngredientUnderMouse(guiContainer).stream()
 		);
 	}
 
-	private Stream<IClickedIngredient<?>> getSlotIngredientUnderMouse(AbstractContainerScreen<?> guiContainer) {
-		return Stream.ofNullable(guiContainer.getSlotUnderMouse())
-			.flatMap(slot -> {
-				ItemStack stack = slot.getItem();
-				return TypedIngredient.createTyped(this.registeredIngredients, VanillaTypes.ITEM, stack)
-					.map(typedIngredient -> {
-						ImmutableRect2i slotArea = new ImmutableRect2i(slot.x, slot.y, 16, 16);
-						return new ClickedIngredient<>(typedIngredient, slotArea, false, false);
-					})
-					.stream();
+	private Optional<IClickedIngredient<?>> getSlotIngredientUnderMouse(AbstractContainerScreen<?> guiContainer) {
+		return Optional.ofNullable(guiContainer.getSlotUnderMouse())
+			.flatMap(this::getClickedIngredient);
+	}
+
+	private Optional<IClickedIngredient<?>> getClickedIngredient(Slot slot) {
+		ItemStack stack = slot.getItem();
+		return TypedIngredient.createTyped(this.registeredIngredients, VanillaTypes.ITEM, stack)
+			.map(typedIngredient -> {
+				ImmutableRect2i slotArea = new ImmutableRect2i(slot.x, slot.y, 16, 16);
+				return new ClickedIngredient<>(typedIngredient, slotArea, false, false);
 			});
 	}
 }

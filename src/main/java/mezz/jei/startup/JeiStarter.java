@@ -54,7 +54,6 @@ import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.LoggedTimer;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 

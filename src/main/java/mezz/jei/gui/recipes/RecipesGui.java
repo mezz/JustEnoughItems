@@ -296,13 +296,15 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	private static Optional<IClickedIngredient<?>> getRecipeLayoutIngredientUnderMouse(RecipeLayout<?> recipeLayout, double mouseX, double mouseY) {
 		return recipeLayout.getRecipeSlotUnderMouse(mouseX, mouseY)
-			.flatMap(clicked ->
-				clicked.getDisplayedIngredient()
-					.map(displayedIngredient -> {
-						ImmutableRect2i area = absoluteClickedArea(recipeLayout, clicked.getRect());
-						return new ClickedIngredient<>(displayedIngredient, area, false, true);
-					})
-			);
+			.flatMap(recipeSlot -> getClickedIngredient(recipeLayout, recipeSlot));
+	}
+
+	private static Optional<IClickedIngredient<?>> getClickedIngredient(RecipeLayout<?> recipeLayout, RecipeSlot recipeSlot) {
+		return recipeSlot.getDisplayedIngredient()
+			.map(displayedIngredient -> {
+				ImmutableRect2i area = absoluteClickedArea(recipeLayout, recipeSlot.getRect());
+				return new ClickedIngredient<>(displayedIngredient, area, false, true);
+			});
 	}
 
 	/**
