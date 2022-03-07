@@ -3,6 +3,7 @@ package mezz.jei.api.registration;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
@@ -44,15 +45,41 @@ public interface IGuiHandlerRegistration {
 	/**
 	 * Add a clickable area on a gui to jump to specific categories of recipes in JEI.
 	 *
+	 * @param containerScreenClass  the gui class for JEI to detect.
+	 * @param xPos                  left x position of the clickable area, relative to the left edge of the gui.
+	 * @param yPos                  top y position of the clickable area, relative to the top edge of the gui.
+	 * @param width                 the width of the clickable area.
+	 * @param height                the height of the clickable area.
+	 * @param recipeTypes           the recipe types that JEI should display.
+	 *
+	 * @since 9.5.0
+	 */
+	default <T extends AbstractContainerScreen<?>> void addRecipeClickArea(Class<? extends T> containerScreenClass, int xPos, int yPos, int width, int height, RecipeType<?>... recipeTypes) {
+		this.addGuiContainerHandler(containerScreenClass, new IGuiContainerHandler<T>() {
+			@Override
+			public Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen, double mouseX, double mouseY) {
+				IGuiClickableArea clickableArea = IGuiClickableArea.createBasic(xPos, yPos, width, height, recipeTypes);
+				return List.of(clickableArea);
+			}
+		});
+	}
+
+	/**
+	 * Add a clickable area on a gui to jump to specific categories of recipes in JEI.
+	 *
 	 * @param guiContainerClass  the gui class for JEI to detect.
 	 * @param xPos               left x position of the clickable area, relative to the left edge of the gui.
 	 * @param yPos               top y position of the clickable area, relative to the top edge of the gui.
 	 * @param width              the width of the clickable area.
 	 * @param height             the height of the clickable area.
 	 * @param recipeCategoryUids the recipe categories that JEI should display.
+	 *
+	 * @deprecated use {@link #addRecipeClickArea(Class, int, int, int, int, RecipeType[])} instead.
 	 */
+	@Deprecated(forRemoval = true, since = "9.5.0")
 	default <T extends AbstractContainerScreen<?>> void addRecipeClickArea(Class<? extends T> guiContainerClass, int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
 		this.addGuiContainerHandler(guiContainerClass, new IGuiContainerHandler<T>() {
+			@SuppressWarnings("removal")
 			@Override
 			public Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen, double mouseX, double mouseY) {
 				IGuiClickableArea clickableArea = IGuiClickableArea.createBasic(xPos, yPos, width, height, recipeCategoryUids);

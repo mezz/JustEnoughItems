@@ -3,12 +3,14 @@ package mezz.jei.load.registration;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.recipes.RecipeManagerInternal;
 import net.minecraft.resources.ResourceLocation;
 
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
@@ -62,12 +64,21 @@ public class RecipeRegistration implements IRecipeRegistration {
 		return ingredientVisibility;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
+	@Deprecated
 	public void addRecipes(Collection<?> recipes, ResourceLocation recipeCategoryUid) {
 		ErrorUtil.checkNotNull(recipes, "recipes");
 		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
 
-		this.recipeManager.addRecipes(recipes, recipeCategoryUid);
+		this.recipeManager.addRecipes(recipeCategoryUid, recipes);
+	}
+
+	@Override
+	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
+		ErrorUtil.checkNotNull(recipeType, "recipeType");
+		ErrorUtil.checkNotNull(recipes, "recipes");
+		this.recipeManager.addRecipes(recipeType, recipes);
 	}
 
 	@Override
@@ -85,7 +96,7 @@ public class RecipeRegistration implements IRecipeRegistration {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(descriptionComponents, "descriptionComponents");
 
-		List<IngredientInfoRecipe> recipes = IngredientInfoRecipe.create(registeredIngredients, ingredients, ingredientType, descriptionComponents);
-		addRecipes(recipes, VanillaRecipeCategoryUid.INFORMATION);
+		List<IJeiIngredientInfoRecipe> recipes = IngredientInfoRecipe.create(registeredIngredients, ingredients, ingredientType, descriptionComponents);
+		addRecipes(RecipeTypes.INFORMATION, recipes);
 	}
 }

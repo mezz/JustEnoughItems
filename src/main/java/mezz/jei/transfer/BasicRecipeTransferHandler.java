@@ -20,8 +20,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,7 +50,10 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 
 	@Override
 	public Class<R> getRecipeClass() {
-		return transferInfo.getRecipeClass();
+		// TODO: breaking change: make this return Class<? extends R>
+		@SuppressWarnings("unchecked")
+		Class<R> cast = (Class<R>) transferInfo.getRecipeType().getRecipeClass();
+		return cast;
 	}
 
 	@Nullable

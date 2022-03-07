@@ -2,7 +2,7 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -10,6 +10,7 @@ import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.config.Constants;
@@ -51,14 +52,21 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public ResourceLocation getUid() {
-		return VanillaRecipeCategoryUid.CRAFTING;
+		return getRecipeType().getUid();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public Class<? extends CraftingRecipe> getRecipeClass() {
+		return getRecipeType().getRecipeClass();
 	}
 
 	@Override
-	public Class<? extends CraftingRecipe> getRecipeClass() {
-		return CraftingRecipe.class;
+	public RecipeType<CraftingRecipe> getRecipeType() {
+		return RecipeTypes.CRAFTING;
 	}
 
 	@Override

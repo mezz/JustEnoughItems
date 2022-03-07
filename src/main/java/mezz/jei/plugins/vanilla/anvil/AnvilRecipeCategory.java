@@ -1,7 +1,7 @@
 package mezz.jei.plugins.vanilla.anvil;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -9,7 +9,9 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.config.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -23,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
+public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 	private final IDrawable background;
 	private final IDrawable icon;
 	private final String leftSlotName = "leftSlot";
@@ -36,14 +38,21 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Blocks.ANVIL));
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public ResourceLocation getUid() {
-		return VanillaRecipeCategoryUid.ANVIL;
+		return getRecipeType().getUid();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public Class<? extends IJeiAnvilRecipe> getRecipeClass() {
+		return getRecipeType().getRecipeClass();
 	}
 
 	@Override
-	public Class<? extends AnvilRecipe> getRecipeClass() {
-		return AnvilRecipe.class;
+	public RecipeType<IJeiAnvilRecipe> getRecipeType() {
+		return RecipeTypes.ANVIL;
 	}
 
 	@Override
@@ -62,7 +71,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, AnvilRecipe recipe, IFocusGroup focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, IJeiAnvilRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.addItemStacks(recipe.getLeftInputs())
 			.setSlotName(leftSlotName);
@@ -76,7 +85,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<AnvilRecipe> {
 	}
 
 	@Override
-	public void draw(AnvilRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(IJeiAnvilRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		Optional<ItemStack> leftStack = recipeSlotsView.findSlotByName(leftSlotName)
 			.flatMap(slot1 -> slot1.getDisplayedIngredient(VanillaTypes.ITEM));
 

@@ -1,10 +1,11 @@
 package mezz.jei.plugins.vanilla.cooking;
 
+import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.resources.ResourceLocation;
 
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.helpers.IGuiHelper;
 
 public class FurnaceSmeltingCategory extends AbstractCookingCategory<SmeltingRecipe> {
@@ -12,13 +13,20 @@ public class FurnaceSmeltingCategory extends AbstractCookingCategory<SmeltingRec
 		super(guiHelper, Blocks.FURNACE, "gui.jei.category.smelting", 200);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public ResourceLocation getUid() {
-		return VanillaRecipeCategoryUid.FURNACE;
+		return getRecipeType().getUid();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public Class<? extends SmeltingRecipe> getRecipeClass() {
+		return getRecipeType().getRecipeClass();
 	}
 
 	@Override
-	public Class<? extends SmeltingRecipe> getRecipeClass() {
-		return SmeltingRecipe.class;
+	public RecipeType<SmeltingRecipe> getRecipeType() {
+		return RecipeTypes.SMELTING;
 	}
 }

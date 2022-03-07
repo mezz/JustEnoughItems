@@ -5,6 +5,8 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
+
 import java.util.List;
 
 public class FocusedRecipes<T> {
@@ -32,9 +34,13 @@ public class FocusedRecipes<T> {
 		return recipeCategory;
 	}
 
+	@Unmodifiable
 	public List<T> getRecipes() {
 		if (recipes == null) {
-			recipes = recipeManager.getRecipes(recipeCategory, focuses.getAllFocuses(), false);
+			recipes = recipeManager.createRecipeLookup(recipeCategory.getRecipeType())
+				.limitFocus(focuses.getAllFocuses())
+				.get()
+				.toList();
 		}
 		return recipes;
 	}

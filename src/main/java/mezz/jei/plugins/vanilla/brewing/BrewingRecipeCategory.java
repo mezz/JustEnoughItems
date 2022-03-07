@@ -1,16 +1,18 @@
 package mezz.jei.plugins.vanilla.brewing;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
 
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -24,7 +26,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
 
-public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> {
+public class BrewingRecipeCategory implements IRecipeCategory<IJeiBrewingRecipe> {
 	private final IDrawable background;
 	private final IDrawable icon;
 	private final IDrawable slotDrawable;
@@ -53,14 +55,21 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 		slotDrawable = guiHelper.getSlotDrawable();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public ResourceLocation getUid() {
-		return VanillaRecipeCategoryUid.BREWING;
+		return getRecipeType().getUid();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public Class<? extends IJeiBrewingRecipe> getRecipeClass() {
+		return getRecipeType().getRecipeClass();
 	}
 
 	@Override
-	public Class<? extends JeiBrewingRecipe> getRecipeClass() {
-		return JeiBrewingRecipe.class;
+	public RecipeType<IJeiBrewingRecipe> getRecipeType() {
+		return RecipeTypes.BREWING;
 	}
 
 	@Override
@@ -79,7 +88,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 	}
 
 	@Override
-	public void draw(JeiBrewingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(IJeiBrewingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		blazeHeat.draw(poseStack, 5, 30);
 		bubbles.draw(poseStack, 8, 0);
 		arrow.draw(poseStack, 42, 2);
@@ -92,7 +101,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<JeiBrewingRecipe> 
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, JeiBrewingRecipe recipe, IFocusGroup focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, IJeiBrewingRecipe recipe, IFocusGroup focuses) {
 		List<ItemStack> potionInputs = recipe.getPotionInputs();
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 37)

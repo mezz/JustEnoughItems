@@ -1,7 +1,7 @@
 package mezz.jei.plugins.jei.info;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -11,7 +11,9 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.gui.textures.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.locale.Language;
@@ -20,7 +22,7 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
-public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientInfoRecipe> {
+public class IngredientInfoRecipeCategory implements IRecipeCategory<IJeiIngredientInfoRecipe> {
 	public static final int recipeWidth = 160;
 	public static final int recipeHeight = 125;
 	private static final int lineSpacing = 2;
@@ -37,14 +39,21 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 		this.localizedName = new TranslatableComponent("gui.jei.category.itemInformation");
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public ResourceLocation getUid() {
-		return VanillaRecipeCategoryUid.INFORMATION;
+		return getRecipeType().getUid();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public Class<? extends IJeiIngredientInfoRecipe> getRecipeClass() {
+		return getRecipeType().getRecipeClass();
 	}
 
 	@Override
-	public Class<? extends IngredientInfoRecipe> getRecipeClass() {
-		return IngredientInfoRecipe.class;
+	public RecipeType<IJeiIngredientInfoRecipe> getRecipeType() {
+		return RecipeTypes.INFORMATION;
 	}
 
 	@Override
@@ -63,7 +72,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	public void draw(IngredientInfoRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(IJeiIngredientInfoRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		int xPos = 0;
 		int yPos = slotBackground.getHeight() + 4;
 
@@ -75,7 +84,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, IngredientInfoRecipe recipe, IFocusGroup focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, IJeiIngredientInfoRecipe recipe, IFocusGroup focuses) {
 		int xPos = (recipeWidth - 16) / 2;
 
 		IRecipeSlotBuilder inputSlotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, xPos, 1)

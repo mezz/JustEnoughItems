@@ -1,9 +1,11 @@
 package mezz.jei.api.gui.handlers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 
@@ -39,7 +41,32 @@ public interface IGuiClickableArea {
 	/**
 	 * Helper function to create the most basic type of {@link IGuiClickableArea},
 	 * which displays a recipe category on click.
+	 *
+	 * @since 9.5.0
 	 */
+	static IGuiClickableArea createBasic(int xPos, int yPos, int width, int height, RecipeType<?>... recipeTypes) {
+		Rect2i area = new Rect2i(xPos, yPos, width, height);
+		List<RecipeType<?>> recipeTypesList = Arrays.asList(recipeTypes);
+		return new IGuiClickableArea() {
+			@Override
+			public Rect2i getArea() {
+				return area;
+			}
+
+			@Override
+			public void onClick(IFocusFactory focusFactory, IRecipesGui recipesGui) {
+				recipesGui.showTypes(recipeTypesList);
+			}
+		};
+	}
+
+	/**
+	 * Helper function to create the most basic type of {@link IGuiClickableArea},
+	 * which displays a recipe category on click.
+	 *
+	 * @deprecated use {@link #createBasic(int, int, int, int, RecipeType[])} instead.
+	 */
+	@Deprecated(forRemoval = true, since = "9.5.0")
 	static IGuiClickableArea createBasic(int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
 		Rect2i area = new Rect2i(xPos, yPos, width, height);
 		List<ResourceLocation> recipeCategoryUidList = new ArrayList<>();
@@ -50,6 +77,7 @@ public interface IGuiClickableArea {
 				return area;
 			}
 
+			@SuppressWarnings("removal")
 			@Override
 			public void onClick(IFocusFactory focusFactory, IRecipesGui recipesGui) {
 				recipesGui.showCategories(recipeCategoryUidList);

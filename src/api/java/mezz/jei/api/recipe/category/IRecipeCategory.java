@@ -2,7 +2,6 @@ package mezz.jei.api.recipe.category;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -14,11 +13,12 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -28,19 +28,14 @@ import java.util.List;
  * Also draws elements that are common to all recipes in the category like the background.
  */
 public interface IRecipeCategory<T> {
-
 	/**
-	 * Returns a unique ID for this recipe category.
-	 * Referenced from recipes to identify which recipe category they belong to.
+	 * @return the type of recipe that this category handles.
 	 *
-	 * @see VanillaRecipeCategoryUid for vanilla examples
+	 * @since 9.5.0
 	 */
-	ResourceLocation getUid();
-
-	/**
-	 * Returns the class of recipes that this recipe category handles.
-	 */
-	Class<? extends T> getRecipeClass();
+	default RecipeType<T> getRecipeType() {
+		return new RecipeType<>(getUid(), getRecipeClass());
+	}
 
 	/**
 	 * Returns a text component representing the name of this recipe type.
@@ -165,6 +160,23 @@ public interface IRecipeCategory<T> {
 	}
 
 	/**
+	 * Returns a unique ID for this recipe category.
+	 * Referenced from recipes to identify which recipe category they belong to.
+	 *
+	 * @deprecated use {@link #getRecipeType()} instead.
+	 */
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	ResourceLocation getUid();
+
+	/**
+	 * Returns the class of recipes that this recipe category handles.
+	 *
+	 * @deprecated use {@link #getRecipeType()} instead.
+	 */
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	Class<? extends T> getRecipeClass();
+
+	/**
 	 * Called when a player clicks the recipe.
 	 * Useful for implementing buttons, hyperlinks, and other interactions to your recipe.
 	 *
@@ -186,6 +198,7 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @deprecated This is handled automatically by {@link #setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)} instead.
 	 */
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void setIngredients(T recipe, IIngredients ingredients) {
 
@@ -212,6 +225,7 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @deprecated Use {@link #setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)} instead.
 	 */
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void setRecipe(IRecipeLayout recipeLayout, T recipe, IIngredients ingredients) {
 

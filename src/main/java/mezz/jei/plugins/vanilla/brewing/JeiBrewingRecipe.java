@@ -19,8 +19,8 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 	private final int hashCode;
 
 	public JeiBrewingRecipe(List<ItemStack> ingredients, List<ItemStack> potionInputs, ItemStack potionOutput, BrewingRecipeUtil brewingRecipeUtil) {
-		this.ingredients = ingredients;
-		this.potionInputs = potionInputs;
+		this.ingredients = List.copyOf(ingredients);
+		this.potionInputs = List.copyOf(potionInputs);
 		this.potionOutput = potionOutput;
 		this.brewingRecipeUtil = brewingRecipeUtil;
 
@@ -36,14 +36,17 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 			firstIngredient.getItem());
 	}
 
+	@Override
 	public List<ItemStack> getPotionInputs() {
 		return potionInputs;
 	}
 
+	@Override
 	public List<ItemStack> getIngredients() {
 		return ingredients;
 	}
 
+	@Override
 	public ItemStack getPotionOutput() {
 		return potionOutput;
 	}

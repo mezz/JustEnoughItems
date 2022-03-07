@@ -3,6 +3,7 @@ package mezz.jei.transfer;
 import java.util.ArrayList;
 import java.util.List;
 
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.resources.ResourceLocation;
@@ -11,17 +12,15 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 
 public class BasicRecipeTransferInfo<C extends AbstractContainerMenu, R> implements IRecipeTransferInfo<C, R> {
 	private final Class<C> containerClass;
-	private final Class<R> recipeClass;
-	private final ResourceLocation recipeCategoryUid;
+	private final RecipeType<R> recipeType;
 	private final int recipeSlotStart;
 	private final int recipeSlotCount;
 	private final int inventorySlotStart;
 	private final int inventorySlotCount;
 
-	public BasicRecipeTransferInfo(Class<C> containerClass, Class<R> recipeClass, ResourceLocation recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
+	public BasicRecipeTransferInfo(Class<C> containerClass, RecipeType<R> recipeType, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
 		this.containerClass = containerClass;
-		this.recipeClass = recipeClass;
-		this.recipeCategoryUid = recipeCategoryUid;
+		this.recipeType = recipeType;
 		this.recipeSlotStart = recipeSlotStart;
 		this.recipeSlotCount = recipeSlotCount;
 		this.inventorySlotStart = inventorySlotStart;
@@ -33,14 +32,23 @@ public class BasicRecipeTransferInfo<C extends AbstractContainerMenu, R> impleme
 		return containerClass;
 	}
 
+	@SuppressWarnings({"removal"})
 	@Override
 	public Class<R> getRecipeClass() {
-		return recipeClass;
+		@SuppressWarnings("unchecked")
+		Class<R> cast = (Class<R>) recipeType.getRecipeClass();
+		return cast;
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public ResourceLocation getRecipeCategoryUid() {
+		return recipeType.getUid();
 	}
 
 	@Override
-	public ResourceLocation getRecipeCategoryUid() {
-		return recipeCategoryUid;
+	public RecipeType<R> getRecipeType() {
+		return recipeType;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package mezz.jei.api.runtime;
 
 import mezz.jei.api.recipe.IFocusFactory;
+import mezz.jei.api.recipe.RecipeType;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
@@ -36,13 +37,23 @@ public interface IRecipesGui {
 	/**
 	 * Show entire categories of recipes.
 	 *
-	 * @param recipeCategoryUids a list of categories to display, in order. Must not be empty.
+	 * @param recipeTypes a list of recipe types to display, in order. Must not be empty.
 	 */
-	void showCategories(List<ResourceLocation> recipeCategoryUids);
+	void showTypes(List<RecipeType<?>> recipeTypes);
 
 	/**
 	 * @return the ingredient that's currently under the mouse in this gui, or null if there is none.
 	 */
 	@Nullable
 	<T> T getIngredientUnderMouse(IIngredientType<T> ingredientType);
+
+	/**
+	 * Show entire categories of recipes.
+	 *
+	 * @param recipeCategoryUids a list of categories to display, in order. Must not be empty.
+	 *
+	 * @deprecated use {@link #showTypes(List)} instead.
+	 */
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	void showCategories(List<ResourceLocation> recipeCategoryUids);
 }

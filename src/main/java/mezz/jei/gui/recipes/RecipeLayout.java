@@ -79,7 +79,7 @@ public class RecipeLayout<R> {
 				return true;
 			}
 		} catch (RuntimeException | LinkageError e) {
-			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getUid(), e);
+			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getRecipeType().getUid(), e);
 		}
 		return false;
 	}

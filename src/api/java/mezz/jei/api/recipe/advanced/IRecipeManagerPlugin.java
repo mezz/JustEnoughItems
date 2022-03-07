@@ -2,6 +2,7 @@ package mezz.jei.api.recipe.advanced;
 
 import java.util.List;
 
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.recipe.IFocus;
@@ -18,10 +19,13 @@ import mezz.jei.api.registration.IAdvancedRegistration;
  */
 public interface IRecipeManagerPlugin {
 	/**
-	 * Returns a list of Recipe Categories offered for the focus.
-	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipeCategories(IFocus, boolean)}.
+	 * Returns a list of Recipe Types offered for the focus.
+	 *
+	 * @since 9.5.0
 	 */
-	<V> List<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus);
+	default <V> List<RecipeType<?>> getRecipeTypes(IFocus<V> focus) {
+		return List.of();
+	}
 
 	/**
 	 * Returns a list of Recipes in the recipeCategory that have the focus.
@@ -34,4 +38,13 @@ public interface IRecipeManagerPlugin {
 	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipes(IRecipeCategory, List, boolean)}.
 	 */
 	<T> List<T> getRecipes(IRecipeCategory<T> recipeCategory);
+
+	/**
+	 * Returns a list of Recipe Categories offered for the focus.
+	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipeCategories(IFocus, boolean)}.
+	 *
+	 * @deprecated use {@link #getRecipeTypes(IFocus)} instead.
+	 */
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	<V> List<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus);
 }

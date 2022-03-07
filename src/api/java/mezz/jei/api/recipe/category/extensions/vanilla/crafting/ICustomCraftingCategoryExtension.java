@@ -1,6 +1,6 @@
 package mezz.jei.api.recipe.category.extensions.vanilla.crafting;
 
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
@@ -12,7 +12,7 @@ import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
 
 /**
  * This interface allows recipes to override the default behavior in the
- * {@link VanillaRecipeCategoryUid#CRAFTING} recipe category.
+ * {@link RecipeTypes#CRAFTING} recipe category.
  *
  * @deprecated Use {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, IFocusGroup)} instead.
  */
@@ -31,6 +31,7 @@ public interface ICustomCraftingCategoryExtension extends ICraftingCategoryExten
 	 *
 	 * @deprecated Use {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, IFocusGroup)} instead.
 	 */
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void setRecipe(IRecipeLayout recipeLayout, IIngredients ingredients);
 }

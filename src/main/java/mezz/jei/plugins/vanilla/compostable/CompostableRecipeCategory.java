@@ -1,7 +1,7 @@
 package mezz.jei.plugins.vanilla.compostable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -10,6 +10,8 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
 import mezz.jei.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -19,7 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 
-public class CompostableRecipeCategory implements IRecipeCategory<CompostableRecipe> {
+public class CompostableRecipeCategory implements IRecipeCategory<IJeiCompostingRecipe> {
 	public static final int width = 120;
 	public static final int height = 18;
 
@@ -35,14 +37,21 @@ public class CompostableRecipeCategory implements IRecipeCategory<CompostableRec
 		localizedName = new TranslatableComponent("gui.jei.category.compostable");
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public ResourceLocation getUid() {
-		return VanillaRecipeCategoryUid.COMPOSTABLE;
+		return getRecipeType().getUid();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public Class<? extends IJeiCompostingRecipe> getRecipeClass() {
+		return getRecipeType().getRecipeClass();
 	}
 
 	@Override
-	public Class<? extends CompostableRecipe> getRecipeClass() {
-		return CompostableRecipe.class;
+	public RecipeType<IJeiCompostingRecipe> getRecipeType() {
+		return RecipeTypes.COMPOSTING;
 	}
 
 	@Override
@@ -61,13 +70,13 @@ public class CompostableRecipeCategory implements IRecipeCategory<CompostableRec
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, CompostableRecipe recipe, IFocusGroup focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, IJeiCompostingRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.addItemStacks(recipe.getInputs());
 	}
 
 	@Override
-	public void draw(CompostableRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(IJeiCompostingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		slot.draw(poseStack);
 
 		float chance = recipe.getChance();

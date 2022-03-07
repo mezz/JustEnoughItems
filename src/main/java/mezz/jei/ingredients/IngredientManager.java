@@ -11,6 +11,7 @@ import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,6 +41,7 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	@Override
+	@Unmodifiable
 	public <V> Collection<V> getAllIngredients(IIngredientType<V> ingredientType) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 

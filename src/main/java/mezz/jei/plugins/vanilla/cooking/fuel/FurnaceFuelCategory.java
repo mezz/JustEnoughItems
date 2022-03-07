@@ -1,7 +1,10 @@
 package mezz.jei.plugins.vanilla.cooking.fuel;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -10,6 +13,8 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.vanilla.cooking.FurnaceVariantCategory;
@@ -19,10 +24,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
-public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
+import java.text.NumberFormat;
+
+public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecipe> {
 	private final IDrawableStatic background;
 	private final IDrawableStatic flameTransparentBackground;
 	private final Component localizedName;
+	private final LoadingCache<Integer, IDrawableAnimated> cachedFlames;
 
 	public FurnaceFuelCategory(IGuiHelper guiHelper, Textures textures) {
 		super(guiHelper);
@@ -30,7 +38,7 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 		// width of the recipe depends on the text, which is different in each language
 		Minecraft minecraft = Minecraft.getInstance();
 		Font fontRenderer = minecraft.font;
-		Component smeltCountText = FuelRecipe.createSmeltCountText(100000);
+		Component smeltCountText = createSmeltCountText(100000);
 		int stringWidth = fontRenderer.width(smeltCountText.getString());
 
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 134, 18, 34)
@@ -39,6 +47,16 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 
 		flameTransparentBackground = textures.getFlameIcon();
 		localizedName = new TranslatableComponent("gui.jei.category.fuel");
+
+		this.cachedFlames = CacheBuilder.newBuilder()
+			.maximumSize(25)
+			.build(new CacheLoader<>() {
+				@Override
+				public IDrawableAnimated load(Integer burnTime) {
+					return guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 82, 114, 14, 14)
+						.buildAnimated(burnTime, IDrawableAnimated.StartDirection.TOP, true);
+				}
+			});
 	}
 
 	@Override
@@ -46,14 +64,21 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 		return background;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public ResourceLocation getUid() {
-		return VanillaRecipeCategoryUid.FUEL;
+		return getRecipeType().getUid();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public Class<? extends IJeiFuelingRecipe> getRecipeClass() {
+		return getRecipeType().getRecipeClass();
 	}
 
 	@Override
-	public Class<? extends FuelRecipe> getRecipeClass() {
-		return FuelRecipe.class;
+	public RecipeType<IJeiFuelingRecipe> getRecipeType() {
+		return RecipeTypes.FUELING;
 	}
 
 	@Override
@@ -67,17 +92,29 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, FuelRecipe recipe, IFocusGroup focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, IJeiFuelingRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 17)
 			.addItemStacks(recipe.getInputs());
 	}
 
 	@Override
-	public void draw(FuelRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
-		IDrawableAnimated flame = recipe.getFlame();
+	public void draw(IJeiFuelingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+		int burnTime = recipe.getBurnTime();
+		IDrawableAnimated flame = cachedFlames.getUnchecked(burnTime);
 		flame.draw(poseStack, 1, 0);
 		Minecraft minecraft = Minecraft.getInstance();
-		Component smeltCountText = recipe.getSmeltCountText();
+		Component smeltCountText = createSmeltCountText(burnTime);
 		minecraft.font.draw(poseStack, smeltCountText, 24, 13, 0xFF808080);
+	}
+
+	private static Component createSmeltCountText(int burnTime) {
+		if (burnTime == 200) {
+			return new TranslatableComponent("gui.jei.category.fuel.smeltCount.single");
+		} else {
+			NumberFormat numberInstance = NumberFormat.getNumberInstance();
+			numberInstance.setMaximumFractionDigits(2);
+			String smeltCount = numberInstance.format(burnTime / 200f);
+			return new TranslatableComponent("gui.jei.category.fuel.smeltCount", smeltCount);
+		}
 	}
 }

@@ -9,6 +9,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.textures.Textures;
 import net.minecraft.network.chat.Component;
@@ -23,7 +24,7 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.List;
 
 public class DebugFocusRecipeCategory implements IRecipeCategory<DebugRecipe> {
-	public static final ResourceLocation UID = new ResourceLocation(ModIds.JEI_ID, "debug_focus");
+	public static final RecipeType<DebugRecipe> TYPE = RecipeType.create(ModIds.JEI_ID, "debug_focus", DebugRecipe.class);
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
 	private final IDrawable background;
@@ -34,14 +35,21 @@ public class DebugFocusRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		this.localizedName = new TextComponent("debug_focus");
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public ResourceLocation getUid() {
-		return UID;
+		return TYPE.getUid();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public Class<? extends DebugRecipe> getRecipeClass() {
+		return TYPE.getRecipeClass();
 	}
 
 	@Override
-	public Class<? extends DebugRecipe> getRecipeClass() {
-		return DebugRecipe.class;
+	public RecipeType<DebugRecipe> getRecipeType() {
+		return TYPE;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package mezz.jei.plugins.jei.info;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.util.MathUtil;
@@ -14,12 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class IngredientInfoRecipe {
+public class IngredientInfoRecipe implements IJeiIngredientInfoRecipe {
 	private static final int lineSpacing = 2;
 	private final List<FormattedText> description;
 	private final List<ITypedIngredient<?>> ingredients;
 
-	public static <T> List<IngredientInfoRecipe> create(
+	public static <T> List<IJeiIngredientInfoRecipe> create(
 		RegisteredIngredients registeredIngredients,
 		List<T> ingredients,
 		IIngredientType<T> ingredientType,
@@ -30,7 +31,7 @@ public class IngredientInfoRecipe {
 			.flatMap(Optional::stream)
 			.toList();
 
-		List<IngredientInfoRecipe> recipes = new ArrayList<>();
+		List<IJeiIngredientInfoRecipe> recipes = new ArrayList<>();
 		List<FormattedText> descriptionLines = StringUtil.expandNewlines(descriptionComponents);
 		descriptionLines = StringUtil.splitLines(descriptionLines, IngredientInfoRecipeCategory.recipeWidth);
 		final int lineCount = descriptionLines.size();
@@ -54,10 +55,12 @@ public class IngredientInfoRecipe {
 		this.ingredients = ingredients;
 	}
 
+	@Override
 	public List<FormattedText> getDescription() {
 		return description;
 	}
 
+	@Override
 	public List<ITypedIngredient<?>> getIngredients() {
 		return ingredients;
 	}

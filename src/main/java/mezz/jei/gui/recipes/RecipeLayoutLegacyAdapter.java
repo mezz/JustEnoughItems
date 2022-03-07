@@ -64,7 +64,7 @@ public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayou
 			recipeCategory.setRecipe(this, recipe, ingredients);
 			return true;
 		} catch (RuntimeException | LinkageError e) {
-			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getUid(), e);
+			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getRecipeType().getUid(), e);
 		}
 		return false;
 	}

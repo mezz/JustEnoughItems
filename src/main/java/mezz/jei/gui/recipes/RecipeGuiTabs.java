@@ -1,6 +1,5 @@
 package mezz.jei.gui.recipes;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -42,7 +41,7 @@ public class RecipeGuiTabs implements IPaged {
 	}
 
 	public void initLayout(RecipesGui recipesGui) {
-		ImmutableList<IRecipeCategory<?>> categories = this.recipeGuiLogic.getRecipeCategories();
+		List<IRecipeCategory<?>> categories = this.recipeGuiLogic.getRecipeCategories();
 		if (categories.isEmpty()) {
 			return;
 		}
@@ -79,7 +78,7 @@ public class RecipeGuiTabs implements IPaged {
 		tabs.clear();
 		List<IUserInputHandler> inputHandlers = new ArrayList<>();
 
-		ImmutableList<IRecipeCategory<?>> categories = recipeGuiLogic.getRecipeCategories();
+		List<IRecipeCategory<?>> categories = recipeGuiLogic.getRecipeCategories();
 
 		int tabX = area.getX();
 

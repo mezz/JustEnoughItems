@@ -12,13 +12,6 @@ public class HoverChecker {
 	public HoverChecker() {
 	}
 
-	public HoverChecker(int top, int bottom, int left, int right) {
-		this.top = top;
-		this.bottom = bottom;
-		this.left = left;
-		this.right = right;
-	}
-
 	public void updateBounds(Button button) {
 		this.top = button.y;
 		this.bottom = button.y + button.getHeight();

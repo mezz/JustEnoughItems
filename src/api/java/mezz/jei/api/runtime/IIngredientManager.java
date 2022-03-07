@@ -7,6 +7,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import org.jetbrains.annotations.Unmodifiable;
 
 /**
  * The {@link IIngredientManager} has some useful functions related to recipe ingredients.
@@ -17,6 +18,7 @@ public interface IIngredientManager {
 	/**
 	 * Returns an unmodifiable collection of all the ingredients known to JEI, of the specified type.
 	 */
+	@Unmodifiable
 	<V> Collection<V> getAllIngredients(IIngredientType<V> ingredientType);
 
 	/**

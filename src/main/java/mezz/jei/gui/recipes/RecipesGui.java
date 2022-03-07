@@ -10,7 +10,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.config.IClientConfig;
@@ -30,6 +30,7 @@ import mezz.jei.input.MouseUtil;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.recipes.FocusGroup;
+import mezz.jei.recipes.RecipeManager;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.transfer.RecipeTransferUtil;
@@ -60,8 +61,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private static final int innerPadding = 14;
 	private static final int buttonWidth = 13;
 	private static final int buttonHeight = 13;
+
 	private final RecipeTransferManager recipeTransferManager;
 	private final IClientConfig clientConfig;
+	private final RecipeManager recipeManager;
 
 	private int headerHeight;
 
@@ -93,7 +96,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private boolean init = false;
 
 	public RecipesGui(
-		IRecipeManager recipeManager,
+		RecipeManager recipeManager,
 		RecipeTransferManager recipeTransferManager,
 		RegisteredIngredients registeredIngredients,
 		IModIdHelper modIdHelper,
@@ -105,6 +108,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, registeredIngredients, modIdHelper);
 		this.recipeCatalysts = new RecipeCatalysts();
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
+		this.recipeManager = recipeManager;
 		this.minecraft = Minecraft.getInstance();
 
 		Textures textures = Internal.getTextures();
@@ -434,10 +438,20 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
+	public void showTypes(List<RecipeType<?>> recipeTypes) {
+		ErrorUtil.checkNotEmpty(recipeTypes, "recipeTypes");
+
+		if (logic.setCategoryFocus(recipeTypes)) {
+			open();
+		}
+	}
+
+	@SuppressWarnings({"deprecation", "removal"})
+	@Override
 	public void showCategories(List<ResourceLocation> recipeCategoryUids) {
 		ErrorUtil.checkNotEmpty(recipeCategoryUids, "recipeCategoryUids");
-
-		if (logic.setCategoryFocus(recipeCategoryUids)) {
+		List<RecipeType<?>> recipeTypes = recipeManager.getRecipeTypes(recipeCategoryUids);
+		if (logic.setCategoryFocus(recipeTypes)) {
 			open();
 		}
 	}
@@ -504,7 +518,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		pageString = logic.getPageString();
 
-		List<ITypedIngredient<?>> recipeCatalysts = logic.getRecipeCatalysts();
+		List<ITypedIngredient<?>> recipeCatalysts = logic.getRecipeCatalysts().toList();
 		this.recipeCatalysts.updateLayout(recipeCatalysts, this);
 		recipeGuiTabs.initLayout(this);
 	}

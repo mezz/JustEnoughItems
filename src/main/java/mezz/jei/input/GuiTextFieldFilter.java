@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.TextFieldInputHandler;
 import mezz.jei.util.ImmutableRect2i;
@@ -13,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.TextComponent;
 
-import java.util.List;
 import java.util.Optional;
 
 public class GuiTextFieldFilter extends EditBox {

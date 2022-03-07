@@ -3,9 +3,8 @@ package mezz.jei;
 import com.google.common.base.Preconditions;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.gui.textures.Textures;
-import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.IngredientVisibility;
+import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import org.jetbrains.annotations.Nullable;
@@ -22,8 +21,6 @@ public final class Internal {
 	private static RegisteredIngredients registeredIngredients;
 	@Nullable
 	private static ColorNamer colorNamer;
-	@Nullable
-	private static IngredientFilter ingredientFilter;
 	@Nullable
 	private static IngredientVisibility ingredientVisibility;
 	@Nullable
@@ -85,14 +82,5 @@ public final class Internal {
 
 	public static void setColorNamer(ColorNamer colorNamer) {
 		Internal.colorNamer = colorNamer;
-	}
-
-	public static IngredientFilter getIngredientFilter() {
-		Preconditions.checkState(ingredientFilter != null, "Ingredient Filter has not been created yet.");
-		return ingredientFilter;
-	}
-
-	public static void setIngredientFilter(IngredientFilter ingredientFilter) {
-		Internal.ingredientFilter = ingredientFilter;
 	}
 }

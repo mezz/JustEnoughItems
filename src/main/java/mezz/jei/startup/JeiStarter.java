@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableTable;
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -48,6 +48,7 @@ import mezz.jei.load.PluginHelper;
 import mezz.jei.load.PluginLoader;
 import mezz.jei.plugins.jei.JeiInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
+import mezz.jei.recipes.RecipeManager;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
@@ -121,8 +122,9 @@ public final class JeiStarter {
 		ingredientFilter.register(subscriptions);
 
 		BookmarkList bookmarkList = pluginLoader.createBookmarkList(bookmarkConfig);
-		IRecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, vanillaPlugin, recipeCategorySortingConfig);
-		ImmutableTable<Class<?>, ResourceLocation, IRecipeTransferHandler<?, ?>> recipeTransferHandlers = pluginLoader.createRecipeTransferHandlers(plugins);
+		RecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, vanillaPlugin, recipeCategorySortingConfig);
+		ImmutableTable<Class<?>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers =
+			pluginLoader.createRecipeTransferHandlers(plugins, recipeManager);
 		RecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
 
 		LoggedTimer timer = new LoggedTimer();

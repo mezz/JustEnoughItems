@@ -2,7 +2,7 @@ package mezz.jei.transfer;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
@@ -17,8 +17,8 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<InventoryMenu, CraftingRecipe> {
@@ -33,7 +33,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 
 	public PlayerRecipeTransferHandler(IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper) {
 		this.handlerHelper = handlerHelper;
-		var transferInfo = new BasicRecipeTransferInfo<>(InventoryMenu.class, CraftingRecipe.class, VanillaRecipeCategoryUid.CRAFTING, 1, 4, 9, 36);
+		var transferInfo = new BasicRecipeTransferInfo<>(InventoryMenu.class, RecipeTypes.CRAFTING, 1, 4, 9, 36);
 		this.handler = new BasicRecipeTransferHandler<>(stackHelper, handlerHelper, transferInfo);
 	}
 

@@ -1,19 +1,16 @@
 package mezz.jei.plugins.vanilla.cooking.fuel;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraft.world.item.ItemStack;
-
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.util.ErrorUtil;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.ForgeHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Comparator;
+import java.util.List;
 
 public final class FuelRecipeMaker {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -21,17 +18,16 @@ public final class FuelRecipeMaker {
 	private FuelRecipeMaker() {
 	}
 
-	public static List<FuelRecipe> getFuelRecipes(IIngredientManager ingredientManager, IJeiHelpers helpers) {
-		IGuiHelper guiHelper = helpers.getGuiHelper();
-		Collection<ItemStack> allItemStacks = ingredientManager.getAllIngredients(VanillaTypes.ITEM);
-		List<FuelRecipe> fuelRecipes = new ArrayList<>();
-		for (ItemStack stack : allItemStacks) {
-			int burnTime = getBurnTime(stack);
-			if (burnTime > 0) {
-				fuelRecipes.add(new FuelRecipe(guiHelper, List.of(stack), burnTime));
-			}
-		}
-		return fuelRecipes;
+	public static List<IJeiFuelingRecipe> getFuelRecipes(IIngredientManager ingredientManager) {
+		return ingredientManager.getAllIngredients(VanillaTypes.ITEM).stream()
+			.<IJeiFuelingRecipe>mapMulti((stack, consumer) -> {
+				int burnTime = getBurnTime(stack);
+				if (burnTime > 0) {
+					consumer.accept(new FuelingRecipe(List.of(stack), burnTime));
+				}
+			})
+			.sorted(Comparator.comparingInt(IJeiFuelingRecipe::getBurnTime))
+			.toList();
 	}
 
 	private static int getBurnTime(ItemStack itemStack) {

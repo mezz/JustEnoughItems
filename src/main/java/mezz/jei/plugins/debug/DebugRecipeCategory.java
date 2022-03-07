@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -16,6 +16,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IIngredientFilter;
@@ -46,7 +47,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
-	public static final ResourceLocation UID = new ResourceLocation(ModIds.JEI_ID, "debug");
+	public static final RecipeType<DebugRecipe> TYPE = RecipeType.create(ModIds.JEI_ID, "debug", DebugRecipe.class);
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
 	private final IDrawable background;
@@ -66,14 +67,21 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		this.item = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Items.ACACIA_LEAVES));
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public ResourceLocation getUid() {
-		return UID;
+		return TYPE.getUid();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public Class<? extends DebugRecipe> getRecipeClass() {
+		return TYPE.getRecipeClass();
 	}
 
 	@Override
-	public Class<? extends DebugRecipe> getRecipeClass() {
-		return DebugRecipe.class;
+	public RecipeType<DebugRecipe> getRecipeType() {
+		return TYPE;
 	}
 
 	@Override
@@ -216,10 +224,10 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 
 				IRecipeManager recipeManager = runtime.getRecipeManager();
 				if (!hiddenRecipes) {
-					recipeManager.hideRecipeCategory(VanillaRecipeCategoryUid.CRAFTING);
+					recipeManager.hideRecipeCategory(RecipeTypes.CRAFTING);
 					hiddenRecipes = true;
 				} else {
-					recipeManager.unhideRecipeCategory(VanillaRecipeCategoryUid.CRAFTING);
+					recipeManager.unhideRecipeCategory(RecipeTypes.CRAFTING);
 					hiddenRecipes = false;
 				}
 			}

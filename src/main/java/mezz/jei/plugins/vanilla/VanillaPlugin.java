@@ -4,7 +4,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -33,9 +33,9 @@ import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.PotionSubtypeInterpreter;
 import mezz.jei.plugins.vanilla.compostable.CompostableRecipeCategory;
-import mezz.jei.plugins.vanilla.compostable.CompostableRecipeMaker;
+import mezz.jei.plugins.vanilla.compostable.CompostingRecipeMaker;
 import mezz.jei.plugins.vanilla.cooking.BlastingCategory;
-import mezz.jei.plugins.vanilla.cooking.CampfireCategory;
+import mezz.jei.plugins.vanilla.cooking.CampfireCookingCategory;
 import mezz.jei.plugins.vanilla.cooking.FurnaceSmeltingCategory;
 import mezz.jei.plugins.vanilla.cooking.SmokingCategory;
 import mezz.jei.plugins.vanilla.cooking.fuel.FuelRecipeMaker;
@@ -175,7 +175,7 @@ public class VanillaPlugin implements IModPlugin {
 			furnaceCategory = new FurnaceSmeltingCategory(guiHelper),
 			smokingCategory = new SmokingCategory(guiHelper),
 			blastingCategory = new BlastingCategory(guiHelper),
-			campfireCategory = new CampfireCategory(guiHelper),
+			campfireCategory = new CampfireCookingCategory(guiHelper),
 			smithingCategory = new SmithingRecipeCategory(guiHelper),
 			new CompostableRecipeCategory(guiHelper),
 			new FurnaceFuelCategory(guiHelper, textures),
@@ -200,7 +200,6 @@ public class VanillaPlugin implements IModPlugin {
 		ErrorUtil.checkNotNull(campfireCategory, "campfireCategory");
 		ErrorUtil.checkNotNull(smithingCategory, "smithingCategory");
 
-		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
 		VanillaRecipes vanillaRecipes = new VanillaRecipes();
@@ -210,31 +209,31 @@ public class VanillaPlugin implements IModPlugin {
 		List<CraftingRecipe> unhandledCraftingRecipes = craftingRecipes.get(false);
 		List<CraftingRecipe> specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes);
 
-		registration.addRecipes(handledCraftingRecipes, VanillaRecipeCategoryUid.CRAFTING);
-		registration.addRecipes(specialCraftingRecipes, VanillaRecipeCategoryUid.CRAFTING);
+		registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);
+		registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);
 
-		registration.addRecipes(vanillaRecipes.getStonecuttingRecipes(stonecuttingCategory), VanillaRecipeCategoryUid.STONECUTTING);
-		registration.addRecipes(vanillaRecipes.getFurnaceRecipes(furnaceCategory), VanillaRecipeCategoryUid.FURNACE);
-		registration.addRecipes(vanillaRecipes.getSmokingRecipes(smokingCategory), VanillaRecipeCategoryUid.SMOKING);
-		registration.addRecipes(vanillaRecipes.getBlastingRecipes(blastingCategory), VanillaRecipeCategoryUid.BLASTING);
-		registration.addRecipes(vanillaRecipes.getCampfireCookingRecipes(campfireCategory), VanillaRecipeCategoryUid.CAMPFIRE);
-		registration.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientManager, jeiHelpers), VanillaRecipeCategoryUid.FUEL);
-		registration.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory), VanillaRecipeCategoryUid.BREWING);
-		registration.addRecipes(AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager), VanillaRecipeCategoryUid.ANVIL);
-		registration.addRecipes(vanillaRecipes.getSmithingRecipes(smithingCategory), VanillaRecipeCategoryUid.SMITHING);
-		registration.addRecipes(CompostableRecipeMaker.getRecipes(ingredientManager), VanillaRecipeCategoryUid.COMPOSTABLE);
+		registration.addRecipes(RecipeTypes.STONECUTTING, vanillaRecipes.getStonecuttingRecipes(stonecuttingCategory));
+		registration.addRecipes(RecipeTypes.SMELTING, vanillaRecipes.getFurnaceRecipes(furnaceCategory));
+		registration.addRecipes(RecipeTypes.SMOKING, vanillaRecipes.getSmokingRecipes(smokingCategory));
+		registration.addRecipes(RecipeTypes.BLASTING, vanillaRecipes.getBlastingRecipes(blastingCategory));
+		registration.addRecipes(RecipeTypes.CAMPFIRE_COOKING, vanillaRecipes.getCampfireCookingRecipes(campfireCategory));
+		registration.addRecipes(RecipeTypes.FUELING, FuelRecipeMaker.getFuelRecipes(ingredientManager));
+		registration.addRecipes(RecipeTypes.BREWING, BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory));
+		registration.addRecipes(RecipeTypes.ANVIL, AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager));
+		registration.addRecipes(RecipeTypes.SMITHING, vanillaRecipes.getSmithingRecipes(smithingCategory));
+		registration.addRecipes(RecipeTypes.COMPOSTING, CompostingRecipeMaker.getRecipes(ingredientManager));
 	}
 
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-		registration.addRecipeClickArea(CraftingScreen.class, 88, 32, 28, 23, VanillaRecipeCategoryUid.CRAFTING);
-		registration.addRecipeClickArea(InventoryScreen.class, 137, 29, 10, 13, VanillaRecipeCategoryUid.CRAFTING);
-		registration.addRecipeClickArea(BrewingStandScreen.class, 97, 16, 14, 30, VanillaRecipeCategoryUid.BREWING);
-		registration.addRecipeClickArea(FurnaceScreen.class, 78, 32, 28, 23, VanillaRecipeCategoryUid.FURNACE, VanillaRecipeCategoryUid.FUEL);
-		registration.addRecipeClickArea(SmokerScreen.class, 78, 32, 28, 23, VanillaRecipeCategoryUid.SMOKING, VanillaRecipeCategoryUid.FUEL);
-		registration.addRecipeClickArea(BlastFurnaceScreen.class, 78, 32, 28, 23, VanillaRecipeCategoryUid.BLASTING, VanillaRecipeCategoryUid.FUEL);
-		registration.addRecipeClickArea(AnvilScreen.class, 102, 48, 22, 15, VanillaRecipeCategoryUid.ANVIL);
-		registration.addRecipeClickArea(SmithingScreen.class, 102, 48, 22, 15, VanillaRecipeCategoryUid.SMITHING);
+		registration.addRecipeClickArea(CraftingScreen.class, 88, 32, 28, 23, RecipeTypes.CRAFTING);
+		registration.addRecipeClickArea(InventoryScreen.class, 137, 29, 10, 13, RecipeTypes.CRAFTING);
+		registration.addRecipeClickArea(BrewingStandScreen.class, 97, 16, 14, 30, RecipeTypes.BREWING);
+		registration.addRecipeClickArea(FurnaceScreen.class, 78, 32, 28, 23, RecipeTypes.SMELTING, RecipeTypes.FUELING);
+		registration.addRecipeClickArea(SmokerScreen.class, 78, 32, 28, 23, RecipeTypes.SMOKING, RecipeTypes.FUELING);
+		registration.addRecipeClickArea(BlastFurnaceScreen.class, 78, 32, 28, 23, RecipeTypes.BLASTING, RecipeTypes.FUELING);
+		registration.addRecipeClickArea(AnvilScreen.class, 102, 48, 22, 15, RecipeTypes.ANVIL);
+		registration.addRecipeClickArea(SmithingScreen.class, 102, 48, 22, 15, RecipeTypes.SMITHING);
 
 		registration.addGenericGuiContainerHandler(EffectRenderingInventoryScreen.class, new InventoryEffectRendererGuiHandler<>());
 		registration.addGuiContainerHandler(CraftingScreen.class, new RecipeBookGuiHandler<>());
@@ -247,32 +246,33 @@ public class VanillaPlugin implements IModPlugin {
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IRecipeTransferHandlerHelper transferHelper = registration.getTransferHelper();
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
-		registration.addRecipeTransferHandler(CraftingMenu.class, VanillaRecipeCategoryUid.CRAFTING, 1, 9, 10, 36);
-		registration.addRecipeTransferHandler(new PlayerRecipeTransferHandler(stackHelper, transferHelper), VanillaRecipeCategoryUid.CRAFTING);
-		registration.addRecipeTransferHandler(FurnaceMenu.class, VanillaRecipeCategoryUid.FURNACE, 0, 1, 3, 36);
-		registration.addRecipeTransferHandler(FurnaceMenu.class, VanillaRecipeCategoryUid.FUEL, 1, 1, 3, 36);
-		registration.addRecipeTransferHandler(SmokerMenu.class, VanillaRecipeCategoryUid.SMOKING, 0, 1, 3, 36);
-		registration.addRecipeTransferHandler(SmokerMenu.class, VanillaRecipeCategoryUid.FUEL, 1, 1, 3, 36);
-		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, VanillaRecipeCategoryUid.BLASTING, 0, 1, 3, 36);
-		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, VanillaRecipeCategoryUid.FUEL, 1, 1, 3, 36);
-		registration.addRecipeTransferHandler(BrewingStandMenu.class, VanillaRecipeCategoryUid.BREWING, 0, 4, 5, 36);
-		registration.addRecipeTransferHandler(AnvilMenu.class, VanillaRecipeCategoryUid.ANVIL, 0, 2, 3, 36);
-		registration.addRecipeTransferHandler(SmithingMenu.class, VanillaRecipeCategoryUid.SMITHING, 0, 2, 3, 36);
+		registration.addRecipeTransferHandler(CraftingMenu.class, RecipeTypes.CRAFTING, 1, 9, 10, 36);
+		registration.addRecipeTransferHandler(new PlayerRecipeTransferHandler(stackHelper, transferHelper), RecipeTypes.CRAFTING);
+		registration.addRecipeTransferHandler(FurnaceMenu.class, RecipeTypes.SMELTING, 0, 1, 3, 36);
+		registration.addRecipeTransferHandler(FurnaceMenu.class, RecipeTypes.FUELING, 1, 1, 3, 36);
+		registration.addRecipeTransferHandler(SmokerMenu.class, RecipeTypes.SMOKING, 0, 1, 3, 36);
+		registration.addRecipeTransferHandler(SmokerMenu.class, RecipeTypes.FUELING, 1, 1, 3, 36);
+		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, RecipeTypes.BLASTING, 0, 1, 3, 36);
+		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, RecipeTypes.FUELING, 1, 1, 3, 36);
+		registration.addRecipeTransferHandler(BrewingStandMenu.class, RecipeTypes.BREWING, 0, 4, 5, 36);
+		registration.addRecipeTransferHandler(AnvilMenu.class, RecipeTypes.ANVIL, 0, 2, 3, 36);
+		registration.addRecipeTransferHandler(SmithingMenu.class, RecipeTypes.SMITHING, 0, 2, 3, 36);
 	}
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-		registration.addRecipeCatalyst(new ItemStack(Blocks.CRAFTING_TABLE), VanillaRecipeCategoryUid.CRAFTING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.STONECUTTER), VanillaRecipeCategoryUid.STONECUTTING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.FURNACE), VanillaRecipeCategoryUid.FURNACE, VanillaRecipeCategoryUid.FUEL);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.SMOKER), VanillaRecipeCategoryUid.SMOKING, VanillaRecipeCategoryUid.FUEL);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.BLAST_FURNACE), VanillaRecipeCategoryUid.BLASTING, VanillaRecipeCategoryUid.FUEL);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.CAMPFIRE), VanillaRecipeCategoryUid.CAMPFIRE);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.SOUL_CAMPFIRE), VanillaRecipeCategoryUid.CAMPFIRE);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.BREWING_STAND), VanillaRecipeCategoryUid.BREWING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), VanillaRecipeCategoryUid.ANVIL);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.SMITHING_TABLE), VanillaRecipeCategoryUid.SMITHING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.COMPOSTER), VanillaRecipeCategoryUid.COMPOSTABLE);
+		registration.addRecipeCatalyst(new ItemStack(Blocks.CRAFTING_TABLE), RecipeTypes.CRAFTING);
+		registration.addRecipeCatalyst(new ItemStack(Blocks.STONECUTTER), RecipeTypes.STONECUTTING);
+		registration.addRecipeCatalyst(new ItemStack(Blocks.FURNACE), RecipeTypes.SMELTING, RecipeTypes.FUELING);
+
+		registration.addRecipeCatalyst(new ItemStack(Blocks.SMOKER), RecipeTypes.SMOKING, RecipeTypes.FUELING);
+		registration.addRecipeCatalyst(new ItemStack(Blocks.BLAST_FURNACE), RecipeTypes.BLASTING, RecipeTypes.FUELING);
+		registration.addRecipeCatalyst(new ItemStack(Blocks.CAMPFIRE), RecipeTypes.CAMPFIRE_COOKING);
+		registration.addRecipeCatalyst(new ItemStack(Blocks.SOUL_CAMPFIRE), RecipeTypes.CAMPFIRE_COOKING);
+		registration.addRecipeCatalyst(new ItemStack(Blocks.BREWING_STAND), RecipeTypes.BREWING);
+		registration.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), RecipeTypes.ANVIL);
+		registration.addRecipeCatalyst(new ItemStack(Blocks.SMITHING_TABLE), RecipeTypes.SMITHING);
+		registration.addRecipeCatalyst(new ItemStack(Blocks.COMPOSTER), RecipeTypes.COMPOSTING);
 	}
 
 	@Nullable

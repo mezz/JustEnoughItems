@@ -1,20 +1,21 @@
 package mezz.jei.gui.ingredients;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.recipes.FocusedRecipes;
-
 import mezz.jei.recipes.FocusGroup;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
+
 import java.util.List;
 
 public class IngredientLookupState {
 	private final IRecipeManager recipeManager;
 	private final IFocusGroup focuses;
-	private final ImmutableList<IRecipeCategory<?>> recipeCategories;
+	@Unmodifiable
+	private final List<IRecipeCategory<?>> recipeCategories;
 
 	private int recipeCategoryIndex;
 	private int recipeIndex;
@@ -23,7 +24,11 @@ public class IngredientLookupState {
 	private FocusedRecipes<?> focusedRecipes;
 
 	public static IngredientLookupState createWithFocus(IRecipeManager recipeManager, IFocusGroup focuses) {
-		List<IRecipeCategory<?>> recipeCategories = recipeManager.getRecipeCategories(focuses.getAllFocuses(), false);
+		List<IRecipeCategory<?>> recipeCategories = recipeManager.createRecipeCategoryLookup()
+			.limitFocus(focuses.getAllFocuses())
+			.get()
+			.toList();
+
 		return new IngredientLookupState(recipeManager, focuses, recipeCategories);
 	}
 
@@ -34,14 +39,15 @@ public class IngredientLookupState {
 	private IngredientLookupState(IRecipeManager recipeManager, IFocusGroup focuses, List<IRecipeCategory<?>> recipeCategories) {
 		this.recipeManager = recipeManager;
 		this.focuses = focuses;
-		this.recipeCategories = ImmutableList.copyOf(recipeCategories);
+		this.recipeCategories = List.copyOf(recipeCategories);
 	}
 
 	public IFocusGroup getFocuses() {
 		return focuses;
 	}
 
-	public ImmutableList<IRecipeCategory<?>> getRecipeCategories() {
+	@Unmodifiable
+	public List<IRecipeCategory<?>> getRecipeCategories() {
 		return recipeCategories;
 	}
 

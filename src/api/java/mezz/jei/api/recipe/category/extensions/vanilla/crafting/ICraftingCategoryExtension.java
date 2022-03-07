@@ -1,6 +1,6 @@
 package mezz.jei.api.recipe.category.extensions.vanilla.crafting;
 
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.recipe.IFocus;
@@ -16,8 +16,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Implement this interface instead of just {@link IRecipeCategoryExtension} to have your recipe extension work as part of the
- * {@link VanillaRecipeCategoryUid#CRAFTING} recipe category as a shapeless recipe.
+ * Implement this interface instead of just {@link IRecipeCategoryExtension}
+ * to have your recipe extension work as part of {@link RecipeTypes#CRAFTING} as a shapeless recipe.
  *
  * For shaped recipes, override {@link #getWidth()} and {@link #getHeight()}.
  *

@@ -125,19 +125,19 @@ public class JeiDebugPlugin implements IModPlugin {
 				)
 			);
 
-			registration.addRecipes(List.of(
+			registration.addRecipes(DebugRecipeCategory.TYPE, List.of(
 				new DebugRecipe(),
 				new DebugRecipe()
-			), DebugRecipeCategory.UID);
+			));
 
-			registration.addRecipes(List.of(
+			registration.addRecipes(DebugRecipeCategory.TYPE, List.of(
 				new DebugRecipe()
-			), DebugFocusRecipeCategory.UID);
+			));
 
-			registration.addRecipes(List.of(
+			registration.addRecipes(DebugRecipeCategory.TYPE, List.of(
 				new DebugRecipe(),
 				new DebugRecipe()
-			), LegacyDebugRecipeCategory.UID);
+			));
 		}
 	}
 
@@ -179,14 +179,14 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
-			registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.UID);
-			registration.addRecipeCatalyst(VanillaTypes.FLUID, new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), DebugRecipeCategory.UID);
-			registration.addRecipeCatalyst(VanillaTypes.ITEM, new ItemStack(Items.STICK), DebugRecipeCategory.UID);
+			registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
+			registration.addRecipeCatalyst(VanillaTypes.FLUID, new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), DebugRecipeCategory.TYPE);
+			registration.addRecipeCatalyst(VanillaTypes.ITEM, new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
 			int i = 0;
 			for (Item item : ForgeRegistries.ITEMS.getValues()) {
 				ItemStack catalystIngredient = new ItemStack(item);
 				if (!catalystIngredient.isEmpty()) {
-					registration.addRecipeCatalyst(VanillaTypes.ITEM, catalystIngredient, DebugRecipeCategory.UID);
+					registration.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.TYPE);
 				}
 				i++;
 				if (i > 30) {

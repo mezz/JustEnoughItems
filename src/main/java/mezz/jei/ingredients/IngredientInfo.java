@@ -7,6 +7,8 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.collect.IngredientSet;
 
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -37,6 +39,7 @@ public class IngredientInfo<T> {
 		return ingredientRenderer;
 	}
 
+	@Unmodifiable
 	public Collection<T> getAllIngredients() {
 		return Collections.unmodifiableCollection(ingredientSet);
 	}

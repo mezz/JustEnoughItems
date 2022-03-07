@@ -1,13 +1,14 @@
 package mezz.jei.gui.recipes;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
-import net.minecraft.resources.ResourceLocation;
+import mezz.jei.api.recipe.RecipeType;
 
-import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import org.jetbrains.annotations.Unmodifiable;
 
 public interface IRecipeGuiLogic {
 
@@ -39,15 +40,15 @@ public interface IRecipeGuiLogic {
 
 	boolean setCategoryFocus();
 
-	boolean setCategoryFocus(List<ResourceLocation> recipeCategoryUids);
+	boolean setCategoryFocus(List<RecipeType<?>> recipeTypes);
 
 	IRecipeCategory<?> getSelectedRecipeCategory();
 
-	ImmutableList<IRecipeCategory<?>> getRecipeCategories();
+	@Unmodifiable
+	List<IRecipeCategory<?>> getRecipeCategories();
 
-	List<ITypedIngredient<?>> getRecipeCatalysts();
-
-	List<ITypedIngredient<?>> getRecipeCatalysts(IRecipeCategory<?> recipeCategory);
+	Stream<ITypedIngredient<?>> getRecipeCatalysts();
+	Stream<ITypedIngredient<?>> getRecipeCatalysts(IRecipeCategory<?> recipeCategory);
 
 	List<RecipeLayout<?>> getRecipeLayouts(int posX, int posY, int spacingY);
 }

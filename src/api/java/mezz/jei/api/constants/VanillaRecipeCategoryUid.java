@@ -20,7 +20,10 @@ import mezz.jei.api.registration.IRecipeRegistration;
 
 /**
  * List of built-in recipe category UIDs, so that plugins with their own recipe handlers can use them.
+ *
+ * @deprecated This has been replaced by {@link RecipeTypes}.
  */
+@Deprecated(forRemoval = true, since = "9.5.0")
 public final class VanillaRecipeCategoryUid {
 	/**
 	 * The crafting recipe category.
@@ -30,49 +33,56 @@ public final class VanillaRecipeCategoryUid {
 	 * To add a shaped recipe extension to this category, it must implement
 	 * {@link ICraftingCategoryExtension#getWidth()} and {@link ICraftingCategoryExtension#getHeight()}.
 	 */
-	public static final ResourceLocation CRAFTING = new ResourceLocation(ModIds.MINECRAFT_ID, "crafting");
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	public static final ResourceLocation CRAFTING = RecipeTypes.CRAFTING.getUid();
 
 	/**
 	 * The stonecutting recipe category
 	 *
 	 * Automatically includes every {@link StonecutterRecipe}
 	 */
-	public static final ResourceLocation STONECUTTING = new ResourceLocation(ModIds.MINECRAFT_ID, "stonecutting");
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	public static final ResourceLocation STONECUTTING = RecipeTypes.STONECUTTING.getUid();
 
 	/**
 	 * The furnace recipe category.
 	 *
 	 * Automatically includes every {@link SmeltingRecipe}
 	 */
-	public static final ResourceLocation FURNACE = new ResourceLocation(ModIds.MINECRAFT_ID, "furnace");
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	public static final ResourceLocation FURNACE = RecipeTypes.SMELTING.getUid();
 
 	/**
 	 * The smoking recipe category.
 	 *
 	 * Automatically includes every {@link SmokingRecipe}
 	 */
-	public static final ResourceLocation SMOKING = new ResourceLocation(ModIds.MINECRAFT_ID, "smoking");
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	public static final ResourceLocation SMOKING = RecipeTypes.SMOKING.getUid();
 
 	/**
 	 * The blasting recipe category.
 	 *
 	 * Automatically includes every {@link BlastingRecipe}
 	 */
-	public static final ResourceLocation BLASTING = new ResourceLocation(ModIds.MINECRAFT_ID, "blasting");
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	public static final ResourceLocation BLASTING = RecipeTypes.BLASTING.getUid();
 
 	/**
 	 * The campfire furnace recipe category.
 	 *
 	 * Automatically includes every {@link CampfireCookingRecipe}
 	 */
-	public static final ResourceLocation CAMPFIRE = new ResourceLocation(ModIds.MINECRAFT_ID, "campfire");
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	public static final ResourceLocation CAMPFIRE = RecipeTypes.CAMPFIRE_COOKING.getUid();
 
 	/**
 	 * The fuel recipe category.
 	 *
 	 * Automatically includes everything that has a burn time.
 	 */
-	public static final ResourceLocation FUEL = new ResourceLocation(ModIds.MINECRAFT_ID, "fuel");
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	public static final ResourceLocation FUEL = RecipeTypes.FUELING.getUid();
 
 	/**
 	 * The brewing recipe category.
@@ -82,14 +92,16 @@ public final class VanillaRecipeCategoryUid {
 	 * Also automatically adds modded potions from {@link BrewingRecipeRegistry#getRecipes()}.
 	 * JEI can only understand modded potion recipes that are built into vanilla or Forge.
 	 */
-	public static final ResourceLocation BREWING = new ResourceLocation(ModIds.MINECRAFT_ID, "brewing");
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	public static final ResourceLocation BREWING = RecipeTypes.BREWING.getUid();
 
 	/**
 	 * The anvil recipe category.
 	 *
 	 * This is a built-in category, you can create new recipes with {@link IVanillaRecipeFactory#createAnvilRecipe(ItemStack, List, List)}
 	 */
-	public static final ResourceLocation ANVIL = new ResourceLocation(ModIds.MINECRAFT_ID, "anvil");
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	public static final ResourceLocation ANVIL = RecipeTypes.ANVIL.getUid();
 
 	/**
 	 * The smithing recipe category.
@@ -97,15 +109,17 @@ public final class VanillaRecipeCategoryUid {
 	 * Automatically includes every {@link UpgradeRecipe}.
 	 * @since 7.3.1
 	 */
-	public static final ResourceLocation SMITHING = new ResourceLocation(ModIds.MINECRAFT_ID, "smithing");
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	public static final ResourceLocation SMITHING = RecipeTypes.SMITHING.getUid();
 
 	/**
-	 * The sompostable recipe category.
+	 * The compostable recipe category.
 	 *
 	 * Automatically includes every item added to {@link ComposterBlock#COMPOSTABLES}.
 	 * @since 8.1.0
 	 */
-	public static final ResourceLocation COMPOSTABLE = new ResourceLocation(ModIds.MINECRAFT_ID, "compostable");
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	public static final ResourceLocation COMPOSTABLE = RecipeTypes.COMPOSTING.getUid();
 
 	/**
 	 * The JEI info recipe category shows extra information about ingredients.
@@ -114,7 +128,8 @@ public final class VanillaRecipeCategoryUid {
 	 * {@link IRecipeRegistration#addIngredientInfo(Object, IIngredientType, net.minecraft.network.chat.Component...)} or
 	 * {@link IRecipeRegistration#addIngredientInfo(List, IIngredientType, net.minecraft.network.chat.Component...)}
 	 */
-	public static final ResourceLocation INFORMATION = new ResourceLocation(ModIds.JEI_ID, "information");
+	@Deprecated(forRemoval = true, since = "9.5.0")
+	public static final ResourceLocation INFORMATION = RecipeTypes.INFORMATION.getUid();
 
 	private VanillaRecipeCategoryUid() {
 

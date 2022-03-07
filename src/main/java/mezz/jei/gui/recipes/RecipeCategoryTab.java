@@ -62,9 +62,10 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 			iconY += (16 - icon.getHeight()) / 2;
 			icon.draw(poseStack, iconX, iconY);
 		} else {
-			List<ITypedIngredient<?>> recipeCatalysts = logic.getRecipeCatalysts(category);
-			if (!recipeCatalysts.isEmpty()) {
-				ITypedIngredient<?> ingredient = recipeCatalysts.get(0);
+			Optional<ITypedIngredient<?>> firstCatalyst = logic.getRecipeCatalysts(category)
+				.findFirst();
+			if (firstCatalyst.isPresent()) {
+				ITypedIngredient<?> ingredient = firstCatalyst.get();
 				renderIngredient(poseStack, iconX, iconY, ingredient);
 			} else {
 				String text = category.getTitle().getString().substring(0, 2);
@@ -95,7 +96,9 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 
 	@Override
 	public boolean isSelected(IRecipeCategory<?> selectedCategory) {
-		return category.getUid().equals(selectedCategory.getUid());
+		ResourceLocation categoryUid = category.getRecipeType().getUid();
+		ResourceLocation selectedCategoryUid = selectedCategory.getRecipeType().getUid();
+		return categoryUid.equals(selectedCategoryUid);
 	}
 
 	@Override
@@ -107,7 +110,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 			tooltip.add(title);
 		}
 
-		ResourceLocation uid = category.getUid();
+		ResourceLocation uid = category.getRecipeType().getUid();
 		String modId = uid.getNamespace();
 		IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
 		if (modIdHelper.isDisplayingModNameEnabled()) {

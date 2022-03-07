@@ -1,16 +1,17 @@
 package mezz.jei.plugins.vanilla.stonecutting;
 
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.resources.ResourceLocation;
 
-import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.config.Constants;
@@ -32,14 +33,21 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRe
 		localizedName = new TranslatableComponent("gui.jei.category.stoneCutter");
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public ResourceLocation getUid() {
-		return VanillaRecipeCategoryUid.STONECUTTING;
+		return getRecipeType().getUid();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public Class<? extends StonecutterRecipe> getRecipeClass() {
+		return getRecipeType().getRecipeClass();
 	}
 
 	@Override
-	public Class<? extends StonecutterRecipe> getRecipeClass() {
-		return StonecutterRecipe.class;
+	public RecipeType<StonecutterRecipe> getRecipeType() {
+		return RecipeTypes.STONECUTTING;
 	}
 
 	@Override

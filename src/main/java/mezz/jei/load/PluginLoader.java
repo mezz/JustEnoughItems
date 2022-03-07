@@ -7,7 +7,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
@@ -110,7 +110,6 @@ public class PluginLoader {
 			modIdHelper,
 			ingredientVisibility
 		);
-		Internal.setIngredientFilter(ingredientFilter);
 		this.timer.stop();
 
 		this.ingredientManager = new IngredientManager(modIdHelper, blacklist, clientConfig, registeredIngredients, ingredientFilter);
@@ -138,14 +137,14 @@ public class PluginLoader {
 		return guiHandlerRegistration.createGuiScreenHelper(registeredIngredients);
 	}
 
-	public ImmutableTable<Class<?>, ResourceLocation, IRecipeTransferHandler<?, ?>> createRecipeTransferHandlers(List<IModPlugin> plugins) {
+	public ImmutableTable<Class<?>, RecipeType<?>, IRecipeTransferHandler<?, ?>> createRecipeTransferHandlers(List<IModPlugin> plugins, RecipeManager recipeManager) {
 		IRecipeTransferHandlerHelper handlerHelper = new RecipeTransferHandlerHelper();
-		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(jeiHelpers.getStackHelper(), handlerHelper, jeiHelpers);
+		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(jeiHelpers.getStackHelper(), handlerHelper, jeiHelpers, recipeManager);
 		PluginCaller.callOnPlugins("Registering recipes transfer handlers", plugins, p -> p.registerRecipeTransferHandlers(recipeTransferRegistration));
 		return recipeTransferRegistration.getRecipeTransferHandlers();
 	}
 
-	public IRecipeManager createRecipeManager(
+	public RecipeManager createRecipeManager(
 		List<IModPlugin> plugins,
 		VanillaPlugin vanillaPlugin,
 		RecipeCategorySortingConfig recipeCategorySortingConfig

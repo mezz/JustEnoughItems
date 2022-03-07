@@ -11,6 +11,7 @@ import mezz.jei.api.registration.IModIngredientRegistration;
  *
  * @see VanillaTypes for the built-in vanilla types {@link VanillaTypes#ITEM} and {@link VanillaTypes#FLUID}
  */
+@FunctionalInterface
 public interface IIngredientType<T> {
 	/**
 	 * @return The class of the ingredient for this type.

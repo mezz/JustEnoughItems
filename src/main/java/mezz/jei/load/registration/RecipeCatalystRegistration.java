@@ -2,6 +2,7 @@ package mezz.jei.load.registration;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.TypedIngredient;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +20,21 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 		this.registeredIngredients = registeredIngredients;
 	}
 
+	@Override
+	public <T> void addRecipeCatalyst(IIngredientType<T> ingredientType, T ingredient, RecipeType<?>... recipeTypes) {
+		ErrorUtil.checkNotEmpty(recipeTypes, "recipeTypes");
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+
+		for (RecipeType<?> recipeType : recipeTypes) {
+			ErrorUtil.checkNotNull(recipeType, "recipeType");
+			ITypedIngredient<T> typedIngredient = TypedIngredient.createTyped(this.registeredIngredients, ingredientType, ingredient)
+				.orElseThrow(() -> new IllegalArgumentException("Recipe catalyst must not be empty"));
+			this.recipeCatalysts.put(recipeType.getUid(), typedIngredient);
+		}
+	}
+
+	@SuppressWarnings("removal")
 	@Override
 	public <T> void addRecipeCatalyst(IIngredientType<T> ingredientType, T catalystIngredient, ResourceLocation... recipeCategoryUids) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
