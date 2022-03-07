@@ -16,7 +16,7 @@ public interface IRecipeLookup<R> {
 	 *
 	 * @since 9.5.0
 	 */
-	IRecipeLookup<R> limitFocus(Collection<IFocus<?>> focuses);
+	IRecipeLookup<R> limitFocus(Collection<? extends IFocus<?>> focuses);
 
 	/**
 	 * By default, hidden results are not returned.

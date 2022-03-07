@@ -21,7 +21,7 @@ public class RecipeLookup<R> implements IRecipeLookup<R> {
 	}
 
 	@Override
-	public IRecipeLookup<R> limitFocus(Collection<IFocus<?>> focuses) {
+	public IRecipeLookup<R> limitFocus(Collection<? extends IFocus<?>> focuses) {
 		this.focusGroup = FocusGroup.create(focuses);
 		return this;
 	}
