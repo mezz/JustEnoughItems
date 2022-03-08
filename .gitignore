@@ -13,6 +13,8 @@ hs_err_pid*
 
 .gradle
 run/
+run01/
+run02/
 *.iml
 *.ipr
 *.iws

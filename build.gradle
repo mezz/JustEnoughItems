@@ -82,6 +82,20 @@ minecraft {
 				jei.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
 			}
 		}
+		client_player_01 {
+			parent runs.client
+			workingDirectory project.file('run01')
+
+			// program arguments
+			args '--username', 'Player01'
+		}
+		client_player_02 {
+			parent runs.client
+			workingDirectory project.file('run02')
+
+			// program arguments
+			args '--username', 'Player02'
+		}
 		server {
 			property 'forge.logging.console.level', 'debug'
 			workingDirectory file('run')
