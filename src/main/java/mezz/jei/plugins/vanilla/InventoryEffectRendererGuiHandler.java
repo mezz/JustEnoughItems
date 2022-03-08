@@ -36,8 +36,8 @@ class InventoryEffectRendererGuiHandler<T extends AbstractContainerMenu> impleme
 		List<Rect2i> areas = new ArrayList<>();
 		int x = containerScreen.getGuiLeft() + containerScreen.getXSize() + 2;
 		int y = containerScreen.getGuiTop();
-		int availableSpace = containerScreen.width - x;
-		int width = availableSpace >= 120 ? 120 : 32;
+		// JEI always forces the potion effect renderer to "compact" width mode when JEI is open.
+		int width = 32;
 
 		int height = 33;
 		if (activePotionEffects.size() > 5) {

@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IWorldConfig;
+import mezz.jei.events.RuntimeEventSubscriptions;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
@@ -26,6 +27,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
@@ -296,4 +299,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return Collections.emptyList();
 	}
 
+	public void register(RuntimeEventSubscriptions subscriptions) {
+		subscriptions.register(ScreenEvent.PotionSizeEvent.class, event -> {
+			if (isListDisplayed()) {
+				// Forcibly renders the potion indicators in compact mode.
+				// This gives the ingredient list overlay more room to display ingredients.
+				event.setResult(Event.Result.ALLOW);
+			}
+		});
+	}
 }

@@ -160,6 +160,7 @@ public final class JeiStarter {
 			clientConfig,
 			worldConfig
 		);
+		ingredientListOverlay.register(subscriptions);
 
 		IngredientGrid bookmarkListGrid = new IngredientGrid(
 			registeredIngredients,
