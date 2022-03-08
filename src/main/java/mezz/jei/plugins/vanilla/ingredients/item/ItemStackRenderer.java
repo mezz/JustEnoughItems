@@ -40,7 +40,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 				Font font = getFontRenderer(minecraft, ingredient);
 				ItemRenderer itemRenderer = minecraft.getItemRenderer();
 				itemRenderer.renderAndDecorateFakeItem(ingredient, 0, 0);
-				itemRenderer.renderGuiItemDecorations(font, ingredient, 0, 0, null);
+				itemRenderer.renderGuiItemDecorations(font, ingredient, 0, 0);
 				RenderSystem.disableBlend();
 			}
 			modelViewStack.popPose();
