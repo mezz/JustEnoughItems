@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}
  */
+@SuppressWarnings("removal")
 @Deprecated(forRemoval = true, since = "9.3.0")
 public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 
@@ -32,15 +33,18 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 	 * The new methods do not have this legacy 1 pixel offset.
 	 */
 	@Override
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void init(int ingredientIndex, boolean input, int xPosition, int yPosition);
 
 
 	@Override
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void set(int ingredientIndex, @Nullable ItemStack itemStack);
 
 	@Override
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void addTooltipCallback(ITooltipCallback<ItemStack> tooltipCallback);
 }

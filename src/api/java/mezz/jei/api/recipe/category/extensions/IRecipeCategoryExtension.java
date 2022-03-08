@@ -92,6 +92,7 @@ public interface IRecipeCategoryExtension {
 	 * @deprecated Subclasses of this interface should define their own methods of setting ingredients.
 	 * @see ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, IFocusGroup)
 	 */
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void setIngredients(IIngredients ingredients) {
 

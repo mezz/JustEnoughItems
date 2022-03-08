@@ -46,6 +46,7 @@ public interface ICraftingGridHelper {
 	 *
 	 * @deprecated Use {@link #setInputs(IRecipeLayoutBuilder, IIngredientType, List, int, int)} instead.
 	 */
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	<T> void setInputs(IGuiIngredientGroup<T> ingredientGroup, List<List<T>> inputs);
 
@@ -54,6 +55,7 @@ public interface ICraftingGridHelper {
 	 *
 	 * @deprecated Use {@link #setInputs(IRecipeLayoutBuilder, IIngredientType, List, int, int)} instead.
 	 */
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	<T> void setInputs(IGuiIngredientGroup<T> ingredientGroup, List<List<T>> inputs, int width, int height);
 }

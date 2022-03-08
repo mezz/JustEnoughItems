@@ -59,6 +59,7 @@ public interface IRecipeTransferError {
 	 * @implNote JEI still calls this old method for backward compatibility.
 	 * If you implement the new method, leave this one unimplemented.
 	 */
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void showError(PoseStack poseStack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
 

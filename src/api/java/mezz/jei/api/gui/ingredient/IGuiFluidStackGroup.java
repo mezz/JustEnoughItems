@@ -20,6 +20,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
  *
  * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}
  */
+@SuppressWarnings("removal")
 @Deprecated(forRemoval = true, since = "9.3.0")
 public interface IGuiFluidStackGroup extends IGuiIngredientGroup<FluidStack> {
 	/**
@@ -43,10 +44,12 @@ public interface IGuiFluidStackGroup extends IGuiIngredientGroup<FluidStack> {
 	void init(int ingredientIndex, boolean input, int xPosition, int yPosition, int width, int height, int capacityMb, boolean showCapacity, @Nullable IDrawable overlay);
 
 	@Override
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void set(int ingredientIndex, @Nullable FluidStack fluidStack);
 
 	@Override
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void addTooltipCallback(ITooltipCallback<FluidStack> tooltipCallback);
 }

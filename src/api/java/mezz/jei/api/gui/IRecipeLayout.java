@@ -31,6 +31,7 @@ public interface IRecipeLayout {
 	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}
 	 * and other methods that do not use {@link IRecipeLayout}.
 	 */
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	IGuiItemStackGroup getItemStacks();
 
@@ -41,6 +42,7 @@ public interface IRecipeLayout {
 	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}
 	 * and other methods that do not use {@link IRecipeLayout}.
 	 */
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	IGuiFluidStackGroup getFluidStacks();
 
@@ -56,6 +58,7 @@ public interface IRecipeLayout {
 	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}
 	 * and other methods that do not use {@link IRecipeLayout}.
 	 */
+	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	<T> IGuiIngredientGroup<T> getIngredientsGroup(IIngredientType<T> ingredientType);
 

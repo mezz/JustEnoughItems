@@ -43,6 +43,7 @@ public final class ReflectionUtil {
 			Field[] fields = objectClass.getDeclaredFields();
 			for (Field field : fields) {
 				if (fieldClass.isAssignableFrom(field.getType())) {
+					//noinspection deprecation
 					if (!field.isAccessible()) {
 						field.setAccessible(true);
 					}
