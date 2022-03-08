@@ -3,10 +3,12 @@ import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
 buildscript {
 	repositories {
 		maven { url = 'https://maven.minecraftforge.net' }
+		maven { url = 'https://maven.parchmentmc.org' }
 		mavenCentral()
 	}
 	dependencies {
 		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+		classpath 'org.parchmentmc:librarian:1.+'
 	}
 }
 
@@ -20,6 +22,7 @@ plugins {
 	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.71.4'
 }
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply from: 'buildtools/ColoredOutput.gradle'
 
 //adds the build number to the end of the version string if on a build server
