@@ -16,16 +16,18 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 public final class ShulkerBoxColoringRecipeMaker {
 	private static final String group = "jei.shulker.color";
 
-	public static Stream<CraftingRecipe> createRecipes() {
+	public static List<CraftingRecipe> createRecipes() {
 		ItemStack baseShulkerStack = new ItemStack(Blocks.SHULKER_BOX);
 		Ingredient baseShulkerIngredient = Ingredient.of(baseShulkerStack);
 		return Arrays.stream(DyeColor.values())
-			.map(color -> createRecipe(color, baseShulkerIngredient));
+			.map(color -> createRecipe(color, baseShulkerIngredient))
+			.toList();
 	}
 
 	private static CraftingRecipe createRecipe(DyeColor color, Ingredient baseShulkerIngredient) {

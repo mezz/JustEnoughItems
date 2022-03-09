@@ -18,11 +18,12 @@ import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FlowerBlock;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 public final class SuspiciousStewRecipeMaker {
 
-	public static Stream<CraftingRecipe> createRecipes() {
+	public static List<CraftingRecipe> createRecipes() {
 		String group = "jei.suspicious.stew";
 		Ingredient brownMushroom = Ingredient.of(Blocks.BROWN_MUSHROOM.asItem());
 		Ingredient redMushroom = Ingredient.of(Blocks.RED_MUSHROOM.asItem());
@@ -36,7 +37,7 @@ public final class SuspiciousStewRecipeMaker {
 			.map(item -> ((BlockItem) item).getBlock())
 			.filter(FlowerBlock.class::isInstance)
 			.map(FlowerBlock.class::cast)
-			.map(flowerBlock -> {
+			.<CraftingRecipe>map(flowerBlock -> {
 				Ingredient flower = Ingredient.of(flowerBlock.asItem());
 				NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY, brownMushroom, redMushroom, bowl, flower);
 				ItemStack output = new ItemStack(Items.SUSPICIOUS_STEW, 1);
@@ -44,7 +45,8 @@ public final class SuspiciousStewRecipeMaker {
 				SuspiciousStewItem.saveMobEffect(output, mobeffect, flowerBlock.getEffectDuration());
 				ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.suspicious.stew." + flowerBlock.getDescriptionId());
 				return new ShapelessRecipe(id, group, output, inputs);
-			});
+			})
+			.toList();
 	}
 
 	private SuspiciousStewRecipeMaker() {

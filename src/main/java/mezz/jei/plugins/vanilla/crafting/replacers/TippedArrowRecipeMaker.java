@@ -12,17 +12,18 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraftforge.common.crafting.NBTIngredient;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 public final class TippedArrowRecipeMaker {
 
-	public static Stream<CraftingRecipe> createRecipes() {
+	public static List<CraftingRecipe> createRecipes() {
 		String group = "jei.tipped.arrow";
 		ItemStack arrowStack = new ItemStack(Items.ARROW);
 		Ingredient arrowIngredient = Ingredient.of(arrowStack);
 
 		return ForgeRegistries.POTIONS.getValues().stream()
-			.map(potion -> {
+			.<CraftingRecipe>map(potion -> {
 				ItemStack input = PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), potion);
 				ItemStack output = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, 8), potion);
 
@@ -34,7 +35,8 @@ public final class TippedArrowRecipeMaker {
 				);
 				ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + output.getDescriptionId());
 				return new ShapedRecipe(id, group, 3, 3, inputs, output);
-			});
+			})
+			.toList();
 	}
 
 	private TippedArrowRecipeMaker() {

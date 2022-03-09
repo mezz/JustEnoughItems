@@ -292,7 +292,7 @@ public class VanillaPlugin implements IModPlugin {
 	 * we do not replace it.
 	 */
 	private static List<CraftingRecipe> replaceSpecialCraftingRecipes(List<CraftingRecipe> unhandledCraftingRecipes) {
-		Map<Class<? extends CraftingRecipe>, Supplier<Stream<CraftingRecipe>>> replacers = new IdentityHashMap<>();
+		Map<Class<? extends CraftingRecipe>, Supplier<List<CraftingRecipe>>> replacers = new IdentityHashMap<>();
 		replacers.put(TippedArrowRecipe.class, TippedArrowRecipeMaker::createRecipes);
 		replacers.put(ShulkerBoxColoring.class, ShulkerBoxColoringRecipeMaker::createRecipes);
 		replacers.put(SuspiciousStewRecipe.class, SuspiciousStewRecipeMaker::createRecipes);
@@ -304,9 +304,10 @@ public class VanillaPlugin implements IModPlugin {
 			// distinct + this limit will ensure we stop iterating early if we find all the recipes we're looking for.
 			.limit(replacers.size())
 			.flatMap(recipeClass -> {
-				Supplier<Stream<CraftingRecipe>> supplier = replacers.get(recipeClass);
+				Supplier<List<CraftingRecipe>> supplier = replacers.get(recipeClass);
 				try {
-					return supplier.get();
+					List<CraftingRecipe> results = supplier.get();
+					return results.stream();
 				} catch (RuntimeException e) {
 					LOGGER.error("Failed to create JEI recipes for {}", recipeClass, e);
 					return Stream.of();
