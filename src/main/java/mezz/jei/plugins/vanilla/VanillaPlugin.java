@@ -94,6 +94,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -104,6 +106,8 @@ import java.util.stream.Stream;
 
 @JeiPlugin
 public class VanillaPlugin implements IModPlugin {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	@Nullable
 	private CraftingRecipeCategory craftingCategory;
 	@Nullable
@@ -299,8 +303,15 @@ public class VanillaPlugin implements IModPlugin {
 			.filter(replacers::containsKey)
 			// distinct + this limit will ensure we stop iterating early if we find all the recipes we're looking for.
 			.limit(replacers.size())
-			.map(replacers::get)
-			.flatMap(Supplier::get)
+			.flatMap(recipeClass -> {
+				Supplier<Stream<CraftingRecipe>> supplier = replacers.get(recipeClass);
+				try {
+					return supplier.get();
+				} catch (RuntimeException e) {
+					LOGGER.error("Failed to create JEI recipes for {}", recipeClass, e);
+					return Stream.of();
+				}
+			})
 			.toList();
 	}
 }
