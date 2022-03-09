@@ -11,10 +11,12 @@ import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.TagUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -26,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	private final ISubtypeManager subtypeManager;
@@ -143,7 +146,12 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public Collection<ResourceLocation> getTags(FluidStack ingredient) {
-		return TagUtil.getTags(ingredient.getFluid().builtInRegistryHolder());
+		Stream<TagKey<Fluid>> tagKeyStream = Registry.FLUID.getResourceKey(ingredient.getFluid())
+			.flatMap(Registry.FLUID::getHolder)
+			.map(Holder::tags)
+			.orElse(Stream.of());
+
+		return TagUtil.getTags(tagKeyStream);
 	}
 
 	@Override

@@ -1,26 +1,20 @@
 package mezz.jei.util;
 
 import com.mojang.datafixers.util.Pair;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import net.minecraft.tags.TagKey;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class TagUtil {
-
-	public static <TYPE> Collection<ResourceLocation> getTags(Holder.Reference<TYPE> reference) {
-		return getTags(reference.tags());
-	}
-
 	public static <TYPE> Collection<ResourceLocation> getTags(Stream<TagKey<TYPE>> tags) {
 		return tags.map(TagKey::location)
 			.collect(Collectors.toUnmodifiableSet());
