@@ -16,16 +16,19 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class ShulkerBoxColoringRecipeMaker {
 	private static final String GROUP = "jei.shulker.color";
 
-	public static Stream<ICraftingRecipe> createRecipes() {
+	public static List<ICraftingRecipe> createRecipes() {
 		ItemStack baseShulkerStack = new ItemStack(Blocks.SHULKER_BOX);
 		Ingredient baseShulkerIngredient = Ingredient.of(baseShulkerStack);
 		return Arrays.stream(DyeColor.values())
-			.map(color -> createRecipe(color, baseShulkerIngredient));
+			.map(color -> createRecipe(color, baseShulkerIngredient))
+			.collect(Collectors.toList());
 	}
 
 	private static ICraftingRecipe createRecipe(DyeColor color, Ingredient baseShulkerIngredient) {
