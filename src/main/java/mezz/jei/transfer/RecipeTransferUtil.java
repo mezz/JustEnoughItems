@@ -128,7 +128,7 @@ public final class RecipeTransferUtil {
 				LOGGER.error(
 					"Transfer handler has invalid source slots for the inventory stacks for the recipe, " +
 						"the slots are not included in the list of inventory slots or recipe slots. " +
-						StringUtil.intsToString(invalidInventorySlotIndexes) + 
+						StringUtil.intsToString(invalidInventorySlotIndexes) +
 						"\n inventory slots: " + StringUtil.intsToString(inventorySlotIndexes) +
 						"\n crafting slots: " + StringUtil.intsToString(craftingSlotIndexes)
 				);

@@ -21,7 +21,7 @@ import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 
 /**
  * List of all the built-in {@link RecipeType}s that are added by JEI.
- * 
+ *
  * @since 9.5.0
  */
 public final class RecipeTypes {
@@ -39,7 +39,7 @@ public final class RecipeTypes {
 	 * The stonecutting recipe type.
 	 *
 	 * Automatically includes every {@link StonecutterRecipe}.
-	 * 
+	 *
 	 * @since 9.5.0
 	 */
 	public static final RecipeType<StonecutterRecipe> STONECUTTING =
@@ -49,7 +49,7 @@ public final class RecipeTypes {
 	 * The smelting recipe type.
 	 *
 	 * Automatically includes every {@link SmeltingRecipe}.
-	 * 
+	 *
 	 * @since 9.5.0
 	 */
 	public static final RecipeType<SmeltingRecipe> SMELTING =
@@ -59,7 +59,7 @@ public final class RecipeTypes {
 	 * The smoking recipe type.
 	 *
 	 * Automatically includes every {@link SmokingRecipe}.
-	 * 
+	 *
 	 * @since 9.5.0
 	 */
 	public static final RecipeType<SmokingRecipe> SMOKING =
@@ -69,7 +69,7 @@ public final class RecipeTypes {
 	 * The blasting recipe type.
 	 *
 	 * Automatically includes every {@link BlastingRecipe}.
-	 * 
+	 *
 	 * @since 9.5.0
 	 */
 	public static final RecipeType<BlastingRecipe> BLASTING =
@@ -144,7 +144,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<IJeiIngredientInfoRecipe> INFORMATION = 
+	public static final RecipeType<IJeiIngredientInfoRecipe> INFORMATION =
 		RecipeType.create(ModIds.JEI_ID, "information", IJeiIngredientInfoRecipe.class);
 
 	private RecipeTypes() {}

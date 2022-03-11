@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FlowerBlock;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 public final class SuspiciousStewRecipeMaker {
 

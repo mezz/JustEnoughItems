@@ -4,15 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.recipe.IFocusGroup;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
-import net.minecraft.network.chat.Component;
 
 /**
  * Represents one drawn ingredient that is part of a recipe.

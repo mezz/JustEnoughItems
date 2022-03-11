@@ -13,7 +13,6 @@ import net.minecraftforge.common.crafting.NBTIngredient;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 public final class TippedArrowRecipeMaker {
 
