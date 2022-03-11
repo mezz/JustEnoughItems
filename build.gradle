@@ -2,40 +2,41 @@ import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
 
 buildscript {
 	repositories {
-		maven { url = 'https://maven.minecraftforge.net' }
-		maven { url = 'https://maven.parchmentmc.org' }
+		maven { url = "https://maven.minecraftforge.net" }
+		maven { url = "https://maven.parchmentmc.org" }
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-		classpath 'org.parchmentmc:librarian:1.+'
+		classpath group: "net.minecraftforge.gradle", name: "ForgeGradle", version: "5.1.+", changing: true
+		classpath "org.parchmentmc:librarian:1.+"
 	}
 }
 
 plugins {
-	id 'java'
-	id 'eclipse'
-	id 'idea'
+	id "java"
+	id "eclipse"
+	id "idea"
 	id "maven-publish"
 	id "com.diffplug.spotless" version "5.14.3"
-	id 'com.matthewprenger.cursegradle' version '1.4.0'
-	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.71.4'
+	id "com.matthewprenger.cursegradle" version "1.4.0"
+	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.71.4"
 }
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-apply from: 'buildtools/ColoredOutput.gradle'
+apply plugin: "net.minecraftforge.gradle"
+apply plugin: "org.parchmentmc.librarian.forgegradle"
+apply from: "buildtools/ColoredOutput.gradle"
+apply from: "buildtools/AppleSiliconSupport.gradle"
 
 //adds the build number to the end of the version string if on a build server
 String build_number = System.getenv().BUILD_NUMBER
 if (build_number == null) {
-	build_number = '9999'
+	build_number = "9999"
 }
 
 String semver = "${version_major}.${version_minor}.${version_patch}"
 
 // these two are required for the java plugin to generate jar files with a version
 version = "${semver}.${build_number}"
-group = 'mezz.jei' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = "mezz.jei" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
 sourceSets {
 	api {
@@ -65,43 +66,43 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 dependencies {
 	minecraft([
 			group  : "${project.forge_group}",
-			name   : 'forge',
+			name   : "forge",
 			version: "${project.minecraft_version}-${project.forge_version}"
 	])
-	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+	testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.1"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.1"
 }
 
 minecraft {
 	mappings channel: project.mapping_channel, version: project.mapping_version
 
-	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+	accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
 
 	runs {
 		client {
-			property 'forge.logging.console.level', 'debug'
-			workingDirectory file('run')
+			property "forge.logging.console.level", "debug"
+			workingDirectory file("run")
 			mods {
 				jei.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
 			}
 		}
 		client_player_01 {
 			parent runs.client
-			workingDirectory project.file('run01')
+			workingDirectory project.file("run01")
 
 			// program arguments
-			args '--username', 'Player01'
+			args "--username", "Player01"
 		}
 		client_player_02 {
 			parent runs.client
-			workingDirectory project.file('run02')
+			workingDirectory project.file("run02")
 
 			// program arguments
-			args '--username', 'Player02'
+			args "--username", "Player02"
 		}
 		server {
-			property 'forge.logging.console.level', 'debug'
-			workingDirectory file('run')
+			property "forge.logging.console.level", "debug"
+			workingDirectory file("run")
 			mods {
 				jei.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
 			}
@@ -114,14 +115,14 @@ def replaceResources = tasks.register("replaceResources", Copy) {
 	//Copy it into the build dir
 	it.from(sourceSets.main.resources) {
 		include "META-INF/mods.toml"
-		expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range, "loader_version": loader_version_range
+		expand "version": version, "mc_version": minecraft_version_range, "forge_version": forge_version_range, "loader_version": loader_version_range
 	}
 	it.into "$buildDir/resources/main/"
 }
 
 processResources {
 	duplicatesStrategy(DuplicatesStrategy.FAIL)
-	exclude('META-INF/mods.toml')
+	exclude("META-INF/mods.toml")
 	configure { finalizedBy(replaceResources) }
 }
 
@@ -132,125 +133,31 @@ classes.configure {
 javadoc {
 	source = [sourceSets.main.allJava, sourceSets.api.allJava]
 	// prevent java 8's strict doclint for javadocs from failing builds
-	options.addStringOption('Xdoclint:none', '-quiet')
+	options.addStringOption("Xdoclint:none", "-quiet")
 }
 
 task makeChangelog(type: GitChangelogTask) {
 	fromRepo = file("$projectDir")
-	file = file('changelog.html')
+	file = file("changelog.html")
 	untaggedName = "Current release ${project.version}"
-	fromCommit = '2fe051cf727adce1be210a46f778aa8fe031331e'
-	toRef = 'HEAD'
-	templateContent = file('changelog.mustache').getText('UTF-8')
+	fromCommit = "2fe051cf727adce1be210a46f778aa8fe031331e"
+	toRef = "HEAD"
+	templateContent = file("changelog.mustache").getText("UTF-8")
 }
 
 curseforge {
-	apiKey = project.findProperty('curseforge_apikey') ?: '0'
+	apiKey = project.findProperty("curseforge_apikey") ?: "0"
 	project {
 		id = curse_project_id
-		changelog = file('changelog.html')
-		changelogType = 'html'
-		releaseType = 'beta'
+		changelog = file("changelog.html")
+		changelogType = "html"
+		releaseType = "beta"
 		addGameVersion "${minecraft_version}"
 	}
 }
 
 afterEvaluate {
 	tasks.curseforge238222.dependsOn makeChangelog
-
-	// lwjgl 3.3.0 and java-objc-bridge:1.1 have support for apple silicon
-	dependencies {
-		minecraft('org.lwjgl:lwjgl-jemalloc:3.3.0') {
-			force = true
-		}
-		minecraft('org.lwjgl:lwjgl-openal:3.3.0') {
-			force = true
-		}
-		minecraft('org.lwjgl:lwjgl-opengl:3.3.0') {
-			force = true
-		}
-		minecraft('org.lwjgl:lwjgl-glfw:3.3.0') {
-			force = true
-		}
-		minecraft('org.lwjgl:lwjgl-stb:3.3.0') {
-			force = true
-		}
-		minecraft('org.lwjgl:lwjgl-tinyfd:3.3.0') {
-			force = true
-		}
-		minecraft('ca.weblite:java-objc-bridge:1.1') {
-			force = true
-		}
-	}
-}
-
-import net.minecraftforge.gradle.common.util.Utils
-import net.minecraftforge.gradle.common.util.VersionJson
-import org.apache.commons.io.FileUtils
-
-import java.nio.file.FileSystems
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
-import java.nio.file.Path
-
-task extractLwjglNatives(type: ExtractLwjglNatives) {
-	meta = tasks.extractNatives.meta
-	output = tasks.extractNatives.output
-}
-
-extractNatives {
-	finalizedBy extractLwjglNatives
-}
-
-// Extract LWJGL natives from the native JARs provided by LWJGL on Maven Central
-abstract class ExtractLwjglNatives extends DefaultTask {
-	@InputFile
-	abstract RegularFileProperty getMeta();
-
-	@OutputDirectory
-	abstract DirectoryProperty getOutput();
-
-	@TaskAction
-	void run() {
-		def os = VersionJson.OS.current
-		def osName = os == VersionJson.OS.OSX ? 'macos' : os.name
-		def classifier = osName
-		def arch = System.getProperty('os.arch')
-		if (['aarch64', 'arm64'].contains(arch)) {
-			classifier += '-arm64'
-		}
-		def json = Utils.loadJson(meta.getAsFile().get(), VersionJson.class)
-		json.getNatives()
-			.stream()
-			.filter {it.path.startsWith('org/lwjgl') }
-			.each {
-				def version = '3.3.0'
-				def type = it.path.split(/\//)[2]
-				def path = "org/lwjgl/$type/$version/$type-$version-natives-${classifier}.jar"
-				def target = Utils.getCache(getProject(), 'libraries', path)
-				def url = new URL("https://repo1.maven.org/maven2/$path")
-				if (!target.exists()) {
-					if (!target.getParentFile().exists()) {
-						target.getParentFile().mkdirs()
-					}
-					FileUtils.copyURLToFile(url, target)
-				}
-				def rootPath = FileSystems.newFileSystem(target.toPath(), new HashMap<>()).getPath('/')
-				Files.walk(rootPath.resolve(osName))
-					.filter { Files.isRegularFile(it) }
-					.each {
-						def outputFile = getOutput().get().getAsFile()
-						def filePath = Path.of("${outputFile.toPath()}${it}")
-						def file = filePath.toFile()
-						if (!file.exists()) {
-							if (!file.getParentFile().exists()) {
-								file.getParentFile().mkdirs()
-							}
-						}
-						Files.copy(it, filePath, StandardCopyOption.REPLACE_EXISTING)
-					}
-		}
-	}
 }
 
 jar {
@@ -258,35 +165,35 @@ jar {
 	from sourceSets.api.output
 
 	manifest.attributes([
-			'Specification-Title'     : 'Just Enough Items',
-			'Specification-Vendor'    : 'mezz',
-			'Specification-Version'   : "${semver}",
-			'Implementation-Title'    : project.name,
-			'Implementation-Version'  : "${project.version}",
-			'Implementation-Vendor'   : 'mezz',
-			'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+			"Specification-Title"     : "Just Enough Items",
+			"Specification-Vendor"    : "mezz",
+			"Specification-Version"   : "${semver}",
+			"Implementation-Title"    : project.name,
+			"Implementation-Version"  : "${project.version}",
+			"Implementation-Vendor"   : "mezz",
+			"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
 			"Automatic-Module-Name": "mezz.jei",
 	])
 
-	finalizedBy 'reobfJar'
+	finalizedBy "reobfJar"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
 	duplicatesStrategy(DuplicatesStrategy.FAIL)
-	archiveClassifier.set('javadoc')
+	archiveClassifier.set("javadoc")
 	from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar) {
 	duplicatesStrategy(DuplicatesStrategy.FAIL)
-	archiveClassifier.set('sources')
+	archiveClassifier.set("sources")
 	from sourceSets.main.allJava
 	from sourceSets.api.allJava
 }
 
 task apiJar(type: Jar) {
 	duplicatesStrategy(DuplicatesStrategy.FAIL)
-	archiveClassifier.set('api')
+	archiveClassifier.set("api")
 	from sourceSets.api.output
 	afterEvaluate { finalizedBy reobfApiJar }
 
@@ -298,7 +205,7 @@ task apiJar(type: Jar) {
 
 task deobfJar(type: Jar) {
 	duplicatesStrategy(DuplicatesStrategy.FAIL)
-	archiveClassifier.set('deobf')
+	archiveClassifier.set("deobf")
 	from sourceSets.main.output
 	from sourceSets.api.output
 }
@@ -327,7 +234,7 @@ publishing {
 		}
 	}
 	repositories {
-		if (project.hasProperty('DEPLOY_DIR')) {
+		if (project.hasProperty("DEPLOY_DIR")) {
 			maven { url DEPLOY_DIR }
 		}
 	}
@@ -335,7 +242,7 @@ publishing {
 
 idea {
 	module {
-		for (String exclude in ['run', 'out', 'logs']) {
+		for (String exclude in ["run", "out", "logs"]) {
 			excludeDirs += file(exclude)
 		}
 	}
@@ -343,13 +250,13 @@ idea {
 
 test {
 	useJUnitPlatform()
-	include 'mezz/jei/**'
-	exclude 'mezz/jei/lib/**'
+	include "mezz/jei/**"
+	exclude "mezz/jei/lib/**"
 }
 
 spotless {
 	java {
-		target 'src/*/java/mezz/jei/**/*.java'
+		target "src/*/java/mezz/jei/**/*.java"
 
 		endWithNewline()
 		trimTrailingWhitespace()
