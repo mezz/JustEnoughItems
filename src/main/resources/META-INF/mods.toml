@@ -7,7 +7,7 @@
 modLoader="javafml" #mandatory
 
 # A version range to match for said mod loader - for regular FML @Mod it will be the minecraft version (without the 1.)
-loaderVersion="${loader_version}" #mandatory
+loaderVersion="${loaderVersionRange}" #mandatory
 
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/mezz/JustEnoughItems/issues?q=is%3Aissue" #optional
@@ -54,7 +54,7 @@ JEI is an item and recipe viewing mod for Minecraft, built from the ground up fo
 [[dependencies.jei]]
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="${forge_version}" #mandatory
+    versionRange="${forgeVersionRange}" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -63,7 +63,7 @@ JEI is an item and recipe viewing mod for Minecraft, built from the ground up fo
 [[dependencies.jei]]
     modId="minecraft" #mandatory
     mandatory=true #mandatory
-    versionRange="${mc_version}" #mandatory
+    versionRange="${minecraftVersionRange}" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
