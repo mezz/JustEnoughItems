@@ -69,7 +69,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 	}
 
 	@Override
-	public void createFocusLink(IRecipeSlotBuilder... slots) {
+	public void createFocusLink(IIngredientAcceptor<?>... slots) {
 		List<IRecipeLayoutSlotSource> builders = Arrays.stream(slots)
 			.map(IRecipeLayoutSlotSource.class::cast)
 			.toList();
@@ -89,6 +89,11 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 
 		this.slots.removeAll(builders);
 		this.focusLinkedSlots.add(builders);
+	}
+
+	@Override
+	public void createFocusLink(IRecipeSlotBuilder... slots) {
+		createFocusLink((IIngredientAcceptor<?>[]) slots);
 	}
 
 	/**

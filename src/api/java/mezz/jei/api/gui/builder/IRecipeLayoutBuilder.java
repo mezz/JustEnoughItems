@@ -80,6 +80,24 @@ public interface IRecipeLayoutBuilder {
 	 * If the slots are focus-linked, when the player focuses on acacia planks,
 	 * the linked output slot will only display acacia stairs.
 	 *
+	 * @since 9.5.1
+	 */
+	void createFocusLink(IIngredientAcceptor<?>... slots);
+
+	/**
+	 * Link slots together so that if one slot matches the current focus, the others will be limited too.
+	 * This can only be set on slots that contains the same number of ingredients.
+	 *
+	 * For example:
+	 * Consider a recipe that has an input slot with every plank type
+	 * and an output slot with stairs for each plank type.
+	 *
+	 * The number of inputs and outputs are the same,
+	 * and when the full recipe is displayed it rotates through all the different pairs of planks and their stairs.
+	 *
+	 * If the slots are focus-linked, when the player focuses on acacia planks,
+	 * the linked output slot will only display acacia stairs.
+	 *
 	 * @since 9.4.1
 	 */
 	void createFocusLink(IRecipeSlotBuilder... slots);

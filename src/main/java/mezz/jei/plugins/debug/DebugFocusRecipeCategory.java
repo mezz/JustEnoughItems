@@ -3,6 +3,7 @@ package mezz.jei.plugins.debug;
 import mezz.jei.Internal;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -98,7 +99,20 @@ public class DebugFocusRecipeCategory implements IRecipeCategory<DebugRecipe> {
 				new ItemStack(Items.TROPICAL_FISH)
 			));
 
-		builder.createFocusLink(inputSlot, outputSlot);
+		IIngredientAcceptor<?> invisibleSlot = builder.addInvisibleIngredients(RecipeIngredientRole.INPUT)
+			.addItemStacks(List.of(
+				new ItemStack(Items.ACACIA_BOAT),
+				new ItemStack(Items.ACACIA_BUTTON),
+				new ItemStack(Items.ACACIA_DOOR),
+				new ItemStack(Items.ACACIA_LOG),
+				new ItemStack(Items.ACACIA_PLANKS),
+				new ItemStack(Items.ACACIA_FENCE),
+				new ItemStack(Items.ACACIA_FENCE_GATE),
+				new ItemStack(Items.ACACIA_LEAVES),
+				new ItemStack(Items.ACACIA_PRESSURE_PLATE)
+			));
+
+		builder.createFocusLink(inputSlot, outputSlot, invisibleSlot);
 	}
 
 }
