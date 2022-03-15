@@ -10,7 +10,7 @@ modLoader="javafml" #mandatory
 loaderVersion="${loaderVersionRange}" #mandatory
 
 # A URL to refer people to when problems occur with this mod
-issueTrackerURL="https://github.com/mezz/JustEnoughItems/issues?q=is%3Aissue" #optional
+issueTrackerURL="${githubUrl}/issues?q=is%3Aissue" #optional
 
 # License
 license="The MIT License (MIT)"
@@ -25,7 +25,7 @@ license="The MIT License (MIT)"
 [[mods]] #mandatory
 
 # The modid of the mod
-modId="jei" #mandatory
+modId="${modId}" #mandatory
 
 # The version number of the mod
 version="${version}" #mandatory
