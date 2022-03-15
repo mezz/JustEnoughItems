@@ -201,6 +201,12 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 				.filter(i -> i.isEmpty() || ingredientVisibility.isIngredientVisible(i.get()))
 				.limit(MAX_DISPLAYED_INGREDIENTS)
 				.toList();
+
+			if (this.displayIngredients.isEmpty()) {
+				this.displayIngredients = this.allIngredients.stream()
+					.limit(MAX_DISPLAYED_INGREDIENTS)
+					.toList();
+			}
 		}
 	}
 
