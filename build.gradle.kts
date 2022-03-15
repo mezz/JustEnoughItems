@@ -22,20 +22,22 @@ apply {
 }
 
 // gradle.properties
-val modName: String by extra
-val modId: String by extra
-val modAuthor: String by extra
-val modGroup: String by extra
+val curseHomepageLink: String by extra
+val curseProjectId: String by extra
 val forgeVersion: String by extra
 val forgeVersionRange: String by extra
+val githubUrl: String by extra
 val loaderVersionRange: String by extra
-val minecraftVersion: String by extra
-val minecraftVersionRange: String by extra
 val mappingChannel: String by extra
 val mappingVersion: String by extra
+val minecraftVersion: String by extra
+val minecraftVersionRange: String by extra
+val modAuthor: String by extra
+val modGroup: String by extra
+val modId: String by extra
+val modJavaVersion: String by extra
+val modName: String by extra
 val specificationVersion: String by extra
-val curseProjectId: String by extra
-val githubUrl: String by extra
 
 //adds the build number to the end of the version string if on a build server
 var buildNumber = System.getenv()["BUILD_NUMBER"]
@@ -52,7 +54,7 @@ base {
 }
 
 sourceSets {
-	val api = create("api") {
+	named("api") {
 		//The API has no resources
 		resources.setSrcDirs(emptyList<String>())
 
@@ -61,8 +63,8 @@ sourceSets {
 		}
 	}
 	named("main") {
-		compileClasspath += api.output
-		runtimeClasspath += api.output
+//		compileClasspath += api.get().output
+//		runtimeClasspath += api.get().output
 		java {
 			srcDir("src/main/java")
 		}
@@ -71,8 +73,8 @@ sourceSets {
 		//The test module has no resources
 		resources.setSrcDirs(emptyList<String>())
 
-		compileClasspath += api.output
-		runtimeClasspath += api.output
+//		compileClasspath += api.get().output
+//		runtimeClasspath += api.get().output
 		java {
 			srcDir("src/test/java")
 		}
@@ -90,18 +92,16 @@ configurations {
 
 java {
 	toolchain {
-		// Mojang ships Java 17 to end users in 1.18+
-		languageVersion.set(JavaLanguageVersion.of(17))
+		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
 	}
 }
 
 dependencies {
-//	"minecraft"(
-//		group = "net.minecraftforge",
-//		name = "forge",
-//		version = "${minecraftVersion}-${forgeVersion}"
-//	)
-	"minecraft"("net.minecraftforge:forge:${minecraftVersion}-${forgeVersion}")
+	"minecraft"(
+		group = "net.minecraftforge",
+		name = "forge",
+		version = "${minecraftVersion}-${forgeVersion}"
+	)
 }
 
 minecraft {
@@ -227,33 +227,24 @@ tasks {
 		}
 	}
 
-	register<GitChangelogTask>("makeChangelog") {
+	val makeChangelog = register<GitChangelogTask>("makeChangelog") {
 		fromRepo = projectDir.absolutePath.toString()
 		file = file("changelog.html")
 		untaggedName = "Current release $specificationVersion"
-		fromCommit = "2fe051cf727adce1be210a46f778aa8fe031331e"
+		fromCommit = "e72e49fa7a072755e7f96cad65388205f6a010dc"
 		toRef = "HEAD"
 		templateContent = file("changelog.mustache").readText()
 	}
 
-	curseforge {
-		apiKey = project.findProperty("curseforge_apikey") ?: "0"
-		project {
-			id = curseProjectId
-			changelog = file("changelog.html")
-			changelogType = "html"
-			releaseType = "beta"
-			addGameVersion("${project.minecraftVersion}")
-		}
-	}
-
 	register<TaskPublishCurseForge>("publishCurseForge") {
+		dependsOn(makeChangelog.get().path)
+
 		apiToken = project.findProperty("curseforge_apikey") ?: "0"
 
 		val mainFile = upload(curseProjectId, file("${project.buildDir}/libs/$baseArchiveName-$version.jar"))
 		mainFile.changelogType = "html"
-		mainFile.changelog = Utils.getFullChangelog(project)
-		mainFile.releaseType = CFG_Constants.RELEASE_TYPE_RELEASE
+		mainFile.changelog = file("changelog.html")
+		mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
 		mainFile.addJavaVersion("Java $modJavaVersion")
 		mainFile.addGameVersion(minecraftVersion)
 
@@ -309,13 +300,5 @@ spotless {
 		endWithNewline()
 		trimTrailingWhitespace()
 		removeUnusedImports()
-	}
-}
-
-afterEvaluate {
-	tasks {
-		"curseforge${curseProjectId}" {
-			dependsOn(tasks.getByName("makeChangelog"))
-		}
 	}
 }
