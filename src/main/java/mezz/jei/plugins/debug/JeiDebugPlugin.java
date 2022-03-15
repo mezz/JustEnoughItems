@@ -130,14 +130,15 @@ public class JeiDebugPlugin implements IModPlugin {
 				new DebugRecipe()
 			));
 
-			registration.addRecipes(DebugRecipeCategory.TYPE, List.of(
+			registration.addRecipes(DebugFocusRecipeCategory.TYPE, List.of(
 				new DebugRecipe()
 			));
 
-			registration.addRecipes(DebugRecipeCategory.TYPE, List.of(
+			//noinspection removal
+			registration.addRecipes(List.of(
 				new DebugRecipe(),
 				new DebugRecipe()
-			));
+			), LegacyDebugRecipeCategory.UID);
 		}
 	}
 
