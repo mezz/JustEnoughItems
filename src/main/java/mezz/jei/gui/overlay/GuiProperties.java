@@ -22,7 +22,7 @@ public class GuiProperties implements IGuiProperties {
 		if (guiContainer.width == 0 || guiContainer.height == 0) {
 			return null;
 		}
-		return new GuiProperties(
+		return create(
 			guiContainer.getClass(),
 			guiContainer.getGuiLeft(),
 			guiContainer.getGuiTop(),
@@ -33,9 +33,10 @@ public class GuiProperties implements IGuiProperties {
 		);
 	}
 
+	@Nullable
 	public static GuiProperties create(RecipesGui recipesGui) {
 		int extraWidth = recipesGui.getRecipeCatalystExtraWidth();
-		return new GuiProperties(
+		return create(
 			recipesGui.getClass(),
 			recipesGui.getGuiLeft() - extraWidth,
 			recipesGui.getGuiTop(),
@@ -66,6 +67,22 @@ public class GuiProperties implements IGuiProperties {
 		this.guiYSize = guiYSize;
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
+	}
+
+	@Nullable
+	private static GuiProperties create(Class<? extends GuiScreen> guiClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
+		if (guiLeft < 0) {
+			guiXSize += guiLeft;
+			guiLeft = 0;
+		}
+		if (guiTop < 0) {
+			guiYSize += guiTop;
+			guiTop = 0;
+		}
+		if (guiXSize <= 0 || guiYSize <= 0) {
+			return null;
+		}
+		return new GuiProperties(guiClass, guiLeft, guiTop, guiXSize, guiYSize, screenWidth, screenHeight);
 	}
 
 	@Override
