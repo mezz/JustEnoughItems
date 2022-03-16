@@ -279,10 +279,6 @@ idea {
 	}
 }
 
-repositories {
-	mavenCentral()
-}
-
 spotless {
 	java {
 		target("src/*/java/mezz/jei/**/*.java")
