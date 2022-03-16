@@ -118,7 +118,7 @@ minecraft {
 		val client = create("client") {
 			taskName("Client")
 			property("forge.logging.console.level", "debug")
-			workingDirectory(file("runClient"))
+			workingDirectory(file("run/client00"))
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
@@ -129,19 +129,19 @@ minecraft {
 		create("client_player_01") {
 			taskName("Client Player 01")
 			parent(client)
-			workingDirectory(file("runClient01"))
+			workingDirectory(file("run/client01"))
 			args("--username", "Player01")
 		}
 		create("client_player_02") {
 			taskName("Client Player 02")
 			parent(client)
-			workingDirectory(file("runClient02"))
+			workingDirectory(file("run/client02"))
 			args("--username", "Player02")
 		}
 		create("server") {
 			taskName("Server")
 			property("forge.logging.console.level", "debug")
-			workingDirectory(file("runServer"))
+			workingDirectory(file("run/server"))
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
