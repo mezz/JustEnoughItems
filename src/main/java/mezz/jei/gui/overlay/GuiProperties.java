@@ -39,6 +39,14 @@ public class GuiProperties implements IGuiProperties {
 			}
 		}
 
+		if (x < 0) {
+			width -= x;
+			x = 0;
+		}
+		if (y < 0) {
+			height -= y;
+			y = 0;
+		}
 		if (width <= 0 || height <= 0) {
 			return null;
 		}
