@@ -28,8 +28,8 @@ val forgeVersion: String by extra
 val forgeVersionRange: String by extra
 val githubUrl: String by extra
 val loaderVersionRange: String by extra
-val mappingChannel: String by extra
-val mappingVersion: String by extra
+val mappingsChannel: String by extra
+val mappingsVersion: String by extra
 val minecraftVersion: String by extra
 val minecraftVersionRange: String by extra
 val modAuthor: String by extra
@@ -54,7 +54,7 @@ base {
 }
 
 sourceSets {
-	named("api") {
+	create("api") {
 		//The API has no resources
 		resources.setSrcDirs(emptyList<String>())
 
@@ -93,6 +93,8 @@ configurations {
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
+		withJavadocJar()
+		withSourcesJar()
 	}
 }
 
@@ -105,14 +107,14 @@ dependencies {
 }
 
 minecraft {
-	mappings(mappingChannel, mappingVersion)
+	mappings(mappingsChannel, mappingsVersion)
 
 	accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 
 	runs {
 		val client = create("client") {
 			taskName("Client")
-			setProperty("forge.logging.console.level", "debug")
+			property("forge.logging.console.level", "debug")
 			workingDirectory(file("runClient"))
 			mods {
 				create(modId) {
@@ -135,7 +137,7 @@ minecraft {
 		}
 		create("server") {
 			taskName("Server")
-			setProperty("forge.logging.console.level", "debug")
+			property("forge.logging.console.level", "debug")
 			workingDirectory(file("runServer"))
 			mods {
 				create(modId) {
@@ -148,12 +150,11 @@ minecraft {
 }
 
 tasks {
-	val javadoc = register<Javadoc>("javadoc") {
+	withType<Javadoc>() {
 		source = sourceSets.getByName("api").allJava
 		// prevent java 8's strict doclint for javadocs from failing builds
 		options.jFlags("Xdoclint:none", "-quiet")
 	}
-
 	named<Jar>("jar") {
 		from(sourceSets.main.get().output)
 		from(sourceSets.getByName("api").output)
@@ -176,7 +177,7 @@ tasks {
 	}
 
 	named<Jar>("javadocJar") {
-		dependsOn(javadoc.get().path)
+		dependsOn(javadoc.get())
 		from(javadoc.get().destinationDir)
 		duplicatesStrategy = DuplicatesStrategy.FAIL
 		archiveClassifier.set("javadoc")
@@ -191,8 +192,8 @@ tasks {
 		setDescription("Creates a deobfuscated JAR containing the source code, used by developers.")
 	}
 
-	named<Jar>("apiJar") {
-		dependsOn(javadoc.get().path)
+	create<Jar>("apiJar") {
+		dependsOn(javadoc.get())
 		val api = sourceSets.getByName("api")
 		from(api.output)
 		// TODO: when FG bug is fixed, remove allJava from the api jar.
@@ -206,7 +207,7 @@ tasks {
 		setDescription("Creates an obfuscated JAR containing the API source code and javadocs, used by developers.")
 	}
 
-	named<Jar>("deobfJar") {
+	create<Jar>("deobfJar") {
 		from(sourceSets.main.get().output)
 		from(sourceSets.getByName("api").output)
 		duplicatesStrategy = DuplicatesStrategy.FAIL
@@ -274,7 +275,7 @@ publishing {
 		}
 	}
 	repositories {
-		val deployDir = project.property("DEPLOY_DIR")
+		val deployDir = System.getenv()["DEPLOY_DIR"]
 		if (deployDir != null) {
 			maven(deployDir)
 		}
