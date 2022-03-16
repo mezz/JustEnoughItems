@@ -247,7 +247,7 @@ tasks {
 		apiToken = project.findProperty("curseforge_apikey") ?: "0"
 
 		val mainFile = upload(curseProjectId, file("${project.buildDir}/libs/$baseArchiveName-$version.jar"))
-		mainFile.changelogType = "html"
+		mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
 		mainFile.changelog = file("changelog.html")
 		mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
 		mainFile.addJavaVersion("Java $modJavaVersion")
@@ -279,7 +279,7 @@ publishing {
 		}
 	}
 	repositories {
-		val deployDir = System.getenv()["DEPLOY_DIR"]
+		val deployDir = project.findProperty("DEPLOY_DIR")
 		if (deployDir != null) {
 			maven(deployDir)
 		}
@@ -288,7 +288,7 @@ publishing {
 
 idea {
 	module {
-		for (fileName in listOf("runClient", "runClient01", "runClient02", "runServer", "out", "logs")) {
+		for (fileName in listOf("run", "out", "logs")) {
 			excludeDirs.add(file(fileName))
 		}
 	}
