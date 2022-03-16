@@ -54,7 +54,7 @@ base {
 }
 
 sourceSets {
-	create("api") {
+	val api = create("api") {
 		//The API has no resources
 		resources.setSrcDirs(emptyList<String>())
 
@@ -63,8 +63,8 @@ sourceSets {
 		}
 	}
 	named("main") {
-//		compileClasspath += api.get().output
-//		runtimeClasspath += api.get().output
+		compileClasspath += api.output
+		runtimeClasspath += api.output
 		java {
 			srcDir("src/main/java")
 		}
@@ -73,8 +73,8 @@ sourceSets {
 		//The test module has no resources
 		resources.setSrcDirs(emptyList<String>())
 
-//		compileClasspath += api.get().output
-//		runtimeClasspath += api.get().output
+		compileClasspath += api.output
+		runtimeClasspath += api.output
 		java {
 			srcDir("src/test/java")
 		}
@@ -150,7 +150,7 @@ minecraft {
 }
 
 tasks {
-	withType<Javadoc>() {
+	withType<Javadoc> {
 		source = sourceSets.getByName("api").allJava
 		// prevent java 8's strict doclint for javadocs from failing builds
 		options.jFlags("Xdoclint:none", "-quiet")
@@ -173,7 +173,7 @@ tasks {
 		}
 
 		finalizedBy("reobfJar")
-		setDescription("Creates an obfuscated JAR containing the compiled code, used by players.")
+		description = "Creates an obfuscated JAR containing the compiled code, used by players."
 	}
 
 	named<Jar>("javadocJar") {
@@ -181,7 +181,7 @@ tasks {
 		from(javadoc.get().destinationDir)
 		duplicatesStrategy = DuplicatesStrategy.FAIL
 		archiveClassifier.set("javadoc")
-		setDescription("Creates a JAR containing the API javadocs, used by developers.")
+		description = "Creates a JAR containing the API javadocs, used by developers."
 	}
 
 	named<Jar>("sourcesJar") {
@@ -189,7 +189,7 @@ tasks {
 		from(sourceSets.getByName("api").allJava)
 		duplicatesStrategy = DuplicatesStrategy.FAIL
 		archiveClassifier.set("sources")
-		setDescription("Creates a deobfuscated JAR containing the source code, used by developers.")
+		description = "Creates a deobfuscated JAR containing the source code, used by developers."
 	}
 
 	create<Jar>("apiJar") {
@@ -204,7 +204,7 @@ tasks {
 		duplicatesStrategy = DuplicatesStrategy.FAIL
 		finalizedBy("reobfJar")
 		archiveClassifier.set("api")
-		setDescription("Creates an obfuscated JAR containing the API source code and javadocs, used by developers.")
+		description = "Creates an obfuscated JAR containing the API source code and javadocs, used by developers."
 	}
 
 	create<Jar>("deobfJar") {
