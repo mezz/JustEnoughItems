@@ -38,14 +38,19 @@ public class GuiContainerWrapper implements IRecipeFocusSource {
 
 	private Optional<IClickedIngredient<?>> getSlotIngredientUnderMouse(AbstractContainerScreen<?> guiContainer) {
 		return Optional.ofNullable(guiContainer.getSlotUnderMouse())
-			.flatMap(this::getClickedIngredient);
+			.flatMap(slot -> getClickedIngredient(slot, guiContainer));
 	}
 
-	private Optional<IClickedIngredient<?>> getClickedIngredient(Slot slot) {
+	private Optional<IClickedIngredient<?>> getClickedIngredient(Slot slot, AbstractContainerScreen<?> guiContainer) {
 		ItemStack stack = slot.getItem();
 		return TypedIngredient.createTyped(this.registeredIngredients, VanillaTypes.ITEM, stack)
 			.map(typedIngredient -> {
-				ImmutableRect2i slotArea = new ImmutableRect2i(slot.x, slot.y, 16, 16);
+				ImmutableRect2i slotArea = new ImmutableRect2i(
+						guiContainer.getGuiLeft() + slot.x,
+						guiContainer.getGuiTop() + slot.y,
+						16,
+						16
+				);
 				return new ClickedIngredient<>(typedIngredient, slotArea, false, false);
 			});
 	}
