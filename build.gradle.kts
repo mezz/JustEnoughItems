@@ -48,16 +48,17 @@ if (buildNumber == null) {
 version = "${specificationVersion}.${buildNumber}"
 group = modGroup
 
-val baseArchiveName = "${modName}-${minecraftVersion}"
+val baseArchiveName = "${modId}-${minecraftVersion}"
 base {
 	archivesName.set(baseArchiveName)
 }
 
 sourceSets {
 	val api = create("api") {
-		//The API has no resources
-		resources.setSrcDirs(emptyList<String>())
-
+		resources {
+			//The API has no resources
+			setSrcDirs(emptyList<String>())
+		}
 		java {
 			srcDir("src/api/java")
 		}
@@ -70,8 +71,10 @@ sourceSets {
 		}
 	}
 	named("test") {
-		//The test module has no resources
-		resources.setSrcDirs(emptyList<String>())
+		resources {
+			//The test module has no resources
+			setSrcDirs(emptyList<String>())
+		}
 
 		compileClasspath += api.output
 		runtimeClasspath += api.output
@@ -153,7 +156,8 @@ tasks {
 	withType<Javadoc> {
 		source = sourceSets.getByName("api").allJava
 		// prevent java 8's strict doclint for javadocs from failing builds
-		options.jFlags("Xdoclint:none", "-quiet")
+		// workaround cast for https://github.com/gradle/gradle/issues/7038
+		(options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
 	}
 	named<Jar>("jar") {
 		from(sourceSets.main.get().output)
@@ -185,7 +189,7 @@ tasks {
 	}
 
 	named<Jar>("sourcesJar") {
-		from(sourceSets.main.get().allJava)
+		// already contains main allJava by default
 		from(sourceSets.getByName("api").allJava)
 		duplicatesStrategy = DuplicatesStrategy.FAIL
 		archiveClassifier.set("sources")
