@@ -264,7 +264,7 @@ publishing {
 		}
 	}
 	repositories {
-		val deployDir = project.findProperty("DEPLOY_DIR")
+		val deployDir = System.getenv()["DEPLOY_DIR"]
 		if (deployDir != null) {
 			maven(deployDir)
 		}
