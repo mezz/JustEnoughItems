@@ -54,15 +54,15 @@ base {
 }
 
 sourceSets {
-	val api = create("api") {
+	val api = register("api") {
 		resources {
 			//The API has no resources
 			setSrcDirs(emptyList<String>())
 		}
 	}
 	named("main") {
-		compileClasspath += api.output
-		runtimeClasspath += api.output
+		compileClasspath += api.get().output
+		runtimeClasspath += api.get().output
 	}
 	named("test") {
 		resources {
@@ -70,8 +70,8 @@ sourceSets {
 			setSrcDirs(emptyList<String>())
 		}
 
-		compileClasspath += api.output
-		runtimeClasspath += api.output
+		compileClasspath += api.get().output
+		runtimeClasspath += api.get().output
 	}
 }
 
@@ -87,8 +87,6 @@ configurations {
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
-		withJavadocJar()
-		withSourcesJar()
 	}
 }
 
@@ -145,11 +143,20 @@ minecraft {
 
 tasks {
 	withType<Javadoc> {
-		source = sourceSets.getByName("api").allJava
-		// prevent java 8's strict doclint for javadocs from failing builds
+		source(sourceSets.main.get().allJava)
+		source(sourceSets.getByName("api").allJava)
+
 		// workaround cast for https://github.com/gradle/gradle/issues/7038
-		(options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
+		val standardJavadocDocletOptions = options as StandardJavadocDocletOptions
+		// prevent java 8's strict doclint for javadocs from failing builds
+		standardJavadocDocletOptions.addStringOption("Xdoclint:none", "-quiet")
 	}
+
+	withType<Jar> {
+		duplicatesStrategy = DuplicatesStrategy.FAIL
+		finalizedBy("reobfJar")
+	}
+
 	named<Jar>("jar") {
 		from(sourceSets.main.get().output)
 		from(sourceSets.getByName("api").output)
@@ -167,46 +174,35 @@ tasks {
 			))
 		}
 
-		finalizedBy("reobfJar")
-		description = "Creates an obfuscated JAR containing the compiled code, used by players."
+		description = "Creates a JAR containing the compiled code, used by players."
 	}
 
-	named<Jar>("javadocJar") {
+	register<Jar>("javadocJar") {
 		dependsOn(javadoc.get())
 		from(javadoc.get().destinationDir)
-		duplicatesStrategy = DuplicatesStrategy.FAIL
+
 		archiveClassifier.set("javadoc")
-		description = "Creates a JAR containing the API javadocs, used by developers."
+		description = "Creates a JAR containing the javadocs, used by developers."
 	}
 
-	named<Jar>("sourcesJar") {
-		// already contains main allJava by default
+	register<Jar>("sourcesJar") {
+		from(sourceSets.main.get().allJava)
 		from(sourceSets.getByName("api").allJava)
-		duplicatesStrategy = DuplicatesStrategy.FAIL
+
 		archiveClassifier.set("sources")
-		description = "Creates a deobfuscated JAR containing the source code, used by developers."
+		description = "Creates a JAR containing the source code, used by developers."
 	}
 
-	create<Jar>("apiJar") {
-		dependsOn(javadoc.get())
+	register<Jar>("apiJar") {
 		val api = sourceSets.getByName("api")
 		from(api.output)
 		// TODO: when FG bug is fixed, remove allJava from the api jar.
 		// https://github.com/MinecraftForge/ForgeGradle/issues/369
 		// Gradle should be able to pull them from the -sources jar.
 		from(api.allJava)
-		from(javadoc.get().destinationDir)
-		duplicatesStrategy = DuplicatesStrategy.FAIL
-		finalizedBy("reobfJar")
+
 		archiveClassifier.set("api")
 		description = "Creates an obfuscated JAR containing the API source code and javadocs, used by developers."
-	}
-
-	create<Jar>("deobfJar") {
-		from(sourceSets.main.get().output)
-		from(sourceSets.getByName("api").output)
-		duplicatesStrategy = DuplicatesStrategy.FAIL
-		archiveClassifier.set("deobf")
 	}
 
 	named<ProcessResources>("processResources") {
@@ -254,7 +250,6 @@ artifacts {
 	archives(tasks.getByName("javadocJar"))
 	archives(tasks.getByName("sourcesJar"))
 	archives(tasks.getByName("apiJar"))
-	archives(tasks.getByName("deobfJar"))
 }
 
 publishing {
@@ -264,7 +259,6 @@ publishing {
 				tasks.getByName("apiJar"),
 				tasks.getByName("jar"),
 				tasks.getByName("javadocJar"),
-				tasks.getByName("deobfJar"),
 				tasks.getByName("sourcesJar")
 			))
 		}
