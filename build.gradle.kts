@@ -59,16 +59,10 @@ sourceSets {
 			//The API has no resources
 			setSrcDirs(emptyList<String>())
 		}
-		java {
-			srcDir("src/api/java")
-		}
 	}
 	named("main") {
 		compileClasspath += api.output
 		runtimeClasspath += api.output
-		java {
-			srcDir("src/main/java")
-		}
 	}
 	named("test") {
 		resources {
@@ -78,9 +72,6 @@ sourceSets {
 
 		compileClasspath += api.output
 		runtimeClasspath += api.output
-		java {
-			srcDir("src/test/java")
-		}
 	}
 }
 
