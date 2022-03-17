@@ -115,14 +115,14 @@ minecraft {
 				}
 			}
 		}
-		create("client_player_01") {
-			taskName("Client Player 01")
+		create("client_01") {
+			taskName("Client01")
 			parent(client)
 			workingDirectory(file("run/client01"))
 			args("--username", "Player01")
 		}
-		create("client_player_02") {
-			taskName("Client Player 02")
+		create("client_02") {
+			taskName("Client02")
 			parent(client)
 			workingDirectory(file("run/client02"))
 			args("--username", "Player02")
