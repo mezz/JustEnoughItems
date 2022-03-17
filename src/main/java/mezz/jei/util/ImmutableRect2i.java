@@ -1,7 +1,6 @@
 package mezz.jei.util;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
 import net.minecraft.client.renderer.Rect2i;
 
 import javax.annotation.Nonnegative;
@@ -22,16 +21,19 @@ public class ImmutableRect2i {
 		this(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
 	}
 
-	@SuppressWarnings("ConstantConditions")
-	public ImmutableRect2i(@Nonnegative int x, @Nonnegative int y, @Nonnegative int width, @Nonnegative int height) {
-		Preconditions.checkArgument(x >= 0, "x must be greater or equal 0");
-		Preconditions.checkArgument(y >= 0, "y must be greater or equal 0");
-		Preconditions.checkArgument(width >= 0, "width must be greater or equal 0");
-		Preconditions.checkArgument(height >= 0, "height must be greater or equal 0");
+	public ImmutableRect2i(int x, int y, int width, int height) {
+		if (x < 0) {
+			width -= x;
+			x = 0;
+		}
+		if (y < 0) {
+			height -= y;
+			y = 0;
+		}
 		this.x = x;
 		this.y = y;
-		this.width = width;
-		this.height = height;
+		this.width = Math.max(0, width);
+		this.height = Math.max(0, height);
 	}
 
 	@Nonnegative
