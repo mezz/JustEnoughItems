@@ -32,7 +32,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew publish curseforge -PBUILD_NUMBER=${env.BUILD_NUMBER} -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew publish publishCurseForge -PBUILD_NUMBER=${env.BUILD_NUMBER} -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
             }
         }
     }
