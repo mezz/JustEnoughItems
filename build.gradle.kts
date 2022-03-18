@@ -40,7 +40,7 @@ val modName: String by extra
 val specificationVersion: String by extra
 
 //adds the build number to the end of the version string if on a build server
-var buildNumber = System.getenv()["BUILD_NUMBER"]
+var buildNumber = project.findProperty("BUILD_NUMBER")
 if (buildNumber == null) {
 	buildNumber = "9999"
 }
@@ -264,7 +264,7 @@ publishing {
 		}
 	}
 	repositories {
-		val deployDir = System.getenv()["DEPLOY_DIR"]
+		val deployDir = project.findProperty("DEPLOY_DIR")
 		if (deployDir != null) {
 			maven(deployDir)
 		}
