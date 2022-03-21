@@ -219,7 +219,7 @@ tasks {
 	}
 
 	register<TaskPublishCurseForge>("publishCurseForge") {
-		dependsOn("makeChangelog")
+		dependsOn(":makeChangelog")
 
 		apiToken = project.findProperty("curseforge_apikey") ?: "0"
 
