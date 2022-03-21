@@ -6,8 +6,6 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.gui.TickTimer;
 
-import mezz.jei.api.gui.drawable.IDrawableAnimated.StartDirection;
-
 public class DrawableAnimated implements IDrawableAnimated {
 	private final IDrawableStatic drawable;
 	private final ITickTimer tickTimer;
