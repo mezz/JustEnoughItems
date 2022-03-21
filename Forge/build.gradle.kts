@@ -44,41 +44,31 @@ if (buildNumber == null) {
 version = "${specificationVersion}.${buildNumber}"
 group = modGroup
 
-val baseArchiveName = "${modId}-${minecraftVersion}"
+val baseArchiveName = "${modId}-forge-${minecraftVersion}"
 base {
 	archivesName.set(baseArchiveName)
 }
 
 sourceSets {
-	val api = register("api") {
-		resources {
-			//The API has no resources
-			setSrcDirs(emptyList<String>())
-		}
-	}
-	named("main") {
-		compileClasspath += api.get().output
-		runtimeClasspath += api.get().output
-	}
 	named("test") {
 		resources {
 			//The test module has no resources
 			setSrcDirs(emptyList<String>())
 		}
-
-		compileClasspath += api.get().output
-		runtimeClasspath += api.get().output
 	}
 }
 
-configurations {
-	named("apiImplementation") {
-		extendsFrom(getByName("implementation"))
-	}
-	named("apiRuntimeOnly") {
-		extendsFrom(getByName("runtimeOnly"))
-	}
-}
+//fun allSourceSets() = listOf(
+//	sourceSets.main,
+//	project(":Common").sourceSets.main,
+//	project(":CommonApi").sourceSets.main,
+//	project(":ForgeApi").sourceSets.main
+//)
+//
+fun apiProjects() = listOf(
+	project(":CommonApi"),
+	project(":ForgeApi")
+)
 
 java {
 	toolchain {
@@ -92,6 +82,9 @@ dependencies {
 		name = "forge",
 		version = "${minecraftVersion}-${forgeVersion}"
 	)
+	implementation(project(":Common"))
+	implementation(project(":CommonApi"))
+	implementation(project(":ForgeApi"))
 }
 
 minecraft {
@@ -107,7 +100,12 @@ minecraft {
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
-					source(sourceSets.getByName("api"))
+//					source(project(":Common").sourceSets.main.get())
+//					source(project(":CommonApi").sourceSets.main.get())
+//					source(project(":ForgeApi").sourceSets.main.get())
+//					for (s in allSourceSets()) {
+//						source(s.get())
+//					}
 				}
 			}
 		}
@@ -129,128 +127,160 @@ minecraft {
 			workingDirectory(file("run/server"))
 			mods {
 				create(modId) {
+//					for (s in allSourceSets()) {
+//						source(s.get())
+//					}
 					source(sourceSets.main.get())
-					source(sourceSets.getByName("api"))
+//					source(project(":Common").sourceSets.main.get())
+//					source(project(":CommonApi").sourceSets.main.get())
+//					source(project(":ForgeApi").sourceSets.main.get())
 				}
 			}
 		}
 	}
 }
 
-tasks {
-	withType<Javadoc> {
-		source(sourceSets.main.get().allJava)
-		source(sourceSets.getByName("api").allJava)
+tasks.withType<Javadoc> {
+//		for (s in allSourceSets()) {
+//			source(s.get().allJava)
+//		}
 
-		// workaround cast for https://github.com/gradle/gradle/issues/7038
-		val standardJavadocDocletOptions = options as StandardJavadocDocletOptions
-		// prevent java 8's strict doclint for javadocs from failing builds
-		standardJavadocDocletOptions.addStringOption("Xdoclint:none", "-quiet")
-	}
+	source(sourceSets.main.get().allJava)
+//		source(project(":Common").sourceSets.main.get().allJava)
+//		source(project(":CommonApi").sourceSets.main.get().allJava)
+//		source(project(":ForgeApi").sourceSets.main.get().allJava)
 
-	withType<Jar> {
-		duplicatesStrategy = DuplicatesStrategy.FAIL
-		finalizedBy("reobfJar")
-	}
+	// workaround cast for https://github.com/gradle/gradle/issues/7038
+	val standardJavadocDocletOptions = options as StandardJavadocDocletOptions
+	// prevent java 8's strict doclint for javadocs from failing builds
+	standardJavadocDocletOptions.addStringOption("Xdoclint:none", "-quiet")
+}
 
-	named<Jar>("jar") {
-		from(sourceSets.main.get().output)
-		from(sourceSets.getByName("api").output)
+tasks.withType<Jar> {
+	duplicatesStrategy = DuplicatesStrategy.FAIL
+	finalizedBy("reobfJar")
+}
 
-		val now = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(Date())
-		manifest {
-			attributes(mapOf(
-				"Specification-Title" to modName,
-				"Specification-Vendor" to modAuthor,
-				"Specification-Version" to specificationVersion,
-				"Implementation-Title" to name,
-				"Implementation-Version" to archiveVersion,
-				"Implementation-Vendor" to modAuthor,
-				"Implementation-Timestamp" to now,
-			))
-		}
+tasks.named<ProcessResources>("processResources") {
+	// this will ensure that this task is redone when the versions change.
+	inputs.property("version", version)
 
-		description = "Creates a JAR containing the compiled code, used by players."
-	}
+//		for (s in allSourceSets()) {
+//			from(s.get().resources)
+//		}
 
-	register<Jar>("javadocJar") {
-		dependsOn(javadoc.get())
-		from(javadoc.get().destinationDir)
-
-		archiveClassifier.set("javadoc")
-		description = "Creates a JAR containing the javadocs, used by developers."
-	}
-
-	register<Jar>("sourcesJar") {
-		from(sourceSets.main.get().allJava)
-		from(sourceSets.getByName("api").allJava)
-
-		archiveClassifier.set("sources")
-		description = "Creates a JAR containing the source code, used by developers."
-	}
-
-	register<Jar>("apiJar") {
-		val api = sourceSets.getByName("api")
-		from(api.output)
-		// TODO: when FG bug is fixed, remove allJava from the api jar.
-		// https://github.com/MinecraftForge/ForgeGradle/issues/369
-		// Gradle should be able to pull them from the -sources jar.
-		from(api.allJava)
-
-		archiveClassifier.set("api")
-		description = "Creates an obfuscated JAR containing the API source code and javadocs, used by developers."
-	}
-
-	named<ProcessResources>("processResources") {
-		// this will ensure that this task is redone when the versions change.
-		inputs.property("version", version)
-
-		duplicatesStrategy = DuplicatesStrategy.FAIL
-		filesMatching("META-INF/mods.toml") {
-			expand(mapOf(
-				"modId" to modId,
-				"version" to version,
-				"minecraftVersionRange" to minecraftVersionRange,
-				"forgeVersionRange" to forgeVersionRange,
-				"loaderVersionRange" to loaderVersionRange,
-				"githubUrl" to githubUrl
-			))
-		}
-	}
-
-	register<TaskPublishCurseForge>("publishCurseForge") {
-		dependsOn(":makeChangelog")
-
-		apiToken = project.findProperty("curseforge_apikey") ?: "0"
-
-		val mainFile = upload(curseProjectId, file("${project.buildDir}/libs/$baseArchiveName-$version.jar"))
-		mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
-		mainFile.changelog = file("../changelog.html")
-		mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
-		mainFile.addJavaVersion("Java $modJavaVersion")
-		mainFile.addGameVersion(minecraftVersion)
-
-		doLast {
-			project.ext.set("curse_file_url", "${curseHomepageLink}/files/${mainFile.curseFileId}")
-		}
+	from(project(":Common").sourceSets.main.get().resources)
+	duplicatesStrategy = DuplicatesStrategy.FAIL
+	filesMatching("META-INF/mods.toml") {
+		expand(mapOf(
+			"modId" to modId,
+			"version" to version,
+			"minecraftVersionRange" to minecraftVersionRange,
+			"forgeVersionRange" to forgeVersionRange,
+			"loaderVersionRange" to loaderVersionRange,
+			"githubUrl" to githubUrl
+		))
 	}
 }
 
+//tasks {
+//	withType<JavaCompile> {
+//		for (s in allSourceSets()) {
+//			source(s.get().allSource)
+//		}
+//	}
+//}
+
+tasks.register<TaskPublishCurseForge>("publishCurseForge") {
+	//		dependsOn("makeChangelog")
+
+	apiToken = project.findProperty("curseforge_apikey") ?: "0"
+
+	val mainFile = upload(curseProjectId, file("${project.buildDir}/libs/$baseArchiveName-$version.jar"))
+	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
+	mainFile.changelog = file("../changelog.html")
+	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
+	mainFile.addJavaVersion("Java $modJavaVersion")
+	mainFile.addGameVersion(minecraftVersion)
+
+	doLast {
+		project.ext.set("curse_file_url", "${curseHomepageLink}/files/${mainFile.curseFileId}")
+	}
+}
+
+val jar = tasks.named<Jar>("jar") {
+//		for (s in allSourceSets()) {
+//			from(s.get().output)
+//		}
+	from(sourceSets.main.get().output)
+//		from(sourceSets.getByName("api").output)
+//		from(project(":Common").sourceSets.main.get().output)
+//		from(project(":Common").sourceSets.getByName("api").output)
+
+	val now = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(Date())
+	manifest {
+		attributes(mapOf(
+			"Specification-Title" to modName,
+			"Specification-Vendor" to modAuthor,
+			"Specification-Version" to specificationVersion,
+			"Implementation-Title" to name,
+			"Implementation-Version" to archiveVersion,
+			"Implementation-Vendor" to modAuthor,
+			"Implementation-Timestamp" to now,
+		))
+	}
+
+	description = "Creates a JAR containing the compiled code, used by players."
+}
+
+val sourcesJar = tasks.register<Jar>("sourcesJar") {
+//		for (s in allSourceSets()) {
+//			from(s.get().allJava)
+//		}
+	from(sourceSets.main.get().allJava)
+//		from(sourceSets.getByName("api").allJava)
+//		from(project(":Common").sourceSets.main.get().allJava)
+//		from(project(":Common").sourceSets.getByName("api").allJava)
+
+	archiveClassifier.set("sources")
+	description = "Creates a JAR containing the source code, used by developers."
+}
+
+val javadocJar = tasks.register<Jar>("javadocJar") {
+	val javadoc = tasks.javadoc.get()
+	dependsOn(javadoc)
+	from(javadoc.destinationDir)
+
+	archiveClassifier.set("javadoc")
+	description = "Creates a JAR containing the javadocs, used by developers."
+}
+
+val apiJar = tasks.register<Jar>("apiJar") {
+//	for (project in apiProjects()) {
+//		val main = project.sourceSets.main.get();
+//		from(main.output)
+//		// TODO: when FG bug is fixed, remove allJava from the api jar.
+//		// https://github.com/MinecraftForge/ForgeGradle/issues/369
+//		// Gradle should be able to pull them from the -sources jar.
+//		from(main.allJava)
+//	}
+
+	archiveClassifier.set("api")
+	description = "Creates an obfuscated JAR containing the API source code and javadocs, used by developers."
+}
+
 artifacts {
-	archives(tasks.getByName("javadocJar"))
-	archives(tasks.getByName("sourcesJar"))
-	archives(tasks.getByName("apiJar"))
+	archives(javadocJar.get())
+	archives(sourcesJar.get())
+	archives(apiJar.get())
 }
 
 publishing {
 	publications {
 		register<MavenPublication>("maven") {
-			setArtifacts(listOf(
-				tasks.getByName("apiJar"),
-				tasks.getByName("jar"),
-				tasks.getByName("javadocJar"),
-				tasks.getByName("sourcesJar")
-			))
+			artifact(jar.get())
+			artifact(javadocJar.get())
+			artifact(sourcesJar.get())
 		}
 	}
 	repositories {
