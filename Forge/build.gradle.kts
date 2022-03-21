@@ -202,6 +202,9 @@ tasks {
 	}
 
 	named<ProcessResources>("processResources") {
+		// this will ensure that this task is redone when the versions change.
+		inputs.property("version", version)
+
 		duplicatesStrategy = DuplicatesStrategy.FAIL
 		filesMatching("META-INF/mods.toml") {
 			expand(mapOf(
