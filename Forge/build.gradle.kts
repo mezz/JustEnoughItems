@@ -225,7 +225,7 @@ tasks {
 
 		val mainFile = upload(curseProjectId, file("${project.buildDir}/libs/$baseArchiveName-$version.jar"))
 		mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
-		mainFile.changelog = file("changelog.html")
+		mainFile.changelog = file("../changelog.html")
 		mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
 		mainFile.addJavaVersion("Java $modJavaVersion")
 		mainFile.addGameVersion(minecraftVersion)
