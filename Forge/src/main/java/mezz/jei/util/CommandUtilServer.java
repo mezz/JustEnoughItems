@@ -149,9 +149,9 @@ public final class CommandUtilServer {
 			giveCount = itemStack.getCount();
 		}
 
-		if (giveCount > 0 && sender instanceof ServerPlayer serverPlayerEntity) {
+		if (giveCount > 0) {
 			itemStackCopy.setCount(giveCount);
-			notifyGive(serverPlayerEntity, itemStackCopy);
+			notifyGive(sender, itemStackCopy);
 			containerMenu.broadcastChanges();
 		}
 	}
@@ -185,11 +185,14 @@ public final class CommandUtilServer {
 		notifyGive(entityplayermp, itemStackCopy);
 	}
 
-	private static void notifyGive(Player entityPlayerMP, ItemStack stack) {
-		CommandSourceStack commandSource = entityPlayerMP.createCommandSourceStack();
+	private static void notifyGive(Player player, ItemStack stack) {
+		if (player.getServer() == null) {
+			return;
+		}
+		CommandSourceStack commandSource = player.createCommandSourceStack();
 		int count = stack.getCount();
 		Component stackTextComponent = stack.getDisplayName();
-		Component displayName = entityPlayerMP.getDisplayName();
+		Component displayName = player.getDisplayName();
 		TranslatableComponent message = new TranslatableComponent("commands.give.success.single", count, stackTextComponent, displayName);
 		commandSource.sendSuccess(message, true);
 	}
