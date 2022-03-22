@@ -43,5 +43,10 @@ dependencies {
 
 minecraft {
 	mappings(mappingsChannel, mappingsVersion)
+
+	// All minecraft configurations in the multi-project must be identical, including ATs,
+	// because of a ForgeGradle bug https://github.com/MinecraftForge/ForgeGradle/issues/844
+	accessTransformer(file("../Forge/src/main/resources/META-INF/accesstransformer.cfg"))
+
 	// no runs are configured for API
 }
