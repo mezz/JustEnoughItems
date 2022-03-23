@@ -245,6 +245,7 @@ artifacts {
 publishing {
 	publications {
 		register<MavenPublication>("maven") {
+			artifactId = baseArchiveName
 			setArtifacts(listOf(
 				tasks.getByName("apiJar"),
 				tasks.getByName("jar"),
