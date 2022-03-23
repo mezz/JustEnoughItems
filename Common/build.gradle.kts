@@ -10,6 +10,14 @@ val minecraftVersion: String by extra
 
 val archivesBaseName = "${modName}-common-${minecraftVersion}"
 
+val dependencyProjects: List<Project> = listOf(
+    project(":CommonApi"),
+)
+
+dependencyProjects.forEach {
+    project.evaluationDependsOn(it.path)
+}
+
 minecraft {
     version(minecraftVersion)
     // no runs are configured for Common
@@ -28,4 +36,7 @@ dependencies {
         name = "mixin",
         version = "0.8.5"
     )
+    dependencyProjects.forEach {
+        implementation(it)
+    }
 }
