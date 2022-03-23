@@ -2,7 +2,7 @@ buildscript {
     dependencies {
         constraints {
             // Force ASM on buildscript/plugin classpath to 9.2 instead of possibly outdated versions
-            classpath("asm coords:9.2")
+            classpath("org.ow2.asm:asm:9.2")
         }
     }
 }
