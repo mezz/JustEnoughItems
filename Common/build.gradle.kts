@@ -1,3 +1,11 @@
+buildscript {
+    dependencies {
+        constraints {
+            classpath("asm coords:9.2")
+        }
+    }
+}
+
 plugins {
     java
     id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT"
