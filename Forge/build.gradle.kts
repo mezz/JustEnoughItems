@@ -19,16 +19,11 @@ apply {
 val curseHomepageLink: String by extra
 val curseProjectId: String by extra
 val forgeVersion: String by extra
-val forgeVersionRange: String by extra
-val githubUrl: String by extra
-val loaderVersionRange: String by extra
 val mappingsChannel: String by extra
 val mappingsVersion: String by extra
 val minecraftVersion: String by extra
-val minecraftVersionRange: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
-val modName: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}"
 base {
@@ -115,23 +110,6 @@ minecraft {
 				}
 			}
 		}
-	}
-}
-
-tasks.named<ProcessResources>("processResources") {
-	// this will ensure that this task is redone when the versions change.
-	inputs.property("version", version)
-
-	filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta")) {
-		expand(mapOf(
-			"modId" to modId,
-			"modName" to modName,
-			"version" to version,
-			"minecraftVersionRange" to minecraftVersionRange,
-			"forgeVersionRange" to forgeVersionRange,
-			"loaderVersionRange" to loaderVersionRange,
-			"githubUrl" to githubUrl
-		))
 	}
 }
 
