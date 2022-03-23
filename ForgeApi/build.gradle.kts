@@ -1,5 +1,5 @@
 plugins {
-	id("java")
+	java
 	id("net.minecraftforge.gradle") version ("5.1.+")
 	id("org.parchmentmc.librarian.forgegradle") version ("1.+")
 }

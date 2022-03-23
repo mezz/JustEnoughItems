@@ -4,11 +4,7 @@ plugins {
 }
 
 // gradle.properties
-val specificationVersion: String by extra
-val modName: String by extra
 val minecraftVersion: String by extra
-
-val archivesBaseName = "${modName}-common-${minecraftVersion}"
 
 val dependencyProjects: List<Project> = listOf(
     project(":CommonApi"),

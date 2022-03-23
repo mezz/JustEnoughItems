@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    java
     id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT"
 }
 

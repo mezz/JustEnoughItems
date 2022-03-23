@@ -2,10 +2,10 @@ import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.darkhax.curseforgegradle.Constants as CFG_Constants
 
 plugins {
-	id("java")
-	id("idea")
-	id("eclipse")
-	id("maven-publish")
+	java
+	idea
+	eclipse
+	`maven-publish`
 	id("net.minecraftforge.gradle") version("5.1.+")
 	id("org.parchmentmc.librarian.forgegradle") version("1.+")
 	id("net.darkhax.curseforgegradle") version("1.0.8")
