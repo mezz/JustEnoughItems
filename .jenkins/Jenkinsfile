@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
       ORG_GRADLE_PROJECT_curseforge_apikey = credentials('jei-curseforge-key')
+      ORG_GRADLE_PROJECT_BUILD_NUMBER = env.BUILD_NUMBER
     }
     stages {
         stage('Checkout') {
@@ -11,15 +12,15 @@ pipeline {
             }
         }
 
-        stage('Forge Test') {
+        stage('Test Forge') {
             steps {
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:cleanTest :Forge:test  --no-build-cache --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:cleanTest :Forge:test --no-build-cache --no-daemon"
             }
         }
 
-        stage('Forge Build') {
+        stage('Build Forge') {
             steps {
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:build -PBUILD_NUMBER=${env.BUILD_NUMBER} --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:build --no-daemon"
             }
         }
 
@@ -30,9 +31,15 @@ pipeline {
             }
         }
 
-        stage('Forge Publish') {
+        stage('Publish Maven Forge') {
             steps {
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:publish :Forge:publishCurseForge -PBUILD_NUMBER=${env.BUILD_NUMBER} -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+            }
+        }
+
+        stage('Publish CurseForge Forge') {
+            steps {
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:publishCurseForge --no-daemon"
             }
         }
     }
