@@ -1,7 +1,5 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.darkhax.curseforgegradle.Constants as CFG_Constants
-import java.text.SimpleDateFormat
-import java.util.*
 
 plugins {
 	id("java")
@@ -32,9 +30,9 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val modName: String by extra
 
-val baseArchiveName = "${modId}-forge-${minecraftVersion}"
+val baseArchivesName = "${modId}-${minecraftVersion}"
 base {
-	archivesName.set(baseArchiveName)
+	archivesName.set(baseArchivesName)
 }
 
 sourceSets {
@@ -120,18 +118,6 @@ minecraft {
 	}
 }
 
-//tasks.named<Javadoc>("javadoc") {
-//	for (p in mainProjects) {
-//		source(project(p).sourceSets.main.get().allJava)
-//	}
-//
-//	source(sourceSets.main.get().allJava)
-//		source(project(":Common").sourceSets.main.get().allJava)
-//		source(project(":CommonApi").sourceSets.main.get().allJava)
-//		source(project(":ForgeApi").sourceSets.main.get().allJava)
-//
-//}
-
 tasks.named<ProcessResources>("processResources") {
 	// this will ensure that this task is redone when the versions change.
 	inputs.property("version", version)
@@ -150,48 +136,70 @@ tasks.named<ProcessResources>("processResources") {
 }
 
 tasks.named<Jar>("jar") {
+	from(sourceSets.main.get().output)
+	for (p in dependencyProjects) {
+		from(p.sourceSets.main.get().output)
+	}
+
+	duplicatesStrategy = DuplicatesStrategy.WARN
+	finalizedBy("reobfJar")
+}
+
+val apiJar = tasks.register<Jar>("apiJar") {
+	from(project(":CommonApi").sourceSets.main.get().output)
+	from(project(":ForgeApi").sourceSets.main.get().output)
+
+	// TODO: when FG bug is fixed, remove allJava from the api jar.
+	// https://github.com/MinecraftForge/ForgeGradle/issues/369
+	// Gradle should be able to pull them from the -sources jar.
+	from(project(":CommonApi").sourceSets.main.get().allJava)
+	from(project(":ForgeApi").sourceSets.main.get().allJava)
+
+	duplicatesStrategy = DuplicatesStrategy.WARN
+	finalizedBy("reobfJar")
+	archiveClassifier.set("api")
+}
+
+val sourcesJar = tasks.register<Jar>("sourcesJar") {
 	from(sourceSets.main.get().allJava)
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().allJava)
 	}
-	duplicatesStrategy = DuplicatesStrategy.FAIL
+
+	duplicatesStrategy = DuplicatesStrategy.WARN
 	finalizedBy("reobfJar")
+	archiveClassifier.set("sources")
 }
 
-//tasks.register<TaskPublishCurseForge>("publishCurseForge") {
-////	dependsOn(":makeChangelog")
-//
-//	apiToken = project.findProperty("curseforge_apikey") ?: "0"
-//
-//	val mainFile = upload(curseProjectId, file("${project.buildDir}/libs/$baseArchiveName-$version.jar"))
-//	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
-//	mainFile.changelog = file("../changelog.html")
-//	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
-//	mainFile.addJavaVersion("Java $modJavaVersion")
-//	mainFile.addGameVersion(minecraftVersion)
-//
-//	doLast {
-//		project.ext.set("curse_file_url", "${curseHomepageLink}/files/${mainFile.curseFileId}")
-//	}
-//}
+tasks.register<TaskPublishCurseForge>("publishCurseForge") {
+	dependsOn(":makeChangelog")
 
-//val javadocJar = tasks.register<Jar>("javadocJar") {
-//	val javadoc = tasks.javadoc.get()
-//	dependsOn(javadoc)
-//	from(javadoc.destinationDir)
-//
-//	archiveClassifier.set("javadoc")
-//	description = "Creates a JAR containing the javadocs, used by developers."
-//}
+	apiToken = project.findProperty("curseforge_apikey") ?: "0"
+
+	val mainFile = upload(curseProjectId, file("${project.buildDir}/libs/$baseArchivesName-$version.jar"))
+	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
+	mainFile.changelog = file("../changelog.html")
+	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
+	mainFile.addJavaVersion("Java $modJavaVersion")
+	mainFile.addGameVersion(minecraftVersion)
+
+	doLast {
+		project.ext.set("curse_file_url", "${curseHomepageLink}/files/${mainFile.curseFileId}")
+	}
+}
 
 artifacts {
+	archives(apiJar.get())
+	archives(sourcesJar.get())
 	archives(tasks.jar.get())
 }
 
 publishing {
 	publications {
 		register<MavenPublication>("maven") {
-			artifactId = baseArchiveName
+			artifactId = baseArchivesName
+			artifact(apiJar.get())
+			artifact(sourcesJar.get())
 			artifact(tasks.jar.get())
 		}
 	}
@@ -199,8 +207,6 @@ publishing {
 		val deployDir = project.findProperty("DEPLOY_DIR")
 		if (deployDir != null) {
 			maven(deployDir)
-		} else {
-			logger.info("No DEPLOY_DIR property is set, skipping maven publish.")
 		}
 	}
 }

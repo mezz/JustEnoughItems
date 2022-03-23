@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.api.constants;
+package mezz.jei.api;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 
