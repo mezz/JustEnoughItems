@@ -8,9 +8,9 @@ plugins {
 	id("idea")
 	id("eclipse")
 	id("maven-publish")
-	id("net.minecraftforge.gradle") version ("5.1.+")
-	id("org.parchmentmc.librarian.forgegradle") version ("1.+")
-	id("net.darkhax.curseforgegradle") version ("1.0.8")
+	id("net.minecraftforge.gradle") version("5.1.+")
+	id("org.parchmentmc.librarian.forgegradle") version("1.+")
+	id("net.darkhax.curseforgegradle") version("1.0.8")
 }
 apply {
 	from("../buildtools/Test.gradle")
@@ -28,25 +28,12 @@ val mappingsChannel: String by extra
 val mappingsVersion: String by extra
 val minecraftVersion: String by extra
 val minecraftVersionRange: String by extra
-val modAuthor: String by extra
-val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val modName: String by extra
-val specificationVersion: String by extra
 
-//adds the build number to the end of the version string if on a build server
-var buildNumber = project.findProperty("BUILD_NUMBER")
-if (buildNumber == null) {
-	buildNumber = "9999"
-}
-
-version = "${specificationVersion}.${buildNumber}"
-group = modGroup
-
-val baseArchiveName = "${modId}-forge-${minecraftVersion}"
 base {
-	archivesName.set(baseArchiveName)
+	archivesName.set("${modId}-forge-${minecraftVersion}")
 }
 
 sourceSets {
@@ -58,17 +45,15 @@ sourceSets {
 	}
 }
 
-//fun allSourceSets() = listOf(
-//	sourceSets.main,
-//	project(":Common").sourceSets.main,
-//	project(":CommonApi").sourceSets.main,
-//	project(":ForgeApi").sourceSets.main
-//)
-//
-fun apiProjects() = listOf(
+val dependencyProjects: List<Project> = listOf(
+	project(":Common"),
 	project(":CommonApi"),
-	project(":ForgeApi")
+	project(":ForgeApi"),
 )
+
+dependencyProjects.forEach {
+	project.evaluationDependsOn(it.path)
+}
 
 java {
 	toolchain {
@@ -82,9 +67,9 @@ dependencies {
 		name = "forge",
 		version = "${minecraftVersion}-${forgeVersion}"
 	)
-	implementation(project(":Common"))
-	implementation(project(":CommonApi"))
-	implementation(project(":ForgeApi"))
+	dependencyProjects.forEach {
+		implementation(it)
+	}
 }
 
 minecraft {
@@ -100,12 +85,9 @@ minecraft {
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
-//					source(project(":Common").sourceSets.main.get())
-//					source(project(":CommonApi").sourceSets.main.get())
-//					source(project(":ForgeApi").sourceSets.main.get())
-//					for (s in allSourceSets()) {
-//						source(s.get())
-//					}
+					for (p in dependencyProjects) {
+						source(p.sourceSets.main.get())
+					}
 				}
 			}
 		}
@@ -127,53 +109,36 @@ minecraft {
 			workingDirectory(file("run/server"))
 			mods {
 				create(modId) {
-//					for (s in allSourceSets()) {
-//						source(s.get())
-//					}
 					source(sourceSets.main.get())
-//					source(project(":Common").sourceSets.main.get())
-//					source(project(":CommonApi").sourceSets.main.get())
-//					source(project(":ForgeApi").sourceSets.main.get())
+					for (p in dependencyProjects) {
+						source(p.sourceSets.main.get())
+					}
 				}
 			}
 		}
 	}
 }
 
-tasks.withType<Javadoc> {
-//		for (s in allSourceSets()) {
-//			source(s.get().allJava)
-//		}
-
-	source(sourceSets.main.get().allJava)
+//tasks.named<Javadoc>("javadoc") {
+//	for (p in mainProjects) {
+//		source(project(p).sourceSets.main.get().allJava)
+//	}
+//
+//	source(sourceSets.main.get().allJava)
 //		source(project(":Common").sourceSets.main.get().allJava)
 //		source(project(":CommonApi").sourceSets.main.get().allJava)
 //		source(project(":ForgeApi").sourceSets.main.get().allJava)
-
-	// workaround cast for https://github.com/gradle/gradle/issues/7038
-	val standardJavadocDocletOptions = options as StandardJavadocDocletOptions
-	// prevent java 8's strict doclint for javadocs from failing builds
-	standardJavadocDocletOptions.addStringOption("Xdoclint:none", "-quiet")
-}
-
-tasks.withType<Jar> {
-	duplicatesStrategy = DuplicatesStrategy.FAIL
-	finalizedBy("reobfJar")
-}
+//
+//}
 
 tasks.named<ProcessResources>("processResources") {
 	// this will ensure that this task is redone when the versions change.
 	inputs.property("version", version)
 
-//		for (s in allSourceSets()) {
-//			from(s.get().resources)
-//		}
-
-	from(project(":Common").sourceSets.main.get().resources)
-	duplicatesStrategy = DuplicatesStrategy.FAIL
-	filesMatching("META-INF/mods.toml") {
+	filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta")) {
 		expand(mapOf(
 			"modId" to modId,
+			"modName" to modName,
 			"version" to version,
 			"minecraftVersionRange" to minecraftVersionRange,
 			"forgeVersionRange" to forgeVersionRange,
@@ -183,104 +148,49 @@ tasks.named<ProcessResources>("processResources") {
 	}
 }
 
-//tasks {
-//	withType<JavaCompile> {
-//		for (s in allSourceSets()) {
-//			source(s.get().allSource)
-//		}
+tasks.named<Jar>("jar") {
+	from(sourceSets.main.get().allJava)
+	for (p in dependencyProjects) {
+		from(p.sourceSets.main.get().allJava)
+	}
+	duplicatesStrategy = DuplicatesStrategy.FAIL
+	finalizedBy("reobfJar")
+}
+
+//tasks.register<TaskPublishCurseForge>("publishCurseForge") {
+////	dependsOn(":makeChangelog")
+//
+//	apiToken = project.findProperty("curseforge_apikey") ?: "0"
+//
+//	val mainFile = upload(curseProjectId, file("${project.buildDir}/libs/$baseArchiveName-$version.jar"))
+//	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
+//	mainFile.changelog = file("../changelog.html")
+//	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
+//	mainFile.addJavaVersion("Java $modJavaVersion")
+//	mainFile.addGameVersion(minecraftVersion)
+//
+//	doLast {
+//		project.ext.set("curse_file_url", "${curseHomepageLink}/files/${mainFile.curseFileId}")
 //	}
 //}
 
-tasks.register<TaskPublishCurseForge>("publishCurseForge") {
-	//		dependsOn("makeChangelog")
-
-	apiToken = project.findProperty("curseforge_apikey") ?: "0"
-
-	val mainFile = upload(curseProjectId, file("${project.buildDir}/libs/$baseArchiveName-$version.jar"))
-	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
-	mainFile.changelog = file("../changelog.html")
-	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
-	mainFile.addJavaVersion("Java $modJavaVersion")
-	mainFile.addGameVersion(minecraftVersion)
-
-	doLast {
-		project.ext.set("curse_file_url", "${curseHomepageLink}/files/${mainFile.curseFileId}")
-	}
-}
-
-val jar = tasks.named<Jar>("jar") {
-//		for (s in allSourceSets()) {
-//			from(s.get().output)
-//		}
-	from(sourceSets.main.get().output)
-//		from(sourceSets.getByName("api").output)
-//		from(project(":Common").sourceSets.main.get().output)
-//		from(project(":Common").sourceSets.getByName("api").output)
-
-	val now = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(Date())
-	manifest {
-		attributes(mapOf(
-			"Specification-Title" to modName,
-			"Specification-Vendor" to modAuthor,
-			"Specification-Version" to specificationVersion,
-			"Implementation-Title" to name,
-			"Implementation-Version" to archiveVersion,
-			"Implementation-Vendor" to modAuthor,
-			"Implementation-Timestamp" to now,
-		))
-	}
-
-	description = "Creates a JAR containing the compiled code, used by players."
-}
-
-val sourcesJar = tasks.register<Jar>("sourcesJar") {
-//		for (s in allSourceSets()) {
-//			from(s.get().allJava)
-//		}
-	from(sourceSets.main.get().allJava)
-//		from(sourceSets.getByName("api").allJava)
-//		from(project(":Common").sourceSets.main.get().allJava)
-//		from(project(":Common").sourceSets.getByName("api").allJava)
-
-	archiveClassifier.set("sources")
-	description = "Creates a JAR containing the source code, used by developers."
-}
-
-val javadocJar = tasks.register<Jar>("javadocJar") {
-	val javadoc = tasks.javadoc.get()
-	dependsOn(javadoc)
-	from(javadoc.destinationDir)
-
-	archiveClassifier.set("javadoc")
-	description = "Creates a JAR containing the javadocs, used by developers."
-}
-
-val apiJar = tasks.register<Jar>("apiJar") {
-//	for (project in apiProjects()) {
-//		val main = project.sourceSets.main.get();
-//		from(main.output)
-//		// TODO: when FG bug is fixed, remove allJava from the api jar.
-//		// https://github.com/MinecraftForge/ForgeGradle/issues/369
-//		// Gradle should be able to pull them from the -sources jar.
-//		from(main.allJava)
-//	}
-
-	archiveClassifier.set("api")
-	description = "Creates an obfuscated JAR containing the API source code and javadocs, used by developers."
-}
+//val javadocJar = tasks.register<Jar>("javadocJar") {
+//	val javadoc = tasks.javadoc.get()
+//	dependsOn(javadoc)
+//	from(javadoc.destinationDir)
+//
+//	archiveClassifier.set("javadoc")
+//	description = "Creates a JAR containing the javadocs, used by developers."
+//}
 
 artifacts {
-	archives(javadocJar.get())
-	archives(sourcesJar.get())
-	archives(apiJar.get())
+	archives(tasks.jar.get())
 }
 
 publishing {
 	publications {
 		register<MavenPublication>("maven") {
-			artifact(jar.get())
-			artifact(javadocJar.get())
-			artifact(sourcesJar.get())
+			artifact(tasks.jar.get())
 		}
 	}
 	repositories {

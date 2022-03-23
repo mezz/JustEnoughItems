@@ -10,7 +10,7 @@ val minecraftVersion: String by extra
 
 minecraft {
     version(minecraftVersion)
-    // no runs are configured for Common
+    // no runs are configured for Common API
 }
 
 sourceSets {
