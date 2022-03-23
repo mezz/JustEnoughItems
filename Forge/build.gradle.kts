@@ -257,6 +257,8 @@ publishing {
 		val deployDir = project.findProperty("DEPLOY_DIR")
 		if (deployDir != null) {
 			maven(deployDir)
+		} else {
+			logger.info("No DEPLOY_DIR property is set, skipping maven publish.")
 		}
 	}
 }
