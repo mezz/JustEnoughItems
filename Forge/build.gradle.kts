@@ -48,6 +48,7 @@ val dependencyProjects: List<Project> = listOf(
 dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
+project.evaluationDependsOn(project(":Changelog").path)
 
 java {
 	toolchain {
@@ -150,13 +151,13 @@ val sourcesJar = tasks.register<Jar>("sourcesJar") {
 }
 
 tasks.register<TaskPublishCurseForge>("publishCurseForge") {
-	dependsOn(":makeChangelog")
+	dependsOn(":Changelog:makeChangelog")
 
 	apiToken = project.findProperty("curseforge_apikey") ?: "0"
 
 	val mainFile = upload(curseProjectId, file("${project.buildDir}/libs/$baseArchivesName-$version.jar"))
 	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
-	mainFile.changelog = file("../changelog.html")
+	mainFile.changelog = file("../Changelog/changelog.html")
 	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
 	mainFile.addJavaVersion("Java $modJavaVersion")
 	mainFile.addGameVersion(minecraftVersion)
