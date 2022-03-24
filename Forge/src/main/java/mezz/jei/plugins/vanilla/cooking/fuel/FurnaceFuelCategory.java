@@ -18,6 +18,8 @@ import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.vanilla.cooking.FurnaceVariantCategory;
+import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
@@ -31,6 +33,7 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecip
 	private final IDrawableStatic flameTransparentBackground;
 	private final Component localizedName;
 	private final LoadingCache<Integer, IDrawableAnimated> cachedFlames;
+	private final ImmutableRect2i textArea;
 
 	public FurnaceFuelCategory(IGuiHelper guiHelper, Textures textures) {
 		super(guiHelper);
@@ -38,12 +41,16 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecip
 		// width of the recipe depends on the text, which is different in each language
 		Minecraft minecraft = Minecraft.getInstance();
 		Font fontRenderer = minecraft.font;
-		Component smeltCountText = createSmeltCountText(100000);
-		int stringWidth = fontRenderer.width(smeltCountText.getString());
+		Component maxSmeltCountText = createSmeltCountText(10000000 * 200);
+		int maxStringWidth = fontRenderer.width(maxSmeltCountText.getString());
+		int backgroundHeight = 34;
+		int textPadding = 20;
 
-		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 134, 18, 34)
-			.addPadding(0, 0, 0, stringWidth + 20)
+		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 134, 18, backgroundHeight)
+			.addPadding(0, 0, 0, textPadding + maxStringWidth)
 			.build();
+
+		textArea = new ImmutableRect2i(20, 0, textPadding + maxStringWidth, backgroundHeight);
 
 		flameTransparentBackground = textures.getFlameIcon();
 		localizedName = new TranslatableComponent("gui.jei.category.fuel");
@@ -103,8 +110,10 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecip
 		IDrawableAnimated flame = cachedFlames.getUnchecked(burnTime);
 		flame.draw(poseStack, 1, 0);
 		Minecraft minecraft = Minecraft.getInstance();
+		Font font = minecraft.font;
 		Component smeltCountText = createSmeltCountText(burnTime);
-		minecraft.font.draw(poseStack, smeltCountText, 24, 13, 0xFF808080);
+		ImmutableRect2i centerArea = MathUtil.centerTextArea(this.textArea, font, smeltCountText);
+		font.draw(poseStack, smeltCountText, centerArea.getX(), centerArea.getY(), 0xFF808080);
 	}
 
 	private static Component createSmeltCountText(int burnTime) {
