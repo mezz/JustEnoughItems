@@ -55,6 +55,10 @@ public class BasicRecipeTransferHandler<C extends Container> implements IRecipeT
 		}
 
 		if (!transferHelper.canHandle(container)) {
+			IRecipeTransferError handlingError = transferHelper.getHandlingError(container);
+			if (handlingError != null) {
+				return handlingError;
+			}
 			return handlerHelper.createInternalError();
 		}
 
