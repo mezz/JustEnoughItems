@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
-import mezz.jei.collect.Table;
+import mezz.jei.core.collect.Table;
 
 public final class ReflectionUtil {
 

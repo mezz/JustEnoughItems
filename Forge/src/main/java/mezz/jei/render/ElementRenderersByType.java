@@ -1,7 +1,7 @@
 package mezz.jei.render;
 
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.collect.ListMultiMap;
+import mezz.jei.core.collect.ListMultiMap;
 
 import java.util.Collection;
 import java.util.Set;

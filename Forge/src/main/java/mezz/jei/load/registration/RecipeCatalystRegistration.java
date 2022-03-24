@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
-import mezz.jei.collect.ListMultiMap;
+import mezz.jei.core.collect.ListMultiMap;
 import mezz.jei.util.ErrorUtil;
 
 public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {

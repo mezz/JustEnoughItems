@@ -1,4 +1,6 @@
-package mezz.jei.collect;
+package mezz.jei.core.collect;
+
+import com.google.common.collect.ImmutableSetMultimap;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,5 +28,12 @@ public class SetMultiMap<K, V> extends MultiMap<K, V, Set<V>> {
 			return Collections.unmodifiableSet(collection);
 		}
 		return Collections.emptySet();
+	}
+
+	@Override
+	public ImmutableSetMultimap<K, V> toImmutable() {
+		ImmutableSetMultimap.Builder<K, V> builder = ImmutableSetMultimap.builder();
+		map.forEach(builder::putAll);
+		return builder.build();
 	}
 }

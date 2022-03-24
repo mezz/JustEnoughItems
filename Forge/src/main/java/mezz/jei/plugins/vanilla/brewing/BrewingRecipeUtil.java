@@ -14,7 +14,7 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.collect.SetMultiMap;
+import mezz.jei.core.collect.SetMultiMap;
 
 public class BrewingRecipeUtil {
 	public static final ItemStack POTION = new ItemStack(Items.POTION);

@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.test.search.suffixtree;
+package mezz.jei.core.collect;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
 

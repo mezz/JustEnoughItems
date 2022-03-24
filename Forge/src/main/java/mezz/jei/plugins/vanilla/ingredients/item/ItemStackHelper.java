@@ -16,12 +16,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final StackHelper stackHelper;
 
 	public ItemStackHelper(StackHelper stackHelper) {
@@ -83,7 +88,13 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public Iterable<Integer> getColors(ItemStack ingredient) {
-		return ColorGetter.getColors(ingredient, 2);
+		try {
+			return ColorGetter.unsafeGetColors(ingredient, 2);
+		} catch (RuntimeException | LinkageError e) {
+			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
+			LOGGER.debug("Failed to get color name for {}", itemStackInfo, e);
+			return Collections.emptyList();
+		}
 	}
 
 	@SuppressWarnings("removal")

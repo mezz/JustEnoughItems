@@ -1,4 +1,4 @@
-package mezz.jei.collect;
+package mezz.jei.core.collect;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;

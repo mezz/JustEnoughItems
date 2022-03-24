@@ -1,4 +1,4 @@
-package mezz.jei.collect;
+package mezz.jei.core.collect;
 
 import java.util.ArrayList;
 import java.util.List;

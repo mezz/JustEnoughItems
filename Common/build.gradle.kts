@@ -7,6 +7,7 @@ plugins {
 val minecraftVersion: String by extra
 
 val dependencyProjects: List<Project> = listOf(
+    project(":Core"),
     project(":CommonApi"),
 )
 

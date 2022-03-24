@@ -1,4 +1,4 @@
-package mezz.jei.util;
+package mezz.jei.core;
 
 import javax.annotation.Nonnull;
 import javax.annotation.meta.TypeQualifierDefault;
