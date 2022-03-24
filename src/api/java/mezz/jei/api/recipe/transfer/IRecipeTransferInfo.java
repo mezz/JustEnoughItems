@@ -1,5 +1,6 @@
 package mezz.jei.api.recipe.transfer;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.inventory.Container;
@@ -29,6 +30,18 @@ public interface IRecipeTransferInfo<C extends Container> {
 	 * @since JEI 4.0.2
 	 */
 	boolean canHandle(C container);
+
+	/**
+	 * Return an optional descriptive error if this recipe transfer info cannot handle
+	 * the given container instance.
+	 *
+	 * @implNote this is only called if {@link #canHandle} returns {@code false}.
+	 * @since JEI 4.18.0
+	 */
+	@Nullable
+	default IRecipeTransferError getHandlingError(C container) {
+		return null;
+	}
 
 	/**
 	 * Return a list of slots for the recipe area.
