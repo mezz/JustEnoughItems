@@ -43,7 +43,7 @@ public class BookmarkConfig {
 			return null;
 		}
 		File configFolder = configPath.toFile();
-		if (!configFolder.mkdirs()) {
+		if (!configFolder.exists() && !configFolder.mkdirs()) {
 			LOGGER.error("Unable to create bookmark config folder: {}", configFolder);
 			return null;
 		}
