@@ -9,6 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 
+import javax.annotation.Nullable;
+
 /**
  * Gives JEI the information it needs to transfer recipes from a slotted inventory into the crafting area.
  *
@@ -37,6 +39,19 @@ public interface IRecipeTransferInfo<C extends AbstractContainerMenu, R> {
 	 * Return true if this recipe transfer info can handle the given container instance and recipe.
 	 */
 	boolean canHandle(C container, R recipe);
+
+	/**
+	 * Return an optional descriptive error if this recipe transfer info cannot handle
+	 * the given container instance and recipe.
+	 *
+	 * @implNote this is only called if {@link #canHandle} returns `false`.
+	 *
+	 * @since 9.5.4
+	 */
+	@Nullable
+	default IRecipeTransferError getHandlingError(C container, R recipe) {
+		return null;
+	}
 
 	/**
 	 * Return a list of slots for the recipe area.

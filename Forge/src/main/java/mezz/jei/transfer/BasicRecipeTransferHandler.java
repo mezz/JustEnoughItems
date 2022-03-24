@@ -65,6 +65,10 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		}
 
 		if (!transferInfo.canHandle(container, recipe)) {
+			IRecipeTransferError handlingError = transferInfo.getHandlingError(container, recipe);
+			if (handlingError != null) {
+				return handlingError;
+			}
 			return handlerHelper.createInternalError();
 		}
 
