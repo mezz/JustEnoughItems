@@ -2,6 +2,8 @@ package mezz.jei.plugins.vanilla.furnace;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.Minecraft;
+
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IDrawableStatic;
 import mezz.jei.api.gui.IGuiItemStackGroup;
@@ -19,8 +21,11 @@ public class FurnaceFuelCategory extends FurnaceRecipeCategory<FuelRecipe> {
 
 	public FurnaceFuelCategory(GuiHelper guiHelper) {
 		super(guiHelper);
+		String maxSmeltCountText = FuelRecipe.createSmeltCountString(10000000 * 200);
+		int maxStringWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(maxSmeltCountText);
+		int textPadding = 20;
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 134, 18, 34)
-			.addPadding(0, 0, 0, 88)
+			.addPadding(0, 0, 0, textPadding + maxStringWidth)
 			.build();
 
 		flameTransparentBackground = guiHelper.getFlameIcon();

@@ -29,17 +29,20 @@ public class FuelRecipe implements IRecipeWrapper {
 		List<ItemStack> inputList = new ArrayList<>(input);
 		this.inputs = Collections.singletonList(inputList);
 
-		if (burnTime == 200) {
-			this.smeltCountString = Translator.translateToLocal("gui.jei.category.fuel.smeltCount.single");
-		} else {
-			NumberFormat numberInstance = NumberFormat.getNumberInstance();
-			numberInstance.setMaximumFractionDigits(2);
-			String smeltCount = numberInstance.format(burnTime / 200f);
-			this.smeltCountString = Translator.translateToLocalFormatted("gui.jei.category.fuel.smeltCount", smeltCount);
-		}
+		this.smeltCountString = createSmeltCountString(burnTime);
 
 		this.flame = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 82, 114, 14, 14)
 			.buildAnimated(burnTime, IDrawableAnimated.StartDirection.TOP, true);
+	}
+
+	public static String createSmeltCountString(int burnTime) {
+		if (burnTime == 200) {
+			return Translator.translateToLocal("gui.jei.category.fuel.smeltCount.single");
+		}
+		NumberFormat numberInstance = NumberFormat.getNumberInstance();
+		numberInstance.setMaximumFractionDigits(2);
+		String smeltCount = numberInstance.format(burnTime / 200f);
+		return Translator.translateToLocalFormatted("gui.jei.category.fuel.smeltCount", smeltCount);
 	}
 
 	@Override
@@ -50,6 +53,9 @@ public class FuelRecipe implements IRecipeWrapper {
 	@Override
 	public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 		flame.draw(minecraft, 1, 0);
-		minecraft.fontRenderer.drawString(smeltCountString, 24, 13, Color.gray.getRGB());
+		int stringWidth = minecraft.fontRenderer.getStringWidth(smeltCountString);
+		int textX = 20 + Math.round((recipeWidth - 20 - stringWidth) / 2.0f);
+		int textY = Math.round((recipeHeight - minecraft.fontRenderer.FONT_HEIGHT) / 2.0f);
+		minecraft.fontRenderer.drawString(smeltCountString, textX, textY, Color.gray.getRGB());
 	}
 }
