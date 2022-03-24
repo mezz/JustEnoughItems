@@ -34,6 +34,6 @@ public class JustEnoughItemsClient {
 
 		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(networkHandler, textures, jeiClientConfigs);
 		clientLifecycleHandler.register(subscriptions);
-		event.registerReloadListener(clientLifecycleHandler);
+		event.registerReloadListener(clientLifecycleHandler.getReloadListener());
 	}
 }
