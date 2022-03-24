@@ -1,5 +1,14 @@
 import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
 
+buildscript {
+    dependencies {
+        constraints {
+            // Force ASM on buildscript/plugin classpath to 9.2 instead of an outdated version from gitchangelog
+            classpath("org.ow2.asm:asm:9.2")
+        }
+    }
+}
+
 plugins {
 	id("se.bjurr.gitchangelog.git-changelog-gradle-plugin") version("1.71.4")
 	id("com.diffplug.spotless") version("5.14.3")
