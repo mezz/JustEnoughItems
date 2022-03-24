@@ -120,7 +120,7 @@ tasks.named<Jar>("jar") {
 		from(p.sourceSets.main.get().output)
 	}
 
-	duplicatesStrategy = DuplicatesStrategy.WARN
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	finalizedBy("reobfJar")
 }
 
@@ -134,7 +134,7 @@ val apiJar = tasks.register<Jar>("apiJar") {
 	from(project(":CommonApi").sourceSets.main.get().allJava)
 	from(project(":ForgeApi").sourceSets.main.get().allJava)
 
-	duplicatesStrategy = DuplicatesStrategy.WARN
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	finalizedBy("reobfJar")
 	archiveClassifier.set("api")
 }
@@ -145,7 +145,7 @@ val sourcesJar = tasks.register<Jar>("sourcesJar") {
 		from(p.sourceSets.main.get().allJava)
 	}
 
-	duplicatesStrategy = DuplicatesStrategy.WARN
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	finalizedBy("reobfJar")
 	archiveClassifier.set("sources")
 }
