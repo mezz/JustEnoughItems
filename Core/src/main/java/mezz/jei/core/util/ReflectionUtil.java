@@ -1,6 +1,5 @@
 package mezz.jei.core.util;
 
-import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
@@ -9,49 +8,42 @@ import mezz.jei.core.collect.Table;
 public final class ReflectionUtil {
 	private final Table<Class<?>, Class<?>, Optional<Field>> cache = Table.hashBasedTable();
 
-	@Nullable
-	public <T> T getFieldWithClass(final Object object, final Class<? extends T> fieldClass) {
-		Field field = getField(object, fieldClass);
-		if (field != null) {
-			try {
-				Object fieldValue = field.get(object);
-				if (fieldClass.isInstance(fieldValue)) {
-					return fieldClass.cast(fieldValue);
-				}
-			} catch (IllegalAccessException ignored) {
-
-			}
-		}
-
-		return null;
+	public <T> Optional<T> getFieldWithClass(Object object, Class<? extends T> fieldClass) {
+		return getField(object, fieldClass)
+			.flatMap(field -> getFieldValue(object, field, fieldClass));
 	}
 
-	@Nullable
-	private Field getField(final Object object, final Class<?> fieldClass) {
-		Class<?> objectClass = object.getClass();
-		Optional<Field> cachedField = cache.get(fieldClass, objectClass);
-		//noinspection OptionalAssignedToNull
-		if (cachedField != null) {
-			return cachedField.orElse(null);
+	private static <T> Optional<T> getFieldValue(Object object, Field field, Class<? extends T> fieldClass) {
+		Object fieldValue;
+		try {
+			fieldValue = field.get(object);
+		} catch (IllegalAccessException ignored) {
+			return Optional.empty();
 		}
+		if (fieldClass.isInstance(fieldValue)) {
+			T cast = fieldClass.cast(fieldValue);
+			return Optional.of(cast);
+		}
+		return Optional.empty();
+	}
 
+	private Optional<Field> getField(final Object object, final Class<?> fieldClass) {
+		Class<?> objectClass = object.getClass();
+		return cache.computeIfAbsent(fieldClass, objectClass, () -> getFieldUncached(objectClass, fieldClass));
+	}
+
+	private Optional<Field> getFieldUncached(final Class<?> objectClass, final Class<?> fieldClass) {
 		try {
 			Field[] fields = objectClass.getDeclaredFields();
 			for (Field field : fields) {
 				if (fieldClass.isAssignableFrom(field.getType())) {
-					//noinspection deprecation
-					if (!field.isAccessible()) {
-						field.setAccessible(true);
-					}
-					cache.put(fieldClass, objectClass, Optional.of(field));
-					return field;
+					field.setAccessible(true);
+					return Optional.of(field);
 				}
 			}
 		} catch (SecurityException ignored) {
 
 		}
-		cache.put(fieldClass, objectClass, Optional.empty());
-		return null;
+		return Optional.empty();
 	}
-
 }

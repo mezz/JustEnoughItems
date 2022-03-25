@@ -128,7 +128,8 @@ public class InputEventHandler {
 	}
 
 	private boolean isContainerTextFieldFocused(Screen screen) {
-		EditBox textField = reflectionUtil.getFieldWithClass(screen, EditBox.class);
-		return textField != null && textField.isActive() && textField.isFocused();
+		return reflectionUtil.getFieldWithClass(screen, EditBox.class)
+			.map(textField -> textField.isActive() && textField.isFocused())
+			.orElse(false);
 	}
 }
