@@ -15,7 +15,7 @@ import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.input.MouseUtil;
-import mezz.jei.util.LimitedLogger;
+import mezz.jei.common.util.LimitedLogger;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -4,7 +4,7 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.events.RuntimeEventSubscriptions;
 import mezz.jei.input.mouse.ICharTypedHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
-import mezz.jei.util.ReflectionUtil;
+import mezz.jei.core.util.ReflectionUtil;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -14,6 +14,7 @@ import java.util.List;
 public class InputEventHandler {
 	private final List<ICharTypedHandler> charTypedHandlers;
 	private final CombinedInputHandler inputHandler;
+	private final ReflectionUtil reflectionUtil = new ReflectionUtil();
 
 	public InputEventHandler(List<ICharTypedHandler> charTypedHandlers, CombinedInputHandler inputHandler) {
 		this.charTypedHandlers = charTypedHandlers;
@@ -126,8 +127,8 @@ public class InputEventHandler {
 			.anyMatch(handler -> handler.onCharTyped(codePoint, modifiers));
 	}
 
-	private static boolean isContainerTextFieldFocused(Screen screen) {
-		EditBox textField = ReflectionUtil.getFieldWithClass(screen, EditBox.class);
+	private boolean isContainerTextFieldFocused(Screen screen) {
+		EditBox textField = reflectionUtil.getFieldWithClass(screen, EditBox.class);
 		return textField != null && textField.isActive() && textField.isFocused();
 	}
 }

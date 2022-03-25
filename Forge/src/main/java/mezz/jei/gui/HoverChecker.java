@@ -1,6 +1,6 @@
 package mezz.jei.gui;
 
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.components.Button;
 
 public class HoverChecker {

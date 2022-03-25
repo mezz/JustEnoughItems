@@ -2,7 +2,7 @@ package mezz.jei.gui.elements;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 

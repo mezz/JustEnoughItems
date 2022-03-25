@@ -9,7 +9,7 @@ import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.input.UserInput;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.Rect2i;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.util.MathUtil;
+import mezz.jei.common.util.MathUtil;
 import org.lwjgl.opengl.GL11;
 
 public class GhostIngredientDrag<T> {

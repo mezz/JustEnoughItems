@@ -3,7 +3,7 @@ package mezz.jei.input.mouse.handlers;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.screens.Screen;
 
 import org.jetbrains.annotations.Nullable;

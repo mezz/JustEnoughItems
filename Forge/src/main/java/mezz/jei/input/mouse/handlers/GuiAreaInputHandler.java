@@ -7,7 +7,7 @@ import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.recipes.FocusFactory;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 

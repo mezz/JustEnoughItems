@@ -18,7 +18,7 @@ import mezz.jei.ingredients.IngredientVisibility;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.render.IngredientRenderHelper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;

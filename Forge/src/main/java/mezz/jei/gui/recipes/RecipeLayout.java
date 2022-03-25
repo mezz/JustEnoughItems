@@ -16,7 +16,7 @@ import mezz.jei.gui.ingredients.RecipeSlots;
 import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.UserInput;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;

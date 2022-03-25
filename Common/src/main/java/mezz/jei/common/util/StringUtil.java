@@ -1,4 +1,4 @@
-package mezz.jei.util;
+package mezz.jei.common.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;

@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import org.jetbrains.annotations.Nullable;
 
 public class ClickedIngredient<V> implements IClickedIngredient<V> {

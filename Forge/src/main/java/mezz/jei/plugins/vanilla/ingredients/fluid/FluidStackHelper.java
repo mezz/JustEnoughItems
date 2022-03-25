@@ -8,7 +8,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.TagUtil;
+import mezz.jei.common.util.TagUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Holder;

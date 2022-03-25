@@ -1,6 +1,6 @@
 package mezz.jei.events;
 
-import mezz.jei.util.WeakConsumer;
+import mezz.jei.core.util.WeakConsumer;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;

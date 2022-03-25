@@ -1,4 +1,4 @@
-package mezz.jei.util;
+package mezz.jei.core.util;
 
 import java.lang.ref.WeakReference;
 import java.util.function.Consumer;

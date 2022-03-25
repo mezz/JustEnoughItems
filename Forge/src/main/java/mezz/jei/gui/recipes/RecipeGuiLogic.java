@@ -11,7 +11,7 @@ import mezz.jei.gui.ingredients.IngredientLookupState;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.recipes.FocusGroup;
 import mezz.jei.recipes.RecipeTransferManager;
-import mezz.jei.util.MathUtil;
+import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;

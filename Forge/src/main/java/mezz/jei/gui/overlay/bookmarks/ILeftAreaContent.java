@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.Set;
 
 import mezz.jei.input.mouse.IUserInputHandler;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 
 import mezz.jei.input.IRecipeFocusSource;

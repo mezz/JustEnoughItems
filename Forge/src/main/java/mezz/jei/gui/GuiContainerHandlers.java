@@ -2,7 +2,7 @@ package mezz.jei.gui;
 
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
-import mezz.jei.util.MathUtil;
+import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.AbstractContainerMenu;

@@ -11,7 +11,7 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiComponent;
 
 import java.util.ArrayList;

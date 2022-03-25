@@ -2,7 +2,7 @@ package mezz.jei.render;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.input.IClickedIngredient;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 
 import javax.annotation.Nonnull;
 

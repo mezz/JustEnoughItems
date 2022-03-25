@@ -6,7 +6,7 @@ import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 

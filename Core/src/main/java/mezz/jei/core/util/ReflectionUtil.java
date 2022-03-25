@@ -1,4 +1,4 @@
-package mezz.jei.util;
+package mezz.jei.core.util;
 
 import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
@@ -7,14 +7,10 @@ import java.util.Optional;
 import mezz.jei.core.collect.Table;
 
 public final class ReflectionUtil {
-
-	private static final Table<Class<?>, Class<?>, Optional<Field>> CACHE = Table.hashBasedTable();
-
-	private ReflectionUtil() {
-	}
+	private final Table<Class<?>, Class<?>, Optional<Field>> cache = Table.hashBasedTable();
 
 	@Nullable
-	public static <T> T getFieldWithClass(final Object object, final Class<? extends T> fieldClass) {
+	public <T> T getFieldWithClass(final Object object, final Class<? extends T> fieldClass) {
 		Field field = getField(object, fieldClass);
 		if (field != null) {
 			try {
@@ -31,9 +27,9 @@ public final class ReflectionUtil {
 	}
 
 	@Nullable
-	private static Field getField(final Object object, final Class<?> fieldClass) {
+	private Field getField(final Object object, final Class<?> fieldClass) {
 		Class<?> objectClass = object.getClass();
-		Optional<Field> cachedField = CACHE.get(fieldClass, objectClass);
+		Optional<Field> cachedField = cache.get(fieldClass, objectClass);
 		//noinspection OptionalAssignedToNull
 		if (cachedField != null) {
 			return cachedField.orElse(null);
@@ -47,14 +43,14 @@ public final class ReflectionUtil {
 					if (!field.isAccessible()) {
 						field.setAccessible(true);
 					}
-					CACHE.put(fieldClass, objectClass, Optional.of(field));
+					cache.put(fieldClass, objectClass, Optional.of(field));
 					return field;
 				}
 			}
 		} catch (SecurityException ignored) {
 
 		}
-		CACHE.put(fieldClass, objectClass, Optional.empty());
+		cache.put(fieldClass, objectClass, Optional.empty());
 		return null;
 	}
 

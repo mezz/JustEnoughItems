@@ -1,7 +1,7 @@
 package mezz.jei.input;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import org.jetbrains.annotations.Nullable;
 
 public interface IClickedIngredient<V> {

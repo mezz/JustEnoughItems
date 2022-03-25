@@ -14,7 +14,7 @@ import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ItemStackMatchable;
 import mezz.jei.util.MatchingIterable;
-import mezz.jei.util.StringUtil;
+import mezz.jei.common.util.StringUtil;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;

@@ -13,8 +13,8 @@ import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
-import mezz.jei.util.ImmutableRect2i;
-import mezz.jei.util.MathUtil;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

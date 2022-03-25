@@ -13,7 +13,7 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.gui.screens.Screen;

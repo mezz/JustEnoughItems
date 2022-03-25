@@ -1,4 +1,4 @@
-package mezz.jei.util;
+package mezz.jei.common.util;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.HolderSet;

@@ -5,8 +5,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.util.ImmutableRect2i;
-import mezz.jei.util.MathUtil;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.entity.ItemRenderer;

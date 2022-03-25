@@ -1,4 +1,4 @@
-package mezz.jei.util;
+package mezz.jei.common.util;
 
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;

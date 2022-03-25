@@ -5,7 +5,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.elements.HighResolutionDrawable;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 

@@ -8,7 +8,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;

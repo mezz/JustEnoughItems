@@ -18,7 +18,7 @@ import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.CheatInputHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.input.mouse.handlers.ProxyInputHandler;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 

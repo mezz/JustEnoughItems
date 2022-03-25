@@ -1,4 +1,4 @@
-package mezz.jei.util;
+package mezz.jei.common.util;
 
 import com.google.common.base.MoreObjects;
 import net.minecraft.client.renderer.Rect2i;

@@ -7,7 +7,7 @@ import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.TextFieldInputHandler;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.TextComponent;

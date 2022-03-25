@@ -53,7 +53,7 @@ import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.LoggedTimer;
+import mezz.jei.common.util.LoggedTimer;
 
 import java.util.List;
 

@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
-import mezz.jei.util.TagUtil;
+import mezz.jei.common.util.TagUtil;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

@@ -9,7 +9,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
 import mezz.jei.config.Constants;
 import mezz.jei.gui.textures.JeiSpriteUploader;
-import mezz.jei.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;

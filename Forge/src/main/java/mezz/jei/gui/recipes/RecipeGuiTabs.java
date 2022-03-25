@@ -8,8 +8,8 @@ import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
-import mezz.jei.util.ImmutableRect2i;
-import mezz.jei.util.MathUtil;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 

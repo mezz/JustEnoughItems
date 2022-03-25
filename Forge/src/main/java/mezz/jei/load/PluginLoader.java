@@ -50,7 +50,7 @@ import mezz.jei.recipes.RecipeManagerInternal;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
 import mezz.jei.util.ErrorUtil;
-import mezz.jei.util.LoggedTimer;
+import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.util.StackHelper;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;

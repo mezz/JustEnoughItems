@@ -11,7 +11,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.config.ServerInfo;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRecipeTransfer;
-import mezz.jei.util.StringUtil;
+import mezz.jei.common.util.StringUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;
