@@ -1,6 +1,5 @@
 package mezz.jei.gui.overlay;
 
-import com.google.common.base.Joiner;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -23,9 +22,8 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
+import java.util.stream.Collectors;
 
 public final class IngredientGridTooltipHelper {
 	private final RegisteredIngredients registeredIngredients;
@@ -77,9 +75,9 @@ public final class IngredientGridTooltipHelper {
 
 		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
 		Iterable<Integer> colors = ingredientHelper.getColors(ingredient);
-		Collection<String> colorNames = colorNamer.getColorNames(colors, false);
-		if (!colorNames.isEmpty()) {
-			String colorNamesString = Joiner.on(", ").join(colorNames);
+		String colorNamesString = colorNamer.getColorNames(colors)
+				.collect(Collectors.joining(", "));
+		if (!colorNamesString.isEmpty()) {
 			Component colorTranslation = new TranslatableComponent("jei.tooltip.item.colors", colorNamesString)
 				.withStyle(ChatFormatting.GRAY);
 			tooltip.add(colorTranslation);

@@ -51,6 +51,9 @@ public final class IngredientInformationUtil {
 	public static <V> Collection<String> getColorStrings(V ingredient, IIngredientHelper<V> ingredientHelper) {
 		Iterable<Integer> colors = ingredientHelper.getColors(ingredient);
 		ColorNamer colorNamer = Internal.getColorNamer();
-		return colorNamer.getColorNames(colors, true);
+		return colorNamer.getColorNames(colors)
+				.map(Translator::toLowercaseWithLocale)
+				.distinct()
+				.toList();
 	}
 }
