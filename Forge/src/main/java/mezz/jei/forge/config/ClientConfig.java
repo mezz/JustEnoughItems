@@ -1,4 +1,4 @@
-package mezz.jei.config;
+package mezz.jei.forge.config;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -6,8 +6,10 @@ import com.google.common.collect.Lists;
 import mezz.jei.Internal;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
-import mezz.jei.ingredients.IngredientSortStage;
-import mezz.jei.util.GiveMode;
+import mezz.jei.config.IJEIConfig;
+import mezz.jei.core.config.IClientConfig;
+import mezz.jei.core.config.IngredientSortStage;
+import mezz.jei.core.config.GiveMode;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.LogManager;
@@ -36,12 +38,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	public static final List<IngredientSortStage> ingredientSorterStagesDefault = List.of(
 		IngredientSortStage.MOD_NAME,
 		IngredientSortStage.INGREDIENT_TYPE,
-		IngredientSortStage.CREATIVE_MENU,
-		IngredientSortStage.ALPHABETICAL,
-		IngredientSortStage.WEAPON_DAMAGE,
-		IngredientSortStage.TOOL_TYPE,
-		IngredientSortStage.ARMOR,
-		IngredientSortStage.TAG
+		IngredientSortStage.CREATIVE_MENU
 	);
 	private List<IngredientSortStage> ingredientSorterStages = ingredientSorterStagesDefault;
 

@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.config.ClientConfig;
+import mezz.jei.forge.config.ClientConfig;
 import mezz.jei.ingredients.IIngredientSupplier;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.recipes.IngredientSupplierHelper;

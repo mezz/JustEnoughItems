@@ -10,7 +10,7 @@ import net.minecraft.ChatFormatting;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.textures.Textures;

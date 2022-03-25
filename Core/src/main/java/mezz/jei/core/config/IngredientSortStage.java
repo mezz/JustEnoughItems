@@ -1,4 +1,4 @@
-package mezz.jei.ingredients;
+package mezz.jei.core.config;
 
 public enum IngredientSortStage {
 	MOD_NAME, INGREDIENT_TYPE, ALPHABETICAL, CREATIVE_MENU, TAG, TOOL_TYPE, WEAPON_DAMAGE, ARMOR, MAX_DURABILITY

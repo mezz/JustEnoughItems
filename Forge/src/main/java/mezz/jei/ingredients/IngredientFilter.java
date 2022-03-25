@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.config.IClientConfig;
+import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.events.EditModeToggleEvent;
 import mezz.jei.events.RuntimeEventSubscriptions;

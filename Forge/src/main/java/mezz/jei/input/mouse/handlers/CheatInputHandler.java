@@ -1,7 +1,7 @@
 package mezz.jei.input.mouse.handlers;
 
-import mezz.jei.config.IClientConfig;
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.core.config.IClientConfig;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IRecipeFocusSource;

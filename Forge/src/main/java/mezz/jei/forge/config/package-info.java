@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.test.util;
+package mezz.jei.forge.config;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
 

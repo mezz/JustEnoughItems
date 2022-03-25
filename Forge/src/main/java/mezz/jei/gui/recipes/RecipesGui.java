@@ -13,7 +13,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IRecipesGui;
-import mezz.jei.config.IClientConfig;
+import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.HoverChecker;
 import mezz.jei.gui.TooltipRenderer;

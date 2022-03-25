@@ -1,7 +1,6 @@
 package mezz.jei.common.util;
 
 import java.util.Locale;
-import java.util.Optional;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;

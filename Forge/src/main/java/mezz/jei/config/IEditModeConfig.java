@@ -2,6 +2,7 @@ package mezz.jei.config;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.core.config.IngredientBlacklistType;
 import mezz.jei.ingredients.IngredientFilter;
 
 public interface IEditModeConfig {

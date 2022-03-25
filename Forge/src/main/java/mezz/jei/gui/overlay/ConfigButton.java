@@ -3,7 +3,7 @@ package mezz.jei.gui.overlay;
 import mezz.jei.Internal;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.textures.Textures;

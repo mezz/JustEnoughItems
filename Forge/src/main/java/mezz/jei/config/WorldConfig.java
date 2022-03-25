@@ -1,5 +1,6 @@
 package mezz.jei.config;
 
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import org.lwjgl.glfw.GLFW;

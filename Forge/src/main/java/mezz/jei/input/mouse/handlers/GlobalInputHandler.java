@@ -1,6 +1,6 @@
 package mezz.jei.input.mouse.handlers;
 
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;

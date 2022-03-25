@@ -1,9 +1,9 @@
 package mezz.jei.test.lib;
 
-import mezz.jei.config.ClientConfig;
-import mezz.jei.config.IClientConfig;
-import mezz.jei.ingredients.IngredientSortStage;
-import mezz.jei.util.GiveMode;
+import mezz.jei.forge.config.ClientConfig;
+import mezz.jei.core.config.IClientConfig;
+import mezz.jei.core.config.IngredientSortStage;
+import mezz.jei.core.config.GiveMode;
 
 import java.util.List;
 

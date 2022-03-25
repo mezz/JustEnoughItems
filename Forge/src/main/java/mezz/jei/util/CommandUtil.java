@@ -1,6 +1,7 @@
 package mezz.jei.util;
 
-import mezz.jei.config.IClientConfig;
+import mezz.jei.core.config.GiveMode;
+import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.ServerInfo;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketGiveItemStack;

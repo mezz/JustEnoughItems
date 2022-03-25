@@ -1,6 +1,6 @@
 package mezz.jei.test.lib;
 
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.core.config.IWorldConfig;
 
 public class TestWorldConfig implements IWorldConfig {
 	@Override

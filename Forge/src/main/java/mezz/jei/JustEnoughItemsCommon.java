@@ -1,6 +1,6 @@
 package mezz.jei;
 
-import mezz.jei.config.ServerConfig;
+import mezz.jei.forge.config.ServerConfig;
 import mezz.jei.events.PermanentEventSubscriptions;
 import mezz.jei.startup.NetworkHandler;
 import net.minecraftforge.fml.ModLoadingContext;

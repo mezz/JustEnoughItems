@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.config.IClientConfig;
+import mezz.jei.core.config.IClientConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.fml.ModContainer;

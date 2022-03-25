@@ -6,7 +6,7 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.config.EditModeConfig;
-import mezz.jei.config.IClientConfig;
+import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.JEIClientConfigs;
 import mezz.jei.config.KeyBindings;

@@ -1,4 +1,4 @@
-package mezz.jei.config;
+package mezz.jei.core.config;
 
 public interface IServerConfig {
 	boolean isCheatModeEnabledForOp();

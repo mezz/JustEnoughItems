@@ -21,7 +21,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.IClickedIngredient;

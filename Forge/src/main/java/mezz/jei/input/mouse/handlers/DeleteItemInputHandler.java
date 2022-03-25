@@ -1,8 +1,8 @@
 package mezz.jei.input.mouse.handlers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.config.IClientConfig;
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.core.config.IClientConfig;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.input.UserInput;
@@ -11,7 +11,7 @@ import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
 import mezz.jei.network.packets.PacketJei;
 import mezz.jei.util.CheatUtil;
-import mezz.jei.util.GiveMode;
+import mezz.jei.core.config.GiveMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;

@@ -5,7 +5,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.config.IEditModeConfig;
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.core.config.IWorldConfig;
 
 public class IngredientVisibility implements IIngredientVisibility {
 	private final IngredientBlacklistInternal blacklist;

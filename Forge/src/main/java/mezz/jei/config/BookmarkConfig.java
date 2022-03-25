@@ -7,12 +7,14 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.bookmarks.BookmarkList;
+import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.ingredients.IngredientInfo;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.TypedIngredient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +40,7 @@ public class BookmarkConfig {
 
 	@Nullable
 	private static File getFile(File jeiConfigurationDir) {
-		Path configPath = ServerInfo.getWorldPath(jeiConfigurationDir.toPath());
+		Path configPath = ServerConfigPathUtil.getWorldPath(jeiConfigurationDir.toPath(), ServerLifecycleHooks::getCurrentServer);
 		if (configPath == null) {
 			return null;
 		}

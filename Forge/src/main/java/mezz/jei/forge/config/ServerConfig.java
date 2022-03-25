@@ -1,6 +1,7 @@
-package mezz.jei.config;
+package mezz.jei.forge.config;
 
 import com.google.common.base.Preconditions;
+import mezz.jei.core.config.IServerConfig;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;

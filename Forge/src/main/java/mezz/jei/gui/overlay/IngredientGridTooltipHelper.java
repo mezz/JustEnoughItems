@@ -9,7 +9,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.config.IIngredientFilterConfig;
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.core.search.SearchMode;
 import mezz.jei.gui.TooltipRenderer;

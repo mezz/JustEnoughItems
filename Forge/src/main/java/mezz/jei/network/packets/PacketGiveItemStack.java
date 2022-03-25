@@ -8,7 +8,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
 import mezz.jei.util.CommandUtilServer;
-import mezz.jei.util.GiveMode;
+import mezz.jei.core.config.GiveMode;
 
 public class PacketGiveItemStack extends PacketJei {
 	private final ItemStack itemStack;

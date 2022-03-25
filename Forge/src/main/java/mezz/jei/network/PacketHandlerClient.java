@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
 
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.network.packets.IPacketJeiHandler;
 import mezz.jei.network.packets.PacketCheatPermission;
 import net.minecraftforge.network.NetworkEvent;

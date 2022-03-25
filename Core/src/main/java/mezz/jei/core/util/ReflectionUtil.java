@@ -1,16 +1,21 @@
 package mezz.jei.core.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import mezz.jei.core.collect.Table;
 
 public final class ReflectionUtil {
-	private final Table<Class<?>, Class<?>, Optional<Field>> cache = Table.hashBasedTable();
+	private final Table<Class<?>, Class<?>, List<Field>> cache = Table.hashBasedTable();
 
-	public <T> Optional<T> getFieldWithClass(Object object, Class<? extends T> fieldClass) {
-		return getField(object, fieldClass)
-			.flatMap(field -> getFieldValue(object, field, fieldClass));
+	public <T> Stream<T> getFieldWithClass(Object object, Class<? extends T> fieldClass) {
+		return getFieldsCached(object, fieldClass)
+			.flatMap(field -> getFieldValue(object, field, fieldClass).stream());
 	}
 
 	private static <T> Optional<T> getFieldValue(Object object, Field field, Class<? extends T> fieldClass) {
@@ -27,23 +32,41 @@ public final class ReflectionUtil {
 		return Optional.empty();
 	}
 
-	private Optional<Field> getField(final Object object, final Class<?> fieldClass) {
-		Class<?> objectClass = object.getClass();
-		return cache.computeIfAbsent(fieldClass, objectClass, () -> getFieldUncached(objectClass, fieldClass));
+	private Stream<Field> getFieldsCached(Object object, Class<?> fieldClass) {
+		return cache.computeIfAbsent(fieldClass, object.getClass(), () -> getFieldUncached(object, fieldClass))
+			.stream();
 	}
 
-	private Optional<Field> getFieldUncached(final Class<?> objectClass, final Class<?> fieldClass) {
-		try {
-			Field[] fields = objectClass.getDeclaredFields();
-			for (Field field : fields) {
-				if (fieldClass.isAssignableFrom(field.getType())) {
+	private List<Field> getFieldUncached(Object object, Class<?> fieldClass) {
+		return allFields(object)
+			.filter(field -> fieldClass.isAssignableFrom(field.getType()))
+			.<Field>mapMulti((field, mapper) -> {
+				try {
 					field.setAccessible(true);
-					return Optional.of(field);
-				}
-			}
-		} catch (SecurityException ignored) {
+					mapper.accept(field);
+				} catch (InaccessibleObjectException | SecurityException ignored) {
 
-		}
-		return Optional.empty();
+				}
+			})
+			.toList();
+	}
+
+	private Stream<Field> allFields(Object object) {
+		Class<?> objectClass = object.getClass();
+		List<Class<?>> classes = new ArrayList<>();
+		do {
+			classes.add(objectClass);
+			objectClass = objectClass.getSuperclass();
+		} while (objectClass != Object.class);
+
+		return classes.stream()
+			.flatMap(c -> {
+				try {
+					Field[] fields = c.getDeclaredFields();
+					return Arrays.stream(fields);
+				} catch (SecurityException ignored) {
+					return Stream.of();
+				}
+			});
 	}
 }

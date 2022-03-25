@@ -1,4 +1,4 @@
-package mezz.jei.test.util;
+package mezz.jei.core.test.util;
 
 import mezz.jei.core.util.SubString;
 import org.junit.jupiter.api.Assertions;

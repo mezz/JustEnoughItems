@@ -1,6 +1,6 @@
 package mezz.jei.startup;
 
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.network.PacketHandler;
 import mezz.jei.network.PacketHandlerClient;
 import net.minecraftforge.api.distmarker.Dist;

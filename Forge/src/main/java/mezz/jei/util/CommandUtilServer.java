@@ -1,12 +1,13 @@
 package mezz.jei.util;
 
+import mezz.jei.core.config.GiveMode;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import mezz.jei.config.IServerConfig;
-import mezz.jei.config.ServerConfig;
+import mezz.jei.core.config.IServerConfig;
+import mezz.jei.forge.config.ServerConfig;
 import net.minecraft.Util;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.items.ItemHandlerHelper;

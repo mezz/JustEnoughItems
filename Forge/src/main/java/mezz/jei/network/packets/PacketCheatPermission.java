@@ -1,12 +1,12 @@
 package mezz.jei.network.packets;
 
-import mezz.jei.config.IServerConfig;
-import mezz.jei.config.ServerConfig;
+import mezz.jei.core.config.IServerConfig;
+import mezz.jei.forge.config.ServerConfig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.ChatFormatting;
 
-import mezz.jei.config.IWorldConfig;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdClient;
 import mezz.jei.util.CommandUtilServer;

@@ -3,6 +3,7 @@ package mezz.jei.ingredients;
 import com.google.common.collect.Multimap;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.core.config.IngredientSortStage;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.gui.ingredients.IListElement;
