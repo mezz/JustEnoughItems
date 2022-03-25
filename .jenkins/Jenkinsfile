@@ -33,7 +33,7 @@ pipeline {
         stage('Archive') {
             steps {
                 archive includes: 'Forge/build/libs/*.jar'
-                junit allowEmptyResults: true, testResults: 'Forge/build/test-results/**/*.xml'
+                junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
             }
         }
 
