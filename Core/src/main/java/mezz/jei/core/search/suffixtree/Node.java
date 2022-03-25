@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package mezz.jei.search.suffixtree;
+package mezz.jei.core.search.suffixtree;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMaps;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
-import mezz.jei.util.SubString;
+import mezz.jei.core.util.SubString;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintWriter;

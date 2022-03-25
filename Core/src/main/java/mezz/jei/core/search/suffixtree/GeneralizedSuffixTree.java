@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package mezz.jei.search.suffixtree;
+package mezz.jei.core.search.suffixtree;
 
-import mezz.jei.search.ISearchStorage;
-import mezz.jei.util.Pair;
-import mezz.jei.util.SubString;
+import mezz.jei.core.search.ISearchStorage;
+import mezz.jei.core.util.Pair;
+import mezz.jei.core.util.SubString;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintWriter;

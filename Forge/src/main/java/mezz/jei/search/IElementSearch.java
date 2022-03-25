@@ -10,7 +10,7 @@ public interface IElementSearch {
 
 	Collection<IListElementInfo<?>> getAllIngredients();
 
-	Set<IListElementInfo<?>> getSearchResults(PrefixInfos.TokenInfo tokenInfo);
+	Set<IListElementInfo<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo);
 
 	@SuppressWarnings("unused") // used for debugging
 	void logStatistics();

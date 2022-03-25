@@ -1,4 +1,4 @@
-package mezz.jei.util;
+package mezz.jei.core.util;
 
 import javax.annotation.Nonnegative;
 

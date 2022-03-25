@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package mezz.jei.search.suffixtree;
+package mezz.jei.core.search.suffixtree;
 
-import mezz.jei.util.SubString;
+import mezz.jei.core.util.SubString;
 
 /**
  * Represents an Edge in the Suffix Tree.

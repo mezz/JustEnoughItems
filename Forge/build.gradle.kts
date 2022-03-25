@@ -11,7 +11,6 @@ plugins {
 	id("net.darkhax.curseforgegradle") version("1.0.8")
 }
 apply {
-	from("../buildtools/Test.gradle")
 	from("buildtools/AppleSiliconSupport.gradle")
 }
 
@@ -24,6 +23,7 @@ val mappingsVersion: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val jUnitVersion: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}"
 base {
@@ -66,6 +66,16 @@ dependencies {
 	dependencyProjects.forEach {
 		implementation(it)
 	}
+	testImplementation(
+		group = "org.junit.jupiter",
+		name = "junit-jupiter-api",
+		version = jUnitVersion
+	)
+	testRuntimeOnly(
+		group = "org.junit.jupiter",
+		name = "junit-jupiter-engine",
+		version = jUnitVersion
+	)
 }
 
 minecraft {
@@ -166,6 +176,12 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 	doLast {
 		project.ext.set("curse_file_url", "${curseHomepageLink}/files/${mainFile.curseFileId}")
 	}
+}
+
+tasks.named<Test>("test") {
+	useJUnitPlatform()
+	include("mezz/jei/**")
+	exclude("mezz/jei/lib/**")
 }
 
 artifacts {

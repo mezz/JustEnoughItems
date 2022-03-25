@@ -1,11 +1,12 @@
 package mezz.jei.search;
 
+import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.ingredients.IListElementInfo;
-import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -15,26 +16,26 @@ import java.util.stream.Collectors;
 public class ElementSearchLowMem implements IElementSearch {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final NonNullList<IListElementInfo<?>> elementInfoList;
+	private final List<IListElementInfo<?>> elementInfoList;
 
 	public ElementSearchLowMem() {
-		this.elementInfoList = NonNullList.create();
+		this.elementInfoList = new ArrayList<>();
 	}
 
 	@Override
-	public Set<IListElementInfo<?>> getSearchResults(PrefixInfos.TokenInfo tokenInfo) {
+	public Set<IListElementInfo<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo) {
 		String token = tokenInfo.token();
 		if (token.isEmpty()) {
 			return Set.of();
 		}
 
-		PrefixInfo prefixInfo = tokenInfo.prefixInfo();
+		PrefixInfo<IListElementInfo<?>> prefixInfo = tokenInfo.prefixInfo();
 		return this.elementInfoList.stream()
 			.filter(elementInfo -> matches(token, prefixInfo, elementInfo))
 			.collect(Collectors.toSet());
 	}
 
-	private static boolean matches(String word, PrefixInfo prefixInfo, IListElementInfo<?> elementInfo) {
+	private static boolean matches(String word, PrefixInfo<IListElementInfo<?>> prefixInfo, IListElementInfo<?> elementInfo) {
 		IListElement<?> element = elementInfo.getElement();
 		if (element.isVisible()) {
 			Collection<String> strings = prefixInfo.getStrings(elementInfo);

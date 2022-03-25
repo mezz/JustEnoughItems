@@ -1,4 +1,4 @@
-package mezz.jei.search.suffixtree;
+package mezz.jei.core.search.suffixtree;
 
 /**
  * The root node can have a lot of values added to it because so many suffix links point to it.

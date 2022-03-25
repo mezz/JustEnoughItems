@@ -1,4 +1,4 @@
-package mezz.jei.search;
+package mezz.jei.core.search;
 
 import java.util.Set;
 

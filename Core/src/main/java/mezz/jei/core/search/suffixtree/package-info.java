@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.color;
+package mezz.jei.core.search.suffixtree;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
 

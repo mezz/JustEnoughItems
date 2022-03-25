@@ -17,8 +17,7 @@ import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.search.ElementSearch;
 import mezz.jei.search.ElementSearchLowMem;
 import mezz.jei.search.IElementSearch;
-import mezz.jei.search.PrefixInfo;
-import mezz.jei.search.PrefixInfos;
+import mezz.jei.search.ElementPrefixParser;
 import mezz.jei.util.Translator;
 import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
@@ -52,7 +51,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	private final IngredientVisibility ingredientVisibility;
 
 	private final IElementSearch elementSearch;
-	private final PrefixInfos prefixInfos;
+	private final ElementPrefixParser elementPrefixParser;
 	private final Set<String> modNamesForSorting = new HashSet<>();
 
 	@Nullable
@@ -73,12 +72,12 @@ public class IngredientFilter implements IIngredientGridSource {
 		this.registeredIngredients = registeredIngredients;
 		this.sorter = sorter;
 		this.ingredientVisibility = ingredientVisibility;
-		this.prefixInfos = new PrefixInfos(registeredIngredients, config);
+		this.elementPrefixParser = new ElementPrefixParser(registeredIngredients, config);
 
 		if (clientConfig.isLowMemorySlowSearchEnabled()) {
 			this.elementSearch = new ElementSearchLowMem();
 		} else {
-			this.elementSearch = new ElementSearch(this.prefixInfos);
+			this.elementSearch = new ElementSearch(this.elementPrefixParser);
 		}
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
@@ -126,7 +125,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		String displayName = ingredientHelper.getDisplayName(ingredient);
 		String lowercaseDisplayName = Translator.toLowercaseWithLocale(displayName);
 
-		PrefixInfos.TokenInfo tokenInfo = new PrefixInfos.TokenInfo(lowercaseDisplayName, PrefixInfo.NO_PREFIX);
+		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, ElementPrefixParser.NO_PREFIX);
 		return this.elementSearch.getSearchResults(tokenInfo)
 			.stream()
 			.map(elementInfo -> checkForMatch(elementInfo, type, ingredientUid, uidFunction))
@@ -303,7 +302,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		return Optional.empty();
 	}
 
-	private record SearchTokens(List<PrefixInfos.TokenInfo> toSearch, List<PrefixInfos.TokenInfo> toRemove) {}
+	private record SearchTokens(List<ElementPrefixParser.TokenInfo> toSearch, List<ElementPrefixParser.TokenInfo> toRemove) {}
 
 	private SearchTokens parseSearchTokens(String filterText) {
 		SearchTokens searchTokens = new SearchTokens(new ArrayList<>(), new ArrayList<>());
@@ -322,7 +321,7 @@ public class IngredientFilter implements IIngredientGridSource {
 			if (string.isEmpty()) {
 				continue;
 			}
-			this.prefixInfos.parseToken(string)
+			this.elementPrefixParser.parseToken(string)
 				.ifPresent(result -> {
 					if (remove) {
 						searchTokens.toRemove.add(result);
@@ -341,7 +340,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		Set<IListElementInfo<?>> results = intersection(resultsPerToken);
 
 		if (!results.isEmpty() && !searchTokens.toRemove.isEmpty()) {
-			for (PrefixInfos.TokenInfo tokenInfo : searchTokens.toRemove) {
+			for (ElementPrefixParser.TokenInfo tokenInfo : searchTokens.toRemove) {
 				Set<IListElementInfo<?>> resultsToRemove = this.elementSearch.getSearchResults(tokenInfo);
 				results.removeAll(resultsToRemove);
 				if (results.isEmpty()) {

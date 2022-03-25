@@ -1,5 +1,6 @@
 package mezz.jei.config;
 
+import mezz.jei.core.search.SearchMode;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class IngredientFilterConfig implements IIngredientFilterConfig {

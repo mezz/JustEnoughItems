@@ -2,7 +2,7 @@ package mezz.jei.test.search.suffixtree;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import mezz.jei.search.suffixtree.GeneralizedSuffixTree;
+import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

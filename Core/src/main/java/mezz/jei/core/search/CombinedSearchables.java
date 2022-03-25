@@ -1,10 +1,8 @@
-package mezz.jei.search;
+package mezz.jei.core.search;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import mezz.jei.config.SearchMode;
 
 public class CombinedSearchables<T> implements ISearchable<T> {
 	private final List<ISearchable<T>> searchables = new ArrayList<>();

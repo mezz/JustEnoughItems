@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.color;
+package mezz.jei.core.util;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
 
