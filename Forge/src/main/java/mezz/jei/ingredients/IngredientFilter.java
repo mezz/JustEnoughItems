@@ -18,7 +18,7 @@ import mezz.jei.search.ElementSearch;
 import mezz.jei.search.ElementSearchLowMem;
 import mezz.jei.search.IElementSearch;
 import mezz.jei.search.ElementPrefixParser;
-import mezz.jei.util.Translator;
+import mezz.jei.common.util.Translator;
 import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -2,7 +2,7 @@ package mezz.jei.config;
 
 import java.util.List;
 
-import mezz.jei.util.Translator;
+import mezz.jei.common.util.Translator;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.client.settings.KeyConflictContext;

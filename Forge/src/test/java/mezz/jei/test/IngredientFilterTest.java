@@ -31,7 +31,7 @@ import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
 import mezz.jei.test.lib.TestWorldConfig;
-import mezz.jei.util.Translator;
+import mezz.jei.common.util.Translator;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;

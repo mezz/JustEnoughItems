@@ -5,7 +5,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.color.ColorNamer;
 import mezz.jei.config.IIngredientFilterConfig;
-import mezz.jei.util.Translator;
+import mezz.jei.common.util.Translator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;

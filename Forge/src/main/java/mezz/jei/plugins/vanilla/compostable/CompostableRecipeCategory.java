@@ -12,7 +12,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
-import mezz.jei.util.Translator;
+import mezz.jei.common.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
