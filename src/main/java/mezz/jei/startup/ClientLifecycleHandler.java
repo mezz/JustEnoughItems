@@ -16,7 +16,6 @@ import mezz.jei.config.WorldConfig;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
-import mezz.jei.events.DebugRestartJeiEvent;
 import mezz.jei.events.PermanentEventSubscriptions;
 import mezz.jei.events.PlayerJoinedWorldEvent;
 import mezz.jei.events.RuntimeEventSubscriptions;
@@ -27,9 +26,7 @@ import mezz.jei.ingredients.IngredientSorter;
 import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
@@ -38,13 +35,13 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.util.List;
 
-public class ClientLifecycleHandler implements ResourceManagerReloadListener {
+public class ClientLifecycleHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final JeiStarter jeiStarter;
 	private final WorldConfig worldConfig;
 	private final ModIdFormattingConfig modIdFormattingConfig;
-	private final StartEventObserver startEventObserver = new StartEventObserver(this::startJei);
+	private final StartEventObserver startEventObserver = new StartEventObserver(this::startJei, this::stopJei);
 	private final RuntimeEventSubscriptions runtimeSubscriptions;
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures, JEIClientConfigs jeiClientConfigs) {
@@ -89,13 +86,10 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 	public void register(PermanentEventSubscriptions subscriptions) {
 		this.worldConfig.register(subscriptions);
 		this.startEventObserver.register(subscriptions);
-		subscriptions.register(DebugRestartJeiEvent.class, this::onRestartJeiEvent);
+	}
 
-		subscriptions.register(ClientPlayerNetworkEvent.LoggedOutEvent.class, event -> {
-			if (event.getPlayer() != null) {
-				this.stopJei();
-			}
-		});
+	public PreparableReloadListener getReloadListener() {
+		return this.startEventObserver;
 	}
 
 	private void startJei() {
@@ -111,36 +105,15 @@ public class ClientLifecycleHandler implements ResourceManagerReloadListener {
 		this.worldConfig.syncWorldConfig();
 		this.modIdFormattingConfig.checkForModNameFormatOverride();
 
-		this.runtimeSubscriptions.clear();
 		this.jeiStarter.start(this.runtimeSubscriptions);
 
 		MinecraftForge.EVENT_BUS.post(new PlayerJoinedWorldEvent());
 	}
 
 	private void stopJei() {
-		if (this.runtimeSubscriptions.isEmpty()) {
-			LOGGER.error("Tried to stop JEI but it is not running.");
-		}
-		this.startEventObserver.reset();
+		LOGGER.info("Stopping JEI");
 		this.runtimeSubscriptions.clear();
 		Internal.setRuntime(null);
-	}
-
-	@Override
-	public void onResourceManagerReload(ResourceManager resourceManager) {
-		restartJei();
-	}
-
-	private void onRestartJeiEvent(DebugRestartJeiEvent event) {
-		LOGGER.warn("Restarting JEI from DebugRestartJeiEvent", new Throwable("Restarting JEI from DebugRestartJeiEvent"));
-		restartJei();
-	}
-
-	private void restartJei() {
-		if (!this.runtimeSubscriptions.isEmpty()) {
-			this.runtimeSubscriptions.clear();
-			this.jeiStarter.start(this.runtimeSubscriptions);
-		}
 	}
 
 	private static IIngredientSorter createIngredientSorter(IClientConfig clientConfig, File jeiConfigurationDir) {
