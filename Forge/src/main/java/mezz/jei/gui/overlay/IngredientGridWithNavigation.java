@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.IIngredientGridConfig;
 import mezz.jei.core.config.IWorldConfig;
@@ -51,6 +52,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private final IIngredientGridSource ingredientSource;
 	private final DrawableNineSliceTexture background;
 	private final DrawableNineSliceTexture slotBackground;
+	private final CommandUtil commandUtil;
 
 	private ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i slotBackgroundArea = ImmutableRect2i.EMPTY;
@@ -61,6 +63,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		IngredientGrid ingredientGrid,
 		IWorldConfig worldConfig,
 		IClientConfig clientConfig,
+		IServerConnection serverConnection,
 		IIngredientGridConfig gridConfig,
 		DrawableNineSliceTexture background,
 		DrawableNineSliceTexture slotBackground
@@ -75,6 +78,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.navigation = new PageNavigation(this.pageDelegate, false);
 		this.background = background;
 		this.slotBackground = slotBackground;
+		this.commandUtil = new CommandUtil(clientConfig, serverConnection);
 
 		this.ingredientSource.addSourceListChangedListener(() -> updateLayout(true));
 	}
@@ -190,7 +194,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public IUserInputHandler createInputHandler() {
 		return new CombinedInputHandler(
-			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.worldConfig, clientConfig, this::isMouseOver),
+			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.worldConfig, this.clientConfig, this.commandUtil, this::isMouseOver),
 			this.ingredientGrid.getInputHandler(),
 			this.navigation.createInputHandler()
 		);
@@ -295,13 +299,22 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		private final IWorldConfig worldConfig;
 		private final IClientConfig clientConfig;
 		private final UserInput.MouseOverable mouseOverable;
+		private final CommandUtil commandUtil;
 
-		private UserInputHandler(IngredientGridPaged paged, IRecipeFocusSource focusSource, IWorldConfig worldConfig, IClientConfig clientConfig, UserInput.MouseOverable mouseOverable) {
+		private UserInputHandler(
+				IngredientGridPaged paged,
+				IRecipeFocusSource focusSource,
+				IWorldConfig worldConfig,
+				IClientConfig clientConfig,
+				CommandUtil commandUtil,
+				UserInput.MouseOverable mouseOverable
+		) {
 			this.paged = paged;
 			this.focusSource = focusSource;
 			this.worldConfig = worldConfig;
 			this.clientConfig = clientConfig;
 			this.mouseOverable = mouseOverable;
+			this.commandUtil = commandUtil;
 		}
 
 		@Override
@@ -364,7 +377,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 				.filter(i -> !i.isEmpty())
 				.findFirst()
 				.map(itemStack -> {
-					CommandUtil.setHotbarStack(itemStack, hotbarSlot);
+					commandUtil.setHotbarStack(itemStack, hotbarSlot);
 					return this;
 				});
 		}

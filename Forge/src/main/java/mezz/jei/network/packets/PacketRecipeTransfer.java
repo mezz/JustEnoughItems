@@ -1,7 +1,8 @@
 package mezz.jei.network.packets;
 
-import mezz.jei.network.IPacketId;
-import mezz.jei.network.PacketIdServer;
+import mezz.jei.common.network.IPacketId;
+import mezz.jei.common.network.packets.PacketJei;
+import mezz.jei.common.network.PacketIdServer;
 import mezz.jei.transfer.BasicRecipeTransferHandlerServer;
 import mezz.jei.transfer.TransferOperation;
 import net.minecraft.network.FriendlyByteBuf;

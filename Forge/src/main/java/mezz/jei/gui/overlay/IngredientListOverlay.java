@@ -5,6 +5,7 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.events.RuntimeEventSubscriptions;
@@ -46,6 +47,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IngredientGridWithNavigation contents;
 	private final IClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
+	private final IServerConnection serverConnection;
 	private final GuiScreenHelper guiScreenHelper;
 	private final GuiTextFieldFilter searchField;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
@@ -63,12 +65,14 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		GuiScreenHelper guiScreenHelper,
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
-		IWorldConfig worldConfig
+		IWorldConfig worldConfig,
+		IServerConnection serverConnection
 	) {
 		this.guiScreenHelper = guiScreenHelper;
 		this.contents = contents;
 		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
+		this.serverConnection = serverConnection;
 
 		this.searchField = new GuiTextFieldFilter();
 		this.searchField.setValue(filterTextSource.getFilterText());
@@ -236,7 +240,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			this.searchField.createInputHandler(),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler(),
-			new CheatInputHandler(this.contents, worldConfig, clientConfig)
+			new CheatInputHandler(this.contents, worldConfig, clientConfig, serverConnection)
 		);
 
 		final IUserInputHandler hiddenInputHandler = this.configButton.createInputHandler();

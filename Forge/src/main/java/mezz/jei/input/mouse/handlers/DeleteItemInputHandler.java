@@ -1,15 +1,15 @@
 package mezz.jei.input.mouse.handlers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
-import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketDeletePlayerItem;
-import mezz.jei.network.packets.PacketJei;
+import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.util.CheatUtil;
 import mezz.jei.core.config.GiveMode;
 import net.minecraft.client.Minecraft;
@@ -27,11 +27,18 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 	private final IngredientGrid ingredientGrid;
 	private final IWorldConfig worldConfig;
 	private final IClientConfig clientConfig;
+	private final IServerConnection serverConnection;
 
-	public DeleteItemInputHandler(IngredientGrid ingredientGrid, IWorldConfig worldConfig, IClientConfig clientConfig) {
+	public DeleteItemInputHandler(
+			IngredientGrid ingredientGrid,
+			IWorldConfig worldConfig,
+			IClientConfig clientConfig,
+			IServerConnection serverConnection
+	) {
 		this.ingredientGrid = ingredientGrid;
 		this.worldConfig = worldConfig;
 		this.clientConfig = clientConfig;
+		this.serverConnection = serverConnection;
 	}
 
 	@Override
@@ -56,7 +63,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 		if (!userInput.isSimulate()) {
 			player.containerMenu.setCarried(ItemStack.EMPTY);
 			PacketJei packet = new PacketDeletePlayerItem(itemStack);
-			Network.sendPacketToServer(packet);
+			serverConnection.sendPacketToServer(packet);
 		}
 		return Optional.of(this);
 	}

@@ -1,5 +1,6 @@
 package mezz.jei.input.mouse.handlers;
 
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
@@ -18,12 +19,17 @@ import java.util.Optional;
 public class CheatInputHandler implements IUserInputHandler {
     private final IRecipeFocusSource showsRecipeFocuses;
     private final IWorldConfig worldConfig;
-    private final IClientConfig clientConfig;
+    private final CommandUtil commandUtil;
 
-    public CheatInputHandler(IRecipeFocusSource showsRecipeFocuses, IWorldConfig worldConfig, IClientConfig clientConfig) {
+    public CheatInputHandler(
+        IRecipeFocusSource showsRecipeFocuses,
+        IWorldConfig worldConfig,
+        IClientConfig clientConfig,
+        IServerConnection serverConnection
+    ) {
         this.showsRecipeFocuses = showsRecipeFocuses;
         this.worldConfig = worldConfig;
-        this.clientConfig = clientConfig;
+        this.commandUtil = new CommandUtil(clientConfig, serverConnection);
     }
 
     @Override
@@ -52,7 +58,7 @@ public class CheatInputHandler implements IUserInputHandler {
                 if (!input.isSimulate()) {
                     ItemStack itemStack = CheatUtil.getCheatItemStack(clicked);
                     if (!itemStack.isEmpty()) {
-                        CommandUtil.giveStack(itemStack, giveAmount, clientConfig);
+                        commandUtil.giveStack(itemStack, giveAmount);
                     }
                 }
                 return LimitedAreaInputHandler.create(this, clicked.getArea());

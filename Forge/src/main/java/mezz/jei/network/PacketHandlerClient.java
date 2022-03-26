@@ -2,6 +2,7 @@ package mezz.jei.network;
 
 import java.util.EnumMap;
 
+import mezz.jei.common.network.PacketIdClient;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.client.Minecraft;

@@ -1,15 +1,20 @@
 package mezz.jei.config;
 
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import org.lwjgl.glfw.GLFW;
 
 public class WorldConfig implements IWorldConfig {
+	private final IServerConnection serverConnection;
 	private boolean overlayEnabled = true;
 	private boolean cheatItemsEnabled = false;
 	private boolean editModeEnabled = false;
 	private boolean bookmarkOverlayEnabled = true;
+
+	public WorldConfig(IServerConnection serverConnection) {
+		this.serverConnection = serverConnection;
+	}
 
 	@Override
 	public boolean isOverlayEnabled() {
@@ -46,7 +51,7 @@ public class WorldConfig implements IWorldConfig {
 
 	@Override
 	public boolean isDeleteItemsInCheatModeActive() {
-		return cheatItemsEnabled && ServerInfo.isJeiOnServer();
+		return cheatItemsEnabled && serverConnection.isJeiOnServer();
 	}
 
 
@@ -59,8 +64,8 @@ public class WorldConfig implements IWorldConfig {
 	public void setCheatItemsEnabled(boolean value) {
 		if (cheatItemsEnabled != value) {
 			cheatItemsEnabled = value;
-			if (cheatItemsEnabled && ServerInfo.isJeiOnServer()) {
-				Network.sendPacketToServer(new PacketRequestCheatPermission());
+			if (cheatItemsEnabled && serverConnection.isJeiOnServer()) {
+				serverConnection.sendPacketToServer(new PacketRequestCheatPermission());
 			}
 		}
 	}

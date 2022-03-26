@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.bookmarks.BookmarkList;
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
@@ -66,6 +67,7 @@ public class PluginLoader {
 	private final JeiHelpers jeiHelpers;
 	private final IngredientVisibility ingredientVisibility;
 	private final IngredientFilter ingredientFilter;
+	private final IServerConnection serverConnection;
 
 	public PluginLoader(
 		List<IModPlugin> plugins,
@@ -76,10 +78,12 @@ public class PluginLoader {
 		IIngredientFilterConfig ingredientFilterConfig,
 		IWorldConfig worldConfig,
 		IEditModeConfig editModeConfig,
-		IFilterTextSource filterTextSource
+		IFilterTextSource filterTextSource,
+		IServerConnection serverConnection
 	) {
 		this.timer = new LoggedTimer();
 		this.modIdHelper = modIdHelper;
+		this.serverConnection = serverConnection;
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 
 		SubtypeRegistration subtypeRegistration = new SubtypeRegistration();
@@ -140,7 +144,7 @@ public class PluginLoader {
 
 	public ImmutableTable<Class<?>, RecipeType<?>, IRecipeTransferHandler<?, ?>> createRecipeTransferHandlers(List<IModPlugin> plugins, RecipeManager recipeManager) {
 		IRecipeTransferHandlerHelper handlerHelper = new RecipeTransferHandlerHelper();
-		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(jeiHelpers.getStackHelper(), handlerHelper, jeiHelpers, recipeManager);
+		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(jeiHelpers.getStackHelper(), handlerHelper, jeiHelpers, recipeManager, serverConnection);
 		PluginCaller.callOnPlugins("Registering recipes transfer handlers", plugins, p -> p.registerRecipeTransferHandlers(recipeTransferRegistration));
 		return recipeTransferRegistration.getRecipeTransferHandlers();
 	}

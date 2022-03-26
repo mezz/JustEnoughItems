@@ -2,6 +2,7 @@ package mezz.jei.network;
 
 import java.util.EnumMap;
 
+import mezz.jei.common.network.PacketIdServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;

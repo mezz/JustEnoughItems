@@ -1,5 +1,6 @@
 package mezz.jei.network.packets;
 
+import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.forge.config.ServerConfig;
 import net.minecraft.world.entity.player.Player;
@@ -7,8 +8,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.ChatFormatting;
 
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.network.IPacketId;
-import mezz.jei.network.PacketIdClient;
+import mezz.jei.common.network.IPacketId;
+import mezz.jei.common.network.PacketIdClient;
 import mezz.jei.util.CommandUtilServer;
 
 import java.util.ArrayList;

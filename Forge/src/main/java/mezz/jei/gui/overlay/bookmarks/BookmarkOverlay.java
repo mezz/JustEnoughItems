@@ -5,6 +5,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.bookmarks.BookmarkList;
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.GuiScreenHelper;
@@ -30,6 +31,9 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 	private static final int INNER_PADDING = 2;
 	private static final int BUTTON_SIZE = 20;
 
+	// input
+	private final CheatInputHandler cheatInputHandler;
+
 	// areas
 	private ImmutableRect2i parentArea = ImmutableRect2i.EMPTY;
 
@@ -42,7 +46,6 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 
 	// data
 	private final BookmarkList bookmarkList;
-	private final IClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
 
 	public BookmarkOverlay(
@@ -51,12 +54,13 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
-		GuiScreenHelper guiScreenHelper
+		GuiScreenHelper guiScreenHelper,
+		IServerConnection serverConnection
 	) {
 		this.bookmarkList = bookmarkList;
-		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, textures, worldConfig);
+		this.cheatInputHandler = new CheatInputHandler(this, worldConfig, clientConfig, serverConnection);
 		this.contents = contents;
 		bookmarkList.addSourceListChangedListener(() -> {
 			worldConfig.setBookmarkEnabled(!bookmarkList.isEmpty());
@@ -149,7 +153,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 		final IUserInputHandler bookmarkButtonInputHandler = this.bookmarkButton.createInputHandler();
 
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
-			new CheatInputHandler(this, worldConfig, clientConfig),
+			this.cheatInputHandler,
 			this.contents.createInputHandler(),
 			bookmarkButtonInputHandler
 		);

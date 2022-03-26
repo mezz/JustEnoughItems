@@ -1,9 +1,8 @@
 package mezz.jei.util;
 
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IClientConfig;
-import mezz.jei.config.ServerInfo;
-import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketGiveItemStack;
 import mezz.jei.network.packets.PacketSetHotbarItemStack;
 import net.minecraft.client.Minecraft;
@@ -24,8 +23,12 @@ import org.apache.logging.log4j.Logger;
 
 public final class CommandUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private final IClientConfig clientConfig;
+	private final IServerConnection serverConnection;
 
-	private CommandUtil() {
+	public CommandUtil(IClientConfig clientConfig, IServerConnection serverConnection) {
+		this.clientConfig = clientConfig;
+		this.serverConnection = serverConnection;
 	}
 
 	/**
@@ -33,7 +36,7 @@ public final class CommandUtil {
 	 * <p>
 	 * {@link CreativeModeInventoryScreen} has special client-side handling for itemStacks, just give the item on the client
 	 */
-	public static void giveStack(ItemStack itemStack, GiveAmount giveAmount, IClientConfig clientConfig) {
+	public void giveStack(ItemStack itemStack, GiveAmount giveAmount) {
 		final GiveMode giveMode = clientConfig.getGiveMode();
 		Minecraft minecraft = Minecraft.getInstance();
 		LocalPlayer player = minecraft.player;
@@ -45,20 +48,20 @@ public final class CommandUtil {
 		if (minecraft.screen instanceof CreativeModeInventoryScreen && giveMode == GiveMode.MOUSE_PICKUP) {
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			CommandUtilServer.mousePickupItemStack(player, sendStack);
-		} else if (ServerInfo.isJeiOnServer()) {
+		} else if (serverConnection.isJeiOnServer()) {
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack, giveMode);
-			Network.sendPacketToServer(packet);
+			serverConnection.sendPacketToServer(packet);
 		} else {
 			giveStackVanilla(itemStack, amount);
 		}
 	}
 
-	public static void setHotbarStack(ItemStack itemStack, int hotbarSlot) {
-		if (ServerInfo.isJeiOnServer()) {
+	public void setHotbarStack(ItemStack itemStack, int hotbarSlot) {
+		if (serverConnection.isJeiOnServer()) {
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, itemStack.getMaxStackSize());
 			PacketSetHotbarItemStack packet = new PacketSetHotbarItemStack(sendStack, hotbarSlot);
-			Network.sendPacketToServer(packet);
+			serverConnection.sendPacketToServer(packet);
 		}
 	}
 

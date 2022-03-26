@@ -1,12 +1,13 @@
 package mezz.jei.network.packets;
 
+import mezz.jei.common.network.packets.PacketJei;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 
-import mezz.jei.network.IPacketId;
+import mezz.jei.common.network.IPacketId;
 import mezz.jei.network.Network;
-import mezz.jei.network.PacketIdServer;
+import mezz.jei.common.network.PacketIdServer;
 import mezz.jei.util.CommandUtilServer;
 
 public class PacketRequestCheatPermission extends PacketJei {

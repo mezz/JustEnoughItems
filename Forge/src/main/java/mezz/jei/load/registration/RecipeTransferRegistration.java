@@ -1,6 +1,7 @@
 package mezz.jei.load.registration;
 
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.recipes.RecipeManager;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.resources.ResourceLocation;
@@ -24,17 +25,20 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IJeiHelpers jeiHelpers;
 	private final RecipeManager recipeManager;
+	private final IServerConnection serverConnection;
 
 	public RecipeTransferRegistration(
 		IStackHelper stackHelper,
 		IRecipeTransferHandlerHelper handlerHelper,
 		IJeiHelpers jeiHelpers,
-		RecipeManager recipeManager
+		RecipeManager recipeManager,
+		IServerConnection serverConnection
 	) {
 		this.stackHelper = stackHelper;
 		this.handlerHelper = handlerHelper;
 		this.jeiHelpers = jeiHelpers;
 		this.recipeManager = recipeManager;
+		this.serverConnection = serverConnection;
 	}
 
 	@Override
@@ -72,7 +76,7 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 	public <C extends AbstractContainerMenu, R> void addRecipeTransferHandler(IRecipeTransferInfo<C, R> recipeTransferInfo) {
 		ErrorUtil.checkNotNull(recipeTransferInfo, "recipeTransferInfo");
 
-		IRecipeTransferHandler<C, R> recipeTransferHandler = new BasicRecipeTransferHandler<>(stackHelper, handlerHelper, recipeTransferInfo);
+		IRecipeTransferHandler<C, R> recipeTransferHandler = new BasicRecipeTransferHandler<>(serverConnection, stackHelper, handlerHelper, recipeTransferInfo);
 		addRecipeTransferHandler(recipeTransferHandler, recipeTransferInfo.getRecipeType());
 	}
 

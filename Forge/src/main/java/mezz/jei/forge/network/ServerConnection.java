@@ -1,26 +1,30 @@
-package mezz.jei.config;
+package mezz.jei.forge.network;
 
 import com.google.common.collect.ImmutableMap;
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.network.PacketHandler;
+import mezz.jei.common.network.packets.PacketJei;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
 import net.minecraftforge.network.ConnectionData;
+import net.minecraftforge.network.ICustomPacket;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkHooks;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public final class ServerInfo {
+public final class ServerConnection implements IServerConnection {
 	@Nullable
 	private static UUID jeiOnServerCacheUuid = null;
 	private static boolean jeiOnServerCacheValue = false;
 
-	private ServerInfo() {
-
-	}
-
-	public static boolean isJeiOnServer() {
+	@Override
+	public boolean isJeiOnServer() {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPacketListener clientPacketListener = minecraft.getConnection();
 		if (clientPacketListener == null) {
@@ -38,5 +42,16 @@ public final class ServerInfo {
 				.orElse(false);
 		}
 		return jeiOnServerCacheValue;
+	}
+
+	@Override
+	public void sendPacketToServer(PacketJei packet) {
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientPacketListener netHandler = minecraft.getConnection();
+		if (netHandler != null && isJeiOnServer()) {
+			Pair<FriendlyByteBuf, Integer> packetData = packet.getPacketData();
+			ICustomPacket<Packet<?>> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(packetData, PacketHandler.CHANNEL_ID);
+			netHandler.send(payload.getThis());
+		}
 	}
 }

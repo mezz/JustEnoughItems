@@ -2,6 +2,7 @@ package mezz.jei;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.color.ColorNamer;
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientVisibility;
 import mezz.jei.ingredients.RegisteredIngredients;
@@ -25,6 +26,8 @@ public final class Internal {
 	private static IngredientVisibility ingredientVisibility;
 	@Nullable
 	private static Textures textures;
+	@Nullable
+	private static IServerConnection serverConnection;
 
 	private Internal() {
 
@@ -82,5 +85,14 @@ public final class Internal {
 
 	public static void setColorNamer(ColorNamer colorNamer) {
 		Internal.colorNamer = colorNamer;
+	}
+
+	public static IServerConnection getServerConnection() {
+		Preconditions.checkState(serverConnection != null, "Server Connection has not been created yet.");
+		return serverConnection;
+	}
+
+	public static void setServerConnection(IServerConnection serverConnection) {
+		Internal.serverConnection = serverConnection;
 	}
 }

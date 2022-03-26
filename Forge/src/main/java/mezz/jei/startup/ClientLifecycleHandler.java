@@ -6,6 +6,8 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.config.EditModeConfig;
+import mezz.jei.common.network.IServerConnection;
+import mezz.jei.forge.network.ServerConnection;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.JEIClientConfigs;
@@ -56,7 +58,10 @@ public class ClientLifecycleHandler {
 
 		IIngredientSorter ingredientSorter = createIngredientSorter(clientConfig, jeiConfigurationDir);
 
-		WorldConfig worldConfig = new WorldConfig();
+		IServerConnection serverConnection = new ServerConnection();
+		Internal.setServerConnection(serverConnection);
+
+		WorldConfig worldConfig = new WorldConfig(serverConnection);
 		networkHandler.createClientPacketHandler(worldConfig);
 
 		List<IModPlugin> plugins = AnnotatedInstanceUtil.getModPlugins();
@@ -69,6 +74,7 @@ public class ClientLifecycleHandler {
 			jeiClientConfigs,
 			editModeConfig,
 			worldConfig,
+			serverConnection,
 			bookmarkConfig,
 			modIdHelper,
 			recipeCategorySortingConfig,

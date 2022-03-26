@@ -1,4 +1,4 @@
-package mezz.jei.network;
+package mezz.jei.common.network;
 
 public enum PacketIdClient implements IPacketId {
 	CHEAT_PERMISSION;

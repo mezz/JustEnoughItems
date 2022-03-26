@@ -1,9 +1,9 @@
-package mezz.jei.network.packets;
+package mezz.jei.common.network.packets;
 
 import net.minecraft.network.FriendlyByteBuf;
 
 import io.netty.buffer.Unpooled;
-import mezz.jei.network.IPacketId;
+import mezz.jei.common.network.IPacketId;
 import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class PacketJei {

@@ -1,4 +1,4 @@
-package mezz.jei.network;
+package mezz.jei.common.network;
 
 public enum PacketIdServer implements IPacketId {
 	RECIPE_TRANSFER,

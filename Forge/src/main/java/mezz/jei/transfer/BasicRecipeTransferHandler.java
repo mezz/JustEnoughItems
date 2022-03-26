@@ -8,8 +8,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
-import mezz.jei.config.ServerInfo;
-import mezz.jei.network.Network;
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.network.chat.Component;
@@ -33,11 +32,13 @@ import java.util.stream.Collectors;
 public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> implements IRecipeTransferHandler<C, R> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
+	private final IServerConnection serverConnection;
 	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IRecipeTransferInfo<C, R> transferInfo;
 
-	public BasicRecipeTransferHandler(IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper, IRecipeTransferInfo<C, R> transferInfo) {
+	public BasicRecipeTransferHandler(IServerConnection serverConnection, IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper, IRecipeTransferInfo<C, R> transferInfo) {
+		this.serverConnection = serverConnection;
 		this.stackHelper = stackHelper;
 		this.handlerHelper = handlerHelper;
 		this.transferInfo = transferInfo;
@@ -59,7 +60,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 	@Nullable
 	@Override
 	public IRecipeTransferError transferRecipe(C container, R recipe, IRecipeSlotsView recipeSlotsView, Player player, boolean maxTransfer, boolean doTransfer) {
-		if (!ServerInfo.isJeiOnServer()) {
+		if (!serverConnection.isJeiOnServer()) {
 			Component tooltipMessage = new TranslatableComponent("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
@@ -122,7 +123,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 				maxTransfer,
 				requireCompleteSets
 			);
-			Network.sendPacketToServer(packet);
+			serverConnection.sendPacketToServer(packet);
 		}
 
 		return null;

@@ -1,7 +1,8 @@
 package mezz.jei.network.packets;
 
-import mezz.jei.network.IPacketId;
-import mezz.jei.network.PacketIdServer;
+import mezz.jei.common.network.IPacketId;
+import mezz.jei.common.network.packets.PacketJei;
+import mezz.jei.common.network.PacketIdServer;
 import mezz.jei.util.CommandUtilServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;

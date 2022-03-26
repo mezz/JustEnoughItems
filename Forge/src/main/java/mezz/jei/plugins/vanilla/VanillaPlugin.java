@@ -25,6 +25,7 @@ import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeMaker;
@@ -247,11 +248,7 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-		IRecipeTransferHandlerHelper transferHelper = registration.getTransferHelper();
-		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 		registration.addRecipeTransferHandler(CraftingMenu.class, RecipeTypes.CRAFTING, 1, 9, 10, 36);
-		registration.addRecipeTransferHandler(new PlayerRecipeTransferHandler(stackHelper, transferHelper), RecipeTypes.CRAFTING);
 		registration.addRecipeTransferHandler(FurnaceMenu.class, RecipeTypes.SMELTING, 0, 1, 3, 36);
 		registration.addRecipeTransferHandler(FurnaceMenu.class, RecipeTypes.FUELING, 1, 1, 3, 36);
 		registration.addRecipeTransferHandler(SmokerMenu.class, RecipeTypes.SMOKING, 0, 1, 3, 36);
@@ -261,6 +258,13 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeTransferHandler(BrewingStandMenu.class, RecipeTypes.BREWING, 0, 4, 5, 36);
 		registration.addRecipeTransferHandler(AnvilMenu.class, RecipeTypes.ANVIL, 0, 2, 3, 36);
 		registration.addRecipeTransferHandler(SmithingMenu.class, RecipeTypes.SMITHING, 0, 2, 3, 36);
+
+		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+		IRecipeTransferHandlerHelper transferHelper = registration.getTransferHelper();
+		IStackHelper stackHelper = jeiHelpers.getStackHelper();
+		IServerConnection serverConnection = Internal.getServerConnection();
+		PlayerRecipeTransferHandler recipeTransferHandler = new PlayerRecipeTransferHandler(serverConnection, stackHelper, transferHelper);
+		registration.addRecipeTransferHandler(recipeTransferHandler, RecipeTypes.CRAFTING);
 	}
 
 	@Override

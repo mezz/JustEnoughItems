@@ -10,6 +10,7 @@ import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.BookmarkConfig;
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.forge.config.ClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.core.config.IWorldConfig;
@@ -67,6 +68,7 @@ public final class JeiStarter {
 	private final IModIdHelper modIdHelper;
 	private final RecipeCategorySortingConfig recipeCategorySortingConfig;
 	private final IIngredientSorter ingredientSorter;
+	private final IServerConnection serverConnection;
 
 	public JeiStarter(
 		List<IModPlugin> plugins,
@@ -74,6 +76,7 @@ public final class JeiStarter {
 		JEIClientConfigs clientConfigs,
 		IEditModeConfig editModeConfig,
 		IWorldConfig worldConfig,
+		IServerConnection serverConnection,
 		BookmarkConfig bookmarkConfig,
 		IModIdHelper modIdHelper,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
@@ -85,6 +88,7 @@ public final class JeiStarter {
 		this.clientConfigs = clientConfigs;
 		this.editModeConfig = editModeConfig;
 		this.worldConfig = worldConfig;
+		this.serverConnection = serverConnection;
 		this.bookmarkConfig = bookmarkConfig;
 		this.modIdHelper = modIdHelper;
 		this.recipeCategorySortingConfig = recipeCategorySortingConfig;
@@ -111,7 +115,8 @@ public final class JeiStarter {
 			ingredientFilterConfig,
 			worldConfig,
 			editModeConfig,
-			filterTextSource
+			filterTextSource,
+			serverConnection
 		);
 		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 
@@ -138,7 +143,8 @@ public final class JeiStarter {
 			clientConfig,
 			worldConfig,
 			guiScreenHelper,
-			modIdHelper
+			modIdHelper,
+			serverConnection
 		);
 
 		IngredientGridWithNavigation ingredientListGridNavigation = new IngredientGridWithNavigation(
@@ -147,6 +153,7 @@ public final class JeiStarter {
 			ingredientListGrid,
 			worldConfig,
 			clientConfig,
+			serverConnection,
 			clientConfigs.getIngredientListConfig(),
 			textures.getIngredientListBackground(),
 			textures.getIngredientListSlotBackground()
@@ -158,7 +165,8 @@ public final class JeiStarter {
 			guiScreenHelper,
 			ingredientListGridNavigation,
 			clientConfig,
-			worldConfig
+			worldConfig,
+			serverConnection
 		);
 		ingredientListOverlay.register(subscriptions);
 
@@ -170,7 +178,8 @@ public final class JeiStarter {
 			clientConfig,
 			worldConfig,
 			guiScreenHelper,
-			modIdHelper
+			modIdHelper,
+			serverConnection
 		);
 
 		IngredientGridWithNavigation bookmarkListGridNavigation = new IngredientGridWithNavigation(
@@ -179,6 +188,7 @@ public final class JeiStarter {
 			bookmarkListGrid,
 			worldConfig,
 			clientConfig,
+			serverConnection,
 			clientConfigs.getBookmarkListConfig(),
 			textures.getBookmarkListBackground(),
 			textures.getBookmarkListSlotBackground()
@@ -189,7 +199,8 @@ public final class JeiStarter {
 			bookmarkListGridNavigation,
 			clientConfig,
 			worldConfig,
-			guiScreenHelper
+			guiScreenHelper,
+			serverConnection
 		);
 
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);

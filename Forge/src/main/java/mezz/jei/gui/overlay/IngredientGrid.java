@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.network.IServerConnection;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
@@ -55,13 +56,14 @@ public class IngredientGrid implements IRecipeFocusSource {
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
 		GuiScreenHelper guiScreenHelper,
-		IModIdHelper modIdHelper
+		IModIdHelper modIdHelper,
+		IServerConnection serverConnection
 	) {
 		this.gridConfig = gridConfig;
 		this.guiScreenHelper = guiScreenHelper;
 		this.ingredientListRenderer = new IngredientListRenderer(editModeConfig, worldConfig, registeredIngredients);
 		this.tooltipHelper = new IngredientGridTooltipHelper(registeredIngredients, ingredientFilterConfig, worldConfig, modIdHelper);
-		this.deleteItemHandler = new DeleteItemInputHandler(this, worldConfig, clientConfig);
+		this.deleteItemHandler = new DeleteItemInputHandler(this, worldConfig, clientConfig, serverConnection);
 	}
 
 	public IUserInputHandler getInputHandler() {
