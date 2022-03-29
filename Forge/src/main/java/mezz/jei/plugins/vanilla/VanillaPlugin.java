@@ -25,7 +25,7 @@ import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.network.IServerConnection;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeMaker;
@@ -262,7 +262,7 @@ public class VanillaPlugin implements IModPlugin {
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IRecipeTransferHandlerHelper transferHelper = registration.getTransferHelper();
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
-		IServerConnection serverConnection = Internal.getServerConnection();
+		IConnectionToServer serverConnection = Internal.getServerConnection();
 		PlayerRecipeTransferHandler recipeTransferHandler = new PlayerRecipeTransferHandler(serverConnection, stackHelper, transferHelper);
 		registration.addRecipeTransferHandler(recipeTransferHandler, RecipeTypes.CRAFTING);
 	}

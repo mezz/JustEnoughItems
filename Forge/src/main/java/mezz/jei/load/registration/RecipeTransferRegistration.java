@@ -1,7 +1,7 @@
 package mezz.jei.load.registration;
 
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.common.network.IServerConnection;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.recipes.RecipeManager;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.resources.ResourceLocation;
@@ -25,14 +25,14 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IJeiHelpers jeiHelpers;
 	private final RecipeManager recipeManager;
-	private final IServerConnection serverConnection;
+	private final IConnectionToServer serverConnection;
 
 	public RecipeTransferRegistration(
 		IStackHelper stackHelper,
 		IRecipeTransferHandlerHelper handlerHelper,
 		IJeiHelpers jeiHelpers,
 		RecipeManager recipeManager,
-		IServerConnection serverConnection
+		IConnectionToServer serverConnection
 	) {
 		this.stackHelper = stackHelper;
 		this.handlerHelper = handlerHelper;

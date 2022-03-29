@@ -1,6 +1,6 @@
 package mezz.jei.input.mouse.handlers;
 
-import mezz.jei.common.network.IServerConnection;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
@@ -10,7 +10,7 @@ import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
 import mezz.jei.util.CheatUtil;
 import mezz.jei.util.CommandUtil;
-import mezz.jei.util.GiveAmount;
+import mezz.jei.common.util.GiveAmount;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
 
@@ -25,7 +25,7 @@ public class CheatInputHandler implements IUserInputHandler {
         IRecipeFocusSource showsRecipeFocuses,
         IWorldConfig worldConfig,
         IClientConfig clientConfig,
-        IServerConnection serverConnection
+        IConnectionToServer serverConnection
     ) {
         this.showsRecipeFocuses = showsRecipeFocuses;
         this.worldConfig = worldConfig;

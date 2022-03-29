@@ -1,21 +1,24 @@
 package mezz.jei;
 
 import mezz.jei.config.JEIClientConfigs;
+import mezz.jei.core.config.IServerConfig;
 import mezz.jei.events.PermanentEventSubscriptions;
 import mezz.jei.gui.textures.JeiSpriteUploader;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.startup.ClientLifecycleHandler;
-import mezz.jei.startup.NetworkHandler;
+import mezz.jei.forge.network.NetworkHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 
 public class JustEnoughItemsClient {
 	private final NetworkHandler networkHandler;
 	private final PermanentEventSubscriptions subscriptions;
+	private final IServerConfig serverConfig;
 
-	public JustEnoughItemsClient(NetworkHandler networkHandler, PermanentEventSubscriptions subscriptions) {
+	public JustEnoughItemsClient(NetworkHandler networkHandler, PermanentEventSubscriptions subscriptions, IServerConfig serverConfig) {
 		this.networkHandler = networkHandler;
 		this.subscriptions = subscriptions;
+		this.serverConfig = serverConfig;
 	}
 
 	public void register() {
@@ -32,7 +35,7 @@ public class JustEnoughItemsClient {
 		Internal.setTextures(textures);
 		event.registerReloadListener(spriteUploader);
 
-		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(networkHandler, textures, jeiClientConfigs);
+		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(networkHandler, textures, jeiClientConfigs, serverConfig);
 		clientLifecycleHandler.register(subscriptions);
 		event.registerReloadListener(clientLifecycleHandler.getReloadListener());
 	}

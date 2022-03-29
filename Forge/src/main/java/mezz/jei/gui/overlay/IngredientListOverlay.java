@@ -5,7 +5,7 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
-import mezz.jei.common.network.IServerConnection;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.events.RuntimeEventSubscriptions;
@@ -47,7 +47,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IngredientGridWithNavigation contents;
 	private final IClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
-	private final IServerConnection serverConnection;
+	private final IConnectionToServer serverConnection;
 	private final GuiScreenHelper guiScreenHelper;
 	private final GuiTextFieldFilter searchField;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
@@ -66,7 +66,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
-		IServerConnection serverConnection
+		IConnectionToServer serverConnection
 	) {
 		this.guiScreenHelper = guiScreenHelper;
 		this.contents = contents;

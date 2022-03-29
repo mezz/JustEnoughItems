@@ -13,7 +13,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.common.network.IServerConnection;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
@@ -67,7 +67,7 @@ public class PluginLoader {
 	private final JeiHelpers jeiHelpers;
 	private final IngredientVisibility ingredientVisibility;
 	private final IngredientFilter ingredientFilter;
-	private final IServerConnection serverConnection;
+	private final IConnectionToServer serverConnection;
 
 	public PluginLoader(
 		List<IModPlugin> plugins,
@@ -79,7 +79,7 @@ public class PluginLoader {
 		IWorldConfig worldConfig,
 		IEditModeConfig editModeConfig,
 		IFilterTextSource filterTextSource,
-		IServerConnection serverConnection
+		IConnectionToServer serverConnection
 	) {
 		this.timer = new LoggedTimer();
 		this.modIdHelper = modIdHelper;

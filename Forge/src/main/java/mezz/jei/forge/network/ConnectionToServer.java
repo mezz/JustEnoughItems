@@ -1,8 +1,8 @@
 package mezz.jei.forge.network;
 
 import com.google.common.collect.ImmutableMap;
-import mezz.jei.common.network.IServerConnection;
-import mezz.jei.network.PacketHandler;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.network.ServerPacketRouter;
 import mezz.jei.common.network.packets.PacketJei;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-public final class ServerConnection implements IServerConnection {
+public final class ConnectionToServer implements IConnectionToServer {
 	@Nullable
 	private static UUID jeiOnServerCacheUuid = null;
 	private static boolean jeiOnServerCacheValue = false;
@@ -38,7 +38,7 @@ public final class ServerConnection implements IServerConnection {
 				.map(NetworkHooks::getConnectionData)
 				.map(ConnectionData::getChannels)
 				.map(ImmutableMap::keySet)
-				.map(keys -> keys.contains(PacketHandler.CHANNEL_ID))
+				.map(keys -> keys.contains(ServerPacketRouter.CHANNEL_ID))
 				.orElse(false);
 		}
 		return jeiOnServerCacheValue;
@@ -50,7 +50,7 @@ public final class ServerConnection implements IServerConnection {
 		ClientPacketListener netHandler = minecraft.getConnection();
 		if (netHandler != null && isJeiOnServer()) {
 			Pair<FriendlyByteBuf, Integer> packetData = packet.getPacketData();
-			ICustomPacket<Packet<?>> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(packetData, PacketHandler.CHANNEL_ID);
+			ICustomPacket<Packet<?>> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(packetData, ServerPacketRouter.CHANNEL_ID);
 			netHandler.send(payload.getThis());
 		}
 	}

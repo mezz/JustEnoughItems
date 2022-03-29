@@ -8,7 +8,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
-import mezz.jei.common.network.IServerConnection;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.network.chat.Component;
@@ -32,12 +32,12 @@ import java.util.stream.Collectors;
 public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> implements IRecipeTransferHandler<C, R> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final IServerConnection serverConnection;
+	private final IConnectionToServer serverConnection;
 	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IRecipeTransferInfo<C, R> transferInfo;
 
-	public BasicRecipeTransferHandler(IServerConnection serverConnection, IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper, IRecipeTransferInfo<C, R> transferInfo) {
+	public BasicRecipeTransferHandler(IConnectionToServer serverConnection, IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper, IRecipeTransferInfo<C, R> transferInfo) {
 		this.serverConnection = serverConnection;
 		this.stackHelper = stackHelper;
 		this.handlerHelper = handlerHelper;

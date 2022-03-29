@@ -10,7 +10,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
-import mezz.jei.common.network.IServerConnection;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.gui.ingredients.RecipeSlotsView;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -28,11 +28,11 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 	 */
 	private static final IntSet PLAYER_INV_INDEXES = IntArraySet.of(0, 1, 3, 4);
 
-	private final IServerConnection serverConnection;
+	private final IConnectionToServer serverConnection;
 	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IRecipeTransferHandler<InventoryMenu, CraftingRecipe> handler;
 
-	public PlayerRecipeTransferHandler(IServerConnection serverConnection, IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper) {
+	public PlayerRecipeTransferHandler(IConnectionToServer serverConnection, IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper) {
 		this.serverConnection = serverConnection;
 		this.handlerHelper = handlerHelper;
 		var transferInfo = new BasicRecipeTransferInfo<>(InventoryMenu.class, RecipeTypes.CRAFTING, 1, 4, 9, 36);

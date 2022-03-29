@@ -10,7 +10,7 @@ import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.BookmarkConfig;
-import mezz.jei.common.network.IServerConnection;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.forge.config.ClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.core.config.IWorldConfig;
@@ -68,7 +68,7 @@ public final class JeiStarter {
 	private final IModIdHelper modIdHelper;
 	private final RecipeCategorySortingConfig recipeCategorySortingConfig;
 	private final IIngredientSorter ingredientSorter;
-	private final IServerConnection serverConnection;
+	private final IConnectionToServer serverConnection;
 
 	public JeiStarter(
 		List<IModPlugin> plugins,
@@ -76,7 +76,7 @@ public final class JeiStarter {
 		JEIClientConfigs clientConfigs,
 		IEditModeConfig editModeConfig,
 		IWorldConfig worldConfig,
-		IServerConnection serverConnection,
+		IConnectionToServer serverConnection,
 		BookmarkConfig bookmarkConfig,
 		IModIdHelper modIdHelper,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,

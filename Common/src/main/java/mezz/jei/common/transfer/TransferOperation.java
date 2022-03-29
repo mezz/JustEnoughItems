@@ -1,4 +1,4 @@
-package mezz.jei.transfer;
+package mezz.jei.common.transfer;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.AbstractContainerMenu;

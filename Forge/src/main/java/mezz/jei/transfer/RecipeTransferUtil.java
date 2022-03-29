@@ -1,6 +1,7 @@
 package mezz.jei.transfer;
 
 import mezz.jei.Internal;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
@@ -8,12 +9,13 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.common.transfer.TransferOperation;
 import mezz.jei.gui.ingredients.RecipeSlots;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;
-import mezz.jei.util.ItemStackMatchable;
-import mezz.jei.util.MatchingIterable;
+import mezz.jei.common.util.ItemStackMatchable;
+import mezz.jei.common.util.MatchingIterable;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -213,7 +215,8 @@ public final class RecipeTransferUtil {
 	@Nullable
 	public static <T> Map.Entry<T, ItemStack> containsAnyStackIndexed(IStackHelper stackhelper, Map<T, ItemStack> stacks, IRecipeSlotView recipeSlotView) {
 		MatchingIndexed<T> matchingStacks = new MatchingIndexed<>(stacks);
-		MatchingIterable matchingContains = new MatchingIterable(recipeSlotView);
+		List<ItemStack> ingredients = recipeSlotView.getIngredients(VanillaTypes.ITEM).toList();
+		MatchingIterable matchingContains = new MatchingIterable(ingredients);
 		return containsStackMatchable(stackhelper, matchingStacks, matchingContains);
 	}
 

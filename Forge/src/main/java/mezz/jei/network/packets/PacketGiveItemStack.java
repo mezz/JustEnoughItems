@@ -1,15 +1,16 @@
 package mezz.jei.network.packets;
 
-import mezz.jei.common.network.packets.PacketJei;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-
 import mezz.jei.common.network.IPacketId;
 import mezz.jei.common.network.PacketIdServer;
-import mezz.jei.util.CommandUtilServer;
+import mezz.jei.common.network.packets.PacketJei;
+import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.core.config.GiveMode;
+import mezz.jei.core.config.IServerConfig;
+import mezz.jei.common.network.IConnectionToClient;
+import mezz.jei.util.ServerCommandUtil;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 public class PacketGiveItemStack extends PacketJei {
 	private final ItemStack itemStack;
@@ -31,14 +32,15 @@ public class PacketGiveItemStack extends PacketJei {
 		buf.writeEnum(giveMode);
 	}
 
-	public static void readPacketData(FriendlyByteBuf buf, Player player) {
-		if (player instanceof ServerPlayer sender) {
-
-			ItemStack itemStack = buf.readItem();
-			if (!itemStack.isEmpty()) {
-				GiveMode giveMode = buf.readEnum(GiveMode.class);
-				CommandUtilServer.executeGive(sender, itemStack, giveMode);
-			}
+	public static void readPacketData(ServerPacketData data) {
+		ServerPlayer player = data.player();
+		FriendlyByteBuf buf = data.buf();
+		ItemStack itemStack = buf.readItem();
+		if (!itemStack.isEmpty()) {
+			GiveMode giveMode = buf.readEnum(GiveMode.class);
+			IServerConfig serverConfig = data.serverConfig();
+			IConnectionToClient connection = data.connection();
+			ServerCommandUtil.executeGive(player, itemStack, giveMode, serverConfig, connection);
 		}
 	}
 }

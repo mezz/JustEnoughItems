@@ -1,12 +1,13 @@
 package mezz.jei.network.packets;
 
 import mezz.jei.common.network.IPacketId;
-import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.common.network.PacketIdServer;
+import mezz.jei.common.network.packets.PacketJei;
+import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.transfer.BasicRecipeTransferHandlerServer;
-import mezz.jei.transfer.TransferOperation;
+import mezz.jei.common.transfer.TransferOperation;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 
@@ -61,7 +62,9 @@ public class PacketRecipeTransfer extends PacketJei {
 		buf.writeBoolean(requireCompleteSets);
 	}
 
-	public static void readPacketData(FriendlyByteBuf buf, Player player) {
+	public static void readPacketData(ServerPacketData data) {
+		ServerPlayer player = data.player();
+		FriendlyByteBuf buf = data.buf();
 		AbstractContainerMenu container = player.containerMenu;
 
 		int transferOperationsSize = buf.readVarInt();

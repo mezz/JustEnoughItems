@@ -6,8 +6,9 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.config.EditModeConfig;
-import mezz.jei.common.network.IServerConnection;
-import mezz.jei.forge.network.ServerConnection;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.core.config.IServerConfig;
+import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.JEIClientConfigs;
@@ -19,6 +20,7 @@ import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.events.PermanentEventSubscriptions;
 import mezz.jei.events.RuntimeEventSubscriptions;
+import mezz.jei.forge.network.NetworkHandler;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.ForgeModIdHelper;
 import mezz.jei.ingredients.IIngredientSorter;
@@ -43,7 +45,7 @@ public class ClientLifecycleHandler {
 	private final StartEventObserver startEventObserver = new StartEventObserver(this::startJei, this::stopJei);
 	private final RuntimeEventSubscriptions runtimeSubscriptions;
 
-	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures, JEIClientConfigs jeiClientConfigs) {
+	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures, JEIClientConfigs jeiClientConfigs, IServerConfig serverConfig) {
 		this.runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
 		File jeiConfigurationDir = createConfigDir();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
@@ -58,11 +60,11 @@ public class ClientLifecycleHandler {
 
 		IIngredientSorter ingredientSorter = createIngredientSorter(clientConfig, jeiConfigurationDir);
 
-		IServerConnection serverConnection = new ServerConnection();
+		IConnectionToServer serverConnection = new ConnectionToServer();
 		Internal.setServerConnection(serverConnection);
 
 		WorldConfig worldConfig = new WorldConfig(serverConnection);
-		networkHandler.createClientPacketHandler(worldConfig);
+		networkHandler.createClientPacketHandler(serverConnection, serverConfig, worldConfig);
 
 		List<IModPlugin> plugins = AnnotatedInstanceUtil.getModPlugins();
 

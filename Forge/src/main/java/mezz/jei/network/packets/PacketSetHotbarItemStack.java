@@ -1,17 +1,16 @@
 package mezz.jei.network.packets;
 
-import mezz.jei.common.network.packets.PacketJei;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-
 import com.google.common.base.Preconditions;
 import mezz.jei.common.network.IPacketId;
 import mezz.jei.common.network.PacketIdServer;
-import mezz.jei.util.CommandUtilServer;
+import mezz.jei.common.network.ServerPacketData;
+import mezz.jei.common.network.packets.PacketJei;
+import mezz.jei.util.ServerCommandUtil;
 import mezz.jei.util.ErrorUtil;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 
 public class PacketSetHotbarItemStack extends PacketJei {
 	private final ItemStack itemStack;
@@ -35,14 +34,13 @@ public class PacketSetHotbarItemStack extends PacketJei {
 		buf.writeVarInt(hotbarSlot);
 	}
 
-	public static void readPacketData(FriendlyByteBuf buf, Player player) {
-		if (player instanceof ServerPlayer sender) {
-
-			ItemStack itemStack = buf.readItem();
-			if (!itemStack.isEmpty()) {
-				int hotbarSlot = buf.readVarInt();
-				CommandUtilServer.setHotbarSlot(sender, itemStack, hotbarSlot);
-			}
+	public static void readPacketData(ServerPacketData data) {
+		ServerPlayer player = data.player();
+		FriendlyByteBuf buf = data.buf();
+		ItemStack itemStack = buf.readItem();
+		if (!itemStack.isEmpty()) {
+			int hotbarSlot = buf.readVarInt();
+			ServerCommandUtil.setHotbarSlot(player, itemStack, hotbarSlot, data.serverConfig(), data.connection());
 		}
 	}
 }

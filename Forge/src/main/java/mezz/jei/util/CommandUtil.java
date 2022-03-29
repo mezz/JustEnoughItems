@@ -1,6 +1,7 @@
 package mezz.jei.util;
 
-import mezz.jei.common.network.IServerConnection;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.GiveAmount;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.network.packets.PacketGiveItemStack;
@@ -24,9 +25,9 @@ import org.apache.logging.log4j.Logger;
 public final class CommandUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final IClientConfig clientConfig;
-	private final IServerConnection serverConnection;
+	private final IConnectionToServer serverConnection;
 
-	public CommandUtil(IClientConfig clientConfig, IServerConnection serverConnection) {
+	public CommandUtil(IClientConfig clientConfig, IConnectionToServer serverConnection) {
 		this.clientConfig = clientConfig;
 		this.serverConnection = serverConnection;
 	}
@@ -47,7 +48,7 @@ public final class CommandUtil {
 		final int amount = giveAmount.getAmountForStack(itemStack);
 		if (minecraft.screen instanceof CreativeModeInventoryScreen && giveMode == GiveMode.MOUSE_PICKUP) {
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
-			CommandUtilServer.mousePickupItemStack(player, sendStack);
+			ServerCommandUtil.mousePickupItemStack(player, sendStack);
 		} else if (serverConnection.isJeiOnServer()) {
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, amount);
 			PacketGiveItemStack packet = new PacketGiveItemStack(sendStack, giveMode);
@@ -94,7 +95,7 @@ public final class CommandUtil {
 	}
 
 	private static void sendGiveAction(LocalPlayer sender, ItemStack itemStack, int amount) {
-		String[] commandParameters = CommandUtilServer.getGiveCommandParameters(sender, itemStack, amount);
+		String[] commandParameters = ServerCommandUtil.getGiveCommandParameters(sender, itemStack, amount);
 		String fullCommand = "/give " + StringUtils.join(commandParameters, " ");
 		sendChatMessage(sender, fullCommand);
 	}

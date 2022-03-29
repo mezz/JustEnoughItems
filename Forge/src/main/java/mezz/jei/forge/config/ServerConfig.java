@@ -17,11 +17,12 @@ public final class ServerConfig implements IServerConfig {
 	private final ForgeConfigSpec.BooleanValue enableCheatModeForCreative;
 	private final ForgeConfigSpec.BooleanValue enableCheatModeForGive;
 
-	public static void register(ModLoadingContext modLoadingContext) {
+	public static IServerConfig register(ModLoadingContext modLoadingContext) {
 		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 		instance = new ServerConfig(builder);
 		ForgeConfigSpec config = builder.build();
 		modLoadingContext.registerConfig(ModConfig.Type.SERVER, config);
+		return instance;
 	}
 
 	public ServerConfig(ForgeConfigSpec.Builder builder) {

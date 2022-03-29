@@ -1,7 +1,7 @@
 package mezz.jei.input.mouse.handlers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.common.network.IServerConnection;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.TooltipRenderer;
@@ -27,13 +27,13 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 	private final IngredientGrid ingredientGrid;
 	private final IWorldConfig worldConfig;
 	private final IClientConfig clientConfig;
-	private final IServerConnection serverConnection;
+	private final IConnectionToServer serverConnection;
 
 	public DeleteItemInputHandler(
 			IngredientGrid ingredientGrid,
 			IWorldConfig worldConfig,
 			IClientConfig clientConfig,
-			IServerConnection serverConnection
+			IConnectionToServer serverConnection
 	) {
 		this.ingredientGrid = ingredientGrid;
 		this.worldConfig = worldConfig;

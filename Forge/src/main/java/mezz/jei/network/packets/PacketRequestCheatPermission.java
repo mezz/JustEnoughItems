@@ -1,14 +1,15 @@
 package mezz.jei.network.packets;
 
-import mezz.jei.common.network.packets.PacketJei;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.FriendlyByteBuf;
-
 import mezz.jei.common.network.IPacketId;
-import mezz.jei.network.Network;
 import mezz.jei.common.network.PacketIdServer;
-import mezz.jei.util.CommandUtilServer;
+import mezz.jei.common.network.packets.PacketCheatPermission;
+import mezz.jei.common.network.packets.PacketJei;
+import mezz.jei.common.network.ServerPacketData;
+import mezz.jei.core.config.IServerConfig;
+import mezz.jei.common.network.IConnectionToClient;
+import mezz.jei.util.ServerCommandUtil;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 
 public class PacketRequestCheatPermission extends PacketJei {
 	@Override
@@ -21,12 +22,13 @@ public class PacketRequestCheatPermission extends PacketJei {
 		// the packet itself is the only data needed
 	}
 
-	public static void readPacketData(FriendlyByteBuf buf, Player player) {
-		if (player instanceof ServerPlayer sender) {
-			boolean hasPermission = CommandUtilServer.hasPermissionForCheatMode(sender);
-			PacketCheatPermission packetCheatPermission = new PacketCheatPermission(hasPermission);
+	public static void readPacketData(ServerPacketData data) {
+		ServerPlayer player = data.player();
+		IServerConfig serverConfig = data.serverConfig();
+		boolean hasPermission = ServerCommandUtil.hasPermissionForCheatMode(player, serverConfig);
+		PacketCheatPermission packetCheatPermission = new PacketCheatPermission(hasPermission);
 
-			Network.sendPacketToClient(packetCheatPermission, sender);
-		}
+		IConnectionToClient connection = data.connection();
+		connection.sendPacketToClient(packetCheatPermission, player);
 	}
 }

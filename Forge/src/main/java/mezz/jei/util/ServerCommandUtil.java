@@ -1,49 +1,44 @@
 package mezz.jei.util;
 
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.RootCommandNode;
 import mezz.jei.core.config.GiveMode;
+import mezz.jei.core.config.IServerConfig;
+import mezz.jei.common.network.IConnectionToClient;
+import mezz.jei.common.network.packets.PacketCheatPermission;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import mezz.jei.core.config.IServerConfig;
-import mezz.jei.forge.config.ServerConfig;
-import net.minecraft.Util;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraftforge.items.ItemHandlerHelper;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.RootCommandNode;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.item.ItemInput;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.TranslatableComponent;
-
-import mezz.jei.network.Network;
-import mezz.jei.network.packets.PacketCheatPermission;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  * Server-side-safe utilities for commands.
  */
-public final class CommandUtilServer {
+public final class ServerCommandUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private CommandUtilServer() {
+	private ServerCommandUtil() {
 	}
 
 	public static String[] getGiveCommandParameters(Player sender, ItemStack itemStack, int amount) {
@@ -67,14 +62,7 @@ public final class CommandUtilServer {
 		return commandStrings.toArray(new String[0]);
 	}
 
-	public static void writeChatMessage(Player player, String translationKey, ChatFormatting color) {
-		TranslatableComponent component = new TranslatableComponent(translationKey);
-		component.getStyle().applyFormat(color);
-		player.sendMessage(component, Util.NIL_UUID);
-	}
-
-	public static boolean hasPermissionForCheatMode(Player sender) {
-		IServerConfig serverConfig = ServerConfig.getInstance();
+	public static boolean hasPermissionForCheatMode(ServerPlayer sender, IServerConfig serverConfig) {
 		if (serverConfig.isCheatModeEnabledForCreative() &&
 			sender.isCreative()) {
 			return true;
@@ -102,20 +90,32 @@ public final class CommandUtilServer {
 	/**
 	 * Gives a player an item.
 	 */
-	public static void executeGive(ServerPlayer sender, ItemStack itemStack, GiveMode giveMode) {
-		if (hasPermissionForCheatMode(sender)) {
+	public static void executeGive(
+		ServerPlayer sender,
+		ItemStack itemStack,
+		GiveMode giveMode,
+		IServerConfig serverConfig,
+		IConnectionToClient connection
+	) {
+		if (hasPermissionForCheatMode(sender, serverConfig)) {
 			if (giveMode == GiveMode.INVENTORY) {
 				giveToInventory(sender, itemStack);
 			} else if (giveMode == GiveMode.MOUSE_PICKUP) {
 				mousePickupItemStack(sender, itemStack);
 			}
 		} else {
-			Network.sendPacketToClient(new PacketCheatPermission(false), sender);
+			connection.sendPacketToClient(new PacketCheatPermission(false), sender);
 		}
 	}
 
-	public static void setHotbarSlot(ServerPlayer sender, ItemStack itemStack, int hotbarSlot) {
-		if (hasPermissionForCheatMode(sender)) {
+	public static void setHotbarSlot(
+		ServerPlayer sender,
+		ItemStack itemStack,
+		int hotbarSlot,
+		IServerConfig serverConfig,
+		IConnectionToClient connection
+	) {
+		if (hasPermissionForCheatMode(sender, serverConfig)) {
 			if (!Inventory.isHotbarSlot(hotbarSlot)) {
 				LOGGER.error("Tried to set slot that is not in the hotbar: {}", hotbarSlot);
 				return;
@@ -130,7 +130,7 @@ public final class CommandUtilServer {
 			sender.inventoryMenu.broadcastChanges();
 			notifyGive(sender, itemStackCopy);
 		} else {
-			Network.sendPacketToClient(new PacketCheatPermission(false), sender);
+			connection.sendPacketToClient(new PacketCheatPermission(false), sender);
 		}
 	}
 
@@ -141,7 +141,7 @@ public final class CommandUtilServer {
 		ItemStack existingStack = containerMenu.getCarried();
 
 		final int giveCount;
-		if (ItemHandlerHelper.canItemStacksStack(existingStack, itemStack)) {
+		if (canStack(existingStack, itemStack)) {
 			int newCount = Math.min(existingStack.getMaxStackSize(), existingStack.getCount() + itemStack.getCount());
 			giveCount = newCount - existingStack.getCount();
 			existingStack.setCount(newCount);
@@ -155,6 +155,18 @@ public final class CommandUtilServer {
 			notifyGive(sender, itemStackCopy);
 			containerMenu.broadcastChanges();
 		}
+	}
+
+	private static boolean canStack(ItemStack a, ItemStack b) {
+		if (a.isEmpty() || !a.sameItem(b) || a.hasTag() != b.hasTag()) {
+			return false;
+		}
+
+		CompoundTag tag = a.getTag();
+		if (tag != null && !tag.equals(b.getTag())) {
+			return false;
+		}
+		return a.areCapsCompatible(b);
 	}
 
 	/**

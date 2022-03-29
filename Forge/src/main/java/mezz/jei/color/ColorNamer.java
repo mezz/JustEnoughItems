@@ -1,7 +1,7 @@
 package mezz.jei.color;
 
 import org.jetbrains.annotations.Nullable;
-import java.util.Collection;
+
 import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Stream;

@@ -3,7 +3,7 @@ package mezz.jei.gui.overlay;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.network.IServerConnection;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.IIngredientGridConfig;
 import mezz.jei.core.config.IWorldConfig;
@@ -63,7 +63,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		IngredientGrid ingredientGrid,
 		IWorldConfig worldConfig,
 		IClientConfig clientConfig,
-		IServerConnection serverConnection,
+		IConnectionToServer serverConnection,
 		IIngredientGridConfig gridConfig,
 		DrawableNineSliceTexture background,
 		DrawableNineSliceTexture slotBackground

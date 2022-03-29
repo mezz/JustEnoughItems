@@ -1,18 +1,18 @@
 package mezz.jei.config;
 
-import mezz.jei.common.network.IServerConnection;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
 import org.lwjgl.glfw.GLFW;
 
 public class WorldConfig implements IWorldConfig {
-	private final IServerConnection serverConnection;
+	private final IConnectionToServer serverConnection;
 	private boolean overlayEnabled = true;
 	private boolean cheatItemsEnabled = false;
 	private boolean editModeEnabled = false;
 	private boolean bookmarkOverlayEnabled = true;
 
-	public WorldConfig(IServerConnection serverConnection) {
+	public WorldConfig(IConnectionToServer serverConnection) {
 		this.serverConnection = serverConnection;
 	}
 
