@@ -3,10 +3,17 @@ package mezz.jei.api.registration;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 public interface IRecipeCatalystRegistration {
+	/**
+	 * The {@link IIngredientManager} has some useful functions related to recipe ingredients.
+	 * @since 9.5.5
+	 */
+	IIngredientManager getIngredientManager();
+
 	/**
 	 * Add an association between an {@link ItemStack} and what it can craft.
 	 * (i.e. Furnace ItemStack can craft Smelting and Fuel Recipes)
