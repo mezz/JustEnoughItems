@@ -58,8 +58,14 @@ public final class AnvilRecipeMaker {
 				.toList();
 		}
 
-		public Enchantment getEnchantment() {
-			return enchantment;
+		private boolean canEnchant(ItemStack ingredient) {
+			try {
+				return enchantment.canEnchant(ingredient);
+			} catch (RuntimeException e) {
+				String stackInfo = ErrorUtil.getItemStackInfo(ingredient);
+				LOGGER.error("Failed to check if ingredient can be enchanted: {}", stackInfo, e);
+				return false;
+			}
 		}
 
 		private static List<ItemStack> getEnchantedBooks(Enchantment enchantment) {
@@ -95,7 +101,7 @@ public final class AnvilRecipeMaker {
 		ItemStack ingredient
 	) {
 		return enchantmentDatas.stream()
-			.filter(data -> data.getEnchantment().canEnchant(ingredient))
+			.filter(data -> data.canEnchant(ingredient))
 			.map(data -> data.getEnchantedBooks(ingredient))
 			.filter(enchantedBooks -> !enchantedBooks.isEmpty())
 			.map(enchantedBooks -> {
