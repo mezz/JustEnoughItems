@@ -20,6 +20,7 @@ import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
+import mezz.jei.forge.util.ForgeRecipeRegistryHelper;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.ingredients.IListElement;
@@ -52,6 +53,7 @@ import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;
+import mezz.jei.util.RecipeErrorUtil;
 import mezz.jei.util.StackHelper;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
@@ -94,7 +96,8 @@ public class PluginLoader {
 		RegisteredIngredientsBuilder registeredIngredientsBuilder = new RegisteredIngredientsBuilder(subtypeManager);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(registeredIngredientsBuilder));
 		this.registeredIngredients = registeredIngredientsBuilder.build();
-		Internal.setIngredientManager(this.registeredIngredients);
+		Internal.setRegisteredIngredients(this.registeredIngredients);
+		RecipeErrorUtil.setRegisteredIngredients(this.registeredIngredients);
 
 		this.ingredientVisibility = new IngredientVisibility(blacklist, worldConfig, editModeConfig, this.registeredIngredients);
 		Internal.setIngredientVisibility(this.ingredientVisibility);

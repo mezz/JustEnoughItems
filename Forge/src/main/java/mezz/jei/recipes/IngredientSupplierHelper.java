@@ -6,6 +6,7 @@ import mezz.jei.ingredients.IIngredientSupplier;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.RecipeErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +26,7 @@ public final class IngredientSupplierHelper {
 				return builder;
 			}
 		} catch (RuntimeException | LinkageError e) {
-			String recipeName = ErrorUtil.getNameForRecipe(recipe);
+			String recipeName = RecipeErrorUtil.getNameForRecipe(recipe);
 			LOGGER.error("Found a broken recipe, failed to setRecipe with RecipeLayoutBuilder: {}\n", recipeName, e);
 		}
 
@@ -40,7 +41,7 @@ public final class IngredientSupplierHelper {
 			recipeCategory.setIngredients(recipe, ingredients);
 			return ingredients;
 		} catch (RuntimeException | LinkageError e) {
-			String recipeName = ErrorUtil.getNameForRecipe(recipe);
+			String recipeName = RecipeErrorUtil.getNameForRecipe(recipe);
 			LOGGER.error("Found a broken recipe, failed to set Ingredients: {}\n", recipeName, e);
 		}
 

@@ -2,6 +2,7 @@ package mezz.jei.plugins.vanilla.crafting;
 
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.RecipeErrorUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -36,13 +37,13 @@ public final class CategoryRecipeValidator<T extends Recipe<?>> {
 		}
 		ItemStack recipeOutput = recipe.getResultItem();
 		if (recipeOutput == null || recipeOutput.isEmpty()) {
-			String recipeInfo = getInfo(recipe);
+			String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
 			LOGGER.error("Recipe has no output. {}", recipeInfo);
 			return false;
 		}
 		List<Ingredient> ingredients = recipe.getIngredients();
 		if (ingredients == null) {
-			String recipeInfo = getInfo(recipe);
+			String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
 			LOGGER.error("Recipe has no input Ingredients. {}", recipeInfo);
 			return false;
 		}
@@ -50,19 +51,15 @@ public final class CategoryRecipeValidator<T extends Recipe<?>> {
 		if (inputCount == INVALID_COUNT) {
 			return false;
 		} else if (inputCount > maxInputs) {
-			String recipeInfo = getInfo(recipe);
+			String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
 			LOGGER.error("Recipe has too many inputs. {}", recipeInfo);
 			return false;
 		} else if (inputCount == 0 && maxInputs > 0) {
-			String recipeInfo = getInfo(recipe);
+			String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
 			LOGGER.error("Recipe has no inputs. {}", recipeInfo);
 			return false;
 		}
 		return true;
-	}
-
-	private String getInfo(T recipe) {
-		return ErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
 	}
 
 	@SuppressWarnings("ConstantConditions")

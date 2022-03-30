@@ -119,7 +119,7 @@ public class IngredientListRenderer {
 			}
 			poseStack.popPose();
 		} catch (RuntimeException | LinkageError e) {
-			throw ErrorUtil.createRenderIngredientException(e, ingredient);
+			throw ErrorUtil.createRenderIngredientException(e, ingredient, registeredIngredients);
 		}
 	}
 

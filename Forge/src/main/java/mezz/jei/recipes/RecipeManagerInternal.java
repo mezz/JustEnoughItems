@@ -12,6 +12,7 @@ import mezz.jei.ingredients.IIngredientSupplier;
 import mezz.jei.ingredients.IngredientVisibility;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.RecipeErrorUtil;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -135,7 +136,7 @@ public class RecipeManagerInternal {
 			}
 			return true;
 		} catch (RuntimeException | LinkageError e) {
-			String recipeInfo = ErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
+			String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
 			LOGGER.error("Found a broken recipe, failed to addRecipe: {}\n", recipeInfo, e);
 			return false;
 		}

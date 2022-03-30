@@ -65,7 +65,7 @@ public final class Internal {
 		return registeredIngredients;
 	}
 
-	public static void setIngredientManager(RegisteredIngredients registeredIngredients) {
+	public static void setRegisteredIngredients(RegisteredIngredients registeredIngredients) {
 		Internal.registeredIngredients = registeredIngredients;
 	}
 

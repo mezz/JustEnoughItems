@@ -7,7 +7,6 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.util.ErrorUtil;
 import mezz.jei.common.util.TagUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -23,8 +22,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -67,7 +66,6 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public String getWildcardId(FluidStack ingredient) {
-		ErrorUtil.checkNotEmpty(ingredient);
 		Fluid fluid = ingredient.getFluid();
 		ResourceLocation registryName = fluid.getRegistryName();
 		return "fluid:" + registryName;

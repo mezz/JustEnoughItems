@@ -64,7 +64,7 @@ public class JeiRuntime implements IJeiRuntime {
 	public <T> ITypedIngredient<T> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient) {
 		Optional<ITypedIngredient<T>> result = TypedIngredient.createTyped(registeredIngredients, ingredientType, ingredient);
 		if (result.isEmpty()) {
-			String ingredientInfo = ErrorUtil.getIngredientInfo(ingredient, ingredientType);
+			String ingredientInfo = ErrorUtil.getIngredientInfo(ingredient, ingredientType, registeredIngredients);
 			throw new IllegalArgumentException("Invalid ingredient: " + ingredientInfo);
 		}
 		return result.get();

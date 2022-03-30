@@ -276,7 +276,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		try {
 			ingredientRenderer.render(poseStack, ingredient);
 		} catch (RuntimeException | LinkageError e) {
-			throw ErrorUtil.createRenderIngredientException(e, ingredient);
+			throw ErrorUtil.createRenderIngredientException(e, ingredient, registeredIngredients);
 		}
 	}
 

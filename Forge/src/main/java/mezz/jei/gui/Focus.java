@@ -82,7 +82,7 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 			.flatMap(i -> TypedIngredient.deepCopy(registeredIngredients, i));
 
 		if (typedIngredient.isEmpty()) {
-			throw new IllegalArgumentException("Focus value is invalid: " + ErrorUtil.getIngredientInfo(value, ingredientType));
+			throw new IllegalArgumentException("Focus value is invalid: " + ErrorUtil.getIngredientInfo(value, ingredientType, registeredIngredients));
 		}
 		return new Focus<>(role, typedIngredient.get());
 	}

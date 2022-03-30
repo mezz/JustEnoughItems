@@ -1,18 +1,17 @@
 package mezz.jei.api.ingredients;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusFactory;
+import mezz.jei.api.registration.IModIngredientRegistration;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
-
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
-
-import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IFocusFactory;
-import mezz.jei.api.registration.IModIngredientRegistration;
 
 /**
  * An ingredient helper allows JEI to get information about ingredients for searching and other purposes.

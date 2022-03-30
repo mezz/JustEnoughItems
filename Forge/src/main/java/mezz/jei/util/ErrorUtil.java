@@ -1,16 +1,10 @@
 package mezz.jei.util;
 
-import mezz.jei.Internal;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.forge.config.ClientConfig;
-import mezz.jei.ingredients.IIngredientSupplier;
 import mezz.jei.ingredients.RegisteredIngredients;
-import mezz.jei.recipes.IngredientSupplierHelper;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
@@ -21,21 +15,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Stream;
 
 public final class ErrorUtil {
-	private static final Logger LOGGER = LogManager.getLogger();
 	@Nullable
 	private static IModIdHelper modIdHelper;
 
@@ -46,93 +31,9 @@ public final class ErrorUtil {
 		ErrorUtil.modIdHelper = modIdHelper;
 	}
 
-	public static <T> String getInfoFromRecipe(T recipe, IRecipeCategory<T> recipeCategory) {
-		StringBuilder recipeInfoBuilder = new StringBuilder();
-		String recipeName = getNameForRecipe(recipe);
-		recipeInfoBuilder.append(recipeName).append(" {");
-
-		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
-		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, registeredIngredients);
-		if (ingredientSupplier == null) {
-			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
-			return recipeInfoBuilder.toString();
-		}
-
-		recipeInfoBuilder.append("\n  Outputs:");
-		appendRoleData(ingredientSupplier, RecipeIngredientRole.OUTPUT, recipeInfoBuilder);
-
-		recipeInfoBuilder.append("\n  Inputs:");
-		appendRoleData(ingredientSupplier, RecipeIngredientRole.INPUT, recipeInfoBuilder);
-
-		recipeInfoBuilder.append("\n  Catalysts:");
-		appendRoleData(ingredientSupplier, RecipeIngredientRole.CATALYST, recipeInfoBuilder);
-
-		recipeInfoBuilder.append("\n}");
-
-		return recipeInfoBuilder.toString();
-	}
-
-	private static void appendRoleData(IIngredientSupplier ingredientSupplier, RecipeIngredientRole role, StringBuilder recipeInfoBuilder) {
-		ingredientSupplier.getIngredientTypes(role)
-			.forEach(ingredientType -> {
-				String ingredientOutputInfo = getIngredientInfo(ingredientType, role, ingredientSupplier);
-				recipeInfoBuilder
-					.append("\n    ")
-					.append(ingredientType.getIngredientClass().getName())
-					.append(": ")
-					.append(ingredientOutputInfo);
-			});
-	}
-
-	private static <T> String getIngredientInfo(IIngredientType<T> ingredientType, RecipeIngredientRole role, IIngredientSupplier ingredients) {
-		List<T> ingredientList = ingredients.getIngredientStream(ingredientType, role).toList();
-		IIngredientHelper<T> ingredientHelper = Internal.getRegisteredIngredients().getIngredientHelper(ingredientType);
-
-		Stream<String> stringStream = ingredientList.stream()
-			.map(ingredientHelper::getErrorInfo);
-
-		return truncatedStream(stringStream, ingredientList.size(), 10)
-			.toList()
-			.toString();
-	}
-
-	public static String getNameForRecipe(Object recipe) {
-		ResourceLocation registryName = null;
-		if (recipe instanceof Recipe) {
-			registryName = ((Recipe<?>) recipe).getId();
-		} else if (recipe instanceof IForgeRegistryEntry<?> registryEntry) {
-			registryName = registryEntry.getRegistryName();
-		}
-		if (registryName != null) {
-			if (modIdHelper != null) {
-				String modId = registryName.getNamespace();
-				String modName = modIdHelper.getModNameForModId(modId);
-				return modName + " " + registryName + " " + recipe.getClass();
-			}
-			return registryName + " " + recipe.getClass();
-		}
-		try {
-			return recipe.toString();
-		} catch (RuntimeException e) {
-			LOGGER.error("Failed recipe.toString", e);
-			return recipe.getClass().toString();
-		}
-	}
-
-	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType) {
-		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType, RegisteredIngredients registeredIngredients) {
 		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 		return ingredientHelper.getErrorInfo(ingredient);
-	}
-
-	private static Stream<String> truncatedStream(Stream<String> stream, int size, int limit) {
-		if (size + 1 > limit) {
-			return Stream.concat(
-				stream.limit(limit),
-				Stream.of(String.format("<truncated to %s elements, skipped %s>", limit, size - limit))
-			);
-		}
-		return stream;
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -171,27 +72,6 @@ public final class ErrorUtil {
 	}
 
 	@SuppressWarnings("ConstantConditions")
-	public static String getFluidStackInfo(FluidStack fluidStack) {
-		if (fluidStack == null) {
-			return "null";
-		}
-		Fluid fluid = fluidStack.getFluid();
-		final String fluidName;
-		ResourceLocation registryName = fluid.getRegistryName();
-		if (registryName != null) {
-			fluidName = registryName.toString();
-		} else {
-			fluidName = fluid.getClass().getName();
-		}
-
-		CompoundTag nbt = fluidStack.getTag();
-		if (nbt != null) {
-			return fluidStack + " " + fluidName + " nbt:" + nbt;
-		}
-		return fluidStack + " " + fluidName;
-	}
-
-	@SuppressWarnings("ConstantConditions")
 	public static void checkNotEmpty(ItemStack itemStack) {
 		if (itemStack == null) {
 			throw new NullPointerException("ItemStack must not be null.");
@@ -208,16 +88,6 @@ public final class ErrorUtil {
 		} else if (itemStack.isEmpty()) {
 			String info = getItemStackInfo(itemStack);
 			throw new IllegalArgumentException("ItemStack " + name + " must not be empty. " + info);
-		}
-	}
-
-	@SuppressWarnings("ConstantConditions")
-	public static void checkNotEmpty(FluidStack fluidStack) {
-		if (fluidStack == null) {
-			throw new NullPointerException("FluidStack must not be null.");
-		} else if (fluidStack.isEmpty()) {
-			String info = getFluidStackInfo(fluidStack);
-			throw new IllegalArgumentException("FluidStack value must not be empty. " + info);
 		}
 	}
 
@@ -282,8 +152,7 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient) {
-		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient, RegisteredIngredients registeredIngredients) {
 		IIngredientType<T> ingredientType = registeredIngredients.getIngredientType(ingredient);
 		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 
@@ -304,7 +173,6 @@ public final class ErrorUtil {
 		jeiCategory.setDetail("Unique Id (for Blacklist)", () -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
 		jeiCategory.setDetail("Ingredient Type", () -> ingredientType.getIngredientClass().toString());
 		jeiCategory.setDetail("Error Info", () -> ingredientHelper.getErrorInfo(ingredient));
-		jeiCategory.setDetail("Debug Mode Enabled", () -> Boolean.toString(ClientConfig.getInstance().isDebugModeEnabled()));
 
 		throw new ReportedException(crashreport);
 	}

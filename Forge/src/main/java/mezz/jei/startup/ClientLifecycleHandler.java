@@ -27,6 +27,8 @@ import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientSorter;
 import mezz.jei.util.AnnotatedInstanceUtil;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.forge.util.ForgeRecipeRegistryHelper;
+import mezz.jei.util.RecipeErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraftforge.common.MinecraftForge;
@@ -52,6 +54,8 @@ public class ClientLifecycleHandler {
 		this.modIdFormattingConfig = jeiClientConfigs.getModNameFormat();
 		IModIdHelper modIdHelper = new ForgeModIdHelper(clientConfig, this.modIdFormattingConfig);
 		ErrorUtil.setModIdHelper(modIdHelper);
+		RecipeErrorUtil.setModIdHelper(modIdHelper);
+		RecipeErrorUtil.setRecipeRegistryHelper(new ForgeRecipeRegistryHelper());
 
 		// Additional config files
 		BookmarkConfig bookmarkConfig = new BookmarkConfig(jeiConfigurationDir);
