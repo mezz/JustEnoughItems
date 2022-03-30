@@ -66,7 +66,7 @@ public final class AnvilRecipeMaker {
 		for (ItemStack ingredient : ingredients) {
 			if (ingredient.isEnchantable()) {
 				for (Enchantment enchantment : enchantments) {
-					if (enchantment.canEnchant(ingredient)) {
+					if (canEnchant(enchantment, ingredient)) {
 						try {
 							getBookEnchantmentRecipes(recipes, vanillaRecipeFactory, enchantment, ingredient);
 						} catch (RuntimeException e) {
@@ -76,6 +76,16 @@ public final class AnvilRecipeMaker {
 					}
 				}
 			}
+		}
+	}
+
+	private static boolean canEnchant(Enchantment enchantment, ItemStack ingredient) {
+		try {
+			return enchantment.canEnchant(ingredient);
+		} catch (RuntimeException e) {
+			String stackInfo = ErrorUtil.getItemStackInfo(ingredient);
+			LOGGER.error("Failed to check if ingredient can be enchanted: {}", stackInfo, e);
+			return false;
 		}
 	}
 
