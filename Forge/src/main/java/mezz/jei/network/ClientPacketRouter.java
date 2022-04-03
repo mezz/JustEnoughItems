@@ -10,9 +10,12 @@ import mezz.jei.common.network.packets.PacketCheatPermission;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.EnumMap;
 
+@OnlyIn(Dist.CLIENT)
 public class ClientPacketRouter {
 	public final EnumMap<PacketIdClient, IClientPacketHandler> clientHandlers = new EnumMap<>(PacketIdClient.class);
 	private final IConnectionToServer connection;

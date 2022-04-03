@@ -9,6 +9,8 @@ import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,7 @@ public class PacketCheatPermission extends PacketJei {
 		buf.writeBoolean(hasPermission);
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public static void readPacketData(ClientPacketData data) {
 		FriendlyByteBuf buf = data.buf();
 		boolean hasPermission = buf.readBoolean();
