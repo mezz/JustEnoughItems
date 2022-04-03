@@ -11,7 +11,6 @@ import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraft.world.level.block.ComposterBlock;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
@@ -89,7 +88,7 @@ public final class VanillaRecipeCategoryUid {
 	 *
 	 * Automatically tries to generate all potion variations from the basic ingredients.
 	 *
-	 * Also automatically adds modded potions from {@link BrewingRecipeRegistry#getRecipes()}.
+	 * Also automatically adds modded potions from the Forge BrewingRecipeRegistry.
 	 * JEI can only understand modded potion recipes that are built into vanilla or Forge.
 	 */
 	@Deprecated(forRemoval = true, since = "9.5.0")

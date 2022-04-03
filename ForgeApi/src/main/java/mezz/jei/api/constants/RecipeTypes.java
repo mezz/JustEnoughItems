@@ -17,7 +17,6 @@ import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraft.world.level.block.ComposterBlock;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 
 /**
  * List of all the built-in {@link RecipeType}s that are added by JEI.
@@ -100,7 +99,7 @@ public final class RecipeTypes {
 	 * The brewing recipe type.
 	 *
 	 * JEI automatically tries to generate all potion variations from the basic ingredients,
-	 * and also automatically adds modded potions from {@link BrewingRecipeRegistry#getRecipes()}.
+	 * and also automatically adds modded potions from the Forge BrewingRecipeRegistry
 	 *
 	 * @see IVanillaRecipeFactory#createBrewingRecipe to create new brewing recipes in JEI.
 	 *
