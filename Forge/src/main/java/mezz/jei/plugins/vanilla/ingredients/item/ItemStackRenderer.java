@@ -2,6 +2,8 @@ package mezz.jei.plugins.vanilla.ingredients.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.common.platform.Services;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,6 @@ import net.minecraft.ChatFormatting;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraftforge.client.RenderProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -78,11 +79,8 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 	@Override
 	public Font getFontRenderer(Minecraft minecraft, ItemStack ingredient) {
-		Font fontRenderer = RenderProperties.get(ingredient).getFont(ingredient);
-		if (fontRenderer == null) {
-			fontRenderer = minecraft.font;
-		}
-		return fontRenderer;
+		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+		return renderHelper.getFontRenderer(minecraft, ingredient);
 	}
 
 	@Override

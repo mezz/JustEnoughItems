@@ -5,6 +5,8 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.color.ColorGetter;
+import mezz.jei.common.platform.IPlatformRegistry;
+import mezz.jei.common.platform.Services;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
 import mezz.jei.common.util.TagUtil;
@@ -14,7 +16,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
@@ -140,7 +141,8 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public boolean isIngredientOnServer(ItemStack ingredient) {
 		Item item = ingredient.getItem();
-		return ForgeRegistries.ITEMS.containsValue(item);
+		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
+		return registry.contains(item);
 	}
 
 	@Override

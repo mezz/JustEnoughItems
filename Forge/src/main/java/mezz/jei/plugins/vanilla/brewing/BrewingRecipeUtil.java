@@ -1,20 +1,19 @@
 package mezz.jei.plugins.vanilla.brewing;
 
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.core.collect.SetMultiMap;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.alchemy.Potions;
-
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.core.collect.SetMultiMap;
 
 public class BrewingRecipeUtil {
 	public static final ItemStack POTION = new ItemStack(Items.POTION);

@@ -1,46 +1,47 @@
 package mezz.jei.plugins.debug;
 
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collections;
-import java.util.List;
-
+import mezz.jei.api.IModPlugin;
+import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.constants.ModIds;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
-import mezz.jei.forge.config.ClientConfig;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.resources.ResourceLocation;
-
-import mezz.jei.api.IModPlugin;
-import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.handlers.IGuiContainerHandler;
-import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.common.platform.IPlatformRegistry;
+import mezz.jei.common.platform.Services;
+import mezz.jei.forge.config.ClientConfig;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientListFactory;
 import mezz.jei.plugins.jei.ingredients.DebugIngredientRenderer;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidStack;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+import java.util.List;
 
 @JeiPlugin
 public class JeiDebugPlugin implements IModPlugin {
@@ -95,7 +96,7 @@ public class JeiDebugPlugin implements IModPlugin {
 				new TranslatableComponent("description.jei.wooden.door.3")
 			);
 
-			registration.addIngredientInfo(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), VanillaTypes.FLUID, new TextComponent("water"));
+			registration.addIngredientInfo(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), ForgeTypes.FLUID, new TextComponent("water"));
 			registration.addIngredientInfo(new DebugIngredient(1), DebugIngredient.TYPE, new TextComponent("debug"));
 			registration.addIngredientInfo(new DebugIngredient(2), DebugIngredient.TYPE,
 				new TextComponent("debug colored").withStyle(ChatFormatting.AQUA),
@@ -181,10 +182,11 @@ public class JeiDebugPlugin implements IModPlugin {
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
-			registration.addRecipeCatalyst(VanillaTypes.FLUID, new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), DebugRecipeCategory.TYPE);
+			registration.addRecipeCatalyst(ForgeTypes.FLUID, new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), DebugRecipeCategory.TYPE);
 			registration.addRecipeCatalyst(VanillaTypes.ITEM, new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
 			int i = 0;
-			for (Item item : ForgeRegistries.ITEMS.getValues()) {
+			IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
+			for (Item item : registry.getValues()) {
 				ItemStack catalystIngredient = new ItemStack(item);
 				if (!catalystIngredient.isEmpty()) {
 					registration.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.TYPE);

@@ -6,7 +6,6 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IStackHelper;
@@ -26,12 +25,13 @@ import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.platform.IPlatformRegistry;
+import mezz.jei.common.platform.Services;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.plugins.vanilla.anvil.SmithingRecipeCategory;
 import mezz.jei.plugins.vanilla.brewing.BrewingRecipeCategory;
-import mezz.jei.plugins.vanilla.brewing.BrewingRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.PotionSubtypeInterpreter;
 import mezz.jei.plugins.vanilla.compostable.CompostableRecipeCategory;
 import mezz.jei.plugins.vanilla.compostable.CompostingRecipeMaker;
@@ -43,13 +43,10 @@ import mezz.jei.plugins.vanilla.cooking.fuel.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.cooking.fuel.FurnaceFuelCategory;
 import mezz.jei.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
+import mezz.jei.plugins.vanilla.crafting.VanillaRecipes;
 import mezz.jei.plugins.vanilla.crafting.replacers.ShulkerBoxColoringRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.replacers.SuspiciousStewRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
-import mezz.jei.plugins.vanilla.crafting.VanillaRecipes;
-import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackHelper;
-import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackListFactory;
-import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
@@ -57,47 +54,46 @@ import mezz.jei.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
-import net.minecraft.world.item.crafting.ShulkerBoxColoring;
-import net.minecraft.world.item.crafting.SuspiciousStewRecipe;
-import net.minecraft.world.item.crafting.TippedArrowRecipe;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
+import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.FurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.BlastFurnaceMenu;
 import net.minecraft.world.inventory.BrewingStandMenu;
+import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.FurnaceMenu;
-import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.inventory.SmokerMenu;
-import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
-import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.UpgradeRecipe;
+import net.minecraft.world.item.crafting.ShulkerBoxColoring;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
-
+import net.minecraft.world.item.crafting.SuspiciousStewRecipe;
+import net.minecraft.world.item.crafting.TippedArrowRecipe;
+import net.minecraft.world.item.crafting.UpgradeRecipe;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.Blocks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -141,7 +137,8 @@ public class VanillaPlugin implements IModPlugin {
 			for (int i = 0; i < enchantments.size(); ++i) {
 				CompoundTag compoundnbt = enchantments.getCompound(i);
 				String id = compoundnbt.getString("id");
-				Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(ResourceLocation.tryParse(id));
+				IPlatformRegistry<Enchantment> enchantmentRegistry = Services.PLATFORM.getRegistry(Registry.ENCHANTMENT_REGISTRY);
+				Enchantment enchantment = enchantmentRegistry.getValue(ResourceLocation.tryParse(id));
 				if (enchantment != null) {
 					String enchantmentUid = enchantment.getDescriptionId() + ".lvl" + compoundnbt.getShort("lvl");
 					enchantmentNames.add(enchantmentUid);
@@ -156,17 +153,11 @@ public class VanillaPlugin implements IModPlugin {
 	public void registerIngredients(IModIngredientRegistration registration) {
 		ISubtypeManager subtypeManager = registration.getSubtypeManager();
 		StackHelper stackHelper = new StackHelper(subtypeManager);
-		IColorHelper colorHelper = registration.getColorHelper();
 
 		List<ItemStack> itemStacks = ItemStackListFactory.create(stackHelper);
 		ItemStackHelper itemStackHelper = new ItemStackHelper(stackHelper);
 		ItemStackRenderer itemStackRenderer = new ItemStackRenderer();
 		registration.register(VanillaTypes.ITEM, itemStacks, itemStackHelper, itemStackRenderer);
-
-		List<FluidStack> fluidStacks = FluidStackListFactory.create();
-		FluidStackHelper fluidStackHelper = new FluidStackHelper(subtypeManager, colorHelper);
-		FluidStackRenderer fluidStackRenderer = new FluidStackRenderer();
-		registration.register(VanillaTypes.FLUID, fluidStacks, fluidStackHelper, fluidStackRenderer);
 	}
 
 	@Override
@@ -207,12 +198,14 @@ public class VanillaPlugin implements IModPlugin {
 
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
+		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 		VanillaRecipes vanillaRecipes = new VanillaRecipes();
 
 		Map<Boolean, List<CraftingRecipe>> craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
 		List<CraftingRecipe> handledCraftingRecipes = craftingRecipes.get(true);
 		List<CraftingRecipe> unhandledCraftingRecipes = craftingRecipes.get(false);
-		List<CraftingRecipe> specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes);
+		List<CraftingRecipe> specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, stackHelper);
 
 		registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);
 		registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);
@@ -223,7 +216,6 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(RecipeTypes.BLASTING, vanillaRecipes.getBlastingRecipes(blastingCategory));
 		registration.addRecipes(RecipeTypes.CAMPFIRE_COOKING, vanillaRecipes.getCampfireCookingRecipes(campfireCategory));
 		registration.addRecipes(RecipeTypes.FUELING, FuelRecipeMaker.getFuelRecipes(ingredientManager));
-		registration.addRecipes(RecipeTypes.BREWING, BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory));
 		registration.addRecipes(RecipeTypes.ANVIL, AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager));
 		registration.addRecipes(RecipeTypes.SMITHING, vanillaRecipes.getSmithingRecipes(smithingCategory));
 		registration.addRecipes(RecipeTypes.COMPOSTING, CompostingRecipeMaker.getRecipes(ingredientManager));
@@ -295,9 +287,9 @@ public class VanillaPlugin implements IModPlugin {
 	 * If a special recipe we know how to replace is not present (because it has been removed),
 	 * we do not replace it.
 	 */
-	private static List<CraftingRecipe> replaceSpecialCraftingRecipes(List<CraftingRecipe> unhandledCraftingRecipes) {
+	private static List<CraftingRecipe> replaceSpecialCraftingRecipes(List<CraftingRecipe> unhandledCraftingRecipes, IStackHelper stackHelper) {
 		Map<Class<? extends CraftingRecipe>, Supplier<List<CraftingRecipe>>> replacers = new IdentityHashMap<>();
-		replacers.put(TippedArrowRecipe.class, TippedArrowRecipeMaker::createRecipes);
+		replacers.put(TippedArrowRecipe.class, () -> TippedArrowRecipeMaker.createRecipes(stackHelper));
 		replacers.put(ShulkerBoxColoring.class, ShulkerBoxColoringRecipeMaker::createRecipes);
 		replacers.put(SuspiciousStewRecipe.class, SuspiciousStewRecipeMaker::createRecipes);
 

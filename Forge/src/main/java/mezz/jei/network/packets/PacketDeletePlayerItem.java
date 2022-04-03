@@ -4,13 +4,15 @@ import mezz.jei.common.network.IPacketId;
 import mezz.jei.common.network.PacketIdServer;
 import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.common.network.ServerPacketData;
+import mezz.jei.common.platform.IPlatformRegistry;
+import mezz.jei.common.platform.Services;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.util.ServerCommandUtil;
+import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class PacketDeletePlayerItem extends PacketJei {
 	private final ItemStack itemStack;
@@ -26,14 +28,18 @@ public class PacketDeletePlayerItem extends PacketJei {
 
 	@Override
 	public void writePacketData(FriendlyByteBuf buf) {
-		buf.writeRegistryIdUnsafe(ForgeRegistries.ITEMS, itemStack.getItem());
+		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
+		int itemId = registry.getId(itemStack.getItem());
+		buf.writeVarInt(itemId);
 	}
 
 	public static void readPacketData(ServerPacketData data) {
+		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
 		FriendlyByteBuf buf = data.buf();
 		ServerPlayer player = data.player();
 		IServerConfig serverConfig = data.serverConfig();
-		Item item = buf.readRegistryIdUnsafe(ForgeRegistries.ITEMS);
+		int itemId = buf.readVarInt();
+		Item item = registry.getValue(itemId);
 		if (ServerCommandUtil.hasPermissionForCheatMode(player, serverConfig)) {
 			ItemStack playerItem = player.containerMenu.getCarried();
 			if (playerItem.getItem() == item) {

@@ -2,7 +2,7 @@ package mezz.jei.gui.recipes.builder;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
@@ -17,7 +17,7 @@ import mezz.jei.gui.ingredients.RecipeSlots;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.IngredientAcceptor;
 import mezz.jei.ingredients.RegisteredIngredients;
-import mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackRenderer;
+import mezz.jei.forge.plugins.forge.ingredients.fluid.FluidStackRenderer;
 import mezz.jei.util.ErrorUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,7 +75,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 		Preconditions.checkArgument(capacityMb > 0, "capacityMb must be > 0");
 
 		FluidStackRenderer fluidStackRenderer = new FluidStackRenderer(capacityMb, showCapacity, width, height);
-		this.recipeSlot.addRenderOverride(VanillaTypes.FLUID, fluidStackRenderer);
+		this.recipeSlot.addRenderOverride(ForgeTypes.FLUID, fluidStackRenderer);
 		return this;
 	}
 

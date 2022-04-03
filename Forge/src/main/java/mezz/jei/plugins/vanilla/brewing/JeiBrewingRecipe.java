@@ -1,15 +1,13 @@
 package mezz.jei.plugins.vanilla.brewing;
 
-import java.util.List;
-
-import net.minecraftforge.registries.ForgeRegistries;
+import com.google.common.base.Objects;
+import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.resources.ResourceLocation;
 
-import com.google.common.base.Objects;
-import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
+import java.util.List;
 
 public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 	private final List<ItemStack> ingredients;
@@ -26,14 +24,11 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 
 		brewingRecipeUtil.addRecipe(potionInputs, potionOutput);
 
-		ItemStack firstIngredient = ingredients.get(0);
-		ItemStack firstInput = potionInputs.get(0);
-
-		Potion typeIn = PotionUtils.getPotion(firstInput);
-		Potion typeOut = PotionUtils.getPotion(potionOutput);
-		this.hashCode = Objects.hashCode(firstInput.getItem(), ForgeRegistries.POTIONS.getKey(typeIn),
-			potionOutput.getItem(), ForgeRegistries.POTIONS.getKey(typeOut),
-			firstIngredient.getItem());
+		this.hashCode = Objects.hashCode(
+			ingredients.stream().map(ItemStack::getItem).toList(),
+			potionInputs.stream().map(ItemStack::getItem).toList(),
+			potionOutput.getItem()
+		);
 	}
 
 	@Override

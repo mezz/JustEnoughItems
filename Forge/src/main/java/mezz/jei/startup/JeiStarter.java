@@ -11,7 +11,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.forge.config.ClientConfig;
+import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.IngredientFilterConfig;
@@ -103,7 +103,7 @@ public final class JeiStarter {
 		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins);
 		ErrorUtil.checkNotNull(vanillaPlugin, "vanilla plugin");
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
-		ClientConfig clientConfig = clientConfigs.getClientConfig();
+		IClientConfig clientConfig = clientConfigs.getClientConfig();
 		IngredientFilterConfig ingredientFilterConfig = clientConfigs.getFilterConfig();
 		IFilterTextSource filterTextSource = new FilterTextSource();
 		PluginLoader pluginLoader = new PluginLoader(

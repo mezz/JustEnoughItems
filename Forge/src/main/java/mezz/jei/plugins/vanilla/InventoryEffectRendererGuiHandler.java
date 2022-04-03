@@ -1,22 +1,21 @@
 package mezz.jei.plugins.vanilla;
 
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.common.platform.Services;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import mezz.jei.api.gui.handlers.IGuiContainerHandler;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.effect.MobEffectInstance;
-
-import net.minecraftforge.client.EffectRenderer;
-import net.minecraftforge.client.RenderProperties;
-
-class InventoryEffectRendererGuiHandler<T extends AbstractContainerMenu> implements IGuiContainerHandler<EffectRenderingInventoryScreen<T>> {
+public final class InventoryEffectRendererGuiHandler<T extends AbstractContainerMenu> implements IGuiContainerHandler<EffectRenderingInventoryScreen<T>> {
 	/**
 	 * Modeled after {@link DisplayEffectsScreen#drawActivePotionEffects()}
 	 */
@@ -43,9 +42,9 @@ class InventoryEffectRendererGuiHandler<T extends AbstractContainerMenu> impleme
 		if (activePotionEffects.size() > 5) {
 			height = 132 / (activePotionEffects.size() - 1);
 		}
+		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		for (MobEffectInstance potionEffect : activePotionEffects) {
-			EffectRenderer effectRenderer = RenderProperties.getEffectRenderer(potionEffect);
-			if (effectRenderer.shouldRender(potionEffect)) {
+			if (renderHelper.shouldRender(potionEffect)) {
 				areas.add(new Rect2i(x, y, width, height));
 				y += height;
 			}

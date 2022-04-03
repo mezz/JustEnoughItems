@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IBookmarkOverlay;
@@ -105,7 +106,7 @@ public class LegacyDebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		FluidStack water = new FluidStack(Fluids.WATER, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME));
 		FluidStack lava = new FluidStack(Fluids.LAVA, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME));
 
-		ingredients.setInputs(VanillaTypes.FLUID, List.of(water, lava));
+		ingredients.setInputs(ForgeTypes.FLUID, List.of(water, lava));
 
 		ingredients.setInput(VanillaTypes.ITEM, new ItemStack(Items.STICK));
 
@@ -192,7 +193,7 @@ public class LegacyDebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 
 		guiFluidStacks.setBackground(0, tankBackground);
 
-		List<List<FluidStack>> fluidInputs = ingredients.getInputs(VanillaTypes.FLUID);
+		List<List<FluidStack>> fluidInputs = ingredients.getInputs(ForgeTypes.FLUID);
 		guiFluidStacks.set(0, fluidInputs.get(0));
 		guiFluidStacks.set(1, fluidInputs.get(1));
 

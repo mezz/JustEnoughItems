@@ -1,7 +1,7 @@
-package mezz.jei.plugins.vanilla.ingredients.fluid;
+package mezz.jei.forge.plugins.forge.ingredients.fluid;
 
 import com.google.common.base.MoreObjects;
-import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -40,7 +40,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public IIngredientType<FluidStack> getIngredientType() {
-		return VanillaTypes.FLUID;
+		return ForgeTypes.FLUID;
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import mezz.jei.ingredients.IIngredientSupplier;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.ingredients.RegisteredIngredients;
-import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.RecipeErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

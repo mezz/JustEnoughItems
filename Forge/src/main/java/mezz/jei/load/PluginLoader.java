@@ -20,7 +20,6 @@ import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
-import mezz.jei.forge.util.ForgeRecipeRegistryHelper;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.ingredients.IListElement;

@@ -2,6 +2,7 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
@@ -52,7 +53,7 @@ public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayou
 		this.guiItemStackGroup = new RecipeSlotsGuiItemStackGroupAdapter(recipeSlots, registeredIngredients, ingredientCycleOffset);
 		this.guiItemStackGroup.setOverrideDisplayFocus(itemStackFocus);
 
-		IFocus<FluidStack> fluidStackFocus = focuses.getFocuses(VanillaTypes.FLUID).findFirst().orElse(null);
+		IFocus<FluidStack> fluidStackFocus = focuses.getFocuses(ForgeTypes.FLUID).findFirst().orElse(null);
 		this.guiFluidStackGroup = new RecipeSlotsGuiFluidStackGroupAdapter(recipeSlots, registeredIngredients, ingredientCycleOffset);
 		this.guiFluidStackGroup.setOverrideDisplayFocus(fluidStackFocus);
 	}
@@ -112,7 +113,7 @@ public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayou
 		if (ingredientType == VanillaTypes.ITEM) {
 			return (IGuiIngredientGroup<V>) this.guiItemStackGroup;
 		}
-		if (ingredientType == VanillaTypes.FLUID) {
+		if (ingredientType == ForgeTypes.FLUID) {
 			return (IGuiIngredientGroup<V>) this.guiFluidStackGroup;
 		}
 		RecipeSlotsGuiIngredientGroupAdapter<V> adapter = new RecipeSlotsGuiIngredientGroupAdapter<>(

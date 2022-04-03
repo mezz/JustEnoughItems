@@ -2,7 +2,7 @@ package mezz.jei.plugins.debug;
 
 import mezz.jei.Internal;
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -86,7 +86,7 @@ public class DebugFocusRecipeCategory implements IRecipeCategory<DebugRecipe> {
 
 		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 20, 0)
 			.addItemStack(ItemStack.EMPTY)
-			.addIngredients(VanillaTypes.FLUID, List.of(
+			.addIngredients(ForgeTypes.FLUID, List.of(
 				new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME),
 				new FluidStack(Fluids.LAVA, FluidAttributes.BUCKET_VOLUME)
 			))

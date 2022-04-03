@@ -4,8 +4,11 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.platform.IPlatformRegistry;
+import mezz.jei.common.platform.Services;
 import mezz.jei.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Registry;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +21,6 @@ import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -83,8 +85,8 @@ public final class AnvilRecipeMaker {
 		IVanillaRecipeFactory vanillaRecipeFactory,
 		IIngredientManager ingredientManager
 	) {
-		List<EnchantmentData> enchantmentDatas = ForgeRegistries.ENCHANTMENTS
-			.getValues()
+		IPlatformRegistry<Enchantment> registry = Services.PLATFORM.getRegistry(Registry.ENCHANTMENT_REGISTRY);
+		List<EnchantmentData> enchantmentDatas = registry.getValues()
 			.stream()
 			.map(EnchantmentData::new)
 			.toList();

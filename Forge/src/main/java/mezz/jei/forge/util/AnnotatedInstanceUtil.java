@@ -1,4 +1,4 @@
-package mezz.jei.util;
+package mezz.jei.forge.util;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;

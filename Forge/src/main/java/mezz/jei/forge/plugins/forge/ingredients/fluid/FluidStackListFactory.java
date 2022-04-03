@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.ingredients.fluid;
+package mezz.jei.forge.plugins.forge.ingredients.fluid;
 
 import java.util.Collection;
 import java.util.List;

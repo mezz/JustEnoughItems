@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.brewing;
+package mezz.jei.forge.plugins.forge.brewing;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,8 +52,6 @@ public class BrewingRecipeMaker {
 	}
 
 	private List<IJeiBrewingRecipe> getBrewingRecipes() {
-		unhandledRecipeClasses.clear();
-
 		Set<IJeiBrewingRecipe> recipes = new HashSet<>();
 
 		Collection<IBrewingRecipe> brewingRecipes = BrewingRecipeRegistry.getRecipes();

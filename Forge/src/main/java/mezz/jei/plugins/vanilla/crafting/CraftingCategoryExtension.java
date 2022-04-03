@@ -5,10 +5,11 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
+import mezz.jei.common.platform.IPlatformRecipeHelper;
+import mezz.jei.common.platform.Services;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.common.util.Size2i;
 
 import org.jetbrains.annotations.Nullable;
@@ -44,25 +45,26 @@ public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICra
 	@Nullable
 	@Override
 	public Size2i getSize() {
-		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
-			return new Size2i(shapedRecipe.getRecipeWidth(), shapedRecipe.getRecipeHeight());
+		int width = getWidth();
+		if (width == 0) {
+			return null;
 		}
-		return null;
+		int height = getHeight();
+		if (height == 0) {
+			return null;
+		}
+		return new Size2i(width, height);
 	}
 
 	@Override
 	public int getWidth() {
-		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
-			return shapedRecipe.getRecipeWidth();
-		}
-		return 0;
+		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
+		return recipeHelper.getWidth(recipe);
 	}
 
 	@Override
 	public int getHeight() {
-		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
-			return shapedRecipe.getRecipeHeight();
-		}
-		return 0;
+		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
+		return recipeHelper.getHeight(recipe);
 	}
 }

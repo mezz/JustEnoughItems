@@ -1,4 +1,4 @@
-package mezz.jei.startup;
+package mezz.jei.forge.startup;
 
 import mezz.jei.events.DebugRestartJeiEvent;
 import mezz.jei.events.PermanentEventSubscriptions;

@@ -1,4 +1,4 @@
-package mezz.jei;
+package mezz.jei.forge;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.core.config.IServerConfig;

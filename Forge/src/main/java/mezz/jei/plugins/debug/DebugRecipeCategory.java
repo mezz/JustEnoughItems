@@ -6,6 +6,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -152,7 +153,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 				.setFluidRenderer(capacityMb, false, 16, 58)
 				.setOverlay(tankOverlay, -1, -1)
 				.setBackground(tankBackground, -1, -1)
-				.addIngredient(VanillaTypes.FLUID, new FluidStack(Fluids.WATER, amountMb));
+				.addIngredient(ForgeTypes.FLUID, new FluidStack(Fluids.WATER, amountMb));
 		}
 
 		{
@@ -161,7 +162,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			int amountMb = (capacityMb / 2) + (int) ((Math.random() * capacityMb) / 2);
 			builder.addSlot(RecipeIngredientRole.INPUT, 24, 0)
 				.setFluidRenderer(capacityMb, true, 12, 47)
-				.addIngredient(VanillaTypes.FLUID, new FluidStack(Fluids.LAVA, amountMb));
+				.addIngredient(ForgeTypes.FLUID, new FluidStack(Fluids.LAVA, amountMb));
 		}
 
 		// DEBUG type

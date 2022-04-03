@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.ingredients.fluid;
+package mezz.jei.forge.plugins.forge.ingredients.fluid;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;

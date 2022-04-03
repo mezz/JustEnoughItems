@@ -1,11 +1,12 @@
-package mezz.jei;
+package mezz.jei.forge;
 
+import mezz.jei.Internal;
 import mezz.jei.config.JEIClientConfigs;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.events.PermanentEventSubscriptions;
 import mezz.jei.gui.textures.JeiSpriteUploader;
 import mezz.jei.gui.textures.Textures;
-import mezz.jei.startup.ClientLifecycleHandler;
+import mezz.jei.forge.startup.ClientLifecycleHandler;
 import mezz.jei.forge.network.NetworkHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;

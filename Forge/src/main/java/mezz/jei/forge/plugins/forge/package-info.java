@@ -1,7 +1,7 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.plugins.vanilla.ingredients.fluid;
-
-import javax.annotation.ParametersAreNonnullByDefault;
+package mezz.jei.forge.plugins.forge;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
+
+import javax.annotation.ParametersAreNonnullByDefault;
