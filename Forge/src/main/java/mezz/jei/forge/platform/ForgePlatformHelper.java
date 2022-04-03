@@ -10,6 +10,7 @@ public class ForgePlatformHelper implements IPlatformHelper {
     private final ForgeRenderHelper renderHelper = new ForgeRenderHelper();
     private final ForgeRecipeHelper recipeHelper = new ForgeRecipeHelper();
     private final ForgeServerHelper serverHelper = new ForgeServerHelper();
+    private final ForgeConfigHelper configHelper = new ForgeConfigHelper();
 
     @Override
     public <T> IPlatformRegistry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
@@ -34,6 +35,11 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public ForgeServerHelper getServerHelper() {
         return serverHelper;
+    }
+
+    @Override
+    public ForgeConfigHelper getConfigHelper() {
+        return configHelper;
     }
 }
 

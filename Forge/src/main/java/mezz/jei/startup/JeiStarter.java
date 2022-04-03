@@ -18,7 +18,7 @@ import mezz.jei.forge.config.IngredientFilterConfig;
 import mezz.jei.forge.config.JEIClientConfigs;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
-import mezz.jei.gui.GuiEventHandler;
+import mezz.jei.forge.events.GuiEventHandler;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.overlay.FilterTextSource;
 import mezz.jei.gui.overlay.IFilterTextSource;
@@ -168,7 +168,6 @@ public final class JeiStarter {
 			worldConfig,
 			serverConnection
 		);
-		ingredientListOverlay.register(subscriptions);
 
 		IngredientGrid bookmarkListGrid = new IngredientGrid(
 			registeredIngredients,

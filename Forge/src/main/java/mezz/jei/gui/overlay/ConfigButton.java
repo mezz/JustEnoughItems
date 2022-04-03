@@ -1,24 +1,20 @@
 package mezz.jei.gui.overlay;
 
 import mezz.jei.Internal;
-import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.common.platform.IPlatformConfigHelper;
+import mezz.jei.common.platform.Services;
 import mezz.jei.config.KeyBindings;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.UserInput;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraftforge.client.ConfigGuiHandler;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModList;
 
 import java.util.List;
 import java.util.Optional;
@@ -100,21 +96,13 @@ public class ConfigButton extends GuiIconToggleButton {
 			return;
 		}
 
-		Optional<Screen> configScreen = ModList.get()
-			.getModContainerById(ModIds.JEI_ID)
-			.map(ModContainer::getModInfo)
-			.flatMap(ConfigGuiHandler::getGuiFactoryFor)
-			.map(f -> f.apply(mc, mc.screen));
+		IPlatformConfigHelper configHelper = Services.PLATFORM.getConfigHelper();
+		Optional<Screen> configScreen = configHelper.getConfigScreen();
 
 		if (configScreen.isPresent()) {
 			mc.setScreen(configScreen.get());
 		} else {
-			ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/configured");
-			Style style = Style.EMPTY
-				.setUnderlined(true)
-				.withClickEvent(clickEvent);
-			MutableComponent message = new TranslatableComponent("jei.message.configured");
-			message = message.setStyle(style);
+			Component message = configHelper.getMissingConfigScreenMessage();
 			mc.player.displayClientMessage(message, false);
 		}
 	}

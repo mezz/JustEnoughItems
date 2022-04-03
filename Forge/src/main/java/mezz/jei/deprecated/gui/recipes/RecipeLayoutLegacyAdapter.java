@@ -1,4 +1,4 @@
-package mezz.jei.gui.recipes;
+package mezz.jei.deprecated.gui.recipes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
@@ -14,9 +14,10 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.ingredients.RecipeSlots;
-import mezz.jei.gui.ingredients.adapters.RecipeSlotsGuiFluidStackGroupAdapter;
-import mezz.jei.gui.ingredients.adapters.RecipeSlotsGuiIngredientGroupAdapter;
-import mezz.jei.gui.ingredients.adapters.RecipeSlotsGuiItemStackGroupAdapter;
+import mezz.jei.deprecated.gui.ingredients.adapters.RecipeSlotsGuiFluidStackGroupAdapter;
+import mezz.jei.deprecated.gui.ingredients.adapters.RecipeSlotsGuiIngredientGroupAdapter;
+import mezz.jei.deprecated.gui.ingredients.adapters.RecipeSlotsGuiItemStackGroupAdapter;
+import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.Ingredients;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +26,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings({"unchecked", "removal"})
+@SuppressWarnings({"unchecked", "removal", "DeprecatedIsStillUsed"})
+@Deprecated
 public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayoutDrawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 

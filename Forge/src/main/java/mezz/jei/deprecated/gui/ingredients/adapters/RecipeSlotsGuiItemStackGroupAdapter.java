@@ -1,4 +1,4 @@
-package mezz.jei.gui.ingredients.adapters;
+package mezz.jei.deprecated.gui.ingredients.adapters;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;

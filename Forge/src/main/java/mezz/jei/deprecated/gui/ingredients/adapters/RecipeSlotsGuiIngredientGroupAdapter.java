@@ -1,4 +1,4 @@
-package mezz.jei.gui.ingredients.adapters;
+package mezz.jei.deprecated.gui.ingredients.adapters;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntArraySet;

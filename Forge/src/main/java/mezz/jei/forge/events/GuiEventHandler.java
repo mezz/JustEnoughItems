@@ -1,21 +1,22 @@
-package mezz.jei.gui;
+package mezz.jei.forge.events;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.forge.events.RuntimeEventSubscriptions;
+import mezz.jei.api.gui.handlers.IGuiClickableArea;
+import mezz.jei.common.util.LimitedLogger;
+import mezz.jei.gui.GuiScreenHelper;
+import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
+import mezz.jei.input.MouseUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.event.ScreenOpenEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-
-import mezz.jei.api.gui.handlers.IGuiClickableArea;
-import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
-import mezz.jei.input.MouseUtil;
-import mezz.jei.common.util.LimitedLogger;
+import net.minecraftforge.eventbus.api.Event;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,6 +50,7 @@ public class GuiEventHandler {
 		subscriptions.register(ContainerScreenEvent.DrawForeground.class, this::onDrawForegroundEvent);
 		subscriptions.register(ScreenEvent.DrawScreenEvent.Post.class, this::onDrawScreenEventPost);
 		subscriptions.register(TickEvent.ClientTickEvent.class, this::onClientTick);
+		subscriptions.register(ScreenEvent.PotionSizeEvent.class, this::onPotionSizeEvent);
 	}
 
 	public void onGuiInit(ScreenEvent.InitScreenEvent.Post event) {
@@ -126,5 +128,13 @@ public class GuiEventHandler {
 		}
 
 		ingredientListOverlay.handleTick();
+	}
+
+	public void onPotionSizeEvent(ScreenEvent.PotionSizeEvent event) {
+		if (ingredientListOverlay.isListDisplayed()) {
+			// Forcibly renders the potion indicators in compact mode.
+			// This gives the ingredient list overlay more room to display ingredients.
+			event.setResult(Event.Result.ALLOW);
+		}
 	}
 }

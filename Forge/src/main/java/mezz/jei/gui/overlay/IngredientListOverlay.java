@@ -6,9 +6,9 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
@@ -23,14 +23,11 @@ import mezz.jei.input.mouse.handlers.CheatInputHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.input.mouse.handlers.NullInputHandler;
 import mezz.jei.input.mouse.handlers.ProxyInputHandler;
-import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -301,15 +298,5 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 				.toList();
 		}
 		return Collections.emptyList();
-	}
-
-	public void register(RuntimeEventSubscriptions subscriptions) {
-		subscriptions.register(ScreenEvent.PotionSizeEvent.class, event -> {
-			if (isListDisplayed()) {
-				// Forcibly renders the potion indicators in compact mode.
-				// This gives the ingredient list overlay more room to display ingredients.
-				event.setResult(Event.Result.ALLOW);
-			}
-		});
 	}
 }
