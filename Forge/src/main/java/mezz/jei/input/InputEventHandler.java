@@ -1,7 +1,7 @@
 package mezz.jei.input;
 
 import mezz.jei.config.KeyBindings;
-import mezz.jei.events.RuntimeEventSubscriptions;
+import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.input.mouse.ICharTypedHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.core.util.ReflectionUtil;

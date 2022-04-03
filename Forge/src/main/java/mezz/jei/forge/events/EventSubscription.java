@@ -1,4 +1,4 @@
-package mezz.jei.events;
+package mezz.jei.forge.events;
 
 import mezz.jei.core.util.WeakConsumer;
 import net.minecraftforge.eventbus.api.Event;

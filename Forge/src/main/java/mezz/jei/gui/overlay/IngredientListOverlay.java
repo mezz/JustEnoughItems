@@ -8,7 +8,7 @@ import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.events.RuntimeEventSubscriptions;
+import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;

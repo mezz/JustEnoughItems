@@ -1,7 +1,7 @@
 package mezz.jei.forge.startup;
 
-import mezz.jei.events.DebugRestartJeiEvent;
-import mezz.jei.events.PermanentEventSubscriptions;
+import mezz.jei.forge.events.DebugRestartJeiEvent;
+import mezz.jei.forge.events.PermanentEventSubscriptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

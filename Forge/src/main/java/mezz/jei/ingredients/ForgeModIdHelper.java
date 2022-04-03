@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.ChatFormatting;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.config.ModIdFormattingConfig;
+import mezz.jei.forge.config.ModIdFormattingConfig;
 import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.commons.lang3.StringUtils;
 

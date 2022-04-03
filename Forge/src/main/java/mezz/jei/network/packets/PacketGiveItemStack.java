@@ -6,11 +6,8 @@ import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.core.config.GiveMode;
-import mezz.jei.core.config.IServerConfig;
-import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.util.ServerCommandUtil;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
 public class PacketGiveItemStack extends PacketJei {

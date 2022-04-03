@@ -2,7 +2,7 @@ package mezz.jei.forge;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.core.config.IServerConfig;
-import mezz.jei.events.PermanentEventSubscriptions;
+import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.NetworkHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;

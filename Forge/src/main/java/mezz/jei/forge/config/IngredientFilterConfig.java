@@ -1,5 +1,6 @@
-package mezz.jei.config;
+package mezz.jei.forge.config;
 
+import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.core.search.SearchMode;
 import net.minecraftforge.common.ForgeConfigSpec;
 

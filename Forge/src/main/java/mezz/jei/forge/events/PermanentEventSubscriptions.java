@@ -1,4 +1,4 @@
-package mezz.jei.events;
+package mezz.jei.forge.events;
 
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;

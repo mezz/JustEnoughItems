@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import mezz.jei.Internal;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.color.ColorNamer;
-import mezz.jei.config.IJEIConfig;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IngredientSortStage;
 import mezz.jei.core.config.GiveMode;
@@ -24,7 +23,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public final class ClientConfig implements IJEIConfig, IClientConfig {
+public final class ClientConfig implements IClientConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 	@Nullable
 	private static IClientConfig instance;
@@ -102,7 +101,6 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 		return instance;
 	}
 
-	@Override
 	public void reload() {
 		this.ingredientSorterStages = ingredientSorterStagesCfg.get()
 			.stream()

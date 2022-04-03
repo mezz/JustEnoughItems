@@ -1,4 +1,4 @@
-package mezz.jei.config;
+package mezz.jei.forge.config;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ModIdFormattingConfig implements IJEIConfig {
+public class ModIdFormattingConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
@@ -63,7 +63,6 @@ public class ModIdFormattingConfig implements IJEIConfig {
 		builder.pop();
 	}
 
-	@Override
 	public void reload() {
 		modNameFormatFriendly = modNameFormatConfig.get();
 		updateModNameFormat();

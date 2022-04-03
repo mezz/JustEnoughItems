@@ -1,7 +1,7 @@
 package mezz.jei.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.events.RuntimeEventSubscriptions;
+import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent;

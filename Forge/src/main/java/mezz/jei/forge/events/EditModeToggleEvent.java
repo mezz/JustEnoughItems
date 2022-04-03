@@ -1,4 +1,4 @@
-package mezz.jei.events;
+package mezz.jei.forge.events;
 
 public class EditModeToggleEvent extends JeiEvent {
 	private final boolean editModeEnabled;

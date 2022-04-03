@@ -2,7 +2,7 @@ package mezz.jei.input.mouse.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.config.KeyBindings;
-import mezz.jei.events.DebugRestartJeiEvent;
+import mezz.jei.forge.events.DebugRestartJeiEvent;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.TextHistory;
 import mezz.jei.input.UserInput;

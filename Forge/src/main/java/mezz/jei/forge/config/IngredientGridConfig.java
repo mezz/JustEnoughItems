@@ -1,5 +1,6 @@
-package mezz.jei.config;
+package mezz.jei.forge.config;
 
+import mezz.jei.config.IIngredientGridConfig;
 import mezz.jei.gui.overlay.HorizontalAlignment;
 import mezz.jei.gui.overlay.NavigationVisibility;
 import mezz.jei.gui.overlay.VerticalAlignment;
