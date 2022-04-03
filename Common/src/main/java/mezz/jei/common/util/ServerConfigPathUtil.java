@@ -1,5 +1,7 @@
 package mezz.jei.common.util;
 
+import mezz.jei.common.platform.IPlatformServerHelper;
+import mezz.jei.common.platform.Services;
 import mezz.jei.core.util.FileUtil;
 import mezz.jei.core.util.ReflectionUtil;
 import net.minecraft.client.Minecraft;
@@ -11,7 +13,6 @@ import net.minecraft.world.level.storage.LevelStorageSource;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
-import java.util.function.Supplier;
 
 public final class ServerConfigPathUtil {
 	private static final Path worldDirPath = Path.of("world");
@@ -22,8 +23,8 @@ public final class ServerConfigPathUtil {
 	}
 
 	@Nullable
-	public static Path getWorldPath(Path basePath, Supplier<MinecraftServer> serverSupplier) {
-		Path worldPath = getWorldPath(serverSupplier);
+	public static Path getWorldPath(Path basePath) {
+		Path worldPath = getWorldPath();
 		if (worldPath == null) {
 			return null;
 		}
@@ -31,7 +32,7 @@ public final class ServerConfigPathUtil {
 	}
 
 	@Nullable
-	private static Path getWorldPath(Supplier<MinecraftServer> serverSupplier) {
+	private static Path getWorldPath() {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPacketListener clientPacketListener = minecraft.getConnection();
 		if (clientPacketListener == null) {
@@ -39,7 +40,8 @@ public final class ServerConfigPathUtil {
 		}
 		Connection connection = clientPacketListener.getConnection();
 		if (connection.isMemoryConnection()) {
-			MinecraftServer minecraftServer = serverSupplier.get();
+			IPlatformServerHelper serverHelper = Services.PLATFORM.getServerHelper();
+			MinecraftServer minecraftServer = serverHelper.getServer();
 			if (minecraftServer != null) {
 				return reflectionUtil.getFieldWithClass(minecraftServer, LevelStorageSource.LevelStorageAccess.class)
 					.findFirst()

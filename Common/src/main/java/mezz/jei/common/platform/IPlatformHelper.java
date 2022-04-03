@@ -11,4 +11,6 @@ public interface IPlatformHelper {
     IPlatformRenderHelper getRenderHelper();
 
     IPlatformRecipeHelper getRecipeHelper();
+
+    IPlatformServerHelper getServerHelper();
 }

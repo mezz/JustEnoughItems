@@ -9,6 +9,7 @@ public class ForgePlatformHelper implements IPlatformHelper {
     private final ForgeItemStackHelper itemStackHelper = new ForgeItemStackHelper();
     private final ForgeRenderHelper renderHelper = new ForgeRenderHelper();
     private final ForgeRecipeHelper recipeHelper = new ForgeRecipeHelper();
+    private final ForgeServerHelper serverHelper = new ForgeServerHelper();
 
     @Override
     public <T> IPlatformRegistry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
@@ -28,6 +29,11 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public ForgeRecipeHelper getRecipeHelper() {
         return recipeHelper;
+    }
+
+    @Override
+    public ForgeServerHelper getServerHelper() {
+        return serverHelper;
     }
 }
 
