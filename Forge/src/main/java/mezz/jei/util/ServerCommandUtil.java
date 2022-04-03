@@ -3,6 +3,7 @@ package mezz.jei.util;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.common.network.IConnectionToClient;
@@ -91,12 +92,12 @@ public final class ServerCommandUtil {
 	 * Gives a player an item.
 	 */
 	public static void executeGive(
-		ServerPlayer sender,
+		ServerPacketContext context,
 		ItemStack itemStack,
-		GiveMode giveMode,
-		IServerConfig serverConfig,
-		IConnectionToClient connection
+		GiveMode giveMode
 	) {
+		ServerPlayer sender = context.player();
+		IServerConfig serverConfig = context.serverConfig();
 		if (hasPermissionForCheatMode(sender, serverConfig)) {
 			if (giveMode == GiveMode.INVENTORY) {
 				giveToInventory(sender, itemStack);
@@ -104,17 +105,18 @@ public final class ServerCommandUtil {
 				mousePickupItemStack(sender, itemStack);
 			}
 		} else {
+			IConnectionToClient connection = context.connection();
 			connection.sendPacketToClient(new PacketCheatPermission(false), sender);
 		}
 	}
 
 	public static void setHotbarSlot(
-		ServerPlayer sender,
+		ServerPacketContext context,
 		ItemStack itemStack,
-		int hotbarSlot,
-		IServerConfig serverConfig,
-		IConnectionToClient connection
+		int hotbarSlot
 	) {
+		ServerPlayer sender = context.player();
+		IServerConfig serverConfig = context.serverConfig();
 		if (hasPermissionForCheatMode(sender, serverConfig)) {
 			if (!Inventory.isHotbarSlot(hotbarSlot)) {
 				LOGGER.error("Tried to set slot that is not in the hotbar: {}", hotbarSlot);
@@ -130,6 +132,7 @@ public final class ServerCommandUtil {
 			sender.inventoryMenu.broadcastChanges();
 			notifyGive(sender, itemStackCopy);
 		} else {
+			IConnectionToClient connection = context.connection();
 			connection.sendPacketToClient(new PacketCheatPermission(false), sender);
 		}
 	}

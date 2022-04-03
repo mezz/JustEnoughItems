@@ -1,5 +1,6 @@
 package mezz.jei.network;
 
+import mezz.jei.common.network.ClientPacketContext;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.PacketIdClient;
 import mezz.jei.common.network.ClientPacketData;
@@ -36,7 +37,8 @@ public class ClientPacketRouter {
 		Minecraft minecraft = Minecraft.getInstance();
 		LocalPlayer player = minecraft.player;
 		if (player != null) {
-			ClientPacketData data = new ClientPacketData(packetBuffer, player, connection, serverConfig, worldConfig);
+			ClientPacketContext context = new ClientPacketContext(player, connection, serverConfig, worldConfig);
+			ClientPacketData data = new ClientPacketData(packetBuffer, context);
 			packetHandler.readPacketData(data);
 		}
 	}

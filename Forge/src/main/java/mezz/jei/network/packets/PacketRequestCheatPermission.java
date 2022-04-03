@@ -2,6 +2,7 @@ package mezz.jei.network.packets;
 
 import mezz.jei.common.network.IPacketId;
 import mezz.jei.common.network.PacketIdServer;
+import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.PacketCheatPermission;
 import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.common.network.ServerPacketData;
@@ -23,12 +24,13 @@ public class PacketRequestCheatPermission extends PacketJei {
 	}
 
 	public static void readPacketData(ServerPacketData data) {
-		ServerPlayer player = data.player();
-		IServerConfig serverConfig = data.serverConfig();
+		ServerPacketContext context = data.context();
+		ServerPlayer player = context.player();
+		IServerConfig serverConfig = context.serverConfig();
 		boolean hasPermission = ServerCommandUtil.hasPermissionForCheatMode(player, serverConfig);
 		PacketCheatPermission packetCheatPermission = new PacketCheatPermission(hasPermission);
 
-		IConnectionToClient connection = data.connection();
+		IConnectionToClient connection = context.connection();
 		connection.sendPacketToClient(packetCheatPermission, player);
 	}
 }

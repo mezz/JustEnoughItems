@@ -2,6 +2,7 @@ package mezz.jei.network.packets;
 
 import mezz.jei.common.network.IPacketId;
 import mezz.jei.common.network.PacketIdServer;
+import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.core.config.GiveMode;
@@ -33,14 +34,12 @@ public class PacketGiveItemStack extends PacketJei {
 	}
 
 	public static void readPacketData(ServerPacketData data) {
-		ServerPlayer player = data.player();
 		FriendlyByteBuf buf = data.buf();
 		ItemStack itemStack = buf.readItem();
 		if (!itemStack.isEmpty()) {
 			GiveMode giveMode = buf.readEnum(GiveMode.class);
-			IServerConfig serverConfig = data.serverConfig();
-			IConnectionToClient connection = data.connection();
-			ServerCommandUtil.executeGive(player, itemStack, giveMode, serverConfig, connection);
+			ServerPacketContext context = data.context();
+			ServerCommandUtil.executeGive(context, itemStack, giveMode);
 		}
 	}
 }

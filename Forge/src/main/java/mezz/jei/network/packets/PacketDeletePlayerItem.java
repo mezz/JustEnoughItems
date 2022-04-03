@@ -2,6 +2,7 @@ package mezz.jei.network.packets;
 
 import mezz.jei.common.network.IPacketId;
 import mezz.jei.common.network.PacketIdServer;
+import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.common.platform.IPlatformRegistry;
@@ -36,8 +37,9 @@ public class PacketDeletePlayerItem extends PacketJei {
 	public static void readPacketData(ServerPacketData data) {
 		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
 		FriendlyByteBuf buf = data.buf();
-		ServerPlayer player = data.player();
-		IServerConfig serverConfig = data.serverConfig();
+		ServerPacketContext context = data.context();
+		ServerPlayer player = context.player();
+		IServerConfig serverConfig = context.serverConfig();
 		int itemId = buf.readVarInt();
 		Item item = registry.getValue(itemId);
 		if (ServerCommandUtil.hasPermissionForCheatMode(player, serverConfig)) {

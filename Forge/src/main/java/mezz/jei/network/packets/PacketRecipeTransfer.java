@@ -2,6 +2,7 @@ package mezz.jei.network.packets;
 
 import mezz.jei.common.network.IPacketId;
 import mezz.jei.common.network.PacketIdServer;
+import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.transfer.BasicRecipeTransferHandlerServer;
@@ -63,7 +64,8 @@ public class PacketRecipeTransfer extends PacketJei {
 	}
 
 	public static void readPacketData(ServerPacketData data) {
-		ServerPlayer player = data.player();
+		ServerPacketContext context = data.context();
+		ServerPlayer player = context.player();
 		FriendlyByteBuf buf = data.buf();
 		AbstractContainerMenu container = player.containerMenu;
 

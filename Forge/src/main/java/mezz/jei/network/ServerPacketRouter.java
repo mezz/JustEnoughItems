@@ -3,6 +3,7 @@ package mezz.jei.network;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.PacketIdServer;
+import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.IServerPacketHandler;
 import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.core.config.IServerConfig;
@@ -39,7 +40,8 @@ public class ServerPacketRouter {
 		PacketIdServer packetId = PacketIdServer.VALUES[packetIdOrdinal];
 		IServerPacketHandler packetHandler = handlers.get(packetId);
 
-		ServerPacketData data = new ServerPacketData(packetBuffer, player, serverConfig, connection);
+		ServerPacketContext context = new ServerPacketContext(player, serverConfig, connection);
+		ServerPacketData data = new ServerPacketData(packetBuffer, context);
 		packetHandler.readPacketData(data);
 	}
 }
