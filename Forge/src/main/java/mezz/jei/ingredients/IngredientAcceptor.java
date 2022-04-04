@@ -11,7 +11,8 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.util.ErrorUtil;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 

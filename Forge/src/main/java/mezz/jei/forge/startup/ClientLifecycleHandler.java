@@ -28,7 +28,7 @@ import mezz.jei.ingredients.ForgeModIdHelper;
 import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientSorter;
 import mezz.jei.startup.JeiStarter;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.util.RecipeErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.PreparableReloadListener;

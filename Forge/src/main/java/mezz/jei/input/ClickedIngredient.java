@@ -5,8 +5,8 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.ingredients.RegisteredIngredients;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import org.jetbrains.annotations.Nullable;
 

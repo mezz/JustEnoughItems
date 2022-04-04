@@ -8,7 +8,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
 import net.minecraft.client.Minecraft;

@@ -16,4 +16,7 @@ public interface IPlatformRegistry<T> {
     T getValue(int id);
 
     boolean contains(T entry);
+
+    @Nullable
+    ResourceLocation getRegistryName(T entry);
 }

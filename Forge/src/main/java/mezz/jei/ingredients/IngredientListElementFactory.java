@@ -2,6 +2,8 @@ package mezz.jei.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.ingredients.IngredientInfo;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.gui.ingredients.IListElement;
 import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;

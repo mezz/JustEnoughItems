@@ -5,7 +5,7 @@ import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.load.registration.SubtypeRegistration;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.util.ErrorUtil;
 import org.jetbrains.annotations.Nullable;
 
 public class SubtypeManager implements ISubtypeManager {

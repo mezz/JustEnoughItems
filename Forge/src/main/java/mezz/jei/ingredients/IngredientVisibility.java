@@ -4,6 +4,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.core.config.IWorldConfig;
 

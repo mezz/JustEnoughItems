@@ -1,6 +1,7 @@
 package mezz.jei.util;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.common.util.ErrorUtil;
 import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;

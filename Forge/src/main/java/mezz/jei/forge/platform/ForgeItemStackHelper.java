@@ -1,7 +1,7 @@
 package mezz.jei.forge.platform;
 
 import mezz.jei.common.platform.IPlatformItemStackHelper;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeHooks;
 import org.apache.logging.log4j.LogManager;

@@ -1,4 +1,4 @@
-package mezz.jei.color;
+package mezz.jei.common.color;
 
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
@@ -26,7 +26,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.Mth;
 
 import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -109,7 +109,8 @@ public final class ColorGetter implements IColorHelper {
 	}
 
 	private static List<Integer> getItemColors(ItemStack itemStack, int colorCount) {
-		final ItemColors itemColors = Minecraft.getInstance().getItemColors();
+		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+		final ItemColors itemColors = renderHelper.getItemColors();
 		final int renderColor = itemColors.getColor(itemStack, 0);
 		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(itemStack);
 		if (textureAtlasSprite == null) {
@@ -160,12 +161,12 @@ public final class ColorGetter implements IColorHelper {
 	private static NativeImage getNativeImage(TextureAtlasSprite textureAtlasSprite) {
 		final int iconWidth = textureAtlasSprite.getWidth();
 		final int iconHeight = textureAtlasSprite.getHeight();
-		final int frameCount = textureAtlasSprite.getFrameCount();
-		if (iconWidth <= 0 || iconHeight <= 0 || frameCount <= 0) {
+		if (iconWidth <= 0 || iconHeight <= 0) {
 			return null;
 		}
-		NativeImage[] frames = textureAtlasSprite.mainImage;
-		return frames[0];
+
+		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+		return renderHelper.getMainImage(textureAtlasSprite);
 	}
 
 	@Nullable

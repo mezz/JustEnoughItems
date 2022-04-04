@@ -1,4 +1,4 @@
-package mezz.jei.color;
+package mezz.jei.common.color;
 
 /*
  * Java Color Thief

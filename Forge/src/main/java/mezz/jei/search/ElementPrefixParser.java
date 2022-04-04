@@ -7,7 +7,7 @@ import mezz.jei.core.search.LimitedStringStorage;
 import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.core.search.SearchMode;
 import mezz.jei.ingredients.IListElementInfo;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
 
 import java.util.ArrayList;

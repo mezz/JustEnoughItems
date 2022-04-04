@@ -3,7 +3,7 @@ package mezz.jei.ingredients;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.color.ColorNamer;
+import mezz.jei.common.color.ColorNamer;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.common.util.Translator;
 import net.minecraft.ChatFormatting;

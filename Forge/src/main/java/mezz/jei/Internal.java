@@ -1,11 +1,11 @@
 package mezz.jei;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.color.ColorNamer;
+import mezz.jei.common.color.ColorNamer;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.ingredients.IngredientVisibility;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import org.jetbrains.annotations.Nullable;

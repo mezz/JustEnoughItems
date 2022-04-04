@@ -1,7 +1,7 @@
 package mezz.jei.gui;
 
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.ITickTimer;
@@ -17,7 +17,7 @@ import mezz.jei.gui.elements.DrawableBlank;
 import mezz.jei.gui.elements.DrawableBuilder;
 import mezz.jei.gui.elements.DrawableIngredient;
 import mezz.jei.gui.textures.Textures;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.util.ErrorUtil;
 
 public class GuiHelper implements IGuiHelper {
 	private final RegisteredIngredients registeredIngredients;

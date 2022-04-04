@@ -13,7 +13,7 @@ import mezz.jei.config.IIngredientGridConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.input.mouse.IUserInputHandler;

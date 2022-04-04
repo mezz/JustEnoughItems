@@ -19,7 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

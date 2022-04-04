@@ -18,7 +18,7 @@ import mezz.jei.deprecated.gui.ingredients.adapters.RecipeSlotsGuiFluidStackGrou
 import mezz.jei.deprecated.gui.ingredients.adapters.RecipeSlotsGuiIngredientGroupAdapter;
 import mezz.jei.deprecated.gui.ingredients.adapters.RecipeSlotsGuiItemStackGroupAdapter;
 import mezz.jei.gui.recipes.RecipeLayout;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.Ingredients;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;

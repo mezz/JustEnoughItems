@@ -3,7 +3,7 @@ package mezz.jei.util;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.input.IClickedIngredient;
 import net.minecraft.world.item.ItemStack;
 

@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 
 public class RecipeCatalystBuilder {
 	private final ImmutableListMultimap.Builder<IRecipeCategory<?>, ITypedIngredient<?>> recipeCategoryCatalystsBuilder = ImmutableListMultimap.builder();

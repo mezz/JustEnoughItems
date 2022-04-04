@@ -8,7 +8,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.gui.ingredients.IngredientLookupState;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.recipes.FocusGroup;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.common.util.MathUtil;

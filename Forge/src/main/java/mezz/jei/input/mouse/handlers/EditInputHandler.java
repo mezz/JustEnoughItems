@@ -7,7 +7,7 @@ import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.core.config.IngredientBlacklistType;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.input.CombinedRecipeFocusSource;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.UserInput;

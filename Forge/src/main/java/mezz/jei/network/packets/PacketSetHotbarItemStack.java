@@ -7,7 +7,7 @@ import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.util.ServerCommandUtil;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;

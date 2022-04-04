@@ -4,7 +4,7 @@ import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
 import mezz.jei.gui.ingredients.RecipeSlots;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.forge.plugins.forge.ingredients.fluid.FluidStackRenderer;
 import net.minecraftforge.fluids.FluidStack;
 

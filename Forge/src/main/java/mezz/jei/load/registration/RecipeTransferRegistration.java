@@ -17,7 +17,7 @@ import mezz.jei.core.collect.Table;
 import mezz.jei.config.Constants;
 import mezz.jei.transfer.BasicRecipeTransferHandler;
 import mezz.jei.transfer.BasicRecipeTransferInfo;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.util.ErrorUtil;
 
 public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 	private final Table<Class<?>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers = Table.hashBasedTable();

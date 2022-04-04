@@ -1,5 +1,7 @@
 package mezz.jei.ingredients;
 
+import mezz.jei.common.ingredients.RegisteredIngredients;
+
 import java.util.Comparator;
 
 public interface IIngredientSorter {

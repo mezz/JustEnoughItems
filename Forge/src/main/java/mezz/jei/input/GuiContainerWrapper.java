@@ -2,7 +2,7 @@ package mezz.jei.input;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 
 import mezz.jei.ingredients.TypedIngredient;
 import mezz.jei.common.util.ImmutableRect2i;

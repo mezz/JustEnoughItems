@@ -1,5 +1,6 @@
 package mezz.jei.ingredients;
 
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.core.config.IngredientSortStage;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;

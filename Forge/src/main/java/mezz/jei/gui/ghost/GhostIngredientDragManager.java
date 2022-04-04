@@ -23,7 +23,7 @@ import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.input.IClickedIngredient;
 import net.minecraft.world.item.ItemStack;
 

@@ -6,6 +6,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.common.util.Translator;

@@ -51,4 +51,10 @@ public class ForgeRegistryWrapper<T extends IForgeRegistryEntry<T>> implements I
     public boolean contains(T entry) {
         return this.forgeRegistry.containsValue(entry);
     }
+
+    @Override
+    @Nullable
+    public ResourceLocation getRegistryName(T entry) {
+        return entry.getRegistryName();
+    }
 }

@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.core.NonNullList;
 
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

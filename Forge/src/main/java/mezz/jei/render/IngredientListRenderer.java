@@ -8,9 +8,9 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.ingredients.IngredientInfo;
-import mezz.jei.ingredients.RegisteredIngredients;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.ingredients.IngredientInfo;
+import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiComponent;
 

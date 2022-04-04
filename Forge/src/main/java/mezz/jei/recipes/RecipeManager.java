@@ -16,8 +16,8 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeLayout;
-import mezz.jei.ingredients.RegisteredIngredients;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.Nullable;

@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 

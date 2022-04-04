@@ -6,7 +6,7 @@ import java.util.Set;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.network.chat.Component;
 
 public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper {

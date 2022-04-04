@@ -1,7 +1,7 @@
 package mezz.jei.plugins.vanilla.crafting;
 
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.Container;

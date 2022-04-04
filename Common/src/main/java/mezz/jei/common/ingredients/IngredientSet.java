@@ -1,4 +1,4 @@
-package mezz.jei.ingredients;
+package mezz.jei.common.ingredients;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.AbstractSet;

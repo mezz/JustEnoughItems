@@ -8,7 +8,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.util.IRecipeRegistryHelper;
 import mezz.jei.common.util.RecipeRegistryHelper;
 import mezz.jei.ingredients.IIngredientSupplier;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.recipes.IngredientSupplierHelper;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;

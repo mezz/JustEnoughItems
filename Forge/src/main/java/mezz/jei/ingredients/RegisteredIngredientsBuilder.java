@@ -14,8 +14,10 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.registration.IModIngredientRegistration;
-import mezz.jei.color.ColorGetter;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.color.ColorGetter;
+import mezz.jei.common.ingredients.IngredientInfo;
+import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.util.ErrorUtil;
 
 public class RegisteredIngredientsBuilder implements IModIngredientRegistration {
 	private final List<IngredientInfo<?>> ingredientInfos = new ArrayList<>();

@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import mezz.jei.common.network.ServerPacketContext;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.common.network.IConnectionToClient;

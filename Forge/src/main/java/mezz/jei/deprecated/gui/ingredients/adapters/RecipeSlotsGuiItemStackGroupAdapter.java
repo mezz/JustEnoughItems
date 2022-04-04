@@ -4,7 +4,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.ingredients.RecipeSlots;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
 import net.minecraft.world.item.ItemStack;
 

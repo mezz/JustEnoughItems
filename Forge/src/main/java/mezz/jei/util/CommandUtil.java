@@ -1,6 +1,7 @@
 package mezz.jei.util;
 
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.GiveAmount;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IClientConfig;

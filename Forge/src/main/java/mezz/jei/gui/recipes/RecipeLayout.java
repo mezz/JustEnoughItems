@@ -15,7 +15,7 @@ import mezz.jei.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.ingredients.RecipeSlots;
 import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.input.UserInput;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;

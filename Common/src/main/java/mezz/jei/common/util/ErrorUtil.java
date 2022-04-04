@@ -1,15 +1,18 @@
-package mezz.jei.util;
+package mezz.jei.common.util;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.ingredients.RegisteredIngredients;
+import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.platform.IPlatformRegistry;
+import mezz.jei.common.platform.Services;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -43,7 +46,8 @@ public final class ErrorUtil {
 		}
 		Item item = itemStack.getItem();
 		final String itemName;
-		ResourceLocation registryName = item.getRegistryName();
+		IPlatformRegistry<Item> itemRegistry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
+		ResourceLocation registryName = itemRegistry.getRegistryName(item);
 		if (registryName != null) {
 			itemName = registryName.toString();
 		} else if (item instanceof BlockItem) {
@@ -52,7 +56,8 @@ public final class ErrorUtil {
 			if (block == null) {
 				blockName = "null";
 			} else {
-				ResourceLocation blockRegistryName = block.getRegistryName();
+				IPlatformRegistry<Block> blockRegistry = Services.PLATFORM.getRegistry(Registry.BLOCK_REGISTRY);
+				ResourceLocation blockRegistryName = blockRegistry.getRegistryName(block);
 				if (blockRegistryName != null) {
 					blockName = blockRegistryName.toString();
 				} else {
