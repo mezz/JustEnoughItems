@@ -4,7 +4,6 @@ import mezz.jei.api.recipe.IFocusGroup;
 import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -36,24 +35,12 @@ public interface IRecipeLayout {
 	IGuiItemStackGroup getItemStacks();
 
 	/**
-	 * Contains all the fluidStacks displayed on this recipe layout.
-	 * Init and set them in your recipe category.
-	 *
-	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}
-	 * and other methods that do not use {@link IRecipeLayout}.
-	 */
-	@SuppressWarnings("removal")
-	@Deprecated(forRemoval = true, since = "9.3.0")
-	IGuiFluidStackGroup getFluidStacks();
-
-	/**
 	 * Get all the ingredients of one type that are displayed on this recipe layout.
 	 * Init and set them in your recipe category.
 	 *
 	 * This method is for handling custom item types, registered with {@link IModIngredientRegistration}.
 	 *
 	 * @see #getItemStacks()
-	 * @see #getFluidStacks()
 	 *
 	 * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}
 	 * and other methods that do not use {@link IRecipeLayout}.

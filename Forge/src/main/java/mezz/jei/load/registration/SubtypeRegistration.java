@@ -61,15 +61,6 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 		return interpreters.contains(VanillaTypes.ITEM_STACK, item);
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public boolean hasSubtypeInterpreter(FluidStack fluidStack) {
-		ErrorUtil.checkNotNull(fluidStack, "fluidStack");
-
-		Fluid fluid = fluidStack.getFluid();
-		return interpreters.contains(ForgeTypes.FLUID_STACK, fluid);
-	}
-
 	public SubtypeInterpreters getInterpreters() {
 		return interpreters;
 	}

@@ -33,7 +33,6 @@ import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -179,23 +178,23 @@ public class LegacyDebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		guiItemStacks.set(0, new ItemStack(Items.WATER_BUCKET));
 		guiItemStacks.set(1, Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));
 
-		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
-		guiFluidStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
-			if (input) {
-				tooltip.add(new TextComponent(slotIndex + " Input fluidStack"));
-			} else {
-				tooltip.add(new TextComponent(slotIndex + " Output fluidStack"));
-			}
-		});
-
-		guiFluidStacks.init(0, false, 90, 0, 16, 58, 16000, false, tankOverlay);
-		guiFluidStacks.init(1, true, 24, 0, 12, 47, 2000, true, null);
-
-		guiFluidStacks.setBackground(0, tankBackground);
-
-		List<List<FluidStack>> fluidInputs = ingredients.getInputs(ForgeTypes.FLUID_STACK);
-		guiFluidStacks.set(0, fluidInputs.get(0));
-		guiFluidStacks.set(1, fluidInputs.get(1));
+//		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
+//		guiFluidStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+//			if (input) {
+//				tooltip.add(new TextComponent(slotIndex + " Input fluidStack"));
+//			} else {
+//				tooltip.add(new TextComponent(slotIndex + " Output fluidStack"));
+//			}
+//		});
+//
+//		guiFluidStacks.init(0, false, 90, 0, 16, 58, 16000, false, tankOverlay);
+//		guiFluidStacks.init(1, true, 24, 0, 12, 47, 2000, true, null);
+//
+//		guiFluidStacks.setBackground(0, tankBackground);
+//
+//		List<List<FluidStack>> fluidInputs = ingredients.getInputs(ForgeTypes.FLUID_STACK);
+//		guiFluidStacks.set(0, fluidInputs.get(0));
+//		guiFluidStacks.set(1, fluidInputs.get(1));
 
 		IGuiIngredientGroup<DebugIngredient> debugIngredientsGroup = recipeLayout.getIngredientsGroup(DebugIngredient.TYPE);
 		debugIngredientsGroup.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {

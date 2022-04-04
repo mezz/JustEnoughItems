@@ -1,12 +1,10 @@
 package mezz.jei.api.ingredients.subtypes;
 
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -53,23 +51,6 @@ public interface ISubtypeManager {
 	@Nullable
 	default String getSubtypeInfo(ItemStack itemStack, UidContext context) {
 		String subtypeInfo = getSubtypeInfo(VanillaTypes.ITEM_STACK, itemStack, context);
-		if (subtypeInfo.isEmpty()) {
-			return null;
-		}
-		return subtypeInfo;
-	}
-
-	/**
-	 * Get the data from a fluidStack that is relevant to comparing and telling subtypes apart.
-	 * Returns null if the fluidStack has no information used for subtypes.
-	 *
-	 * @since 7.6.2
-	 * @deprecated use {@link #getSubtypeInfo(IIngredientType, Object, UidContext)}
-	 */
-	@Deprecated(forRemoval = true, since = "9.6.0")
-	@Nullable
-	default String getSubtypeInfo(FluidStack fluidStack, UidContext context) {
-		String subtypeInfo = getSubtypeInfo(ForgeTypes.FLUID_STACK, fluidStack, context);
 		if (subtypeInfo.isEmpty()) {
 			return null;
 		}

@@ -10,7 +10,6 @@ import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.util.Size2i;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
@@ -57,12 +56,7 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	 * @since 9.3.0
 	 */
 	default int getWidth() {
-		// if not implemented, this calls the old getSize function for backward compatibility
-		Size2i size = getSize();
-		if (size == null) {
-			return 0;
-		}
-		return size.width;
+		return 0;
 	}
 
 	/**
@@ -70,12 +64,7 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	 * @since 9.3.0
 	 */
 	default int getHeight() {
-		// if not implemented, this calls the old getSize function for backward compatibility
-		Size2i size = getSize();
-		if (size == null) {
-			return 0;
-		}
-		return size.height;
+		return 0;
 	}
 
 	/**
@@ -93,15 +82,5 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 		List<? extends IFocus<?>> focuses
 	) {
 
-	}
-
-	/**
-	 * @return the size of a shaped recipe, or null for a shapeless recipe
-	 * @deprecated Use {@link #getWidth()} and {@link #getHeight()} instead.
-	 */
-	@Deprecated(forRemoval = true, since = "9.3.0")
-	@Nullable
-	default Size2i getSize() {
-		return null;
 	}
 }

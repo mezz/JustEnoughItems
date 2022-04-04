@@ -10,7 +10,6 @@ import mezz.jei.common.platform.Services;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraftforge.common.util.Size2i;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
@@ -39,21 +38,6 @@ public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICra
 	@Override
 	public ResourceLocation getRegistryName() {
 		return recipe.getId();
-	}
-
-	@SuppressWarnings("removal")
-	@Nullable
-	@Override
-	public Size2i getSize() {
-		int width = getWidth();
-		if (width == 0) {
-			return null;
-		}
-		int height = getHeight();
-		if (height == 0) {
-			return null;
-		}
-		return new Size2i(width, height);
 	}
 
 	@Override

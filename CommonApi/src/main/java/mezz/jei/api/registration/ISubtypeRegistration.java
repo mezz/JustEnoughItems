@@ -1,15 +1,12 @@
 package mezz.jei.api.registration;
 
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-
-import net.minecraftforge.fluids.FluidStack;
 
 /**
  * Tell JEI how to interpret NBT tags and capabilities when comparing and looking up ingredients.
@@ -59,32 +56,10 @@ public interface ISubtypeRegistration {
 	}
 
 	/**
-	 * Add an interpreter to compare fluid subtypes.
-	 * This interpreter should account for nbt and anything else that's relevant to differentiating the fluid's subtypes.
-	 *
-	 * @param fluid       the fluid that has subtypes.
-	 * @param interpreter the interpreter for the fluid.
-	 *
-	 * @deprecated use {@link #registerSubtypeInterpreter(IIngredientTypeWithSubtypes, Object, IIngredientSubtypeInterpreter)}
-	 */
-	@Deprecated(forRemoval = true, since = "9.7.0")
-	default void registerSubtypeInterpreter(Fluid fluid, IIngredientSubtypeInterpreter<FluidStack> interpreter) {
-		registerSubtypeInterpreter(ForgeTypes.FLUID_STACK, fluid, interpreter);
-	}
-
-	/**
 	 * Returns whether an {@link IIngredientSubtypeInterpreter} has been registered for this item.
 	 *
 	 * @deprecated no longer used
 	 */
 	@Deprecated(forRemoval = true, since = "9.7.0")
 	boolean hasSubtypeInterpreter(ItemStack itemStack);
-
-	/**
-	 * Returns whether an {@link IIngredientSubtypeInterpreter} has been registered for this fluid.
-	 *
-	 * @deprecated no longer used
-	 */
-	@Deprecated(forRemoval = true, since = "9.7.0")
-	boolean hasSubtypeInterpreter(FluidStack fluidStack);
 }

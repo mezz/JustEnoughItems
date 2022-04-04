@@ -106,11 +106,6 @@ public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayou
 	}
 
 	@Override
-	public IGuiFluidStackGroup getFluidStacks() {
-		return guiFluidStackGroup;
-	}
-
-	@Override
 	public <V> IGuiIngredientGroup<V> getIngredientsGroup(IIngredientType<V> ingredientType) {
 		if (ingredientType == VanillaTypes.ITEM_STACK) {
 			return (IGuiIngredientGroup<V>) this.guiItemStackGroup;
