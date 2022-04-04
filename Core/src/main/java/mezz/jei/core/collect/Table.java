@@ -2,6 +2,7 @@ package mezz.jei.core.collect;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -11,6 +12,10 @@ import com.google.common.collect.ImmutableTable;
 public class Table<R, C, V> {
 	public static <R, C, V> Table<R, C, V> hashBasedTable() {
 		return new Table<>(new HashMap<>(), HashMap::new);
+	}
+
+	public static <R, C, V> Table<R, C, V> identityHashBasedTable() {
+		return new Table<>(new IdentityHashMap<>(), IdentityHashMap::new);
 	}
 
 	private final Map<R, Map<C, V>> table;
@@ -40,6 +45,11 @@ public class Table<R, C, V> {
 
 	public Map<C, V> getRow(R row) {
 		return table.computeIfAbsent(row, rowMappingFunction);
+	}
+
+	public boolean contains(R row, C col) {
+		Map<C, V> map = table.get(row);
+		return map != null && map.containsKey(col);
 	}
 
 	public void clear() {

@@ -13,7 +13,7 @@ public class RecipeSlotsGuiItemStackGroupAdapter extends RecipeSlotsGuiIngredien
 	private static final ItemStackRenderer renderer = new ItemStackRenderer();
 
 	public RecipeSlotsGuiItemStackGroupAdapter(RecipeSlots recipeSlots, RegisteredIngredients registeredIngredients, int cycleOffset) {
-		super(recipeSlots, registeredIngredients, VanillaTypes.ITEM, cycleOffset);
+		super(recipeSlots, registeredIngredients, VanillaTypes.ITEM_STACK, cycleOffset);
 	}
 
 	@Override

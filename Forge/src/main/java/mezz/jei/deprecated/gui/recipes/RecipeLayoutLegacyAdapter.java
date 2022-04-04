@@ -51,11 +51,11 @@ public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayou
 
 		RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
 
-		IFocus<ItemStack> itemStackFocus = focuses.getFocuses(VanillaTypes.ITEM).findFirst().orElse(null);
+		IFocus<ItemStack> itemStackFocus = focuses.getFocuses(VanillaTypes.ITEM_STACK).findFirst().orElse(null);
 		this.guiItemStackGroup = new RecipeSlotsGuiItemStackGroupAdapter(recipeSlots, registeredIngredients, ingredientCycleOffset);
 		this.guiItemStackGroup.setOverrideDisplayFocus(itemStackFocus);
 
-		IFocus<FluidStack> fluidStackFocus = focuses.getFocuses(ForgeTypes.FLUID).findFirst().orElse(null);
+		IFocus<FluidStack> fluidStackFocus = focuses.getFocuses(ForgeTypes.FLUID_STACK).findFirst().orElse(null);
 		this.guiFluidStackGroup = new RecipeSlotsGuiFluidStackGroupAdapter(recipeSlots, registeredIngredients, ingredientCycleOffset);
 		this.guiFluidStackGroup.setOverrideDisplayFocus(fluidStackFocus);
 	}
@@ -112,10 +112,10 @@ public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayou
 
 	@Override
 	public <V> IGuiIngredientGroup<V> getIngredientsGroup(IIngredientType<V> ingredientType) {
-		if (ingredientType == VanillaTypes.ITEM) {
+		if (ingredientType == VanillaTypes.ITEM_STACK) {
 			return (IGuiIngredientGroup<V>) this.guiItemStackGroup;
 		}
-		if (ingredientType == ForgeTypes.FLUID) {
+		if (ingredientType == ForgeTypes.FLUID_STACK) {
 			return (IGuiIngredientGroup<V>) this.guiFluidStackGroup;
 		}
 		RecipeSlotsGuiIngredientGroupAdapter<V> adapter = new RecipeSlotsGuiIngredientGroupAdapter<>(

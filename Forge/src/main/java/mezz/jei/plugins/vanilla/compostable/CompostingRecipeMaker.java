@@ -16,7 +16,7 @@ import java.util.List;
 public class CompostingRecipeMaker {
 	public static List<IJeiCompostingRecipe> getRecipes(IIngredientManager ingredientManager) {
 		Object2FloatMap<ItemLike> compostables = ComposterBlock.COMPOSTABLES;
-		Collection<ItemStack> allIngredients = ingredientManager.getAllIngredients(VanillaTypes.ITEM);
+		Collection<ItemStack> allIngredients = ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK);
 
 		return allIngredients.stream()
 			.<IJeiCompostingRecipe>mapMulti((itemStack, consumer) -> {

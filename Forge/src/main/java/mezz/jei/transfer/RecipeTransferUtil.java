@@ -215,7 +215,7 @@ public final class RecipeTransferUtil {
 	@Nullable
 	public static <T> Map.Entry<T, ItemStack> containsAnyStackIndexed(IStackHelper stackhelper, Map<T, ItemStack> stacks, IRecipeSlotView recipeSlotView) {
 		MatchingIndexed<T> matchingStacks = new MatchingIndexed<>(stacks);
-		List<ItemStack> ingredients = recipeSlotView.getIngredients(VanillaTypes.ITEM).toList();
+		List<ItemStack> ingredients = recipeSlotView.getIngredients(VanillaTypes.ITEM_STACK).toList();
 		MatchingIterable matchingContains = new MatchingIterable(ingredients);
 		return containsStackMatchable(stackhelper, matchingStacks, matchingContains);
 	}

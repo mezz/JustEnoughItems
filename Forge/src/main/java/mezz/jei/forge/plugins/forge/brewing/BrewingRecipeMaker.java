@@ -79,7 +79,7 @@ public class BrewingRecipeMaker {
 	}
 
 	private void addVanillaBrewingRecipes(Collection<IJeiBrewingRecipe> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
-		List<ItemStack> potionIngredients = ingredientManager.getAllIngredients(VanillaTypes.ITEM).stream()
+		List<ItemStack> potionIngredients = ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK).stream()
 			.filter(BrewingRecipeMaker::isIngredient)
 			.toList();
 
@@ -87,7 +87,7 @@ public class BrewingRecipeMaker {
 			.flatMap(potionItem -> Arrays.stream(potionItem.getItems()))
 			.toList();
 
-		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM);
+		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 		Collection<ItemStack> knownPotions = IngredientSet.create(itemStackHelper, UidContext.Ingredient);
 		for (Potion potion : ForgeRegistries.POTIONS.getValues()) {
 			if (potion == Potions.EMPTY) {

@@ -47,7 +47,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 60, width, height);
-		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Blocks.CRAFTING_TABLE));
+		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.CRAFTING_TABLE));
 		localizedName = new TranslatableComponent("gui.jei.category.craftingTable");
 		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1);
 	}
@@ -100,8 +100,8 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	private void legacySetRecipe(IRecipeLayoutBuilder builder, ICraftingCategoryExtension recipeExtension) {
 		Ingredients ingredients = new Ingredients();
 		recipeExtension.setIngredients(ingredients);
-		List<@Nullable List<@Nullable ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
-		List<@Nullable List<@Nullable ItemStack>> outputs = ingredients.getOutputs(VanillaTypes.ITEM);
+		List<@Nullable List<@Nullable ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM_STACK);
+		List<@Nullable List<@Nullable ItemStack>> outputs = ingredients.getOutputs(VanillaTypes.ITEM_STACK);
 		List<@Nullable ItemStack> output;
 		if (outputs.isEmpty()) {
 			output = List.of();
@@ -112,8 +112,8 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 
 		int width = recipeExtension.getWidth();
 		int height = recipeExtension.getHeight();
-		craftingGridHelper.setOutputs(builder, VanillaTypes.ITEM, output);
-		craftingGridHelper.setInputs(builder, VanillaTypes.ITEM, inputs, width, height);
+		craftingGridHelper.setOutputs(builder, VanillaTypes.ITEM_STACK, output);
+		craftingGridHelper.setInputs(builder, VanillaTypes.ITEM_STACK, inputs, width, height);
 	}
 
 	@Override

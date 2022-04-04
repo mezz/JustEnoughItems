@@ -37,7 +37,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18)
 			.addPadding(0, 20, 0, 0)
 			.build();
-		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Blocks.ANVIL));
+		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.ANVIL));
 	}
 
 	@SuppressWarnings("removal")
@@ -103,10 +103,10 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 	@Override
 	public void draw(IJeiAnvilRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		Optional<ItemStack> leftStack = recipeSlotsView.findSlotByName(leftSlotName)
-			.flatMap(slot1 -> slot1.getDisplayedIngredient(VanillaTypes.ITEM));
+			.flatMap(slot1 -> slot1.getDisplayedIngredient(VanillaTypes.ITEM_STACK));
 
 		Optional<ItemStack> rightStack = recipeSlotsView.findSlotByName(rightSlotName)
-			.flatMap(slot -> slot.getDisplayedIngredient(VanillaTypes.ITEM));
+			.flatMap(slot -> slot.getDisplayedIngredient(VanillaTypes.ITEM_STACK));
 
 		if (leftStack.isEmpty() || rightStack.isEmpty()) {
 			return;

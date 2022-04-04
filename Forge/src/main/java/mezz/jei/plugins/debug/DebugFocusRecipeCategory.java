@@ -86,7 +86,7 @@ public class DebugFocusRecipeCategory implements IRecipeCategory<DebugRecipe> {
 
 		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 20, 0)
 			.addItemStack(ItemStack.EMPTY)
-			.addIngredients(ForgeTypes.FLUID, List.of(
+			.addIngredients(ForgeTypes.FLUID_STACK, List.of(
 				new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME),
 				new FluidStack(Fluids.LAVA, FluidAttributes.BUCKET_VOLUME)
 			))

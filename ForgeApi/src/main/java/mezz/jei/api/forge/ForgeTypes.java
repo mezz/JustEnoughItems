@@ -1,6 +1,8 @@
 package mezz.jei.api.forge;
 
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 /**
@@ -10,9 +12,31 @@ import net.minecraftforge.fluids.FluidStack;
  */
 public final class ForgeTypes {
     /**
-     * @since 9.6.0
+     * @since 9.7.0
      */
-    public static final IIngredientType<FluidStack> FLUID = () -> FluidStack.class;
+    public static final IIngredientTypeWithSubtypes<Fluid, FluidStack> FLUID_STACK = new IIngredientTypeWithSubtypes<>() {
+        @Override
+        public Class<? extends FluidStack> getIngredientClass() {
+            return FluidStack.class;
+        }
+
+        @Override
+        public Class<? extends Fluid> getIngredientBaseClass() {
+            return Fluid.class;
+        }
+
+        @Override
+        public Fluid getBase(FluidStack ingredient) {
+            return ingredient.getFluid();
+        }
+    };
+
+    /**
+     * @since 9.6.0
+     * @deprecated use {@link #FLUID_STACK}
+     */
+    @Deprecated(forRemoval = true, since = "9.7.0")
+    public static final IIngredientType<FluidStack> FLUID = FLUID_STACK;
 
     private ForgeTypes() {}
 }

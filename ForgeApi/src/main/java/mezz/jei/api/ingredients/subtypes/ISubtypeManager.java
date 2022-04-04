@@ -1,28 +1,46 @@
 package mezz.jei.api.ingredients.subtypes;
 
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.ingredients.IIngredientType;
-import org.jetbrains.annotations.Nullable;
-
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.registration.ISubtypeRegistration;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Gets subtype information from ingredients that have subtype interpreters.
  *
- * Add subtypes for your ingredients with {@link ISubtypeRegistration#registerSubtypeInterpreter(Item, IIngredientSubtypeInterpreter)}.
+ * Add subtypes for your ingredients with {@link ISubtypeRegistration#registerSubtypeInterpreter(IIngredientTypeWithSubtypes, Object, IIngredientSubtypeInterpreter)}.
  */
 public interface ISubtypeManager {
+	/**
+	 * Get the data from an ingredient that is relevant to comparing and telling subtypes apart.
+	 * Returns {@link IIngredientSubtypeInterpreter#NONE} if the ingredient has no information used for subtypes.
+	 *
+	 * @since 9.7.0
+	 */
+	<T> String getSubtypeInfo(IIngredientTypeWithSubtypes<?, T> ingredientType, T ingredient, UidContext context);
+
 	/**
 	 * Get the data from an ingredient that is relevant to comparing and telling subtypes apart.
 	 * Returns null if the ingredient has no information used for subtypes.
 	 *
 	 * @since 9.6.0
+	 * @deprecated use {@link #getSubtypeInfo(IIngredientTypeWithSubtypes, Object, UidContext)}
 	 */
+	@Deprecated(forRemoval = true, since = "9.7.0")
 	@Nullable
-	<T> String getSubtypeInfo(IIngredientType<T> ingredientType, T ingredient, UidContext context);
+	default <T> String getSubtypeInfo(IIngredientType<T> ingredientType, T ingredient, UidContext context) {
+		if (ingredientType instanceof IIngredientTypeWithSubtypes<?, T> ingredientTypeWithSubtypes) {
+			String subtypeInfo = getSubtypeInfo(ingredientTypeWithSubtypes, ingredient, context);
+			if (!subtypeInfo.isEmpty()) {
+				return subtypeInfo;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Get the data from an itemStack that is relevant to comparing and telling subtypes apart.
@@ -33,7 +51,13 @@ public interface ISubtypeManager {
 	 */
 	@Deprecated(forRemoval = true, since = "9.6.0")
 	@Nullable
-	String getSubtypeInfo(ItemStack itemStack, UidContext context);
+	default String getSubtypeInfo(ItemStack itemStack, UidContext context) {
+		String subtypeInfo = getSubtypeInfo(VanillaTypes.ITEM_STACK, itemStack, context);
+		if (subtypeInfo.isEmpty()) {
+			return null;
+		}
+		return subtypeInfo;
+	}
 
 	/**
 	 * Get the data from a fluidStack that is relevant to comparing and telling subtypes apart.
@@ -44,5 +68,11 @@ public interface ISubtypeManager {
 	 */
 	@Deprecated(forRemoval = true, since = "9.6.0")
 	@Nullable
-	String getSubtypeInfo(FluidStack fluidStack, UidContext context);
+	default String getSubtypeInfo(FluidStack fluidStack, UidContext context) {
+		String subtypeInfo = getSubtypeInfo(ForgeTypes.FLUID_STACK, fluidStack, context);
+		if (subtypeInfo.isEmpty()) {
+			return null;
+		}
+		return subtypeInfo;
+	}
 }

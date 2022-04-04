@@ -35,7 +35,7 @@ public class ForgePlugin implements IModPlugin {
         List<FluidStack> fluidStacks = FluidStackListFactory.create();
         FluidStackHelper fluidStackHelper = new FluidStackHelper(subtypeManager, colorHelper);
         FluidStackRenderer fluidStackRenderer = new FluidStackRenderer();
-        registration.register(ForgeTypes.FLUID, fluidStacks, fluidStackHelper, fluidStackRenderer);
+        registration.register(ForgeTypes.FLUID_STACK, fluidStacks, fluidStackHelper, fluidStackRenderer);
     }
 
     @Override

@@ -25,7 +25,7 @@ public class IngredientTypeSortingConfig extends MappedSortingConfig<IListElemen
 
 	@Override
 	protected Comparator<String> getDefaultSortOrder() {
-		String itemStackIngredientType = getIngredientTypeString(VanillaTypes.ITEM);
+		String itemStackIngredientType = getIngredientTypeString(VanillaTypes.ITEM_STACK);
 		Comparator<String> itemStackFirst = Comparator.comparing((String s) -> s.equals(itemStackIngredientType)).reversed();
 		Comparator<String> naturalOrder = Comparator.naturalOrder();
 		return itemStackFirst.thenComparing(naturalOrder);

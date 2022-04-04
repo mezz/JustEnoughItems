@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings({"removal", "deprecation"})
 public class RecipeSlotsGuiFluidStackGroupAdapter extends RecipeSlotsGuiIngredientGroupAdapter<FluidStack> implements IGuiFluidStackGroup {
 	public RecipeSlotsGuiFluidStackGroupAdapter(RecipeSlots recipeSlots, RegisteredIngredients registeredIngredients, int cycleOffset) {
-		super(recipeSlots, registeredIngredients, ForgeTypes.FLUID, cycleOffset);
+		super(recipeSlots, registeredIngredients, ForgeTypes.FLUID_STACK, cycleOffset);
 	}
 
 	@Override

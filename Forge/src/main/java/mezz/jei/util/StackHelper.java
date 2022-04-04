@@ -41,8 +41,8 @@ public class StackHelper implements IStackHelper {
 	@Override
 	public String getUniqueIdentifierForStack(ItemStack stack, UidContext context) {
 		String result = getRegistryNameForStack(stack);
-		String subtypeInfo = subtypeManager.getSubtypeInfo(VanillaTypes.ITEM, stack, context);
-		if (subtypeInfo != null && !subtypeInfo.isEmpty()) {
+		String subtypeInfo = subtypeManager.getSubtypeInfo(VanillaTypes.ITEM_STACK, stack, context);
+		if (!subtypeInfo.isEmpty()) {
 			result = result + ':' + subtypeInfo;
 		}
 		return result;

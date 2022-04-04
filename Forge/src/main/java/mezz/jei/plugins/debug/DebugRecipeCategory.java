@@ -65,7 +65,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		ResourceLocation backgroundTexture = new ResourceLocation(ModIds.JEI_ID, Constants.TEXTURE_GUI_PATH + "debug.png");
 		this.tankBackground = guiHelper.createDrawable(backgroundTexture, 220, 196, 18, 60);
 		this.tankOverlay = guiHelper.createDrawable(backgroundTexture, 238, 196, 18, 60);
-		this.item = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Items.ACACIA_LEAVES));
+		this.item = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.ACACIA_LEAVES));
 	}
 
 	@SuppressWarnings("removal")
@@ -153,7 +153,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 				.setFluidRenderer(capacityMb, false, 16, 58)
 				.setOverlay(tankOverlay, -1, -1)
 				.setBackground(tankBackground, -1, -1)
-				.addIngredient(ForgeTypes.FLUID, new FluidStack(Fluids.WATER, amountMb));
+				.addIngredient(ForgeTypes.FLUID_STACK, new FluidStack(Fluids.WATER, amountMb));
 		}
 
 		{
@@ -162,7 +162,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			int amountMb = (capacityMb / 2) + (int) ((Math.random() * capacityMb) / 2);
 			builder.addSlot(RecipeIngredientRole.INPUT, 24, 0)
 				.setFluidRenderer(capacityMb, true, 12, 47)
-				.addIngredient(ForgeTypes.FLUID, new FluidStack(Fluids.LAVA, amountMb));
+				.addIngredient(ForgeTypes.FLUID_STACK, new FluidStack(Fluids.LAVA, amountMb));
 		}
 
 		// DEBUG type

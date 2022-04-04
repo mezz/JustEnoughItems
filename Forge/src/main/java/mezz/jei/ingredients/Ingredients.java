@@ -39,7 +39,7 @@ public class Ingredients implements IIngredients, IIngredientSupplier {
 			List<ItemStack> expandedInput = List.of(stacks);
 			inputLists.add(expandedInput);
 		}
-		setIngredients(VanillaTypes.ITEM, this.inputs, inputLists);
+		setIngredients(VanillaTypes.ITEM_STACK, this.inputs, inputLists);
 	}
 
 	@Override

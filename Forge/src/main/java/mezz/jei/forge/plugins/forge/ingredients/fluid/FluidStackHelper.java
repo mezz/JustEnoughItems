@@ -40,7 +40,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public IIngredientType<FluidStack> getIngredientType() {
-		return ForgeTypes.FLUID;
+		return ForgeTypes.FLUID_STACK;
 	}
 
 	@Override
@@ -56,11 +56,13 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		StringBuilder result = new StringBuilder()
 			.append("fluid:")
 			.append(registryName);
-		String subtypeInfo = subtypeManager.getSubtypeInfo(ForgeTypes.FLUID, ingredient, context);
-		if (subtypeInfo != null && !subtypeInfo.isEmpty()) {
+
+		String subtypeInfo = subtypeManager.getSubtypeInfo(ForgeTypes.FLUID_STACK, ingredient, context);
+		if (!subtypeInfo.isEmpty()) {
 			result.append(":");
 			result.append(subtypeInfo);
 		}
+
 		return result.toString();
 	}
 

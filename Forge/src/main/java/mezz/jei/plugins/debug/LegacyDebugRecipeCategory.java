@@ -72,7 +72,7 @@ public class LegacyDebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		this.tankOverlay = guiHelper.drawableBuilder(backgroundTexture, 238, 196, 18, 60)
 			.addPadding(-1, -1, -1, -1)
 			.build();
-		this.item = guiHelper.createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(Items.ACACIA_LEAVES));
+		this.item = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.ACACIA_LEAVES));
 	}
 
 	@Override
@@ -106,9 +106,9 @@ public class LegacyDebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		FluidStack water = new FluidStack(Fluids.WATER, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME));
 		FluidStack lava = new FluidStack(Fluids.LAVA, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME));
 
-		ingredients.setInputs(ForgeTypes.FLUID, List.of(water, lava));
+		ingredients.setInputs(ForgeTypes.FLUID_STACK, List.of(water, lava));
 
-		ingredients.setInput(VanillaTypes.ITEM, new ItemStack(Items.STICK));
+		ingredients.setInput(VanillaTypes.ITEM_STACK, new ItemStack(Items.STICK));
 
 		ingredients.setInputLists(DebugIngredient.TYPE, List.of(
 			List.of(new DebugIngredient(0), new DebugIngredient(1))
@@ -193,7 +193,7 @@ public class LegacyDebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 
 		guiFluidStacks.setBackground(0, tankBackground);
 
-		List<List<FluidStack>> fluidInputs = ingredients.getInputs(ForgeTypes.FLUID);
+		List<List<FluidStack>> fluidInputs = ingredients.getInputs(ForgeTypes.FLUID_STACK);
 		guiFluidStacks.set(0, fluidInputs.get(0));
 		guiFluidStacks.set(1, fluidInputs.get(1));
 

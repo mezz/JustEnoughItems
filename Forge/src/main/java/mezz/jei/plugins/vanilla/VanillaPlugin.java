@@ -127,11 +127,11 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistration registration) {
-		registration.registerSubtypeInterpreter(Items.TIPPED_ARROW, PotionSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.POTION, PotionSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, (itemStack, context) -> {
+		registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, Items.TIPPED_ARROW, PotionSubtypeInterpreter.INSTANCE);
+		registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, Items.POTION, PotionSubtypeInterpreter.INSTANCE);
+		registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
+		registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
+		registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, Items.ENCHANTED_BOOK, (itemStack, context) -> {
 			List<String> enchantmentNames = new ArrayList<>();
 			ListTag enchantments = EnchantedBookItem.getEnchantments(itemStack);
 			for (int i = 0; i < enchantments.size(); ++i) {
@@ -157,7 +157,7 @@ public class VanillaPlugin implements IModPlugin {
 		List<ItemStack> itemStacks = ItemStackListFactory.create(stackHelper);
 		ItemStackHelper itemStackHelper = new ItemStackHelper(stackHelper);
 		ItemStackRenderer itemStackRenderer = new ItemStackRenderer();
-		registration.register(VanillaTypes.ITEM, itemStacks, itemStackHelper, itemStackRenderer);
+		registration.register(VanillaTypes.ITEM_STACK, itemStacks, itemStackHelper, itemStackRenderer);
 	}
 
 	@Override

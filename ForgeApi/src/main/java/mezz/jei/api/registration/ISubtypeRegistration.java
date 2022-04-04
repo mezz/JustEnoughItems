@@ -1,6 +1,10 @@
 package mezz.jei.api.registration;
 
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -8,30 +12,26 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 /**
- * Tell JEI how to interpret NBT tags and capabilities when comparing and looking up items and fluids.
+ * Tell JEI how to interpret NBT tags and capabilities when comparing and looking up ingredients.
  *
- * If your item or fluid has subtypes that depend on NBT or capabilities, use this so JEI can tell those subtypes apart.
+ * If your ingredient has subtypes that depend on NBT or capabilities,
+ * use this so JEI can tell those subtypes apart.
  */
 public interface ISubtypeRegistration {
 
 	/**
-	 * Add an interpreter to compare item subtypes.
-	 * This interpreter should account for nbt and anything else that's relevant to differentiating the item's subtypes.
+	 * Add an interpreter to allow JEI to understand the differences between ingredient subtypes.
+	 * This interpreter should account for nbt and anything else
+	 * that's relevant to differentiating the ingredient's subtypes.
 	 *
-	 * @param item        the item that has subtypes.
-	 * @param interpreter the interpreter for the item.
-	 * @since 7.6.2
-	 */
-	void registerSubtypeInterpreter(Item item, IIngredientSubtypeInterpreter<ItemStack> interpreter);
-
-	/**
-	 * Add an interpreter to compare fluid subtypes.
-	 * This interpreter should account for nbt and anything else that's relevant to differentiating the fluid's subtypes.
+	 * @param type        the ingredient type (for example {@link VanillaTypes#ITEM_STACK}
+	 * @param base        the base of the ingredient that has subtypes (for example, {@link Items#ENCHANTED_BOOK}).
+	 *                       All ingredients with this base will use the given interpreter.
+	 * @param interpreter the interpreter for the ingredient's subtypes
 	 *
-	 * @param fluid       the fluid that has subtypes.
-	 * @param interpreter the interpreter for the fluid.
+	 * @since 9.7.0
 	 */
-	void registerSubtypeInterpreter(Fluid fluid, IIngredientSubtypeInterpreter<FluidStack> interpreter);
+	<B, I> void registerSubtypeInterpreter(IIngredientTypeWithSubtypes<B, I> type, B base, IIngredientSubtypeInterpreter<I> interpreter);
 
 	/**
 	 * Tells JEI to treat all NBT as relevant to these items' subtypes.
@@ -44,12 +44,47 @@ public interface ISubtypeRegistration {
 	void useNbtForSubtypes(Fluid... fluids);
 
 	/**
-	 * Returns whether an {@link IIngredientSubtypeInterpreter} has been registered for this item.
+	 * Add an interpreter to compare item subtypes.
+	 * This interpreter should account for nbt and anything else that's relevant to differentiating the item's subtypes.
+	 *
+	 * @param item        the item that has subtypes.
+	 * @param interpreter the interpreter for the item.
+	 * @since 7.6.2
+	 *
+	 * @deprecated use {@link #registerSubtypeInterpreter(IIngredientTypeWithSubtypes, Object, IIngredientSubtypeInterpreter)}
 	 */
+	@Deprecated(forRemoval = true, since = "9.7.0")
+	default void registerSubtypeInterpreter(Item item, IIngredientSubtypeInterpreter<ItemStack> interpreter) {
+		registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, interpreter);
+	}
+
+	/**
+	 * Add an interpreter to compare fluid subtypes.
+	 * This interpreter should account for nbt and anything else that's relevant to differentiating the fluid's subtypes.
+	 *
+	 * @param fluid       the fluid that has subtypes.
+	 * @param interpreter the interpreter for the fluid.
+	 *
+	 * @deprecated use {@link #registerSubtypeInterpreter(IIngredientTypeWithSubtypes, Object, IIngredientSubtypeInterpreter)}
+	 */
+	@Deprecated(forRemoval = true, since = "9.7.0")
+	default void registerSubtypeInterpreter(Fluid fluid, IIngredientSubtypeInterpreter<FluidStack> interpreter) {
+		registerSubtypeInterpreter(ForgeTypes.FLUID_STACK, fluid, interpreter);
+	}
+
+	/**
+	 * Returns whether an {@link IIngredientSubtypeInterpreter} has been registered for this item.
+	 *
+	 * @deprecated no longer used
+	 */
+	@Deprecated(forRemoval = true, since = "9.7.0")
 	boolean hasSubtypeInterpreter(ItemStack itemStack);
 
 	/**
 	 * Returns whether an {@link IIngredientSubtypeInterpreter} has been registered for this fluid.
+	 *
+	 * @deprecated no longer used
 	 */
+	@Deprecated(forRemoval = true, since = "9.7.0")
 	boolean hasSubtypeInterpreter(FluidStack fluidStack);
 }

@@ -91,7 +91,7 @@ public final class AnvilRecipeMaker {
 			.map(EnchantmentData::new)
 			.toList();
 
-		return ingredientManager.getAllIngredients(VanillaTypes.ITEM)
+		return ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK)
 			.stream()
 			.filter(ItemStack::isEnchantable)
 			.flatMap(ingredient -> getBookEnchantmentRecipes(vanillaRecipeFactory, enchantmentDatas, ingredient));

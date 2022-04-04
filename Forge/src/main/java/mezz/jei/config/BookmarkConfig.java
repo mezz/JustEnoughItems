@@ -106,9 +106,9 @@ public class BookmarkConfig {
 		}
 
 		Collection<IIngredientType<?>> otherIngredientTypes = new ArrayList<>(registeredIngredients.getIngredientTypes());
-		otherIngredientTypes.remove(VanillaTypes.ITEM);
+		otherIngredientTypes.remove(VanillaTypes.ITEM_STACK);
 
-		IIngredientHelper<ItemStack> itemStackHelper = registeredIngredients.getIngredientHelper(VanillaTypes.ITEM);
+		IIngredientHelper<ItemStack> itemStackHelper = registeredIngredients.getIngredientHelper(VanillaTypes.ITEM_STACK);
 
 		for (String ingredientJsonString : ingredientJsonStrings) {
 			if (ingredientJsonString.startsWith(MARKER_STACK)) {
@@ -118,7 +118,7 @@ public class BookmarkConfig {
 					ItemStack itemStack = ItemStack.of(itemStackAsNbt);
 					if (!itemStack.isEmpty()) {
 						ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);
-						Optional<ITypedIngredient<ItemStack>> typedIngredient = TypedIngredient.createTyped(registeredIngredients, VanillaTypes.ITEM, normalized);
+						Optional<ITypedIngredient<ItemStack>> typedIngredient = TypedIngredient.createTyped(registeredIngredients, VanillaTypes.ITEM_STACK, normalized);
 						if (typedIngredient.isEmpty()) {
 							LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
 						} else {

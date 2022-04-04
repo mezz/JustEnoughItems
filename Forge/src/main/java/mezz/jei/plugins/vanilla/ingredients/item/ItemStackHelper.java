@@ -31,7 +31,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public IIngredientType<ItemStack> getIngredientType() {
-		return VanillaTypes.ITEM;
+		return VanillaTypes.ITEM_STACK;
 	}
 
 	@Override

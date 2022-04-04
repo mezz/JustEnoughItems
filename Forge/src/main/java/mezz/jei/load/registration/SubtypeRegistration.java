@@ -1,18 +1,18 @@
 package mezz.jei.load.registration;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
-
+import com.google.common.base.Preconditions;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.world.level.material.Fluid;
+import mezz.jei.api.registration.ISubtypeRegistration;
+import mezz.jei.ingredients.SubtypeInterpreters;
+import mezz.jei.util.ErrorUtil;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-
-import com.google.common.collect.ImmutableMap;
-import mezz.jei.api.registration.ISubtypeRegistration;
-import mezz.jei.util.ErrorUtil;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,71 +20,58 @@ import org.apache.logging.log4j.Logger;
 public class SubtypeRegistration implements ISubtypeRegistration {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final Map<Item, IIngredientSubtypeInterpreter<ItemStack>> itemInterpreters = new IdentityHashMap<>();
-	private final Map<Fluid, IIngredientSubtypeInterpreter<FluidStack>> fluidInterpreters = new IdentityHashMap<>();
+	private final SubtypeInterpreters interpreters = new SubtypeInterpreters();
 
 	@Override
 	public void useNbtForSubtypes(Item... items) {
 		for (Item item : items) {
-			registerSubtypeInterpreter(item, AllNbt.INSTANCE);
+			registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, AllNbt.INSTANCE);
 		}
 	}
 
 	@Override
 	public void useNbtForSubtypes(Fluid... fluids) {
 		for (Fluid fluid : fluids) {
-			registerSubtypeInterpreter(fluid, AllFluidNbt.INSTANCE);
+			registerSubtypeInterpreter(ForgeTypes.FLUID_STACK, fluid, AllFluidNbt.INSTANCE);
 		}
 	}
 
 	@Override
-	public void registerSubtypeInterpreter(Item item, IIngredientSubtypeInterpreter<ItemStack> interpreter) {
-		ErrorUtil.checkNotNull(item, "item ");
+	public <B, I> void registerSubtypeInterpreter(IIngredientTypeWithSubtypes<B, I> type, B base, IIngredientSubtypeInterpreter<I> interpreter) {
+		ErrorUtil.checkNotNull(type, "type");
+		ErrorUtil.checkNotNull(base, "base");
 		ErrorUtil.checkNotNull(interpreter, "interpreter");
-
-		if (itemInterpreters.containsKey(item)) {
-			LOGGER.error("An interpreter is already registered for this item: {}", item, new IllegalArgumentException());
+		Class<? extends B> ingredientBaseClass = type.getIngredientBaseClass();
+		if (!ingredientBaseClass.isInstance(base)) {
+			throw new IllegalArgumentException(String.format("base (%s) must be an instance of %s", base.getClass(), ingredientBaseClass));
+		}
+		if (this.interpreters.contains(type, base)) {
+			LOGGER.error("An interpreter is already registered for this: {}", base, new IllegalArgumentException());
 			return;
 		}
-
-		itemInterpreters.put(item, interpreter);
+		this.interpreters.addInterpreter(type, base, interpreter);
 	}
 
-	@Override
-	public void registerSubtypeInterpreter(Fluid fluid, IIngredientSubtypeInterpreter<FluidStack> interpreter) {
-		ErrorUtil.checkNotNull(fluid, "fluid ");
-		ErrorUtil.checkNotNull(interpreter, "interpreter");
-
-		if (fluidInterpreters.containsKey(fluid)) {
-			LOGGER.error("An interpreter is already registered for this fluid: {}", fluid, new IllegalArgumentException());
-			return;
-		}
-
-		fluidInterpreters.put(fluid, interpreter);
-	}
-
+	@SuppressWarnings("removal")
 	@Override
 	public boolean hasSubtypeInterpreter(ItemStack itemStack) {
 		ErrorUtil.checkNotEmpty(itemStack);
 
 		Item item = itemStack.getItem();
-		return itemInterpreters.containsKey(item);
+		return interpreters.contains(VanillaTypes.ITEM_STACK, item);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public boolean hasSubtypeInterpreter(FluidStack fluidStack) {
-		ErrorUtil.checkNotNull(fluidStack, "fluid ");
+		ErrorUtil.checkNotNull(fluidStack, "fluidStack");
 
 		Fluid fluid = fluidStack.getFluid();
-		return fluidInterpreters.containsKey(fluid);
+		return interpreters.contains(ForgeTypes.FLUID_STACK, fluid);
 	}
 
-	public ImmutableMap<Item, IIngredientSubtypeInterpreter<ItemStack>> getItemInterpreters() {
-		return ImmutableMap.copyOf(itemInterpreters);
-	}
-
-	public ImmutableMap<Fluid, IIngredientSubtypeInterpreter<FluidStack>> getFluidInterpreters() {
-		return ImmutableMap.copyOf(fluidInterpreters);
+	public SubtypeInterpreters getInterpreters() {
+		return interpreters;
 	}
 
 	private static class AllNbt implements IIngredientSubtypeInterpreter<ItemStack> {

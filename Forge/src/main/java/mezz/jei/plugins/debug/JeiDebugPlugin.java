@@ -90,13 +90,13 @@ public class JeiDebugPlugin implements IModPlugin {
 				new ItemStack(Blocks.ACACIA_DOOR),
 				new ItemStack(Blocks.DARK_OAK_DOOR)
 				),
-				VanillaTypes.ITEM,
+				VanillaTypes.ITEM_STACK,
 				new TranslatableComponent("description.jei.wooden.door.1"), // actually 2 lines
 				new TranslatableComponent("description.jei.wooden.door.2"),
 				new TranslatableComponent("description.jei.wooden.door.3")
 			);
 
-			registration.addIngredientInfo(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), ForgeTypes.FLUID, new TextComponent("water"));
+			registration.addIngredientInfo(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), ForgeTypes.FLUID_STACK, new TextComponent("water"));
 			registration.addIngredientInfo(new DebugIngredient(1), DebugIngredient.TYPE, new TextComponent("debug"));
 			registration.addIngredientInfo(new DebugIngredient(2), DebugIngredient.TYPE,
 				new TextComponent("debug colored").withStyle(ChatFormatting.AQUA),
@@ -175,15 +175,15 @@ public class JeiDebugPlugin implements IModPlugin {
 		Fluid water = Fluids.WATER;
 		FluidSubtypeHandlerTest subtype = new FluidSubtypeHandlerTest();
 
-		registration.registerSubtypeInterpreter(water, subtype);
+		registration.registerSubtypeInterpreter(ForgeTypes.FLUID_STACK, water, subtype);
 	}
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
-			registration.addRecipeCatalyst(ForgeTypes.FLUID, new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), DebugRecipeCategory.TYPE);
-			registration.addRecipeCatalyst(VanillaTypes.ITEM, new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
+			registration.addRecipeCatalyst(ForgeTypes.FLUID_STACK, new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), DebugRecipeCategory.TYPE);
+			registration.addRecipeCatalyst(VanillaTypes.ITEM_STACK, new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
 			int i = 0;
 			IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
 			for (Item item : registry.getValues()) {

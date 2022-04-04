@@ -43,7 +43,7 @@ public class GuiContainerWrapper implements IRecipeFocusSource {
 
 	private Optional<IClickedIngredient<?>> getClickedIngredient(Slot slot, AbstractContainerScreen<?> guiContainer) {
 		ItemStack stack = slot.getItem();
-		return TypedIngredient.createTyped(this.registeredIngredients, VanillaTypes.ITEM, stack)
+		return TypedIngredient.createTyped(this.registeredIngredients, VanillaTypes.ITEM_STACK, stack)
 			.map(typedIngredient -> {
 				ImmutableRect2i slotArea = new ImmutableRect2i(
 						guiContainer.getGuiLeft() + slot.x,

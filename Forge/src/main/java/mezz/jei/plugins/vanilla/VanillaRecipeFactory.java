@@ -18,7 +18,7 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	private final BrewingRecipeUtil brewingRecipeUtil;
 
 	public VanillaRecipeFactory(RegisteredIngredients registeredIngredients) {
-		IIngredientHelper<ItemStack> ingredientHelper = registeredIngredients.getIngredientHelper(VanillaTypes.ITEM);
+		IIngredientHelper<ItemStack> ingredientHelper = registeredIngredients.getIngredientHelper(VanillaTypes.ITEM_STACK);
 		this.brewingRecipeUtil = new BrewingRecipeUtil(ingredientHelper);
 	}
 

@@ -47,7 +47,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 * @since 9.3.0
 	 */
 	default THIS addIngredients(Ingredient ingredient) {
-		return addIngredients(VanillaTypes.ITEM, List.of(ingredient.getItems()));
+		return addIngredients(VanillaTypes.ITEM_STACK, List.of(ingredient.getItems()));
 	}
 
 	/**
@@ -56,7 +56,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 * @since 9.3.0
 	 */
 	default THIS addItemStacks(List<ItemStack> itemStacks) {
-		return addIngredients(VanillaTypes.ITEM, itemStacks);
+		return addIngredients(VanillaTypes.ITEM_STACK, itemStacks);
 	}
 
 	/**
@@ -65,6 +65,6 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 * @since 9.3.0
 	 */
 	default THIS addItemStack(ItemStack itemStack) {
-		return addIngredient(VanillaTypes.ITEM, itemStack);
+		return addIngredient(VanillaTypes.ITEM_STACK, itemStack);
 	}
 }

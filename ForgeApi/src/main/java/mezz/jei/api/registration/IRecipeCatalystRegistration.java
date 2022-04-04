@@ -26,7 +26,7 @@ public interface IRecipeCatalystRegistration {
 	 * @since 9.5.0
 	 */
 	default void addRecipeCatalyst(ItemStack ingredient, RecipeType<?>... recipeTypes) {
-		addRecipeCatalyst(VanillaTypes.ITEM, ingredient, recipeTypes);
+		addRecipeCatalyst(VanillaTypes.ITEM_STACK, ingredient, recipeTypes);
 	}
 
 	/**
@@ -53,7 +53,7 @@ public interface IRecipeCatalystRegistration {
 	 */
 	@Deprecated(forRemoval = true, since = "9.5.0")
 	default void addRecipeCatalyst(ItemStack catalystIngredient, ResourceLocation... recipeCategoryUids) {
-		addRecipeCatalyst(VanillaTypes.ITEM, catalystIngredient, recipeCategoryUids);
+		addRecipeCatalyst(VanillaTypes.ITEM_STACK, catalystIngredient, recipeCategoryUids);
 	}
 
 	/**

@@ -75,7 +75,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 		Preconditions.checkArgument(capacityMb > 0, "capacityMb must be > 0");
 
 		FluidStackRenderer fluidStackRenderer = new FluidStackRenderer(capacityMb, showCapacity, width, height);
-		this.recipeSlot.addRenderOverride(ForgeTypes.FLUID, fluidStackRenderer);
+		this.recipeSlot.addRenderOverride(ForgeTypes.FLUID_STACK, fluidStackRenderer);
 		return this;
 	}
 
