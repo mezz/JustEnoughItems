@@ -11,6 +11,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.bookmarks.BookmarkList;
 import mezz.jei.common.config.IBookmarkConfig;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.common.config.IEditModeConfig;
@@ -70,6 +71,7 @@ public final class JeiStarter {
 	private final RecipeCategorySortingConfig recipeCategorySortingConfig;
 	private final IIngredientSorter ingredientSorter;
 	private final IConnectionToServer serverConnection;
+	private final IKeyBindings keyBindings;
 
 	public JeiStarter(
 		List<IModPlugin> plugins,
@@ -81,7 +83,8 @@ public final class JeiStarter {
 		IBookmarkConfig bookmarkConfig,
 		IModIdHelper modIdHelper,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
-		IIngredientSorter ingredientSorter
+		IIngredientSorter ingredientSorter,
+		IKeyBindings keyBindings
 	) {
 		ErrorUtil.checkNotEmpty(plugins, "plugins");
 		this.plugins = plugins;
@@ -94,6 +97,7 @@ public final class JeiStarter {
 		this.modIdHelper = modIdHelper;
 		this.recipeCategorySortingConfig = recipeCategorySortingConfig;
 		this.ingredientSorter = ingredientSorter;
+		this.keyBindings = keyBindings;
 	}
 
 	public void start(RuntimeEventSubscriptions subscriptions) {
@@ -145,7 +149,8 @@ public final class JeiStarter {
 			worldConfig,
 			guiScreenHelper,
 			modIdHelper,
-			serverConnection
+			serverConnection,
+			keyBindings
 		);
 
 		IngredientGridWithNavigation ingredientListGridNavigation = new IngredientGridWithNavigation(
@@ -169,7 +174,8 @@ public final class JeiStarter {
 			clientConfig,
 			worldConfig,
 			serverConnection,
-			textures
+			textures,
+			keyBindings
 		);
 
 		IngredientGrid bookmarkListGrid = new IngredientGrid(
@@ -181,7 +187,8 @@ public final class JeiStarter {
 			worldConfig,
 			guiScreenHelper,
 			modIdHelper,
-			serverConnection
+			serverConnection,
+			keyBindings
 		);
 
 		IngredientGridWithNavigation bookmarkListGridNavigation = new IngredientGridWithNavigation(
@@ -203,7 +210,8 @@ public final class JeiStarter {
 			clientConfig,
 			worldConfig,
 			guiScreenHelper,
-			serverConnection
+			serverConnection,
+			keyBindings
 		);
 
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
@@ -217,7 +225,8 @@ public final class JeiStarter {
 			modIdHelper,
 			clientConfig,
 			textures,
-			ingredientVisibility
+			ingredientVisibility,
+			keyBindings
 		);
 
 		JeiRuntime jeiRuntime = new JeiRuntime(
@@ -261,7 +270,7 @@ public final class JeiStarter {
 			new GlobalInputHandler(worldConfig),
 			new GuiAreaInputHandler(registeredIngredients, guiScreenHelper, recipesGui)
 		);
-		InputEventHandler inputEventHandler = new InputEventHandler(charTypedHandlers, userInputHandler);
+		InputEventHandler inputEventHandler = new InputEventHandler(charTypedHandlers, userInputHandler, keyBindings);
 		inputEventHandler.register(subscriptions);
 
 		// This needs to be run after all of the "Ingredients are being added at runtime" items.

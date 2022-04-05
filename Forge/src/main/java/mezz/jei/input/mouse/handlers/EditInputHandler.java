@@ -3,15 +3,15 @@ package mezz.jei.input.mouse.handlers;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.config.IEditModeConfig;
-import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.core.config.IngredientBlacklistType;
-import mezz.jei.config.KeyBindings;
 import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.input.CombinedRecipeFocusSource;
 import mezz.jei.common.input.IClickedIngredient;
-import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.core.config.IngredientBlacklistType;
+import mezz.jei.input.CombinedRecipeFocusSource;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
@@ -32,24 +32,24 @@ public class EditInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
 		if (!worldConfig.isEditModeEnabled()) {
 			return Optional.empty();
 		}
 
-		if (input.is(KeyBindings.toggleHideIngredient)) {
-			return handle(input, IngredientBlacklistType.ITEM);
+		if (input.is(keyBindings.getToggleHideIngredient())) {
+			return handle(input, keyBindings, IngredientBlacklistType.ITEM);
 		}
 
-		if (input.is(KeyBindings.toggleWildcardHideIngredient)) {
-			return handle(input, IngredientBlacklistType.WILDCARD);
+		if (input.is(keyBindings.getToggleWildcardHideIngredient())) {
+			return handle(input, keyBindings, IngredientBlacklistType.WILDCARD);
 		}
 
 		return Optional.empty();
 	}
 
-	private Optional<IUserInputHandler> handle(UserInput input, IngredientBlacklistType blacklistType) {
-		return focusSource.getIngredientUnderMouse(input)
+	private Optional<IUserInputHandler> handle(UserInput input, IKeyBindings keyBindings, IngredientBlacklistType blacklistType) {
+		return focusSource.getIngredientUnderMouse(input, keyBindings)
 			.findFirst()
 			.map(clicked -> {
 				if (!input.isSimulate()) {

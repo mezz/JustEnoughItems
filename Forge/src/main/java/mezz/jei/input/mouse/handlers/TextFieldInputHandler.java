@@ -1,7 +1,7 @@
 package mezz.jei.input.mouse.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import mezz.jei.config.KeyBindings;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.forge.events.DebugRestartJeiEvent;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.core.util.TextHistory;
@@ -20,23 +20,23 @@ public class TextFieldInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
-		if (handleUserInputBoolean(input)) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+		if (handleUserInputBoolean(input, keyBindings)) {
 			return Optional.of(this);
 		}
 		return Optional.empty();
 	}
 
-	private boolean handleUserInputBoolean(UserInput input) {
-		if (input.is(KeyBindings.enterKey) || input.is(KeyBindings.escapeKey)) {
+	private boolean handleUserInputBoolean(UserInput input, IKeyBindings keyBindings) {
+		if (input.is(keyBindings.getEnterKey()) || input.is(keyBindings.getEscapeKey())) {
 			return handleSetFocused(input, false);
 		}
 
-		if (input.is(KeyBindings.focusSearch)) {
+		if (input.is(keyBindings.getFocusSearch())) {
 			return handleSetFocused(input, true);
 		}
 
-		if (input.is(KeyBindings.hoveredClearSearchBar) &&
+		if (input.is(keyBindings.getHoveredClearSearchBar()) &&
 			textFieldFilter.isMouseOver(input.getMouseX(), input.getMouseY())
 		) {
 			return handleHoveredClearSearchBar(input);
@@ -50,15 +50,15 @@ public class TextFieldInputHandler implements IUserInputHandler {
 			return true;
 		}
 
-		if (input.is(KeyBindings.previousSearch)) {
+		if (input.is(keyBindings.getPreviousSearch())) {
 			return handleNavigateHistory(input, TextHistory.Direction.PREVIOUS);
 		}
 
-		if (input.is(KeyBindings.nextSearch)) {
+		if (input.is(keyBindings.getNextSearch())) {
 			return handleNavigateHistory(input, TextHistory.Direction.NEXT);
 		}
 
-		if (input.is(KeyBindings.reloadJeiOverTextFilter)) {
+		if (input.is(keyBindings.getReloadJeiOverTextFilter())) {
 			MinecraftForge.EVENT_BUS.post(new DebugRestartJeiEvent());
 		}
 

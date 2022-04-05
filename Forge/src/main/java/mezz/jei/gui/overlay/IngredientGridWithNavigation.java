@@ -5,11 +5,11 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.config.KeyBindings;
 import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
@@ -336,13 +336,13 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		}
 
 		@Override
-		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
-			if (input.is(KeyBindings.nextPage)) {
+		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+			if (input.is(keyBindings.getNextPage())) {
 				this.paged.nextPage();
 				return Optional.of(this);
 			}
 
-			if (input.is(KeyBindings.previousPage)) {
+			if (input.is(keyBindings.getPreviousPage())) {
 				this.paged.previousPage();
 				return Optional.of(this);
 			}

@@ -1,6 +1,7 @@
 package mezz.jei.input.mouse.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -26,9 +27,9 @@ public class LimitedAreaInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
 		if (this.area.contains(input.getMouseX(), input.getMouseY())) {
-			return this.handler.handleUserInput(screen, input)
+			return this.handler.handleUserInput(screen, input, keyBindings)
 				.map(handled -> this);
 		}
 		return Optional.empty();

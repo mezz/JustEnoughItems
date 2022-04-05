@@ -1,6 +1,7 @@
 package mezz.jei.input.mouse.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
 import net.minecraft.client.gui.screens.Screen;
@@ -27,11 +28,11 @@ public class CombinedInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
 		return switch (input.getClickState()) {
-			case IMMEDIATE -> handleImmediateClick(screen, input);
-			case SIMULATE -> handleSimulateClick(screen, input);
-			case EXECUTE -> handleExecuteClick(screen, input);
+			case IMMEDIATE -> handleImmediateClick(screen, input, keyBindings);
+			case SIMULATE -> handleSimulateClick(screen, input, keyBindings);
+			case EXECUTE -> handleExecuteClick(screen, input, keyBindings);
 		};
 	}
 
@@ -40,10 +41,10 @@ public class CombinedInputHandler implements IUserInputHandler {
 	 * We do not track the mousedDown for it,
 	 * the first handler to use it will be the "winner", the rest will get a clicked-out.
 	 */
-	private Optional<IUserInputHandler> handleImmediateClick(Screen screen, UserInput input) {
+	private Optional<IUserInputHandler> handleImmediateClick(Screen screen, UserInput input, IKeyBindings keyBindings) {
 		this.mousedDown.remove(input.getKey());
 
-		return handleClickInternal(screen, input)
+		return handleClickInternal(screen, input, keyBindings)
 			.map(handled -> this);
 	}
 
@@ -55,19 +56,19 @@ public class CombinedInputHandler implements IUserInputHandler {
 	 * and it will be added to mousedDown.
 	 * In the second pass, all handlers that were in mousedDown will be sent the real click.
 	 */
-	private Optional<IUserInputHandler> handleSimulateClick(Screen screen, UserInput input) {
+	private Optional<IUserInputHandler> handleSimulateClick(Screen screen, UserInput input, IKeyBindings keyBindings) {
 		this.mousedDown.remove(input.getKey());
 
-		return handleClickInternal(screen, input)
+		return handleClickInternal(screen, input, keyBindings)
 			.map(handled -> {
 				this.mousedDown.put(input.getKey(), handled);
 				return this;
 			});
 	}
 
-	private Optional<IUserInputHandler> handleExecuteClick(Screen screen, UserInput input) {
+	private Optional<IUserInputHandler> handleExecuteClick(Screen screen, UserInput input, IKeyBindings keyBindings) {
 		return Optional.ofNullable(this.mousedDown.remove(input.getKey()))
-			.map(inputHandler -> inputHandler.handleUserInput(screen, input))
+			.map(inputHandler -> inputHandler.handleUserInput(screen, input, keyBindings))
 			.map(handled -> this);
 	}
 
@@ -78,11 +79,11 @@ public class CombinedInputHandler implements IUserInputHandler {
 	 * 1. every mouse handler that fails to handleClick (returned null).
 	 * 2. every mouse handler that never got a chance to handleClick because something else handled it first.
 	 */
-	private Optional<IUserInputHandler> handleClickInternal(Screen screen, UserInput input) {
+	private Optional<IUserInputHandler> handleClickInternal(Screen screen, UserInput input, IKeyBindings keyBindings) {
 		Optional<IUserInputHandler> firstHandled = Optional.empty();
 		for (IUserInputHandler inputHandler : this.inputHandlers) {
 			if (firstHandled.isEmpty()) {
-				firstHandled = inputHandler.handleUserInput(screen, input);
+				firstHandled = inputHandler.handleUserInput(screen, input, keyBindings);
 				if (firstHandled.isEmpty()) {
 					inputHandler.handleMouseClickedOut(input.getKey());
 				}

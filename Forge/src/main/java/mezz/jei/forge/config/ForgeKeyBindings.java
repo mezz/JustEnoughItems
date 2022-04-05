@@ -1,7 +1,8 @@
-package mezz.jei.config;
+package mezz.jei.forge.config;
 
 import java.util.List;
 
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.util.Translator;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.settings.IKeyConflictContext;
@@ -12,7 +13,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 
 import org.lwjgl.glfw.GLFW;
 
-public final class KeyBindings {
+public final class ForgeKeyBindings implements IKeyBindings {
 	private static final String overlaysCategoryName = Translator.translateToLocal("jei.key.category.overlays");
 	private static final String mouseHoverCategoryName = Translator.translateToLocal("jei.key.category.mouse.hover");
 	private static final String cheatModeCategoryName = Translator.translateToLocal("jei.key.category.cheat.mode");
@@ -23,56 +24,56 @@ public final class KeyBindings {
 	private static final String devToolsCategoryName = Translator.translateToLocal("jei.key.category.dev.tools");
 	private static final String jeiHiddenInternalCategoryName = "jei.key.category.hidden.internal";
 
-	public static final KeyMapping toggleOverlay;
-	public static final KeyMapping focusSearch;
-	public static final KeyMapping toggleCheatMode;
-	public static final KeyMapping toggleEditMode;
+	private final KeyMapping toggleOverlay;
+	private final KeyMapping focusSearch;
+	private final KeyMapping toggleCheatMode;
+	private final KeyMapping toggleEditMode;
 
-	public static final KeyMapping toggleCheatModeConfigButton;
+	private final KeyMapping toggleCheatModeConfigButton;
 
-	public static final KeyMapping recipeBack;
-	public static final KeyMapping previousCategory;
-	public static final KeyMapping nextCategory;
-	public static final KeyMapping previousRecipePage;
-	public static final KeyMapping nextRecipePage;
+	private final KeyMapping recipeBack;
+	private final KeyMapping previousCategory;
+	private final KeyMapping nextCategory;
+	private final KeyMapping previousRecipePage;
+	private final KeyMapping nextRecipePage;
 
-	public static final KeyMapping previousPage;
-	public static final KeyMapping nextPage;
+	private final KeyMapping previousPage;
+	private final KeyMapping nextPage;
 
-	public static final KeyMapping bookmark;
-	public static final KeyMapping toggleBookmarkOverlay;
+	private final KeyMapping bookmark;
+	private final KeyMapping toggleBookmarkOverlay;
 
-	public static final List<KeyMapping> showRecipe;
-	public static final List<KeyMapping> showUses;
+	private final List<KeyMapping> showRecipe;
+	private final List<KeyMapping> showUses;
 
-	public static final List<KeyMapping> cheatOneItem;
-	public static final List<KeyMapping> cheatItemStack;
+	private final List<KeyMapping> cheatOneItem;
+	private final List<KeyMapping> cheatItemStack;
 
-	public static final KeyMapping toggleHideIngredient;
-	public static final KeyMapping toggleWildcardHideIngredient;
+	private final KeyMapping toggleHideIngredient;
+	private final KeyMapping toggleWildcardHideIngredient;
 
-	public static final KeyMapping hoveredClearSearchBar;
-	public static final KeyMapping previousSearch;
-	public static final KeyMapping nextSearch;
+	private final KeyMapping hoveredClearSearchBar;
+	private final KeyMapping previousSearch;
+	private final KeyMapping nextSearch;
 
-	public static final KeyMapping copyRecipeId;
+	private final KeyMapping copyRecipeId;
 
-	private static final List<KeyMapping> allBindings;
+	private final List<KeyMapping> allBindings;
 
 	// internal only, unregistered and can't be changed because they match vanilla Minecraft hard-coded keys:
-	public static final KeyMapping escapeKey;
-	public static final KeyMapping leftClick;
-	public static final KeyMapping rightClick;
-	public static final List<KeyMapping> enterKey;
+	private final KeyMapping escapeKey;
+	private final KeyMapping leftClick;
+	private final KeyMapping rightClick;
+	private final List<KeyMapping> enterKey;
 
 	// debug only
-	public static final KeyMapping reloadJeiOverTextFilter;
+	private final KeyMapping reloadJeiOverTextFilter;
 
-	static InputConstants.Key getKey(int key) {
+	private static InputConstants.Key getKey(int key) {
 		return InputConstants.Type.KEYSYM.getOrCreate(key);
 	}
 
-	static {
+	public ForgeKeyBindings() {
 		KeyMapping showRecipe1;
 		KeyMapping showRecipe2;
 		KeyMapping showUses1;
@@ -144,13 +145,155 @@ public final class KeyBindings {
 		reloadJeiOverTextFilter = new KeyMapping("key.jei.internal.debug.reload", KeyConflictContext.GUI, KeyModifier.SHIFT, getKey(GLFW.GLFW_KEY_F12), jeiHiddenInternalCategoryName);
 	}
 
-	private KeyBindings() {
-	}
-
-	public static void init() {
+	public void register() {
 		for (KeyMapping binding : allBindings) {
 			ClientRegistry.registerKeyBinding(binding);
 		}
+	}
+
+	@Override
+	public KeyMapping getToggleOverlay() {
+		return toggleOverlay;
+	}
+
+	@Override
+	public KeyMapping getFocusSearch() {
+		return focusSearch;
+	}
+
+	@Override
+	public KeyMapping getToggleCheatMode() {
+		return toggleCheatMode;
+	}
+
+	@Override
+	public KeyMapping getToggleEditMode() {
+		return toggleEditMode;
+	}
+
+	@Override
+	public KeyMapping getToggleCheatModeConfigButton() {
+		return toggleCheatModeConfigButton;
+	}
+
+	@Override
+	public KeyMapping getRecipeBack() {
+		return recipeBack;
+	}
+
+	@Override
+	public KeyMapping getPreviousCategory() {
+		return previousCategory;
+	}
+
+	@Override
+	public KeyMapping getNextCategory() {
+		return nextCategory;
+	}
+
+	@Override
+	public KeyMapping getPreviousRecipePage() {
+		return previousRecipePage;
+	}
+
+	@Override
+	public KeyMapping getNextRecipePage() {
+		return nextRecipePage;
+	}
+
+	@Override
+	public KeyMapping getPreviousPage() {
+		return previousPage;
+	}
+
+	@Override
+	public KeyMapping getNextPage() {
+		return nextPage;
+	}
+
+	@Override
+	public KeyMapping getBookmark() {
+		return bookmark;
+	}
+
+	@Override
+	public KeyMapping getToggleBookmarkOverlay() {
+		return toggleBookmarkOverlay;
+	}
+
+	@Override
+	public List<KeyMapping> getShowRecipe() {
+		return showRecipe;
+	}
+
+	@Override
+	public List<KeyMapping> getShowUses() {
+		return showUses;
+	}
+
+	@Override
+	public List<KeyMapping> getCheatOneItem() {
+		return cheatOneItem;
+	}
+
+	@Override
+	public List<KeyMapping> getCheatItemStack() {
+		return cheatItemStack;
+	}
+
+	@Override
+	public KeyMapping getToggleHideIngredient() {
+		return toggleHideIngredient;
+	}
+
+	@Override
+	public KeyMapping getToggleWildcardHideIngredient() {
+		return toggleWildcardHideIngredient;
+	}
+
+	@Override
+	public KeyMapping getHoveredClearSearchBar() {
+		return hoveredClearSearchBar;
+	}
+
+	@Override
+	public KeyMapping getPreviousSearch() {
+		return previousSearch;
+	}
+
+	@Override
+	public KeyMapping getNextSearch() {
+		return nextSearch;
+	}
+
+	@Override
+	public KeyMapping getCopyRecipeId() {
+		return copyRecipeId;
+	}
+
+	@Override
+	public KeyMapping getEscapeKey() {
+		return escapeKey;
+	}
+
+	@Override
+	public KeyMapping getLeftClick() {
+		return leftClick;
+	}
+
+	@Override
+	public KeyMapping getRightClick() {
+		return rightClick;
+	}
+
+	@Override
+	public List<KeyMapping> getEnterKey() {
+		return enterKey;
+	}
+
+	@Override
+	public KeyMapping getReloadJeiOverTextFilter() {
+		return reloadJeiOverTextFilter;
 	}
 
 	private enum JeiConflictContexts implements IKeyConflictContext {

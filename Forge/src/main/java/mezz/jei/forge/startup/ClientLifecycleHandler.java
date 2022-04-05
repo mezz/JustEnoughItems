@@ -9,8 +9,8 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.config.BookmarkConfig;
 import mezz.jei.common.config.EditModeConfig;
 import mezz.jei.common.config.IEditModeConfig;
+import mezz.jei.forge.config.ForgeKeyBindings;
 import mezz.jei.forge.config.JEIClientConfigs;
-import mezz.jei.config.KeyBindings;
 import mezz.jei.forge.config.ModIdFormattingConfig;
 import mezz.jei.config.WorldConfig;
 import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
@@ -69,12 +69,13 @@ public class ClientLifecycleHandler {
 		IConnectionToServer serverConnection = new ConnectionToServer();
 		Internal.setServerConnection(serverConnection);
 
-		WorldConfig worldConfig = new WorldConfig(serverConnection);
+		ForgeKeyBindings keyBindings = new ForgeKeyBindings();
+		keyBindings.register();
+
+		WorldConfig worldConfig = new WorldConfig(serverConnection, keyBindings);
 		networkHandler.createClientPacketHandler(serverConnection, serverConfig, worldConfig);
 
 		List<IModPlugin> plugins = AnnotatedInstanceUtil.getModPlugins();
-
-		KeyBindings.init();
 
 		this.jeiStarter = new JeiStarter(
 			plugins,
@@ -86,7 +87,8 @@ public class ClientLifecycleHandler {
 			bookmarkConfig,
 			modIdHelper,
 			recipeCategorySortingConfig,
-			ingredientSorter
+			ingredientSorter,
+			keyBindings
 		);
 	}
 

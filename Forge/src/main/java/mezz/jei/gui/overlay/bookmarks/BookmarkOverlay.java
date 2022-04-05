@@ -5,6 +5,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.common.bookmarks.BookmarkList;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
@@ -55,11 +56,12 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
 		GuiScreenHelper guiScreenHelper,
-		IConnectionToServer serverConnection
+		IConnectionToServer serverConnection,
+		IKeyBindings keyBindings
 	) {
 		this.bookmarkList = bookmarkList;
 		this.worldConfig = worldConfig;
-		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, textures, worldConfig);
+		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, textures, worldConfig, keyBindings);
 		this.cheatInputHandler = new CheatInputHandler(this, worldConfig, clientConfig, serverConnection);
 		this.contents = contents;
 		bookmarkList.addSourceListChangedListener(() -> {

@@ -24,6 +24,7 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.ClickedIngredient;
 import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.MouseUtil;
@@ -32,7 +33,6 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
-import mezz.jei.config.KeyBindings;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.common.gui.GuiProperties;
 import mezz.jei.gui.overlay.IngredientListOverlay;
@@ -68,6 +68,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final RegisteredIngredients registeredIngredients;
 	private final IModIdHelper modIdHelper;
 	private final IClientConfig clientConfig;
+	private final IKeyBindings keyBindings;
 	private final RecipeManager recipeManager;
 
 	private int headerHeight;
@@ -106,13 +107,15 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IModIdHelper modIdHelper,
 		IClientConfig clientConfig,
 		Textures textures,
-		IIngredientVisibility ingredientVisibility
+		IIngredientVisibility ingredientVisibility,
+		IKeyBindings keyBindings
 	) {
 		super(new TextComponent("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;
 		this.registeredIngredients = registeredIngredients;
 		this.modIdHelper = modIdHelper;
 		this.clientConfig = clientConfig;
+		this.keyBindings = keyBindings;
 		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, registeredIngredients, modIdHelper, textures, ingredientVisibility);
 		this.recipeCatalysts = new RecipeCatalysts(textures, ingredientVisibility);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures);
@@ -358,12 +361,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		double mouseY = input.getMouseY();
 		if (isMouseOver(mouseX, mouseY)) {
 			if (titleHoverChecker.checkHover(mouseX, mouseY)) {
-				if (input.is(KeyBindings.leftClick) && logic.setCategoryFocus()) {
+				if (input.is(keyBindings.getLeftClick()) && logic.setCategoryFocus()) {
 					return true;
 				}
 			} else {
 				for (RecipeLayout<?> recipeLayout : recipeLayouts) {
-					if (recipeLayout.handleInput(input)) {
+					if (recipeLayout.handleInput(input, keyBindings)) {
 						return true;
 					}
 				}
@@ -371,21 +374,21 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 
 		IUserInputHandler handler = recipeGuiTabs.getInputHandler();
-		if (handler.handleUserInput(this, input).isPresent()) {
+		if (handler.handleUserInput(this, input, keyBindings).isPresent()) {
 			return true;
 		}
 
 		Minecraft minecraft = Minecraft.getInstance();
-		if (input.is(KeyBindings.escapeKey) || input.is(minecraft.options.keyInventory)) {
+		if (input.is(keyBindings.getEscapeKey()) || input.is(minecraft.options.keyInventory)) {
 			onClose();
 			return true;
-		} else if (input.is(KeyBindings.recipeBack)) {
+		} else if (input.is(keyBindings.getRecipeBack())) {
 			back();
 			return true;
-		} else if (input.is(KeyBindings.nextCategory)) {
+		} else if (input.is(keyBindings.getNextCategory())) {
 			logic.nextRecipeCategory();
 			return true;
-		} else if (input.is(KeyBindings.previousCategory)) {
+		} else if (input.is(keyBindings.getPreviousCategory())) {
 			logic.previousRecipeCategory();
 			return true;
 		} else {
@@ -393,10 +396,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			if (runtime != null) {
 				IngredientListOverlay itemListOverlay = runtime.getIngredientListOverlay();
 				if (!itemListOverlay.isMouseOver(mouseX, mouseY)) {
-					if (input.is(KeyBindings.nextRecipePage)) {
+					if (input.is(keyBindings.getNextRecipePage())) {
 						logic.nextPage();
 						return true;
-					} else if (input.is(KeyBindings.previousRecipePage)) {
+					} else if (input.is(keyBindings.getPreviousRecipePage())) {
 						logic.previousPage();
 						return true;
 					}

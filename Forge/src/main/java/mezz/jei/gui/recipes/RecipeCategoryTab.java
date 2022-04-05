@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
 import net.minecraft.client.Minecraft;
@@ -37,7 +38,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
 		if (!isMouseOver(input.getMouseX(), input.getMouseY())) {
 			return Optional.empty();
 		}

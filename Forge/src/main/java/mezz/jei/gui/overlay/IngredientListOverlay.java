@@ -14,6 +14,7 @@ import mezz.jei.common.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.MouseUtil;
@@ -68,7 +69,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
 		IConnectionToServer serverConnection,
-		Textures textures
+		Textures textures,
+		IKeyBindings keyBindings
 	) {
 		this.guiScreenHelper = guiScreenHelper;
 		this.contents = contents;
@@ -83,7 +85,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 		ingredientGridSource.addSourceListChangedListener(() -> updateBounds(true));
 
-		this.configButton = ConfigButton.create(this, worldConfig, textures);
+		this.configButton = ConfigButton.create(this, worldConfig, textures, keyBindings);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, registeredIngredients, worldConfig);
 	}
 

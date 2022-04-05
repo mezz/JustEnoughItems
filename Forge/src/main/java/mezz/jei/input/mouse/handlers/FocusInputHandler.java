@@ -3,11 +3,11 @@ package mezz.jei.input.mouse.handlers;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IRecipesGui;
-import mezz.jei.config.KeyBindings;
 import mezz.jei.common.focus.Focus;
-import mezz.jei.input.CombinedRecipeFocusSource;
-import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.input.CombinedRecipeFocusSource;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
@@ -23,20 +23,20 @@ public class FocusInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
-		if (input.is(KeyBindings.showRecipe)) {
-			return handleShow(input, List.of(RecipeIngredientRole.OUTPUT));
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+		if (input.is(keyBindings.getShowRecipe())) {
+			return handleShow(input, List.of(RecipeIngredientRole.OUTPUT), keyBindings);
 		}
 
-		if (input.is(KeyBindings.showUses)) {
-			return handleShow(input, List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CATALYST));
+		if (input.is(keyBindings.getShowUses())) {
+			return handleShow(input, List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CATALYST), keyBindings);
 		}
 
 		return Optional.empty();
 	}
 
-	private Optional<IUserInputHandler> handleShow(UserInput input, List<RecipeIngredientRole> roles) {
-		return focusSource.getIngredientUnderMouse(input)
+	private Optional<IUserInputHandler> handleShow(UserInput input, List<RecipeIngredientRole> roles, IKeyBindings keyBindings) {
+		return focusSource.getIngredientUnderMouse(input, keyBindings)
 			.findFirst()
 			.map(clicked -> {
 				if (!input.isSimulate()) {

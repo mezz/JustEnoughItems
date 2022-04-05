@@ -1,6 +1,6 @@
 package mezz.jei.input.mouse.handlers;
 
-import mezz.jei.config.KeyBindings;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.common.ingredients.RegisteredIngredients;
@@ -25,8 +25,8 @@ public class GuiAreaInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
-		if (input.is(KeyBindings.leftClick)) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+		if (input.is(keyBindings.getLeftClick())) {
 			if (screen instanceof AbstractContainerScreen<?> guiContainer) {
 				double guiMouseX = input.getMouseX() - guiContainer.getGuiLeft();
 				double guiMouseY = input.getMouseY() - guiContainer.getGuiTop();

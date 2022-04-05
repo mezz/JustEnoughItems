@@ -14,9 +14,9 @@ import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.config.KeyBindings;
 import mezz.jei.deprecated.gui.recipes.RecipeLayoutLegacyAdapter;
 import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import net.minecraft.client.Minecraft;
@@ -236,7 +236,7 @@ public class RecipeLayout<R> {
 		return this.recipeSlots.getHoveredSlot(recipeMouseX, recipeMouseY);
 	}
 
-	public boolean handleInput(UserInput input) {
+	public boolean handleInput(UserInput input, IKeyBindings keyBindings) {
 		if (!isMouseOver(input.getMouseX(), input.getMouseY())) {
 			return false;
 		}
@@ -247,7 +247,7 @@ public class RecipeLayout<R> {
 			return true;
 		}
 
-		if (input.is(KeyBindings.copyRecipeId)) {
+		if (input.is(keyBindings.getCopyRecipeId())) {
 			return handleCopyRecipeId();
 		}
 		return false;

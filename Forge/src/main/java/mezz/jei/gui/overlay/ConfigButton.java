@@ -1,9 +1,9 @@
 package mezz.jei.gui.overlay;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.config.KeyBindings;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.common.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.textures.Textures;
@@ -19,17 +19,20 @@ import java.util.List;
 import java.util.Optional;
 
 public class ConfigButton extends GuiIconToggleButton {
-	public static ConfigButton create(IngredientListOverlay parent, IWorldConfig worldConfig, Textures textures) {
-		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), parent, worldConfig, textures);
+	private final IKeyBindings keyBindings;
+
+	public static ConfigButton create(IngredientListOverlay parent, IWorldConfig worldConfig, Textures textures, IKeyBindings keyBindings) {
+		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), parent, worldConfig, textures, keyBindings);
 	}
 
 	private final IngredientListOverlay parent;
 	private final IWorldConfig worldConfig;
 
-	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, IngredientListOverlay parent, IWorldConfig worldConfig, Textures textures) {
+	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, IngredientListOverlay parent, IWorldConfig worldConfig, Textures textures, IKeyBindings keyBindings) {
 		super(disabledIcon, enabledIcon, textures);
 		this.parent = parent;
 		this.worldConfig = worldConfig;
+		this.keyBindings = keyBindings;
 	}
 
 	@Override
@@ -39,7 +42,7 @@ public class ConfigButton extends GuiIconToggleButton {
 			TranslatableComponent disabled = new TranslatableComponent("jei.tooltip.ingredient.list.disabled");
 			TranslatableComponent disabledFix = new TranslatableComponent(
 				"jei.tooltip.ingredient.list.disabled.how.to.fix",
-				KeyBindings.toggleOverlay.getTranslatedKeyMessage()
+				keyBindings.getToggleOverlay().getTranslatedKeyMessage()
 			);
 			tooltip.add(disabled.withStyle(ChatFormatting.GOLD));
 			tooltip.add(disabledFix.withStyle(ChatFormatting.GOLD));
@@ -52,16 +55,16 @@ public class ConfigButton extends GuiIconToggleButton {
 				.withStyle(ChatFormatting.RED);
 			tooltip.add(enabled);
 
-			if (!KeyBindings.toggleCheatMode.isUnbound()) {
+			if (!keyBindings.getToggleCheatMode().isUnbound()) {
 				MutableComponent component = new TranslatableComponent(
 					"jei.tooltip.cheat.mode.how.to.disable.hotkey",
-					KeyBindings.toggleCheatMode.getTranslatedKeyMessage()
+					keyBindings.getToggleCheatMode().getTranslatedKeyMessage()
 				).withStyle(ChatFormatting.RED);
 				tooltip.add(component);
-			} else if (!KeyBindings.toggleCheatModeConfigButton.isUnbound()) {
+			} else if (!keyBindings.getToggleCheatModeConfigButton().isUnbound()) {
 				MutableComponent component = new TranslatableComponent(
 					"jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey",
-					KeyBindings.toggleCheatModeConfigButton.getTranslatedKeyMessage()
+					keyBindings.getToggleCheatModeConfigButton().getTranslatedKeyMessage()
 				).withStyle(ChatFormatting.RED);
 				tooltip.add(component);
 			}
@@ -77,7 +80,7 @@ public class ConfigButton extends GuiIconToggleButton {
 	protected boolean onMouseClicked(UserInput input) {
 		if (worldConfig.isOverlayEnabled()) {
 			if (!input.isSimulate()) {
-				if (input.is(KeyBindings.toggleCheatModeConfigButton)) {
+				if (input.is(keyBindings.getToggleCheatModeConfigButton())) {
 					worldConfig.toggleCheatItemsEnabled();
 				} else {
 					openSettings();

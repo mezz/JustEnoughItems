@@ -1,16 +1,16 @@
 package mezz.jei.input.mouse.handlers;
 
+import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IRecipeFocusSource;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.GiveAmount;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.common.input.IRecipeFocusSource;
-import mezz.jei.common.input.UserInput;
-import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.util.CheatUtil;
 import mezz.jei.util.CommandUtil;
-import mezz.jei.common.util.GiveAmount;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
 
@@ -33,18 +33,18 @@ public class CheatInputHandler implements IUserInputHandler {
     }
 
     @Override
-    public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
+    public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
         if (!worldConfig.isCheatItemsEnabled() ||
             screen instanceof RecipesGui
         ) {
             return Optional.empty();
         }
 
-        if (input.is(KeyBindings.cheatItemStack)) {
+        if (input.is(keyBindings.getCheatItemStack())) {
             return handleGive(input, GiveAmount.MAX);
         }
 
-        if (input.is(KeyBindings.cheatOneItem)) {
+        if (input.is(keyBindings.getCheatOneItem())) {
             return handleGive(input, GiveAmount.ONE);
         }
 

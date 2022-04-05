@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screens.Screen;
 import java.util.Optional;
 
 public interface IUserInputHandler {
-	default Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
+	default Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
 		return Optional.empty();
 	}
 

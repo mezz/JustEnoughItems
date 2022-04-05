@@ -1,10 +1,10 @@
 package mezz.jei.input.mouse.handlers;
 
 import mezz.jei.common.bookmarks.BookmarkList;
-import mezz.jei.config.KeyBindings;
-import mezz.jei.input.CombinedRecipeFocusSource;
-import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.input.CombinedRecipeFocusSource;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
@@ -19,15 +19,15 @@ public class BookmarkInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input) {
-		if (input.is(KeyBindings.bookmark)) {
-			return handleBookmark(input);
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+		if (input.is(keyBindings.getBookmark())) {
+			return handleBookmark(input, keyBindings);
 		}
 		return Optional.empty();
 	}
 
-	private Optional<IUserInputHandler> handleBookmark(UserInput input) {
-		return focusSource.getIngredientUnderMouse(input)
+	private Optional<IUserInputHandler> handleBookmark(UserInput input, IKeyBindings keyBindings) {
+		return focusSource.getIngredientUnderMouse(input, keyBindings)
 			.findFirst()
 			.flatMap(clicked -> {
 				if (input.isSimulate() ||

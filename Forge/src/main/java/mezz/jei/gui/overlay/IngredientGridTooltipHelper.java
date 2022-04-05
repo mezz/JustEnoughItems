@@ -8,8 +8,8 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.color.ColorNamer;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.config.KeyBindings;
 import mezz.jei.core.search.SearchMode;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.ingredients.IngredientInfo;
@@ -29,17 +29,20 @@ public final class IngredientGridTooltipHelper {
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IWorldConfig worldConfig;
 	private final IModIdHelper modIdHelper;
+	private final IKeyBindings keyBindings;
 
 	public IngredientGridTooltipHelper(
 		RegisteredIngredients registeredIngredients,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IWorldConfig worldConfig,
-		IModIdHelper modIdHelper
+		IModIdHelper modIdHelper,
+		IKeyBindings keyBindings
 	) {
 		this.registeredIngredients = registeredIngredients;
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.worldConfig = worldConfig;
 		this.modIdHelper = modIdHelper;
+		this.keyBindings = keyBindings;
 	}
 
 	public <T> void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, ITypedIngredient<T> value) {
@@ -63,7 +66,7 @@ public final class IngredientGridTooltipHelper {
 		}
 
 		if (worldConfig.isEditModeEnabled()) {
-			addEditModeInfoToTooltip(tooltip);
+			addEditModeInfoToTooltip(tooltip, keyBindings);
 		}
 
 		return tooltip;
@@ -83,18 +86,18 @@ public final class IngredientGridTooltipHelper {
 		}
 	}
 
-	private static void addEditModeInfoToTooltip(List<Component> tooltip) {
+	private static void addEditModeInfoToTooltip(List<Component> tooltip, IKeyBindings keyBindings) {
 		List<Component> lines = List.of(
 			TextComponent.EMPTY,
 			new TranslatableComponent("gui.jei.editMode.description")
 				.withStyle(ChatFormatting.DARK_GREEN),
 			new TranslatableComponent(
 				"gui.jei.editMode.description.hide",
-				KeyBindings.toggleHideIngredient.getTranslatedKeyMessage()
+				keyBindings.getToggleHideIngredient().getTranslatedKeyMessage()
 			).withStyle(ChatFormatting.GRAY),
 			new TranslatableComponent(
 				"gui.jei.editMode.description.hide.wild",
-				KeyBindings.toggleWildcardHideIngredient.getTranslatedKeyMessage()
+				keyBindings.getToggleWildcardHideIngredient().getTranslatedKeyMessage()
 			).withStyle(ChatFormatting.GRAY)
 		);
 		tooltip.addAll(lines);

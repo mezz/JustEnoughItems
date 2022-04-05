@@ -1,9 +1,9 @@
 package mezz.jei.input;
 
 import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.config.KeyBindings;
 import net.minecraft.client.Minecraft;
 
 import java.util.List;
@@ -16,14 +16,14 @@ public class CombinedRecipeFocusSource {
 		this.handlers = List.of(handlers);
 	}
 
-	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(UserInput input) {
+	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(UserInput input, IKeyBindings keyBindings) {
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
 
 		Stream<IClickedIngredient<?>> stream = handlers.stream()
 			.flatMap(handler -> handler.getIngredientUnderMouse(mouseX, mouseY));
 
-		if (isConflictingVanillaMouseButton(input)) {
+		if (isConflictingVanillaMouseButton(input, keyBindings)) {
 			stream = stream.filter(IClickedIngredient::canOverrideVanillaClickHandler);
 		}
 
@@ -35,12 +35,12 @@ public class CombinedRecipeFocusSource {
 	 * it would conflict with their normal behavior.
 	 * @see IClickedIngredient#canOverrideVanillaClickHandler()
 	 */
-	private static boolean isConflictingVanillaMouseButton(UserInput input) {
+	private static boolean isConflictingVanillaMouseButton(UserInput input, IKeyBindings keyBindings) {
 		if (input.isMouse()) {
 			Minecraft minecraft = Minecraft.getInstance();
-			return input.is(KeyBindings.leftClick) ||
+			return input.is(keyBindings.getLeftClick()) ||
 				input.is(minecraft.options.keyPickItem) ||
-				input.is(KeyBindings.rightClick);
+				input.is(keyBindings.getRightClick());
 		}
 		return false;
 	}

@@ -1,12 +1,11 @@
 package mezz.jei.forge.input;
 
-import mezz.jei.common.input.UserInput;
-import mezz.jei.config.KeyBindings;
-import mezz.jei.forge.events.RuntimeEventSubscriptions;
-import mezz.jei.forge.input.ForgeUserInput;
 import mezz.jei.common.input.ICharTypedHandler;
-import mezz.jei.input.mouse.handlers.CombinedInputHandler;
+import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.core.util.ReflectionUtil;
+import mezz.jei.forge.events.RuntimeEventSubscriptions;
+import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -16,11 +15,13 @@ import java.util.List;
 public class InputEventHandler {
 	private final List<ICharTypedHandler> charTypedHandlers;
 	private final CombinedInputHandler inputHandler;
+	private final IKeyBindings keybindings;
 	private final ReflectionUtil reflectionUtil = new ReflectionUtil();
 
-	public InputEventHandler(List<ICharTypedHandler> charTypedHandlers, CombinedInputHandler inputHandler) {
+	public InputEventHandler(List<ICharTypedHandler> charTypedHandlers, CombinedInputHandler inputHandler, IKeyBindings keybindings) {
 		this.charTypedHandlers = charTypedHandlers;
 		this.inputHandler = inputHandler;
+		this.keybindings = keybindings;
 	}
 
 	public void register(RuntimeEventSubscriptions subscriptions) {
@@ -49,7 +50,7 @@ public class InputEventHandler {
 		Screen screen = event.getScreen();
 		if (!isContainerTextFieldFocused(screen)) {
 			UserInput input = ForgeUserInput.fromEvent(event);
-			this.inputHandler.handleUserInput(screen, input)
+			this.inputHandler.handleUserInput(screen, input, keybindings)
 				.ifPresent(handler -> event.setCanceled(true));
 		}
 	}
@@ -61,7 +62,7 @@ public class InputEventHandler {
 		Screen screen = event.getScreen();
 		if (isContainerTextFieldFocused(screen)) {
 			UserInput input = ForgeUserInput.fromEvent(event);
-			this.inputHandler.handleUserInput(screen, input)
+			this.inputHandler.handleUserInput(screen, input, keybindings)
 				.ifPresent(handler -> event.setCanceled(true));
 		}
 	}
@@ -92,10 +93,10 @@ public class InputEventHandler {
 		ForgeUserInput.fromEvent(event)
 			.ifPresent(input -> {
 				Screen screen = event.getScreen();
-				this.inputHandler.handleUserInput(screen, input)
+				this.inputHandler.handleUserInput(screen, input, keybindings)
 					.ifPresent(handled -> event.setCanceled(true));
 
-				if (input.is(KeyBindings.leftClick)) {
+				if (input.is(keybindings.getLeftClick())) {
 					this.inputHandler.handleDragStart(screen, input)
 						.ifPresent(handled -> event.setCanceled(true));
 				}
@@ -107,10 +108,10 @@ public class InputEventHandler {
 			.ifPresent(input -> {
 				Screen screen = event.getScreen();
 
-				this.inputHandler.handleUserInput(screen, input)
+				this.inputHandler.handleUserInput(screen, input, keybindings)
 					.ifPresent(handled -> event.setCanceled(true));
 
-				if (input.is(KeyBindings.leftClick)) {
+				if (input.is(keybindings.getLeftClick())) {
 					this.inputHandler.handleDragComplete(screen, input)
 						.ifPresent(handled -> event.setCanceled(true));
 				}
