@@ -27,7 +27,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.ChatFormatting;
 
-import mezz.jei.Internal;
+import mezz.jei.common.Internal;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;

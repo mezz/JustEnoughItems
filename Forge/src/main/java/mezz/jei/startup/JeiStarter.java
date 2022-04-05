@@ -1,7 +1,7 @@
 package mezz.jei.startup;
 
 import com.google.common.collect.ImmutableTable;
-import mezz.jei.Internal;
+import mezz.jei.common.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.RecipeType;
@@ -53,8 +53,8 @@ import mezz.jei.plugins.jei.JeiInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.recipes.RecipeManager;
 import mezz.jei.recipes.RecipeTransferManager;
-import mezz.jei.runtime.JeiHelpers;
-import mezz.jei.runtime.JeiRuntime;
+import mezz.jei.common.runtime.JeiHelpers;
+import mezz.jei.common.runtime.JeiRuntime;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;
 

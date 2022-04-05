@@ -2,11 +2,11 @@ package mezz.jei.input.mouse.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.core.util.TextHistory;
 import mezz.jei.forge.events.DebugRestartJeiEvent;
 import mezz.jei.input.GuiTextFieldFilter;
-import mezz.jei.core.util.TextHistory;
-import mezz.jei.common.input.UserInput;
-import mezz.jei.common.input.IUserInputHandler;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.common.MinecraftForge;
 

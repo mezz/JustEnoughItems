@@ -1,6 +1,6 @@
 package mezz.jei.plugins.jei;
 
-import mezz.jei.Internal;
+import mezz.jei.common.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;

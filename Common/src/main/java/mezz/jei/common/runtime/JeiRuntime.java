@@ -1,4 +1,4 @@
-package mezz.jei.runtime;
+package mezz.jei.common.runtime;
 
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -8,12 +8,12 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IIngredientFilter;
+import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.focus.Focus;
-import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.ErrorUtil;
@@ -21,11 +21,10 @@ import mezz.jei.common.util.ErrorUtil;
 import java.util.Optional;
 
 public class JeiRuntime implements IJeiRuntime {
-
 	private final IRecipeManager recipeManager;
-	private final IngredientListOverlay ingredientListOverlay;
+	private final IIngredientListOverlay ingredientListOverlay;
 	private final IBookmarkOverlay bookmarkOverlay;
-	private final RecipesGui recipesGui;
+	private final IRecipesGui recipesGui;
 	private final IIngredientFilter ingredientFilter;
 	private final RegisteredIngredients registeredIngredients;
 	private final IIngredientManager ingredientManager;
@@ -34,9 +33,9 @@ public class JeiRuntime implements IJeiRuntime {
 
 	public JeiRuntime(
 		IRecipeManager recipeManager,
-		IngredientListOverlay ingredientListOverlay,
+		IIngredientListOverlay ingredientListOverlay,
 		IBookmarkOverlay bookmarkOverlay,
-		RecipesGui recipesGui,
+		IRecipesGui recipesGui,
 		IIngredientFilter ingredientFilter,
 		RegisteredIngredients registeredIngredients,
 		IIngredientManager ingredientManager,
@@ -81,7 +80,7 @@ public class JeiRuntime implements IJeiRuntime {
 	}
 
 	@Override
-	public IngredientListOverlay getIngredientListOverlay() {
+	public IIngredientListOverlay getIngredientListOverlay() {
 		return ingredientListOverlay;
 	}
 
@@ -101,7 +100,7 @@ public class JeiRuntime implements IJeiRuntime {
 	}
 
 	@Override
-	public RecipesGui getRecipesGui() {
+	public IRecipesGui getRecipesGui() {
 		return recipesGui;
 	}
 

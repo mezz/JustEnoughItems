@@ -1,6 +1,6 @@
 package mezz.jei.plugins.debug;
 
-import mezz.jei.Internal;
+import mezz.jei.common.Internal;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;

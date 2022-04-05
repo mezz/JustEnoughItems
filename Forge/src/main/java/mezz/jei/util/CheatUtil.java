@@ -1,6 +1,6 @@
 package mezz.jei.util;
 
-import mezz.jei.Internal;
+import mezz.jei.common.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.ingredients.RegisteredIngredients;

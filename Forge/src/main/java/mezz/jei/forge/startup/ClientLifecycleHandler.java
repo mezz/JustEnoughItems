@@ -1,6 +1,6 @@
 package mezz.jei.forge.startup;
 
-import mezz.jei.Internal;
+import mezz.jei.common.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;

@@ -2,7 +2,6 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -15,6 +14,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.focus.FocusGroup;
+import mezz.jei.common.gui.GuiProperties;
 import mezz.jei.common.gui.HoverChecker;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
@@ -34,11 +34,8 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.core.config.IClientConfig;
-import mezz.jei.common.gui.GuiProperties;
-import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.recipes.RecipeManager;
 import mezz.jei.recipes.RecipeTransferManager;
-import mezz.jei.runtime.JeiRuntime;
 import mezz.jei.transfer.RecipeTransferUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -391,20 +388,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		} else if (input.is(keyBindings.getPreviousCategory())) {
 			logic.previousRecipeCategory();
 			return true;
-		} else {
-			JeiRuntime runtime = Internal.getRuntime();
-			if (runtime != null) {
-				IngredientListOverlay itemListOverlay = runtime.getIngredientListOverlay();
-				if (!itemListOverlay.isMouseOver(mouseX, mouseY)) {
-					if (input.is(keyBindings.getNextRecipePage())) {
-						logic.nextPage();
-						return true;
-					} else if (input.is(keyBindings.getPreviousRecipePage())) {
-						logic.previousPage();
-						return true;
-					}
-				}
-			}
+		} else if (input.is(keyBindings.getNextRecipePage())) {
+			logic.nextPage();
+			return true;
+		} else if (input.is(keyBindings.getPreviousRecipePage())) {
+			logic.previousPage();
+			return true;
 		}
 		return false;
 	}

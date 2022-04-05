@@ -2,7 +2,7 @@ package mezz.jei.plugins.debug;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.Internal;
+import mezz.jei.common.Internal;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;

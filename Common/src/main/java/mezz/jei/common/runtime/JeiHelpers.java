@@ -1,11 +1,11 @@
-package mezz.jei.runtime;
+package mezz.jei.common.runtime;
 
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.IFocusFactory;
-import mezz.jei.gui.GuiHelper;
+import mezz.jei.common.gui.GuiHelper;
 
 public class JeiHelpers implements IJeiHelpers {
 	private final GuiHelper guiHelper;

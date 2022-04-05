@@ -1,4 +1,4 @@
-package mezz.jei.gui;
+package mezz.jei.common.gui;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;

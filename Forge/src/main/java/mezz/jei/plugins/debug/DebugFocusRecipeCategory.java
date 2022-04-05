@@ -1,6 +1,6 @@
 package mezz.jei.plugins.debug;
 
-import mezz.jei.Internal;
+import mezz.jei.common.Internal;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
