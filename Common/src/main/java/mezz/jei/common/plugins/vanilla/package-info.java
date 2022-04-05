@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.plugins.vanilla.stonecutting;
+package mezz.jei.common.plugins.vanilla;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
 

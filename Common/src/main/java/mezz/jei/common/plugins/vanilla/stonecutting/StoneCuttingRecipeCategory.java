@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.stonecutting;
+package mezz.jei.common.plugins.vanilla.stonecutting;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
