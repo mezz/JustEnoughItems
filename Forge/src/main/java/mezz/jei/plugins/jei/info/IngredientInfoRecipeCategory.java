@@ -15,6 +15,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.ingredients.IngredientInfoRecipe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -23,17 +24,13 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IJeiIngredientInfoRecipe> {
-	public static final int recipeWidth = 160;
-	public static final int recipeHeight = 125;
-	private static final int lineSpacing = 2;
-
 	private final IDrawable background;
 	private final IDrawable icon;
 	private final IDrawable slotBackground;
 	private final Component localizedName;
 
 	public IngredientInfoRecipeCategory(IGuiHelper guiHelper, Textures textures) {
-		this.background = guiHelper.createBlankDrawable(recipeWidth, recipeHeight);
+		this.background = guiHelper.createBlankDrawable(IngredientInfoRecipe.recipeWidth, IngredientInfoRecipe.recipeHeight);
 		this.icon = textures.getInfoIcon();
 		this.slotBackground = guiHelper.getSlotDrawable();
 		this.localizedName = new TranslatableComponent("gui.jei.category.itemInformation");
@@ -79,13 +76,13 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IJeiIngredi
 		Minecraft minecraft = Minecraft.getInstance();
 		for (FormattedText descriptionLine : recipe.getDescription()) {
 			minecraft.font.draw(poseStack, Language.getInstance().getVisualOrder(descriptionLine), xPos, yPos, 0xFF000000);
-			yPos += minecraft.font.lineHeight + lineSpacing;
+			yPos += minecraft.font.lineHeight + IngredientInfoRecipe.lineSpacing;
 		}
 	}
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, IJeiIngredientInfoRecipe recipe, IFocusGroup focuses) {
-		int xPos = (recipeWidth - 16) / 2;
+		int xPos = (IngredientInfoRecipe.recipeWidth - 16) / 2;
 
 		IRecipeSlotBuilder inputSlotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, xPos, 1)
 			.setBackground(slotBackground, -1, -1);

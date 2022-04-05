@@ -1,10 +1,8 @@
-package mezz.jei.plugins.jei.info;
+package mezz.jei.common.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
-import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.client.Minecraft;
@@ -16,7 +14,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class IngredientInfoRecipe implements IJeiIngredientInfoRecipe {
-	private static final int lineSpacing = 2;
+	public static final int recipeWidth = 160;
+	public static final int recipeHeight = 125;
+	public static final int lineSpacing = 2;
+
 	private final List<FormattedText> description;
 	private final List<ITypedIngredient<?>> ingredients;
 
@@ -33,11 +34,11 @@ public class IngredientInfoRecipe implements IJeiIngredientInfoRecipe {
 
 		List<IJeiIngredientInfoRecipe> recipes = new ArrayList<>();
 		List<FormattedText> descriptionLines = StringUtil.expandNewlines(descriptionComponents);
-		descriptionLines = StringUtil.splitLines(descriptionLines, IngredientInfoRecipeCategory.recipeWidth);
+		descriptionLines = StringUtil.splitLines(descriptionLines, recipeWidth);
 		final int lineCount = descriptionLines.size();
 
 		Minecraft minecraft = Minecraft.getInstance();
-		final int maxLinesPerPage = (IngredientInfoRecipeCategory.recipeHeight - 20) / (minecraft.font.lineHeight + lineSpacing);
+		final int maxLinesPerPage = (recipeHeight - 20) / (minecraft.font.lineHeight + lineSpacing);
 		final int pageCount = MathUtil.divideCeil(lineCount, maxLinesPerPage);
 		for (int i = 0; i < pageCount; i++) {
 			int startLine = i * maxLinesPerPage;

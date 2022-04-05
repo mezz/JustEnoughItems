@@ -1,4 +1,4 @@
-package mezz.jei.load.registration;
+package mezz.jei.common.load.registration;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.helpers.IJeiHelpers;
@@ -11,7 +11,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.plugins.jei.info.IngredientInfoRecipe;
+import mezz.jei.common.ingredients.IngredientInfoRecipe;
 import mezz.jei.common.recipes.RecipeManagerInternal;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

@@ -1,8 +1,9 @@
-package mezz.jei.ingredients;
+package mezz.jei.common.ingredients;
 
 import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.common.ingredients.IListElementInfo;
 import mezz.jei.common.ingredients.IngredientFilter;
+import mezz.jei.common.ingredients.IngredientSorterComparators;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.core.config.IngredientSortStage;
 import mezz.jei.core.config.IClientConfig;

@@ -1,4 +1,4 @@
-package mezz.jei.ingredients;
+package mezz.jei.common.ingredients;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -10,6 +10,7 @@ import mezz.jei.common.ingredients.IListElementInfo;
 import mezz.jei.common.ingredients.IngredientBlacklistInternal;
 import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.IngredientInfo;
+import mezz.jei.common.ingredients.IngredientListElementFactory;
 import mezz.jei.common.ingredients.ListElementInfo;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;

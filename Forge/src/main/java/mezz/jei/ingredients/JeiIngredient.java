@@ -5,7 +5,6 @@ import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
 import org.apache.commons.lang3.NotImplementedException;
 
 import javax.annotation.Nullable;
@@ -29,11 +28,6 @@ public class JeiIngredient extends Ingredient {
     @Override
     public boolean isSimple() {
         return false;
-    }
-
-    @Override
-    public IIngredientSerializer<? extends Ingredient> getSerializer() {
-        throw new NotImplementedException("JeiIngredient should only be used internally for JEI at runtime");
     }
 
     @Override

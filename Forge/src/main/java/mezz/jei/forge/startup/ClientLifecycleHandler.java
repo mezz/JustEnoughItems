@@ -27,7 +27,7 @@ import mezz.jei.forge.util.ForgeRecipeRegistryHelper;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.forge.helpers.ForgeModIdHelper;
 import mezz.jei.common.ingredients.IIngredientSorter;
-import mezz.jei.ingredients.IngredientSorter;
+import mezz.jei.common.ingredients.IngredientSorter;
 import mezz.jei.startup.JeiStarter;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RecipeErrorUtil;

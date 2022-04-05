@@ -1,4 +1,4 @@
-package mezz.jei.load.registration;
+package mezz.jei.common.load.registration;
 
 import net.minecraft.world.item.crafting.CraftingRecipe;
 

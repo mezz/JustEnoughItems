@@ -1,13 +1,10 @@
-package mezz.jei.ingredients;
+package mezz.jei.common.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.common.config.sorting.ModNameSortingConfig;
 import mezz.jei.common.gui.ingredients.IListElement;
-import mezz.jei.common.ingredients.IListElementInfo;
-import mezz.jei.common.ingredients.IngredientFilter;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.core.config.IngredientSortStage;
 import net.minecraft.core.HolderSet.ListBacked;
 import net.minecraft.core.Registry;

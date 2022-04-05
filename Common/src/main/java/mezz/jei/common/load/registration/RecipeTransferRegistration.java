@@ -1,4 +1,4 @@
-package mezz.jei.load.registration;
+package mezz.jei.common.load.registration;
 
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.helpers.IJeiHelpers;
