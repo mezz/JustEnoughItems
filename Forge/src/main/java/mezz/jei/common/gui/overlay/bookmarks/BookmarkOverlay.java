@@ -11,7 +11,7 @@ import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.elements.GuiIconToggleButton;
-import mezz.jei.gui.overlay.IngredientGridWithNavigation;
+import mezz.jei.common.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IClickedIngredient;
 import mezz.jei.common.input.IRecipeFocusSource;

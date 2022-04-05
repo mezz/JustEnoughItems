@@ -1,11 +1,10 @@
-package mezz.jei.gui.overlay;
+package mezz.jei.common.gui.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.gui.overlay.IIngredientGrid;
 import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
@@ -20,9 +19,9 @@ import mezz.jei.common.input.IClickedIngredient;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.handlers.DeleteItemInputHandler;
-import mezz.jei.render.IngredientListRenderer;
-import mezz.jei.render.ElementRenderer;
-import mezz.jei.render.IngredientListSlot;
+import mezz.jei.common.render.IngredientListRenderer;
+import mezz.jei.common.render.ElementRenderer;
+import mezz.jei.common.render.IngredientListSlot;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;

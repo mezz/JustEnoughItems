@@ -1,4 +1,4 @@
-package mezz.jei.render;
+package mezz.jei.common.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -7,11 +7,14 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.config.IEditModeConfig;
-import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.common.ingredients.IngredientInfo;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.render.ElementRenderer;
+import mezz.jei.common.render.ElementRenderersByType;
+import mezz.jei.common.render.IngredientListSlot;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.gui.GuiComponent;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package mezz.jei.render;
+package mezz.jei.common.render;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.input.IClickedIngredient;

@@ -1,9 +1,8 @@
-package mezz.jei.gui.overlay;
+package mezz.jei.common.gui.overlay;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.network.IConnectionToServer;

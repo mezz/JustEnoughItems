@@ -1,9 +1,7 @@
 package mezz.jei.common.platform;
 
-import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.common.gui.ingredients.RecipeSlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;

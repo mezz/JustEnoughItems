@@ -1,4 +1,4 @@
-package mezz.jei.gui.overlay;
+package mezz.jei.common.gui.overlay;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.input.IKeyBindings;
