@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.compostable;
+package mezz.jei.common.plugins.vanilla.compostable;
 
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import mezz.jei.api.constants.VanillaTypes;

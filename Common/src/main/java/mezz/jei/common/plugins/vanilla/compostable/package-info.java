@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.plugins.vanilla.compostable;
+package mezz.jei.common.plugins.vanilla.compostable;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
 

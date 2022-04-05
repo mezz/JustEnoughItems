@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.compostable;
+package mezz.jei.common.plugins.vanilla.compostable;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
