@@ -1,4 +1,4 @@
-package mezz.jei.deprecated.gui.ingredients.adapters;
+package mezz.jei.common.deprecated.gui.ingredients.adapters;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
@@ -18,7 +18,6 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.deprecated.gui.ingredients.LegacyTooltipAdapter;
 import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.ingredients.RegisteredIngredients;

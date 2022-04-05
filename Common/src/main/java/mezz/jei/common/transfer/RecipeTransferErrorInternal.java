@@ -1,4 +1,4 @@
-package mezz.jei.transfer;
+package mezz.jei.common.transfer;
 
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 

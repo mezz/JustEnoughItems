@@ -1,4 +1,4 @@
-package mezz.jei.deprecated.gui.ingredients.adapters;
+package mezz.jei.common.deprecated.gui.ingredients.adapters;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
@@ -6,7 +6,7 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
+import mezz.jei.common.render.ItemStackRenderer;
 import net.minecraft.world.item.ItemStack;
 
 @SuppressWarnings({"removal"})

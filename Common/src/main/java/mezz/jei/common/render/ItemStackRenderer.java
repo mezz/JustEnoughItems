@@ -1,28 +1,26 @@
-package mezz.jei.plugins.vanilla.ingredients.item;
-
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import mezz.jei.common.platform.IPlatformRenderHelper;
-import mezz.jei.common.platform.Services;
-import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+package mezz.jei.common.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.ErrorUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
-
-import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.common.util.ErrorUtil;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.TooltipFlag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	private static final Logger LOGGER = LogManager.getLogger();

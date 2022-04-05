@@ -9,6 +9,8 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.transfer.RecipeTransferOperationsResult;
+import mezz.jei.common.transfer.RecipeTransferUtil;
 import mezz.jei.network.packets.PacketRecipeTransfer;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.network.chat.Component;

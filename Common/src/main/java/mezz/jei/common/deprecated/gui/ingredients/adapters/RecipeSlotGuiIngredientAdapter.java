@@ -1,4 +1,4 @@
-package mezz.jei.deprecated.gui.ingredients.adapters;
+package mezz.jei.common.deprecated.gui.ingredients.adapters;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.ingredient.IGuiIngredient;

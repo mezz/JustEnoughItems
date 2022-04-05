@@ -1,4 +1,4 @@
-package mezz.jei.gui.recipes;
+package mezz.jei.common.gui.recipes.layout;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -7,11 +7,12 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.GuiIconButtonSmall;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
+import mezz.jei.common.gui.recipes.layout.IRecipeLayoutInternal;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.gui.recipes.layout.RecipeLayout;
-import mezz.jei.recipes.RecipeTransferManager;
-import mezz.jei.transfer.RecipeTransferErrorInternal;
-import mezz.jei.transfer.RecipeTransferUtil;
+import mezz.jei.common.gui.recipes.IOnClickHandler;
+import mezz.jei.common.recipes.RecipeTransferManager;
+import mezz.jei.common.transfer.RecipeTransferErrorInternal;
+import mezz.jei.common.transfer.RecipeTransferUtil;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -22,13 +23,13 @@ import java.util.List;
 public class RecipeTransferButton extends GuiIconButtonSmall {
 	public static final int RECIPE_BUTTON_SIZE = 13;
 
-	private final RecipeLayout<?> recipeLayout;
+	private final IRecipeLayoutInternal<?> recipeLayout;
 	@Nullable
 	private IRecipeTransferError recipeTransferError;
 	@Nullable
 	private IOnClickHandler onClickHandler;
 
-	public RecipeTransferButton(int xPos, int yPos, IDrawable icon, RecipeLayout<?> recipeLayout, Textures textures) {
+	public RecipeTransferButton(int xPos, int yPos, IDrawable icon, IRecipeLayoutInternal<?> recipeLayout, Textures textures) {
 		super(xPos, yPos, RECIPE_BUTTON_SIZE, RECIPE_BUTTON_SIZE, icon, b -> {}, textures);
 		this.recipeLayout = recipeLayout;
 	}

@@ -49,7 +49,7 @@ import mezz.jei.plugins.vanilla.crafting.replacers.SuspiciousStewRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackHelper;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory;
-import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
+import mezz.jei.common.render.ItemStackRenderer;
 import mezz.jei.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
 import mezz.jei.common.util.ErrorUtil;

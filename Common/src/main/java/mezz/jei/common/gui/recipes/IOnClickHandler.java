@@ -1,4 +1,4 @@
-package mezz.jei.gui.recipes;
+package mezz.jei.common.gui.recipes;
 
 @FunctionalInterface
 public interface IOnClickHandler {

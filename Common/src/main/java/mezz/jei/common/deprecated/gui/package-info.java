@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.gui.recipes.layout;
+package mezz.jei.common.deprecated.gui;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
 

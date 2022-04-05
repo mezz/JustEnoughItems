@@ -1,4 +1,4 @@
-package mezz.jei.gui.recipes.layout;
+package mezz.jei.common.deprecated.gui.recipes.layout;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
@@ -13,9 +13,10 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
+import mezz.jei.common.gui.recipes.layout.IRecipeLayoutInternal;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.deprecated.gui.ingredients.adapters.RecipeSlotsGuiIngredientGroupAdapter;
-import mezz.jei.deprecated.gui.ingredients.adapters.RecipeSlotsGuiItemStackGroupAdapter;
+import mezz.jei.common.deprecated.gui.ingredients.adapters.RecipeSlotsGuiIngredientGroupAdapter;
+import mezz.jei.common.deprecated.gui.ingredients.adapters.RecipeSlotsGuiItemStackGroupAdapter;
 import mezz.jei.common.deprecated.ingredients.Ingredients;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayoutDrawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final RecipeLayout<R> recipeLayout;
+	private final IRecipeLayoutInternal<R> recipeLayout;
 	private final RegisteredIngredients registeredIngredients;
 	private final IIngredientVisibility ingredientVisibility;
 	private final IFocusGroup focuses;
@@ -35,7 +36,7 @@ public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayou
 	private final IGuiItemStackGroup guiItemStackGroup;
 
 	public RecipeLayoutLegacyAdapter(
-		RecipeLayout<R> recipeLayout,
+		IRecipeLayoutInternal<R> recipeLayout,
 		RegisteredIngredients registeredIngredients,
 		IIngredientVisibility ingredientVisibility,
 		IFocusGroup focuses,

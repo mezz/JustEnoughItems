@@ -1,6 +1,5 @@
-package mezz.jei.transfer;
+package mezz.jei.common.transfer;
 
-import mezz.jei.common.Internal;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -9,11 +8,14 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
-import mezz.jei.common.transfer.TransferOperation;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
-import mezz.jei.gui.recipes.layout.RecipeLayout;
-import mezz.jei.recipes.RecipeTransferManager;
+import mezz.jei.common.gui.recipes.layout.IRecipeLayoutInternal;
+import mezz.jei.common.recipes.RecipeTransferManager;
 import mezz.jei.common.runtime.JeiRuntime;
+import mezz.jei.common.transfer.RecipeTransferErrorInternal;
+import mezz.jei.common.transfer.RecipeTransferOperationsResult;
+import mezz.jei.common.transfer.TransferOperation;
 import mezz.jei.common.util.ItemStackMatchable;
 import mezz.jei.common.util.MatchingIterable;
 import mezz.jei.common.util.StringUtil;
@@ -23,8 +25,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -40,11 +42,11 @@ public final class RecipeTransferUtil {
 	}
 
 	@Nullable
-	public static IRecipeTransferError getTransferRecipeError(RecipeTransferManager recipeTransferManager, AbstractContainerMenu container, RecipeLayout<?> recipeLayout, Player player) {
+	public static IRecipeTransferError getTransferRecipeError(RecipeTransferManager recipeTransferManager, AbstractContainerMenu container, IRecipeLayoutInternal<?> recipeLayout, Player player) {
 		return transferRecipe(recipeTransferManager, container, recipeLayout, player, false, false);
 	}
 
-	public static boolean transferRecipe(RecipeTransferManager recipeTransferManager, AbstractContainerMenu container, RecipeLayout<?> recipeLayout, Player player, boolean maxTransfer) {
+	public static boolean transferRecipe(RecipeTransferManager recipeTransferManager, AbstractContainerMenu container, IRecipeLayoutInternal<?> recipeLayout, Player player, boolean maxTransfer) {
 		IRecipeTransferError error = transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer, true);
 		return allowsTransfer(error);
 	}
@@ -54,7 +56,7 @@ public final class RecipeTransferUtil {
 	private static <C extends AbstractContainerMenu, R> IRecipeTransferError transferRecipe(
 		RecipeTransferManager recipeTransferManager,
 		C container,
-		RecipeLayout<R> recipeLayout,
+		IRecipeLayoutInternal<R> recipeLayout,
 		Player player,
 		boolean maxTransfer,
 		boolean doTransfer

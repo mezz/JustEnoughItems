@@ -1,7 +1,6 @@
-package mezz.jei.transfer;
+package mezz.jei.common.transfer;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
-import mezz.jei.common.transfer.TransferOperation;
 
 import java.util.ArrayList;
 import java.util.List;

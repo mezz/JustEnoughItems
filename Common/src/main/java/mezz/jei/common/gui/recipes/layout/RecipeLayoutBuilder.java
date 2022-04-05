@@ -1,4 +1,4 @@
-package mezz.jei.gui.recipes.layout;
+package mezz.jei.common.gui.recipes.layout;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;

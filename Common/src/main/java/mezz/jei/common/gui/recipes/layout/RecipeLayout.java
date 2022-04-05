@@ -1,4 +1,4 @@
-package mezz.jei.gui.recipes.layout;
+package mezz.jei.common.gui.recipes.layout;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -12,13 +12,13 @@ import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
+import mezz.jei.common.deprecated.gui.recipes.layout.RecipeLayoutLegacyAdapter;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.gui.recipes.OutputSlotTooltipCallback;
-import mezz.jei.gui.recipes.RecipeTransferButton;
 import mezz.jei.common.gui.recipes.ShapelessIcon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class RecipeLayout<R> {
+public class RecipeLayout<R> implements IRecipeLayoutInternal<R> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int HIGHLIGHT_COLOR = 0x80FFFFFF;
 	private static final int RECIPE_BORDER_PADDING = 4;
@@ -142,6 +142,7 @@ public class RecipeLayout<R> {
 		this.legacyAdapter = new RecipeLayoutLegacyAdapter<>(this, registeredIngredients, ingredientVisibility, focuses, ingredientCycleOffset);
 	}
 
+	@Override
 	public void setPosition(int posX, int posY) {
 		if (this.recipeTransferButton != null) {
 			int xDiff = posX - this.posX;
@@ -154,6 +155,7 @@ public class RecipeLayout<R> {
 		this.posY = posY;
 	}
 
+	@Override
 	public void drawRecipe(PoseStack poseStack, int mouseX, int mouseY) {
 		IDrawable background = recipeCategory.getBackground();
 
@@ -198,6 +200,7 @@ public class RecipeLayout<R> {
 		RenderSystem.disableBlend();
 	}
 
+	@Override
 	public void drawOverlays(PoseStack poseStack, int mouseX, int mouseY) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
@@ -225,6 +228,7 @@ public class RecipeLayout<R> {
 		}
 	}
 
+	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		final IDrawable background = recipeCategory.getBackground();
 		final ImmutableRect2i backgroundRect = new ImmutableRect2i(posX, posY, background.getWidth(), background.getHeight());
@@ -232,6 +236,7 @@ public class RecipeLayout<R> {
 			(recipeTransferButton != null && recipeTransferButton.isMouseOver(mouseX, mouseY));
 	}
 
+	@Override
 	public Optional<RecipeSlot> getRecipeSlotUnderMouse(double mouseX, double mouseY) {
 		final double recipeMouseX = mouseX - posX;
 		final double recipeMouseY = mouseY - posY;
@@ -275,6 +280,7 @@ public class RecipeLayout<R> {
 		return true;
 	}
 
+	@Override
 	public void moveRecipeTransferButton(int posX, int posY) {
 		if (recipeTransferButton != null) {
 			recipeTransferButton.x = posX + this.posX;
@@ -282,6 +288,7 @@ public class RecipeLayout<R> {
 		}
 	}
 
+	@Override
 	public void setShapeless() {
 		this.shapelessIcon = new ShapelessIcon(textures);
 		int categoryWidth = this.recipeCategory.getBackground().getWidth();
@@ -302,26 +309,32 @@ public class RecipeLayout<R> {
 		return recipeTransferButton;
 	}
 
+	@Override
 	public IRecipeCategory<R> getRecipeCategory() {
 		return recipeCategory;
 	}
 
+	@Override
 	public int getPosX() {
 		return posX;
 	}
 
+	@Override
 	public int getPosY() {
 		return posY;
 	}
 
+	@Override
 	public R getRecipe() {
 		return recipe;
 	}
 
+	@Override
 	public RecipeSlots getRecipeSlots() {
 		return this.recipeSlots;
 	}
 
+	@Override
 	public RecipeLayoutLegacyAdapter<R> getLegacyAdapter() {
 		return this.legacyAdapter;
 	}

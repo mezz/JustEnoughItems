@@ -14,7 +14,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.common.Constants;
-import mezz.jei.gui.recipes.layout.RecipeLayoutBuilder;
+import mezz.jei.common.gui.recipes.layout.RecipeLayoutBuilder;
 import mezz.jei.common.deprecated.ingredients.Ingredients;
 import mezz.jei.recipes.ExtendableRecipeCategoryHelper;
 import mezz.jei.common.util.ErrorUtil;

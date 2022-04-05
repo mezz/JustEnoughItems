@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.deprecated;
+package mezz.jei.common.recipes;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

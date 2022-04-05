@@ -1,4 +1,4 @@
-package mezz.jei.recipes;
+package mezz.jei.common.recipes;
 
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.recipe.RecipeType;

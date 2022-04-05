@@ -1,4 +1,4 @@
-package mezz.jei.deprecated.gui.ingredients;
+package mezz.jei.common.deprecated.gui.ingredients.adapters;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
