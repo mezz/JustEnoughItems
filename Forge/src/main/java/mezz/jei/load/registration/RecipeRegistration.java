@@ -12,7 +12,7 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipe;
-import mezz.jei.recipes.RecipeManagerInternal;
+import mezz.jei.common.recipes.RecipeManagerInternal;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 

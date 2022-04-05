@@ -1,15 +1,14 @@
-package mezz.jei.gui.recipes;
-
-import java.util.List;
-import java.util.stream.Stream;
+package mezz.jei.common.gui.recipes;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
-
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.gui.recipes.layout.RecipeLayout;
 import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 public interface IRecipeGuiLogic {
 

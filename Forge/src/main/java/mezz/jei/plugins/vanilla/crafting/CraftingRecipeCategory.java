@@ -16,7 +16,7 @@ import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategor
 import mezz.jei.common.Constants;
 import mezz.jei.common.gui.recipes.layout.RecipeLayoutBuilder;
 import mezz.jei.common.deprecated.ingredients.Ingredients;
-import mezz.jei.recipes.ExtendableRecipeCategoryHelper;
+import mezz.jei.common.recipes.ExtendableRecipeCategoryHelper;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;

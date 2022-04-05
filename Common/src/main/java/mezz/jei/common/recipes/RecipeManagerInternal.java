@@ -1,4 +1,4 @@
-package mezz.jei.recipes;
+package mezz.jei.common.recipes;
 
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -11,6 +11,12 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.common.ingredients.IIngredientSupplier;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.recipes.InternalRecipeManagerPlugin;
+import mezz.jei.common.recipes.PluginManager;
+import mezz.jei.common.recipes.RecipeCatalystBuilder;
+import mezz.jei.common.recipes.collect.RecipeMap;
+import mezz.jei.common.recipes.collect.RecipeTypeData;
+import mezz.jei.common.recipes.collect.RecipeTypeDataMap;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.IngredientSupplierHelper;
 import mezz.jei.common.util.RecipeErrorUtil;

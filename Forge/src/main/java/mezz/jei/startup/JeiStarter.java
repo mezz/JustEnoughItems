@@ -51,7 +51,7 @@ import mezz.jei.load.PluginHelper;
 import mezz.jei.load.PluginLoader;
 import mezz.jei.plugins.jei.JeiInternalPlugin;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
-import mezz.jei.recipes.RecipeManager;
+import mezz.jei.common.recipes.RecipeManager;
 import mezz.jei.common.recipes.RecipeTransferManager;
 import mezz.jei.common.runtime.JeiHelpers;
 import mezz.jei.common.runtime.JeiRuntime;

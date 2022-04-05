@@ -1,9 +1,10 @@
-package mezz.jei.recipes;
+package mezz.jei.common.recipes;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeCatalystLookup;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.common.recipes.RecipeManagerInternal;
 
 import java.util.Optional;
 import java.util.stream.Stream;

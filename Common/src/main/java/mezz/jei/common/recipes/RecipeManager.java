@@ -1,4 +1,4 @@
-package mezz.jei.recipes;
+package mezz.jei.common.recipes;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;

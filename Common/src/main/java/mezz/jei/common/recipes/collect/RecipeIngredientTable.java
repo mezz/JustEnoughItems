@@ -1,4 +1,4 @@
-package mezz.jei.recipes;
+package mezz.jei.common.recipes.collect;
 
 import mezz.jei.api.recipe.RecipeType;
 import org.jetbrains.annotations.UnmodifiableView;

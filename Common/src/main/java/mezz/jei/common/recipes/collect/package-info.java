@@ -1,7 +1,7 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.recipes;
-
-import javax.annotation.ParametersAreNonnullByDefault;
+package mezz.jei.common.recipes.collect;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
+
+import javax.annotation.ParametersAreNonnullByDefault;

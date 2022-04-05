@@ -1,4 +1,4 @@
-package mezz.jei.recipes;
+package mezz.jei.common.recipes;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -10,6 +10,9 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.recipes.collect.RecipeMap;
+import mezz.jei.common.recipes.collect.RecipeTypeData;
+import mezz.jei.common.recipes.collect.RecipeTypeDataMap;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.ingredients.IIngredientHelper;

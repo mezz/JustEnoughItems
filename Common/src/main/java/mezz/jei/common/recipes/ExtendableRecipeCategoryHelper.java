@@ -1,4 +1,4 @@
-package mezz.jei.recipes;
+package mezz.jei.common.recipes;
 
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
 import mezz.jei.common.util.RecipeErrorUtil;

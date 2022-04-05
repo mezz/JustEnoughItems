@@ -2,7 +2,7 @@ package mezz.jei.load.registration;
 
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.recipes.RecipeManager;
+import mezz.jei.common.recipes.RecipeManager;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.resources.ResourceLocation;
 
