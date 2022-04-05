@@ -17,20 +17,21 @@ import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 public class ConfigButton extends GuiIconToggleButton {
 	private final IKeyBindings keyBindings;
 
-	public static ConfigButton create(IngredientListOverlay parent, IWorldConfig worldConfig, Textures textures, IKeyBindings keyBindings) {
-		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), parent, worldConfig, textures, keyBindings);
+	public static ConfigButton create(BooleanSupplier isListDisplayed, IWorldConfig worldConfig, Textures textures, IKeyBindings keyBindings) {
+		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), isListDisplayed, worldConfig, textures, keyBindings);
 	}
 
-	private final IngredientListOverlay parent;
+	private final BooleanSupplier isListDisplayed;
 	private final IWorldConfig worldConfig;
 
-	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, IngredientListOverlay parent, IWorldConfig worldConfig, Textures textures, IKeyBindings keyBindings) {
+	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, BooleanSupplier isListDisplayed, IWorldConfig worldConfig, Textures textures, IKeyBindings keyBindings) {
 		super(disabledIcon, enabledIcon, textures);
-		this.parent = parent;
+		this.isListDisplayed = isListDisplayed;
 		this.worldConfig = worldConfig;
 		this.keyBindings = keyBindings;
 	}
@@ -46,7 +47,7 @@ public class ConfigButton extends GuiIconToggleButton {
 			);
 			tooltip.add(disabled.withStyle(ChatFormatting.GOLD));
 			tooltip.add(disabledFix.withStyle(ChatFormatting.GOLD));
-		} else if (!parent.isListDisplayed()) {
+		} else if (!isListDisplayed.getAsBoolean()) {
 			TranslatableComponent notEnoughSpace = new TranslatableComponent("jei.tooltip.not.enough.space");
 			tooltip.add(notEnoughSpace.withStyle(ChatFormatting.GOLD));
 		}

@@ -10,6 +10,8 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.common.Constants;
+import mezz.jei.common.platform.IPlatformRecipeHelper;
+import mezz.jei.common.platform.Services;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
@@ -60,11 +62,13 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, UpgradeRecipe recipe, IFocusGroup focuses) {
+		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
+
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
-			.addIngredients(recipe.base);
+			.addIngredients(recipeHelper.getBase(recipe));
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 50, 1)
-			.addIngredients(recipe.addition);
+			.addIngredients(recipeHelper.getAddition(recipe));
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 1)
 			.addItemStack(recipe.getResultItem());

@@ -83,7 +83,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 		ingredientGridSource.addSourceListChangedListener(() -> updateBounds(true));
 
-		this.configButton = ConfigButton.create(this, worldConfig, textures, keyBindings);
+		this.configButton = ConfigButton.create(this::isListDisplayed, worldConfig, textures, keyBindings);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, registeredIngredients, worldConfig);
 	}
 

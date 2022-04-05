@@ -367,7 +367,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 				return Optional.empty();
 			}
 
-			Minecraft minecraft = screen.getMinecraft();
+			Minecraft minecraft = Minecraft.getInstance();
 			Options gameSettings = minecraft.options;
 			int hotbarSlot = getHotbarSlotForInput(input, gameSettings);
 			if (hotbarSlot < 0) {

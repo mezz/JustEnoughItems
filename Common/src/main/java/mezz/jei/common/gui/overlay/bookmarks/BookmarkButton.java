@@ -12,7 +12,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class BookmarkButton extends GuiIconToggleButton {
 	protected void getTooltips(List<Component> tooltip) {
 		tooltip.add(new TranslatableComponent("jei.tooltip.bookmarks"));
 		KeyMapping bookmarkKey = keyBindings.getBookmark();
-		if (bookmarkKey.getKey().getValue() == GLFW.GLFW_KEY_UNKNOWN) {
+		if (bookmarkKey.isUnbound()) {
 			TranslatableComponent noKey = new TranslatableComponent("jei.tooltip.bookmarks.usage.nokey");
 			tooltip.add(noKey.withStyle(ChatFormatting.RED));
 		} else if (!bookmarkOverlay.hasRoom()) {
