@@ -1,10 +1,9 @@
 package mezz.jei;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
 import org.jetbrains.annotations.Nullable;
@@ -19,8 +18,6 @@ public final class Internal {
 	private static JeiRuntime runtime;
 	@Nullable
 	private static RegisteredIngredients registeredIngredients;
-	@Nullable
-	private static IngredientVisibility ingredientVisibility;
 	@Nullable
 	private static Textures textures;
 	@Nullable
@@ -64,15 +61,6 @@ public final class Internal {
 
 	public static void setRegisteredIngredients(RegisteredIngredients registeredIngredients) {
 		Internal.registeredIngredients = registeredIngredients;
-	}
-
-	public static IngredientVisibility getIngredientVisibility() {
-		Preconditions.checkState(ingredientVisibility != null, "Ingredient Visibility has not been created yet.");
-		return ingredientVisibility;
-	}
-
-	public static void setIngredientVisibility(IngredientVisibility ingredientVisibility) {
-		Internal.ingredientVisibility = ingredientVisibility;
 	}
 
 	public static IConnectionToServer getServerConnection() {

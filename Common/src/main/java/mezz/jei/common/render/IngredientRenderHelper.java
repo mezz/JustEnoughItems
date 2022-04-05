@@ -1,4 +1,4 @@
-package mezz.jei.render;
+package mezz.jei.common.render;
 
 import java.util.ArrayList;
 import java.util.List;

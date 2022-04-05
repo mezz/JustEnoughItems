@@ -7,9 +7,9 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.ingredients.IIngredientSupplier;
-import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.util.RecipeErrorUtil;
@@ -32,7 +32,7 @@ public class RecipeManagerInternal {
 
 	@Unmodifiable
 	private final List<IRecipeCategory<?>> recipeCategories;
-	private final IngredientVisibility ingredientVisibility;
+	private final IIngredientVisibility ingredientVisibility;
 	private final RegisteredIngredients registeredIngredients;
 	private final RecipeTypeDataMap recipeTypeDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
@@ -50,7 +50,7 @@ public class RecipeManagerInternal {
 		RegisteredIngredients registeredIngredients,
 		List<IRecipeManagerPlugin> plugins,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
-		IngredientVisibility ingredientVisibility
+		IIngredientVisibility ingredientVisibility
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
@@ -114,7 +114,7 @@ public class RecipeManagerInternal {
 				if (hiddenRecipes.contains(recipe) || !recipeCategory.isHandled(recipe)) {
 					return false;
 				}
-				IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, registeredIngredients);
+				IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, registeredIngredients, ingredientVisibility);
 				if (ingredientSupplier == null) {
 					return false;
 				}

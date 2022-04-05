@@ -12,6 +12,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.KeyBindings;
@@ -19,7 +20,7 @@ import mezz.jei.common.gui.HoverChecker;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.elements.GuiIconButtonSmall;
-import mezz.jei.gui.ingredients.RecipeSlot;
+import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
@@ -29,7 +30,7 @@ import mezz.jei.input.IRecipeFocusSource;
 import mezz.jei.common.input.MouseUtil;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.recipes.FocusGroup;
+import mezz.jei.common.focus.FocusGroup;
 import mezz.jei.recipes.RecipeManager;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;
@@ -63,6 +64,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private static final int buttonHeight = 13;
 
 	private final RecipeTransferManager recipeTransferManager;
+	private final RegisteredIngredients registeredIngredients;
+	private final IModIdHelper modIdHelper;
 	private final IClientConfig clientConfig;
 	private final RecipeManager recipeManager;
 
@@ -101,13 +104,16 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		RegisteredIngredients registeredIngredients,
 		IModIdHelper modIdHelper,
 		IClientConfig clientConfig,
-		Textures textures
+		Textures textures,
+		IIngredientVisibility ingredientVisibility
 	) {
 		super(new TextComponent("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;
+		this.registeredIngredients = registeredIngredients;
+		this.modIdHelper = modIdHelper;
 		this.clientConfig = clientConfig;
-		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, registeredIngredients, modIdHelper, textures);
-		this.recipeCatalysts = new RecipeCatalysts(textures);
+		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, registeredIngredients, modIdHelper, textures, ingredientVisibility);
+		this.recipeCatalysts = new RecipeCatalysts(textures, ingredientVisibility);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures);
 		this.recipeManager = recipeManager;
 		this.minecraft = Minecraft.getInstance();
@@ -253,7 +259,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			hoveredLayout.drawOverlays(poseStack, mouseX, mouseY);
 		}
 		if (hoveredRecipeCatalyst != null) {
-			hoveredRecipeCatalyst.drawOverlays(poseStack, 0, 0, mouseX, mouseY);
+			hoveredRecipeCatalyst.drawOverlays(poseStack, 0, 0, mouseX, mouseY, modIdHelper);
 		}
 
 		if (titleHoverChecker.checkHover(mouseX, mouseY) && !logic.hasAllCategories()) {
@@ -425,7 +431,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public <V> void show(IFocus<V> focus) {
-		IFocusGroup checkedFocuses = FocusGroup.create(focus);
+		IFocusGroup checkedFocuses = FocusGroup.create(focus, registeredIngredients);
 		if (logic.setFocus(checkedFocuses)) {
 			open();
 		}
@@ -433,7 +439,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public void show(List<IFocus<?>> focuses) {
-		IFocusGroup checkedFocuses = FocusGroup.create(focuses);
+		IFocusGroup checkedFocuses = FocusGroup.create(focuses, registeredIngredients);
 		if (logic.setFocus(checkedFocuses)) {
 			open();
 		}

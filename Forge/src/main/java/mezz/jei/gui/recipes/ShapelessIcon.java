@@ -1,7 +1,6 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.gui.HoverChecker;
 import mezz.jei.common.gui.elements.HighResolutionDrawable;

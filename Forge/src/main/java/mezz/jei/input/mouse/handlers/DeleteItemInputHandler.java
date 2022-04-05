@@ -8,7 +8,7 @@ import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.network.packets.PacketDeletePlayerItem;
+import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.util.CheatUtil;
 import mezz.jei.core.config.GiveMode;

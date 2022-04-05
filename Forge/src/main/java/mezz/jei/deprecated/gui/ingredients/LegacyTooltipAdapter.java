@@ -5,7 +5,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.ITooltipCallback;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.gui.ingredients.RecipeSlot;
+import mezz.jei.common.gui.ingredients.RecipeSlot;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;

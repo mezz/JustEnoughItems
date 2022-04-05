@@ -8,6 +8,7 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.ingredients.IIngredientSupplier;
 import mezz.jei.common.ingredients.RegisteredIngredients;
@@ -23,6 +24,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 	private final List<IRecipeLayoutSlotSource> slots = new ArrayList<>();
 	private final List<List<IRecipeLayoutSlotSource>> focusLinkedSlots = new ArrayList<>();
 	private final RegisteredIngredients registeredIngredients;
+	private final IIngredientVisibility ingredientVisibility;
 	private final int ingredientCycleOffset;
 	private boolean shapeless = false;
 	private int recipeTransferX = -1;
@@ -31,14 +33,15 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 	private int shapelessY = -1;
 	private int legacyIngredientIndex = 0;
 
-	public RecipeLayoutBuilder(RegisteredIngredients registeredIngredients, int ingredientCycleOffset) {
+	public RecipeLayoutBuilder(RegisteredIngredients registeredIngredients, IIngredientVisibility ingredientVisibility, int ingredientCycleOffset) {
 		this.registeredIngredients = registeredIngredients;
+		this.ingredientVisibility = ingredientVisibility;
 		this.ingredientCycleOffset = ingredientCycleOffset;
 	}
 
 	@Override
 	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role, int x, int y) {
-		RecipeSlotBuilder slotBuilder = new RecipeSlotBuilder(registeredIngredients, role, x, y, ingredientCycleOffset, legacyIngredientIndex++);
+		RecipeSlotBuilder slotBuilder = new RecipeSlotBuilder(registeredIngredients, role, ingredientVisibility, x, y, ingredientCycleOffset, legacyIngredientIndex++);
 		this.slots.add(slotBuilder);
 		return slotBuilder;
 	}

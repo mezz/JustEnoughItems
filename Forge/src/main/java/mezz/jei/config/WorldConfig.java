@@ -2,7 +2,7 @@ package mezz.jei.config;
 
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.network.packets.PacketRequestCheatPermission;
+import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import org.lwjgl.glfw.GLFW;
 
 public class WorldConfig implements IWorldConfig {

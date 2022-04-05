@@ -25,6 +25,7 @@ public class IngredientVisibility implements IIngredientVisibility {
 		this.registeredIngredients = registeredIngredients;
 	}
 
+	@Override
 	public <V> boolean isIngredientVisible(ITypedIngredient<V> typedIngredient) {
 		IIngredientType<V> ingredientType = typedIngredient.getType();
 		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);

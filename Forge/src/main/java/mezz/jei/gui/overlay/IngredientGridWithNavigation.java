@@ -7,7 +7,7 @@ import mezz.jei.common.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
-import mezz.jei.config.IIngredientGridConfig;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;

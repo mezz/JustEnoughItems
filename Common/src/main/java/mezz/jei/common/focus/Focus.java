@@ -1,6 +1,5 @@
-package mezz.jei.gui;
+package mezz.jei.common.focus;
 
-import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
@@ -63,7 +62,7 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 	/**
 	 * Make sure any IFocus coming in through API calls is validated and turned into JEI's Focus.
 	 */
-	public static <V> Focus<V> checkOne(IFocus<V> focus) {
+	public static <V> Focus<V> checkOne(IFocus<V> focus, RegisteredIngredients registeredIngredients) {
 		if (focus instanceof Focus) {
 			return (Focus<V>) focus;
 		}
@@ -72,7 +71,6 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 		V value = focus.getValue();
 		ErrorUtil.checkNotNull(value, "focus value");
 
-		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
 		IIngredientType<V> ingredientType = registeredIngredients.getIngredientType(value);
 		return createFromApi(registeredIngredients, focus.getRole(), ingredientType, value);
 	}

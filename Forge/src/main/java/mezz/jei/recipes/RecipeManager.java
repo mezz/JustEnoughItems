@@ -14,8 +14,10 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.gui.Focus;
+import mezz.jei.common.focus.Focus;
+import mezz.jei.common.focus.FocusGroup;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
@@ -31,12 +33,14 @@ public class RecipeManager implements IRecipeManager {
 	private final IModIdHelper modIdHelper;
 	private final RegisteredIngredients registeredIngredients;
 	private final Textures textures;
+	private final IIngredientVisibility ingredientVisibility;
 
-	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, RegisteredIngredients registeredIngredients, Textures textures) {
+	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, RegisteredIngredients registeredIngredients, Textures textures, IIngredientVisibility ingredientVisibility) {
 		this.internal = internal;
 		this.modIdHelper = modIdHelper;
 		this.registeredIngredients = registeredIngredients;
 		this.textures = textures;
+		this.ingredientVisibility = ingredientVisibility;
 	}
 
 	@SuppressWarnings("removal")
@@ -53,12 +57,12 @@ public class RecipeManager implements IRecipeManager {
 	@Override
 	public <R> IRecipeLookup<R> createRecipeLookup(RecipeType<R> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		return new RecipeLookup<>(recipeType, internal);
+		return new RecipeLookup<>(recipeType, internal, registeredIngredients);
 	}
 
 	@Override
 	public IRecipeCategoriesLookup createRecipeCategoryLookup() {
-		return new RecipeCategoriesLookup(internal);
+		return new RecipeCategoriesLookup(internal, registeredIngredients);
 	}
 
 	@Override
@@ -114,7 +118,7 @@ public class RecipeManager implements IRecipeManager {
 	@Deprecated(forRemoval = true, since = "9.5.0")
 	public <V> List<IRecipeCategory<?>> getRecipeCategories(Collection<ResourceLocation> recipeCategoryUids, @Nullable IFocus<V> focus, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategoryUids, "recipeCategoryUids");
-		IFocusGroup internalFocus = FocusGroup.createFromNullable(focus);
+		IFocusGroup internalFocus = FocusGroup.createFromNullable(focus, registeredIngredients);
 		return internal.getRecipeCategoriesStream(recipeCategoryUids, internalFocus, includeHidden)
 			.collect(Collectors.toList());
 	}
@@ -123,7 +127,7 @@ public class RecipeManager implements IRecipeManager {
 	@Override
 	@Deprecated(forRemoval = true, since = "9.5.0")
 	public <V> List<IRecipeCategory<?>> getRecipeCategories(@Nullable IFocus<V> focus, boolean includeHidden) {
-		IFocusGroup internalFocus = FocusGroup.createFromNullable(focus);
+		IFocusGroup internalFocus = FocusGroup.createFromNullable(focus, registeredIngredients);
 		return internal.getRecipeCategoriesStream(List.of(), internalFocus, includeHidden)
 			.collect(Collectors.toList());
 	}
@@ -132,7 +136,7 @@ public class RecipeManager implements IRecipeManager {
 	@Override
 	@Deprecated(forRemoval = true, since = "9.5.0")
 	public List<IRecipeCategory<?>> getRecipeCategories(Collection<? extends IFocus<?>> focus, boolean includeHidden) {
-		IFocusGroup internalFocus = FocusGroup.create(focus);
+		IFocusGroup internalFocus = FocusGroup.create(focus, registeredIngredients);
 		return internal.getRecipeCategoriesStream(List.of(), internalFocus, includeHidden)
 			.collect(Collectors.toList());
 	}
@@ -142,7 +146,7 @@ public class RecipeManager implements IRecipeManager {
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	public <T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		IFocusGroup internalFocus = FocusGroup.createFromNullable(focus);
+		IFocusGroup internalFocus = FocusGroup.createFromNullable(focus, registeredIngredients);
 		return internal.getRecipesStream(recipeCategory.getRecipeType(), internalFocus, includeHidden)
 			.collect(Collectors.toList());
 	}
@@ -152,7 +156,7 @@ public class RecipeManager implements IRecipeManager {
 	@Deprecated(forRemoval = true, since = "9.5.0")
 	public <T> List<T> getRecipes(IRecipeCategory<T> recipeCategory, List<? extends IFocus<?>> focuses, boolean includeHidden) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		IFocusGroup internalFocus = FocusGroup.create(focuses);
+		IFocusGroup internalFocus = FocusGroup.create(focuses, registeredIngredients);
 		return internal.getRecipesStream(recipeCategory.getRecipeType(), internalFocus, includeHidden)
 			.collect(Collectors.toList());
 	}
@@ -182,8 +186,19 @@ public class RecipeManager implements IRecipeManager {
 	public <T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
-		IFocusGroup focusGroup = FocusGroup.createFromNullable(focus);
-		RecipeLayout<T> recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, focusGroup, registeredIngredients, modIdHelper, 0, 0, textures);
+		IFocusGroup focusGroup = FocusGroup.createFromNullable(focus, registeredIngredients);
+		RecipeLayout<T> recipeLayout = RecipeLayout.create(
+			-1,
+			recipeCategory,
+			recipe,
+			focusGroup,
+			registeredIngredients,
+			ingredientVisibility,
+			modIdHelper,
+			0,
+			0,
+			textures
+		);
 		Preconditions.checkNotNull(recipeLayout, "Recipe layout crashed during creation, see log.");
 		return recipeLayout.getLegacyAdapter();
 	}

@@ -11,7 +11,7 @@ import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.gui.Focus;
+import mezz.jei.common.focus.Focus;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.common.ingredients.RegisteredIngredients;

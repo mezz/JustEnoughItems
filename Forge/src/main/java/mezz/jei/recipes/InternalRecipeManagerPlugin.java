@@ -16,7 +16,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.gui.Focus;
+import mezz.jei.common.focus.Focus;
 
 public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 	private final RegisteredIngredients registeredIngredients;
@@ -37,7 +37,7 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 	@Override
 	@Deprecated
 	public <V> List<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus) {
-		focus = Focus.checkOne(focus);
+		focus = Focus.checkOne(focus, registeredIngredients);
 		ITypedIngredient<V> ingredient = focus.getTypedValue();
 		RecipeIngredientRole role = focus.getRole();
 		RecipeMap recipeMap = this.recipeMaps.get(role);
@@ -50,7 +50,7 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 
 	@Override
 	public <V> List<RecipeType<?>> getRecipeTypes(IFocus<V> focus) {
-		focus = Focus.checkOne(focus);
+		focus = Focus.checkOne(focus, registeredIngredients);
 		ITypedIngredient<V> ingredient = focus.getTypedValue();
 		RecipeIngredientRole role = focus.getRole();
 		RecipeMap recipeMap = this.recipeMaps.get(role);
@@ -63,7 +63,7 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 
 	@Override
 	public <T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus) {
-		focus = Focus.checkOne(focus);
+		focus = Focus.checkOne(focus, registeredIngredients);
 		ITypedIngredient<V> ingredient = focus.getTypedValue();
 		RecipeIngredientRole role = focus.getRole();
 

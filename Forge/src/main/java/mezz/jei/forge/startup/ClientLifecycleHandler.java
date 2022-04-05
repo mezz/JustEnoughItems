@@ -4,9 +4,10 @@ import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.common.config.IBookmarkConfig;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.config.BookmarkConfig;
-import mezz.jei.config.EditModeConfig;
+import mezz.jei.common.config.BookmarkConfig;
+import mezz.jei.common.config.EditModeConfig;
 import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.forge.config.JEIClientConfigs;
 import mezz.jei.config.KeyBindings;
@@ -59,7 +60,7 @@ public class ClientLifecycleHandler {
 		RecipeErrorUtil.setRecipeRegistryHelper(new ForgeRecipeRegistryHelper());
 
 		// Additional config files
-		BookmarkConfig bookmarkConfig = new BookmarkConfig(jeiConfigurationDir);
+		IBookmarkConfig bookmarkConfig = new BookmarkConfig(jeiConfigurationDir);
 		IEditModeConfig editModeConfig = new EditModeConfig(jeiConfigurationDir);
 		RecipeCategorySortingConfig recipeCategorySortingConfig = new RecipeCategorySortingConfig(new File(jeiConfigurationDir, "recipe-category-sort-order.ini"));
 

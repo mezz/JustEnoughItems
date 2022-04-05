@@ -1,4 +1,4 @@
-package mezz.jei.config;
+package mezz.jei.common.config;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.constants.VanillaTypes;
@@ -6,7 +6,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.bookmarks.BookmarkList;
+import mezz.jei.common.bookmarks.BookmarkList;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.common.ingredients.IngredientInfo;
 import mezz.jei.common.ingredients.RegisteredIngredients;
@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public class BookmarkConfig {
+public class BookmarkConfig implements IBookmarkConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final String MARKER_OTHER = "O:";
 	private static final String MARKER_STACK = "T:";
@@ -59,6 +59,7 @@ public class BookmarkConfig {
 		this.jeiConfigurationDir = jeiConfigurationDir;
 	}
 
+	@Override
 	public void saveBookmarks(RegisteredIngredients registeredIngredients, List<ITypedIngredient<?>> ingredientList) {
 		File file = getFile(jeiConfigurationDir);
 		if (file == null) {
@@ -81,6 +82,7 @@ public class BookmarkConfig {
 		}
 	}
 
+	@Override
 	public void loadBookmarks(RegisteredIngredients registeredIngredients, BookmarkList bookmarkList) {
 		File file = getFile(jeiConfigurationDir);
 		if (file == null) {

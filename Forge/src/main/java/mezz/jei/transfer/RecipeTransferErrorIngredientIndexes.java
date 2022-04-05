@@ -3,7 +3,7 @@ package mezz.jei.transfer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.gui.ingredients.RecipeSlot;
+import mezz.jei.common.gui.ingredients.RecipeSlot;
 import net.minecraft.network.chat.Component;
 
 import java.util.Set;

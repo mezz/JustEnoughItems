@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.ingredient.IGuiIngredient;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.gui.ingredients.RecipeSlot;
+import mezz.jei.common.gui.ingredients.RecipeSlot;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.List;

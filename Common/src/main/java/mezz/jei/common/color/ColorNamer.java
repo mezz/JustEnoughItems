@@ -3,7 +3,6 @@ package mezz.jei.common.color;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Stream;

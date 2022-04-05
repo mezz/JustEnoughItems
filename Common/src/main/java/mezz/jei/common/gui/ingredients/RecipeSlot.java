@@ -1,9 +1,8 @@
-package mezz.jei.gui.ingredients;
+package mezz.jei.common.gui.ingredients;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
@@ -13,11 +12,10 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.common.gui.ingredients.CycleTimer;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.TooltipRenderer;
-import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.render.IngredientRenderHelper;
+import mezz.jei.common.render.IngredientRenderHelper;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.ChatFormatting;
@@ -140,7 +138,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 
-	private <T> void drawTooltip(PoseStack poseStack, int xOffset, int yOffset, int mouseX, int mouseY, ITypedIngredient<T> typedIngredient) {
+	private <T> void drawTooltip(PoseStack poseStack, int xOffset, int yOffset, int mouseX, int mouseY, ITypedIngredient<T> typedIngredient, IModIdHelper modIdHelper) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		T value = typedIngredient.getIngredient();
 
@@ -153,7 +151,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 		try {
 			IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
-			List<Component> tooltip = getTooltip(value, ingredientType, ingredientRenderer);
+			List<Component> tooltip = getTooltip(value, ingredientType, ingredientRenderer, modIdHelper);
 			TooltipRenderer.drawHoveringText(poseStack, tooltip, xOffset + mouseX, yOffset + mouseY, value, ingredientRenderer);
 
 			RenderSystem.enableDepthTest();
@@ -162,8 +160,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		}
 	}
 
-	private <T> List<Component> getTooltip(T value, IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer) {
-		IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
+	private <T> List<Component> getTooltip(T value, IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer, IModIdHelper modIdHelper) {
 		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 		List<Component> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
 		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
@@ -188,7 +185,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		this.overlay = overlay;
 	}
 
-	public void set(List<Optional<ITypedIngredient<?>>> ingredients, IntSet focusMatches) {
+	public void set(List<Optional<ITypedIngredient<?>>> ingredients, IntSet focusMatches, IIngredientVisibility ingredientVisibility) {
 		this.allIngredients = List.copyOf(ingredients);
 
 		if (!focusMatches.isEmpty()) {
@@ -197,7 +194,6 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 				.mapToObj(i -> this.allIngredients.get(i))
 				.toList();
 		} else {
-			IngredientVisibility ingredientVisibility = Internal.getIngredientVisibility();
 			this.displayIngredients = this.allIngredients.stream()
 				.filter(i -> i.isEmpty() || ingredientVisibility.isIngredientVisible(i.get()))
 				.limit(MAX_DISPLAYED_INGREDIENTS)
@@ -281,9 +277,9 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		}
 	}
 
-	public void drawOverlays(PoseStack poseStack, int xOffset, int yOffset, int mouseX, int mouseY) {
+	public void drawOverlays(PoseStack poseStack, int xOffset, int yOffset, int mouseX, int mouseY, IModIdHelper modIdHelper) {
 		getDisplayedIngredient()
-			.ifPresent(typedIngredient -> drawTooltip(poseStack, xOffset, yOffset, mouseX, mouseY, typedIngredient));
+			.ifPresent(typedIngredient -> drawTooltip(poseStack, xOffset, yOffset, mouseX, mouseY, typedIngredient, modIdHelper));
 	}
 
 	public ImmutableRect2i getRect() {

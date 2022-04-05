@@ -1,4 +1,4 @@
-package mezz.jei.gui.ingredients;
+package mezz.jei.common.gui.ingredients;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;

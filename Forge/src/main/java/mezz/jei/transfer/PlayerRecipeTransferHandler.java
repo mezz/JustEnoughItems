@@ -11,7 +11,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.gui.ingredients.RecipeSlotsView;
+import mezz.jei.common.gui.ingredients.RecipeSlotsView;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;

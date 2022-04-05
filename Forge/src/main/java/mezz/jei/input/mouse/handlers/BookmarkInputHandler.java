@@ -1,6 +1,6 @@
 package mezz.jei.input.mouse.handlers;
 
-import mezz.jei.bookmarks.BookmarkList;
+import mezz.jei.common.bookmarks.BookmarkList;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.input.CombinedRecipeFocusSource;
 import mezz.jei.common.input.UserInput;

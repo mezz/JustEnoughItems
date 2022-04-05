@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.gui.ingredients.RecipeSlots;
+import mezz.jei.common.gui.ingredients.RecipeSlots;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.world.entity.player.Player;

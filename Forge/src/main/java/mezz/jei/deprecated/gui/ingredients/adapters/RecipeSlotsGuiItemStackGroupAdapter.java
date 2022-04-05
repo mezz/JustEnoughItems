@@ -2,8 +2,9 @@ package mezz.jei.deprecated.gui.ingredients.adapters;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
-import mezz.jei.gui.ingredients.GuiIngredientProperties;
-import mezz.jei.gui.ingredients.RecipeSlots;
+import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.gui.ingredients.GuiIngredientProperties;
+import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
 import net.minecraft.world.item.ItemStack;
@@ -12,8 +13,8 @@ import net.minecraft.world.item.ItemStack;
 public class RecipeSlotsGuiItemStackGroupAdapter extends RecipeSlotsGuiIngredientGroupAdapter<ItemStack> implements IGuiItemStackGroup {
 	private static final ItemStackRenderer renderer = new ItemStackRenderer();
 
-	public RecipeSlotsGuiItemStackGroupAdapter(RecipeSlots recipeSlots, RegisteredIngredients registeredIngredients, int cycleOffset) {
-		super(recipeSlots, registeredIngredients, VanillaTypes.ITEM_STACK, cycleOffset);
+	public RecipeSlotsGuiItemStackGroupAdapter(RecipeSlots recipeSlots, RegisteredIngredients registeredIngredients, IIngredientVisibility ingredientVisibility, int cycleOffset) {
+		super(recipeSlots, registeredIngredients, VanillaTypes.ITEM_STACK, ingredientVisibility, cycleOffset);
 	}
 
 	@Override

@@ -3,7 +3,8 @@ package mezz.jei.deprecated.gui.ingredients.adapters;
 import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IGuiFluidStackGroup;
-import mezz.jei.gui.ingredients.RecipeSlots;
+import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.forge.plugins.forge.ingredients.fluid.FluidStackRenderer;
 import net.minecraftforge.fluids.FluidStack;
@@ -12,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings({"removal", "deprecation"})
 public class RecipeSlotsGuiFluidStackGroupAdapter extends RecipeSlotsGuiIngredientGroupAdapter<FluidStack> implements IGuiFluidStackGroup {
-	public RecipeSlotsGuiFluidStackGroupAdapter(RecipeSlots recipeSlots, RegisteredIngredients registeredIngredients, int cycleOffset) {
-		super(recipeSlots, registeredIngredients, ForgeTypes.FLUID_STACK, cycleOffset);
+	public RecipeSlotsGuiFluidStackGroupAdapter(RecipeSlots recipeSlots, RegisteredIngredients registeredIngredients, IIngredientVisibility ingredientVisibility, int cycleOffset) {
+		super(recipeSlots, registeredIngredients, ForgeTypes.FLUID_STACK, ingredientVisibility, cycleOffset);
 	}
 
 	@Override

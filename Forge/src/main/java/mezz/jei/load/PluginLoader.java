@@ -12,26 +12,29 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.config.BookmarkConfig;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.bookmarks.BookmarkList;
+import mezz.jei.common.config.IBookmarkConfig;
 import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.config.sorting.RecipeCategorySortingConfig;
-import mezz.jei.gui.GuiHelper;
-import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.gui.overlay.IFilterTextSource;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.common.ingredients.IngredientBlacklistInternal;
 import mezz.jei.common.ingredients.IngredientFilter;
-import mezz.jei.ingredients.IngredientListElementFactory;
-import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.LoggedTimer;
+import mezz.jei.config.sorting.RecipeCategorySortingConfig;
+import mezz.jei.core.config.IClientConfig;
+import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.gui.GuiHelper;
+import mezz.jei.gui.GuiScreenHelper;
+import mezz.jei.ingredients.IngredientListElementFactory;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.ingredients.RegisteredIngredientsBuilder;
 import mezz.jei.ingredients.SubtypeManager;
 import mezz.jei.load.registration.AdvancedRegistration;
@@ -50,8 +53,6 @@ import mezz.jei.recipes.RecipeManager;
 import mezz.jei.recipes.RecipeManagerInternal;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
-import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.util.RecipeErrorUtil;
 import mezz.jei.util.StackHelper;
 import net.minecraft.core.NonNullList;
@@ -66,7 +67,7 @@ public class PluginLoader {
 	private final RegisteredIngredients registeredIngredients;
 	private final IIngredientManager ingredientManager;
 	private final JeiHelpers jeiHelpers;
-	private final IngredientVisibility ingredientVisibility;
+	private final IIngredientVisibility ingredientVisibility;
 	private final IngredientFilter ingredientFilter;
 	private final IConnectionToServer serverConnection;
 	private final Textures textures;
@@ -101,7 +102,6 @@ public class PluginLoader {
 		RecipeErrorUtil.setRegisteredIngredients(this.registeredIngredients);
 
 		this.ingredientVisibility = new IngredientVisibility(blacklist, worldConfig, editModeConfig, this.registeredIngredients);
-		Internal.setIngredientVisibility(this.ingredientVisibility);
 
 		this.timer.start("Building ingredient list");
 		NonNullList<IListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(this.registeredIngredients);
@@ -183,14 +183,14 @@ public class PluginLoader {
 		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, registeredIngredients, ingredientManager, ingredientVisibility, vanillaRecipeFactory, recipeManagerInternal);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
-		return new RecipeManager(recipeManagerInternal, modIdHelper, registeredIngredients, textures);
+		return new RecipeManager(recipeManagerInternal, modIdHelper, registeredIngredients, textures, ingredientVisibility);
 	}
 
 	public IngredientFilter getIngredientFilter() {
 		return ingredientFilter;
 	}
 
-	public IngredientVisibility getIngredientVisibility() {
+	public IIngredientVisibility getIngredientVisibility() {
 		return ingredientVisibility;
 	}
 
@@ -206,7 +206,7 @@ public class PluginLoader {
 		return jeiHelpers;
 	}
 
-	public BookmarkList createBookmarkList(BookmarkConfig bookmarkConfig) {
+	public BookmarkList createBookmarkList(IBookmarkConfig bookmarkConfig) {
 		timer.start("Building bookmarks");
 		BookmarkList bookmarkList = new BookmarkList(registeredIngredients, bookmarkConfig);
 		bookmarkConfig.loadBookmarks(registeredIngredients, bookmarkList);

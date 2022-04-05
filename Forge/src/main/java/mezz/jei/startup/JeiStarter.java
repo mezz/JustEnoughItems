@@ -8,8 +8,9 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.config.BookmarkConfig;
+import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.bookmarks.BookmarkList;
+import mezz.jei.common.config.IBookmarkConfig;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.common.config.IEditModeConfig;
@@ -33,7 +34,6 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientFilterApi;
-import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.input.CombinedRecipeFocusSource;
 import mezz.jei.input.GuiContainerWrapper;
@@ -65,7 +65,7 @@ public final class JeiStarter {
 	private final JEIClientConfigs clientConfigs;
 	private final IEditModeConfig editModeConfig;
 	private final IWorldConfig worldConfig;
-	private final BookmarkConfig bookmarkConfig;
+	private final IBookmarkConfig bookmarkConfig;
 	private final IModIdHelper modIdHelper;
 	private final RecipeCategorySortingConfig recipeCategorySortingConfig;
 	private final IIngredientSorter ingredientSorter;
@@ -78,7 +78,7 @@ public final class JeiStarter {
 		IEditModeConfig editModeConfig,
 		IWorldConfig worldConfig,
 		IConnectionToServer serverConnection,
-		BookmarkConfig bookmarkConfig,
+		IBookmarkConfig bookmarkConfig,
 		IModIdHelper modIdHelper,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		IIngredientSorter ingredientSorter
@@ -208,7 +208,7 @@ public final class JeiStarter {
 
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
 		IIngredientManager ingredientManager = pluginLoader.getIngredientManager();
-		IngredientVisibility ingredientVisibility = pluginLoader.getIngredientVisibility();
+		IIngredientVisibility ingredientVisibility = pluginLoader.getIngredientVisibility();
 
 		RecipesGui recipesGui = new RecipesGui(
 			recipeManager,
@@ -216,7 +216,8 @@ public final class JeiStarter {
 			registeredIngredients,
 			modIdHelper,
 			clientConfig,
-			textures
+			textures,
+			ingredientVisibility
 		);
 
 		JeiRuntime jeiRuntime = new JeiRuntime(

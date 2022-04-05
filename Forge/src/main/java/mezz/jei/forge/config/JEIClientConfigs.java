@@ -1,7 +1,7 @@
 package mezz.jei.forge.config;
 
 import mezz.jei.forge.events.PermanentEventSubscriptions;
-import mezz.jei.gui.overlay.HorizontalAlignment;
+import mezz.jei.common.gui.overlay.options.HorizontalAlignment;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;

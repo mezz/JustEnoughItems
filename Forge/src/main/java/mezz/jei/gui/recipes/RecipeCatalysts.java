@@ -6,15 +6,16 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.gui.ingredients.RecipeSlot;
+import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
-import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.MathUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -35,12 +36,14 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 	private final List<RecipeSlot> recipeSlots;
 	private final DrawableNineSliceTexture slotBackground;
+	private final IIngredientVisibility ingredientVisibility;
 	private int left = 0;
 	private int top = 0;
 	private int width = 0;
 	private int height = 0;
 
-	public RecipeCatalysts(Textures textures) {
+	public RecipeCatalysts(Textures textures, IIngredientVisibility ingredientVisibility) {
+		this.ingredientVisibility = ingredientVisibility;
 		recipeSlots = new ArrayList<>();
 		backgroundTab = textures.getCatalystTab();
 		slotBackground = textures.getRecipeCatalystSlotBackground();
@@ -92,7 +95,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 			0,
 			0
 		);
-		recipeSlot.set(List.of(Optional.of(typedIngredient)), IntSet.of(0));
+		recipeSlot.set(List.of(Optional.of(typedIngredient)), IntSet.of(0), ingredientVisibility);
 		return recipeSlot;
 	}
 

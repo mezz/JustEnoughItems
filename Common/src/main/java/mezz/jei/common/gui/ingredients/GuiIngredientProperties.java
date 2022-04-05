@@ -1,4 +1,4 @@
-package mezz.jei.gui.ingredients;
+package mezz.jei.common.gui.ingredients;
 
 public final class GuiIngredientProperties {
 	private static final int baseWidth = 16;

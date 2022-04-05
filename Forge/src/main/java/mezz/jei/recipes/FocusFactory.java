@@ -4,7 +4,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.gui.Focus;
+import mezz.jei.common.focus.Focus;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
 

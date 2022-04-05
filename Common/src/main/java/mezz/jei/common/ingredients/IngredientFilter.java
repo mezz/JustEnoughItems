@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.ingredients.IListElement;
@@ -46,7 +47,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	private final IFilterTextSource filterTextSource;
 	private final RegisteredIngredients registeredIngredients;
 	private final IIngredientSorter sorter;
-	private final IngredientVisibility ingredientVisibility;
+	private final IIngredientVisibility ingredientVisibility;
 
 	private final IElementSearch elementSearch;
 	private final ElementPrefixParser elementPrefixParser;
@@ -64,7 +65,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		IIngredientSorter sorter,
 		NonNullList<IListElement<?>> ingredients,
 		IModIdHelper modIdHelper,
-		IngredientVisibility ingredientVisibility
+		IIngredientVisibility ingredientVisibility
 	) {
 		this.filterTextSource = filterTextSource;
 		this.registeredIngredients = registeredIngredients;

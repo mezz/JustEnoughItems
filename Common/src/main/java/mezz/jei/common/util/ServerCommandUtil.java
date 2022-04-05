@@ -1,10 +1,12 @@
-package mezz.jei.util;
+package mezz.jei.common.util;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import mezz.jei.common.network.ServerPacketContext;
-import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.platform.IPlatformItemStackHelper;
+import mezz.jei.common.platform.IPlatformRegistry;
+import mezz.jei.common.platform.Services;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.common.network.IConnectionToClient;
@@ -12,6 +14,7 @@ import mezz.jei.common.network.packets.PacketCheatPermission;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -46,7 +49,8 @@ public final class ServerCommandUtil {
 	public static String[] getGiveCommandParameters(Player sender, ItemStack itemStack, int amount) {
 		Component senderName = sender.getName();
 		Item item = itemStack.getItem();
-		ResourceLocation itemResourceLocation = item.getRegistryName();
+		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
+		ResourceLocation itemResourceLocation = registry.getRegistryName(item);
 		if (itemResourceLocation == null) {
 			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
 			throw new IllegalArgumentException("item.getRegistryName() returned null for: " + stackInfo);
@@ -162,15 +166,8 @@ public final class ServerCommandUtil {
 	}
 
 	private static boolean canStack(ItemStack a, ItemStack b) {
-		if (a.isEmpty() || !a.sameItem(b) || a.hasTag() != b.hasTag()) {
-			return false;
-		}
-
-		CompoundTag tag = a.getTag();
-		if (tag != null && !tag.equals(b.getTag())) {
-			return false;
-		}
-		return a.areCapsCompatible(b);
+		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
+		return itemStackHelper.canStack(a, b);
 	}
 
 	/**

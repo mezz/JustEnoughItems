@@ -2,23 +2,23 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.config.KeyBindings;
-import mezz.jei.deprecated.gui.recipes.RecipeLayoutLegacyAdapter;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.gui.ingredients.RecipeSlot;
-import mezz.jei.gui.ingredients.RecipeSlots;
-import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
+import mezz.jei.common.gui.ingredients.RecipeSlot;
+import mezz.jei.common.gui.ingredients.RecipeSlots;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.config.KeyBindings;
+import mezz.jei.deprecated.gui.recipes.RecipeLayoutLegacyAdapter;
+import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -39,6 +39,8 @@ public class RecipeLayout<R> {
 	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);
 	private final IRecipeCategory<R> recipeCategory;
 	private final RegisteredIngredients registeredIngredients;
+	private final IIngredientVisibility ingredientVisibility;
+	private final IModIdHelper modIdHelper;
 	private final Textures textures;
 	private final RecipeSlots recipeSlots;
 	private final RecipeLayoutLegacyAdapter<R> legacyAdapter;
@@ -53,10 +55,10 @@ public class RecipeLayout<R> {
 	private int posY;
 
 	@Nullable
-	public static <T> RecipeLayout<T> create(int index, IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, RegisteredIngredients registeredIngredients, IModIdHelper modIdHelper, int posX, int posY, Textures textures) {
-		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, focuses, registeredIngredients, posX, posY, textures);
+	public static <T> RecipeLayout<T> create(int index, IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, RegisteredIngredients registeredIngredients, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, int posX, int posY, Textures textures) {
+		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, focuses, registeredIngredients, ingredientVisibility, modIdHelper, posX, posY, textures);
 		if (
-			recipeLayout.setRecipeLayout(recipeCategory, recipe, registeredIngredients, focuses) ||
+			recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses) ||
 			recipeLayout.getLegacyAdapter().setRecipeLayout(recipeCategory, recipe)
 		) {
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
@@ -71,10 +73,9 @@ public class RecipeLayout<R> {
 	private boolean setRecipeLayout(
 		IRecipeCategory<R> recipeCategory,
 		R recipe,
-		RegisteredIngredients registeredIngredients,
 		IFocusGroup focuses
 	) {
-		RecipeLayoutBuilder builder = new RecipeLayoutBuilder(registeredIngredients, this.ingredientCycleOffset);
+		RecipeLayoutBuilder builder = new RecipeLayoutBuilder(registeredIngredients, ingredientVisibility, this.ingredientCycleOffset);
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
 			if (builder.isUsed()) {
@@ -107,12 +108,16 @@ public class RecipeLayout<R> {
 		R recipe,
 		IFocusGroup focuses,
 		RegisteredIngredients registeredIngredients,
+		IIngredientVisibility ingredientVisibility,
+		IModIdHelper modIdHelper,
 		int posX,
 		int posY,
 		Textures textures
 	) {
 		this.recipeCategory = recipeCategory;
 		this.registeredIngredients = registeredIngredients;
+		this.ingredientVisibility = ingredientVisibility;
+		this.modIdHelper = modIdHelper;
 		this.textures = textures;
 		this.recipeSlots = new RecipeSlots();
 
@@ -132,7 +137,7 @@ public class RecipeLayout<R> {
 
 		this.recipe = recipe;
 		this.recipeBorder = textures.getRecipeBackground();
-		this.legacyAdapter = new RecipeLayoutLegacyAdapter<>(this, registeredIngredients, focuses, ingredientCycleOffset);
+		this.legacyAdapter = new RecipeLayoutLegacyAdapter<>(this, registeredIngredients, ingredientVisibility, focuses, ingredientCycleOffset);
 	}
 
 	public void setPosition(int posX, int posY) {
@@ -206,7 +211,7 @@ public class RecipeLayout<R> {
 		RenderSystem.disableBlend();
 
 		if (hoveredSlot != null) {
-			hoveredSlot.drawOverlays(poseStack, posX, posY, recipeMouseX, recipeMouseY);
+			hoveredSlot.drawOverlays(poseStack, posX, posY, recipeMouseX, recipeMouseY, modIdHelper);
 		} else if (isMouseOver(mouseX, mouseY)) {
 			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeSlots.getView(), recipeMouseX, recipeMouseY);
 			if (tooltipStrings.isEmpty() && shapelessIcon != null) {

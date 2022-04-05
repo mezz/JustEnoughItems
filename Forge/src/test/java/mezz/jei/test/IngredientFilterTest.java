@@ -4,7 +4,8 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.config.EditModeConfig;
+import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.config.EditModeConfig;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.core.config.IWorldConfig;
@@ -55,7 +56,7 @@ public class IngredientFilterTest {
 	@Nullable
 	private IngredientFilter ingredientFilter;
 	@Nullable
-	private IngredientVisibility ingredientVisibility;
+	private IIngredientVisibility ingredientVisibility;
 	@Nullable
 	private NonNullList<IListElement<?>> baseList;
 	@Nullable
@@ -202,7 +203,7 @@ public class IngredientFilterTest {
 	private static void addIngredients(
 		IngredientFilter ingredientFilter,
 		IFilterTextSource filterTextSource,
-		IngredientVisibility ingredientVisibility,
+		IIngredientVisibility ingredientVisibility,
 		RegisteredIngredients registeredIngredients,
 		IIngredientManager ingredientManager,
 		List<TestIngredient> ingredientsToAdd
@@ -234,7 +235,7 @@ public class IngredientFilterTest {
 	private static void removeIngredients(
 		IngredientFilter ingredientFilter,
 		IFilterTextSource filterTextSource,
-		IngredientVisibility ingredientVisibility,
+		IIngredientVisibility ingredientVisibility,
 		RegisteredIngredients registeredIngredients,
 		IIngredientManager ingredientManager,
 		List<TestIngredient> ingredientsToRemove

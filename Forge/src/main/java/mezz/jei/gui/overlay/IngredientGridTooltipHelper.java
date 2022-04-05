@@ -14,7 +14,7 @@ import mezz.jei.core.search.SearchMode;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.ingredients.IngredientInfo;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.render.IngredientRenderHelper;
+import mezz.jei.common.render.IngredientRenderHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;

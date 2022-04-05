@@ -10,7 +10,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.common.transfer.TransferOperation;
-import mezz.jei.gui.ingredients.RecipeSlots;
+import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.runtime.JeiRuntime;

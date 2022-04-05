@@ -17,12 +17,13 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.deprecated.gui.ingredients.LegacyTooltipAdapter;
-import mezz.jei.gui.ingredients.RecipeSlot;
-import mezz.jei.gui.ingredients.RecipeSlots;
+import mezz.jei.common.gui.ingredients.RecipeSlot;
+import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
-import mezz.jei.recipes.FocusGroup;
+import mezz.jei.common.focus.FocusGroup;
 import mezz.jei.common.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,16 +58,19 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	 */
 	private IFocusGroup focuses = FocusGroup.EMPTY;
 	private boolean slotsCreatedWithLegacyInit = false;
+	private IIngredientVisibility ingredientVisibility;
 
 	public RecipeSlotsGuiIngredientGroupAdapter(
 		RecipeSlots recipeSlots,
 		RegisteredIngredients registeredIngredients,
 		IIngredientType<T> ingredientType,
+		IIngredientVisibility ingredientVisibility,
 		int cycleOffset
 	) {
 		this.recipeSlots = recipeSlots;
 		this.registeredIngredients = registeredIngredients;
 		this.ingredientType = ingredientType;
+		this.ingredientVisibility = ingredientVisibility;
 		this.cycleOffset = cycleOffset;
 	}
 
@@ -131,7 +135,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 
 	@Override
 	public void setOverrideDisplayFocus(@Nullable IFocus<T> focus) {
-		this.focuses = FocusGroup.createFromNullable(focus);
+		this.focuses = FocusGroup.createFromNullable(focus, registeredIngredients);
 	}
 
 	@Override
@@ -200,7 +204,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 			.ifPresent(recipeSlot -> {
 				List<Optional<ITypedIngredient<?>>> typedIngredients = getTypedIngredients(ingredients);
 				IntSet focusMatches = getMatches(focuses, recipeSlot.getRole(), typedIngredients);
-				recipeSlot.set(typedIngredients, focusMatches);
+				recipeSlot.set(typedIngredients, focusMatches, ingredientVisibility);
 				this.legacyTooltipCallbacks.forEach(recipeSlot::addTooltipCallback);
 			});
 	}

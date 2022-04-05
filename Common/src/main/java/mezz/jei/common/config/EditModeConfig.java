@@ -1,4 +1,4 @@
-package mezz.jei.config;
+package mezz.jei.common.config;
 
 import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.core.config.IngredientBlacklistType;

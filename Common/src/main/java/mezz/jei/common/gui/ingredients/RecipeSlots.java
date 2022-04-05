@@ -1,7 +1,9 @@
-package mezz.jei.gui.ingredients;
+package mezz.jei.common.gui.ingredients;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.common.gui.ingredients.RecipeSlot;
+import mezz.jei.common.gui.ingredients.RecipeSlotsView;
 
 import java.util.ArrayList;
 import java.util.Collections;

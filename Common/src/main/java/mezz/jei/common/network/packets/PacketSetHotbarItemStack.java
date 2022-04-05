@@ -1,4 +1,4 @@
-package mezz.jei.network.packets;
+package mezz.jei.common.network.packets;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.common.network.IPacketId;
@@ -6,7 +6,7 @@ import mezz.jei.common.network.PacketIdServer;
 import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.common.network.packets.PacketJei;
-import mezz.jei.util.ServerCommandUtil;
+import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
