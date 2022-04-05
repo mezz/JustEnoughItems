@@ -52,7 +52,7 @@ import mezz.jei.common.focus.FocusFactory;
 import mezz.jei.common.recipes.RecipeManager;
 import mezz.jei.common.recipes.RecipeManagerInternal;
 import mezz.jei.common.runtime.JeiHelpers;
-import mezz.jei.transfer.RecipeTransferHandlerHelper;
+import mezz.jei.common.transfer.RecipeTransferHandlerHelper;
 import mezz.jei.common.util.RecipeErrorUtil;
 import mezz.jei.common.util.StackHelper;
 import net.minecraft.core.NonNullList;

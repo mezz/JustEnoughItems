@@ -9,7 +9,7 @@ import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketGiveItemStack;
-import mezz.jei.network.packets.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.PacketRecipeTransfer;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
 import net.minecraft.network.FriendlyByteBuf;

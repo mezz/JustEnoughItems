@@ -1,4 +1,4 @@
-package mezz.jei.transfer;
+package mezz.jei.common.transfer;
 
 import java.util.ArrayList;
 import java.util.List;

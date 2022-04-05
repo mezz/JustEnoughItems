@@ -1,23 +1,22 @@
 package mezz.jei.load.registration;
 
-import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.recipes.RecipeManager;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.resources.ResourceLocation;
-
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IStackHelper;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
-import mezz.jei.core.collect.Table;
 import mezz.jei.common.Constants;
-import mezz.jei.transfer.BasicRecipeTransferHandler;
-import mezz.jei.transfer.BasicRecipeTransferInfo;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.recipes.RecipeManager;
+import mezz.jei.common.transfer.BasicRecipeTransferHandler;
+import mezz.jei.common.transfer.BasicRecipeTransferInfo;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.core.collect.Table;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
 public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 	private final Table<Class<?>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers = Table.hashBasedTable();

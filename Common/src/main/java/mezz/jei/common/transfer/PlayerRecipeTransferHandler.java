@@ -1,4 +1,4 @@
-package mezz.jei.transfer;
+package mezz.jei.common.transfer;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;

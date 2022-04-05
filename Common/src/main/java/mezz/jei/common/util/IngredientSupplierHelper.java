@@ -33,7 +33,7 @@ public final class IngredientSupplierHelper {
 		return getLegacyIngredientSupplier(recipe, recipeCategory);
 	}
 
-	@SuppressWarnings("removal")
+	@SuppressWarnings({"removal", "deprecation"})
 	@Nullable
 	public static <T> IIngredientSupplier getLegacyIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory) {
 		try {
