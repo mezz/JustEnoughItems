@@ -23,7 +23,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.input.GuiTextFieldFilter;
+import mezz.jei.common.input.GuiTextFieldFilter;
 import mezz.jei.common.input.handlers.CheatInputHandler;
 import mezz.jei.common.input.handlers.CombinedInputHandler;
 import mezz.jei.common.input.handlers.NullInputHandler;
