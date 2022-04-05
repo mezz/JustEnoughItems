@@ -1,6 +1,6 @@
-package mezz.jei.config.sorting;
+package mezz.jei.common.config.sorting;
 
-import mezz.jei.config.sorting.serializers.ISortingSerializer;
+import mezz.jei.common.config.sorting.serializers.ISortingSerializer;
 
 import java.io.File;
 import java.util.Collection;

@@ -9,7 +9,7 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.input.CombinedRecipeFocusSource;
-import mezz.jei.input.IClickedIngredient;
+import mezz.jei.common.input.IClickedIngredient;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
 import net.minecraft.client.gui.screens.Screen;

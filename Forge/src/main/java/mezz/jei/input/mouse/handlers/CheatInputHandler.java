@@ -5,7 +5,7 @@ import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.input.IRecipeFocusSource;
+import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.util.CheatUtil;

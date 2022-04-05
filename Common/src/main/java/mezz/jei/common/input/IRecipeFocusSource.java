@@ -1,4 +1,4 @@
-package mezz.jei.input;
+package mezz.jei.common.input;
 
 import java.util.stream.Stream;
 

@@ -1,26 +1,24 @@
-package mezz.jei.gui.ghost;
-
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import org.jetbrains.annotations.Nullable;
-import java.util.List;
+package mezz.jei.common.gui.ghost;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import mezz.jei.common.input.UserInput;
-import mezz.jei.common.util.ImmutableRect2i;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.Rect2i;
-
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
+
+import java.util.List;
 
 public class GhostIngredientDrag<T> {
 	private static final int targetColor = 0x4013C90A;

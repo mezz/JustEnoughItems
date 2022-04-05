@@ -1,11 +1,6 @@
-package mezz.jei.input;
+package mezz.jei.common.input;
 
-import com.google.common.base.MoreObjects;
-import mezz.jei.Internal;
-import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import org.jetbrains.annotations.Nullable;
@@ -44,17 +39,5 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	@Override
 	public boolean allowsCheating() {
 		return allowsCheating;
-	}
-
-	@Override
-	public String toString() {
-		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
-		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
-		return MoreObjects.toStringHelper(ClickedIngredient.class)
-			.add("value", ingredientHelper.getUniqueId(value.getIngredient(), UidContext.Ingredient))
-			.add("area", area)
-			.add("allowsCheating", allowsCheating)
-			.add("canOverrideVanillaClickHandler", canOverrideVanillaClickHandler)
-			.toString();
 	}
 }

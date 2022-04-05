@@ -13,9 +13,9 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
-import mezz.jei.input.ClickedIngredient;
-import mezz.jei.input.IClickedIngredient;
-import mezz.jei.input.IRecipeFocusSource;
+import mezz.jei.common.input.ClickedIngredient;
+import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.common.input.IRecipeFocusSource;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

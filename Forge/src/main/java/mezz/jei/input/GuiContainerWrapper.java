@@ -1,10 +1,13 @@
 package mezz.jei.input;
 
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.gui.GuiScreenHelper;
+import mezz.jei.common.input.ClickedIngredient;
+import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 
 import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

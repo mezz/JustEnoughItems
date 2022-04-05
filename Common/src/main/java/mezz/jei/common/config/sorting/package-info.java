@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.gui.ghost;
+package mezz.jei.common.config.sorting;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
 

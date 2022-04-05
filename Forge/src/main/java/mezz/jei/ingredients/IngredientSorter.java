@@ -6,8 +6,8 @@ import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.core.config.IngredientSortStage;
 import mezz.jei.core.config.IClientConfig;
-import mezz.jei.config.sorting.IngredientTypeSortingConfig;
-import mezz.jei.config.sorting.ModNameSortingConfig;
+import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
+import mezz.jei.common.config.sorting.ModNameSortingConfig;
 
 import java.util.Comparator;
 import java.util.List;

@@ -1,4 +1,4 @@
-package mezz.jei.config.sorting.serializers;
+package mezz.jei.common.config.sorting.serializers;
 
 import org.apache.commons.io.IOUtils;
 

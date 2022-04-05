@@ -2,10 +2,10 @@ package mezz.jei.gui.overlay.bookmarks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiProperties;
-import mezz.jei.gui.GuiScreenHelper;
+import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.gui.overlay.GuiProperties;
-import mezz.jei.input.IClickedIngredient;
-import mezz.jei.input.IRecipeFocusSource;
+import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.NullInputHandler;
 import mezz.jei.input.mouse.handlers.ProxyInputHandler;

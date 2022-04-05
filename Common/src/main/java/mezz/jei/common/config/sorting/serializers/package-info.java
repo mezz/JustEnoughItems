@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.config.sorting;
+package mezz.jei.common.config.sorting.serializers;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
 

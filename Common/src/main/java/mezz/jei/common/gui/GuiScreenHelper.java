@@ -1,4 +1,4 @@
-package mezz.jei.gui;
+package mezz.jei.common.gui;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
@@ -9,8 +9,10 @@ import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
-import mezz.jei.input.ClickedIngredient;
-import mezz.jei.input.IClickedIngredient;
+import mezz.jei.common.input.ClickedIngredient;
+import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.common.platform.IPlatformScreenHelper;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.screens.Screen;
@@ -18,8 +20,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -164,7 +166,8 @@ public class GuiScreenHelper {
 
 	@Nullable
 	public static <T> ImmutableRect2i getSlotArea(ITypedIngredient<T> typedIngredient, AbstractContainerScreen<?> guiContainer) {
-		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
+		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+		Slot slotUnderMouse = screenHelper.getSlotUnderMouse(guiContainer);
 		if (slotUnderMouse == null) {
 			return null;
 		}
@@ -172,8 +175,8 @@ public class GuiScreenHelper {
 			.filter(i -> ItemStack.matches(slotUnderMouse.getItem(), i))
 			.map(i ->
 				new ImmutableRect2i(
-					guiContainer.getGuiLeft() + slotUnderMouse.x,
-					guiContainer.getGuiTop() + slotUnderMouse.y,
+					screenHelper.getGuiLeft(guiContainer) + slotUnderMouse.x,
+					screenHelper.getGuiTop(guiContainer) + slotUnderMouse.y,
 					16,
 					16
 				)

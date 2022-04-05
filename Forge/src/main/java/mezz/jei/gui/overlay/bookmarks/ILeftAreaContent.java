@@ -8,7 +8,7 @@ import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 
-import mezz.jei.input.IRecipeFocusSource;
+import mezz.jei.common.input.IRecipeFocusSource;
 
 public interface ILeftAreaContent extends IRecipeFocusSource {
 

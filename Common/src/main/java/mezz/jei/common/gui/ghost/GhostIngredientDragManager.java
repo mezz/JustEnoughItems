@@ -1,31 +1,30 @@
-package mezz.jei.gui.ghost;
+package mezz.jei.common.gui.ghost;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-
+import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.gui.GuiScreenHelper;
+import mezz.jei.common.gui.ghost.GhostIngredientDrag;
+import mezz.jei.common.gui.ghost.GhostIngredientReturning;
+import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.common.input.IRecipeFocusSource;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.core.config.IWorldConfig;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.input.IRecipeFocusSource;
-import mezz.jei.common.input.UserInput;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.util.ImmutableRect2i;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-
-import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
-import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.input.IClickedIngredient;
-import net.minecraft.world.item.ItemStack;
 
 public class GhostIngredientDragManager {
 	private final IRecipeFocusSource source;
@@ -132,9 +131,6 @@ public class GhostIngredientDragManager {
 	private class UserInputHandler implements IUserInputHandler {
 		@Override
 		public Optional<IUserInputHandler> handleDragStart(Screen screen, UserInput input) {
-			if (screen instanceof RecipesGui) {
-				return Optional.empty();
-			}
 			Minecraft minecraft = Minecraft.getInstance();
 			LocalPlayer player = minecraft.player;
 			if (player == null) {
@@ -155,9 +151,6 @@ public class GhostIngredientDragManager {
 
 		@Override
 		public Optional<IUserInputHandler> handleDragComplete(Screen screen, UserInput input) {
-			if (screen instanceof RecipesGui) {
-				return Optional.empty();
-			}
 			if (ghostIngredientDrag == null) {
 				return Optional.empty();
 			}

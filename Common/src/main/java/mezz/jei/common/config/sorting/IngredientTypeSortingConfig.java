@@ -1,9 +1,9 @@
-package mezz.jei.config.sorting;
+package mezz.jei.common.config.sorting;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.config.sorting.serializers.SortingSerializers;
+import mezz.jei.common.config.sorting.serializers.SortingSerializers;
 import mezz.jei.common.ingredients.IListElementInfo;
 
 import java.io.File;

@@ -1,6 +1,6 @@
-package mezz.jei.config.sorting;
+package mezz.jei.common.config.sorting;
 
-import mezz.jei.config.sorting.serializers.ISortingSerializer;
+import mezz.jei.common.config.sorting.serializers.ISortingSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

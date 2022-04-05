@@ -1,4 +1,4 @@
-package mezz.jei.input;
+package mezz.jei.common.input;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.util.ImmutableRect2i;

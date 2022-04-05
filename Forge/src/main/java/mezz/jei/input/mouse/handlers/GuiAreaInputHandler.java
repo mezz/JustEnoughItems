@@ -1,7 +1,7 @@
 package mezz.jei.input.mouse.handlers;
 
 import mezz.jei.config.KeyBindings;
-import mezz.jei.gui.GuiScreenHelper;
+import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.UserInput;

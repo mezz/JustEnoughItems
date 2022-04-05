@@ -1,9 +1,6 @@
-package mezz.jei.gui.ghost;
+package mezz.jei.common.gui.ghost;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-
-import org.jetbrains.annotations.Nullable;
-
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
@@ -11,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.phys.Vec2;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Renders an item returning to the ingredient list after a failed ghost drag.

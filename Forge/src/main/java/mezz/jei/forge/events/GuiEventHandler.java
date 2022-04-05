@@ -3,7 +3,7 @@ package mezz.jei.forge.events;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.common.util.LimitedLogger;
-import mezz.jei.gui.GuiScreenHelper;
+import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
