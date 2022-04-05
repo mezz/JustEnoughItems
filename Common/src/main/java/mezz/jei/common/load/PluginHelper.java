@@ -1,10 +1,10 @@
-package mezz.jei.load;
+package mezz.jei.common.load;
 
+import mezz.jei.common.plugins.jei.JeiInternalPlugin;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import mezz.jei.api.IModPlugin;
-import mezz.jei.plugins.jei.JeiInternalPlugin;
 import mezz.jei.common.plugins.vanilla.VanillaPlugin;
 
 public class PluginHelper {

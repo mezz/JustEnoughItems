@@ -18,6 +18,8 @@ import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.MouseUtil;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.platform.IPlatformScreenHelper;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
@@ -201,7 +203,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (isListDisplayed()) {
 			poseStack.pushPose();
 			{
-				poseStack.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
+				IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+				poseStack.translate(-screenHelper.getGuiLeft(gui), -screenHelper.getGuiTop(gui), 0);
 				this.ghostIngredientDragManager.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
 			}
 			poseStack.popPose();
@@ -212,20 +215,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (this.isListDisplayed()) {
 			this.searchField.tick();
 		}
-	}
-
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		if (isListDisplayed()) {
-			if (this.clientConfig.isCenterSearchBarEnabled() && searchField.isMouseOver(mouseX, mouseY)) {
-				return true;
-			}
-			return displayArea.contains(mouseX, mouseY) &&
-				!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
-		}
-		if (this.guiProperties != null) {
-			return this.configButton.isMouseOver(mouseX, mouseY);
-		}
-		return false;
 	}
 
 	@Override

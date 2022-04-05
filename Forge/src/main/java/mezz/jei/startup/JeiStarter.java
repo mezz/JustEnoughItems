@@ -37,6 +37,7 @@ import mezz.jei.common.input.handlers.FocusInputHandler;
 import mezz.jei.common.input.handlers.GlobalInputHandler;
 import mezz.jei.common.input.handlers.GuiAreaInputHandler;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.plugins.jei.JeiInternalPlugin;
 import mezz.jei.common.recipes.RecipeManager;
 import mezz.jei.common.recipes.RecipeTransferManager;
 import mezz.jei.common.runtime.JeiHelpers;
@@ -53,9 +54,8 @@ import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.input.InputEventHandler;
 import mezz.jei.common.ingredients.IngredientFilterApi;
 import mezz.jei.common.load.PluginCaller;
-import mezz.jei.load.PluginHelper;
+import mezz.jei.common.load.PluginHelper;
 import mezz.jei.load.PluginLoader;
-import mezz.jei.plugins.jei.JeiInternalPlugin;
 import mezz.jei.common.plugins.vanilla.VanillaPlugin;
 
 import java.util.List;

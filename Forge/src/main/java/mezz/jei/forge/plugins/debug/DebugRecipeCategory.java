@@ -1,4 +1,4 @@
-package mezz.jei.plugins.debug;
+package mezz.jei.forge.plugins.debug;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;

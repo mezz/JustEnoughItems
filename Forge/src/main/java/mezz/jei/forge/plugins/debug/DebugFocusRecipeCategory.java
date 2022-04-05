@@ -1,4 +1,4 @@
-package mezz.jei.plugins.debug;
+package mezz.jei.forge.plugins.debug;
 
 import mezz.jei.common.Internal;
 import mezz.jei.api.constants.ModIds;

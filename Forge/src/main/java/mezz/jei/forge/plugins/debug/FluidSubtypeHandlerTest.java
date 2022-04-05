@@ -1,4 +1,4 @@
-package mezz.jei.plugins.debug;
+package mezz.jei.forge.plugins.debug;
 
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
