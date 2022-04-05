@@ -2,7 +2,7 @@ package mezz.jei.forge.network;
 
 import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.packets.PacketJei;
-import mezz.jei.network.ServerPacketRouter;
+import mezz.jei.common.network.ServerPacketRouter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;

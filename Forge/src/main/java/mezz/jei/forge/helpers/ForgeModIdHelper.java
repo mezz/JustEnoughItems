@@ -1,9 +1,10 @@
-package mezz.jei.ingredients;
+package mezz.jei.forge.helpers;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.common.helpers.AbstractModIdHelper;
 import mezz.jei.core.config.IClientConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;

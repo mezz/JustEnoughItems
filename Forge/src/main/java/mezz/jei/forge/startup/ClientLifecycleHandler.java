@@ -25,7 +25,7 @@ import mezz.jei.forge.network.NetworkHandler;
 import mezz.jei.forge.util.AnnotatedInstanceUtil;
 import mezz.jei.forge.util.ForgeRecipeRegistryHelper;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.ingredients.ForgeModIdHelper;
+import mezz.jei.forge.helpers.ForgeModIdHelper;
 import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientSorter;
 import mezz.jei.startup.JeiStarter;

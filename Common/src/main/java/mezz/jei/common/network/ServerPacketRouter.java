@@ -1,17 +1,13 @@
-package mezz.jei.network;
+package mezz.jei.common.network;
 
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.common.network.IConnectionToClient;
-import mezz.jei.common.network.PacketIdServer;
-import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.IServerPacketHandler;
-import mezz.jei.common.network.ServerPacketData;
-import mezz.jei.core.config.IServerConfig;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketGiveItemStack;
 import mezz.jei.common.network.packets.PacketRecipeTransfer;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
+import mezz.jei.core.config.IServerConfig;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;

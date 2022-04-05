@@ -1,31 +1,21 @@
 package mezz.jei.ingredients;
 
-import com.google.common.collect.Multimap;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
+import mezz.jei.common.config.sorting.ModNameSortingConfig;
+import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.ingredients.IListElementInfo;
 import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.core.config.IngredientSortStage;
-import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
-import mezz.jei.common.config.sorting.ModNameSortingConfig;
-import mezz.jei.common.gui.ingredients.IListElement;
 import net.minecraft.core.HolderSet.ListBacked;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.TieredItem;
-import net.minecraftforge.common.TierSortingRegistry;
-import net.minecraftforge.common.ToolAction;
-import net.minecraftforge.common.ToolActions;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -64,9 +54,7 @@ public class IngredientSorterComparators {
 			case CREATIVE_MENU -> getCreativeMenuComparator();
 			case INGREDIENT_TYPE -> getIngredientTypeComparator();
 			case MOD_NAME -> getModNameComparator();
-			case TOOL_TYPE -> getToolsComparator();
 			case TAG -> getTagComparator();
-			case WEAPON_DAMAGE -> getWeaponDamageComparator();
 			case ARMOR -> getArmorComparator();
 			case MAX_DURABILITY -> getMaxDurabilityComparator();
 		};
@@ -116,34 +104,6 @@ public class IngredientSorterComparators {
 		return isTagged.reversed().thenComparing(tag);
 	}
 
-	private static Comparator<IListElementInfo<?>> getToolsComparator() {
-		Comparator<IListElementInfo<?>> toolType =
-			Comparator.comparing(o -> getToolClass(getItemStack(o)));
-		Comparator<IListElementInfo<?>> tier =
-			Comparator.comparing(o -> getTier(getItemStack(o)));
-		Comparator<IListElementInfo<?>> maxDamage =
-			Comparator.comparing(o -> getToolDurability(getItemStack(o)));
-
-		return toolType.reversed() // Sort non-tools after the tools.
-			.thenComparing(tier.reversed())
-			.thenComparing(maxDamage.reversed());
-	}
-
-	private static Comparator<IListElementInfo<?>> getWeaponDamageComparator() {
-		Comparator<IListElementInfo<?>> isWeaponComp =
-			Comparator.comparing(o -> isWeapon(getItemStack(o)));
-		Comparator<IListElementInfo<?>> attackDamage =
-			Comparator.comparing(o -> getWeaponDamage(getItemStack(o)));
-		Comparator<IListElementInfo<?>> attackSpeed =
-			Comparator.comparing(o -> getWeaponSpeed(getItemStack(o)));
-		Comparator<IListElementInfo<?>> maxDamage =
-			Comparator.comparing(o -> getWeaponDurability(getItemStack(o)));
-		return isWeaponComp.reversed()
-			.thenComparing(attackDamage.reversed())
-			.thenComparing(attackSpeed.reversed())
-			.thenComparing(maxDamage.reversed());
-	}
-
 	private static Comparator<IListElementInfo<?>> getArmorComparator() {
 		Comparator<IListElementInfo<?>> isArmorComp =
 			Comparator.comparing(o -> isArmor(getItemStack(o)));
@@ -160,69 +120,6 @@ public class IngredientSorterComparators {
 			.thenComparing(armorDamage.reversed())
 			.thenComparing(armorToughness.reversed())
 			.thenComparing(maxDamage.reversed());
-	}
-
-	private static int getTier(ItemStack itemStack) {
-		Item item = itemStack.getItem();
-		if (item instanceof TieredItem tieredItem) {
-			Tier tier = tieredItem.getTier();
-			List<Tier> sortedTiers = TierSortingRegistry.getSortedTiers();
-			return sortedTiers.indexOf(tier);
-		}
-		return -1;
-	}
-
-	private static boolean isTool(ItemStack itemStack) {
-		return getToolActions(itemStack).stream()
-			.anyMatch(itemStack::canPerformAction);
-	}
-
-	private static int getToolDurability(ItemStack itemStack) {
-		if (!isTool(itemStack)) {
-			return 0;
-		}
-		return itemStack.getMaxDamage();
-	}
-
-	private static boolean isWeapon(ItemStack itemStack) {
-		//Sort Weapons apart from tools, armor, and other random things..
-		//AttackDamage also filters out Tools and Armor.  Anything that deals extra damage is a weapon.
-		return getWeaponDamage(itemStack) > 0;
-	}
-
-	private static double getWeaponDamage(ItemStack itemStack) {
-		if (isTool(itemStack) || isArmor(itemStack)) {
-			return 0;
-		}
-		Multimap<Attribute, AttributeModifier> multimap = itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND);
-		return max(multimap, Attributes.ATTACK_DAMAGE);
-	}
-
-	private static double getWeaponSpeed(ItemStack itemStack) {
-		if (!isWeapon(itemStack)) {
-			return 0;
-		}
-		Multimap<Attribute, AttributeModifier> multimap = itemStack.getAttributeModifiers(EquipmentSlot.MAINHAND);
-		return max(multimap, Attributes.ATTACK_SPEED);
-	}
-
-	private static double max(Multimap<Attribute, AttributeModifier> multimap, Attribute attribute) {
-		Collection<AttributeModifier> modifiers = multimap.get(attribute);
-		return max(modifiers);
-	}
-
-	private static double max(Collection<AttributeModifier> modifiers) {
-		return modifiers.stream()
-			.mapToDouble(AttributeModifier::getAmount)
-			.max()
-			.orElse(0);
-	}
-
-	private static int getWeaponDurability(ItemStack itemStack) {
-		if (isWeapon(itemStack)) {
-			return itemStack.getMaxDamage();
-		}
-		return 0;
 	}
 
 	private static boolean isArmor(ItemStack itemStack) {
@@ -283,26 +180,6 @@ public class IngredientSorterComparators {
 
 	private boolean hasTag(IListElementInfo<?> elementInfo) {
 		return !getTagForSorting(elementInfo).isEmpty();
-	}
-
-	private static String getToolClass(ItemStack itemStack) {
-		if (itemStack.isEmpty()) {
-			return "";
-		}
-
-		return getToolActions(itemStack).stream()
-			.filter(itemStack::canPerformAction)
-			.findFirst()
-			.map(ToolAction::name)
-			.orElse("");
-	}
-
-	private static Collection<ToolAction> getToolActions(ItemStack itemStack) {
-		// HACK: ensure the actions for the itemStack get loaded before we call ToolAction.getActions(),
-		// so the ToolAction.getActions() map is populated with whatever actions the itemStack uses.
-		itemStack.canPerformAction(ToolActions.AXE_DIG);
-
-		return ToolAction.getActions();
 	}
 
 	public static <V> ItemStack getItemStack(IListElementInfo<V> ingredientInfo) {

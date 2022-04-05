@@ -8,6 +8,8 @@ public interface IPlatformHelper {
 
     IPlatformItemStackHelper getItemStackHelper();
 
+    IPlatformFluidHelper<?> getFluidHelper();
+
     IPlatformRenderHelper getRenderHelper();
 
     IPlatformRecipeHelper getRecipeHelper();

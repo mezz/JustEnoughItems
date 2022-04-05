@@ -2,7 +2,6 @@ package mezz.jei.common.platform;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.common.gui.ingredients.RecipeSlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
@@ -32,6 +31,4 @@ public interface IPlatformRenderHelper {
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     void renderTooltip(Screen screen, PoseStack poseStack, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, int x, int y, @Nullable Font font, ItemStack stack);
-
-    void setFluidRenderer(RecipeSlot recipeSlot, int capacityMb, boolean showCapacity, int width, int height);
 }

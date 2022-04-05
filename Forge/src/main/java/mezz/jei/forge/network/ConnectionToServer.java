@@ -2,7 +2,7 @@ package mezz.jei.forge.network;
 
 import com.google.common.collect.ImmutableMap;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.network.ServerPacketRouter;
+import mezz.jei.common.network.ServerPacketRouter;
 import mezz.jei.common.network.packets.PacketJei;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;

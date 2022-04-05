@@ -1,5 +1,6 @@
 package mezz.jei.forge.platform;
 
+import mezz.jei.common.platform.IPlatformFluidHelper;
 import mezz.jei.common.platform.IPlatformHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import net.minecraft.core.Registry;
@@ -7,6 +8,7 @@ import net.minecraft.resources.ResourceKey;
 
 public class ForgePlatformHelper implements IPlatformHelper {
     private final ForgeItemStackHelper itemStackHelper = new ForgeItemStackHelper();
+    private final ForgeFluidHelper fluidHelper = new ForgeFluidHelper();
     private final ForgeRenderHelper renderHelper = new ForgeRenderHelper();
     private final ForgeRecipeHelper recipeHelper = new ForgeRecipeHelper();
     private final ForgeServerHelper serverHelper = new ForgeServerHelper();
@@ -22,6 +24,11 @@ public class ForgePlatformHelper implements IPlatformHelper {
     @Override
     public ForgeItemStackHelper getItemStackHelper() {
         return itemStackHelper;
+    }
+
+    @Override
+    public IPlatformFluidHelper<?> getFluidHelper() {
+        return fluidHelper;
     }
 
     @Override

@@ -7,6 +7,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -16,9 +17,10 @@ import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.ingredients.IngredientAcceptor;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.common.platform.IPlatformFluidHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
+import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -76,9 +78,14 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	public IRecipeSlotBuilder setFluidRenderer(int capacityMb, boolean showCapacity, int width, int height) {
 		Preconditions.checkArgument(capacityMb > 0, "capacityMb must be > 0");
 
-		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-		renderHelper.setFluidRenderer(this.recipeSlot, capacityMb, showCapacity, width, height);
+		IPlatformFluidHelper<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		return setFluidRenderer(fluidHelper, capacityMb, showCapacity, width, height);
+	}
 
+	private <T> IRecipeSlotBuilder setFluidRenderer(IPlatformFluidHelper<T> fluidHelper, int capacityMb, boolean showCapacity, int width, int height) {
+		IIngredientRenderer<T> renderer = fluidHelper.createRenderer(capacityMb, showCapacity, width, height);
+		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
+		this.recipeSlot.addRenderOverride(type, renderer);
 		return this;
 	}
 

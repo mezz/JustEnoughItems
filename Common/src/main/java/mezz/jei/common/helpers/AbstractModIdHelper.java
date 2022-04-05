@@ -1,4 +1,4 @@
-package mezz.jei.ingredients;
+package mezz.jei.common.helpers;
 
 import java.util.ArrayList;
 import java.util.List;

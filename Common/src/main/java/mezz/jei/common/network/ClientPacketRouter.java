@@ -1,13 +1,9 @@
-package mezz.jei.network;
+package mezz.jei.common.network;
 
-import mezz.jei.common.network.ClientPacketContext;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.network.PacketIdClient;
-import mezz.jei.common.network.ClientPacketData;
 import mezz.jei.common.network.packets.IClientPacketHandler;
+import mezz.jei.common.network.packets.PacketCheatPermission;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.common.network.packets.PacketCheatPermission;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;

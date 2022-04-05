@@ -1,6 +1,6 @@
 package mezz.jei.test.lib;
 
-import mezz.jei.ingredients.AbstractModIdHelper;
+import mezz.jei.common.helpers.AbstractModIdHelper;
 
 public class TestModIdHelper extends AbstractModIdHelper {
 	@Override

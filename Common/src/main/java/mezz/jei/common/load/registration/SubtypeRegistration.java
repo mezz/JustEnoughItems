@@ -1,18 +1,18 @@
-package mezz.jei.load.registration;
+package mezz.jei.common.load.registration;
 
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.ISubtypeRegistration;
-import mezz.jei.ingredients.SubtypeInterpreters;
+import mezz.jei.common.platform.IPlatformFluidHelper;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.ingredients.subtypes.SubtypeInterpreters;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,8 +30,15 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 
 	@Override
 	public void useNbtForSubtypes(Fluid... fluids) {
+		IPlatformFluidHelper<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		useNbtForSubtypes(fluidHelper, fluids);
+	}
+
+	private <T> void useNbtForSubtypes(IPlatformFluidHelper<T> fluidHelper, Fluid... fluids) {
+		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
+		IIngredientSubtypeInterpreter<T> allNbt = fluidHelper.getAllNbtSubtypeInterpreter();
 		for (Fluid fluid : fluids) {
-			registerSubtypeInterpreter(ForgeTypes.FLUID_STACK, fluid, AllFluidNbt.INSTANCE);
+			registerSubtypeInterpreter(type, fluid, allNbt);
 		}
 	}
 
@@ -73,22 +80,6 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 		@Override
 		public String apply(ItemStack itemStack, UidContext context) {
 			CompoundTag nbtTagCompound = itemStack.getTag();
-			if (nbtTagCompound == null || nbtTagCompound.isEmpty()) {
-				return IIngredientSubtypeInterpreter.NONE;
-			}
-			return nbtTagCompound.toString();
-		}
-	}
-
-	private static class AllFluidNbt implements IIngredientSubtypeInterpreter<FluidStack> {
-		public static final AllFluidNbt INSTANCE = new AllFluidNbt();
-
-		private AllFluidNbt() {
-		}
-
-		@Override
-		public String apply(FluidStack fluidStack, UidContext context) {
-			CompoundTag nbtTagCompound = fluidStack.getTag();
 			if (nbtTagCompound == null || nbtTagCompound.isEmpty()) {
 				return IIngredientSubtypeInterpreter.NONE;
 			}
