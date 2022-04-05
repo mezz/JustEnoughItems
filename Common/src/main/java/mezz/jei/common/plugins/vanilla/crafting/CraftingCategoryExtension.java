@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.crafting;
+package mezz.jei.common.plugins.vanilla.crafting;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;

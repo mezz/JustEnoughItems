@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.crafting;
+package mezz.jei.common.plugins.vanilla.crafting;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -96,7 +96,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 		legacySetRecipe(builder, recipeExtension);
 	}
 
-	@SuppressWarnings({"removal"})
+	@SuppressWarnings({"removal", "deprecation"})
 	private void legacySetRecipe(IRecipeLayoutBuilder builder, ICraftingCategoryExtension recipeExtension) {
 		Ingredients ingredients = new Ingredients();
 		recipeExtension.setIngredients(ingredients);

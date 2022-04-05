@@ -1,6 +1,7 @@
-package mezz.jei.plugins.vanilla.crafting;
+package mezz.jei.common.plugins.vanilla.crafting;
 
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.common.plugins.vanilla.crafting.CategoryRecipeValidator;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;

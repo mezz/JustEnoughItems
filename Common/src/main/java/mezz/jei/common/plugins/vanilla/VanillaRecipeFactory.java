@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla;
+package mezz.jei.common.plugins.vanilla;
 
 import java.util.List;
 

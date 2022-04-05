@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.crafting.replacers;
+package mezz.jei.common.plugins.vanilla.crafting.replacers;
 
 import mezz.jei.api.constants.ModIds;
 import net.minecraft.core.Holder;
