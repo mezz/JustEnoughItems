@@ -1,7 +1,5 @@
 package mezz.jei.common.gui.overlay;
 
-import mezz.jei.common.gui.overlay.IFilterTextSource;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,5 +1,6 @@
 package mezz.jei.forge.config;
 
+import mezz.jei.common.config.IModIdFormattingConfig;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -25,7 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ModIdFormattingConfig {
+public class ModIdFormattingConfig implements IModIdFormattingConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";

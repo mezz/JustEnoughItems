@@ -5,10 +5,15 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.common.config.IBookmarkConfig;
+import mezz.jei.common.load.PluginHelper;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.config.BookmarkConfig;
 import mezz.jei.common.config.EditModeConfig;
 import mezz.jei.common.config.IEditModeConfig;
+import mezz.jei.common.plugins.jei.JeiInternalPlugin;
+import mezz.jei.common.plugins.vanilla.VanillaPlugin;
+import mezz.jei.common.startup.ConfigData;
+import mezz.jei.common.startup.StartData;
 import mezz.jei.forge.config.ForgeKeyBindings;
 import mezz.jei.forge.config.JEIClientConfigs;
 import mezz.jei.forge.config.ModIdFormattingConfig;
@@ -28,7 +33,6 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.forge.helpers.ForgeModIdHelper;
 import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.common.ingredients.IngredientSorter;
-import mezz.jei.startup.JeiStarter;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RecipeErrorUtil;
 import net.minecraft.client.Minecraft;
@@ -76,20 +80,35 @@ public class ClientLifecycleHandler {
 		networkHandler.createClientPacketHandler(serverConnection, serverConfig, worldConfig);
 
 		List<IModPlugin> plugins = AnnotatedInstanceUtil.getModPlugins();
+		VanillaPlugin vanillaPlugin = PluginHelper.getPluginWithClass(VanillaPlugin.class, plugins);
+		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins);
+		ErrorUtil.checkNotNull(vanillaPlugin, "vanilla plugin");
+		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
 
-		this.jeiStarter = new JeiStarter(
-			plugins,
-			textures,
-			jeiClientConfigs,
+		ConfigData configData = new ConfigData(
+			clientConfig,
 			editModeConfig,
+			jeiClientConfigs.getFilterConfig(),
 			worldConfig,
-			serverConnection,
 			bookmarkConfig,
-			modIdHelper,
-			recipeCategorySortingConfig,
-			ingredientSorter,
-			keyBindings
+			modIdFormattingConfig,
+			jeiClientConfigs.getIngredientListConfig(),
+			jeiClientConfigs.getBookmarkListConfig(),
+			recipeCategorySortingConfig
 		);
+
+		StartData startData = new StartData(
+			plugins,
+			vanillaPlugin,
+			textures,
+			serverConnection,
+			modIdHelper,
+			ingredientSorter,
+			keyBindings,
+			configData
+		);
+
+		this.jeiStarter = new JeiStarter(startData);
 	}
 
 	public void register(PermanentEventSubscriptions subscriptions) {
