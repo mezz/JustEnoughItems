@@ -1,9 +1,10 @@
-package mezz.jei.plugins.vanilla.anvil;
+package mezz.jei.common.plugins.vanilla.anvil;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
@@ -14,7 +15,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.ArmorMaterials;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Tiers;
@@ -54,9 +54,9 @@ public final class AnvilRecipeMaker {
 		}
 
 		public List<ItemStack> getEnchantedBooks(ItemStack ingredient) {
-			Item item = ingredient.getItem();
+			IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
 			return enchantedBooks.stream()
-				.filter(enchantedBook -> item.isBookEnchantable(ingredient, enchantedBook))
+				.filter(enchantedBook -> itemStackHelper.isBookEnchantable(ingredient, enchantedBook))
 				.toList();
 		}
 

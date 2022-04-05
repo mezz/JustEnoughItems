@@ -3,6 +3,7 @@ package mezz.jei.forge.platform;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeHooks;
 import org.apache.logging.log4j.LogManager;
@@ -33,5 +34,11 @@ public class ForgeItemStackHelper implements IPlatformItemStackHelper {
             return false;
         }
         return a.areCapsCompatible(b);
+    }
+
+    @Override
+    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+        Item item = stack.getItem();
+        return item.isBookEnchantable(stack, book);
     }
 }

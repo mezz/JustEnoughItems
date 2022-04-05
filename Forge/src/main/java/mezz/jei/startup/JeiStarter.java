@@ -52,7 +52,7 @@ import mezz.jei.forge.events.GuiEventHandler;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.input.InputEventHandler;
 import mezz.jei.common.ingredients.IngredientFilterApi;
-import mezz.jei.load.PluginCaller;
+import mezz.jei.common.load.PluginCaller;
 import mezz.jei.load.PluginHelper;
 import mezz.jei.load.PluginLoader;
 import mezz.jei.plugins.jei.JeiInternalPlugin;

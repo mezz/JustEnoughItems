@@ -25,6 +25,7 @@ import mezz.jei.common.ingredients.IngredientBlacklistInternal;
 import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.load.PluginCaller;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;

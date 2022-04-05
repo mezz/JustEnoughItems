@@ -1,4 +1,4 @@
-package mezz.jei.load;
+package mezz.jei.common.load;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.base.Stopwatch;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.plugins.vanilla.VanillaPlugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,9 +25,6 @@ public class PluginCaller {
 				func.accept(plugin);
 				LOGGER.info("{}: {} took {}", title, pluginUid, stopwatch);
 			} catch (RuntimeException | LinkageError e) {
-				if (plugin instanceof VanillaPlugin) {
-					throw e;
-				}
 				LOGGER.error("Caught an error from mod plugin: {} {}", plugin.getClass(), plugin.getPluginUid(), e);
 				erroredPlugins.add(plugin);
 			}

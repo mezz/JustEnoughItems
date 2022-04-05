@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.anvil;
+package mezz.jei.common.plugins.vanilla.anvil;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.RecipeTypes;
