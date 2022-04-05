@@ -53,7 +53,7 @@ import mezz.jei.common.render.ItemStackRenderer;
 import mezz.jei.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.util.StackHelper;
+import mezz.jei.common.util.StackHelper;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;

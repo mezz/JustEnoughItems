@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.gui.PageNavigation;
+import mezz.jei.common.gui.PageNavigation;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.input.IPaged;
 import mezz.jei.common.input.IUserInputHandler;

@@ -1,17 +1,16 @@
-package mezz.jei.gui;
+package mezz.jei.common.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
+import mezz.jei.common.gui.elements.GuiIconButton;
+import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.input.IPaged;
 import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.handlers.CombinedInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
-
-import mezz.jei.common.gui.elements.GuiIconButton;
-import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IPaged;
 
 public class PageNavigation {
 	private final IPaged paged;

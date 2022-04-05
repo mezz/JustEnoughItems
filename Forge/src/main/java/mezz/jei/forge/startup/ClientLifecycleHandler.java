@@ -30,7 +30,7 @@ import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientSorter;
 import mezz.jei.startup.JeiStarter;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.util.RecipeErrorUtil;
+import mezz.jei.common.util.RecipeErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraftforge.common.MinecraftForge;

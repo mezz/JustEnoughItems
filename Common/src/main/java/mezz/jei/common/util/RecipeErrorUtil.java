@@ -1,4 +1,4 @@
-package mezz.jei.util;
+package mezz.jei.common.util;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -6,11 +6,8 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.ingredients.IngredientVisibilityDummy;
-import mezz.jei.common.util.IRecipeRegistryHelper;
-import mezz.jei.common.util.RecipeRegistryHelper;
 import mezz.jei.common.ingredients.IIngredientSupplier;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.recipes.IngredientSupplierHelper;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

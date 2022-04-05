@@ -1,7 +1,7 @@
 package mezz.jei.plugins.vanilla.crafting;
 
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.util.RecipeErrorUtil;
+import mezz.jei.common.util.RecipeErrorUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.Ingredient;

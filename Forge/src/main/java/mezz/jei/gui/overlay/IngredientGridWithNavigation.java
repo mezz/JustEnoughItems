@@ -11,7 +11,7 @@ import mezz.jei.core.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.common.gui.GuiScreenHelper;
-import mezz.jei.gui.PageNavigation;
+import mezz.jei.common.gui.PageNavigation;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.common.input.IClickedIngredient;

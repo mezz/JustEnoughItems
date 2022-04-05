@@ -12,7 +12,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.core.NonNullList;
 
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.util.StackHelper;
+import mezz.jei.common.util.StackHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

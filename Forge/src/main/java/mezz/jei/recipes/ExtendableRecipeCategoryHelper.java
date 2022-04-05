@@ -1,7 +1,7 @@
 package mezz.jei.recipes;
 
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
-import mezz.jei.util.RecipeErrorUtil;
+import mezz.jei.common.util.RecipeErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;

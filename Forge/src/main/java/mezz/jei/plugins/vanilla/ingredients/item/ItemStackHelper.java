@@ -8,7 +8,7 @@ import mezz.jei.common.color.ColorGetter;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.util.StackHelper;
+import mezz.jei.common.util.StackHelper;
 import mezz.jei.common.util.TagUtil;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
