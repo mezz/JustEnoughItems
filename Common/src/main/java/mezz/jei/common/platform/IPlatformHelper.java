@@ -21,4 +21,6 @@ public interface IPlatformHelper {
     IPlatformInputHelper getInputHelper();
 
     IPlatformScreenHelper getScreenHelper();
+
+    IPlatformIngredientHelper getIngredientHelper();
 }

@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla;
+package mezz.jei.common.plugins.vanilla;
 
 import mezz.jei.common.Internal;
 import mezz.jei.api.IModPlugin;
@@ -46,11 +46,11 @@ import mezz.jei.common.plugins.vanilla.cooking.fuel.FurnaceFuelCategory;
 import mezz.jei.common.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.common.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.common.plugins.vanilla.crafting.VanillaRecipes;
-import mezz.jei.plugins.vanilla.crafting.replacers.ShulkerBoxColoringRecipeMaker;
+import mezz.jei.common.plugins.vanilla.crafting.replacers.ShulkerBoxColoringRecipeMaker;
 import mezz.jei.common.plugins.vanilla.crafting.replacers.SuspiciousStewRecipeMaker;
-import mezz.jei.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
-import mezz.jei.plugins.vanilla.ingredients.item.ItemStackHelper;
-import mezz.jei.plugins.vanilla.ingredients.item.ItemStackListFactory;
+import mezz.jei.common.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
+import mezz.jei.common.plugins.vanilla.ingredients.item.ItemStackHelper;
+import mezz.jei.common.plugins.vanilla.ingredients.item.ItemStackListFactory;
 import mezz.jei.common.render.ItemStackRenderer;
 import mezz.jei.common.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.common.transfer.PlayerRecipeTransferHandler;

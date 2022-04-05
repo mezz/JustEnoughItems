@@ -5,7 +5,7 @@ import java.util.List;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.plugins.jei.JeiInternalPlugin;
-import mezz.jei.plugins.vanilla.VanillaPlugin;
+import mezz.jei.common.plugins.vanilla.VanillaPlugin;
 
 public class PluginHelper {
 	public static void sortPlugins(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin, @Nullable JeiInternalPlugin jeiInternalPlugin) {

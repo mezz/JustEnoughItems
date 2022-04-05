@@ -1,4 +1,4 @@
-package mezz.jei.ingredients;
+package mezz.jei.forge.ingredients;
 
 import com.google.gson.JsonElement;
 import mezz.jei.api.helpers.IStackHelper;

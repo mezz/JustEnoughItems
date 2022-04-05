@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.ingredients.item;
+package mezz.jei.common.plugins.vanilla.ingredients.item;
 
 import java.util.ArrayList;
 import java.util.HashSet;

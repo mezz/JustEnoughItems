@@ -56,7 +56,7 @@ import mezz.jei.common.load.PluginCaller;
 import mezz.jei.load.PluginHelper;
 import mezz.jei.load.PluginLoader;
 import mezz.jei.plugins.jei.JeiInternalPlugin;
-import mezz.jei.plugins.vanilla.VanillaPlugin;
+import mezz.jei.common.plugins.vanilla.VanillaPlugin;
 
 import java.util.List;
 

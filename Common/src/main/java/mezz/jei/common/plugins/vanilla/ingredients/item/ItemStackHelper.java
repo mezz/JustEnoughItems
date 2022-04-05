@@ -1,10 +1,11 @@
-package mezz.jei.plugins.vanilla.ingredients.item;
+package mezz.jei.common.plugins.vanilla.ingredients.item;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.color.ColorGetter;
+import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
@@ -57,24 +58,16 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@SuppressWarnings("removal")
 	@Override
 	public String getModId(ItemStack ingredient) {
-		ErrorUtil.checkNotEmpty(ingredient);
-
-		Item item = ingredient.getItem();
-		ResourceLocation itemName = item.getRegistryName();
-		if (itemName == null) {
-			String stackInfo = getErrorInfo(ingredient);
-			throw new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
-		}
-
-		return itemName.getNamespace();
+		ResourceLocation resourceLocation = getResourceLocation(ingredient);
+		return resourceLocation.getNamespace();
 	}
 
 	@Override
 	public String getDisplayModId(ItemStack ingredient) {
 		ErrorUtil.checkNotEmpty(ingredient);
 
-		Item item = ingredient.getItem();
-		String modId = item.getCreatorModId(ingredient);
+		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
+		String modId = itemStackHelper.getCreatorModId(ingredient);
 		if (modId == null) {
 			String stackInfo = getErrorInfo(ingredient);
 			throw new IllegalStateException("item.getCreatorModId() returned null for: " + stackInfo);
@@ -90,16 +83,8 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@SuppressWarnings("removal")
 	@Override
 	public String getResourceId(ItemStack ingredient) {
-		ErrorUtil.checkNotEmpty(ingredient);
-
-		Item item = ingredient.getItem();
-		ResourceLocation itemName = item.getRegistryName();
-		if (itemName == null) {
-			String stackInfo = getErrorInfo(ingredient);
-			throw new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
-		}
-
-		return itemName.getPath();
+		ResourceLocation resourceLocation = getResourceLocation(ingredient);
+		return resourceLocation.getPath();
 	}
 
 	@Override
@@ -107,7 +92,8 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		ErrorUtil.checkNotEmpty(ingredient);
 
 		Item item = ingredient.getItem();
-		ResourceLocation name = item.getRegistryName();
+		IPlatformRegistry<Item> itemRegistry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
+		ResourceLocation name = itemRegistry.getRegistryName(item);
 		if (name == null) {
 			String stackInfo = getErrorInfo(ingredient);
 			throw new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
@@ -153,8 +139,8 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public Collection<String> getCreativeTabNames(ItemStack ingredient) {
 		Collection<String> creativeTabsStrings = new ArrayList<>();
-		Item item = ingredient.getItem();
-		for (CreativeModeTab itemGroup : item.getCreativeTabs()) {
+		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
+		for (CreativeModeTab itemGroup : itemStackHelper.getCreativeTabs(ingredient)) {
 			if (itemGroup != null) {
 				String creativeTabName = itemGroup.getDisplayName().getString();
 				creativeTabsStrings.add(creativeTabName);

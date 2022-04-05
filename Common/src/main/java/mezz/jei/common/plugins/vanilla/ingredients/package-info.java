@@ -1,7 +1,7 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.plugins.vanilla;
-
-import javax.annotation.ParametersAreNonnullByDefault;
+package mezz.jei.common.plugins.vanilla.ingredients;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
+
+import javax.annotation.ParametersAreNonnullByDefault;

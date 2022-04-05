@@ -1,7 +1,7 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.plugins.vanilla.crafting;
-
-import javax.annotation.ParametersAreNonnullByDefault;
+package mezz.jei.forge.ingredients;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
+
+import javax.annotation.ParametersAreNonnullByDefault;
