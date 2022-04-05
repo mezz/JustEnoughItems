@@ -2,8 +2,8 @@ package mezz.jei.input.mouse.handlers;
 
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
-import mezz.jei.input.UserInput;
-import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.IUserInputHandler;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;

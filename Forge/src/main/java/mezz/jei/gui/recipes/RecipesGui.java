@@ -15,20 +15,20 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.KeyBindings;
-import mezz.jei.gui.HoverChecker;
-import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.gui.elements.GuiIconButtonSmall;
+import mezz.jei.common.gui.HoverChecker;
+import mezz.jei.common.gui.TooltipRenderer;
+import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.GuiIconButtonSmall;
 import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.gui.textures.Textures;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
-import mezz.jei.input.MouseUtil;
-import mezz.jei.input.UserInput;
-import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.common.input.MouseUtil;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.recipes.FocusGroup;
 import mezz.jei.recipes.RecipeManager;
 import mezz.jei.recipes.RecipeTransferManager;
@@ -100,25 +100,25 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		RecipeTransferManager recipeTransferManager,
 		RegisteredIngredients registeredIngredients,
 		IModIdHelper modIdHelper,
-		IClientConfig clientConfig
+		IClientConfig clientConfig,
+		Textures textures
 	) {
 		super(new TextComponent("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;
 		this.clientConfig = clientConfig;
-		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, registeredIngredients, modIdHelper);
-		this.recipeCatalysts = new RecipeCatalysts();
-		this.recipeGuiTabs = new RecipeGuiTabs(this.logic);
+		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, registeredIngredients, modIdHelper, textures);
+		this.recipeCatalysts = new RecipeCatalysts(textures);
+		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures);
 		this.recipeManager = recipeManager;
 		this.minecraft = Minecraft.getInstance();
 
-		Textures textures = Internal.getTextures();
 		IDrawableStatic arrowNext = textures.getArrowNext();
 		IDrawableStatic arrowPrevious = textures.getArrowPrevious();
 
-		nextRecipeCategory = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowNext, b -> logic.nextRecipeCategory());
-		previousRecipeCategory = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowPrevious, b -> logic.previousRecipeCategory());
-		nextPage = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowNext, b -> logic.nextPage());
-		previousPage = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowPrevious, b -> logic.previousPage());
+		nextRecipeCategory = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowNext, b -> logic.nextRecipeCategory(), textures);
+		previousRecipeCategory = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowPrevious, b -> logic.previousRecipeCategory(), textures);
+		nextPage = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowNext, b -> logic.nextPage(), textures);
+		previousPage = new GuiIconButtonSmall(0, 0, buttonWidth, buttonHeight, arrowPrevious, b -> logic.previousPage(), textures);
 
 		background = textures.getRecipeGuiBackground();
 	}

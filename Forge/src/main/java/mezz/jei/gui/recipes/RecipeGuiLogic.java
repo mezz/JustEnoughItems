@@ -7,6 +7,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.ingredients.IngredientLookupState;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.recipes.FocusGroup;
@@ -16,6 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Unmodifiable;
+import org.w3c.dom.Text;
 
 import javax.annotation.Nonnegative;
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	private boolean initialState = true;
 	private IngredientLookupState state;
+	private final Textures textures;
 	private final Stack<IngredientLookupState> history = new Stack<>();
 
 	public RecipeGuiLogic(
@@ -39,7 +42,8 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		RecipeTransferManager recipeTransferManager,
 		IRecipeLogicStateListener stateListener,
 		RegisteredIngredients registeredIngredients,
-		IModIdHelper modIdHelper
+		IModIdHelper modIdHelper,
+		Textures textures
 	) {
 		this.recipeManager = recipeManager;
 		this.recipeTransferManager = recipeTransferManager;
@@ -47,6 +51,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		this.registeredIngredients = registeredIngredients;
 		this.modIdHelper = modIdHelper;
 		this.state = IngredientLookupState.createWithFocus(recipeManager, FocusGroup.EMPTY);
+		this.textures = textures;
 	}
 
 	@Override
@@ -188,7 +193,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		for (int recipeIndex = firstRecipeIndex; recipeIndex < recipes.size() && recipeLayouts.size() < state.getRecipesPerPage(); recipeIndex++) {
 			T recipe = recipes.get(recipeIndex);
 			int index = recipeWidgetIndex++;
-			RecipeLayout<T> recipeLayout = RecipeLayout.create(index, recipeCategory, recipe, state.getFocuses(), registeredIngredients, modIdHelper, posX, recipePosY);
+			RecipeLayout<T> recipeLayout = RecipeLayout.create(index, recipeCategory, recipe, state.getFocuses(), registeredIngredients, modIdHelper, posX, recipePosY, textures);
 			if (recipeLayout == null) {
 				brokenRecipes.add(recipe);
 			} else {

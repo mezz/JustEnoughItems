@@ -2,7 +2,7 @@ package mezz.jei.gui.overlay.bookmarks;
 
 import java.util.List;
 
-import mezz.jei.input.UserInput;
+import mezz.jei.common.input.UserInput;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
@@ -12,8 +12,8 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
-import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.gui.textures.Textures;
+import mezz.jei.common.gui.elements.GuiIconToggleButton;
+import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.network.chat.TranslatableComponent;
 import org.lwjgl.glfw.GLFW;
 
@@ -21,15 +21,15 @@ public class BookmarkButton extends GuiIconToggleButton {
 	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, Textures textures, IWorldConfig worldConfig) {
 		IDrawableStatic offIcon = textures.getBookmarkButtonDisabledIcon();
 		IDrawableStatic onIcon = textures.getBookmarkButtonEnabledIcon();
-		return new BookmarkButton(offIcon, onIcon, bookmarkOverlay, bookmarkList, worldConfig);
+		return new BookmarkButton(offIcon, onIcon, textures, bookmarkOverlay, bookmarkList, worldConfig);
 	}
 
 	private final BookmarkOverlay bookmarkOverlay;
 	private final BookmarkList bookmarkList;
 	private final IWorldConfig worldConfig;
 
-	private BookmarkButton(IDrawable offIcon, IDrawable onIcon, BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IWorldConfig worldConfig) {
-		super(offIcon, onIcon);
+	private BookmarkButton(IDrawable offIcon, IDrawable onIcon, Textures textures, BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IWorldConfig worldConfig) {
+		super(offIcon, onIcon, textures);
 		this.bookmarkOverlay = bookmarkOverlay;
 		this.bookmarkList = bookmarkList;
 		this.worldConfig = worldConfig;

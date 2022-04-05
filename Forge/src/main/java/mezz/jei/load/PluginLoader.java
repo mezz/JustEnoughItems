@@ -16,21 +16,21 @@ import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.core.config.IClientConfig;
-import mezz.jei.config.IEditModeConfig;
-import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IEditModeConfig;
+import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.gui.ingredients.IListElement;
-import mezz.jei.gui.overlay.IFilterTextSource;
-import mezz.jei.gui.textures.Textures;
-import mezz.jei.ingredients.IIngredientSorter;
-import mezz.jei.ingredients.IngredientBlacklistInternal;
-import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.common.gui.ingredients.IListElement;
+import mezz.jei.common.gui.overlay.IFilterTextSource;
+import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.ingredients.IIngredientSorter;
+import mezz.jei.common.ingredients.IngredientBlacklistInternal;
+import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientManager;
-import mezz.jei.ingredients.IngredientVisibility;
+import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.ingredients.RegisteredIngredientsBuilder;
 import mezz.jei.ingredients.SubtypeManager;
@@ -69,6 +69,7 @@ public class PluginLoader {
 	private final IngredientVisibility ingredientVisibility;
 	private final IngredientFilter ingredientFilter;
 	private final IConnectionToServer serverConnection;
+	private final Textures textures;
 
 	public PluginLoader(
 		List<IModPlugin> plugins,
@@ -82,6 +83,7 @@ public class PluginLoader {
 		IFilterTextSource filterTextSource,
 		IConnectionToServer serverConnection
 	) {
+		this.textures = textures;
 		this.timer = new LoggedTimer();
 		this.modIdHelper = modIdHelper;
 		this.serverConnection = serverConnection;
@@ -181,7 +183,7 @@ public class PluginLoader {
 		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, registeredIngredients, ingredientManager, ingredientVisibility, vanillaRecipeFactory, recipeManagerInternal);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
-		return new RecipeManager(recipeManagerInternal, modIdHelper, registeredIngredients);
+		return new RecipeManager(recipeManagerInternal, modIdHelper, registeredIngredients, textures);
 	}
 
 	public IngredientFilter getIngredientFilter() {

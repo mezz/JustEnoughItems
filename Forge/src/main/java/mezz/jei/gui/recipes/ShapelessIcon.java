@@ -3,8 +3,9 @@ package mezz.jei.gui.recipes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.gui.HoverChecker;
-import mezz.jei.gui.elements.HighResolutionDrawable;
+import mezz.jei.common.gui.HoverChecker;
+import mezz.jei.common.gui.elements.HighResolutionDrawable;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -19,8 +20,8 @@ public class ShapelessIcon {
 	private int posX;
 	private int posY;
 
-	public ShapelessIcon() {
-		this.icon = Internal.getTextures().getShapelessIcon();
+	public ShapelessIcon(Textures textures) {
+		this.icon = textures.getShapelessIcon();
 		this.hoverChecker = new HoverChecker();
 		setPosition(0, 0);
 	}

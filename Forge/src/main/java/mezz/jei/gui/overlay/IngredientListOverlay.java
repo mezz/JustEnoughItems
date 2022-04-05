@@ -5,20 +5,23 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
+import mezz.jei.common.gui.overlay.IFilterTextSource;
+import mezz.jei.common.gui.overlay.IIngredientGridSource;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.GuiScreenHelper;
-import mezz.jei.gui.elements.GuiIconToggleButton;
+import mezz.jei.common.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
-import mezz.jei.input.MouseUtil;
+import mezz.jei.common.input.MouseUtil;
 import mezz.jei.input.mouse.ICharTypedHandler;
-import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.CheatInputHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.input.mouse.handlers.NullInputHandler;
@@ -63,7 +66,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
-		IConnectionToServer serverConnection
+		IConnectionToServer serverConnection,
+		Textures textures
 	) {
 		this.guiScreenHelper = guiScreenHelper;
 		this.contents = contents;
@@ -71,14 +75,14 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.worldConfig = worldConfig;
 		this.serverConnection = serverConnection;
 
-		this.searchField = new GuiTextFieldFilter();
+		this.searchField = new GuiTextFieldFilter(textures);
 		this.searchField.setValue(filterTextSource.getFilterText());
 		this.searchField.setFocused(false);
 		this.searchField.setResponder(filterTextSource::setFilterText);
 
 		ingredientGridSource.addSourceListChangedListener(() -> updateBounds(true));
 
-		this.configButton = ConfigButton.create(this, worldConfig);
+		this.configButton = ConfigButton.create(this, worldConfig, textures);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, registeredIngredients, worldConfig);
 	}
 

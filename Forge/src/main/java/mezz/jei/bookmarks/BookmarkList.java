@@ -9,9 +9,9 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.config.BookmarkConfig;
-import mezz.jei.gui.overlay.IIngredientGridSource;
+import mezz.jei.common.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.TypedIngredient;
 import net.minecraft.world.item.ItemStack;
 
 public class BookmarkList implements IIngredientGridSource {

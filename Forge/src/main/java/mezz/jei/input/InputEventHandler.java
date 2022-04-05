@@ -1,7 +1,9 @@
 package mezz.jei.input;
 
+import mezz.jei.common.input.UserInput;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
+import mezz.jei.forge.input.ForgeUserInput;
 import mezz.jei.input.mouse.ICharTypedHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.core.util.ReflectionUtil;
@@ -46,7 +48,7 @@ public class InputEventHandler {
 	public void onKeyboardKeyPressedEvent(ScreenEvent.KeyboardKeyPressedEvent.Pre event) {
 		Screen screen = event.getScreen();
 		if (!isContainerTextFieldFocused(screen)) {
-			UserInput input = UserInput.fromEvent(event);
+			UserInput input = ForgeUserInput.fromEvent(event);
 			this.inputHandler.handleUserInput(screen, input)
 				.ifPresent(handler -> event.setCanceled(true));
 		}
@@ -58,7 +60,7 @@ public class InputEventHandler {
 	public void onKeyboardKeyPressedEvent(ScreenEvent.KeyboardKeyPressedEvent.Post event) {
 		Screen screen = event.getScreen();
 		if (isContainerTextFieldFocused(screen)) {
-			UserInput input = UserInput.fromEvent(event);
+			UserInput input = ForgeUserInput.fromEvent(event);
 			this.inputHandler.handleUserInput(screen, input)
 				.ifPresent(handler -> event.setCanceled(true));
 		}
@@ -87,7 +89,7 @@ public class InputEventHandler {
 	}
 
 	public void onGuiMouseClickedEvent(ScreenEvent.MouseClickedEvent.Pre event) {
-		UserInput.fromEvent(event)
+		ForgeUserInput.fromEvent(event)
 			.ifPresent(input -> {
 				Screen screen = event.getScreen();
 				this.inputHandler.handleUserInput(screen, input)
@@ -101,7 +103,7 @@ public class InputEventHandler {
 	}
 
 	public void onGuiMouseReleasedEvent(ScreenEvent.MouseReleasedEvent.Pre event) {
-		UserInput.fromEvent(event)
+		ForgeUserInput.fromEvent(event)
 			.ifPresent(input -> {
 				Screen screen = event.getScreen();
 

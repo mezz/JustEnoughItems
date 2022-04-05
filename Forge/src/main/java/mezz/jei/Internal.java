@@ -1,10 +1,9 @@
 package mezz.jei;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.common.color.ColorNamer;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.gui.textures.Textures;
-import mezz.jei.ingredients.IngredientVisibility;
+import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.runtime.JeiRuntime;
@@ -20,8 +19,6 @@ public final class Internal {
 	private static JeiRuntime runtime;
 	@Nullable
 	private static RegisteredIngredients registeredIngredients;
-	@Nullable
-	private static ColorNamer colorNamer;
 	@Nullable
 	private static IngredientVisibility ingredientVisibility;
 	@Nullable
@@ -76,15 +73,6 @@ public final class Internal {
 
 	public static void setIngredientVisibility(IngredientVisibility ingredientVisibility) {
 		Internal.ingredientVisibility = ingredientVisibility;
-	}
-
-	public static ColorNamer getColorNamer() {
-		Preconditions.checkState(colorNamer != null, "Color Namer has not been created yet.");
-		return colorNamer;
-	}
-
-	public static void setColorNamer(ColorNamer colorNamer) {
-		Internal.colorNamer = colorNamer;
 	}
 
 	public static IConnectionToServer getServerConnection() {

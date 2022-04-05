@@ -3,7 +3,6 @@ package mezz.jei.forge.config;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import mezz.jei.Internal;
 import mezz.jei.common.color.ColorGetter;
 import mezz.jei.common.color.ColorNamer;
 import mezz.jei.core.config.IClientConfig;
@@ -164,8 +163,7 @@ public final class ClientConfig implements IClientConfig {
 				LOGGER.error("Invalid number format for searchColor entry: {}", entry, e);
 			}
 		}
-		final ColorNamer colorNamer = new ColorNamer(searchColorsMapBuilder.build());
-		Internal.setColorNamer(colorNamer);
+		ColorNamer.create(searchColorsMapBuilder.build());
 	}
 
 	@SuppressWarnings("SameParameterValue")

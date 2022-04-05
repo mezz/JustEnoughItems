@@ -6,9 +6,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.RecipeSlot;
-import mezz.jei.gui.textures.Textures;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
@@ -40,10 +40,8 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	private int width = 0;
 	private int height = 0;
 
-	public RecipeCatalysts() {
+	public RecipeCatalysts(Textures textures) {
 		recipeSlots = new ArrayList<>();
-
-		Textures textures = Internal.getTextures();
 		backgroundTab = textures.getCatalystTab();
 		slotBackground = textures.getRecipeCatalystSlotBackground();
 	}

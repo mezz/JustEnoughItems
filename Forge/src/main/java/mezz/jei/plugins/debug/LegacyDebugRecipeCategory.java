@@ -44,8 +44,8 @@ import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.config.Constants;
-import mezz.jei.gui.textures.Textures;
+import mezz.jei.common.Constants;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.plugins.jei.ingredients.DebugIngredient;
 
 @SuppressWarnings("removal")

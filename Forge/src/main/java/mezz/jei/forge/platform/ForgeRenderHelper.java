@@ -1,19 +1,26 @@
 package mezz.jei.forge.platform;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.EffectRenderer;
 import net.minecraftforge.client.IItemRenderProperties;
 import net.minecraftforge.client.RenderProperties;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Optional;
 
 public class ForgeRenderHelper implements IPlatformRenderHelper {
     @Override
@@ -50,5 +57,27 @@ public class ForgeRenderHelper implements IPlatformRenderHelper {
             return null;
         }
         return frames[0];
+    }
+
+    @Override
+    public void renderTooltip(
+        Screen screen,
+        PoseStack poseStack,
+        List<Component> textComponents,
+        Optional<TooltipComponent> tooltipComponent,
+        int x,
+        int y,
+        @Nullable Font font,
+        ItemStack stack
+    ) {
+        screen.renderTooltip(
+            poseStack,
+            textComponents,
+            tooltipComponent,
+            x,
+            y,
+            font,
+            stack
+        );
     }
 }

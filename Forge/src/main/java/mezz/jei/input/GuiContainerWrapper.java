@@ -4,7 +4,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 
-import mezz.jei.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

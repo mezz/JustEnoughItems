@@ -8,15 +8,16 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.deprecated.gui.recipes.RecipeLayoutLegacyAdapter;
-import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.TooltipRenderer;
+import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.ingredients.RecipeSlot;
 import mezz.jei.gui.ingredients.RecipeSlots;
 import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.input.UserInput;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -38,6 +39,7 @@ public class RecipeLayout<R> {
 	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);
 	private final IRecipeCategory<R> recipeCategory;
 	private final RegisteredIngredients registeredIngredients;
+	private final Textures textures;
 	private final RecipeSlots recipeSlots;
 	private final RecipeLayoutLegacyAdapter<R> legacyAdapter;
 	private final R recipe;
@@ -51,8 +53,8 @@ public class RecipeLayout<R> {
 	private int posY;
 
 	@Nullable
-	public static <T> RecipeLayout<T> create(int index, IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, RegisteredIngredients registeredIngredients, IModIdHelper modIdHelper, int posX, int posY) {
-		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, focuses, registeredIngredients, posX, posY);
+	public static <T> RecipeLayout<T> create(int index, IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, RegisteredIngredients registeredIngredients, IModIdHelper modIdHelper, int posX, int posY, Textures textures) {
+		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, focuses, registeredIngredients, posX, posY, textures);
 		if (
 			recipeLayout.setRecipeLayout(recipeCategory, recipe, registeredIngredients, focuses) ||
 			recipeLayout.getLegacyAdapter().setRecipeLayout(recipeCategory, recipe)
@@ -106,20 +108,22 @@ public class RecipeLayout<R> {
 		IFocusGroup focuses,
 		RegisteredIngredients registeredIngredients,
 		int posX,
-		int posY
+		int posY,
+		Textures textures
 	) {
 		this.recipeCategory = recipeCategory;
 		this.registeredIngredients = registeredIngredients;
+		this.textures = textures;
 		this.recipeSlots = new RecipeSlots();
 
 		if (index >= 0) {
-			IDrawable icon = Internal.getTextures().getRecipeTransfer();
+			IDrawable icon = textures.getRecipeTransfer();
 			IDrawable background = recipeCategory.getBackground();
 			int width = background.getWidth();
 			int height = background.getHeight();
 			int buttonX = width + RECIPE_BORDER_PADDING + 2;
 			int buttonY = height - RecipeTransferButton.RECIPE_BUTTON_SIZE;
-			this.recipeTransferButton = new RecipeTransferButton(buttonX, buttonY, icon, this);
+			this.recipeTransferButton = new RecipeTransferButton(buttonX, buttonY, icon, this, textures);
 		} else {
 			this.recipeTransferButton = null;
 		}
@@ -127,7 +131,7 @@ public class RecipeLayout<R> {
 		setPosition(posX, posY);
 
 		this.recipe = recipe;
-		this.recipeBorder = Internal.getTextures().getRecipeBackground();
+		this.recipeBorder = textures.getRecipeBackground();
 		this.legacyAdapter = new RecipeLayoutLegacyAdapter<>(this, registeredIngredients, focuses, ingredientCycleOffset);
 	}
 
@@ -272,7 +276,7 @@ public class RecipeLayout<R> {
 	}
 
 	public void setShapeless() {
-		this.shapelessIcon = new ShapelessIcon();
+		this.shapelessIcon = new ShapelessIcon(textures);
 		int categoryWidth = this.recipeCategory.getBackground().getWidth();
 
 		// align to top-right
@@ -282,7 +286,7 @@ public class RecipeLayout<R> {
 	}
 
 	public void setShapeless(int shapelessX, int shapelessY) {
-		this.shapelessIcon = new ShapelessIcon();
+		this.shapelessIcon = new ShapelessIcon(textures);
 		this.shapelessIcon.setPosition(shapelessX, shapelessY);
 	}
 

@@ -12,27 +12,28 @@ import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.config.BookmarkConfig;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
-import mezz.jei.config.IEditModeConfig;
+import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.forge.config.IngredientFilterConfig;
 import mezz.jei.forge.config.JEIClientConfigs;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
+import mezz.jei.forge.events.EditModeToggleEvent;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.events.GuiEventHandler;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.overlay.FilterTextSource;
-import mezz.jei.gui.overlay.IFilterTextSource;
+import mezz.jei.common.gui.overlay.IFilterTextSource;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.gui.textures.Textures;
-import mezz.jei.ingredients.IIngredientSorter;
-import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.ingredients.IIngredientSorter;
+import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientFilterApi;
-import mezz.jei.ingredients.IngredientVisibility;
+import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.input.CombinedRecipeFocusSource;
 import mezz.jei.input.GuiContainerWrapper;
@@ -123,7 +124,7 @@ public final class JeiStarter {
 		RegisteredIngredients registeredIngredients = pluginLoader.getRegisteredIngredients();
 
 		IngredientFilter ingredientFilter = pluginLoader.getIngredientFilter();
-		ingredientFilter.register(subscriptions);
+		subscriptions.register(EditModeToggleEvent.class, event -> ingredientFilter.updateHidden());
 
 		BookmarkList bookmarkList = pluginLoader.createBookmarkList(bookmarkConfig);
 		RecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, vanillaPlugin, recipeCategorySortingConfig);
@@ -156,7 +157,8 @@ public final class JeiStarter {
 			serverConnection,
 			clientConfigs.getIngredientListConfig(),
 			textures.getIngredientListBackground(),
-			textures.getIngredientListSlotBackground()
+			textures.getIngredientListSlotBackground(),
+			textures
 		);
 		IngredientListOverlay ingredientListOverlay = new IngredientListOverlay(
 			ingredientFilter,
@@ -166,7 +168,8 @@ public final class JeiStarter {
 			ingredientListGridNavigation,
 			clientConfig,
 			worldConfig,
-			serverConnection
+			serverConnection,
+			textures
 		);
 
 		IngredientGrid bookmarkListGrid = new IngredientGrid(
@@ -190,7 +193,8 @@ public final class JeiStarter {
 			serverConnection,
 			clientConfigs.getBookmarkListConfig(),
 			textures.getBookmarkListBackground(),
-			textures.getBookmarkListSlotBackground()
+			textures.getBookmarkListSlotBackground(),
+			textures
 		);
 		BookmarkOverlay bookmarkOverlay = new BookmarkOverlay(
 			bookmarkList,
@@ -206,7 +210,14 @@ public final class JeiStarter {
 		IIngredientManager ingredientManager = pluginLoader.getIngredientManager();
 		IngredientVisibility ingredientVisibility = pluginLoader.getIngredientVisibility();
 
-		RecipesGui recipesGui = new RecipesGui(recipeManager, recipeTransferManager, registeredIngredients, modIdHelper, clientConfig);
+		RecipesGui recipesGui = new RecipesGui(
+			recipeManager,
+			recipeTransferManager,
+			registeredIngredients,
+			modIdHelper,
+			clientConfig,
+			textures
+		);
 
 		JeiRuntime jeiRuntime = new JeiRuntime(
 			recipeManager,

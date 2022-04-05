@@ -1,6 +1,6 @@
 package mezz.jei.test;
 
-import mezz.jei.gui.TickTimer;
+import mezz.jei.common.util.TickTimer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

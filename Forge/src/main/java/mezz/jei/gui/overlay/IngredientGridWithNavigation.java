@@ -3,6 +3,8 @@ package mezz.jei.gui.overlay;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.gui.overlay.IIngredientGridSource;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.config.IIngredientGridConfig;
@@ -10,13 +12,13 @@ import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.PageNavigation;
-import mezz.jei.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.IRecipeFocusSource;
-import mezz.jei.input.UserInput;
-import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.util.CheatUtil;
 import mezz.jei.util.CommandUtil;
@@ -66,7 +68,8 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		IConnectionToServer serverConnection,
 		IIngredientGridConfig gridConfig,
 		DrawableNineSliceTexture background,
-		DrawableNineSliceTexture slotBackground
+		DrawableNineSliceTexture slotBackground,
+		Textures textures
 	) {
 		this.worldConfig = worldConfig;
 		this.clientConfig = clientConfig;
@@ -75,7 +78,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.guiScreenHelper = guiScreenHelper;
 		this.gridConfig = gridConfig;
 		this.pageDelegate = new IngredientGridPaged();
-		this.navigation = new PageNavigation(this.pageDelegate, false);
+		this.navigation = new PageNavigation(this.pageDelegate, false, textures);
 		this.background = background;
 		this.slotBackground = slotBackground;
 		this.commandUtil = new CommandUtil(clientConfig, serverConnection);

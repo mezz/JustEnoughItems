@@ -4,7 +4,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.client.Minecraft;

@@ -14,6 +14,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipeLayout;
 import mezz.jei.common.ingredients.RegisteredIngredients;
@@ -29,11 +30,13 @@ public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
 	private final IModIdHelper modIdHelper;
 	private final RegisteredIngredients registeredIngredients;
+	private final Textures textures;
 
-	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, RegisteredIngredients registeredIngredients) {
+	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, RegisteredIngredients registeredIngredients, Textures textures) {
 		this.internal = internal;
 		this.modIdHelper = modIdHelper;
 		this.registeredIngredients = registeredIngredients;
+		this.textures = textures;
 	}
 
 	@SuppressWarnings("removal")
@@ -180,7 +183,7 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		IFocusGroup focusGroup = FocusGroup.createFromNullable(focus);
-		RecipeLayout<T> recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, focusGroup, registeredIngredients, modIdHelper, 0, 0);
+		RecipeLayout<T> recipeLayout = RecipeLayout.create(-1, recipeCategory, recipe, focusGroup, registeredIngredients, modIdHelper, 0, 0, textures);
 		Preconditions.checkNotNull(recipeLayout, "Recipe layout crashed during creation, see log.");
 		return recipeLayout.getLegacyAdapter();
 	}

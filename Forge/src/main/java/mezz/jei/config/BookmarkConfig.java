@@ -10,7 +10,7 @@ import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.common.ingredients.IngredientInfo;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.TypedIngredient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;

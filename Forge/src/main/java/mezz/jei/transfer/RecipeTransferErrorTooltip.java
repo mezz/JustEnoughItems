@@ -11,7 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
-import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.common.gui.TooltipRenderer;
 import net.minecraft.network.chat.TranslatableComponent;
 
 public class RecipeTransferErrorTooltip implements IRecipeTransferError {

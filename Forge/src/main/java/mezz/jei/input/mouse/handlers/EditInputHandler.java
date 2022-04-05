@@ -2,16 +2,16 @@ package mezz.jei.input.mouse.handlers;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.config.IEditModeConfig;
+import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.core.config.IngredientBlacklistType;
 import mezz.jei.config.KeyBindings;
-import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.input.CombinedRecipeFocusSource;
 import mezz.jei.input.IClickedIngredient;
-import mezz.jei.input.UserInput;
-import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.IUserInputHandler;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;

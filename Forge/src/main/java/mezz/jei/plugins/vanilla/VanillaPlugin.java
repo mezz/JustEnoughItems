@@ -27,7 +27,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
-import mezz.jei.gui.textures.Textures;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.plugins.vanilla.anvil.SmithingRecipeCategory;
@@ -138,10 +138,13 @@ public class VanillaPlugin implements IModPlugin {
 				CompoundTag compoundnbt = enchantments.getCompound(i);
 				String id = compoundnbt.getString("id");
 				IPlatformRegistry<Enchantment> enchantmentRegistry = Services.PLATFORM.getRegistry(Registry.ENCHANTMENT_REGISTRY);
-				Enchantment enchantment = enchantmentRegistry.getValue(ResourceLocation.tryParse(id));
-				if (enchantment != null) {
-					String enchantmentUid = enchantment.getDescriptionId() + ".lvl" + compoundnbt.getShort("lvl");
-					enchantmentNames.add(enchantmentUid);
+				ResourceLocation resourceLocation = ResourceLocation.tryParse(id);
+				if (resourceLocation != null) {
+					Enchantment enchantment = enchantmentRegistry.getValue(resourceLocation);
+					if (enchantment != null) {
+						String enchantmentUid = enchantment.getDescriptionId() + ".lvl" + compoundnbt.getShort("lvl");
+						enchantmentNames.add(enchantmentUid);
+					}
 				}
 			}
 			enchantmentNames.sort(null);

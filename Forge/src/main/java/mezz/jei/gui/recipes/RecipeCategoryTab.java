@@ -8,9 +8,10 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.input.UserInput;
-import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.IUserInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
@@ -29,8 +30,8 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	private final IRecipeGuiLogic logic;
 	private final IRecipeCategory<?> category;
 
-	public RecipeCategoryTab(IRecipeGuiLogic logic, IRecipeCategory<?> category, int x, int y) {
-		super(x, y);
+	public RecipeCategoryTab(IRecipeGuiLogic logic, IRecipeCategory<?> category, Textures textures, int x, int y) {
+		super(textures, x, y);
 		this.logic = logic;
 		this.category = category;
 	}

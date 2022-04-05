@@ -1,14 +1,13 @@
 package mezz.jei.gui.overlay;
 
-import mezz.jei.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.gui.textures.Textures;
-import mezz.jei.input.UserInput;
+import mezz.jei.common.gui.elements.GuiIconToggleButton;
+import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.input.UserInput;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -20,16 +19,15 @@ import java.util.List;
 import java.util.Optional;
 
 public class ConfigButton extends GuiIconToggleButton {
-	public static ConfigButton create(IngredientListOverlay parent, IWorldConfig worldConfig) {
-		Textures textures = Internal.getTextures();
-		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), parent, worldConfig);
+	public static ConfigButton create(IngredientListOverlay parent, IWorldConfig worldConfig, Textures textures) {
+		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), parent, worldConfig, textures);
 	}
 
 	private final IngredientListOverlay parent;
 	private final IWorldConfig worldConfig;
 
-	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, IngredientListOverlay parent, IWorldConfig worldConfig) {
-		super(disabledIcon, enabledIcon);
+	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, IngredientListOverlay parent, IWorldConfig worldConfig, Textures textures) {
+		super(disabledIcon, enabledIcon, textures);
 		this.parent = parent;
 		this.worldConfig = worldConfig;
 	}

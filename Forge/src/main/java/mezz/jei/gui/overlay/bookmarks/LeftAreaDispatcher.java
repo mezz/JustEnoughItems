@@ -6,7 +6,7 @@ import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.overlay.GuiProperties;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IRecipeFocusSource;
-import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.NullInputHandler;
 import mezz.jei.input.mouse.handlers.ProxyInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;

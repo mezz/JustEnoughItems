@@ -2,16 +2,15 @@ package mezz.jei.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
-import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 
-import mezz.jei.Internal;
-import mezz.jei.gui.elements.GuiIconButton;
-import mezz.jei.gui.textures.Textures;
+import mezz.jei.common.gui.elements.GuiIconButton;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.input.IPaged;
 
 public class PageNavigation {
@@ -22,11 +21,10 @@ public class PageNavigation {
 	private String pageNumDisplayString = "1/1";
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
-	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
+	public PageNavigation(IPaged paged, boolean hideOnSinglePage, Textures textures) {
 		this.paged = paged;
-		Textures textures = Internal.getTextures();
-		this.nextButton = new GuiIconButton(textures.getArrowNext(), b -> paged.nextPage());
-		this.backButton = new GuiIconButton(textures.getArrowPrevious(), b -> paged.previousPage());
+		this.nextButton = new GuiIconButton(textures.getArrowNext(), b -> paged.nextPage(), textures);
+		this.backButton = new GuiIconButton(textures.getArrowPrevious(), b -> paged.previousPage(), textures);
 		this.hideOnSinglePage = hideOnSinglePage;
 	}
 

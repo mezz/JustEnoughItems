@@ -4,7 +4,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.config.sorting.serializers.SortingSerializers;
-import mezz.jei.ingredients.IListElementInfo;
+import mezz.jei.common.ingredients.IListElementInfo;
 
 import java.io.File;
 import java.util.Comparator;

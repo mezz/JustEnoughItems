@@ -1,5 +1,6 @@
 package mezz.jei.config;
 
+import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.core.config.IngredientBlacklistType;
 import org.jetbrains.annotations.Nullable;
 import java.io.File;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.common.ingredients.IngredientFilter;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

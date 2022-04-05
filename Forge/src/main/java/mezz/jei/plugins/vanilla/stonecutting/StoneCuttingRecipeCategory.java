@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.config.Constants;
+import mezz.jei.common.Constants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 

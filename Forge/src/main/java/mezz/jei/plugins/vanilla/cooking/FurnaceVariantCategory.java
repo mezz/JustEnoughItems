@@ -4,7 +4,7 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.config.Constants;
+import mezz.jei.common.Constants;
 
 public abstract class FurnaceVariantCategory<T> implements IRecipeCategory<T> {
 	protected final IDrawableStatic staticFlame;

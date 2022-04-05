@@ -2,7 +2,7 @@ package mezz.jei.plugins.debug;
 
 import net.minecraft.network.chat.TextComponent;
 
-import mezz.jei.gui.HoverChecker;
+import mezz.jei.common.gui.HoverChecker;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
 
 public class DebugRecipe {

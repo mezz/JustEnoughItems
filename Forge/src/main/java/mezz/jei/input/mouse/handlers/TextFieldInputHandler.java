@@ -5,8 +5,8 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.forge.events.DebugRestartJeiEvent;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.TextHistory;
-import mezz.jei.input.UserInput;
-import mezz.jei.input.mouse.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.IUserInputHandler;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.common.MinecraftForge;
 

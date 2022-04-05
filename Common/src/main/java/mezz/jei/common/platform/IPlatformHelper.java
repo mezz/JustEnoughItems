@@ -15,4 +15,6 @@ public interface IPlatformHelper {
     IPlatformServerHelper getServerHelper();
 
     IPlatformConfigHelper getConfigHelper();
+
+    IPlatformInputHelper getInputHelper();
 }

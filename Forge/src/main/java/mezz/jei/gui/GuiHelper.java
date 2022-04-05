@@ -2,6 +2,7 @@ package mezz.jei.gui;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.util.TickTimer;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.ITickTimer;
@@ -12,11 +13,11 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.gui.elements.DrawableAnimated;
-import mezz.jei.gui.elements.DrawableBlank;
-import mezz.jei.gui.elements.DrawableBuilder;
-import mezz.jei.gui.elements.DrawableIngredient;
-import mezz.jei.gui.textures.Textures;
+import mezz.jei.common.gui.elements.DrawableAnimated;
+import mezz.jei.common.gui.elements.DrawableBlank;
+import mezz.jei.common.gui.elements.DrawableBuilder;
+import mezz.jei.common.gui.elements.DrawableIngredient;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 
 public class GuiHelper implements IGuiHelper {

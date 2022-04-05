@@ -1,5 +1,6 @@
 package mezz.jei.input;
 
+import mezz.jei.common.input.UserInput;
 import mezz.jei.config.KeyBindings;
 import net.minecraft.client.Minecraft;
 

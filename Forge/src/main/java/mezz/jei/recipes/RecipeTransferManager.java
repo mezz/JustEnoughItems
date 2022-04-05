@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
-import mezz.jei.config.Constants;
+import mezz.jei.common.Constants;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;

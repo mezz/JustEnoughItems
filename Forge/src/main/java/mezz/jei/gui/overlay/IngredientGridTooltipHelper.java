@@ -1,18 +1,17 @@
 package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.Internal;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.color.ColorNamer;
-import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.core.search.SearchMode;
-import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.ingredients.IngredientInfo;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.render.IngredientRenderHelper;
@@ -71,7 +70,7 @@ public final class IngredientGridTooltipHelper {
 	}
 
 	private static <T> void addColorSearchInfoToTooltip(List<Component> tooltip, T ingredient, IngredientInfo<T> ingredientInfo) {
-		ColorNamer colorNamer = Internal.getColorNamer();
+		ColorNamer colorNamer = ColorNamer.getInstance();
 
 		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
 		Iterable<Integer> colors = ingredientHelper.getColors(ingredient);

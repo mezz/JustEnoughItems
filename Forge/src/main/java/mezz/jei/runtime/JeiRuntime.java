@@ -15,7 +15,7 @@ import mezz.jei.gui.Focus;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.ErrorUtil;
 
 import java.util.Optional;
