@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.gui.overlay.bookmarks;
+package mezz.jei.common.gui.overlay.bookmarks;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
