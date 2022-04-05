@@ -1,4 +1,4 @@
-package mezz.jei.plugins.jei.info;
+package mezz.jei.common.plugins.jei.info;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.RecipeTypes;

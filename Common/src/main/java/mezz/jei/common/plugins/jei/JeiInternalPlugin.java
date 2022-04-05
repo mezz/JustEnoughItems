@@ -1,4 +1,4 @@
-package mezz.jei.plugins.jei;
+package mezz.jei.common.plugins.jei;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -11,7 +11,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.GuiProperties;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.gui.recipes.RecipesGui;
-import mezz.jei.plugins.jei.info.IngredientInfoRecipeCategory;
+import mezz.jei.common.plugins.jei.info.IngredientInfoRecipeCategory;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
 

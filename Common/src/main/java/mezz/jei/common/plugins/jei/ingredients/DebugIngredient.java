@@ -1,4 +1,4 @@
-package mezz.jei.plugins.jei.ingredients;
+package mezz.jei.common.plugins.jei.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
 
