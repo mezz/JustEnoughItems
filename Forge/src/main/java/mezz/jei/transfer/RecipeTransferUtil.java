@@ -11,7 +11,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.common.transfer.TransferOperation;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
-import mezz.jei.gui.recipes.RecipeLayout;
+import mezz.jei.gui.recipes.layout.RecipeLayout;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.common.runtime.JeiRuntime;
 import mezz.jei.common.util.ItemStackMatchable;

@@ -1,24 +1,23 @@
 package mezz.jei.load.registration;
 
-import java.util.Collection;
-import java.util.List;
-
 import mezz.jei.api.constants.RecipeTypes;
-import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
-import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.recipes.RecipeManagerInternal;
-import net.minecraft.resources.ResourceLocation;
-
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.plugins.jei.info.IngredientInfoRecipe;
+import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.plugins.jei.info.IngredientInfoRecipe;
+import mezz.jei.recipes.RecipeManagerInternal;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.Collection;
+import java.util.List;
 
 public class RecipeRegistration implements IRecipeRegistration {
 	private final IJeiHelpers jeiHelpers;

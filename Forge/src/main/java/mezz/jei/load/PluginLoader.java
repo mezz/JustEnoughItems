@@ -48,7 +48,7 @@ import mezz.jei.load.registration.VanillaCategoryExtensionRegistration;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
-import mezz.jei.recipes.FocusFactory;
+import mezz.jei.common.focus.FocusFactory;
 import mezz.jei.recipes.RecipeManager;
 import mezz.jei.recipes.RecipeManagerInternal;
 import mezz.jei.common.runtime.JeiHelpers;

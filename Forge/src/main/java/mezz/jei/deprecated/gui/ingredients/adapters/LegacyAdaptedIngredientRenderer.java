@@ -11,7 +11,8 @@ import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
-@SuppressWarnings("removal")
+@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
+@Deprecated
 public class LegacyAdaptedIngredientRenderer<T> implements IIngredientRenderer<T> {
 	public static <T> IIngredientRenderer<T> create(IIngredientRenderer<T> original, int width, int height, int xOffset, int yOffset) {
 		if (xOffset == 0 && yOffset == 0 && original.getWidth() == width && original.getHeight() == height) {

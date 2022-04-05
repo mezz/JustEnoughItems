@@ -44,7 +44,4 @@ public interface IKeyBindings {
     KeyMapping getLeftClick();
     KeyMapping getRightClick();
     List<KeyMapping> getEnterKey();
-
-    // debug only
-    KeyMapping getReloadJeiOverTextFilter();
 }

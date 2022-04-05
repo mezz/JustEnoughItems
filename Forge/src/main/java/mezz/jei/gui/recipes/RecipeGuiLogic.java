@@ -13,6 +13,7 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.gui.ingredients.IngredientLookupState;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.focus.FocusGroup;
+import mezz.jei.gui.recipes.layout.RecipeLayout;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;

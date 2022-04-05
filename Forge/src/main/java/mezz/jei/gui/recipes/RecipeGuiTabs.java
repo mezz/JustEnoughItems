@@ -8,7 +8,7 @@ import mezz.jei.gui.PageNavigation;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.input.IPaged;
 import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.input.mouse.handlers.CombinedInputHandler;
+import mezz.jei.common.input.handlers.CombinedInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;

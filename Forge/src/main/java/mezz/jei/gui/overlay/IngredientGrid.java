@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.gui.overlay.IIngredientGrid;
 import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
@@ -18,7 +19,7 @@ import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.IClickedIngredient;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.input.mouse.handlers.DeleteItemInputHandler;
+import mezz.jei.common.input.handlers.DeleteItemInputHandler;
 import mezz.jei.render.IngredientListRenderer;
 import mezz.jei.render.ElementRenderer;
 import mezz.jei.render.IngredientListSlot;
@@ -37,7 +38,7 @@ import java.util.stream.Stream;
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
  * It does not draw a background or have external padding, those are left up to a higher-level element.
  */
-public class IngredientGrid implements IRecipeFocusSource {
+public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	private static final int INGREDIENT_PADDING = 1;
 	public static final int INGREDIENT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
 	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
@@ -182,6 +183,7 @@ public class IngredientGrid implements IRecipeFocusSource {
 		}
 	}
 
+	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return area.contains(mouseX, mouseY) &&
 			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);

@@ -1,6 +1,5 @@
 package mezz.jei.forge.startup;
 
-import mezz.jei.forge.events.DebugRestartJeiEvent;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -63,11 +62,6 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 				LOGGER.info("JEI StartEventObserver received {}", event.getClass());
 				transitionState(State.DISABLED);
 			}
-		});
-
-		subscriptions.register(DebugRestartJeiEvent.class, event -> {
-			LOGGER.warn("Restarting JEI from DebugRestartJeiEvent", new Throwable("Restarting JEI from DebugRestartJeiEvent"));
-			restart();
 		});
 
 		subscriptions.register(ScreenEvent.InitScreenEvent.Pre.class, event -> {

@@ -2,7 +2,10 @@ package mezz.jei.forge.platform;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.forge.plugins.forge.ingredients.fluid.FluidStackRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
@@ -79,5 +82,11 @@ public class ForgeRenderHelper implements IPlatformRenderHelper {
             font,
             stack
         );
+    }
+
+    @Override
+    public void setFluidRenderer(RecipeSlot recipeSlot, int capacityMb, boolean showCapacity, int width, int height) {
+        FluidStackRenderer fluidStackRenderer = new FluidStackRenderer(capacityMb, showCapacity, width, height);
+        recipeSlot.addRenderOverride(ForgeTypes.FLUID_STACK, fluidStackRenderer);
     }
 }

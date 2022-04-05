@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.gui.recipes.layout.RecipeLayout;
 import org.jetbrains.annotations.Unmodifiable;
 
 public interface IRecipeGuiLogic {

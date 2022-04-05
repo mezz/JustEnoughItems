@@ -66,9 +66,6 @@ public final class ForgeKeyBindings implements IKeyBindings {
 	private final KeyMapping rightClick;
 	private final List<KeyMapping> enterKey;
 
-	// debug only
-	private final KeyMapping reloadJeiOverTextFilter;
-
 	private static InputConstants.Key getKey(int key) {
 		return InputConstants.Type.KEYSYM.getOrCreate(key);
 	}
@@ -141,8 +138,6 @@ public final class ForgeKeyBindings implements IKeyBindings {
 			new KeyMapping("key.jei.internal.enter.key", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_ENTER), jeiHiddenInternalCategoryName),
 			new KeyMapping("key.jei.internal.enter.key2", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_KP_ENTER), jeiHiddenInternalCategoryName)
 		);
-
-		reloadJeiOverTextFilter = new KeyMapping("key.jei.internal.debug.reload", KeyConflictContext.GUI, KeyModifier.SHIFT, getKey(GLFW.GLFW_KEY_F12), jeiHiddenInternalCategoryName);
 	}
 
 	public void register() {
@@ -289,11 +284,6 @@ public final class ForgeKeyBindings implements IKeyBindings {
 	@Override
 	public List<KeyMapping> getEnterKey() {
 		return enterKey;
-	}
-
-	@Override
-	public KeyMapping getReloadJeiOverTextFilter() {
-		return reloadJeiOverTextFilter;
 	}
 
 	private enum JeiConflictContexts implements IKeyConflictContext {

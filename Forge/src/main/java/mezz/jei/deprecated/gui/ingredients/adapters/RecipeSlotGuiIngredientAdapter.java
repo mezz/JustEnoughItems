@@ -9,7 +9,8 @@ import mezz.jei.common.gui.ingredients.RecipeSlot;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
-@SuppressWarnings("removal")
+@SuppressWarnings({"removal"})
+@Deprecated
 public class RecipeSlotGuiIngredientAdapter<T> implements IGuiIngredient<T> {
 	private final RecipeSlot recipeSlot;
 	private final IIngredientType<T> ingredientType;

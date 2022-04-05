@@ -5,10 +5,8 @@ import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.core.util.TextHistory;
-import mezz.jei.forge.events.DebugRestartJeiEvent;
 import mezz.jei.input.GuiTextFieldFilter;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Optional;
 
@@ -56,10 +54,6 @@ public class TextFieldInputHandler implements IUserInputHandler {
 
 		if (input.is(keyBindings.getNextSearch())) {
 			return handleNavigateHistory(input, TextHistory.Direction.NEXT);
-		}
-
-		if (input.is(keyBindings.getReloadJeiOverTextFilter())) {
-			MinecraftForge.EVENT_BUS.post(new DebugRestartJeiEvent());
 		}
 
 		// If we can handle this input as a typed char,

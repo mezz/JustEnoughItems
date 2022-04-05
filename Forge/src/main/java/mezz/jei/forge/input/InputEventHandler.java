@@ -5,7 +5,7 @@ import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.core.util.ReflectionUtil;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
-import mezz.jei.input.mouse.handlers.CombinedInputHandler;
+import mezz.jei.common.input.handlers.CombinedInputHandler;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.client.event.ScreenEvent;

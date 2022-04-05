@@ -1,7 +1,7 @@
 package mezz.jei.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.input.mouse.handlers.CombinedInputHandler;
+import mezz.jei.common.input.handlers.CombinedInputHandler;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;

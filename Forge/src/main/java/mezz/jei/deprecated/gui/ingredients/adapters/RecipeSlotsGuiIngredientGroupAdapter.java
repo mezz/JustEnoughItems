@@ -37,7 +37,8 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
-@SuppressWarnings({"removal"})
+@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
+@Deprecated
 public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGroup<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 

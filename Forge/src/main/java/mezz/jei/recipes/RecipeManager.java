@@ -12,18 +12,18 @@ import mezz.jei.api.recipe.IRecipeCategoriesLookup;
 import mezz.jei.api.recipe.IRecipeLookup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.focus.Focus;
 import mezz.jei.common.focus.FocusGroup;
-import mezz.jei.gui.recipes.RecipeLayout;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.gui.recipes.layout.RecipeLayout;
 import net.minecraft.resources.ResourceLocation;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;

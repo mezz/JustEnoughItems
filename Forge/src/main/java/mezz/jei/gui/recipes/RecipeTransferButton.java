@@ -1,23 +1,21 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.gui.ingredients.RecipeSlots;
-import org.jetbrains.annotations.Nullable;
-
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.GuiIconButtonSmall;
+import mezz.jei.common.gui.ingredients.RecipeSlots;
+import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.gui.recipes.layout.RecipeLayout;
 import mezz.jei.recipes.RecipeTransferManager;
 import mezz.jei.transfer.RecipeTransferErrorInternal;
 import mezz.jei.transfer.RecipeTransferUtil;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 

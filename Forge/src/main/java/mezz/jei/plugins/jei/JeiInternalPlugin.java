@@ -1,6 +1,5 @@
 package mezz.jei.plugins.jei;
 
-import mezz.jei.common.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
@@ -8,9 +7,10 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.GuiProperties;
-import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipeCategory;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
