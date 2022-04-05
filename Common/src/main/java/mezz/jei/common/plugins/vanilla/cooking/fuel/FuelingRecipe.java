@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.cooking.fuel;
+package mezz.jei.common.plugins.vanilla.cooking.fuel;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;

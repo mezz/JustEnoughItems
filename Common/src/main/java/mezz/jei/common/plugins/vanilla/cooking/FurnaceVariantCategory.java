@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.cooking;
+package mezz.jei.common.plugins.vanilla.cooking;
 
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;

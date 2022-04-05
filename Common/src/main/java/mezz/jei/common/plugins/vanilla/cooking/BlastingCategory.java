@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.cooking;
+package mezz.jei.common.plugins.vanilla.cooking;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.recipe.RecipeType;

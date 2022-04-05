@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.cooking;
+package mezz.jei.common.plugins.vanilla.cooking;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -12,6 +12,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.common.Constants;
+import mezz.jei.common.plugins.vanilla.cooking.FurnaceVariantCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;

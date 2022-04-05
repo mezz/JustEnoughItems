@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.plugins.vanilla.cooking.fuel;
+package mezz.jei.common.plugins.vanilla.cooking;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

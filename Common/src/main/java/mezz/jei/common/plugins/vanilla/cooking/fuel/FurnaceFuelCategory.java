@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.cooking.fuel;
+package mezz.jei.common.plugins.vanilla.cooking.fuel;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -17,7 +17,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
 import mezz.jei.common.Constants;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.plugins.vanilla.cooking.FurnaceVariantCategory;
+import mezz.jei.common.plugins.vanilla.cooking.FurnaceVariantCategory;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
