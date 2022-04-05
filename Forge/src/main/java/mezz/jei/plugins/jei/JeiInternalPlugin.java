@@ -8,7 +8,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.gui.overlay.GuiProperties;
+import mezz.jei.common.gui.GuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipeCategory;
@@ -36,6 +36,6 @@ public class JeiInternalPlugin implements IModPlugin {
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
 		registration.addGuiScreenHandler(AbstractContainerScreen.class, GuiProperties::create);
-		registration.addGuiScreenHandler(RecipesGui.class, GuiProperties::create);
+		registration.addGuiScreenHandler(RecipesGui.class, RecipesGui::getProperties);
 	}
 }

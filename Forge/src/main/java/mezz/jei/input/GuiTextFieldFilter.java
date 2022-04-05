@@ -6,6 +6,7 @@ import mezz.jei.common.gui.HoverChecker;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.core.util.TextHistory;
 import mezz.jei.input.mouse.handlers.TextFieldInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;

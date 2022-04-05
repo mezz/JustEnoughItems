@@ -1,10 +1,10 @@
-package mezz.jei.gui.ingredients;
+package mezz.jei.common.gui.ingredients;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.gui.recipes.FocusedRecipes;
+import mezz.jei.common.gui.recipes.FocusedRecipes;
 import mezz.jei.common.focus.FocusGroup;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;

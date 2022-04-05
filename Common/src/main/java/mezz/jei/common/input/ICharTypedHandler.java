@@ -1,4 +1,4 @@
-package mezz.jei.input.mouse;
+package mezz.jei.common.input;
 
 public interface ICharTypedHandler {
 	boolean hasKeyboardFocus();

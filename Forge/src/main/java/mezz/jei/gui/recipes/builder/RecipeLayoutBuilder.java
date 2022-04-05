@@ -9,9 +9,9 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.gui.recipes.RecipeLayout;
-import mezz.jei.ingredients.IIngredientSupplier;
+import mezz.jei.common.ingredients.IIngredientSupplier;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.gui.recipes.RecipeLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;

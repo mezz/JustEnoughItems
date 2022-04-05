@@ -15,7 +15,7 @@ import mezz.jei.gui.PageNavigation;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.common.input.IClickedIngredient;
-import mezz.jei.input.IPaged;
+import mezz.jei.common.input.IPaged;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;

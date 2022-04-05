@@ -11,7 +11,7 @@ import net.minecraft.client.gui.GuiComponent;
 
 import mezz.jei.common.gui.elements.GuiIconButton;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.input.IPaged;
+import mezz.jei.common.input.IPaged;
 
 public class PageNavigation {
 	private final IPaged paged;

@@ -1,10 +1,10 @@
-package mezz.jei.input;
+package mezz.jei.forge.input;
 
 import mezz.jei.common.input.UserInput;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.input.ForgeUserInput;
-import mezz.jei.input.mouse.ICharTypedHandler;
+import mezz.jei.common.input.ICharTypedHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.core.util.ReflectionUtil;
 import net.minecraft.client.gui.components.EditBox;

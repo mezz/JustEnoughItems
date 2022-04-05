@@ -1,4 +1,4 @@
-package mezz.jei.load.registration;
+package mezz.jei.common.load.registration;
 
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;

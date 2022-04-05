@@ -6,7 +6,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.common.gui.TooltipRenderer;
-import mezz.jei.input.IPaged;
+import mezz.jei.common.input.IPaged;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.input.mouse.handlers.CombinedInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;

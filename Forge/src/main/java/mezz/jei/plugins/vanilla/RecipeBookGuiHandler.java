@@ -1,19 +1,16 @@
 package mezz.jei.plugins.vanilla;
 
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
+import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
+import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
-import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
-import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.Rect2i;
-
-import mezz.jei.api.gui.handlers.IGuiContainerHandler;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-
-import javax.annotation.Nullable;
 
 public class RecipeBookGuiHandler<C extends AbstractContainerMenu, T extends AbstractContainerScreen<C> & RecipeUpdateListener> implements IGuiContainerHandler<T> {
 	/**
@@ -32,16 +29,5 @@ public class RecipeBookGuiHandler<C extends AbstractContainerMenu, T extends Abs
 			return tabAreas;
 		}
 		return Collections.emptyList();
-	}
-
-	@Nullable
-	public static Rect2i getBookArea(RecipeUpdateListener containerScreen) {
-		RecipeBookComponent guiRecipeBook = containerScreen.getRecipeBookComponent();
-		if (guiRecipeBook.isVisible()) {
-			int i = (guiRecipeBook.width - 147) / 2 - guiRecipeBook.xOffset;
-			int j = (guiRecipeBook.height - 166) / 2;
-			return new Rect2i(i, j, 147, 166);
-		}
-		return null;
 	}
 }

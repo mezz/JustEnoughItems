@@ -4,7 +4,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.focus.FocusGroup;
 import mezz.jei.gui.recipes.builder.RecipeLayoutBuilder;
-import mezz.jei.ingredients.IIngredientSupplier;
+import mezz.jei.common.ingredients.IIngredientSupplier;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.util.RecipeErrorUtil;

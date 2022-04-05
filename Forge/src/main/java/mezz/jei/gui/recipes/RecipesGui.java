@@ -34,6 +34,7 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.core.config.IClientConfig;
+import mezz.jei.common.gui.GuiProperties;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.recipes.RecipeManager;
 import mezz.jei.recipes.RecipeTransferManager;
@@ -576,5 +577,28 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	@Override
 	public void onStateChange() {
 		updateLayout();
+	}
+
+	@Nullable
+	public GuiProperties getProperties() {
+		if (width <= 0 || height <= 0) {
+			return null;
+		}
+		int extraWidth = getRecipeCatalystExtraWidth();
+		ImmutableRect2i recipeArea = getArea();
+		int guiXSize = recipeArea.getWidth() + extraWidth;
+		int guiYSize = recipeArea.getHeight();
+		if (guiXSize <= 0 || guiYSize <= 0) {
+			return null;
+		}
+		return new GuiProperties(
+			getClass(),
+			recipeArea.getX() - extraWidth,
+			recipeArea.getY(),
+			guiXSize,
+			guiYSize,
+			width,
+			height
+		);
 	}
 }

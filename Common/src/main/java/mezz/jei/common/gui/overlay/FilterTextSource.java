@@ -1,4 +1,4 @@
-package mezz.jei.gui.overlay;
+package mezz.jei.common.gui.overlay;
 
 import mezz.jei.common.gui.overlay.IFilterTextSource;
 

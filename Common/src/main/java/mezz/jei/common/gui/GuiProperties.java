@@ -1,17 +1,14 @@
-package mezz.jei.gui.overlay;
-
-import org.jetbrains.annotations.Nullable;
+package mezz.jei.common.gui;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.plugins.vanilla.RecipeBookGuiHandler;
+import mezz.jei.api.gui.handlers.IGuiProperties;
+import mezz.jei.common.platform.IPlatformScreenHelper;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-
-import mezz.jei.api.gui.handlers.IGuiProperties;
-import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
-import net.minecraft.client.renderer.Rect2i;
+import org.jetbrains.annotations.Nullable;
 
 public class GuiProperties implements IGuiProperties {
 	private final Class<? extends Screen> screenClass;
@@ -27,13 +24,14 @@ public class GuiProperties implements IGuiProperties {
 		if (containerScreen.width <= 0 || containerScreen.height <= 0) {
 			return null;
 		}
-		int x = containerScreen.getGuiLeft();
-		int y = containerScreen.getGuiTop();
-		int width = containerScreen.getXSize();
-		int height = containerScreen.getYSize();
+		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+		int x = screenHelper.getGuiLeft(containerScreen);
+		int y = screenHelper.getGuiTop(containerScreen);
+		int width = screenHelper.getXSize(containerScreen);
+		int height = screenHelper.getYSize(containerScreen);
 		if (containerScreen instanceof RecipeUpdateListener r) {
-			Rect2i bookArea = RecipeBookGuiHandler.getBookArea(r);
-			if (bookArea != null) {
+			ImmutableRect2i bookArea = screenHelper.getBookArea(r);
+			if (!bookArea.isEmpty()) {
 				width += (x - bookArea.getX());
 				x = bookArea.getX();
 			}
@@ -58,29 +56,6 @@ public class GuiProperties implements IGuiProperties {
 			height,
 			containerScreen.width,
 			containerScreen.height
-		);
-	}
-
-	@Nullable
-	public static GuiProperties create(RecipesGui recipesGui) {
-		if (recipesGui.width <= 0 || recipesGui.height <= 0) {
-			return null;
-		}
-		int extraWidth = recipesGui.getRecipeCatalystExtraWidth();
-		ImmutableRect2i recipeArea = recipesGui.getArea();
-		int guiXSize = recipeArea.getWidth() + extraWidth;
-		int guiYSize = recipeArea.getHeight();
-		if (guiXSize <= 0 || guiYSize <= 0) {
-			return null;
-		}
-		return new GuiProperties(
-			recipesGui.getClass(),
-			recipeArea.getX() - extraWidth,
-			recipeArea.getY(),
-			guiXSize,
-			guiYSize,
-			recipesGui.width,
-			recipesGui.height
 		);
 	}
 
@@ -113,7 +88,7 @@ public class GuiProperties implements IGuiProperties {
 		return guiProperties.getGuiTop() + guiProperties.getGuiYSize();
 	}
 
-	private GuiProperties(Class<? extends Screen> screenClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
+	public GuiProperties(Class<? extends Screen> screenClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
 		Preconditions.checkArgument(guiLeft >= 0, "guiLeft must be >= 0");
 		Preconditions.checkArgument(guiTop >= 0, "guiTop must be >= 0");
 		Preconditions.checkArgument(guiXSize > 0, "guiXSize must be > 0");

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.forge.events.DebugRestartJeiEvent;
 import mezz.jei.input.GuiTextFieldFilter;
-import mezz.jei.input.TextHistory;
+import mezz.jei.core.util.TextHistory;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
 import net.minecraft.client.gui.screens.Screen;

@@ -1,4 +1,4 @@
-package mezz.jei.input;
+package mezz.jei.core.util;
 
 import java.util.LinkedList;
 import java.util.List;

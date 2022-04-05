@@ -1,4 +1,4 @@
-package mezz.jei.input;
+package mezz.jei.common.input;
 
 public interface IPaged {
 	boolean nextPage();

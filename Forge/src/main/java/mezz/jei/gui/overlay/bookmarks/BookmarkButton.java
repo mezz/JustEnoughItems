@@ -1,21 +1,20 @@
 package mezz.jei.gui.overlay.bookmarks;
 
-import java.util.List;
-
-import mezz.jei.common.input.UserInput;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
-
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.common.bookmarks.BookmarkList;
-import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.config.KeyBindings;
 import mezz.jei.common.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.config.KeyBindings;
+import mezz.jei.core.config.IWorldConfig;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.List;
 
 public class BookmarkButton extends GuiIconToggleButton {
 	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, Textures textures, IWorldConfig worldConfig) {

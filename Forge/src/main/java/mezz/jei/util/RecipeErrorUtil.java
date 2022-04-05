@@ -8,7 +8,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.ingredients.IngredientVisibilityDummy;
 import mezz.jei.common.util.IRecipeRegistryHelper;
 import mezz.jei.common.util.RecipeRegistryHelper;
-import mezz.jei.ingredients.IIngredientSupplier;
+import mezz.jei.common.ingredients.IIngredientSupplier;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.recipes.IngredientSupplierHelper;
 import net.minecraft.resources.ResourceLocation;
