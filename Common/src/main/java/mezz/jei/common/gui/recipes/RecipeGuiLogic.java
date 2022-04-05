@@ -1,4 +1,4 @@
-package mezz.jei.gui.recipes;
+package mezz.jei.common.gui.recipes;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;

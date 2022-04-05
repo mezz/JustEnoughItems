@@ -10,7 +10,7 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.GuiProperties;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.common.gui.recipes.RecipesGui;
 import mezz.jei.plugins.jei.info.IngredientInfoRecipeCategory;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
