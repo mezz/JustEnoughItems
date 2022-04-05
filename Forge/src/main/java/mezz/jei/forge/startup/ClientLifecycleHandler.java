@@ -12,7 +12,7 @@ import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.forge.config.ForgeKeyBindings;
 import mezz.jei.forge.config.JEIClientConfigs;
 import mezz.jei.forge.config.ModIdFormattingConfig;
-import mezz.jei.config.WorldConfig;
+import mezz.jei.common.config.WorldConfig;
 import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.common.config.sorting.ModNameSortingConfig;
 import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;

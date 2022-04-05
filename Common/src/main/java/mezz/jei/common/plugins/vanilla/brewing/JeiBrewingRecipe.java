@@ -1,7 +1,10 @@
-package mezz.jei.plugins.vanilla.brewing;
+package mezz.jei.common.plugins.vanilla.brewing;
 
 import com.google.common.base.Objects;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
+import mezz.jei.common.platform.IPlatformRegistry;
+import mezz.jei.common.platform.Services;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
@@ -83,8 +86,9 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 		}
 		Potion type1 = PotionUtils.getPotion(potion1);
 		Potion type2 = PotionUtils.getPotion(potion2);
-		ResourceLocation key1 = type1.getRegistryName();
-		ResourceLocation key2 = type2.getRegistryName();
+		IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registry.POTION_REGISTRY);
+		ResourceLocation key1 = potionRegistry.getRegistryName(type1);
+		ResourceLocation key2 = potionRegistry.getRegistryName(type2);
 		return java.util.Objects.equals(key1, key2);
 	}
 

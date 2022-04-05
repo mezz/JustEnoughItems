@@ -1,7 +1,8 @@
-package mezz.jei.plugins.vanilla;
+package mezz.jei.common.plugins.vanilla;
 
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
@@ -22,7 +23,7 @@ public final class InventoryEffectRendererGuiHandler<T extends AbstractContainer
 	@SuppressWarnings("JavadocReference")
 	@Override
 	public List<Rect2i> getGuiExtraAreas(EffectRenderingInventoryScreen<T> containerScreen) {
-		Minecraft minecraft = containerScreen.getMinecraft();
+		Minecraft minecraft = Minecraft.getInstance();
 		LocalPlayer player = minecraft.player;
 		if (player == null) {
 			return Collections.emptyList();
@@ -32,9 +33,10 @@ public final class InventoryEffectRendererGuiHandler<T extends AbstractContainer
 			return Collections.emptyList();
 		}
 
+		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 		List<Rect2i> areas = new ArrayList<>();
-		int x = containerScreen.getGuiLeft() + containerScreen.getXSize() + 2;
-		int y = containerScreen.getGuiTop();
+		int x = screenHelper.getGuiLeft(containerScreen) + screenHelper.getXSize(containerScreen) + 2;
+		int y = screenHelper.getGuiTop(containerScreen);
 		// JEI always forces the potion effect renderer to "compact" width mode when JEI is open.
 		int width = 32;
 

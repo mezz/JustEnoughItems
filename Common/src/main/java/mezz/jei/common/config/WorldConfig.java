@@ -1,4 +1,4 @@
-package mezz.jei.config;
+package mezz.jei.common.config;
 
 import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.network.IConnectionToServer;

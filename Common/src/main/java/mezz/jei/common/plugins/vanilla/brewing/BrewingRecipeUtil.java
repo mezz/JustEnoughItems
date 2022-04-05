@@ -1,4 +1,4 @@
-package mezz.jei.plugins.vanilla.brewing;
+package mezz.jei.common.plugins.vanilla.brewing;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
