@@ -5,6 +5,7 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
+import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.GuiProperties;
 import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.elements.GuiIconToggleButton;

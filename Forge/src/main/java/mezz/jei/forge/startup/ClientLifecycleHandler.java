@@ -131,7 +131,8 @@ public class ClientLifecycleHandler {
 		}
 		this.modIdFormattingConfig.checkForModNameFormatOverride();
 
-		this.jeiStarter.start(this.runtimeSubscriptions);
+		JeiEventHandlers handlers = this.jeiStarter.start();
+		EventRegistration.registerEvents(this.runtimeSubscriptions, handlers);
 	}
 
 	private void stopJei() {

@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.overlay;
+package mezz.jei.common.filter;
 
 import java.util.ArrayList;
 import java.util.List;

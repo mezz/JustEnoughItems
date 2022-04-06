@@ -19,7 +19,7 @@ import mezz.jei.common.focus.FocusFactory;
 import mezz.jei.common.gui.GuiHelper;
 import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.ingredients.IListElement;
-import mezz.jei.common.gui.overlay.IFilterTextSource;
+import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.ingredients.IngredientBlacklistInternal;
 import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.IngredientListElementFactory;

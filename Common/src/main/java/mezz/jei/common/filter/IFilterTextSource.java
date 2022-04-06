@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.overlay;
+package mezz.jei.common.filter;
 
 public interface IFilterTextSource {
 	String getFilterText();

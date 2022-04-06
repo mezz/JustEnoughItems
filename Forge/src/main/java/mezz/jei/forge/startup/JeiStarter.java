@@ -9,9 +9,9 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.Internal;
 import mezz.jei.common.bookmarks.BookmarkList;
+import mezz.jei.common.filter.FilterTextSource;
+import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.GuiScreenHelper;
-import mezz.jei.common.gui.overlay.FilterTextSource;
-import mezz.jei.common.gui.overlay.IFilterTextSource;
 import mezz.jei.common.gui.overlay.IngredientListOverlay;
 import mezz.jei.common.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.common.gui.overlay.bookmarks.LeftAreaDispatcher;
@@ -39,10 +39,8 @@ import mezz.jei.common.startup.OverlayHelper;
 import mezz.jei.common.startup.StartData;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;
-import mezz.jei.forge.events.EditModeToggleEvent;
-import mezz.jei.forge.events.GuiEventHandler;
-import mezz.jei.forge.events.RuntimeEventSubscriptions;
-import mezz.jei.forge.input.InputEventHandler;
+import mezz.jei.common.gui.GuiEventHandler;
+import mezz.jei.common.input.ClientInputHandler;
 
 import java.util.List;
 
@@ -54,7 +52,7 @@ public final class JeiStarter {
 		this.data = data;
 	}
 
-	public void start(RuntimeEventSubscriptions subscriptions) {
+	public JeiEventHandlers start() {
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
 		List<IModPlugin> plugins = data.plugins();
@@ -67,7 +65,6 @@ public final class JeiStarter {
 		RegisteredIngredients registeredIngredients = pluginLoader.getRegisteredIngredients();
 
 		IngredientFilter ingredientFilter = pluginLoader.getIngredientFilter();
-		subscriptions.register(EditModeToggleEvent.class, event -> ingredientFilter.updateHidden());
 
 		BookmarkList bookmarkList = pluginLoader.createBookmarkList(configData.bookmarkConfig());
 		RecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, data.vanillaPlugin(), configData.recipeCategorySortingConfig());
@@ -129,7 +126,6 @@ public final class JeiStarter {
 		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher(guiScreenHelper, bookmarkOverlay);
 
 		GuiEventHandler guiEventHandler = new GuiEventHandler(guiScreenHelper, leftAreaDispatcher, ingredientListOverlay);
-		guiEventHandler.register(subscriptions);
 
 		CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
 			recipesGui,
@@ -151,13 +147,17 @@ public final class JeiStarter {
 			new GlobalInputHandler(configData.worldConfig()),
 			new GuiAreaInputHandler(registeredIngredients, guiScreenHelper, recipesGui)
 		);
-		InputEventHandler inputEventHandler = new InputEventHandler(charTypedHandlers, userInputHandler, data.keyBindings());
-		inputEventHandler.register(subscriptions);
+		ClientInputHandler clientInputHandler = new ClientInputHandler(charTypedHandlers, userInputHandler, data.keyBindings());
 
 		// This needs to be run after all of the "Ingredients are being added at runtime" items.
 		data.ingredientSorter().doPreSort(ingredientFilter, registeredIngredients);
 
 		totalTime.stop();
+
+		return new JeiEventHandlers(
+			guiEventHandler,
+			clientInputHandler
+		);
 	}
 
 }
