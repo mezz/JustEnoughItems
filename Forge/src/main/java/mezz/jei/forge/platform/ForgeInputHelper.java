@@ -13,6 +13,7 @@ public class ForgeInputHelper implements IPlatformInputHelper {
 
     @Override
     public boolean isSendRepeatsToGui(KeyboardHandler keyboardHandler) {
+        // TODO: Access this by Mixin
         return keyboardHandler.sendRepeatsToGui;
     }
 }

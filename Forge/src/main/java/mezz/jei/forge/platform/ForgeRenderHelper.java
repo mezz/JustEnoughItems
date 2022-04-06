@@ -52,6 +52,7 @@ public class ForgeRenderHelper implements IPlatformRenderHelper {
     @Override
     @Nullable
     public NativeImage getMainImage(TextureAtlasSprite sprite) {
+        // TODO: Access this by Mixin
         NativeImage[] frames = sprite.mainImage;
         if (frames.length == 0) {
             return null;
