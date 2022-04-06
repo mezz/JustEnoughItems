@@ -130,6 +130,15 @@ tasks.withType<Jar> {
 	finalizedBy("reobfJar")
 }
 
+tasks.withType<JavaCompile> {
+	options.encoding = "UTF-8"
+	javaToolchains {
+		compilerFor {
+			languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
+		}
+	}
+}
+
 tasks.named<Jar>("jar") {
 	from(sourceSets.main.get().output)
 	for (p in dependencyProjects) {
