@@ -8,6 +8,8 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.ingredients.IngredientVisibilityDummy;
 import mezz.jei.common.ingredients.IIngredientSupplier;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.platform.IPlatformRecipeHelper;
+import mezz.jei.common.platform.Services;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +22,6 @@ public final class RecipeErrorUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
 	@Nullable
 	private static IModIdHelper modIdHelper;
-	private static IRecipeRegistryHelper recipeRegistryHelper = new RecipeRegistryHelper();
 	@Nullable
 	private static RegisteredIngredients registeredIngredients;
 
@@ -29,10 +30,6 @@ public final class RecipeErrorUtil {
 
 	public static void setModIdHelper(IModIdHelper modIdHelper) {
 		RecipeErrorUtil.modIdHelper = modIdHelper;
-	}
-
-	public static void setRecipeRegistryHelper(IRecipeRegistryHelper recipeRegistryHelper) {
-		RecipeErrorUtil.recipeRegistryHelper = recipeRegistryHelper;
 	}
 
 	public static void setRegisteredIngredients(RegisteredIngredients registeredIngredients) {
@@ -95,7 +92,8 @@ public final class RecipeErrorUtil {
 	}
 
 	public static String getNameForRecipe(Object recipe) {
-		ResourceLocation registryName = recipeRegistryHelper.getRegistryNameForRecipe(recipe);
+		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
+		ResourceLocation registryName = recipeHelper.getRegistryNameForRecipe(recipe);
 		if (registryName != null) {
 			if (modIdHelper != null) {
 				String modId = registryName.getNamespace();

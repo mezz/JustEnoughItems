@@ -7,6 +7,7 @@ import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
+import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
@@ -43,6 +44,7 @@ public class ForgePlugin implements IModPlugin {
         IIngredientManager ingredientManager = registration.getIngredientManager();
         IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
 
-        registration.addRecipes(RecipeTypes.BREWING, BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory));
+        List<IJeiBrewingRecipe> brewingRecipes = BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory);
+        registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
     }
 }

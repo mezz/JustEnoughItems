@@ -63,7 +63,6 @@ public class ClientLifecycleHandler {
 		IModIdHelper modIdHelper = new ForgeModIdHelper(clientConfig, this.modIdFormattingConfig);
 		ErrorUtil.setModIdHelper(modIdHelper);
 		RecipeErrorUtil.setModIdHelper(modIdHelper);
-		RecipeErrorUtil.setRecipeRegistryHelper(new ForgeRecipeRegistryHelper());
 
 		// Additional config files
 		IBookmarkConfig bookmarkConfig = new BookmarkConfig(jeiConfigurationDir);
