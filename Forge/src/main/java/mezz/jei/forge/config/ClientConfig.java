@@ -97,6 +97,9 @@ public final class ClientConfig implements IClientConfig {
 		builder.pop();
 	}
 
+	/**
+	 * Only use this for hacky stuff like the debug plugin
+	 */
 	@Deprecated
 	public static IClientConfig getInstance() {
 		Preconditions.checkNotNull(instance);

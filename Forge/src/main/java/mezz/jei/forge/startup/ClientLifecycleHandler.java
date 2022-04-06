@@ -53,9 +53,11 @@ public class ClientLifecycleHandler {
 	private final StartEventObserver startEventObserver = new StartEventObserver(this::startJei, this::stopJei);
 	private final RuntimeEventSubscriptions runtimeSubscriptions;
 
-	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures, JEIClientConfigs jeiClientConfigs, IServerConfig serverConfig) {
-		this.runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
+	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures, IServerConfig serverConfig) {
 		File jeiConfigurationDir = createConfigDir();
+		JEIClientConfigs jeiClientConfigs = new JEIClientConfigs();
+		jeiClientConfigs.register();
+
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		this.modIdFormattingConfig = jeiClientConfigs.getModNameFormat();
 		IModIdHelper modIdHelper = new ForgeModIdHelper(clientConfig, this.modIdFormattingConfig);
@@ -107,6 +109,7 @@ public class ClientLifecycleHandler {
 		);
 
 		this.jeiStarter = new JeiStarter(startData);
+		this.runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
 	}
 
 	public void register(PermanentEventSubscriptions subscriptions) {

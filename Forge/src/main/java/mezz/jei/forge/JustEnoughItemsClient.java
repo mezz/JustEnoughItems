@@ -23,12 +23,10 @@ public class JustEnoughItemsClient {
 	}
 
 	public void register() {
-		JEIClientConfigs jeiClientConfigs = new JEIClientConfigs();
-		jeiClientConfigs.register();
-		subscriptions.register(RegisterClientReloadListenersEvent.class, event -> this.onRegisterReloadListenerEvent(event, jeiClientConfigs));
+		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 	}
 
-	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event, JEIClientConfigs jeiClientConfigs) {
+	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event) {
 		// Add the Sprite uploader reload listener
 		Minecraft minecraft = Minecraft.getInstance();
 		JeiSpriteUploader spriteUploader = new JeiSpriteUploader(minecraft.textureManager);
@@ -36,7 +34,7 @@ public class JustEnoughItemsClient {
 		Internal.setTextures(textures);
 		event.registerReloadListener(spriteUploader);
 
-		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(networkHandler, textures, jeiClientConfigs, serverConfig);
+		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(networkHandler, textures, serverConfig);
 		clientLifecycleHandler.register(subscriptions);
 		event.registerReloadListener(clientLifecycleHandler.getReloadListener());
 	}
