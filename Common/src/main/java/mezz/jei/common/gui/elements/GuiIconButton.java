@@ -56,7 +56,7 @@ public class GuiIconButton extends Button {
 			if (!this.active) {
 				color = 0xFFA0A0A0;
 			} else if (hovered) {
-				color = 0xFFFFFFA0;
+				color = 0xFFFFFFFF;
 			}
 
 			float red = (color >> 16 & 255) / 255.0F;
