@@ -207,13 +207,22 @@ artifacts {
 
 publishing {
 	publications {
-		register<MavenPublication>("maven") {
-			artifactId = baseArchivesName
-			artifact(tasks.jar.get())
+		register<MavenPublication>("fatJar") {
+			val task = tasks.jar.get()
+			artifactId = "${task.archiveBaseName.get()}-${task.archiveAppendix.get()}"
+			artifact(task)
 			artifact(sourcesJar.get())
-			artifact(commonApiJar.get())
+		}
+		register<MavenPublication>("commonApi") {
+			val task = commonApiJar.get()
+			artifactId = "${task.archiveBaseName.get()}-${task.archiveAppendix.get()}"
+			artifact(task)
 			artifact(commonApiSourcesJar.get())
-			artifact(forgeApiJar.get())
+		}
+		register<MavenPublication>("forgeApi") {
+			val task = forgeApiJar.get()
+			artifactId = "${task.archiveBaseName.get()}-${task.archiveAppendix.get()}"
+			artifact(task)
 			artifact(forgeApiSourcesJar.get())
 		}
 	}
