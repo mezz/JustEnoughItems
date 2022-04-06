@@ -5,6 +5,7 @@ plugins {
 
 // gradle.properties
 val minecraftVersion: String by extra
+val jUnitVersion: String by extra
 
 val dependencyProjects: List<Project> = listOf(
     project(":Core"),
@@ -36,4 +37,20 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
+    testImplementation(
+        group = "org.junit.jupiter",
+        name = "junit-jupiter-api",
+        version = jUnitVersion
+    )
+    testRuntimeOnly(
+        group = "org.junit.jupiter",
+        name = "junit-jupiter-engine",
+        version = jUnitVersion
+    )
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+    include("mezz/jei/**")
+    exclude("mezz/jei/lib/**")
 }

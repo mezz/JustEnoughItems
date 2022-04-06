@@ -1,4 +1,4 @@
-package mezz.jei.test;
+package mezz.jei;
 
 import mezz.jei.common.util.TickTimer;
 import org.junit.jupiter.api.Assertions;

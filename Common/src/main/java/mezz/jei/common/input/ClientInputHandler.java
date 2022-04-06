@@ -37,7 +37,7 @@ public class ClientInputHandler {
 	/**
 	 * Without keyboard focus, use Post
 	 */
-	public boolean onKeyboardKeyPressed(Screen screen, UserInput input) {
+	public boolean onKeyboardKeyPressedPost(Screen screen, UserInput input) {
 		if (isContainerTextFieldFocused(screen)) {
 			return this.inputHandler.handleUserInput(screen, input, keybindings)
 				.isPresent();

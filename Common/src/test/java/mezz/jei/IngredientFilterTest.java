@@ -1,4 +1,4 @@
-package mezz.jei.test;
+package mezz.jei;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -25,13 +25,13 @@ import mezz.jei.common.load.registration.RegisteredIngredientsBuilder;
 import mezz.jei.common.ingredients.IngredientInfo;
 import mezz.jei.common.ingredients.subtypes.SubtypeManager;
 import mezz.jei.common.load.registration.SubtypeRegistration;
-import mezz.jei.test.lib.TestClientConfig;
-import mezz.jei.test.lib.TestIngredient;
-import mezz.jei.test.lib.TestIngredientFilterConfig;
-import mezz.jei.test.lib.TestIngredientHelper;
-import mezz.jei.test.lib.TestModIdHelper;
-import mezz.jei.test.lib.TestPlugin;
-import mezz.jei.test.lib.TestWorldConfig;
+import mezz.jei.lib.TestClientConfig;
+import mezz.jei.lib.TestIngredient;
+import mezz.jei.lib.TestIngredientFilterConfig;
+import mezz.jei.lib.TestIngredientHelper;
+import mezz.jei.lib.TestModIdHelper;
+import mezz.jei.lib.TestPlugin;
+import mezz.jei.lib.TestWorldConfig;
 import mezz.jei.common.util.Translator;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;

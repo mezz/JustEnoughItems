@@ -1,4 +1,4 @@
-package mezz.jei.test.lib;
+package mezz.jei.lib;
 
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.core.search.SearchMode;

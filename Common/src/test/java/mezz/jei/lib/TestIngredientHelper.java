@@ -1,4 +1,4 @@
-package mezz.jei.test.lib;
+package mezz.jei.lib;
 
 import org.jetbrains.annotations.Nullable;
 

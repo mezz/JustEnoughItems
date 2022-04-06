@@ -1,4 +1,4 @@
-package mezz.jei.core.test.search.suffixtree;
+package mezz.jei.test.search.suffixtree;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;

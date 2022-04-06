@@ -18,13 +18,13 @@ import net.minecraftforge.eventbus.api.Event;
 public class EventRegistration {
 	public static void registerEvents(RuntimeEventSubscriptions subscriptions, JeiEventHandlers eventHandlers) {
 		ClientInputHandler clientInputHandler = eventHandlers.clientInputHandler();
-		registerInputHandler(subscriptions, clientInputHandler);
+		registerClientInputHandler(subscriptions, clientInputHandler);
 
 		GuiEventHandler guiEventHandler = eventHandlers.guiEventHandler();
 		registerGuiHandler(subscriptions, guiEventHandler);
 	}
 
-	private static void registerInputHandler(RuntimeEventSubscriptions subscriptions, ClientInputHandler handler) {
+	private static void registerClientInputHandler(RuntimeEventSubscriptions subscriptions, ClientInputHandler handler) {
 		subscriptions.register(ScreenEvent.InitScreenEvent.class, event -> handler.onInitGui());
 
 		subscriptions.register(ScreenEvent.KeyboardKeyPressedEvent.Pre.class, event -> {
@@ -37,7 +37,7 @@ public class EventRegistration {
 		subscriptions.register(ScreenEvent.KeyboardKeyPressedEvent.Post.class, event -> {
 			Screen screen = event.getScreen();
 			UserInput input = ForgeUserInput.fromEvent(event);
-			if (handler.onKeyboardKeyPressed(screen, input)) {
+			if (handler.onKeyboardKeyPressedPost(screen, input)) {
 				event.setCanceled(true);
 			}
 		});

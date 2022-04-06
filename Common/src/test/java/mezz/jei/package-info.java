@@ -1,6 +1,4 @@
-@ParametersAreNonnullByDefault
-@FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.test.lib;
+package mezz.jei;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

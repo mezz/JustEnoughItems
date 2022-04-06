@@ -1,6 +1,5 @@
-package mezz.jei.test.lib;
+package mezz.jei.lib;
 
-import mezz.jei.forge.config.ClientConfig;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IngredientSortStage;
 import mezz.jei.core.config.GiveMode;
@@ -46,6 +45,6 @@ public class TestClientConfig implements IClientConfig {
 
 	@Override
 	public List<IngredientSortStage> getIngredientSorterStages() {
-		return ClientConfig.ingredientSorterStagesDefault;
+		return List.of();
 	}
 }

@@ -1,4 +1,4 @@
-package mezz.jei.core.test.util;
+package mezz.jei.test.util;
 
 import mezz.jei.core.util.FileUtil;
 import org.junit.jupiter.api.Test;

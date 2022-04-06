@@ -4,7 +4,6 @@ import mezz.jei.common.config.IBookmarkConfig;
 import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.config.IModIdFormattingConfig;
 import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
@@ -15,7 +14,6 @@ public record ConfigData(
     IIngredientFilterConfig ingredientFilterConfig,
     IWorldConfig worldConfig,
     IBookmarkConfig bookmarkConfig,
-    IModIdFormattingConfig modNameFormatConfig,
     IIngredientGridConfig ingredientListConfig,
     IIngredientGridConfig bookmarkListConfig,
     RecipeCategorySortingConfig recipeCategorySortingConfig

@@ -18,6 +18,12 @@ pipeline {
             }
         }
 
+        stage('Test Common') {
+            steps {
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Common:cleanTest :Common:test --no-build-cache --no-daemon"
+            }
+        }
+
         stage('Test Forge') {
             steps {
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:cleanTest :Forge:test --no-build-cache --no-daemon"
