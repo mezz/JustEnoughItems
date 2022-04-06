@@ -1,17 +1,11 @@
 package mezz.jei.forge.config;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.core.config.IServerConfig;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 
-import org.jetbrains.annotations.Nullable;
-
 public final class ServerConfig implements IServerConfig {
-	@Nullable
-	private static IServerConfig instance;
-
 	// Forge config
 	private final ForgeConfigSpec.BooleanValue enableCheatModeForOp;
 	private final ForgeConfigSpec.BooleanValue enableCheatModeForCreative;
@@ -19,13 +13,13 @@ public final class ServerConfig implements IServerConfig {
 
 	public static IServerConfig register(ModLoadingContext modLoadingContext) {
 		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
-		instance = new ServerConfig(builder);
+		ServerConfig instance = new ServerConfig(builder);
 		ForgeConfigSpec config = builder.build();
 		modLoadingContext.registerConfig(ModConfig.Type.SERVER, config);
 		return instance;
 	}
 
-	public ServerConfig(ForgeConfigSpec.Builder builder) {
+	private ServerConfig(ForgeConfigSpec.Builder builder) {
 		builder.push("cheat mode");
 		{
 			builder.comment("Enable Cheat Mode for Operators (/op)");
@@ -38,11 +32,6 @@ public final class ServerConfig implements IServerConfig {
 			enableCheatModeForGive = builder.define("enableCheatModeForGive", false);
 		}
 		builder.pop();
-	}
-
-	public static IServerConfig getInstance() {
-		Preconditions.checkNotNull(instance);
-		return instance;
 	}
 
 	@Override

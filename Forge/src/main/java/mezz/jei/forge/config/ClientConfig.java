@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -153,11 +152,11 @@ public final class ClientConfig implements IClientConfig {
 		List<? extends String> searchColors = searchColorsCfg.get();
 		for (String entry : searchColors) {
 			try {
-				Map.Entry<Integer, String> result = parseSearchColor(entry);
+				ColorEntry result = parseSearchColor(entry);
 				if (result == null) {
 					LOGGER.error("Invalid number format for searchColor entry: {}", entry);
 				} else {
-					searchColorsMapBuilder.put(result);
+					searchColorsMapBuilder.put(result.color, result.name);
 				}
 			} catch (NumberFormatException e) {
 				LOGGER.error("Invalid number format for searchColor entry: {}", entry, e);
@@ -183,7 +182,7 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Nullable
-	private static Map.Entry<Integer, String> parseSearchColor(Object obj) throws NumberFormatException {
+	private static ColorEntry parseSearchColor(Object obj) throws NumberFormatException {
 		if (obj instanceof String entry) {
 			String[] values = entry.split(":");
 			if (values.length == 2) {
@@ -204,28 +203,5 @@ public final class ClientConfig implements IClientConfig {
 		}
 	}
 
-	private static class ColorEntry implements Map.Entry<Integer, String> {
-		private final Integer color;
-		private final String name;
-
-		public ColorEntry(Integer color, String name) {
-			this.color = color;
-			this.name = name;
-		}
-
-		@Override
-		public Integer getKey() {
-			return color;
-		}
-
-		@Override
-		public String getValue() {
-			return name;
-		}
-
-		@Override
-		public String setValue(String value) {
-			throw new UnsupportedOperationException();
-		}
-	}
+	private record ColorEntry(Integer color, String name) {}
 }
