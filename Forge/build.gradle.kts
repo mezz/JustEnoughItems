@@ -180,7 +180,7 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 	val mainFile = upload(curseProjectId, tasks.jar.get().archiveFile)
 	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
 	mainFile.changelog = file("../Changelog/changelog.html")
-	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
+	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_ALPHA
 	mainFile.addJavaVersion("Java $modJavaVersion")
 	mainFile.addGameVersion(minecraftVersion)
 	mainFile.addModLoader("Forge")
