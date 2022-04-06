@@ -49,7 +49,7 @@ val dependencyProjects: List<Project> = listOf(
 dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
-project.evaluationDependsOn(project(":Changelog").path)
+project.evaluationDependsOn(":Changelog")
 
 java {
 	toolchain {
@@ -125,29 +125,18 @@ minecraft {
 	}
 }
 
+tasks.withType<Jar> {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	finalizedBy("reobfJar")
+}
+
 tasks.named<Jar>("jar") {
 	from(sourceSets.main.get().output)
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().output)
 	}
 
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	finalizedBy("reobfJar")
-}
-
-val apiJar = tasks.register<Jar>("apiJar") {
-	from(project(":CommonApi").sourceSets.main.get().output)
-	from(project(":ForgeApi").sourceSets.main.get().output)
-
-	// TODO: when FG bug is fixed, remove allJava from the api jar.
-	// https://github.com/MinecraftForge/ForgeGradle/issues/369
-	// Gradle should be able to pull them from the -sources jar.
-	from(project(":CommonApi").sourceSets.main.get().allJava)
-	from(project(":ForgeApi").sourceSets.main.get().allJava)
-
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	finalizedBy("reobfJar")
-	archiveClassifier.set("api")
+	archiveAppendix.set("forge")
 }
 
 val sourcesJar = tasks.register<Jar>("sourcesJar") {
@@ -156,22 +145,45 @@ val sourcesJar = tasks.register<Jar>("sourcesJar") {
 		from(p.sourceSets.main.get().allJava)
 	}
 
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	finalizedBy("reobfJar")
+	archiveAppendix.set("forge")
+	archiveClassifier.set("sources")
+}
+
+val commonApiJar = tasks.register<Jar>("commonApiJar") {
+	from(project(":CommonApi").sourceSets.main.get().output)
+	archiveAppendix.set("common-api")
+}
+
+val commonApiSourcesJar = tasks.register<Jar>("commonApiSourcesJar") {
+	from(project(":CommonApi").sourceSets.main.get().allJava)
+	archiveAppendix.set("common-api")
+	archiveClassifier.set("sources")
+}
+
+val forgeApiJar = tasks.register<Jar>("forgeApiJar") {
+	from(project(":ForgeApi").sourceSets.main.get().output)
+	archiveAppendix.set("forge-api")
+}
+
+val forgeApiSourcesJar = tasks.register<Jar>("forgeApiSourcesJar") {
+	from(project(":ForgeApi").sourceSets.main.get().allJava)
+	archiveAppendix.set("forge-api")
 	archiveClassifier.set("sources")
 }
 
 tasks.register<TaskPublishCurseForge>("publishCurseForge") {
+	dependsOn(tasks.jar.get().path)
 	dependsOn(":Changelog:makeChangelog")
 
 	apiToken = project.findProperty("curseforge_apikey") ?: "0"
 
-	val mainFile = upload(curseProjectId, file("${project.buildDir}/libs/$baseArchivesName-$version.jar"))
+	val mainFile = upload(curseProjectId, tasks.jar.get().archiveFile)
 	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
 	mainFile.changelog = file("../Changelog/changelog.html")
 	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
 	mainFile.addJavaVersion("Java $modJavaVersion")
 	mainFile.addGameVersion(minecraftVersion)
+	mainFile.addModLoader("Forge")
 
 	doLast {
 		project.ext.set("curse_file_url", "${curseHomepageLink}/files/${mainFile.curseFileId}")
@@ -185,18 +197,24 @@ tasks.named<Test>("test") {
 }
 
 artifacts {
-	archives(apiJar.get())
-	archives(sourcesJar.get())
 	archives(tasks.jar.get())
+	archives(sourcesJar.get())
+	archives(commonApiJar.get())
+	archives(commonApiSourcesJar.get())
+	archives(forgeApiJar.get())
+	archives(forgeApiSourcesJar.get())
 }
 
 publishing {
 	publications {
 		register<MavenPublication>("maven") {
 			artifactId = baseArchivesName
-			artifact(apiJar.get())
-			artifact(sourcesJar.get())
 			artifact(tasks.jar.get())
+			artifact(sourcesJar.get())
+			artifact(commonApiJar.get())
+			artifact(commonApiSourcesJar.get())
+			artifact(forgeApiJar.get())
+			artifact(forgeApiSourcesJar.get())
 		}
 	}
 	repositories {
