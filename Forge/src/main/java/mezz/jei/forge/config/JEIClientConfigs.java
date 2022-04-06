@@ -1,11 +1,9 @@
 package mezz.jei.forge.config;
 
-import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.common.gui.overlay.options.HorizontalAlignment;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 public class JEIClientConfigs {
 	private final ClientConfig clientConfig;
@@ -27,20 +25,9 @@ public class JEIClientConfigs {
 		config = builder.build();
 	}
 
-	public void register(PermanentEventSubscriptions subscriptions) {
-		subscriptions.register(ModConfigEvent.class, this::reload);
-
+	public void register() {
 		ModLoadingContext modLoadingContext = ModLoadingContext.get();
 		modLoadingContext.registerConfig(ModConfig.Type.CLIENT, config);
-	}
-
-	public void reload(ModConfigEvent event) {
-		if (event.getConfig().getSpec() != config) {
-			return;
-		}
-
-		clientConfig.reload();
-		modNameFormat.reload();
 	}
 
 	public ClientConfig getClientConfig() {

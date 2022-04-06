@@ -24,7 +24,7 @@ public class JustEnoughItemsClient {
 
 	public void register() {
 		JEIClientConfigs jeiClientConfigs = new JEIClientConfigs();
-		jeiClientConfigs.register(subscriptions);
+		jeiClientConfigs.register();
 		subscriptions.register(RegisterClientReloadListenersEvent.class, event -> this.onRegisterReloadListenerEvent(event, jeiClientConfigs));
 	}
 

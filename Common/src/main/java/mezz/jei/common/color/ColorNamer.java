@@ -5,10 +5,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import com.google.common.collect.ImmutableMap;
 
 public class ColorNamer {
 	@Nullable
@@ -19,13 +18,13 @@ public class ColorNamer {
 		return INSTANCE;
 	}
 
-	public static void create(ImmutableMap<Integer, String> colorNames) {
+	public static void create(Supplier<Map<Integer, String>> colorNames) {
 		INSTANCE = new ColorNamer(colorNames);
 	}
 
-	private final ImmutableMap<Integer, String> colorNames;
+	private final Supplier<Map<Integer, String>> colorNames;
 
-	private ColorNamer(ImmutableMap<Integer, String> colorNames) {
+	private ColorNamer(Supplier<Map<Integer, String>> colorNames) {
 		this.colorNames = colorNames;
 	}
 
@@ -42,7 +41,7 @@ public class ColorNamer {
 
 	@Nullable
 	private String getClosestColorName(Integer color) {
-		return colorNames.entrySet().stream()
+		return colorNames.get().entrySet().stream()
 			.min(Comparator.comparing(entry -> {
 				Integer namedColor = entry.getKey();
 				double distance = ColorUtil.slowPerceptualColorDistanceSquared(namedColor, color);

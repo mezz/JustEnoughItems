@@ -8,6 +8,7 @@ import mezz.jei.common.color.ColorNamer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IngredientSortStage;
 import mezz.jei.core.config.GiveMode;
+import mezz.jei.core.util.function.CachedSupplierTransformer;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.LogManager;
@@ -17,9 +18,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public final class ClientConfig implements IClientConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -37,7 +40,6 @@ public final class ClientConfig implements IClientConfig {
 		IngredientSortStage.INGREDIENT_TYPE,
 		IngredientSortStage.CREATIVE_MENU
 	);
-	private List<IngredientSortStage> ingredientSorterStages = ingredientSorterStagesDefault;
 
 	// Forge config
 	private final ForgeConfigSpec.BooleanValue debugModeEnabled;
@@ -46,8 +48,7 @@ public final class ClientConfig implements IClientConfig {
 	private final ForgeConfigSpec.BooleanValue cheatToHotbarUsingHotkeysEnabled;
 	private final ForgeConfigSpec.EnumValue<GiveMode> giveMode;
 	private final ForgeConfigSpec.IntValue maxRecipeGuiHeight;
-	private final ForgeConfigSpec.ConfigValue<List<? extends String>> searchColorsCfg;
-	private final ForgeConfigSpec.ConfigValue<List<? extends String>> ingredientSorterStagesCfg;
+	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
 
 	public ClientConfig(ForgeConfigSpec.Builder builder) {
 		instance = this;
@@ -77,7 +78,9 @@ public final class ClientConfig implements IClientConfig {
 		builder.push("colors");
 		{
 			builder.comment("Color values to search for");
-			searchColorsCfg = builder.defineList("SearchColors", Lists.newArrayList(ColorGetter.getColorDefaults()), ClientConfig::validSearchColor);
+			ForgeConfigSpec.ConfigValue<List<? extends String>> configValue = builder.defineList("SearchColors", Lists.newArrayList(ColorGetter.getColorDefaults()), ClientConfig::validSearchColor);
+			Supplier<Map<Integer, String>> searchColors = new CachedSupplierTransformer<>(configValue::get, ClientConfig::parseSearchColors);
+			ColorNamer.create(searchColors);
 		}
 		builder.pop();
 
@@ -88,7 +91,8 @@ public final class ClientConfig implements IClientConfig {
 				.map(Enum::name)
 				.toList();
 			Predicate<Object> elementValidator = validEnumElement(IngredientSortStage.class);
-			ingredientSorterStagesCfg = builder.defineList("IngredientSortStages", defaults, elementValidator);
+			ForgeConfigSpec.ConfigValue<List<? extends String>> ingredientSortStages = builder.defineList("IngredientSortStages", defaults, elementValidator);
+			ingredientSorterStages = new CachedSupplierTransformer<>(ingredientSortStages::get, ClientConfig::parseIngredientSorterStages);
 		}
 		builder.pop();
 	}
@@ -99,17 +103,15 @@ public final class ClientConfig implements IClientConfig {
 		return instance;
 	}
 
-	public void reload() {
-		this.ingredientSorterStages = ingredientSorterStagesCfg.get()
-			.stream()
+	private static List<IngredientSortStage> parseIngredientSorterStages(List<? extends String> rawStages) {
+		List<IngredientSortStage> ingredientSorterStages = rawStages.stream()
 			.map(s -> EnumUtils.getEnum(IngredientSortStage.class, s))
 			.filter(Objects::nonNull)
 			.toList();
 		if (ingredientSorterStages.isEmpty()) {
-			this.ingredientSorterStages = ingredientSorterStagesDefault;
+			return ingredientSorterStagesDefault;
 		}
-
-		syncSearchColorsConfig();
+		return ingredientSorterStages;
 	}
 
 	@Override
@@ -144,12 +146,11 @@ public final class ClientConfig implements IClientConfig {
 
 	@Override
 	public List<IngredientSortStage> getIngredientSorterStages() {
-		return ingredientSorterStages;
+		return ingredientSorterStages.get();
 	}
 
-	private void syncSearchColorsConfig() {
+	private static Map<Integer, String> parseSearchColors(List<? extends String> searchColors) {
 		final ImmutableMap.Builder<Integer, String> searchColorsMapBuilder = ImmutableMap.builder();
-		List<? extends String> searchColors = searchColorsCfg.get();
 		for (String entry : searchColors) {
 			try {
 				ColorEntry result = parseSearchColor(entry);
@@ -162,7 +163,7 @@ public final class ClientConfig implements IClientConfig {
 				LOGGER.error("Invalid number format for searchColor entry: {}", entry, e);
 			}
 		}
-		ColorNamer.create(searchColorsMapBuilder.build());
+		return searchColorsMapBuilder.build();
 	}
 
 	@SuppressWarnings("SameParameterValue")

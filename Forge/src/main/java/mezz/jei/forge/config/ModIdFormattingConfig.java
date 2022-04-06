@@ -1,6 +1,7 @@
 package mezz.jei.forge.config;
 
 import mezz.jei.common.config.IModIdFormattingConfig;
+import mezz.jei.core.util.function.CachedSupplierTransformer;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
+import java.util.function.Supplier;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -32,13 +34,9 @@ public class ModIdFormattingConfig implements IModIdFormattingConfig {
 	public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
 	public static final String defaultModNameFormatFriendly = "blue italic";
 
-	private String modNameFormatFriendly = defaultModNameFormatFriendly;
-	public String modNameFormat = parseFriendlyModNameFormat(defaultModNameFormatFriendly);
 	@Nullable
 	private String modNameFormatOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
-
-	// Forge config
-	public final ForgeConfigSpec.ConfigValue<String> modNameFormatConfig;
+	private final Supplier<String> modNameFormat;
 
 	public ModIdFormattingConfig(ForgeConfigSpec.Builder builder) {
 		EnumSet<ChatFormatting> validFormatting = EnumSet.allOf(ChatFormatting.class);
@@ -60,13 +58,9 @@ public class ModIdFormattingConfig implements IModIdFormattingConfig {
 
 		builder.push("modname");
 		builder.comment("Formatting for mod name tooltip", "Use these formatting colors:", validColors, "With these formatting options:", validFormats);
-		modNameFormatConfig = builder.define("ModNameFormat", defaultModNameFormatFriendly);
+		ForgeConfigSpec.ConfigValue<String> configValue = builder.define("ModNameFormat", defaultModNameFormatFriendly);
+		this.modNameFormat = new CachedSupplierTransformer<>(configValue::get, ModIdFormattingConfig::parseFriendlyModNameFormat);
 		builder.pop();
-	}
-
-	public void reload() {
-		modNameFormatFriendly = modNameFormatConfig.get();
-		updateModNameFormat();
 	}
 
 	public String getModNameFormat() {
@@ -74,7 +68,7 @@ public class ModIdFormattingConfig implements IModIdFormattingConfig {
 		if (override != null) {
 			return override;
 		}
-		return modNameFormat;
+		return modNameFormat.get();
 	}
 
 	public boolean isModNameFormatOverrideActive() {
@@ -85,12 +79,7 @@ public class ModIdFormattingConfig implements IModIdFormattingConfig {
 		String modNameFormatOverride = ModIdFormattingConfig.detectModNameTooltipFormatting();
 		if (!Objects.equals(this.modNameFormatOverride, modNameFormatOverride)) {
 			this.modNameFormatOverride = modNameFormatOverride;
-			updateModNameFormat();
 		}
-	}
-
-	private void updateModNameFormat() {
-		modNameFormat = parseFriendlyModNameFormat(modNameFormatFriendly);
 	}
 
 	private static String parseFriendlyModNameFormat(String formatWithEnumNames) {
