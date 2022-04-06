@@ -1,6 +1,5 @@
 package mezz.jei.common.config;
 
-import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.core.config.IngredientBlacklistType;
 import org.jetbrains.annotations.Nullable;
 import java.io.File;

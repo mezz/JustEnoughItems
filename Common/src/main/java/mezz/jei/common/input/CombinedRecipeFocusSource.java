@@ -1,9 +1,5 @@
 package mezz.jei.common.input;
 
-import mezz.jei.common.input.IClickedIngredient;
-import mezz.jei.common.input.IKeyBindings;
-import mezz.jei.common.input.IRecipeFocusSource;
-import mezz.jei.common.input.UserInput;
 import net.minecraft.client.Minecraft;
 
 import java.util.List;

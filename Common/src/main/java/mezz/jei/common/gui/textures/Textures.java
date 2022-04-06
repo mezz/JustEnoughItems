@@ -1,6 +1,5 @@
 package mezz.jei.common.gui.textures;
 
-import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.elements.HighResolutionDrawable;
 import net.minecraft.resources.ResourceLocation;
 

@@ -3,7 +3,6 @@ package mezz.jei.common.network.packets;
 import mezz.jei.common.network.IPacketId;
 import mezz.jei.common.network.PacketIdServer;
 import mezz.jei.common.network.ServerPacketContext;
-import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.common.util.ServerCommandUtil;

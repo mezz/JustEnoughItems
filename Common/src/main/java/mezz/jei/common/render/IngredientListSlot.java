@@ -1,7 +1,6 @@
 package mezz.jei.common.render;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.render.ElementRenderer;
 import mezz.jei.common.util.ImmutableRect2i;
 import org.jetbrains.annotations.Nullable;
 

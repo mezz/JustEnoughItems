@@ -1,7 +1,5 @@
 package mezz.jei.common.transfer;
 
-import mezz.jei.common.transfer.RecipeTransferUtil;
-import mezz.jei.common.transfer.TransferOperation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;

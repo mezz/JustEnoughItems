@@ -6,8 +6,6 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.gui.GuiScreenHelper;
-import mezz.jei.common.gui.ghost.GhostIngredientDrag;
-import mezz.jei.common.gui.ghost.GhostIngredientReturning;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.IClickedIngredient;
 import mezz.jei.common.input.IRecipeFocusSource;

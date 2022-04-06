@@ -35,4 +35,3 @@ public class JeiIngredient extends Ingredient {
         throw new NotImplementedException("JeiIngredient should only be used internally for JEI at runtime");
     }
 }
-

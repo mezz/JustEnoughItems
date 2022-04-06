@@ -5,7 +5,6 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.ingredients.IIngredientSupplier;
-import mezz.jei.common.deprecated.ingredients.IngredientsForType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;

@@ -7,7 +7,6 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.focus.FocusGroup;
-import mezz.jei.common.recipes.RecipeManagerInternal;
 import mezz.jei.common.util.ErrorUtil;
 
 import java.util.Collection;

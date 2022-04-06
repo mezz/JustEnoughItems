@@ -7,7 +7,6 @@ import mezz.jei.common.focus.Focus;
 import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.common.input.handlers.LimitedAreaInputHandler;
 import mezz.jei.common.input.CombinedRecipeFocusSource;
 import net.minecraft.client.gui.screens.Screen;
 

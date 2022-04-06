@@ -7,7 +7,6 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.GuiIconButtonSmall;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
-import mezz.jei.common.gui.recipes.layout.IRecipeLayoutInternal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.gui.recipes.IOnClickHandler;
 import mezz.jei.common.recipes.RecipeTransferManager;

@@ -3,7 +3,6 @@ package mezz.jei.common.input.handlers;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.gui.GuiScreenHelper;
-import mezz.jei.common.input.handlers.LimitedAreaInputHandler;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;

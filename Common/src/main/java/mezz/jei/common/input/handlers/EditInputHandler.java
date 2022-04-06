@@ -9,7 +9,6 @@ import mezz.jei.common.input.IClickedIngredient;
 import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.common.input.handlers.LimitedAreaInputHandler;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.core.config.IngredientBlacklistType;
 import mezz.jei.common.input.CombinedRecipeFocusSource;

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.ingredients.IListElement;
 import net.minecraft.resources.ResourceLocation;
