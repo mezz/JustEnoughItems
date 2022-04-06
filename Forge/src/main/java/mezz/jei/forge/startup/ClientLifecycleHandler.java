@@ -13,6 +13,8 @@ import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.common.plugins.jei.JeiInternalPlugin;
 import mezz.jei.common.plugins.vanilla.VanillaPlugin;
 import mezz.jei.common.startup.ConfigData;
+import mezz.jei.common.startup.JeiEventHandlers;
+import mezz.jei.common.startup.JeiStarter;
 import mezz.jei.common.startup.StartData;
 import mezz.jei.forge.config.ForgeKeyBindings;
 import mezz.jei.forge.config.JEIClientConfigs;

@@ -1,4 +1,4 @@
-package mezz.jei.forge.startup;
+package mezz.jei.common.startup;
 
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.IModPlugin;
@@ -34,9 +34,6 @@ import mezz.jei.common.recipes.RecipeManager;
 import mezz.jei.common.recipes.RecipeTransferManager;
 import mezz.jei.common.runtime.JeiHelpers;
 import mezz.jei.common.runtime.JeiRuntime;
-import mezz.jei.common.startup.ConfigData;
-import mezz.jei.common.startup.OverlayHelper;
-import mezz.jei.common.startup.StartData;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.common.gui.GuiEventHandler;
