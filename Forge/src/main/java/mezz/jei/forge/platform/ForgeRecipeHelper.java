@@ -29,13 +29,11 @@ public class ForgeRecipeHelper implements IPlatformRecipeHelper {
 
     @Override
     public Ingredient getBase(UpgradeRecipe recipe) {
-        // TODO: Access this by Mixin
         return recipe.base;
     }
 
     @Override
     public Ingredient getAddition(UpgradeRecipe recipe) {
-        // TODO: Access this by Mixin
         return recipe.addition;
     }
 

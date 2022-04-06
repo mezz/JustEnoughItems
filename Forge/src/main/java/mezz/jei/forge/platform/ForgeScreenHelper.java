@@ -41,7 +41,6 @@ public class ForgeScreenHelper implements IPlatformScreenHelper {
     public ImmutableRect2i getBookArea(RecipeUpdateListener containerScreen) {
         RecipeBookComponent guiRecipeBook = containerScreen.getRecipeBookComponent();
         if (guiRecipeBook.isVisible()) {
-            // TODO: Access this by Mixin
             int i = (guiRecipeBook.width - 147) / 2 - guiRecipeBook.xOffset;
             int j = (guiRecipeBook.height - 166) / 2;
             return new ImmutableRect2i(i, j, 147, 166);
@@ -51,7 +50,6 @@ public class ForgeScreenHelper implements IPlatformScreenHelper {
 
     @Override
     public List<RecipeBookTabButton> getTabButtons(RecipeBookComponent recipeBookComponent) {
-        // TODO: Access this by Mixin
         return recipeBookComponent.tabButtons;
     }
 }
