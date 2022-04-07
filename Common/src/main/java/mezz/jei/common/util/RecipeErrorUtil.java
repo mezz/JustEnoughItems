@@ -1,13 +1,13 @@
 package mezz.jei.common.util;
 
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.ingredients.IngredientVisibilityDummy;
 import mezz.jei.common.ingredients.IIngredientSupplier;
+import mezz.jei.common.ingredients.IngredientVisibilityDummy;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.resources.ResourceLocation;
@@ -21,15 +21,9 @@ import java.util.stream.Stream;
 public final class RecipeErrorUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
 	@Nullable
-	private static IModIdHelper modIdHelper;
-	@Nullable
 	private static RegisteredIngredients registeredIngredients;
 
 	private RecipeErrorUtil() {
-	}
-
-	public static void setModIdHelper(IModIdHelper modIdHelper) {
-		RecipeErrorUtil.modIdHelper = modIdHelper;
 	}
 
 	public static void setRegisteredIngredients(RegisteredIngredients registeredIngredients) {
@@ -95,12 +89,10 @@ public final class RecipeErrorUtil {
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		ResourceLocation registryName = recipeHelper.getRegistryNameForRecipe(recipe);
 		if (registryName != null) {
-			if (modIdHelper != null) {
-				String modId = registryName.getNamespace();
-				String modName = modIdHelper.getModNameForModId(modId);
-				return modName + " " + registryName + " " + recipe.getClass();
-			}
-			return registryName + " " + recipe.getClass();
+			IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
+			String modId = registryName.getNamespace();
+			String modName = modHelper.getModNameForModId(modId);
+			return modName + " " + registryName + " " + recipe.getClass();
 		}
 		try {
 			return recipe.toString();

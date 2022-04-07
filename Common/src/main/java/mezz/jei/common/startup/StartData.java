@@ -1,7 +1,6 @@
 package mezz.jei.common.startup;
 
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.common.input.IKeyBindings;
@@ -15,7 +14,6 @@ public record StartData(
     VanillaPlugin vanillaPlugin,
     Textures textures,
     IConnectionToServer serverConnection,
-    IModIdHelper modIdHelper,
     IIngredientSorter ingredientSorter,
     IKeyBindings keyBindings,
     ConfigData configData

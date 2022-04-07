@@ -2,6 +2,7 @@ package mezz.jei.common.startup;
 
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.runtime.IIngredientFilter;
@@ -11,14 +12,17 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.bookmarks.BookmarkList;
 import mezz.jei.common.filter.FilterTextSource;
 import mezz.jei.common.filter.IFilterTextSource;
+import mezz.jei.common.gui.GuiEventHandler;
 import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.overlay.IngredientListOverlay;
 import mezz.jei.common.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.common.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.common.gui.recipes.RecipesGui;
+import mezz.jei.common.helpers.ModIdHelper;
 import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.IngredientFilterApi;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.input.ClientInputHandler;
 import mezz.jei.common.input.CombinedRecipeFocusSource;
 import mezz.jei.common.input.GuiContainerWrapper;
 import mezz.jei.common.input.ICharTypedHandler;
@@ -36,8 +40,6 @@ import mezz.jei.common.runtime.JeiHelpers;
 import mezz.jei.common.runtime.JeiRuntime;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;
-import mezz.jei.common.gui.GuiEventHandler;
-import mezz.jei.common.input.ClientInputHandler;
 
 import java.util.List;
 
@@ -56,7 +58,8 @@ public final class JeiStarter {
 		ConfigData configData = data.configData();
 
 		IFilterTextSource filterTextSource = new FilterTextSource();
-		PluginLoader pluginLoader = new PluginLoader(data, filterTextSource);
+		IModIdHelper modIdHelper = new ModIdHelper(configData.clientConfig(), configData.modIdFormatConfig());
+		PluginLoader pluginLoader = new PluginLoader(data, filterTextSource, modIdHelper);
 		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 
 		RegisteredIngredients registeredIngredients = pluginLoader.getRegisteredIngredients();
@@ -64,7 +67,7 @@ public final class JeiStarter {
 		IngredientFilter ingredientFilter = pluginLoader.getIngredientFilter();
 
 		BookmarkList bookmarkList = pluginLoader.createBookmarkList(configData.bookmarkConfig());
-		RecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, data.vanillaPlugin(), configData.recipeCategorySortingConfig());
+		RecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, data.vanillaPlugin(), configData.recipeCategorySortingConfig(), modIdHelper);
 		ImmutableTable<Class<?>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers =
 			pluginLoader.createRecipeTransferHandlers(plugins, recipeManager);
 		RecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
@@ -78,7 +81,8 @@ public final class JeiStarter {
 			registeredIngredients,
 			guiScreenHelper,
 			ingredientFilter,
-			filterTextSource
+			filterTextSource,
+			modIdHelper
 		);
 
 		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
@@ -86,7 +90,8 @@ public final class JeiStarter {
 			registeredIngredients,
 			guiScreenHelper,
 			ingredientFilter,
-			bookmarkList
+			bookmarkList,
+			modIdHelper
 		);
 
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
@@ -97,7 +102,7 @@ public final class JeiStarter {
 			recipeManager,
 			recipeTransferManager,
 			registeredIngredients,
-			data.modIdHelper(),
+			modIdHelper,
 			configData.clientConfig(),
 			data.textures(),
 			ingredientVisibility,

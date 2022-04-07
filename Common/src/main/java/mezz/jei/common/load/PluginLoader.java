@@ -3,6 +3,7 @@ package mezz.jei.common.load;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
@@ -64,7 +65,7 @@ public class PluginLoader {
 	private final IIngredientVisibility ingredientVisibility;
 	private final IngredientFilter ingredientFilter;
 
-	public PluginLoader(StartData data, IFilterTextSource filterTextSource) {
+	public PluginLoader(StartData data, IFilterTextSource filterTextSource, IModIdHelper modIdHelper) {
 		this.data = data;
 		this.timer = new LoggedTimer();
 		ConfigData configData = data.configData();
@@ -102,13 +103,13 @@ public class PluginLoader {
 			registeredIngredients,
 			data.ingredientSorter(),
 			ingredientList,
-			data.modIdHelper(),
+			modIdHelper,
 			ingredientVisibility
 		);
 		this.timer.stop();
 
 		this.ingredientManager = new IngredientManager(
-			data.modIdHelper(),
+			modIdHelper,
 			blacklist,
 			configData.clientConfig(),
 			registeredIngredients,
@@ -118,7 +119,7 @@ public class PluginLoader {
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(registeredIngredients, data.textures());
 		FocusFactory focusFactory = new FocusFactory(registeredIngredients);
-		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, data.modIdHelper(), focusFactory);
+		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory);
 		Internal.setHelpers(jeiHelpers);
 	}
 
@@ -149,7 +150,8 @@ public class PluginLoader {
 	public RecipeManager createRecipeManager(
 		List<IModPlugin> plugins,
 		VanillaPlugin vanillaPlugin,
-		RecipeCategorySortingConfig recipeCategorySortingConfig
+		RecipeCategorySortingConfig recipeCategorySortingConfig,
+		IModIdHelper modIdHelper
 	) {
 		List<IRecipeCategory<?>> recipeCategories = createRecipeCategories(plugins, vanillaPlugin);
 
@@ -176,7 +178,7 @@ public class PluginLoader {
 		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, registeredIngredients, ingredientManager, ingredientVisibility, vanillaRecipeFactory, recipeManagerInternal);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
-		return new RecipeManager(recipeManagerInternal, data.modIdHelper(), registeredIngredients, data.textures(), ingredientVisibility);
+		return new RecipeManager(recipeManagerInternal, modIdHelper, registeredIngredients, data.textures(), ingredientVisibility);
 	}
 
 	public IngredientFilter getIngredientFilter() {

@@ -1,7 +1,6 @@
 package mezz.jei.forge;
 
 import mezz.jei.common.Internal;
-import mezz.jei.forge.config.JEIClientConfigs;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;

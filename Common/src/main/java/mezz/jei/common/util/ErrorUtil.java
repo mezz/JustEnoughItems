@@ -1,10 +1,10 @@
 package mezz.jei.common.util;
 
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import net.minecraft.CrashReport;
@@ -24,14 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 public final class ErrorUtil {
-	@Nullable
-	private static IModIdHelper modIdHelper;
-
 	private ErrorUtil() {
-	}
-
-	public static void setModIdHelper(IModIdHelper modIdHelper) {
-		ErrorUtil.modIdHelper = modIdHelper;
 	}
 
 	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType, RegisteredIngredients registeredIngredients) {
@@ -164,12 +157,11 @@ public final class ErrorUtil {
 		CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering ingredient");
 		CrashReportCategory ingredientCategory = crashreport.addCategory("Ingredient being rendered");
 
-		if (modIdHelper != null) {
-			ingredientCategory.setDetail("Mod Name", () -> {
-				String modId = ingredientHelper.getDisplayModId(ingredient);
-				return modIdHelper.getModNameForModId(modId);
-			});
-		}
+		IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
+		ingredientCategory.setDetail("Mod Name", () -> {
+			String modId = ingredientHelper.getDisplayModId(ingredient);
+			return modHelper.getModNameForModId(modId);
+		});
 		ingredientCategory.setDetail("Registry Name", () -> ingredientHelper.getResourceLocation(ingredient).toString());
 		ingredientCategory.setDetail("Display Name", () -> ingredientHelper.getDisplayName(ingredient));
 		ingredientCategory.setDetail("String Name", ingredient::toString);

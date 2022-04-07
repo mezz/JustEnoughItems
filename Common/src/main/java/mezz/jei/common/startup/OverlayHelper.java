@@ -1,5 +1,6 @@
 package mezz.jei.common.startup;
 
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.common.bookmarks.BookmarkList;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.GuiScreenHelper;
@@ -21,6 +22,7 @@ public final class OverlayHelper {
         RegisteredIngredients registeredIngredients,
         IIngredientGridConfig ingredientGridConfig,
         GuiScreenHelper guiScreenHelper,
+        IModIdHelper modIdHelper,
         DrawableNineSliceTexture background,
         DrawableNineSliceTexture slotBackground
     ) {
@@ -33,7 +35,7 @@ public final class OverlayHelper {
             configData.clientConfig(),
             configData.worldConfig(),
             guiScreenHelper,
-            data.modIdHelper(),
+            modIdHelper,
             data.serverConnection(),
             data.keyBindings()
         );
@@ -57,7 +59,8 @@ public final class OverlayHelper {
         RegisteredIngredients registeredIngredients,
         GuiScreenHelper guiScreenHelper,
         IIngredientGridSource ingredientFilter,
-        IFilterTextSource filterTextSource
+        IFilterTextSource filterTextSource,
+        IModIdHelper modIdHelper
     ) {
         ConfigData configData = data.configData();
 
@@ -67,6 +70,7 @@ public final class OverlayHelper {
             registeredIngredients,
             configData.ingredientListConfig(),
             guiScreenHelper,
+            modIdHelper,
             data.textures().getIngredientListBackground(),
             data.textures().getIngredientListSlotBackground()
         );
@@ -90,7 +94,8 @@ public final class OverlayHelper {
         RegisteredIngredients registeredIngredients,
         GuiScreenHelper guiScreenHelper,
         IIngredientGridSource ingredientFilter,
-        BookmarkList bookmarkList
+        BookmarkList bookmarkList,
+        IModIdHelper modIdHelper
     ) {
         ConfigData configData = data.configData();
 
@@ -100,6 +105,7 @@ public final class OverlayHelper {
             registeredIngredients,
             configData.bookmarkListConfig(),
             guiScreenHelper,
+            modIdHelper,
             data.textures().getBookmarkListBackground(),
             data.textures().getBookmarkListSlotBackground()
         );

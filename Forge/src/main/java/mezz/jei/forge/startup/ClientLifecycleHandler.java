@@ -2,7 +2,6 @@ package mezz.jei.forge.startup;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.BookmarkConfig;
 import mezz.jei.common.config.EditModeConfig;
@@ -13,7 +12,6 @@ import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.common.config.sorting.ModNameSortingConfig;
 import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.helpers.ModIdHelper;
 import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.common.ingredients.IngredientSorter;
 import mezz.jei.common.load.PluginHelper;
@@ -25,12 +23,10 @@ import mezz.jei.common.startup.JeiEventHandlers;
 import mezz.jei.common.startup.JeiStarter;
 import mezz.jei.common.startup.StartData;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.RecipeErrorUtil;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.forge.config.ForgeKeyBindings;
 import mezz.jei.forge.config.JEIClientConfigs;
-import mezz.jei.forge.config.ModIdFormatConfig;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.network.ConnectionToServer;
@@ -49,7 +45,6 @@ public class ClientLifecycleHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final JeiStarter jeiStarter;
-	private final ModIdFormatConfig modIdFormattingConfig;
 	private final StartEventObserver startEventObserver = new StartEventObserver(this::startJei, this::stopJei);
 	private final RuntimeEventSubscriptions runtimeSubscriptions;
 
@@ -59,10 +54,6 @@ public class ClientLifecycleHandler {
 		jeiClientConfigs.register();
 
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		this.modIdFormattingConfig = jeiClientConfigs.getModNameFormat();
-		IModIdHelper modIdHelper = new ModIdHelper(clientConfig, this.modIdFormattingConfig);
-		ErrorUtil.setModIdHelper(modIdHelper);
-		RecipeErrorUtil.setModIdHelper(modIdHelper);
 
 		// Additional config files
 		IBookmarkConfig bookmarkConfig = new BookmarkConfig(jeiConfigurationDir);
@@ -94,7 +85,8 @@ public class ClientLifecycleHandler {
 			bookmarkConfig,
 			jeiClientConfigs.getIngredientListConfig(),
 			jeiClientConfigs.getBookmarkListConfig(),
-			recipeCategorySortingConfig
+			recipeCategorySortingConfig,
+			jeiClientConfigs.getModNameFormat()
 		);
 
 		StartData startData = new StartData(
@@ -102,7 +94,6 @@ public class ClientLifecycleHandler {
 			vanillaPlugin,
 			textures,
 			serverConnection,
-			modIdHelper,
 			ingredientSorter,
 			keyBindings,
 			configData
@@ -130,7 +121,6 @@ public class ClientLifecycleHandler {
 			LOGGER.error("Failed to start JEI, it is already running.");
 			return;
 		}
-		this.modIdFormattingConfig.checkForModNameFormatOverride();
 
 		JeiEventHandlers handlers = this.jeiStarter.start();
 		EventRegistration.registerEvents(this.runtimeSubscriptions, handlers);
