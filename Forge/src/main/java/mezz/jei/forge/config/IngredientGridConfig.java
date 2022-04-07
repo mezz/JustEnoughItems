@@ -1,20 +1,12 @@
 package mezz.jei.forge.config;
 
-import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.AbstractIngredientGridConfig;
 import mezz.jei.common.gui.overlay.options.HorizontalAlignment;
 import mezz.jei.common.gui.overlay.options.NavigationVisibility;
 import mezz.jei.common.gui.overlay.options.VerticalAlignment;
 import net.minecraftforge.common.ForgeConfigSpec;
 
-public class IngredientGridConfig implements IIngredientGridConfig {
-	private static final int minNumRows = 1;
-	private static final int defaultNumRows = 16;
-	private static final int largestNumRows = 100;
-
-	private static final int minNumColumns = 4;
-	private static final int defaultNumColumns = 9;
-	private static final int largestNumColumns = 100;
-
+public class IngredientGridConfig extends AbstractIngredientGridConfig {
 	private final ForgeConfigSpec.IntValue maxRows;
 	private final ForgeConfigSpec.IntValue maxColumns;
 	private final ForgeConfigSpec.EnumValue<HorizontalAlignment> horizontalAlignment;
@@ -35,13 +27,13 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 			horizontalAlignment = builder.defineEnum("HorizontalAlignment", defaultHorizontalAlignment);
 
 			builder.comment("Horizontal alignment of the ingredient grid inside the available area");
-			verticalAlignment = builder.defineEnum("VerticalAlignment", VerticalAlignment.TOP);
+			verticalAlignment = builder.defineEnum("VerticalAlignment", defaultVerticalAlignment);
 
 			builder.comment("Visibility of the top page buttons. Use AUTO_HIDE to only show it when there are multiple pages.");
-			buttonNavigationVisibility = builder.defineEnum("ButtonNavigationVisibility", NavigationVisibility.ENABLED);
+			buttonNavigationVisibility = builder.defineEnum("ButtonNavigationVisibility", defaultButtonNavigationVisibility);
 
 			builder.comment("Set to true to draw a background texture behind the gui.");
-			drawBackground = builder.define("DrawBackground", false);
+			drawBackground = builder.define("DrawBackground", defaultDrawBackground);
 		}
 		builder.pop();
 	}
