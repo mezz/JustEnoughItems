@@ -14,15 +14,12 @@ import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.common.ingredients.IngredientSorter;
-import mezz.jei.common.load.PluginHelper;
+import mezz.jei.common.network.ClientPacketRouter;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.plugins.jei.JeiInternalPlugin;
-import mezz.jei.common.plugins.vanilla.VanillaPlugin;
 import mezz.jei.common.startup.ConfigData;
 import mezz.jei.common.startup.JeiEventHandlers;
 import mezz.jei.common.startup.JeiStarter;
 import mezz.jei.common.startup.StartData;
-import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.forge.config.ForgeKeyBindings;
@@ -69,13 +66,10 @@ public class ClientLifecycleHandler {
 		keyBindings.register();
 
 		WorldConfig worldConfig = new WorldConfig(serverConnection, keyBindings);
-		networkHandler.createClientPacketHandler(serverConnection, serverConfig, worldConfig);
+		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig, worldConfig);
+		networkHandler.createClientPacketHandler(packetRouter);
 
 		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
-		VanillaPlugin vanillaPlugin = PluginHelper.getPluginWithClass(VanillaPlugin.class, plugins);
-		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins);
-		ErrorUtil.checkNotNull(vanillaPlugin, "vanilla plugin");
-		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
 
 		ConfigData configData = new ConfigData(
 			clientConfig,
@@ -91,7 +85,6 @@ public class ClientLifecycleHandler {
 
 		StartData startData = new StartData(
 			plugins,
-			vanillaPlugin,
 			textures,
 			serverConnection,
 			ingredientSorter,

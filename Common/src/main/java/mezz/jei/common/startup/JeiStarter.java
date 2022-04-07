@@ -33,7 +33,10 @@ import mezz.jei.common.input.handlers.FocusInputHandler;
 import mezz.jei.common.input.handlers.GlobalInputHandler;
 import mezz.jei.common.input.handlers.GuiAreaInputHandler;
 import mezz.jei.common.load.PluginCaller;
+import mezz.jei.common.load.PluginHelper;
 import mezz.jei.common.load.PluginLoader;
+import mezz.jei.common.plugins.jei.JeiInternalPlugin;
+import mezz.jei.common.plugins.vanilla.VanillaPlugin;
 import mezz.jei.common.recipes.RecipeManager;
 import mezz.jei.common.recipes.RecipeTransferManager;
 import mezz.jei.common.runtime.JeiHelpers;
@@ -55,6 +58,11 @@ public final class JeiStarter {
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
 		List<IModPlugin> plugins = data.plugins();
+		VanillaPlugin vanillaPlugin = PluginHelper.getPluginWithClass(VanillaPlugin.class, plugins);
+		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins);
+		ErrorUtil.checkNotNull(vanillaPlugin, "vanilla plugin");
+		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
+
 		ConfigData configData = data.configData();
 
 		IFilterTextSource filterTextSource = new FilterTextSource();
@@ -67,7 +75,7 @@ public final class JeiStarter {
 		IngredientFilter ingredientFilter = pluginLoader.getIngredientFilter();
 
 		BookmarkList bookmarkList = pluginLoader.createBookmarkList(configData.bookmarkConfig());
-		RecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, data.vanillaPlugin(), configData.recipeCategorySortingConfig(), modIdHelper);
+		RecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, vanillaPlugin, configData.recipeCategorySortingConfig(), modIdHelper);
 		ImmutableTable<Class<?>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers =
 			pluginLoader.createRecipeTransferHandlers(plugins, recipeManager);
 		RecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);

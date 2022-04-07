@@ -1,11 +1,7 @@
 package mezz.jei.forge.network;
 
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.core.config.IServerConfig;
-import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.common.network.IConnectionToClient;
-import mezz.jei.common.network.ServerPacketRouter;
 import mezz.jei.common.network.ClientPacketRouter;
+import mezz.jei.common.network.ServerPacketRouter;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -37,8 +33,7 @@ public class NetworkHandler {
 		return true;
 	}
 
-	public void createServerPacketHandler(IConnectionToClient connection, IServerConfig config) {
-		ServerPacketRouter packetRouter = new ServerPacketRouter(connection, config);
+	public void createServerPacketHandler(ServerPacketRouter packetRouter) {
 		channel.addListener((NetworkEvent.ClientCustomPayloadEvent event) -> {
 			try {
 				ServerPlayer player = event.getSource().get().getSender();
@@ -60,8 +55,7 @@ public class NetworkHandler {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void createClientPacketHandler(IConnectionToServer connection, IServerConfig serverConfig, IWorldConfig worldConfig) {
-		ClientPacketRouter packetRouter = new ClientPacketRouter(connection, serverConfig, worldConfig);
+	public void createClientPacketHandler(ClientPacketRouter packetRouter) {
 		channel.addListener((NetworkEvent.ServerCustomPayloadEvent event) -> {
 			try {
 				packetRouter.onPacket(event.getPayload());
