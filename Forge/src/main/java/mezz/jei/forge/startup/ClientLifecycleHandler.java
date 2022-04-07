@@ -13,6 +13,7 @@ import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.common.config.sorting.ModNameSortingConfig;
 import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.helpers.ModIdHelper;
 import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.common.ingredients.IngredientSorter;
 import mezz.jei.common.load.PluginHelper;
@@ -29,10 +30,9 @@ import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.forge.config.ForgeKeyBindings;
 import mezz.jei.forge.config.JEIClientConfigs;
-import mezz.jei.forge.config.ModIdFormattingConfig;
+import mezz.jei.forge.config.ModIdFormatConfig;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
-import mezz.jei.forge.helpers.ForgeModIdHelper;
 import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.forge.network.NetworkHandler;
 import net.minecraft.client.Minecraft;
@@ -49,7 +49,7 @@ public class ClientLifecycleHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final JeiStarter jeiStarter;
-	private final ModIdFormattingConfig modIdFormattingConfig;
+	private final ModIdFormatConfig modIdFormattingConfig;
 	private final StartEventObserver startEventObserver = new StartEventObserver(this::startJei, this::stopJei);
 	private final RuntimeEventSubscriptions runtimeSubscriptions;
 
@@ -60,7 +60,7 @@ public class ClientLifecycleHandler {
 
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		this.modIdFormattingConfig = jeiClientConfigs.getModNameFormat();
-		IModIdHelper modIdHelper = new ForgeModIdHelper(clientConfig, this.modIdFormattingConfig);
+		IModIdHelper modIdHelper = new ModIdHelper(clientConfig, this.modIdFormattingConfig);
 		ErrorUtil.setModIdHelper(modIdHelper);
 		RecipeErrorUtil.setModIdHelper(modIdHelper);
 

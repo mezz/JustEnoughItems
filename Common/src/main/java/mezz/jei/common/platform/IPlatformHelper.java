@@ -23,4 +23,6 @@ public interface IPlatformHelper {
     IPlatformScreenHelper getScreenHelper();
 
     IPlatformIngredientHelper getIngredientHelper();
+
+    IPlatformModHelper getModHelper();
 }

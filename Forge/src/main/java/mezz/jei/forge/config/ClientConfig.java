@@ -29,18 +29,6 @@ public final class ClientConfig implements IClientConfig {
 	@Nullable
 	private static IClientConfig instance;
 
-	private static final int minRecipeGuiHeight = 175;
-	private static final int defaultRecipeGuiHeight = 350;
-
-	private static final GiveMode defaultGiveMode = GiveMode.MOUSE_PICKUP;
-	private static final boolean defaultCenterSearchBar = false;
-
-	public static final List<IngredientSortStage> ingredientSorterStagesDefault = List.of(
-		IngredientSortStage.MOD_NAME,
-		IngredientSortStage.INGREDIENT_TYPE,
-		IngredientSortStage.CREATIVE_MENU
-	);
-
 	// Forge config
 	private final ForgeConfigSpec.BooleanValue debugModeEnabled;
 	private final ForgeConfigSpec.BooleanValue centerSearchBarEnabled;
@@ -68,7 +56,7 @@ public final class ClientConfig implements IClientConfig {
 			cheatToHotbarUsingHotkeysEnabled = builder.define("CheatToHotbarUsingHotkeysEnabled", false);
 
 			builder.comment("How items should be handed to you");
-			giveMode = builder.defineEnum("GiveMode", defaultGiveMode);
+			giveMode = builder.defineEnum("GiveMode", GiveMode.defaultGiveMode);
 
 			builder.comment("Max. recipe gui height");
 			maxRecipeGuiHeight = builder.defineInRange("RecipeGuiHeight", defaultRecipeGuiHeight, minRecipeGuiHeight, Integer.MAX_VALUE);
@@ -87,7 +75,7 @@ public final class ClientConfig implements IClientConfig {
 		builder.push("sorting");
 		{
 			builder.comment(String.format("Sorting order for the ingredient list. Valid stages: %s", List.of(IngredientSortStage.values())));
-			List<String> defaults = ingredientSorterStagesDefault.stream()
+			List<String> defaults = IngredientSortStage.defaultStages.stream()
 				.map(Enum::name)
 				.toList();
 			Predicate<Object> elementValidator = validEnumElement(IngredientSortStage.class);
@@ -112,7 +100,7 @@ public final class ClientConfig implements IClientConfig {
 			.filter(Objects::nonNull)
 			.toList();
 		if (ingredientSorterStages.isEmpty()) {
-			return ingredientSorterStagesDefault;
+			return IngredientSortStage.defaultStages;
 		}
 		return ingredientSorterStages;
 	}

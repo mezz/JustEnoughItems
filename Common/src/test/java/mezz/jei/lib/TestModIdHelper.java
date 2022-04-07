@@ -1,9 +1,13 @@
 package mezz.jei.lib;
 
-import mezz.jei.common.helpers.AbstractModIdHelper;
+import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import net.minecraft.network.chat.Component;
 
-public class TestModIdHelper extends AbstractModIdHelper {
-	@Override
+import java.util.List;
+
+public class TestModIdHelper implements IModIdHelper {
+    @Override
 	public String getModNameForModId(String modId) {
 		return "ModName(" + modId + ")";
 	}
@@ -14,7 +18,12 @@ public class TestModIdHelper extends AbstractModIdHelper {
 	}
 
 	@Override
+	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
+		return tooltip;
+	}
+
+	@Override
 	public boolean isDisplayingModNameEnabled() {
-		return true;
+		return false;
 	}
 }

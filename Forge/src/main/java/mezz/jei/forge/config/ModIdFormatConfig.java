@@ -1,8 +1,24 @@
 package mezz.jei.forge.config;
 
-import mezz.jei.common.config.IModIdFormattingConfig;
+import mezz.jei.api.constants.ModIds;
+import mezz.jei.common.config.AbstractModIdFormatConfig;
 import mezz.jei.core.util.function.CachedSupplierTransformer;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -11,34 +27,14 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Supplier;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
-
-import mezz.jei.api.constants.ModIds;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-public class ModIdFormattingConfig implements IModIdFormattingConfig {
+public class ModIdFormatConfig extends AbstractModIdFormatConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
-
-	public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
-	public static final String defaultModNameFormatFriendly = "blue italic";
 
 	@Nullable
 	private String modNameFormatOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
 	private final Supplier<String> modNameFormat;
 
-	public ModIdFormattingConfig(ForgeConfigSpec.Builder builder) {
+	public ModIdFormatConfig(ForgeConfigSpec.Builder builder) {
 		EnumSet<ChatFormatting> validFormatting = EnumSet.allOf(ChatFormatting.class);
 		validFormatting.remove(ChatFormatting.RESET);
 
@@ -59,10 +55,11 @@ public class ModIdFormattingConfig implements IModIdFormattingConfig {
 		builder.push("modname");
 		builder.comment("Formatting for mod name tooltip", "Use these formatting colors:", validColors, "With these formatting options:", validFormats);
 		ForgeConfigSpec.ConfigValue<String> configValue = builder.define("ModNameFormat", defaultModNameFormatFriendly);
-		this.modNameFormat = new CachedSupplierTransformer<>(configValue::get, ModIdFormattingConfig::parseFriendlyModNameFormat);
+		this.modNameFormat = new CachedSupplierTransformer<>(configValue::get, AbstractModIdFormatConfig::parseFriendlyModNameFormat);
 		builder.pop();
 	}
 
+	@Override
 	public String getModNameFormat() {
 		String override = modNameFormatOverride;
 		if (override != null) {
@@ -71,32 +68,16 @@ public class ModIdFormattingConfig implements IModIdFormattingConfig {
 		return modNameFormat.get();
 	}
 
+	@Override
 	public boolean isModNameFormatOverrideActive() {
 		return modNameFormatOverride != null;
 	}
 
 	public void checkForModNameFormatOverride() {
-		String modNameFormatOverride = ModIdFormattingConfig.detectModNameTooltipFormatting();
+		String modNameFormatOverride = detectModNameTooltipFormatting();
 		if (!Objects.equals(this.modNameFormatOverride, modNameFormatOverride)) {
 			this.modNameFormatOverride = modNameFormatOverride;
 		}
-	}
-
-	private static String parseFriendlyModNameFormat(String formatWithEnumNames) {
-		if (formatWithEnumNames.isEmpty()) {
-			return "";
-		}
-		StringBuilder format = new StringBuilder();
-		String[] strings = formatWithEnumNames.split(" ");
-		for (String string : strings) {
-			ChatFormatting valueByName = ChatFormatting.getByName(string);
-			if (valueByName != null) {
-				format.append(valueByName);
-			} else {
-				LOGGER.error("Invalid format: {}", string);
-			}
-		}
-		return format.toString();
 	}
 
 	@Nullable
