@@ -11,7 +11,6 @@ import mezz.jei.common.startup.JeiEventHandlers;
 import mezz.jei.common.startup.JeiStarter;
 import mezz.jei.common.startup.StartData;
 import mezz.jei.core.config.IServerConfig;
-import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.forge.config.ForgeKeyBindings;
 import mezz.jei.forge.config.JEIClientConfigs;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
@@ -26,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 public class ClientLifecycleHandler {
@@ -36,13 +36,13 @@ public class ClientLifecycleHandler {
 	private final RuntimeEventSubscriptions runtimeSubscriptions;
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures, IServerConfig serverConfig) {
-		File jeiConfigurationDir = createConfigDir();
+		Path configDir = FMLPaths.CONFIGDIR.get();
+		Path jeiConfigDir = configDir.resolve(ModIds.JEI_ID);
+
 		JEIClientConfigs jeiClientConfigs = new JEIClientConfigs();
-		jeiClientConfigs.register();
+		jeiClientConfigs.register(configDir, jeiConfigDir.resolve("jei-client.toml"));
 
 		IConnectionToServer serverConnection = new ConnectionToServer();
-		Internal.setServerConnection(serverConnection);
-
 		ForgeKeyBindings keyBindings = new ForgeKeyBindings();
 		keyBindings.register();
 
@@ -54,15 +54,13 @@ public class ClientLifecycleHandler {
 			jeiClientConfigs.getModNameFormat(),
 			serverConnection,
 			keyBindings,
-			jeiConfigurationDir
+			jeiConfigDir
 		);
 
-		IWorldConfig worldConfig = configData.worldConfig();
-		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig, worldConfig);
+		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig, configData.worldConfig());
 		networkHandler.createClientPacketHandler(packetRouter);
 
 		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
-
 		StartData startData = new StartData(
 			plugins,
 			textures,
@@ -102,19 +100,5 @@ public class ClientLifecycleHandler {
 		LOGGER.info("Stopping JEI");
 		this.runtimeSubscriptions.clear();
 		Internal.setRuntime(null);
-	}
-
-	private static File createConfigDir() {
-		File configDir = new File(FMLPaths.CONFIGDIR.get().toFile(), ModIds.JEI_ID);
-		if (!configDir.exists()) {
-			try {
-				if (!configDir.mkdir()) {
-					throw new RuntimeException("Could not create config directory " + configDir);
-				}
-			} catch (SecurityException e) {
-				throw new RuntimeException("Could not create config directory " + configDir, e);
-			}
-		}
-		return configDir;
 	}
 }

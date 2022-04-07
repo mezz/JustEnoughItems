@@ -2,7 +2,7 @@ package mezz.jei.common.util;
 
 import mezz.jei.common.platform.IPlatformServerHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.core.util.FileUtil;
+import mezz.jei.core.util.PathUtil;
 import mezz.jei.core.util.ReflectionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -46,7 +46,7 @@ public final class ServerConfigPathUtil {
 				return reflectionUtil.getFieldWithClass(minecraftServer, LevelStorageSource.LevelStorageAccess.class)
 					.findFirst()
 					.map(LevelStorageSource.LevelStorageAccess::getLevelId)
-					.map(FileUtil::sanitizePathName)
+					.map(PathUtil::sanitizePathName)
 					.map(name -> worldDirPath.resolve("local").resolve(name))
 					.orElse(null);
 			}
@@ -56,7 +56,7 @@ public final class ServerConfigPathUtil {
 				int ipHash = serverData.ip.hashCode();
 				String ipHashHex = Integer.toHexString(ipHash);
 				String name = String.format("%s_%s", serverData.name, ipHashHex);
-				name = FileUtil.sanitizePathName(name);
+				name = PathUtil.sanitizePathName(name);
 				return worldDirPath.resolve("server").resolve(name);
 			}
 		}

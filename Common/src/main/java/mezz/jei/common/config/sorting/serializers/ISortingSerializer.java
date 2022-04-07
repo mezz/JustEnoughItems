@@ -1,12 +1,11 @@
 package mezz.jei.common.config.sorting.serializers;
 
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
+import java.nio.file.Path;
 import java.util.List;
 
 public interface ISortingSerializer<T> {
-	List<T> read(Reader reader) throws IOException;
+	List<T> read(Path path) throws IOException;
 
-	void write(FileWriter writer, List<T> sorted) throws IOException;
+	void write(Path path, List<T> sorted) throws IOException;
 }

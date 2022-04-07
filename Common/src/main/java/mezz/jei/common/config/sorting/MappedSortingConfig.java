@@ -2,7 +2,7 @@ package mezz.jei.common.config.sorting;
 
 import mezz.jei.common.config.sorting.serializers.ISortingSerializer;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Set;
@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 public abstract class MappedSortingConfig<T, V> extends SortingConfig<V> {
 	private final Function<T, V> mapping;
 
-	public MappedSortingConfig(File file, ISortingSerializer<V> serializer, Function<T, V> mapping) {
-		super(file, serializer);
+	public MappedSortingConfig(Path path, ISortingSerializer<V> serializer, Function<T, V> mapping) {
+		super(path, serializer);
 		this.mapping = mapping;
 	}
 

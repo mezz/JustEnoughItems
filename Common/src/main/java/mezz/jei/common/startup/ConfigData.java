@@ -1,5 +1,6 @@
 package mezz.jei.common.startup;
 
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.BookmarkConfig;
 import mezz.jei.common.config.EditModeConfig;
 import mezz.jei.common.config.IBookmarkConfig;
@@ -16,7 +17,9 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public record ConfigData(
     IClientConfig clientConfig,
@@ -39,16 +42,22 @@ public record ConfigData(
         IModIdFormatConfig modIdFormatConfig,
         IConnectionToServer serverConnection,
         IKeyBindings keyBindings,
-        File jeiConfigurationDir
+        Path configDir
     ) {
-        // Additional config files
-        IBookmarkConfig bookmarkConfig = new BookmarkConfig(jeiConfigurationDir);
-        IEditModeConfig editModeConfig = new EditModeConfig(jeiConfigurationDir);
-        RecipeCategorySortingConfig recipeCategorySortingConfig = new RecipeCategorySortingConfig(new File(jeiConfigurationDir, "recipe-category-sort-order.ini"));
-        WorldConfig worldConfig = new WorldConfig(serverConnection, keyBindings);
+        try {
+            Files.createDirectories(configDir);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to create JEI config directory: " + configDir, e);
+        }
+        Internal.setServerConnection(serverConnection);
 
-        ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(new File(jeiConfigurationDir, "ingredient-list-mod-sort-order.ini"));
-        IngredientTypeSortingConfig ingredientTypeSortingConfig = new IngredientTypeSortingConfig(new File(jeiConfigurationDir, "ingredient-list-type-sort-order.ini"));
+        IBookmarkConfig bookmarkConfig = new BookmarkConfig(configDir);
+        IEditModeConfig editModeConfig = new EditModeConfig(configDir.resolve("blacklist.cfg"));
+        RecipeCategorySortingConfig recipeCategorySortingConfig = new RecipeCategorySortingConfig(configDir.resolve("recipe-category-sort-order.ini"));
+        ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(configDir.resolve("ingredient-list-mod-sort-order.ini"));
+        IngredientTypeSortingConfig ingredientTypeSortingConfig = new IngredientTypeSortingConfig(configDir.resolve("ingredient-list-type-sort-order.ini"));
+
+        WorldConfig worldConfig = new WorldConfig(serverConnection, keyBindings);
 
         return new ConfigData(
             clientConfig,

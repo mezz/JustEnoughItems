@@ -6,12 +6,12 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.config.sorting.serializers.SortingSerializers;
 import mezz.jei.common.ingredients.IListElementInfo;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Comparator;
 
 public class IngredientTypeSortingConfig extends MappedSortingConfig<IListElementInfo<?>, String> {
-	public IngredientTypeSortingConfig(File file) {
-		super(file, SortingSerializers.STRING, IngredientTypeSortingConfig::getIngredientTypeString);
+	public IngredientTypeSortingConfig(Path path) {
+		super(path, SortingSerializers.STRING, IngredientTypeSortingConfig::getIngredientTypeString);
 	}
 
 	public static String getIngredientTypeString(IListElementInfo<?> info) {

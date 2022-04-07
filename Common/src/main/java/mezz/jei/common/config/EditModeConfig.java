@@ -1,25 +1,23 @@
 package mezz.jei.common.config;
 
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.core.config.IngredientBlacklistType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.ingredients.IngredientFilter;
-import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class EditModeConfig implements IEditModeConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -28,22 +26,22 @@ public class EditModeConfig implements IEditModeConfig {
 	private final Set<String> blacklist = new LinkedHashSet<>();
 
 	@Nullable
-	private final File blacklistConfigFile;
+	private final Path blacklistConfigFile;
 
-	public EditModeConfig(@Nullable File jeiConfigurationDir) {
+	public EditModeConfig(@Nullable Path blacklistConfigFile) {
 		Collections.addAll(blacklist, defaultBlacklist);
-		if (jeiConfigurationDir != null) {
-			blacklistConfigFile = new File(jeiConfigurationDir, "blacklist.cfg");
+		if (blacklistConfigFile != null) {
+			this.blacklistConfigFile = blacklistConfigFile;
 			loadBlacklistConfig();
 		} else {
-			blacklistConfigFile = null;
+			this.blacklistConfigFile = null;
 		}
 	}
 
 	private void loadBlacklistConfig() {
-		if (blacklistConfigFile != null && blacklistConfigFile.exists()) {
-			try (FileReader reader = new FileReader(blacklistConfigFile)) {
-				List<String> strings = IOUtils.readLines(reader);
+		if (blacklistConfigFile != null && Files.exists(blacklistConfigFile)) {
+			try {
+				List<String> strings = Files.readAllLines(blacklistConfigFile);
 				blacklist.clear();
 				blacklist.addAll(strings);
 			} catch (IOException e) {
@@ -55,12 +53,9 @@ public class EditModeConfig implements IEditModeConfig {
 	private void saveBlacklist() {
 		if (blacklistConfigFile != null) {
 			try {
-				if (blacklistConfigFile.createNewFile()) {
-					LOGGER.debug("Created blacklist config file: {}", blacklistConfigFile);
-				}
-				try (FileWriter writer = new FileWriter(blacklistConfigFile)) {
-					IOUtils.writeLines(blacklist, "\n", writer);
-				}
+				Files.createFile(blacklistConfigFile);
+				LOGGER.debug("Created blacklist config file: {}", blacklistConfigFile);
+				Files.write(blacklistConfigFile, blacklist);
 			} catch (IOException e) {
 				LOGGER.error("Failed to save blacklist to file {}", blacklistConfigFile, e);
 			}

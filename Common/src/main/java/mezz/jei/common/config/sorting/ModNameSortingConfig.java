@@ -4,12 +4,12 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.config.sorting.serializers.SortingSerializers;
 import mezz.jei.common.ingredients.IListElementInfo;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Comparator;
 
 public class ModNameSortingConfig extends MappedSortingConfig<IListElementInfo<?>, String> {
-	public ModNameSortingConfig(File file) {
-		super(file, SortingSerializers.STRING, IListElementInfo::getModNameForSorting);
+	public ModNameSortingConfig(Path path) {
+		super(path, SortingSerializers.STRING, IListElementInfo::getModNameForSorting);
 	}
 
 	@Override

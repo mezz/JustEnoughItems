@@ -7,25 +7,21 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.bookmarks.BookmarkList;
-import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.common.ingredients.IngredientInfo;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.common.util.ServerConfigPathUtil;
+import mezz.jei.core.util.PathUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.jetbrains.annotations.Nullable;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,34 +31,35 @@ public class BookmarkConfig implements IBookmarkConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final String MARKER_OTHER = "O:";
 	private static final String MARKER_STACK = "T:";
-	private final File jeiConfigurationDir;
+	private final Path jeiConfigurationDir;
 
 	@Nullable
-	private static File getFile(File jeiConfigurationDir) {
-		Path configPath = ServerConfigPathUtil.getWorldPath(jeiConfigurationDir.toPath());
+	private static Path getPath(Path jeiConfigurationDir) {
+		Path configPath = ServerConfigPathUtil.getWorldPath(jeiConfigurationDir);
 		if (configPath == null) {
 			return null;
 		}
-		File configFolder = configPath.toFile();
-		if (!configFolder.exists() && !configFolder.mkdirs()) {
-			LOGGER.error("Unable to create bookmark config folder: {}", configFolder);
+		try {
+			configPath = Files.createDirectories(configPath);
+		} catch (IOException e) {
+			LOGGER.error("Unable to create bookmark config folder: {}", configPath);
 			return null;
 		}
-		return configPath.resolve("bookmarks.ini").toFile();
+		return configPath.resolve("bookmarks.ini");
 	}
 
-	private static File getOldFile(File jeiConfigurationDir) {
-		return Path.of(jeiConfigurationDir.getAbsolutePath(), "bookmarks.ini").toFile();
+	private static Path getOldPath(Path jeiConfigurationDir) {
+		return jeiConfigurationDir.resolve("bookmarks.ini");
 	}
 
-	public BookmarkConfig(File jeiConfigurationDir) {
+	public BookmarkConfig(Path jeiConfigurationDir) {
 		this.jeiConfigurationDir = jeiConfigurationDir;
 	}
 
 	@Override
 	public void saveBookmarks(RegisteredIngredients registeredIngredients, List<ITypedIngredient<?>> ingredientList) {
-		File file = getFile(jeiConfigurationDir);
-		if (file == null) {
+		Path path = getPath(jeiConfigurationDir);
+		if (path == null) {
 			return;
 		}
 
@@ -75,35 +72,37 @@ public class BookmarkConfig implements IBookmarkConfig {
 			}
 		}
 
-		try (FileWriter writer = new FileWriter(file)) {
-			IOUtils.writeLines(strings, "\n", writer);
+		try {
+			Files.write(path, strings);
 		} catch (IOException e) {
-			LOGGER.error("Failed to save bookmarks list to file {}", file, e);
+			LOGGER.error("Failed to save bookmarks list to file {}", path, e);
 		}
 	}
 
 	@Override
 	public void loadBookmarks(RegisteredIngredients registeredIngredients, BookmarkList bookmarkList) {
-		File file = getFile(jeiConfigurationDir);
-		if (file == null) {
+		Path path = getPath(jeiConfigurationDir);
+		if (path == null) {
 			return;
-		} else if (!file.exists()) {
-			File oldFile = getOldFile(jeiConfigurationDir);
-			if (!oldFile.exists()) {
-				return;
-			}
+		}
+		if (!Files.exists(path)) {
+			Path oldPath = getOldPath(jeiConfigurationDir);
 			try {
-				Files.copy(oldFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				if (PathUtil.migrateConfigLocation(path, oldPath)) {
+					LOGGER.info("Successfully migrated config file from '{}' to new location '{}'", oldPath, path);
+				}
 			} catch (IOException e) {
-				LOGGER.error("Failed to copy old bookmarks {} to new location {}", oldFile, file, e);
-				return;
+				LOGGER.error("Failed to migrate config file from '{}' to new location '{}'", oldPath, path, e);
 			}
 		}
+		if (!Files.exists(path)) {
+			return;
+		}
 		List<String> ingredientJsonStrings;
-		try (FileReader reader = new FileReader(file)) {
-			ingredientJsonStrings = IOUtils.readLines(reader);
+		try {
+			ingredientJsonStrings = Files.readAllLines(path);
 		} catch (IOException e) {
-			LOGGER.error("Failed to load bookmarks from file {}", file, e);
+			LOGGER.error("Failed to load bookmarks from file {}", path, e);
 			return;
 		}
 

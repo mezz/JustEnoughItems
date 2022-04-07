@@ -5,12 +5,12 @@ import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.common.config.sorting.serializers.SortingSerializers;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Comparator;
 
 public class RecipeCategorySortingConfig extends MappedSortingConfig<RecipeType<?>, String> {
-	public RecipeCategorySortingConfig(File file) {
-		super(file, SortingSerializers.STRING, r -> r.getUid().toString());
+	public RecipeCategorySortingConfig(Path path) {
+		super(path, SortingSerializers.STRING, r -> r.getUid().toString());
 	}
 
 	@Override
