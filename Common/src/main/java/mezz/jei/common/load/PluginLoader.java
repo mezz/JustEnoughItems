@@ -21,10 +21,12 @@ import mezz.jei.common.gui.GuiHelper;
 import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.filter.IFilterTextSource;
+import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.common.ingredients.IngredientBlacklistInternal;
 import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.IngredientListElementFactory;
 import mezz.jei.common.ingredients.IngredientManager;
+import mezz.jei.common.ingredients.IngredientSorter;
 import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.subtypes.SubtypeManager;
@@ -65,7 +67,7 @@ public class PluginLoader {
 	private final IIngredientVisibility ingredientVisibility;
 	private final IngredientFilter ingredientFilter;
 
-	public PluginLoader(StartData data, IFilterTextSource filterTextSource, IModIdHelper modIdHelper) {
+	public PluginLoader(StartData data, IFilterTextSource filterTextSource, IModIdHelper modIdHelper, IIngredientSorter ingredientSorter) {
 		this.data = data;
 		this.timer = new LoggedTimer();
 		ConfigData configData = data.configData();
@@ -101,7 +103,7 @@ public class PluginLoader {
 			configData.clientConfig(),
 			configData.ingredientFilterConfig(),
 			registeredIngredients,
-			data.ingredientSorter(),
+			ingredientSorter,
 			ingredientList,
 			modIdHelper,
 			ingredientVisibility

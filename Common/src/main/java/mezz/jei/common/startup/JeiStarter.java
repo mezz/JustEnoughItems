@@ -19,8 +19,10 @@ import mezz.jei.common.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.common.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.common.gui.recipes.RecipesGui;
 import mezz.jei.common.helpers.ModIdHelper;
+import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.IngredientFilterApi;
+import mezz.jei.common.ingredients.IngredientSorter;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.ClientInputHandler;
 import mezz.jei.common.input.CombinedRecipeFocusSource;
@@ -65,9 +67,15 @@ public final class JeiStarter {
 
 		ConfigData configData = data.configData();
 
+		IIngredientSorter ingredientSorter = new IngredientSorter(
+			configData.clientConfig(),
+			configData.modNameSortingConfig(),
+			configData.ingredientTypeSortingConfig()
+		);
+
 		IFilterTextSource filterTextSource = new FilterTextSource();
 		IModIdHelper modIdHelper = new ModIdHelper(configData.clientConfig(), configData.modIdFormatConfig());
-		PluginLoader pluginLoader = new PluginLoader(data, filterTextSource, modIdHelper);
+		PluginLoader pluginLoader = new PluginLoader(data, filterTextSource, modIdHelper, ingredientSorter);
 		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 
 		RegisteredIngredients registeredIngredients = pluginLoader.getRegisteredIngredients();
@@ -160,7 +168,7 @@ public final class JeiStarter {
 		ClientInputHandler clientInputHandler = new ClientInputHandler(charTypedHandlers, userInputHandler, data.keyBindings());
 
 		// This needs to be run after all of the "Ingredients are being added at runtime" items.
-		data.ingredientSorter().doPreSort(ingredientFilter, registeredIngredients);
+		ingredientSorter.doPreSort(ingredientFilter, registeredIngredients);
 
 		totalTime.stop();
 

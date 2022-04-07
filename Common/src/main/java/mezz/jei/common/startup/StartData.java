@@ -12,7 +12,6 @@ public record StartData(
     List<IModPlugin> plugins,
     Textures textures,
     IConnectionToServer serverConnection,
-    IIngredientSorter ingredientSorter,
     IKeyBindings keyBindings,
     ConfigData configData
 ) {

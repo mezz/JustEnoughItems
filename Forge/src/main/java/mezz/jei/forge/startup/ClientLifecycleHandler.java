@@ -3,25 +3,15 @@ package mezz.jei.forge.startup;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
-import mezz.jei.common.config.BookmarkConfig;
-import mezz.jei.common.config.EditModeConfig;
-import mezz.jei.common.config.IBookmarkConfig;
-import mezz.jei.common.config.IEditModeConfig;
-import mezz.jei.common.config.WorldConfig;
-import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
-import mezz.jei.common.config.sorting.ModNameSortingConfig;
-import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.ingredients.IIngredientSorter;
-import mezz.jei.common.ingredients.IngredientSorter;
 import mezz.jei.common.network.ClientPacketRouter;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.startup.ConfigData;
 import mezz.jei.common.startup.JeiEventHandlers;
 import mezz.jei.common.startup.JeiStarter;
 import mezz.jei.common.startup.StartData;
-import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IServerConfig;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.forge.config.ForgeKeyBindings;
 import mezz.jei.forge.config.JEIClientConfigs;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
@@ -50,44 +40,33 @@ public class ClientLifecycleHandler {
 		JEIClientConfigs jeiClientConfigs = new JEIClientConfigs();
 		jeiClientConfigs.register();
 
-		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-
-		// Additional config files
-		IBookmarkConfig bookmarkConfig = new BookmarkConfig(jeiConfigurationDir);
-		IEditModeConfig editModeConfig = new EditModeConfig(jeiConfigurationDir);
-		RecipeCategorySortingConfig recipeCategorySortingConfig = new RecipeCategorySortingConfig(new File(jeiConfigurationDir, "recipe-category-sort-order.ini"));
-
-		IIngredientSorter ingredientSorter = createIngredientSorter(clientConfig, jeiConfigurationDir);
-
 		IConnectionToServer serverConnection = new ConnectionToServer();
 		Internal.setServerConnection(serverConnection);
 
 		ForgeKeyBindings keyBindings = new ForgeKeyBindings();
 		keyBindings.register();
 
-		WorldConfig worldConfig = new WorldConfig(serverConnection, keyBindings);
+		ConfigData configData = ConfigData.create(
+			jeiClientConfigs.getClientConfig(),
+			jeiClientConfigs.getFilterConfig(),
+			jeiClientConfigs.getIngredientListConfig(),
+			jeiClientConfigs.getBookmarkListConfig(),
+			jeiClientConfigs.getModNameFormat(),
+			serverConnection,
+			keyBindings,
+			jeiConfigurationDir
+		);
+
+		IWorldConfig worldConfig = configData.worldConfig();
 		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig, worldConfig);
 		networkHandler.createClientPacketHandler(packetRouter);
 
 		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
 
-		ConfigData configData = new ConfigData(
-			clientConfig,
-			editModeConfig,
-			jeiClientConfigs.getFilterConfig(),
-			worldConfig,
-			bookmarkConfig,
-			jeiClientConfigs.getIngredientListConfig(),
-			jeiClientConfigs.getBookmarkListConfig(),
-			recipeCategorySortingConfig,
-			jeiClientConfigs.getModNameFormat()
-		);
-
 		StartData startData = new StartData(
 			plugins,
 			textures,
 			serverConnection,
-			ingredientSorter,
 			keyBindings,
 			configData
 		);
@@ -123,12 +102,6 @@ public class ClientLifecycleHandler {
 		LOGGER.info("Stopping JEI");
 		this.runtimeSubscriptions.clear();
 		Internal.setRuntime(null);
-	}
-
-	private static IIngredientSorter createIngredientSorter(IClientConfig clientConfig, File jeiConfigurationDir) {
-		ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(new File(jeiConfigurationDir, "ingredient-list-mod-sort-order.ini"));
-		IngredientTypeSortingConfig ingredientTypeSortingConfig = new IngredientTypeSortingConfig(new File(jeiConfigurationDir, "ingredient-list-type-sort-order.ini"));
-		return new IngredientSorter(clientConfig, ingredientModNameSortingConfig, ingredientTypeSortingConfig);
 	}
 
 	private static File createConfigDir() {
