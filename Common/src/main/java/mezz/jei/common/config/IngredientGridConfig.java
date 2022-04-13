@@ -8,7 +8,19 @@ import mezz.jei.common.gui.overlay.options.VerticalAlignment;
 
 import java.util.function.Supplier;
 
-public class IngredientGridConfig extends AbstractIngredientGridConfig {
+public class IngredientGridConfig implements IIngredientGridConfig {
+	private static final int minNumRows = 1;
+	private static final int defaultNumRows = 16;
+	private static final int largestNumRows = 100;
+
+	private static final int minNumColumns = 4;
+	private static final int defaultNumColumns = 9;
+	private static final int largestNumColumns = 100;
+
+	private static final VerticalAlignment defaultVerticalAlignment = VerticalAlignment.TOP;
+	private static final NavigationVisibility defaultButtonNavigationVisibility = NavigationVisibility.ENABLED;
+	private static final boolean defaultDrawBackground = false;
+
 	private final Supplier<Integer> maxRows;
 	private final Supplier<Integer> maxColumns;
 	private final Supplier<HorizontalAlignment> horizontalAlignment;
