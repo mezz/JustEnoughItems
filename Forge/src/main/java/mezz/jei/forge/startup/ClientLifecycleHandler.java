@@ -12,7 +12,6 @@ import mezz.jei.common.startup.JeiStarter;
 import mezz.jei.common.startup.StartData;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.forge.config.ForgeKeyBindings;
-import mezz.jei.common.config.JEIClientConfigs;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.network.ConnectionToServer;
@@ -38,20 +37,11 @@ public class ClientLifecycleHandler {
 		Path configDir = FMLPaths.CONFIGDIR.get();
 		Path jeiConfigDir = configDir.resolve(ModIds.JEI_ID);
 
-		Path configFile = jeiConfigDir.resolve("jei-client.ini");
-		JEIClientConfigs jeiClientConfigs = new JEIClientConfigs(configFile);
-		jeiClientConfigs.register(configDir, configFile);
-
 		IConnectionToServer serverConnection = new ConnectionToServer();
 		ForgeKeyBindings keyBindings = new ForgeKeyBindings();
 		keyBindings.register();
 
 		ConfigData configData = ConfigData.create(
-			jeiClientConfigs.getClientConfig(),
-			jeiClientConfigs.getFilterConfig(),
-			jeiClientConfigs.getIngredientListConfig(),
-			jeiClientConfigs.getBookmarkListConfig(),
-			jeiClientConfigs.getModNameFormat(),
 			serverConnection,
 			keyBindings,
 			jeiConfigDir
