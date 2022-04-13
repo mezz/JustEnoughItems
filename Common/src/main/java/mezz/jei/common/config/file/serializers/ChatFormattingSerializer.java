@@ -1,13 +1,11 @@
 package mezz.jei.common.config.file.serializers;
 
-import joptsimple.internal.Strings;
 import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public class ChatFormattingSerializer implements IConfigValueSerializer<List<ChatFormatting>> {
