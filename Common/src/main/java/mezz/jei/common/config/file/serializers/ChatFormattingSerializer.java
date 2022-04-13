@@ -1,5 +1,6 @@
 package mezz.jei.common.config.file.serializers;
 
+import joptsimple.internal.Strings;
 import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class ChatFormattingSerializer implements IConfigValueSerializer<List<Cha
     @Override
     public String serialize(List<ChatFormatting> value) {
         return value.stream()
-            .map(ChatFormatting::name)
+            .map(ChatFormatting::getName)
             .collect(Collectors.joining(" "));
     }
 
@@ -50,25 +51,22 @@ public class ChatFormattingSerializer implements IConfigValueSerializer<List<Cha
         EnumSet<ChatFormatting> validFormatting = EnumSet.allOf(ChatFormatting.class);
         validFormatting.remove(ChatFormatting.RESET);
 
-        StringJoiner validColorsJoiner = new StringJoiner(", ");
-        StringJoiner validFormatsJoiner = new StringJoiner(", ");
+        List<ChatFormatting> validColors = new ArrayList<>();
+        List<ChatFormatting> validFormats = new ArrayList<>();
 
         for (ChatFormatting chatFormatting : validFormatting) {
-            String name = chatFormatting.getName();
             if (chatFormatting.isColor()) {
-                validColorsJoiner.add(name);
+                validColors.add(chatFormatting);
             } else if (chatFormatting.isFormat()) {
-                validFormatsJoiner.add(name);
+                validFormats.add(chatFormatting);
             }
         }
-        String validColors = validColorsJoiner.toString();
-        String validFormats = validFormatsJoiner.toString();
 
         return """
             A chat formatting string.
             Use these formatting colors:
             %s
             With these formatting options:
-            %s""".formatted(validColors, validFormats);
+            %s""".formatted(serialize(validColors), serialize(validFormats));
     }
 }
