@@ -1,29 +1,48 @@
 package mezz.jei.common.config;
 
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.common.config.file.ConfigCategoryBuilder;
+import mezz.jei.common.config.file.ConfigSchemaBuilder;
+import mezz.jei.common.config.file.ConfigValue;
+import mezz.jei.common.config.file.serializers.ChatFormattingSerializer;
+import mezz.jei.common.platform.IPlatformItemStackHelper;
+import mezz.jei.common.platform.Services;
+import mezz.jei.core.util.function.CachedSupplierTransformer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-public abstract class AbstractModIdFormatConfig implements IModIdFormatConfig {
-    private static final Logger LOGGER = LogManager.getLogger();
-
-    protected static final String defaultModNameFormat = "blue italic";
+public class ModIdFormatConfig implements IModIdFormatConfig {
+    protected static final List<ChatFormatting> defaultModNameFormat = List.of(ChatFormatting.BLUE, ChatFormatting.ITALIC);
     public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
 
+    private final Supplier<String> modNameFormat;
     @Nullable
     private String cachedOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
 
-    protected abstract List<Component> getTestTooltip(ItemStack itemStack);
+    public ModIdFormatConfig(ConfigSchemaBuilder builder) {
+        ConfigCategoryBuilder modName = builder.addCategory("modname");
+        Supplier<List<ChatFormatting>> configValue = modName.addValue(new ConfigValue<>(
+            "ModNameFormat",
+            defaultModNameFormat,
+            ChatFormattingSerializer.INSTANCE,
+            "Formatting for mod name tooltip"
+        ));
+        this.modNameFormat = new CachedSupplierTransformer<>(configValue, ModIdFormatConfig::toFormatString);
+    }
 
-    protected abstract String getFormat();
+    private static String toFormatString(List<ChatFormatting> values) {
+        return values.stream()
+            .map(ChatFormatting::toString)
+            .collect(Collectors.joining());
+    }
 
     private String getOverride() {
         if (cachedOverride == null) {
@@ -38,7 +57,7 @@ public abstract class AbstractModIdFormatConfig implements IModIdFormatConfig {
         if (!override.isEmpty()) {
             return override;
         }
-        return getFormat();
+        return modNameFormat.get();
     }
 
     @Override
@@ -46,25 +65,9 @@ public abstract class AbstractModIdFormatConfig implements IModIdFormatConfig {
         return !getOverride().isEmpty();
     }
 
-    protected static String parseFriendlyModNameFormat(String formatWithEnumNames) {
-        if (formatWithEnumNames.isEmpty()) {
-            return "";
-        }
-        StringBuilder format = new StringBuilder();
-        String[] strings = formatWithEnumNames.split(" ");
-        for (String string : strings) {
-            ChatFormatting valueByName = ChatFormatting.getByName(string);
-            if (valueByName != null) {
-                format.append(valueByName);
-            } else {
-                LOGGER.error("Invalid format: {}", string);
-            }
-        }
-        return format.toString();
-    }
-
     private String detectModNameTooltipFormatting() {
-        List<Component> tooltip = getTestTooltip(new ItemStack(Items.APPLE));
+        IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
+        List<Component> tooltip = itemStackHelper.getTestTooltip(new ItemStack(Items.APPLE));
         if (tooltip.size() <= 1) {
             return "";
         }

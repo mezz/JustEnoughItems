@@ -18,7 +18,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
-import mezz.jei.forge.config.ClientConfig;
+import mezz.jei.common.config.ClientConfig;
 import mezz.jei.common.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.common.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.common.plugins.jei.ingredients.DebugIngredientListFactory;

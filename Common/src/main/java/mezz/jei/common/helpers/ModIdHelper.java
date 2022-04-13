@@ -6,7 +6,7 @@ import java.util.List;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.config.AbstractModIdFormatConfig;
+import mezz.jei.common.config.ModIdFormatConfig;
 import mezz.jei.common.config.IModIdFormatConfig;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.Services;
@@ -45,10 +45,6 @@ public final class ModIdHelper implements IModIdHelper {
 			// we detected that another mod is adding the mod name already
 			return tooltip;
 		}
-		String modNameFormat = modIdFormattingConfig.getModNameFormat();
-		if (modNameFormat.isEmpty()) {
-			return tooltip;
-		}
 		String modId = ingredientHelper.getDisplayModId(ingredient);
 		String modName = getFormattedModNameForModId(modId);
 		List<Component> tooltipCopy = new ArrayList<>(tooltip);
@@ -78,8 +74,8 @@ public final class ModIdHelper implements IModIdHelper {
 		modName = removeChatFormatting(modName); // some crazy mod has formatting in the name
 		String modNameFormat = modIdFormattingConfig.getModNameFormat();
 		if (!modNameFormat.isEmpty()) {
-			if (modNameFormat.contains(AbstractModIdFormatConfig.MOD_NAME_FORMAT_CODE)) {
-				return StringUtils.replaceOnce(modNameFormat, AbstractModIdFormatConfig.MOD_NAME_FORMAT_CODE, modName);
+			if (modNameFormat.contains(ModIdFormatConfig.MOD_NAME_FORMAT_CODE)) {
+				return StringUtils.replaceOnce(modNameFormat, ModIdFormatConfig.MOD_NAME_FORMAT_CODE, modName);
 			}
 			return modNameFormat + modName;
 		}

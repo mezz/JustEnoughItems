@@ -12,7 +12,7 @@ import mezz.jei.common.startup.JeiStarter;
 import mezz.jei.common.startup.StartData;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.forge.config.ForgeKeyBindings;
-import mezz.jei.forge.config.JEIClientConfigs;
+import mezz.jei.common.config.JEIClientConfigs;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.network.ConnectionToServer;
@@ -24,7 +24,6 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -39,8 +38,9 @@ public class ClientLifecycleHandler {
 		Path configDir = FMLPaths.CONFIGDIR.get();
 		Path jeiConfigDir = configDir.resolve(ModIds.JEI_ID);
 
-		JEIClientConfigs jeiClientConfigs = new JEIClientConfigs();
-		jeiClientConfigs.register(configDir, jeiConfigDir.resolve("jei-client.toml"));
+		Path configFile = jeiConfigDir.resolve("jei-client.ini");
+		JEIClientConfigs jeiClientConfigs = new JEIClientConfigs(configFile);
+		jeiClientConfigs.register(configDir, configFile);
 
 		IConnectionToServer serverConnection = new ConnectionToServer();
 		ForgeKeyBindings keyBindings = new ForgeKeyBindings();

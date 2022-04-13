@@ -1,84 +1,82 @@
 package mezz.jei.common.color;
 
+import com.mojang.blaze3d.platform.NativeImage;
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
-import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
+import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.BlockModelShaper;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.ItemModelShaper;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.item.ItemColors;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.ItemModelShaper;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
-import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.util.Mth;
-
-import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.common.util.ErrorUtil;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public final class ColorGetter implements IColorHelper {
 
 	public static final ColorGetter INSTANCE = new ColorGetter();
 
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String[] defaultColors = new String[]{
-		"White:EEEEEE",
-		"LightBlue:7492cc",
-		"Cyan:00EEEE",
-		"Blue:2222dd",
-		"LapisBlue:25418b",
-		"Teal:008080",
-		"Yellow:cacb58",
-		"GoldenYellow:EED700",
-		"Orange:d97634",
-		"Pink:D1899D",
-		"HotPink:FC0FC0",
-		"Magenta:b24bbb",
-		"Purple:813eb9",
-		"JadedPurple:43324f",
-		"EvilPurple:2e1649",
-		"Lavender:B57EDC",
-		"Indigo:480082",
-		"Sand:dbd3a0",
-		"Tan:bb9b63",
-		"LightBrown:A0522D",
-		"Brown:634b33",
-		"DarkBrown:3a2d13",
-		"LimeGreen:43b239",
-		"SlimeGreen:83cb73",
-		"Green:008000",
-		"DarkGreen:224d22",
-		"GrassGreen:548049",
-		"Red:963430",
-		"BrickRed:b0604b",
-		"NetherBrick:2a1516",
-		"Redstone:ce3e36",
-		"Black:181515",
-		"CharcoalGray:464646",
-		"IronGray:646464",
-		"Gray:808080",
-		"Silver:C0C0C0"
-	};
+	private static final List<ColorName> defaultColors = List.of(
+		new ColorName("White", 0xEEEEEE),
+		new ColorName("LightBlue", 0x7492cc),
+		new ColorName("Cyan", 0x00EEEE),
+		new ColorName("Blue", 0x2222dd),
+		new ColorName("LapisBlue", 0x25418b),
+		new ColorName("Teal", 0x008080),
+		new ColorName("Yellow", 0xcacb58),
+		new ColorName("GoldenYellow", 0xEED700),
+		new ColorName("Orange", 0xd97634),
+		new ColorName("Pink", 0xD1899D),
+		new ColorName("HotPink", 0xFC0FC0),
+		new ColorName("Magenta", 0xb24bbb),
+		new ColorName("Purple", 0x813eb9),
+		new ColorName("EvilPurple", 0x2e1649),
+		new ColorName("Lavender", 0xB57EDC),
+		new ColorName("Indigo", 0x480082),
+		new ColorName("Sand", 0xdbd3a0),
+		new ColorName("Tan", 0xbb9b63),
+		new ColorName("LightBrown", 0xA0522D),
+		new ColorName("Brown", 0x634b33),
+		new ColorName("DarkBrown", 0x3a2d13),
+		new ColorName("LimeGreen", 0x43b239),
+		new ColorName("SlimeGreen", 0x83cb73),
+		new ColorName("Green", 0x008000),
+		new ColorName("DarkGreen", 0x224d22),
+		new ColorName("GrassGreen", 0x548049),
+		new ColorName("Red", 0x963430),
+		new ColorName("BrickRed", 0xb0604b),
+		new ColorName("NetherBrick", 0x2a1516),
+		new ColorName("Redstone", 0xce3e36),
+		new ColorName("Black", 0x181515),
+		new ColorName("CharcoalGray", 0x464646),
+		new ColorName("IronGray", 0x646464),
+		new ColorName("Gray", 0x808080),
+		new ColorName("Silver", 0xC0C0C0)
+	);
 
 	private ColorGetter() {
 
 	}
 
-	public static String[] getColorDefaults() {
+	public static List<ColorName> getColorDefaults() {
 		return defaultColors;
 	}
 

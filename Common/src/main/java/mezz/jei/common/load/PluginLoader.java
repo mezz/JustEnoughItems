@@ -26,7 +26,6 @@ import mezz.jei.common.ingredients.IngredientBlacklistInternal;
 import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.IngredientListElementFactory;
 import mezz.jei.common.ingredients.IngredientManager;
-import mezz.jei.common.ingredients.IngredientSorter;
 import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.subtypes.SubtypeManager;

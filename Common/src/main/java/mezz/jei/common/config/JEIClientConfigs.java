@@ -1,15 +1,18 @@
-package mezz.jei.forge.config;
+package mezz.jei.common.config;
 
+import mezz.jei.common.config.file.ConfigSchema;
+import mezz.jei.common.config.file.ConfigSchemaBuilder;
+import mezz.jei.common.config.file.ConfigSerializer;
+import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.gui.overlay.options.HorizontalAlignment;
 import mezz.jei.core.util.PathUtil;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 
 public class JEIClientConfigs {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -20,21 +23,22 @@ public class JEIClientConfigs {
 	private final IngredientGridConfig ingredientListConfig;
 	private final IngredientGridConfig bookmarkListConfig;
 
-	private final ForgeConfigSpec config;
+	private final ConfigSchema schema;
 
-	public JEIClientConfigs() {
-		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+	public JEIClientConfigs(Path configFile) {
+		ConfigSchemaBuilder builder = new ConfigSchemaBuilder();
 
 		clientConfig = new ClientConfig(builder);
 		filterConfig = new IngredientFilterConfig(builder);
 		modNameFormat = new ModIdFormatConfig(builder);
 		ingredientListConfig = new IngredientGridConfig("IngredientList", builder, HorizontalAlignment.RIGHT);
 		bookmarkListConfig = new IngredientGridConfig("BookmarkList", builder, HorizontalAlignment.LEFT);
-		config = builder.build();
+
+		schema = builder.build(configFile);
 	}
 
 	public void register(Path configDir, Path configFile) {
-		Path oldConfigFile = configDir.resolve(configFile.getFileName());
+		Path oldConfigFile = configDir.resolve("jei-client.toml");
 		try {
 			if (PathUtil.migrateConfigLocation(configFile, oldConfigFile)) {
 				LOGGER.info("Successfully migrated config file from '{}' to new location '{}'", oldConfigFile, configFile);
@@ -42,9 +46,24 @@ public class JEIClientConfigs {
 		} catch (IOException e) {
 			LOGGER.error("Failed to migrate config file from '{}' to new location '{}'", oldConfigFile, configFile, e);
 		}
-		ModLoadingContext modLoadingContext = ModLoadingContext.get();
-		String relativePath = configDir.relativize(configFile).toString();
-		modLoadingContext.registerConfig(ModConfig.Type.CLIENT, config, relativePath);
+
+		Path configPath = schema.getPath();
+		try {
+			if (!Files.exists(configPath)) {
+				Files.createDirectories(configPath.getParent());
+				ConfigSerializer.save(schema);
+			}
+		} catch (IOException e) {
+			LOGGER.error("Failed to create config file: '{}'", configFile, e);
+		}
+
+		try {
+			FileWatcher fileWatcher = new FileWatcher(Map.of(configPath, schema::onFileChanged));
+			Thread thread = new Thread(fileWatcher::run, "JEI Config file watcher");
+			thread.start();
+		} catch (IOException e) {
+			LOGGER.error("Failed to create FileWatcher Thread for config file: '{}'", configFile, e);
+		}
 	}
 
 	public ClientConfig getClientConfig() {

@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
-import java.util.Map;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -18,13 +18,13 @@ public class ColorNamer {
 		return INSTANCE;
 	}
 
-	public static void create(Supplier<Map<Integer, String>> colorNames) {
+	public static void create(Supplier<List<ColorName>> colorNames) {
 		INSTANCE = new ColorNamer(colorNames);
 	}
 
-	private final Supplier<Map<Integer, String>> colorNames;
+	private final Supplier<List<ColorName>> colorNames;
 
-	private ColorNamer(Supplier<Map<Integer, String>> colorNames) {
+	private ColorNamer(Supplier<List<ColorName>> colorNames) {
 		this.colorNames = colorNames;
 	}
 
@@ -41,13 +41,13 @@ public class ColorNamer {
 
 	@Nullable
 	private String getClosestColorName(Integer color) {
-		return colorNames.get().entrySet().stream()
+		return colorNames.get().stream()
 			.min(Comparator.comparing(entry -> {
-				Integer namedColor = entry.getKey();
+				Integer namedColor = entry.color();
 				double distance = ColorUtil.slowPerceptualColorDistanceSquared(namedColor, color);
 				return Math.abs(distance);
 			}))
-			.map(Map.Entry::getValue)
+			.map(ColorName::name)
 			.orElse(null);
 	}
 }
