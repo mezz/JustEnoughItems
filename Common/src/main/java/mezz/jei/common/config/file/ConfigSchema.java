@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +26,12 @@ public class ConfigSchema {
 
     public ConfigSchema(Path path, List<ConfigCategoryBuilder> categoryBuilders) {
         this.path = path;
-        this.categories = new LinkedHashMap<>();
+        Map<String, ConfigCategory> map = new LinkedHashMap<>();
         for (ConfigCategoryBuilder builder : categoryBuilders) {
             ConfigCategory category = builder.build(this);
-            this.categories.put(category.getName(), category);
+            map.put(category.getName(), category);
         }
+        this.categories = Collections.unmodifiableMap(map);
     }
 
     public void loadIfNeeded() {

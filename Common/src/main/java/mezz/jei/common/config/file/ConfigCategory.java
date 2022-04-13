@@ -4,11 +4,11 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class ConfigCategory {
     private final String name;
@@ -17,8 +17,11 @@ public class ConfigCategory {
 
     public ConfigCategory(String name, List<ConfigValue<?>> values) {
         this.name = name;
-        this.valueMap = values.stream()
-            .collect(Collectors.toMap(ConfigValue::getName, Function.identity()));
+        Map<String, ConfigValue<?>> map = new LinkedHashMap<>();
+        for (ConfigValue<?> value : values) {
+            map.put(value.getName(), value);
+        }
+        this.valueMap = Collections.unmodifiableMap(map);
     }
 
     public String getName() {
