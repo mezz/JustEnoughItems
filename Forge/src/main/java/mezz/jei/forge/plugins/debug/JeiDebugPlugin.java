@@ -184,18 +184,15 @@ public class JeiDebugPlugin implements IModPlugin {
 			registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
 			registration.addRecipeCatalyst(ForgeTypes.FLUID_STACK, new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), DebugRecipeCategory.TYPE);
 			registration.addRecipeCatalyst(VanillaTypes.ITEM_STACK, new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
-			int i = 0;
 			IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
-			for (Item item : registry.getValues()) {
-				ItemStack catalystIngredient = new ItemStack(item);
-				if (!catalystIngredient.isEmpty()) {
-					registration.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.TYPE);
-				}
-				i++;
-				if (i > 30) {
-					break;
-				}
-			}
+			registry.getValues()
+				.limit(30)
+				.forEach(item -> {
+					ItemStack catalystIngredient = new ItemStack(item);
+					if (!catalystIngredient.isEmpty()) {
+						registration.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.TYPE);
+					}
+				});
 		}
 	}
 

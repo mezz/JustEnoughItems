@@ -14,6 +14,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Optional;
+
 public class PacketDeletePlayerItem extends PacketJei {
 	private final ItemStack itemStack;
 
@@ -40,10 +42,10 @@ public class PacketDeletePlayerItem extends PacketJei {
 		ServerPlayer player = context.player();
 		IServerConfig serverConfig = context.serverConfig();
 		int itemId = buf.readVarInt();
-		Item item = registry.getValue(itemId);
-		if (ServerCommandUtil.hasPermissionForCheatMode(player, serverConfig)) {
+		Optional<Item> value = registry.getValue(itemId);
+		if (value.isPresent() && ServerCommandUtil.hasPermissionForCheatMode(player, serverConfig)) {
 			ItemStack playerItem = player.containerMenu.getCarried();
-			if (playerItem.getItem() == item) {
+			if (playerItem.getItem() == value.get()) {
 				player.containerMenu.setCarried(ItemStack.EMPTY);
 			}
 		}

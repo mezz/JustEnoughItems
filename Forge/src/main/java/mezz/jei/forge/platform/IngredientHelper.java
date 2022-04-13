@@ -12,7 +12,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.stream.Stream;
 
-public class ForgeIngredientHelper implements IPlatformIngredientHelper {
+public class IngredientHelper implements IPlatformIngredientHelper {
     @Override
     public Ingredient createShulkerDyeIngredient(DyeColor color) {
         DyeItem dye = DyeItem.byColor(color);

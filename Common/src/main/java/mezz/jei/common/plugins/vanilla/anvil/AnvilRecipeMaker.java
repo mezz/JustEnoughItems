@@ -87,7 +87,6 @@ public final class AnvilRecipeMaker {
 	) {
 		IPlatformRegistry<Enchantment> registry = Services.PLATFORM.getRegistry(Registry.ENCHANTMENT_REGISTRY);
 		List<EnchantmentData> enchantmentDatas = registry.getValues()
-			.stream()
 			.map(EnchantmentData::new)
 			.toList();
 

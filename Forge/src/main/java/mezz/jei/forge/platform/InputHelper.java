@@ -5,7 +5,7 @@ import mezz.jei.common.platform.IPlatformInputHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
 
-public class ForgeInputHelper implements IPlatformInputHelper {
+public class InputHelper implements IPlatformInputHelper {
     @Override
     public boolean isActiveAndMatches(KeyMapping keyMapping, InputConstants.Key key) {
         return keyMapping.isActiveAndMatches(key);

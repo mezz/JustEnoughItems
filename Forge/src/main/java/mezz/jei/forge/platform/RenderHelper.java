@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class ForgeRenderHelper implements IPlatformRenderHelper {
+public class RenderHelper implements IPlatformRenderHelper {
     @Override
     public Font getFontRenderer(Minecraft minecraft, ItemStack itemStack) {
         IItemRenderProperties renderProperties = RenderProperties.get(itemStack);

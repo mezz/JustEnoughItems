@@ -12,10 +12,11 @@ import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.render.FluidTankRenderer;
+import mezz.jei.forge.platform.FluidHelper;
 import mezz.jei.forge.plugins.forge.brewing.BrewingRecipeMaker;
 import mezz.jei.forge.plugins.forge.ingredients.fluid.FluidStackHelper;
 import mezz.jei.forge.plugins.forge.ingredients.fluid.FluidStackListFactory;
-import mezz.jei.forge.plugins.forge.ingredients.fluid.FluidStackRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -35,8 +36,8 @@ public class ForgePlugin implements IModPlugin {
 
         List<FluidStack> fluidStacks = FluidStackListFactory.create();
         FluidStackHelper fluidStackHelper = new FluidStackHelper(subtypeManager, colorHelper);
-        FluidStackRenderer fluidStackRenderer = new FluidStackRenderer();
-        registration.register(ForgeTypes.FLUID_STACK, fluidStacks, fluidStackHelper, fluidStackRenderer);
+        FluidTankRenderer<FluidStack> fluidTankRenderer = new FluidTankRenderer<>(FluidHelper.INSTANCE);
+        registration.register(ForgeTypes.FLUID_STACK, fluidStacks, fluidStackHelper, fluidTankRenderer);
     }
 
     @Override

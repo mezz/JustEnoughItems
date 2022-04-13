@@ -15,7 +15,7 @@ import net.minecraftforge.fml.ModList;
 
 import java.util.Optional;
 
-public class ForgeConfigHelper implements IPlatformConfigHelper {
+public class ConfigHelper implements IPlatformConfigHelper {
     @Override
     public Optional<Screen> getConfigScreen() {
         Minecraft minecraft = Minecraft.getInstance();

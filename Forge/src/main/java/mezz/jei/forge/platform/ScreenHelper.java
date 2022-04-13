@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ForgeScreenHelper implements IPlatformScreenHelper {
+public class ScreenHelper implements IPlatformScreenHelper {
     @Override
     public @Nullable Slot getSlotUnderMouse(AbstractContainerScreen<?> containerScreen) {
         return containerScreen.getSlotUnderMouse();

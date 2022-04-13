@@ -16,7 +16,6 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 
-import java.util.Collection;
 import java.util.List;
 
 public final class TippedArrowRecipeMaker {
@@ -28,8 +27,7 @@ public final class TippedArrowRecipeMaker {
 
 		IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registry.POTION_REGISTRY);
 		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
-		Collection<Potion> potions = potionRegistry.getValues();
-		return potions.stream()
+		return potionRegistry.getValues()
 			.<CraftingRecipe>map(potion -> {
 				ItemStack input = PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), potion);
 				ItemStack output = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, 8), potion);

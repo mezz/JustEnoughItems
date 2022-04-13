@@ -10,7 +10,7 @@ import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.jetbrains.annotations.Nullable;
 
-public class ForgeRecipeHelper implements IPlatformRecipeHelper {
+public class RecipeHelper implements IPlatformRecipeHelper {
     @Override
     public <T extends CraftingRecipe> int getWidth(T recipe) {
         if (recipe instanceof IShapedRecipe<?> shapedRecipe) {

@@ -1,7 +1,5 @@
 package mezz.jei.common.util;
 
-import mezz.jei.common.platform.IPlatformServerHelper;
-import mezz.jei.common.platform.Services;
 import mezz.jei.core.util.PathUtil;
 import mezz.jei.core.util.ReflectionUtil;
 import net.minecraft.client.Minecraft;
@@ -40,8 +38,7 @@ public final class ServerConfigPathUtil {
 		}
 		Connection connection = clientPacketListener.getConnection();
 		if (connection.isMemoryConnection()) {
-			IPlatformServerHelper serverHelper = Services.PLATFORM.getServerHelper();
-			MinecraftServer minecraftServer = serverHelper.getServer();
+			MinecraftServer minecraftServer = minecraft.getSingleplayerServer();
 			if (minecraftServer != null) {
 				return reflectionUtil.getFieldWithClass(minecraftServer, LevelStorageSource.LevelStorageAccess.class)
 					.findFirst()
