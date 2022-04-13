@@ -8,6 +8,7 @@ import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.IModIdFormatConfig;
+import mezz.jei.common.config.JEIClientConfigs;
 import mezz.jei.common.config.WorldConfig;
 import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.common.config.sorting.ModNameSortingConfig;
@@ -35,11 +36,6 @@ public record ConfigData(
     IngredientTypeSortingConfig ingredientTypeSortingConfig
 ) {
     public static ConfigData create(
-        IClientConfig clientConfig,
-        IIngredientFilterConfig filterConfig,
-        IIngredientGridConfig ingredientListConfig,
-        IIngredientGridConfig bookmarkListConfig,
-        IModIdFormatConfig modIdFormatConfig,
         IConnectionToServer serverConnection,
         IKeyBindings keyBindings,
         Path configDir
@@ -51,6 +47,10 @@ public record ConfigData(
         }
         Internal.setServerConnection(serverConnection);
 
+        Path configFile = configDir.resolve("jei-client.ini");
+        JEIClientConfigs jeiClientConfigs = new JEIClientConfigs(configFile);
+        jeiClientConfigs.register(configDir, configFile);
+
         IBookmarkConfig bookmarkConfig = new BookmarkConfig(configDir);
         IEditModeConfig editModeConfig = new EditModeConfig(configDir.resolve("blacklist.cfg"));
         RecipeCategorySortingConfig recipeCategorySortingConfig = new RecipeCategorySortingConfig(configDir.resolve("recipe-category-sort-order.ini"));
@@ -60,15 +60,15 @@ public record ConfigData(
         WorldConfig worldConfig = new WorldConfig(serverConnection, keyBindings);
 
         return new ConfigData(
-            clientConfig,
+            jeiClientConfigs.getClientConfig(),
             editModeConfig,
-            filterConfig,
+            jeiClientConfigs.getFilterConfig(),
             worldConfig,
             bookmarkConfig,
-            ingredientListConfig,
-            bookmarkListConfig,
+            jeiClientConfigs.getIngredientListConfig(),
+            jeiClientConfigs.getBookmarkListConfig(),
             recipeCategorySortingConfig,
-            modIdFormatConfig,
+            jeiClientConfigs.getModIdFormat(),
             ingredientModNameSortingConfig,
             ingredientTypeSortingConfig
         );

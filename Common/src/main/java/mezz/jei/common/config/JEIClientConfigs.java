@@ -19,7 +19,7 @@ public class JEIClientConfigs {
 
 	private final ClientConfig clientConfig;
 	private final IngredientFilterConfig filterConfig;
-	private final ModIdFormatConfig modNameFormat;
+	private final ModIdFormatConfig modIdFormat;
 	private final IngredientGridConfig ingredientListConfig;
 	private final IngredientGridConfig bookmarkListConfig;
 
@@ -30,7 +30,7 @@ public class JEIClientConfigs {
 
 		clientConfig = new ClientConfig(builder);
 		filterConfig = new IngredientFilterConfig(builder);
-		modNameFormat = new ModIdFormatConfig(builder);
+		modIdFormat = new ModIdFormatConfig(builder);
 		ingredientListConfig = new IngredientGridConfig("IngredientList", builder, HorizontalAlignment.RIGHT);
 		bookmarkListConfig = new IngredientGridConfig("BookmarkList", builder, HorizontalAlignment.LEFT);
 
@@ -48,13 +48,13 @@ public class JEIClientConfigs {
 		}
 
 		Path configPath = schema.getPath();
-		try {
-			if (!Files.exists(configPath)) {
+		if (!Files.exists(configPath)) {
+			try {
 				Files.createDirectories(configPath.getParent());
 				ConfigSerializer.save(schema);
+			} catch (IOException e) {
+				LOGGER.error("Failed to create config file: '{}'", configFile, e);
 			}
-		} catch (IOException e) {
-			LOGGER.error("Failed to create config file: '{}'", configFile, e);
 		}
 
 		try {
@@ -82,7 +82,7 @@ public class JEIClientConfigs {
 		return bookmarkListConfig;
 	}
 
-	public ModIdFormatConfig getModNameFormat() {
-		return modNameFormat;
+	public ModIdFormatConfig getModIdFormat() {
+		return modIdFormat;
 	}
 }

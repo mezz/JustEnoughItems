@@ -30,7 +30,7 @@ public final class ConfigSerializer {
 
     public static void load(ConfigSchema schema) throws IOException {
         Path path = schema.getPath();
-        LOGGER.info("Loading config file: {}", path.toAbsolutePath());
+        LOGGER.info("Loading config file: {}", path);
         List<String> lines = Files.readAllLines(path);
 
         ConfigCategory category = null;
@@ -113,7 +113,7 @@ public final class ConfigSerializer {
             serialized.add("");
         }
         Path path = schema.getPath();
-        LOGGER.info("Saving config file: {}", path.toAbsolutePath());
+        LOGGER.info("Saving config file: {}", path);
         PathUtil.writeUsingTempFile(path, serialized);
     }
 

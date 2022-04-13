@@ -20,7 +20,6 @@ public final class ClientConfig implements IClientConfig {
 	@Nullable
 	private static IClientConfig instance;
 
-	// Forge config
 	private final Supplier<Boolean> debugModeEnabled;
 	private final Supplier<Boolean> centerSearchBarEnabled;
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
