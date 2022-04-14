@@ -48,7 +48,7 @@ public class ClientLifecycleHandler {
 		);
 
 		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig, configData.worldConfig());
-		networkHandler.createClientPacketHandler(packetRouter);
+		networkHandler.registerClientPacketHandler(packetRouter);
 
 		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
 		StartData startData = new StartData(

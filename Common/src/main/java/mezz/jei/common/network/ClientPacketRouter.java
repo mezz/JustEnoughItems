@@ -4,16 +4,19 @@ import mezz.jei.common.network.packets.IClientPacketHandler;
 import mezz.jei.common.network.packets.PacketCheatPermission;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.core.config.IWorldConfig;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumMap;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientPacketRouter {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public final EnumMap<PacketIdClient, IClientPacketHandler> clientHandlers = new EnumMap<>(PacketIdClient.class);
 	private final IConnectionToServer connection;
 	private final IServerConfig serverConfig;
@@ -26,16 +29,21 @@ public class ClientPacketRouter {
 		clientHandlers.put(PacketIdClient.CHEAT_PERMISSION, PacketCheatPermission::readPacketData);
 	}
 
-	public void onPacket(FriendlyByteBuf packetBuffer) {
-		int packetIdOrdinal = packetBuffer.readByte();
-		PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
-		IClientPacketHandler packetHandler = clientHandlers.get(packetId);
-		Minecraft minecraft = Minecraft.getInstance();
-		LocalPlayer player = minecraft.player;
-		if (player != null) {
+	public void onPacket(FriendlyByteBuf packetBuffer, LocalPlayer player) {
+		PacketIdClient packetId = null;
+		try {
+			int packetIdOrdinal = packetBuffer.readByte();
+			packetId = PacketIdClient.VALUES[packetIdOrdinal];
+			IClientPacketHandler packetHandler = clientHandlers.get(packetId);
 			ClientPacketContext context = new ClientPacketContext(player, connection, serverConfig, worldConfig);
 			ClientPacketData data = new ClientPacketData(packetBuffer, context);
 			packetHandler.readPacketData(data);
+		} catch (Throwable e) {
+			if (packetId != null) {
+				LOGGER.error("Packet error when reading packet: {}", packetId.name(), e);
+			} else {
+				LOGGER.error("Packet error", e);
+			}
 		}
 	}
 }
