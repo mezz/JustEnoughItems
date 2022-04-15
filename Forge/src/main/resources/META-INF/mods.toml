@@ -31,10 +31,10 @@ modId="${modId}" #mandatory
 version="${version}" #mandatory
 
 # A display name for the mod
-displayName="Just Enough Items" #mandatory
+displayName="${modName}" #mandatory
 
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="https://minecraft.curseforge.com/projects/jei" #optional
+displayURL="${curseHomepageUrl}" #optional
 
 # A URL to query for updates for this mod. See the JSON update specification <here>
 #updateJSONURL="" #optional
@@ -43,11 +43,11 @@ displayURL="https://minecraft.curseforge.com/projects/jei" #optional
 # credits="" #optional
 
 # A text field displayed in the mod UI
-authors="mezz" #optional
+authors="${modAuthor}" #optional
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-JEI is an item and recipe viewing mod for Minecraft, built from the ground up for stability and performance.
+${modDescription}
 '''
 
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.

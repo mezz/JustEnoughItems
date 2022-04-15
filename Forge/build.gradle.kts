@@ -15,7 +15,7 @@ apply {
 }
 
 // gradle.properties
-val curseHomepageLink: String by extra
+val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
 val forgeVersion: String by extra
 val mappingsChannel: String by extra
@@ -186,7 +186,7 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 	mainFile.addModLoader("Forge")
 
 	doLast {
-		project.ext.set("curse_file_url", "${curseHomepageLink}/files/${mainFile.curseFileId}")
+		project.ext.set("curse_file_url", "${curseHomepageUrl}/files/${mainFile.curseFileId}")
 	}
 }
 
