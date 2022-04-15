@@ -12,7 +12,7 @@ public interface IPlatformFluidHelper<T> {
 
     IIngredientSubtypeInterpreter<T> getAllNbtSubtypeInterpreter();
 
-    IIngredientRenderer<T> createRenderer(int capacityMb, boolean showCapacity, int width, int height);
+    IIngredientRenderer<T> createRenderer(long capacity, boolean showCapacity, int width, int height);
 
     TextureAtlasSprite getStillFluidSprite(T ingredient);
 

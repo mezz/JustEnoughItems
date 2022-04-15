@@ -8,6 +8,7 @@ import net.minecraft.client.KeyMapping;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
+import java.util.Optional;
 
 public class UserInput {
 	@FunctionalInterface
@@ -30,13 +31,13 @@ public class UserInput {
 		return new UserInput(input, MouseUtil.getX(), MouseUtil.getY(), modifiers, InputType.IMMEDIATE);
 	}
 
-	@Nullable
-	public static UserInput fromVanilla(double mouseX, double mouseY, int mouseButton) {
+	public static Optional<UserInput> fromVanilla(double mouseX, double mouseY, int mouseButton) {
 		if (mouseButton < 0) {
-			return null;
+			return Optional.empty();
 		}
 		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
-		return new UserInput(input, mouseX, mouseY, 0, InputType.IMMEDIATE);
+		UserInput userInput = new UserInput(input, mouseX, mouseY, 0, InputType.IMMEDIATE);
+		return Optional.of(userInput);
 	}
 
 	private final InputConstants.Key key;

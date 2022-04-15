@@ -342,10 +342,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-		UserInput input = UserInput.fromVanilla(mouseX, mouseY, mouseButton);
-		if (input != null) {
-			return handleInput(input) ||
-				super.mouseClicked(mouseX, mouseY, mouseButton);
+		boolean handled = UserInput.fromVanilla(mouseX, mouseY, mouseButton)
+			.map(this::handleInput)
+			.orElse(false);
+
+		if (handled) {
+			return true;
 		}
 		return super.mouseClicked(mouseX, mouseY, mouseButton);
 	}

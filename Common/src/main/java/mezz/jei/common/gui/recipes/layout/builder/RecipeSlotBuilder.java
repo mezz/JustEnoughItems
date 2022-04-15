@@ -75,15 +75,15 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	}
 
 	@Override
-	public IRecipeSlotBuilder setFluidRenderer(int capacityMb, boolean showCapacity, int width, int height) {
-		Preconditions.checkArgument(capacityMb > 0, "capacityMb must be > 0");
+	public IRecipeSlotBuilder setFluidRenderer(int capacity, boolean showCapacity, int width, int height) {
+		Preconditions.checkArgument(capacity > 0, "capacity must be > 0");
 
 		IPlatformFluidHelper<?> fluidHelper = Services.PLATFORM.getFluidHelper();
-		return setFluidRenderer(fluidHelper, capacityMb, showCapacity, width, height);
+		return setFluidRenderer(fluidHelper, capacity, showCapacity, width, height);
 	}
 
-	private <T> IRecipeSlotBuilder setFluidRenderer(IPlatformFluidHelper<T> fluidHelper, int capacityMb, boolean showCapacity, int width, int height) {
-		IIngredientRenderer<T> renderer = fluidHelper.createRenderer(capacityMb, showCapacity, width, height);
+	private <T> IRecipeSlotBuilder setFluidRenderer(IPlatformFluidHelper<T> fluidHelper, long capacity, boolean showCapacity, int width, int height) {
+		IIngredientRenderer<T> renderer = fluidHelper.createRenderer(capacity, showCapacity, width, height);
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		this.recipeSlot.addRenderOverride(type, renderer);
 		return this;

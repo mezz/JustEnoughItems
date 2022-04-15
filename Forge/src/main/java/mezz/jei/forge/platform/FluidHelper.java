@@ -33,8 +33,8 @@ public class FluidHelper implements IPlatformFluidHelper<FluidStack> {
     }
 
     @Override
-    public IIngredientRenderer<FluidStack> createRenderer(int capacityMb, boolean showCapacity, int width, int height) {
-        return new FluidTankRenderer<>(this, capacityMb, showCapacity, width, height);
+    public IIngredientRenderer<FluidStack> createRenderer(long capacity, boolean showCapacity, int width, int height) {
+        return new FluidTankRenderer<>(this, capacity, showCapacity, width, height);
     }
 
     @Override

@@ -65,12 +65,12 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 *
 	 * If no fluid renderer is set, the default 16x16 renderer is used.
 	 *
-	 * @param capacityMb   maximum amount of fluid that this "tank" can hold in milli-buckets
+	 * @param capacity   maximum amount of fluid that this "tank" can hold
 	 * @param showCapacity set `true` to show the capacity in the tooltip
 	 *
 	 * @since 9.3.0
 	 */
-	IRecipeSlotBuilder setFluidRenderer(int capacityMb, boolean showCapacity, int width, int height);
+	IRecipeSlotBuilder setFluidRenderer(int capacity, boolean showCapacity, int width, int height);
 
 	/**
 	 * Set a custom renderer for the given ingredient type for this slot.
