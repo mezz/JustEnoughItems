@@ -6,14 +6,11 @@ import mezz.jei.core.config.IServerConfig;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.EnumMap;
 
-@OnlyIn(Dist.CLIENT)
 public class ClientPacketRouter {
 	private static final Logger LOGGER = LogManager.getLogger();
 
