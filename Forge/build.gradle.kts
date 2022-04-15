@@ -18,8 +18,7 @@ apply {
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
 val forgeVersion: String by extra
-val mappingsChannel: String by extra
-val mappingsVersion: String by extra
+val parchmentVersionForge: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
@@ -79,7 +78,7 @@ dependencies {
 }
 
 minecraft {
-	mappings(mappingsChannel, mappingsVersion)
+	mappings("parchment", parchmentVersionForge)
 
 	accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 

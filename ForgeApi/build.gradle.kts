@@ -6,8 +6,7 @@ plugins {
 
 // gradle.properties
 val forgeVersion: String by extra
-val mappingsChannel: String by extra
-val mappingsVersion: String by extra
+val parchmentVersionForge: String by extra
 val minecraftVersion: String by extra
 val modJavaVersion: String by extra
 
@@ -52,7 +51,7 @@ dependencies {
 }
 
 minecraft {
-	mappings(mappingsChannel, mappingsVersion)
+	mappings("parchment", parchmentVersionForge)
 
 	// All minecraft configurations in the multi-project must be identical, including ATs,
 	// because of a ForgeGradle bug https://github.com/MinecraftForge/ForgeGradle/issues/844

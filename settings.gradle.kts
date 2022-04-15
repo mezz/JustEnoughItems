@@ -26,4 +26,4 @@ pluginManagement {
 val minecraftVersion: String by settings
 
 rootProject.name = "jei-${minecraftVersion}"
-include("Core", "Changelog", "CommonApi", "Common", "ForgeApi", "Forge")
+include("Core", "Changelog", "CommonApi", "Common", "ForgeApi", "Forge", "Fabric", "FabricApi")

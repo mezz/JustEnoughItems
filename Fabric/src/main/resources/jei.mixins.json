@@ -1,0 +1,22 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "mezz.jei.fabric.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+  ],
+  "client": [
+    "AbstractContainerScreenAccess",
+    "AbstractContainerScreenMixin",
+    "KeyboardHandlerAccess",
+    "KeyboardHandlerMixin",
+    "MinecraftAccess",
+    "RecipeBookComponentAccess",
+    "ScreenMixin",
+    "TextureAtlasSpriteAccess",
+    "UpgradeRecipeAccess"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

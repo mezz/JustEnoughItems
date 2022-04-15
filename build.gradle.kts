@@ -8,12 +8,12 @@ apply {
 // gradle.properties
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
+val fabricLoaderVersion: String by extra
 val forgeVersion: String by extra
 val forgeVersionRange: String by extra
 val githubUrl: String by extra
 val loaderVersionRange: String by extra
-val mappingsChannel: String by extra
-val mappingsVersion: String by extra
+val parchmentVersionForge: String by extra
 val minecraftVersion: String by extra
 val minecraftVersionRange: String by extra
 val modAuthor: String by extra
@@ -75,9 +75,10 @@ subprojects {
         // this will ensure that this task is redone when the versions change.
         inputs.property("version", version)
 
-        filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta")) {
+        filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta", "fabric.mod.json")) {
             expand(mapOf(
                 "curseHomepageUrl" to curseHomepageUrl,
+                "fabricLoaderVersion" to fabricLoaderVersion,
                 "forgeVersionRange" to forgeVersionRange,
                 "githubUrl" to githubUrl,
                 "loaderVersionRange" to loaderVersionRange,
