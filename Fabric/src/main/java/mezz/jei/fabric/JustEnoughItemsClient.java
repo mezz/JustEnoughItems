@@ -17,19 +17,8 @@ import net.minecraft.server.packs.PackType;
 public class JustEnoughItemsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
-		Minecraft minecraft = Minecraft.getInstance();
-		MinecraftAccess minecraftAccess = (MinecraftAccess) minecraft;
-		TextureManager textureManager = minecraftAccess.getTextureManager();
-
-		JeiSpriteUploader spriteUploader = new JeiSpriteUploader(textureManager);
-		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES)
-			.registerReloadListener(new JeiIdentifiableResourceReloadListener("sprite_uploader", spriteUploader));
-
-		Textures textures = new Textures(spriteUploader);
-		Internal.setTextures(textures);
-
 		IServerConfig serverConfig = ServerConfig.getInstance();
-		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(textures, serverConfig);
+		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(serverConfig);
 		clientLifecycleHandler.registerEvents();
 
 		ResourceManagerHelper.get(PackType.SERVER_DATA)

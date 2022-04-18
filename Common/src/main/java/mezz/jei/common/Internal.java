@@ -45,6 +45,10 @@ public final class Internal {
 		Internal.textures = textures;
 	}
 
+	public static boolean hasTextures() {
+		return textures != null;
+	}
+
 	@Nullable
 	public static JeiRuntime getRuntime() {
 		return runtime;

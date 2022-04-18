@@ -11,6 +11,7 @@ import mezz.jei.common.gui.overlay.IngredientGrid;
 import mezz.jei.common.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.common.gui.overlay.IngredientListOverlay;
 import mezz.jei.common.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 
 public final class OverlayHelper {
@@ -50,7 +51,7 @@ public final class OverlayHelper {
             ingredientGridConfig,
             background,
             slotBackground,
-            data.textures()
+            data.texturesSupplier().get()
         );
     }
 
@@ -64,6 +65,7 @@ public final class OverlayHelper {
     ) {
         ConfigData configData = data.configData();
 
+        Textures textures = data.texturesSupplier().get();
         IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
             data,
             ingredientFilter,
@@ -71,8 +73,8 @@ public final class OverlayHelper {
             configData.ingredientListConfig(),
             guiScreenHelper,
             modIdHelper,
-            data.textures().getIngredientListBackground(),
-            data.textures().getIngredientListSlotBackground()
+            textures.getIngredientListBackground(),
+            textures.getIngredientListSlotBackground()
         );
 
         return new IngredientListOverlay(
@@ -84,7 +86,7 @@ public final class OverlayHelper {
             configData.clientConfig(),
             configData.worldConfig(),
             data.serverConnection(),
-            data.textures(),
+            textures,
             data.keyBindings()
         );
     }
@@ -99,6 +101,8 @@ public final class OverlayHelper {
     ) {
         ConfigData configData = data.configData();
 
+        Textures textures = data.texturesSupplier().get();
+
         IngredientGridWithNavigation bookmarkListGridNavigation = createIngredientGridWithNavigation(
             data,
             ingredientFilter,
@@ -106,13 +110,13 @@ public final class OverlayHelper {
             configData.bookmarkListConfig(),
             guiScreenHelper,
             modIdHelper,
-            data.textures().getBookmarkListBackground(),
-            data.textures().getBookmarkListSlotBackground()
+            textures.getBookmarkListBackground(),
+            textures.getBookmarkListSlotBackground()
         );
 
         return new BookmarkOverlay(
             bookmarkList,
-            data.textures(),
+            textures,
             bookmarkListGridNavigation,
             configData.clientConfig(),
             configData.worldConfig(),

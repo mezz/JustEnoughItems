@@ -21,6 +21,7 @@ import mezz.jei.common.gui.GuiHelper;
 import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.filter.IFilterTextSource;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.common.ingredients.IngredientBlacklistInternal;
 import mezz.jei.common.ingredients.IngredientFilter;
@@ -118,7 +119,7 @@ public class PluginLoader {
 		);
 
 		StackHelper stackHelper = new StackHelper(subtypeManager);
-		GuiHelper guiHelper = new GuiHelper(registeredIngredients, data.textures());
+		GuiHelper guiHelper = new GuiHelper(registeredIngredients, data.texturesSupplier().get());
 		FocusFactory focusFactory = new FocusFactory(registeredIngredients);
 		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory);
 		Internal.setHelpers(jeiHelpers);
@@ -179,7 +180,8 @@ public class PluginLoader {
 		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, registeredIngredients, ingredientManager, ingredientVisibility, vanillaRecipeFactory, recipeManagerInternal);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
-		return new RecipeManager(recipeManagerInternal, modIdHelper, registeredIngredients, data.textures(), ingredientVisibility);
+		Textures textures = data.texturesSupplier().get();
+		return new RecipeManager(recipeManagerInternal, modIdHelper, registeredIngredients, textures, ingredientVisibility);
 	}
 
 	public IngredientFilter getIngredientFilter() {

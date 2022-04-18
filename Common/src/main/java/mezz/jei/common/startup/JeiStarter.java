@@ -120,7 +120,7 @@ public final class JeiStarter {
 			registeredIngredients,
 			modIdHelper,
 			configData.clientConfig(),
-			data.textures(),
+			data.texturesSupplier().get(),
 			ingredientVisibility,
 			data.keyBindings()
 		);
