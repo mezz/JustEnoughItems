@@ -25,15 +25,15 @@ base {
     archivesName.set(baseArchivesName)
 }
 
-val dependencyProjects: List<Project> = listOf(
-    project(":Core"),
-    project(":Common"),
-    project(":CommonApi"),
-    project(":FabricApi"),
+val dependencyProjects: List<ProjectDependency> = listOf(
+    project.dependencies.project(":Core"),
+    project.dependencies.project(":Common"),
+    project.dependencies.project(":CommonApi"),
+    project.dependencies.project(":FabricApi", configuration = "namedElements")
 )
 
 dependencyProjects.forEach {
-    project.evaluationDependsOn(it.path)
+    project.evaluationDependsOn(it.dependencyProject.path)
 }
 project.evaluationDependsOn(":Changelog")
 
