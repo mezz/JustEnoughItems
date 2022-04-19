@@ -53,7 +53,7 @@ public class ClientLifecycleHandler {
 		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
 		StartData startData = new StartData(
 			plugins,
-			() -> textures,
+			textures,
 			serverConnection,
 			keyBindings,
 			configData

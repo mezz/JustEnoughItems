@@ -119,7 +119,7 @@ public class PluginLoader {
 		);
 
 		StackHelper stackHelper = new StackHelper(subtypeManager);
-		GuiHelper guiHelper = new GuiHelper(registeredIngredients, data.texturesSupplier().get());
+		GuiHelper guiHelper = new GuiHelper(registeredIngredients, data.textures());
 		FocusFactory focusFactory = new FocusFactory(registeredIngredients);
 		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory);
 		Internal.setHelpers(jeiHelpers);
@@ -180,7 +180,7 @@ public class PluginLoader {
 		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, registeredIngredients, ingredientManager, ingredientVisibility, vanillaRecipeFactory, recipeManagerInternal);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
-		Textures textures = data.texturesSupplier().get();
+		Textures textures = data.textures();
 		return new RecipeManager(recipeManagerInternal, modIdHelper, registeredIngredients, textures, ingredientVisibility);
 	}
 

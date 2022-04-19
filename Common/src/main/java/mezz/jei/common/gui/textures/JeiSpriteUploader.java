@@ -14,8 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 public class JeiSpriteUploader extends TextureAtlasHolder {
 	private final Set<ResourceLocation> registeredSprites = new HashSet<>();
 
-	public JeiSpriteUploader(TextureManager p_i50905_1_) {
-		super(p_i50905_1_, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS, "gui");
+	public JeiSpriteUploader(TextureManager textureManager) {
+		super(textureManager, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS, "gui");
 	}
 
 	public void registerSprite(ResourceLocation location) {

@@ -51,7 +51,7 @@ public final class OverlayHelper {
             ingredientGridConfig,
             background,
             slotBackground,
-            data.texturesSupplier().get()
+            data.textures()
         );
     }
 
@@ -65,7 +65,7 @@ public final class OverlayHelper {
     ) {
         ConfigData configData = data.configData();
 
-        Textures textures = data.texturesSupplier().get();
+        Textures textures = data.textures();
         IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
             data,
             ingredientFilter,
@@ -95,17 +95,16 @@ public final class OverlayHelper {
         StartData data,
         RegisteredIngredients registeredIngredients,
         GuiScreenHelper guiScreenHelper,
-        IIngredientGridSource ingredientFilter,
         BookmarkList bookmarkList,
         IModIdHelper modIdHelper
     ) {
         ConfigData configData = data.configData();
 
-        Textures textures = data.texturesSupplier().get();
+        Textures textures = data.textures();
 
         IngredientGridWithNavigation bookmarkListGridNavigation = createIngredientGridWithNavigation(
             data,
-            ingredientFilter,
+            bookmarkList,
             registeredIngredients,
             configData.bookmarkListConfig(),
             guiScreenHelper,

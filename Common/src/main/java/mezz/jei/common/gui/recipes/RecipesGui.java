@@ -28,6 +28,7 @@ import mezz.jei.common.input.IClickedIngredient;
 import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.InputType;
 import mezz.jei.common.input.MouseUtil;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.ErrorUtil;
@@ -342,7 +343,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-		boolean handled = UserInput.fromVanilla(mouseX, mouseY, mouseButton)
+		boolean handled = UserInput.fromVanilla(mouseX, mouseY, mouseButton, InputType.IMMEDIATE)
 			.map(this::handleInput)
 			.orElse(false);
 
@@ -354,7 +355,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		UserInput input = UserInput.fromVanilla(keyCode, scanCode, modifiers);
+		UserInput input = UserInput.fromVanilla(keyCode, scanCode, modifiers, InputType.IMMEDIATE);
 		return handleInput(input);
 	}
 

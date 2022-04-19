@@ -69,8 +69,13 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
 		String modId = itemStackHelper.getCreatorModId(ingredient);
 		if (modId == null) {
-			String stackInfo = getErrorInfo(ingredient);
-			throw new IllegalStateException("item.getCreatorModId() returned null for: " + stackInfo);
+			IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
+			ResourceLocation registryName = registry.getRegistryName(ingredient.getItem());
+			if (registryName == null) {
+				String stackInfo = getErrorInfo(ingredient);
+				throw new IllegalStateException("null registryName for: " + stackInfo);
+			}
+			modId = registryName.getNamespace();
 		}
 		return modId;
 	}

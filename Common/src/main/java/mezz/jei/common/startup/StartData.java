@@ -6,11 +6,10 @@ import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.network.IConnectionToServer;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 public record StartData(
     List<IModPlugin> plugins,
-    Supplier<Textures> texturesSupplier,
+    Textures textures,
     IConnectionToServer serverConnection,
     IKeyBindings keyBindings,
     ConfigData configData

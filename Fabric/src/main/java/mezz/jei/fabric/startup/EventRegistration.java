@@ -2,6 +2,7 @@ package mezz.jei.fabric.startup;
 
 import mezz.jei.common.gui.GuiEventHandler;
 import mezz.jei.common.input.ClientInputHandler;
+import mezz.jei.common.input.InputType;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.startup.JeiEventHandlers;
 import mezz.jei.fabric.events.JeiCharTypedEvents;
@@ -36,33 +37,18 @@ public class EventRegistration {
 
 				ScreenKeyboardEvents.allowKeyPress(screen).register((screen1, key, scancode, modifiers) -> {
 					if (clientInputHandler != null) {
-						UserInput userInput = UserInput.fromVanilla(key, scancode, modifiers);
-						return clientInputHandler.onKeyboardKeyPressedPre(screen1, userInput);
+						UserInput userInput = UserInput.fromVanilla(key, scancode, modifiers, InputType.IMMEDIATE);
+						return !clientInputHandler.onKeyboardKeyPressedPre(screen1, userInput);
 					}
 					return true;
-				});
-				ScreenKeyboardEvents.afterKeyPress(screen).register((screen1, key, scancode, modifiers) -> {
-					if (clientInputHandler != null) {
-						UserInput userInput = UserInput.fromVanilla(key, scancode, modifiers);
-						clientInputHandler.onKeyboardKeyPressedPost(screen1, userInput);
-					}
 				});
 
 				ScreenMouseEvents.allowMouseClick(screen).register((screen1, mouseX, mouseY, button) -> {
 					if (clientInputHandler == null) {
 						return true;
 					}
-					return UserInput.fromVanilla(mouseX, mouseY, button)
+					return UserInput.fromVanilla(mouseX, mouseY, button, InputType.IMMEDIATE)
 						.map(input -> !clientInputHandler.onGuiMouseClicked(screen1, input))
-						.orElse(true);
-				});
-
-				ScreenMouseEvents.allowMouseRelease(screen).register((screen1, mouseX, mouseY, button) -> {
-					if (clientInputHandler == null) {
-						return true;
-					}
-					return UserInput.fromVanilla(mouseX, mouseY, button)
-						.map(input -> !clientInputHandler.onGuiMouseReleased(screen1, input))
 						.orElse(true);
 				});
 
@@ -84,13 +70,6 @@ public class EventRegistration {
 		JeiCharTypedEvents.BEFORE_CHAR_TYPED.register((guiEventListener, codepoint, modifiers) -> {
 			if (clientInputHandler != null && guiEventListener instanceof Screen screen) {
 				return clientInputHandler.onKeyboardCharTypedPre(screen, codepoint, modifiers);
-			}
-			return false;
-		});
-
-		JeiCharTypedEvents.AFTER_CHAR_TYPED.register((guiEventListener, codepoint, modifiers) -> {
-			if (clientInputHandler != null && guiEventListener instanceof Screen screen) {
-				return clientInputHandler.onKeyboardCharTypedPost(screen, codepoint, modifiers);
 			}
 			return false;
 		});

@@ -5,6 +5,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class FabricPluginFinder {
 	private FabricPluginFinder() {
@@ -21,6 +22,6 @@ public final class FabricPluginFinder {
 		List<EntrypointContainer<T>> pluginContainers = fabricLoader.getEntrypointContainers(entrypointContainerKey, instanceClass);
 		return pluginContainers.stream()
 			.map(EntrypointContainer::getEntrypoint)
-			.toList();
+			.collect(Collectors.toList());
 	}
 }

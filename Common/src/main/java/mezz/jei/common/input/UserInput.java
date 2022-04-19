@@ -6,7 +6,6 @@ import mezz.jei.common.platform.Services;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.KeyMapping;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -26,17 +25,17 @@ public class UserInput {
 		boolean isMouseOver(double mouseX, double mouseY);
 	}
 
-	public static UserInput fromVanilla(int keyCode, int scanCode, int modifiers) {
+	public static UserInput fromVanilla(int keyCode, int scanCode, int modifiers, InputType inputType) {
 		InputConstants.Key input = InputConstants.getKey(keyCode, scanCode);
-		return new UserInput(input, MouseUtil.getX(), MouseUtil.getY(), modifiers, InputType.IMMEDIATE);
+		return new UserInput(input, MouseUtil.getX(), MouseUtil.getY(), modifiers, inputType);
 	}
 
-	public static Optional<UserInput> fromVanilla(double mouseX, double mouseY, int mouseButton) {
+	public static Optional<UserInput> fromVanilla(double mouseX, double mouseY, int mouseButton, InputType inputType) {
 		if (mouseButton < 0) {
 			return Optional.empty();
 		}
 		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
-		UserInput userInput = new UserInput(input, mouseX, mouseY, 0, InputType.IMMEDIATE);
+		UserInput userInput = new UserInput(input, mouseX, mouseY, 0, inputType);
 		return Optional.of(userInput);
 	}
 

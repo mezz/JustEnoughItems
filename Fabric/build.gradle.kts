@@ -93,3 +93,13 @@ loom {
         }
     }
 }
+
+sourceSets {
+    named("main") {
+        resources {
+            for (p in dependencyProjects) {
+                srcDir(p.dependencyProject.sourceSets.main.get().resources)
+            }
+        }
+    }
+}

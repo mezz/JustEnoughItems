@@ -105,7 +105,6 @@ public final class JeiStarter {
 			data,
 			registeredIngredients,
 			guiScreenHelper,
-			ingredientFilter,
 			bookmarkList,
 			modIdHelper
 		);
@@ -120,7 +119,7 @@ public final class JeiStarter {
 			registeredIngredients,
 			modIdHelper,
 			configData.clientConfig(),
-			data.texturesSupplier().get(),
+			data.textures(),
 			ingredientVisibility,
 			data.keyBindings()
 		);

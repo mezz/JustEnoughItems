@@ -8,9 +8,12 @@
   "client": [
     "AbstractContainerScreenAccess",
     "AbstractContainerScreenMixin",
+    "ClientPacketListenerMixin",
+    "GameMixin",
     "KeyboardHandlerAccess",
     "KeyboardHandlerMixin",
     "MinecraftAccess",
+    "MinecraftMixin",
     "RecipeBookComponentAccess",
     "ScreenMixin",
     "TextureAtlasSpriteAccess",
