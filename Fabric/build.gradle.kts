@@ -77,6 +77,18 @@ dependencies {
     }
 }
 
+var dependencyJarPaths = dependencyProjects.map {
+    it.dependencyProject.tasks.jar.get().archiveFile.get().asFile
+}
+var classPaths = sourceSets.main.get().output.classesDirs
+var resourcesPaths = listOf(
+    sourceSets.main.get().output.resourcesDir
+)
+var classPathGroups = listOf(dependencyJarPaths, classPaths, resourcesPaths).flatten().filterNotNull()
+var classPathGroupsString = classPathGroups.joinToString(separator = File.pathSeparator) {
+    it.absoluteFile.toString()
+}
+
 loom {
     runs {
         named("client") {
@@ -84,12 +96,14 @@ loom {
             configName = "Fabric Client"
             ideConfigGenerated(true)
             runDir("run/client")
+            vmArgs("-Dfabric.classPathGroups=${classPathGroupsString}")
         }
         named("server") {
             server()
             configName = "Fabric Server"
             ideConfigGenerated(true)
             runDir("run/server")
+            vmArgs("-Dfabric.classPathGroups=${classPathGroupsString}")
         }
     }
 }
