@@ -1,6 +1,6 @@
 package mezz.jei.fabric.platform;
 
-import mezz.jei.common.platform.IPlatformFluidHelper;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import net.minecraft.core.Registry;
@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceKey;
 
 public class PlatformHelper implements IPlatformHelper {
     private final ItemStackHelper itemStackHelper = new ItemStackHelper();
-    private final FluidHelper fluidHelper = new FluidHelper();
     private final RenderHelper renderHelper = new RenderHelper();
     private final RecipeHelper recipeHelper = new RecipeHelper();
     private final ConfigHelper configHelper = new ConfigHelper();
@@ -28,8 +27,8 @@ public class PlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public IPlatformFluidHelper<?> getFluidHelper() {
-        return fluidHelper;
+    public IPlatformFluidHelperInternal<?> getFluidHelper() {
+        return FluidHelper.INSTANCE;
     }
 
     @Override

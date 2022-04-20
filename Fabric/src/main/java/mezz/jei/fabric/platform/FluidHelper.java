@@ -1,17 +1,17 @@
 package mezz.jei.fabric.platform;
 
-import mezz.jei.api.fabric.FabricTypes;
+import mezz.jei.api.fabric.constants.FabricTypes;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
+import mezz.jei.fabric.ingredients.fluid.JeiFluidIngredient;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.platform.IPlatformFluidHelper;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.render.FluidTankRenderer;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -21,29 +21,34 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("UnstableApiUsage")
-public class FluidHelper implements IPlatformFluidHelper<StorageView<FluidVariant>> {
+import java.util.Optional;
+
+public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngredient> {
+    public static final FluidHelper INSTANCE = new FluidHelper();
+
+    private FluidHelper() {}
+
     @Override
-    public IIngredientTypeWithSubtypes<Fluid, StorageView<FluidVariant>> getFluidIngredientType() {
-        return FabricTypes.FLUID_STORAGE;
+    public IIngredientTypeWithSubtypes<Fluid, IJeiFluidIngredient> getFluidIngredientType() {
+        return FabricTypes.FLUID_STACK;
     }
 
     @Override
-    public IIngredientSubtypeInterpreter<StorageView<FluidVariant>> getAllNbtSubtypeInterpreter() {
+    public IIngredientSubtypeInterpreter<IJeiFluidIngredient> getAllNbtSubtypeInterpreter() {
         return AllFluidNbt.INSTANCE;
     }
 
     @Override
-    public IIngredientRenderer<StorageView<FluidVariant>> createRenderer(long capacity, boolean showCapacity, int width, int height) {
+    public IIngredientRenderer<IJeiFluidIngredient> createRenderer(long capacity, boolean showCapacity, int width, int height) {
         return new FluidTankRenderer<>(this, capacity, showCapacity, width, height);
     }
 
     @Override
-    public TextureAtlasSprite getStillFluidSprite(StorageView<FluidVariant> ingredient) {
+    public TextureAtlasSprite getStillFluidSprite(IJeiFluidIngredient ingredient) {
         FluidRenderHandlerRegistry registry = FluidRenderHandlerRegistry.INSTANCE;
-        FluidVariant resource = ingredient.getResource();
-        Fluid fluid = resource.getFluid();
+        Fluid fluid = ingredient.getFluid();
         FluidRenderHandler handler = registry.get(fluid);
         FluidState defaultFluidState = fluid.defaultFluidState();
         TextureAtlasSprite[] fluidSprites = handler.getFluidSprites(null, null, defaultFluidState);
@@ -51,10 +56,9 @@ public class FluidHelper implements IPlatformFluidHelper<StorageView<FluidVarian
     }
 
     @Override
-    public Component getDisplayName(StorageView<FluidVariant> ingredient) {
+    public Component getDisplayName(IJeiFluidIngredient ingredient) {
         // TODO: better Fabric Fluid display name
-        FluidVariant resource = ingredient.getResource();
-        Fluid fluid = resource.getFluid();
+        Fluid fluid = ingredient.getFluid();
         ResourceLocation key = Registry.FLUID.getKey(fluid);
         String path = key.getPath();
         path = path.replace("_", " ");
@@ -63,39 +67,64 @@ public class FluidHelper implements IPlatformFluidHelper<StorageView<FluidVarian
     }
 
     @Override
-    public int getColor(StorageView<FluidVariant> ingredient) {
+    public int getColorTint(IJeiFluidIngredient ingredient) {
         FluidRenderHandlerRegistry registry = FluidRenderHandlerRegistry.INSTANCE;
-        FluidVariant resource = ingredient.getResource();
-        Fluid fluid = resource.getFluid();
+        Fluid fluid = ingredient.getFluid();
         FluidRenderHandler handler = registry.get(fluid);
         FluidState defaultFluidState = fluid.defaultFluidState();
         return handler.getFluidColor(null, null, defaultFluidState);
     }
 
     @Override
-    public long getAmount(StorageView<FluidVariant> ingredient) {
+    public long getAmount(IJeiFluidIngredient ingredient) {
         return ingredient.getAmount();
     }
 
+    @Override
+    public Optional<CompoundTag> getTag(IJeiFluidIngredient ingredient) {
+        return ingredient.getTag();
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public long bucketVolume() {
         return FluidConstants.BUCKET;
     }
 
-    private static class AllFluidNbt implements IIngredientSubtypeInterpreter<StorageView<FluidVariant>> {
+    @Override
+    public IJeiFluidIngredient create(Fluid fluid, long amount, @Nullable CompoundTag tag) {
+        return new JeiFluidIngredient(fluid, amount, tag);
+    }
+
+    @Override
+    public IJeiFluidIngredient create(Fluid fluid, long amount) {
+        return new JeiFluidIngredient(fluid, amount);
+    }
+
+    @Override
+    public IJeiFluidIngredient copy(IJeiFluidIngredient ingredient) {
+        CompoundTag tag = ingredient.getTag().orElse(null);
+        return new JeiFluidIngredient(ingredient.getFluid(), ingredient.getAmount(), tag);
+    }
+
+    @Override
+    public IJeiFluidIngredient normalize(IJeiFluidIngredient ingredient) {
+        CompoundTag tag = ingredient.getTag().orElse(null);
+        return new JeiFluidIngredient(ingredient.getFluid(), bucketVolume(), tag);
+    }
+
+    private static class AllFluidNbt implements IIngredientSubtypeInterpreter<IJeiFluidIngredient> {
         public static final AllFluidNbt INSTANCE = new AllFluidNbt();
 
         private AllFluidNbt() {
         }
 
         @Override
-        public String apply(StorageView<FluidVariant> storage, UidContext context) {
-            FluidVariant resource = storage.getResource();
-            CompoundTag nbtTagCompound = resource.getNbt();
-            if (nbtTagCompound == null || nbtTagCompound.isEmpty()) {
-                return IIngredientSubtypeInterpreter.NONE;
-            }
-            return nbtTagCompound.toString();
+        public String apply(IJeiFluidIngredient storage, UidContext context) {
+            return storage.getTag()
+                .filter(tag -> !tag.isEmpty())
+                .map(CompoundTag::toString)
+                .orElse(IIngredientSubtypeInterpreter.NONE);
         }
     }
 }

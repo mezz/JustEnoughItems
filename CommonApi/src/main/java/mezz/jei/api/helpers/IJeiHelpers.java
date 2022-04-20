@@ -30,4 +30,11 @@ public interface IJeiHelpers {
 	 * @since 9.4.0
 	 */
 	IFocusFactory getFocusFactory();
+
+	/**
+	 * Helps with handling fluid ingredients on multiple platforms (Forge and Fabric).
+	 *
+	 * @since 10.1.0
+	 */
+	IPlatformFluidHelper<?> getPlatformFluidHelper();
 }

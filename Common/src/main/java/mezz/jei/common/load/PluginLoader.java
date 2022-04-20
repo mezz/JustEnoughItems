@@ -39,6 +39,8 @@ import mezz.jei.common.load.registration.RecipeTransferRegistration;
 import mezz.jei.common.load.registration.RegisteredIngredientsBuilder;
 import mezz.jei.common.load.registration.SubtypeRegistration;
 import mezz.jei.common.load.registration.VanillaCategoryExtensionRegistration;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.plugins.vanilla.VanillaPlugin;
 import mezz.jei.common.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.common.plugins.vanilla.crafting.CraftingRecipeCategory;
@@ -74,10 +76,15 @@ public class PluginLoader {
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		List<IModPlugin> plugins = data.plugins();
 		SubtypeRegistration subtypeRegistration = new SubtypeRegistration();
 		PluginCaller.callOnPlugins("Registering item subtypes", plugins, p -> p.registerItemSubtypes(subtypeRegistration));
-		PluginCaller.callOnPlugins("Registering fluid subtypes", plugins, p -> p.registerFluidSubtypes(subtypeRegistration));
+		PluginCaller.callOnPlugins("Registering fluid subtypes", plugins, p -> {
+			p.registerFluidSubtypes(subtypeRegistration, fluidHelper);
+			//noinspection removal
+			p.registerFluidSubtypes(subtypeRegistration);
+		});
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeRegistration);
 
 		RegisteredIngredientsBuilder registeredIngredientsBuilder = new RegisteredIngredientsBuilder(subtypeManager);

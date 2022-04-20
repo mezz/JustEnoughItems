@@ -5,7 +5,8 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.platform.IPlatformFluidHelper;
+import mezz.jei.api.helpers.IPlatformFluidHelper;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.render.FluidTankRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -16,8 +17,11 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
+import org.jetbrains.annotations.Nullable;
 
-public class FluidHelper implements IPlatformFluidHelper<FluidStack> {
+import java.util.Optional;
+
+public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
     public static final FluidHelper INSTANCE = new FluidHelper();
 
     private FluidHelper() {}
@@ -38,7 +42,7 @@ public class FluidHelper implements IPlatformFluidHelper<FluidStack> {
     }
 
     @Override
-    public int getColor(FluidStack ingredient) {
+    public int getColorTint(FluidStack ingredient) {
         Fluid fluid = ingredient.getFluid();
         FluidAttributes attributes = fluid.getAttributes();
         return attributes.getColor(ingredient);
@@ -47,6 +51,11 @@ public class FluidHelper implements IPlatformFluidHelper<FluidStack> {
     @Override
     public long getAmount(FluidStack ingredient) {
         return ingredient.getAmount();
+    }
+
+    @Override
+    public Optional<CompoundTag> getTag(FluidStack ingredient) {
+        return Optional.ofNullable(ingredient.getTag());
     }
 
     @Override
@@ -83,5 +92,29 @@ public class FluidHelper implements IPlatformFluidHelper<FluidStack> {
             }
             return nbtTagCompound.toString();
         }
+    }
+
+    @Override
+    public FluidStack create(Fluid fluid, long amount, @Nullable CompoundTag tag) {
+        int intAmount = (int) Math.min(amount, Integer.MAX_VALUE);
+        return new FluidStack(fluid, intAmount, tag);
+    }
+
+    @Override
+    public FluidStack create(Fluid fluid, long amount) {
+        int intAmount = (int) Math.min(amount, Integer.MAX_VALUE);
+        return new FluidStack(fluid, intAmount);
+    }
+
+    @Override
+    public FluidStack copy(FluidStack ingredient) {
+        return ingredient.copy();
+    }
+
+    @Override
+    public FluidStack normalize(FluidStack ingredient) {
+        FluidStack copy = this.copy(ingredient);
+        copy.setAmount(FluidAttributes.BUCKET_VOLUME);
+        return copy;
     }
 }

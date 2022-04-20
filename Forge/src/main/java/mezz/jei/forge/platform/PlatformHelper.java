@@ -1,6 +1,7 @@
 package mezz.jei.forge.platform;
 
-import mezz.jei.common.platform.IPlatformFluidHelper;
+import mezz.jei.api.helpers.IPlatformFluidHelper;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import net.minecraft.core.Registry;
@@ -27,7 +28,7 @@ public class PlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public IPlatformFluidHelper<?> getFluidHelper() {
+    public IPlatformFluidHelperInternal<?> getFluidHelper() {
         return FluidHelper.INSTANCE;
     }
 

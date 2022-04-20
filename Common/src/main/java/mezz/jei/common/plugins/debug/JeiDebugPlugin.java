@@ -1,13 +1,13 @@
-package mezz.jei.forge.plugins.debug;
+package mezz.jei.common.plugins.debug;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -16,7 +16,9 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
+import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.config.ClientConfig;
 import mezz.jei.common.plugins.jei.ingredients.DebugIngredient;
@@ -36,8 +38,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -69,10 +69,11 @@ public class JeiDebugPlugin implements IModPlugin {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
 			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+			IPlatformFluidHelper<?> platformFluidHelper = jeiHelpers.getPlatformFluidHelper();
 			registration.addRecipeCategories(
-				new DebugRecipeCategory(guiHelper),
-				new DebugFocusRecipeCategory(guiHelper),
-				new LegacyDebugRecipeCategory(guiHelper)
+				new DebugRecipeCategory<>(guiHelper, platformFluidHelper),
+				new DebugFocusRecipeCategory<>(guiHelper, platformFluidHelper),
+				new LegacyDebugRecipeCategory<>(guiHelper, platformFluidHelper)
 			);
 		}
 	}
@@ -96,7 +97,9 @@ public class JeiDebugPlugin implements IModPlugin {
 				new TranslatableComponent("description.jei.wooden.door.3")
 			);
 
-			registration.addIngredientInfo(new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), ForgeTypes.FLUID_STACK, new TextComponent("water"));
+			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+			IPlatformFluidHelper<?> platformFluidHelper = jeiHelpers.getPlatformFluidHelper();
+			registerFluidRecipes(registration, platformFluidHelper);
 			registration.addIngredientInfo(new DebugIngredient(1), DebugIngredient.TYPE, new TextComponent("debug"));
 			registration.addIngredientInfo(new DebugIngredient(2), DebugIngredient.TYPE,
 				new TextComponent("debug colored").withStyle(ChatFormatting.AQUA),
@@ -143,6 +146,12 @@ public class JeiDebugPlugin implements IModPlugin {
 		}
 	}
 
+	private <T> void registerFluidRecipes(IRecipeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
+		long bucketVolume = platformFluidHelper.bucketVolume();
+		T fluidIngredient = platformFluidHelper.create(Fluids.WATER, bucketVolume, null);
+		registration.addIngredientInfo(fluidIngredient, platformFluidHelper.getFluidIngredientType(), new TextComponent("water"));
+	}
+
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
@@ -151,8 +160,12 @@ public class JeiDebugPlugin implements IModPlugin {
 				public List<Rect2i> getGuiExtraAreas(BrewingStandScreen containerScreen) {
 					int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
 					int size = 25 + widthMovement;
+					IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+					int guiLeft = screenHelper.getGuiLeft(containerScreen);
+					int xSize = screenHelper.getXSize(containerScreen);
+					int guiTop = screenHelper.getGuiTop(containerScreen);
 					return List.of(
-						new Rect2i(containerScreen.getGuiLeft() + containerScreen.getXSize(), containerScreen.getGuiTop() + 40, size, size)
+						new Rect2i(guiLeft + xSize, guiTop + 40, size, size)
 					);
 				}
 
@@ -160,7 +173,9 @@ public class JeiDebugPlugin implements IModPlugin {
 				@Override
 				public Object getIngredientUnderMouse(BrewingStandScreen containerScreen, double mouseX, double mouseY) {
 					if (mouseX < 10 && mouseY < 10) {
-						return new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME);
+						IPlatformFluidHelper<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+						long bucketVolume = fluidHelper.bucketVolume();
+						return fluidHelper.create(Fluids.WATER, bucketVolume, null);
 					}
 					return null;
 				}
@@ -171,29 +186,36 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerFluidSubtypes(ISubtypeRegistration registration) {
+	public <T> void registerFluidSubtypes(ISubtypeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
 		Fluid water = Fluids.WATER;
-		FluidSubtypeHandlerTest subtype = new FluidSubtypeHandlerTest();
-
-		registration.registerSubtypeInterpreter(ForgeTypes.FLUID_STACK, water, subtype);
+		IIngredientTypeWithSubtypes<Fluid, T> ingredientType = platformFluidHelper.getFluidIngredientType();
+		FluidSubtypeHandlerTest<T> subtype = new FluidSubtypeHandlerTest<>(ingredientType);
+		registration.registerSubtypeInterpreter(ingredientType, water, subtype);
 	}
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
-			registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
-			registration.addRecipeCatalyst(ForgeTypes.FLUID_STACK, new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME), DebugRecipeCategory.TYPE);
-			registration.addRecipeCatalyst(VanillaTypes.ITEM_STACK, new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
-			IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
-			registry.getValues()
-				.limit(30)
-				.forEach(item -> {
-					ItemStack catalystIngredient = new ItemStack(item);
-					if (!catalystIngredient.isEmpty()) {
-						registration.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.TYPE);
-					}
-				});
+			IPlatformFluidHelper<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+			registerRecipeCatalysts(registration, fluidHelper);
 		}
+	}
+
+	private <T> void registerRecipeCatalysts(IRecipeCatalystRegistration registration, IPlatformFluidHelper<T> fluidHelper) {
+		long bucketVolume = fluidHelper.bucketVolume();
+
+		registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
+		registration.addRecipeCatalyst(fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER, bucketVolume, null), DebugRecipeCategory.TYPE);
+		registration.addRecipeCatalyst(VanillaTypes.ITEM_STACK, new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
+		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
+		registry.getValues()
+			.limit(30)
+			.forEach(item -> {
+				ItemStack catalystIngredient = new ItemStack(item);
+				if (!catalystIngredient.isEmpty()) {
+					registration.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.TYPE);
+				}
+			});
 	}
 
 	@Override

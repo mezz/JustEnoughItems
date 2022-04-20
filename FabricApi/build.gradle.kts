@@ -71,3 +71,14 @@ dependencies {
         implementation(it)
     }
 }
+
+sourceSets {
+    named("main") {
+        //The API has no resources
+        resources.setSrcDirs(emptyList<String>())
+    }
+    named("test") {
+        //The test module has no resources
+        resources.setSrcDirs(emptyList<String>())
+    }
+}

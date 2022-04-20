@@ -1,14 +1,15 @@
 package mezz.jei.common.platform;
 
+import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.material.Fluid;
 
-public interface IPlatformFluidHelper<T> {
-    IIngredientTypeWithSubtypes<Fluid, T> getFluidIngredientType();
+import java.util.Optional;
+
+public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T> {
 
     IIngredientSubtypeInterpreter<T> getAllNbtSubtypeInterpreter();
 
@@ -18,9 +19,13 @@ public interface IPlatformFluidHelper<T> {
 
     Component getDisplayName(T ingredient);
 
-    int getColor(T ingredient);
+    int getColorTint(T ingredient);
 
     long getAmount(T ingredient);
 
-    long bucketVolume();
+    Optional<CompoundTag> getTag(T ingredient);
+
+    T copy(T ingredient);
+
+    T normalize(T ingredient);
 }

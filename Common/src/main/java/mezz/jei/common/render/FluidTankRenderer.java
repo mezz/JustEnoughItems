@@ -10,7 +10,8 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
-import mezz.jei.common.platform.IPlatformFluidHelper;
+import mezz.jei.api.helpers.IPlatformFluidHelper;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -31,7 +32,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	private static final int TEXTURE_SIZE = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 
-	private final IPlatformFluidHelper<T> fluidHelper;
+	private final IPlatformFluidHelperInternal<T> fluidHelper;
 	private final long capacity;
 	private final TooltipMode tooltipMode;
 	private final int width;
@@ -43,15 +44,15 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		ITEM_LIST
 	}
 
-	public FluidTankRenderer(IPlatformFluidHelper<T> fluidHelper) {
+	public FluidTankRenderer(IPlatformFluidHelperInternal<T> fluidHelper) {
 		this(fluidHelper, fluidHelper.bucketVolume(), TooltipMode.ITEM_LIST, 16, 16);
 	}
 
-	public FluidTankRenderer(IPlatformFluidHelper<T> fluidHelper, long capacity, boolean showCapacity, int width, int height) {
+	public FluidTankRenderer(IPlatformFluidHelperInternal<T> fluidHelper, long capacity, boolean showCapacity, int width, int height) {
 		this(fluidHelper, capacity, showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT, width, height);
 	}
 
-	private FluidTankRenderer(IPlatformFluidHelper<T> fluidHelper, long capacity, TooltipMode tooltipMode, int width, int height) {
+	private FluidTankRenderer(IPlatformFluidHelperInternal<T> fluidHelper, long capacity, TooltipMode tooltipMode, int width, int height) {
 		Preconditions.checkArgument(capacity > 0, "capacity must be > 0");
 		Preconditions.checkArgument(width > 0, "width must be > 0");
 		Preconditions.checkArgument(height > 0, "height must be > 0");
@@ -95,7 +96,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 
 		TextureAtlasSprite fluidStillSprite = fluidHelper.getStillFluidSprite(fluidStack);
 
-		int fluidColor = fluidHelper.getColor(fluidStack);
+		int fluidColor = fluidHelper.getColorTint(fluidStack);
 
 		long amount = fluidHelper.getAmount(fluidStack);
 		long scaledAmount = (amount * height) / capacity;

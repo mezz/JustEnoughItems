@@ -1,17 +1,17 @@
-package mezz.jei.forge.plugins.debug;
+package mezz.jei.common.plugins.debug;
 
-import mezz.jei.common.Internal;
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -19,20 +19,20 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.FluidStack;
 
 import java.util.List;
 
-public class DebugFocusRecipeCategory implements IRecipeCategory<DebugRecipe> {
+public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	public static final RecipeType<DebugRecipe> TYPE = RecipeType.create(ModIds.JEI_ID, "debug_focus", DebugRecipe.class);
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
 	private final IDrawable background;
+	private final IPlatformFluidHelper<F> platformFluidHelper;
 	private final Component localizedName;
 
-	public DebugFocusRecipeCategory(IGuiHelper guiHelper) {
+	public DebugFocusRecipeCategory(IGuiHelper guiHelper, IPlatformFluidHelper<F> platformFluidHelper) {
 		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
+		this.platformFluidHelper = platformFluidHelper;
 		this.localizedName = new TextComponent("debug_focus");
 	}
 
@@ -84,11 +84,12 @@ public class DebugFocusRecipeCategory implements IRecipeCategory<DebugRecipe> {
 				new ItemStack(Items.TROPICAL_FISH_BUCKET)
 			));
 
+		long bucketVolume = platformFluidHelper.bucketVolume();
 		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 20, 0)
 			.addItemStack(ItemStack.EMPTY)
-			.addIngredients(ForgeTypes.FLUID_STACK, List.of(
-				new FluidStack(Fluids.WATER, FluidAttributes.BUCKET_VOLUME),
-				new FluidStack(Fluids.LAVA, FluidAttributes.BUCKET_VOLUME)
+			.addIngredients(platformFluidHelper.getFluidIngredientType(), List.of(
+				platformFluidHelper.create(Fluids.WATER, bucketVolume),
+				platformFluidHelper.create(Fluids.LAVA, bucketVolume)
 			))
 			.addItemStacks(List.of(
 				new ItemStack(Items.SNOW_BLOCK),

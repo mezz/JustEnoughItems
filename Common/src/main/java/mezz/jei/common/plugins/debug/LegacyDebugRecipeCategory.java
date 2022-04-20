@@ -1,33 +1,7 @@
-package mezz.jei.forge.plugins.debug;
+package mezz.jei.common.plugins.debug;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import mezz.jei.api.forge.ForgeTypes;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.api.runtime.IBookmarkOverlay;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraftforge.client.gui.widget.ExtendedButton;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.ChatFormatting;
-
-import mezz.jei.common.Internal;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
 import mezz.jei.api.constants.VanillaTypes;
@@ -36,32 +10,56 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Constants;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.plugins.jei.ingredients.DebugIngredient;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.material.Fluids;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 @SuppressWarnings("removal")
-public class LegacyDebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
+public class LegacyDebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	public static final ResourceLocation UID = new ResourceLocation(ModIds.JEI_ID, "legacy_debug");
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
 	private final IDrawable background;
+	private final IPlatformFluidHelper<F> platformFluidHelper;
 	private final Component localizedName;
 	private final IDrawable tankBackground;
 	private final IDrawable tankOverlay;
 	private final IDrawable item;
 	private boolean hiddenRecipes;
 
-	public LegacyDebugRecipeCategory(IGuiHelper guiHelper) {
+	public LegacyDebugRecipeCategory(IGuiHelper guiHelper, IPlatformFluidHelper<F> platformFluidHelper) {
 		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
+		this.platformFluidHelper = platformFluidHelper;
 		this.localizedName = new TextComponent("debug");
 
 		ResourceLocation backgroundTexture = new ResourceLocation(ModIds.JEI_ID, Constants.TEXTURE_GUI_PATH + "debug.png");
@@ -102,10 +100,12 @@ public class LegacyDebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 
 	@Override
 	public void setIngredients(DebugRecipe recipe, IIngredients ingredients) {
-		FluidStack water = new FluidStack(Fluids.WATER, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME));
-		FluidStack lava = new FluidStack(Fluids.LAVA, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME));
+		long bucketVolume = platformFluidHelper.bucketVolume();
+		IIngredientType<F> fluidType = platformFluidHelper.getFluidIngredientType();
+		F water = platformFluidHelper.create(Fluids.WATER, (int) ((1.0 + Math.random()) * bucketVolume));
+		F lava = platformFluidHelper.create(Fluids.LAVA, (int) ((1.0 + Math.random()) * bucketVolume));
 
-		ingredients.setInputs(ForgeTypes.FLUID_STACK, List.of(water, lava));
+		ingredients.setInputs(fluidType, List.of(water, lava));
 
 		ingredients.setInput(VanillaTypes.ITEM_STACK, new ItemStack(Items.STICK));
 
@@ -148,7 +148,7 @@ public class LegacyDebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			}
 		}
 
-		ExtendedButton button = recipe.getButton();
+		Button button = recipe.getButton();
 		button.render(poseStack, (int) mouseX, (int) mouseY, 0);
 	}
 
@@ -232,7 +232,7 @@ public class LegacyDebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		if (input.getType() != InputConstants.Type.MOUSE) {
 			return false;
 		}
-		ExtendedButton button = recipe.getButton();
+		Button button = recipe.getButton();
 		int mouseButton = input.getValue();
 		if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
 			Minecraft minecraft = Minecraft.getInstance();

@@ -1,14 +1,15 @@
 package mezz.jei.common.plugins.vanilla;
 
-import mezz.jei.common.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IStackHelper;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
@@ -24,10 +25,14 @@ import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.Internal;
+import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.ingredients.fluid.FluidIngredientHelper;
+import mezz.jei.common.ingredients.fluid.FluidStackListFactory;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.common.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.common.plugins.vanilla.anvil.SmithingRecipeCategory;
@@ -49,8 +54,9 @@ import mezz.jei.common.plugins.vanilla.crafting.replacers.SuspiciousStewRecipeMa
 import mezz.jei.common.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
 import mezz.jei.common.plugins.vanilla.ingredients.item.ItemStackHelper;
 import mezz.jei.common.plugins.vanilla.ingredients.item.ItemStackListFactory;
-import mezz.jei.common.render.ItemStackRenderer;
 import mezz.jei.common.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
+import mezz.jei.common.render.FluidTankRenderer;
+import mezz.jei.common.render.ItemStackRenderer;
 import mezz.jei.common.transfer.PlayerRecipeTransferHandler;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.StackHelper;
@@ -90,6 +96,7 @@ import net.minecraft.world.item.crafting.TippedArrowRecipe;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -161,6 +168,21 @@ public class VanillaPlugin implements IModPlugin {
 		ItemStackHelper itemStackHelper = new ItemStackHelper(stackHelper);
 		ItemStackRenderer itemStackRenderer = new ItemStackRenderer();
 		registration.register(VanillaTypes.ITEM_STACK, itemStacks, itemStackHelper, itemStackRenderer);
+
+		IPlatformFluidHelperInternal<?> platformFluidHelper = Services.PLATFORM.getFluidHelper();
+		registerFluidIngredients(registration, platformFluidHelper);
+	}
+
+	private <T> void registerFluidIngredients(IModIngredientRegistration registration, IPlatformFluidHelperInternal<T> platformFluidHelper) {
+		ISubtypeManager subtypeManager = registration.getSubtypeManager();
+		IColorHelper colorHelper = registration.getColorHelper();
+
+		IPlatformRegistry<Fluid> registry = Services.PLATFORM.getRegistry(Registry.FLUID_REGISTRY);
+		List<T> fluidIngredients = FluidStackListFactory.create(registry, platformFluidHelper);
+		FluidIngredientHelper<T> fluidIngredientHelper = new FluidIngredientHelper<>(subtypeManager, colorHelper, platformFluidHelper);
+		FluidTankRenderer<T> fluidTankRenderer = new FluidTankRenderer<>(platformFluidHelper);
+		IIngredientType<T> fluidIngredientType = platformFluidHelper.getFluidIngredientType();
+		registration.register(fluidIngredientType, fluidIngredients, fluidIngredientHelper, fluidTankRenderer);
 	}
 
 	@Override

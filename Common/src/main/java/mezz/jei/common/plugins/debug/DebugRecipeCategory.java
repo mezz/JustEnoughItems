@@ -1,17 +1,17 @@
-package mezz.jei.forge.plugins.debug;
+package mezz.jei.common.plugins.debug;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.common.Internal;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -25,10 +25,12 @@ import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Constants;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.plugins.jei.ingredients.DebugIngredient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
@@ -38,28 +40,27 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.client.gui.widget.ExtendedButton;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
+public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	public static final RecipeType<DebugRecipe> TYPE = RecipeType.create(ModIds.JEI_ID, "debug", DebugRecipe.class);
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
 	private final IDrawable background;
+	private final IPlatformFluidHelper<F> platformFluidHelper;
 	private final Component localizedName;
 	private final IDrawable tankBackground;
 	private final IDrawable tankOverlay;
 	private final IDrawable item;
 	private boolean hiddenRecipes;
 
-	public DebugRecipeCategory(IGuiHelper guiHelper) {
+	public DebugRecipeCategory(IGuiHelper guiHelper, IPlatformFluidHelper<F> platformFluidHelper) {
 		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
+		this.platformFluidHelper = platformFluidHelper;
 		this.localizedName = new TextComponent("debug");
 
 		ResourceLocation backgroundTexture = new ResourceLocation(ModIds.JEI_ID, Constants.TEXTURE_GUI_PATH + "debug.png");
@@ -116,7 +117,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			ingredientUnderMouse.ifPresent(typedIngredient -> drawIngredientName(minecraft, poseStack, typedIngredient));
 		}
 
-		ExtendedButton button = recipe.getButton();
+		Button button = recipe.getButton();
 		button.render(poseStack, (int) mouseX, (int) mouseY, 0);
 	}
 
@@ -145,24 +146,26 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 				.addIngredientsUnsafe(Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));
 
 		// FLUID type
+		long bucketVolume = platformFluidHelper.bucketVolume();
+		IIngredientType<F> fluidType = platformFluidHelper.getFluidIngredientType();
 		{
-			int capacityMb = 10 * FluidAttributes.BUCKET_VOLUME;
+			long capacity = 10 * bucketVolume;
 			// random amount between half capacity and full
-			int amountMb = (capacityMb / 2) + (int) ((Math.random() * capacityMb) / 2);
+			long amount = (capacity / 2) + (int) ((Math.random() * capacity) / 2);
 			builder.addSlot(RecipeIngredientRole.OUTPUT, 90, 0)
-				.setFluidRenderer(capacityMb, false, 16, 58)
+				.setFluidRenderer(capacity, false, 16, 58)
 				.setOverlay(tankOverlay, -1, -1)
 				.setBackground(tankBackground, -1, -1)
-				.addIngredient(ForgeTypes.FLUID_STACK, new FluidStack(Fluids.WATER, amountMb));
+				.addIngredient(fluidType, platformFluidHelper.create(Fluids.WATER, amount));
 		}
 
 		{
-			int capacityMb = 2 * FluidAttributes.BUCKET_VOLUME;
+			long capacity = 2 * bucketVolume;
 			// random amount between half capacity and full
-			int amountMb = (capacityMb / 2) + (int) ((Math.random() * capacityMb) / 2);
+			long amount = (capacity / 2) + (int) ((Math.random() * capacity) / 2);
 			builder.addSlot(RecipeIngredientRole.INPUT, 24, 0)
-				.setFluidRenderer(capacityMb, true, 12, 47)
-				.addIngredient(ForgeTypes.FLUID_STACK, new FluidStack(Fluids.LAVA, amountMb));
+				.setFluidRenderer(capacity, true, 12, 47)
+				.addIngredient(fluidType, platformFluidHelper.create(Fluids.LAVA, amount));
 		}
 
 		// DEBUG type
@@ -176,7 +179,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		builder.addSlot(RecipeIngredientRole.INPUT, 40, 32)
 			.addIngredient(DebugIngredient.TYPE, new DebugIngredient(3))
 			.addIngredientsUnsafe(List.of(
-				new FluidStack(Fluids.LAVA, (int) ((1.0 + Math.random()) * FluidAttributes.BUCKET_VOLUME)),
+				platformFluidHelper.create(Fluids.LAVA, (int) ((1.0 + Math.random()) * bucketVolume)),
 				new ItemStack(Items.LAVA_BUCKET)
 			))
 			.addTooltipCallback((recipeSlotView, tooltip) -> {
@@ -208,7 +211,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		if (input.getType() != InputConstants.Type.MOUSE) {
 			return false;
 		}
-		ExtendedButton button = recipe.getButton();
+		Button button = recipe.getButton();
 		int mouseButton = input.getValue();
 		if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
 			Minecraft minecraft = Minecraft.getInstance();
