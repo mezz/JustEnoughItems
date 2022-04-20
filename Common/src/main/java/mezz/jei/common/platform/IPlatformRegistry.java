@@ -3,7 +3,6 @@ package mezz.jei.common.platform;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 

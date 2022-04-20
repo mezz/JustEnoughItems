@@ -1,6 +1,5 @@
 package mezz.jei.forge.platform;
 
-import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformHelper;
 import mezz.jei.common.platform.IPlatformRegistry;

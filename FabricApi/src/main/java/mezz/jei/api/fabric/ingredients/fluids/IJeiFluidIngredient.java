@@ -1,6 +1,5 @@
 package mezz.jei.api.fabric.ingredients.fluids;
 
-import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 
