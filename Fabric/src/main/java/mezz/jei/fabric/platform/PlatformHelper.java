@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceKey;
 
 public class PlatformHelper implements IPlatformHelper {
     private final ItemStackHelper itemStackHelper = new ItemStackHelper();
+    private final FluidHelper fluidHelper = new FluidHelper();
     private final RenderHelper renderHelper = new RenderHelper();
     private final RecipeHelper recipeHelper = new RecipeHelper();
     private final ConfigHelper configHelper = new ConfigHelper();
@@ -28,7 +29,7 @@ public class PlatformHelper implements IPlatformHelper {
 
     @Override
     public IPlatformFluidHelperInternal<?> getFluidHelper() {
-        return FluidHelper.INSTANCE;
+        return fluidHelper;
     }
 
     @Override

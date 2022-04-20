@@ -26,10 +26,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngredient> {
-    public static final FluidHelper INSTANCE = new FluidHelper();
-
-    private FluidHelper() {}
-
     @Override
     public IIngredientTypeWithSubtypes<Fluid, IJeiFluidIngredient> getFluidIngredientType() {
         return FabricTypes.FLUID_STACK;
