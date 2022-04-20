@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -97,17 +96,16 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 
 	public IntSet getMatches(IFocusGroup focusGroup, RecipeIngredientRole role) {
 		int[] matches = focusGroup.getFocuses(role)
-			.map(this::getMatch)
-			.flatMapToInt(OptionalInt::stream)
+			.flatMapToInt(this::getMatch)
 			.distinct()
 			.toArray();
 		return new IntArraySet(matches);
 	}
 
-	private <T> OptionalInt getMatch(IFocus<T> focus) {
+	private <T> IntStream getMatch(IFocus<T> focus) {
 		List<Optional<ITypedIngredient<?>>> ingredients = getAllIngredients();
 		if (ingredients.isEmpty()) {
-			return OptionalInt.empty();
+			return IntStream.empty();
 		}
 
 		ITypedIngredient<T> focusValue = focus.getTypedValue();
@@ -125,7 +123,6 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 						return focusUid.equals(uniqueId);
 					})
 					.orElse(false)
-			)
-			.findFirst();
+			);
 	}
 }
