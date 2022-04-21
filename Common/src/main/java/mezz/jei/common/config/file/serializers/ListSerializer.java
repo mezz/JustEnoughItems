@@ -11,7 +11,7 @@ public class ListSerializer<T> implements IConfigValueSerializer<List<T>> {
     public ListSerializer(IConfigValueSerializer<T> valueSerializer) {
         this.valueSerializer = valueSerializer;
     }
-    
+
     @Override
     public String serialize(List<T> values) {
         return values.stream()

@@ -8,7 +8,6 @@ import mezz.jei.common.input.keys.JeiKeyModifier;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.Translator;
-import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;

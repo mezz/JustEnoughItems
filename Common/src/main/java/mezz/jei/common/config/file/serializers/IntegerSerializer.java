@@ -9,7 +9,7 @@ public class IntegerSerializer implements IConfigValueSerializer<Integer> {
         this.min = min;
         this.max = max;
     }
-    
+
     @Override
     public String serialize(Integer value) {
         return value.toString();
