@@ -97,15 +97,6 @@ public class EventRegistration {
 				guiEventHandler.onClientTick();
 			}
 		});
-
-		// TODO: fabric mixin to force compact potion indicators
-//		subscriptions.register(ScreenEvent.PotionSizeEvent.class, event -> {
-//			if (guiEventHandler.renderCompactPotionIndicators()) {
-//				// Forcibly renders the potion indicators in compact mode.
-//				// This gives the ingredient list overlay more room to display ingredients.
-//				event.setResult(Event.Result.ALLOW);
-//			}
-//		});
 	}
 
 	public void clear() {

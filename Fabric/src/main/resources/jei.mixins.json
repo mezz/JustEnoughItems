@@ -9,6 +9,7 @@
     "AbstractContainerScreenAccess",
     "AbstractContainerScreenMixin",
     "ClientPacketListenerMixin",
+    "EffectRenderingInventoryScreenMixin",
     "GameMixin",
     "KeyboardHandlerAccess",
     "KeyboardHandlerMixin",

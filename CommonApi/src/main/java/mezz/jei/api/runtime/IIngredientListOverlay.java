@@ -28,6 +28,13 @@ public interface IIngredientListOverlay {
 	<T> T getIngredientUnderMouse(IIngredientType<T> ingredientType);
 
 	/**
+	 * @return true if the ingredient list is currently displayed.
+	 *
+	 * @since 10.1.0
+	 */
+	boolean isListDisplayed();
+
+	/**
 	 * @return true if the text box is focused by the player.
 	 */
 	boolean hasKeyboardFocus();
