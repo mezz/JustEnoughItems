@@ -51,5 +51,5 @@ sourceSets {
 tasks.named<Test>("test") {
     useJUnitPlatform()
     include("mezz/jei/**")
-    exclude("mezz/jei/mezz.jei.lib/**")
+    exclude("mezz/jei/lib/**")
 }
