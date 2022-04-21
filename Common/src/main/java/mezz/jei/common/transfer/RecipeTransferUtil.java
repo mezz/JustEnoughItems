@@ -12,7 +12,6 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.gui.recipes.layout.IRecipeLayoutInternal;
 import mezz.jei.common.recipes.RecipeTransferManager;
-import mezz.jei.common.runtime.JeiRuntime;
 import mezz.jei.common.util.ItemStackMatchable;
 import mezz.jei.common.util.MatchingIterable;
 import mezz.jei.common.util.StringUtil;
@@ -58,8 +57,7 @@ public final class RecipeTransferUtil {
 		boolean maxTransfer,
 		boolean doTransfer
 	) {
-		final JeiRuntime runtime = Internal.getRuntime();
-		if (runtime == null) {
+		if (Internal.getRuntime().isEmpty()) {
 			return RecipeTransferErrorInternal.INSTANCE;
 		}
 

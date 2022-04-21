@@ -8,6 +8,8 @@ import mezz.jei.common.runtime.JeiHelpers;
 import mezz.jei.common.runtime.JeiRuntime;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 /**
  * For JEI internal use only, these are normally accessed from the API.
  */
@@ -49,9 +51,8 @@ public final class Internal {
 		return textures != null;
 	}
 
-	@Nullable
-	public static JeiRuntime getRuntime() {
-		return runtime;
+	public static Optional<JeiRuntime> getRuntime() {
+		return Optional.ofNullable(runtime);
 	}
 
 	public static void setRuntime(@Nullable JeiRuntime runtime) {

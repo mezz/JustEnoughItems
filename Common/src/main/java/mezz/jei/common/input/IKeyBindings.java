@@ -1,47 +1,47 @@
 package mezz.jei.common.input;
 
-import net.minecraft.client.KeyMapping;
+import mezz.jei.common.input.keys.IJeiKeyMapping;
 
 import java.util.List;
 
 public interface IKeyBindings {
-    KeyMapping getToggleOverlay();
-    KeyMapping getFocusSearch();
-    KeyMapping getToggleCheatMode();
-    KeyMapping getToggleEditMode();
+    IJeiKeyMapping getToggleOverlay();
+    IJeiKeyMapping getFocusSearch();
+    IJeiKeyMapping getToggleCheatMode();
+    IJeiKeyMapping getToggleEditMode();
 
-    KeyMapping getToggleCheatModeConfigButton();
+    IJeiKeyMapping getToggleCheatModeConfigButton();
 
-    KeyMapping getRecipeBack();
-    KeyMapping getPreviousCategory();
-    KeyMapping getNextCategory();
-    KeyMapping getPreviousRecipePage();
-    KeyMapping getNextRecipePage();
+    IJeiKeyMapping getRecipeBack();
+    IJeiKeyMapping getPreviousCategory();
+    IJeiKeyMapping getNextCategory();
+    IJeiKeyMapping getPreviousRecipePage();
+    IJeiKeyMapping getNextRecipePage();
 
-    KeyMapping getPreviousPage();
-    KeyMapping getNextPage();
+    IJeiKeyMapping getPreviousPage();
+    IJeiKeyMapping getNextPage();
 
-    KeyMapping getBookmark();
-    KeyMapping getToggleBookmarkOverlay();
+    IJeiKeyMapping getBookmark();
+    IJeiKeyMapping getToggleBookmarkOverlay();
 
-    List<KeyMapping> getShowRecipe();
-    List<KeyMapping> getShowUses();
+    List<IJeiKeyMapping> getShowRecipe();
+    List<IJeiKeyMapping> getShowUses();
 
-    List<KeyMapping> getCheatOneItem();
-    List<KeyMapping> getCheatItemStack();
+    List<IJeiKeyMapping> getCheatOneItem();
+    List<IJeiKeyMapping> getCheatItemStack();
 
-    KeyMapping getToggleHideIngredient();
-    KeyMapping getToggleWildcardHideIngredient();
+    IJeiKeyMapping getToggleHideIngredient();
+    IJeiKeyMapping getToggleWildcardHideIngredient();
 
-    KeyMapping getHoveredClearSearchBar();
-    KeyMapping getPreviousSearch();
-    KeyMapping getNextSearch();
+    IJeiKeyMapping getHoveredClearSearchBar();
+    IJeiKeyMapping getPreviousSearch();
+    IJeiKeyMapping getNextSearch();
 
-    KeyMapping getCopyRecipeId();
+    IJeiKeyMapping getCopyRecipeId();
 
     // internal only, unregistered and can't be changed because they match vanilla Minecraft hard-coded keys:
-    KeyMapping getEscapeKey();
-    KeyMapping getLeftClick();
-    KeyMapping getRightClick();
-    List<KeyMapping> getEnterKey();
+    IJeiKeyMapping getEscapeKey();
+    IJeiKeyMapping getLeftClick();
+    IJeiKeyMapping getRightClick();
+    List<IJeiKeyMapping> getEnterKey();
 }

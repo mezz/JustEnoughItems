@@ -3,6 +3,7 @@ package mezz.jei.fabric.startup;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.KeyBindings;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
 import mezz.jei.common.network.IConnectionToServer;
@@ -11,7 +12,6 @@ import mezz.jei.common.startup.JeiEventHandlers;
 import mezz.jei.common.startup.JeiStarter;
 import mezz.jei.common.startup.StartData;
 import mezz.jei.core.config.IServerConfig;
-import mezz.jei.fabric.config.KeyBindings;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
 import mezz.jei.fabric.network.ClientNetworkHandler;
 import mezz.jei.fabric.network.ConnectionToServer;
@@ -38,7 +38,6 @@ public class ClientLifecycleHandler {
 
 		IConnectionToServer serverConnection = new ConnectionToServer();
 		KeyBindings keyBindings = new KeyBindings();
-		keyBindings.register();
 
 		ConfigData configData = ConfigData.create(
 			serverConnection,
@@ -63,14 +62,14 @@ public class ClientLifecycleHandler {
 	}
 
 	public void registerEvents() {
-		JeiLifecycleEvents.GAME_START.register(() -> {
+		JeiLifecycleEvents.GAME_START.register(() ->
 			JeiLifecycleEvents.AFTER_RECIPE_SYNC.register(() -> {
 				if (running) {
 					stopJei();
 				}
 				startJei();
-			});
-		});
+			})
+		);
 		JeiLifecycleEvents.GAME_STOP.register(this::stopJei);
 	}
 

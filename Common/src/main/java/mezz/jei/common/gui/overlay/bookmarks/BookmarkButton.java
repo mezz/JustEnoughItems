@@ -7,9 +7,9 @@ import mezz.jei.common.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.keys.IJeiKeyMapping;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 
@@ -38,7 +38,7 @@ public class BookmarkButton extends GuiIconToggleButton {
 	@Override
 	protected void getTooltips(List<Component> tooltip) {
 		tooltip.add(new TranslatableComponent("jei.tooltip.bookmarks"));
-		KeyMapping bookmarkKey = keyBindings.getBookmark();
+		IJeiKeyMapping bookmarkKey = keyBindings.getBookmark();
 		if (bookmarkKey.isUnbound()) {
 			TranslatableComponent noKey = new TranslatableComponent("jei.tooltip.bookmarks.usage.nokey");
 			tooltip.add(noKey.withStyle(ChatFormatting.RED));

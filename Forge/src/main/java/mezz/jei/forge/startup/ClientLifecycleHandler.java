@@ -11,7 +11,7 @@ import mezz.jei.common.startup.JeiEventHandlers;
 import mezz.jei.common.startup.JeiStarter;
 import mezz.jei.common.startup.StartData;
 import mezz.jei.core.config.IServerConfig;
-import mezz.jei.forge.config.ForgeKeyBindings;
+import mezz.jei.common.config.KeyBindings;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.network.ConnectionToServer;
@@ -38,8 +38,7 @@ public class ClientLifecycleHandler {
 		Path jeiConfigDir = configDir.resolve(ModIds.JEI_ID);
 
 		IConnectionToServer serverConnection = new ConnectionToServer();
-		ForgeKeyBindings keyBindings = new ForgeKeyBindings();
-		keyBindings.register();
+		KeyBindings keyBindings = new KeyBindings();
 
 		ConfigData configData = ConfigData.create(
 			serverConnection,

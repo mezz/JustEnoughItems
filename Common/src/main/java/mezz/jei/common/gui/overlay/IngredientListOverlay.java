@@ -90,6 +90,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, registeredIngredients, worldConfig);
 	}
 
+	@Override
 	public boolean isListDisplayed() {
 		return worldConfig.isOverlayEnabled() && this.guiProperties != null && this.hasRoom;
 	}
