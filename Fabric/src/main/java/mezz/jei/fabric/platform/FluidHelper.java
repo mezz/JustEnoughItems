@@ -68,7 +68,8 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
         Fluid fluid = ingredient.getFluid();
         FluidRenderHandler handler = registry.get(fluid);
         FluidState defaultFluidState = fluid.defaultFluidState();
-        return handler.getFluidColor(null, null, defaultFluidState);
+        int fluidColor = handler.getFluidColor(null, null, defaultFluidState);
+        return fluidColor | 0xFF000000;
     }
 
     @Override
