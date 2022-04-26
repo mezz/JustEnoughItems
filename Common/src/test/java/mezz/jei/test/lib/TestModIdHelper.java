@@ -1,4 +1,4 @@
-package mezz.jei.lib;
+package mezz.jei.test.lib;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;

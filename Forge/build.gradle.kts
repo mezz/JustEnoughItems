@@ -191,8 +191,9 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 
 tasks.named<Test>("test") {
 	useJUnitPlatform()
-	include("mezz/jei/**")
-	exclude("mezz/jei/lib/**")
+	include("mezz/jei/test/**")
+	exclude("mezz/jei/test/lib/**")
+	outputs.upToDateWhen { false }
 }
 
 artifacts {

@@ -1,4 +1,4 @@
-package mezz.jei.lib;
+package mezz.jei.test.lib;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.network.chat.Component;
