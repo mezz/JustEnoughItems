@@ -51,6 +51,7 @@
   "key.jei.nextPage": "Next Page",
   "key.jei.previousCategory": "Previous Recipe Category",
   "key.jei.nextCategory": "Next Recipe Category",
+  "key.jei.closeRecipeGui": "Close Recipes GUI",
   "key.jei.bookmark": "Add/Remove Bookmark",
   "key.jei.toggleBookmarkOverlay": "Show/Hide Bookmarked Ingredients",
   "key.jei.copy.recipe.id": "Copy Recipe ID to Clipboard",

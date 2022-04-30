@@ -372,7 +372,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	private boolean handleKeybindings(InputMappings.Input input) {
-		if (KeyBindings.isInventoryCloseKey(input) || KeyBindings.isInventoryToggleKey(input)) {
+		if (KeyBindings.closeRecipeGui.isActiveAndMatches(input) || KeyBindings.isInventoryToggleKey(input)) {
 			onClose();
 			return true;
 		} else if (KeyBindings.recipeBack.isActiveAndMatches(input)) {
