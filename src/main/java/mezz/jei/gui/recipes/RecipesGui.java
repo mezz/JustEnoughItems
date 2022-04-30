@@ -392,7 +392,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	private boolean handleKeybinds(int eventKey) {
-		if (KeyBindings.isInventoryCloseKey(eventKey) || KeyBindings.isInventoryToggleKey(eventKey)) {
+		if (KeyBindings.closeRecipeGui.isActiveAndMatches(eventKey) || KeyBindings.isInventoryToggleKey(eventKey)) {
 			close();
 			return true;
 		} else if (KeyBindings.recipeBack.isActiveAndMatches(eventKey)) {

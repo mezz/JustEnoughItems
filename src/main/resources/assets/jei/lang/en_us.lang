@@ -44,6 +44,7 @@ key.jei.toggleCheatMode=Toggle Cheat Mode
 key.jei.toggleEditMode=Toggle Hide Ingredients Mode
 key.jei.previousPage=Previous Page
 key.jei.nextPage=Next Page
+key.jei.closeRecipeGui=Close Recipes GUI
 key.jei.bookmark=Add/Remove Bookmark
 key.jei.toggleBookmarkOverlay=Show/Hide Bookmarked Ingredients
 key.jei.copy.recipe.id=Copy Recipe ID to Clipboard
