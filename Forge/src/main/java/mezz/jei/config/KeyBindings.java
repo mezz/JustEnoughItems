@@ -35,6 +35,7 @@ public final class KeyBindings {
 	public static final KeyMapping nextCategory;
 	public static final KeyMapping previousRecipePage;
 	public static final KeyMapping nextRecipePage;
+	public static final KeyMapping closeRecipeGui;
 
 	public static final KeyMapping previousPage;
 	public static final KeyMapping nextPage;
@@ -123,6 +124,7 @@ public final class KeyBindings {
 			nextRecipePage = new KeyMapping("key.jei.nextRecipePage", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_PAGE_DOWN), recipeCategoryName),
 			previousCategory = new KeyMapping("key.jei.previousCategory", KeyConflictContext.GUI, KeyModifier.SHIFT, getKey(GLFW.GLFW_KEY_PAGE_UP), recipeCategoryName),
 			nextCategory = new KeyMapping("key.jei.nextCategory", KeyConflictContext.GUI, KeyModifier.SHIFT, getKey(GLFW.GLFW_KEY_PAGE_DOWN), recipeCategoryName),
+			closeRecipeGui = new KeyMapping("key.jei.closeRecipeGui", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_ESCAPE), recipeCategoryName),
 
 			// Dev Tools
 			copyRecipeId = new KeyMapping("key.jei.copy.recipe.id", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), devToolsCategoryName)

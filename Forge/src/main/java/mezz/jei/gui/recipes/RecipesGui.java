@@ -369,7 +369,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 
 		Minecraft minecraft = Minecraft.getInstance();
-		if (input.is(KeyBindings.escapeKey) || input.is(minecraft.options.keyInventory)) {
+		if (input.is(KeyBindings.closeRecipeGui) || input.is(minecraft.options.keyInventory)) {
 			onClose();
 			return true;
 		} else if (input.is(KeyBindings.recipeBack)) {
