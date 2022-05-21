@@ -125,7 +125,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		if (runtime != null) {
 			IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
 			Minecraft minecraft = Minecraft.getInstance();
-			minecraft.fontRenderer.drawString(matrixStack, ingredientFilter.getFilterText(), 20, 52, 0);
+			minecraft.font.draw(matrixStack, ingredientFilter.getFilterText(), 20, 52, 0);
 
 			IIngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
 			Object ingredientUnderMouse = ingredientListOverlay.getIngredientUnderMouse();
@@ -143,7 +143,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 		if (ingredientManager != null) {
 			IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 			String jeiUid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-			minecraft.fontRenderer.drawString(matrixStack, jeiUid, 50, 52, 0);
+			minecraft.font.draw(matrixStack, jeiUid, 50, 52, 0);
 		}
 	}
 
@@ -207,7 +207,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			tooltipStrings.add(new StringTextComponent("button tooltip!"));
 		} else {
 			StringTextComponent debug = new StringTextComponent("tooltip debug");
-			tooltipStrings.add(debug.mergeStyle(TextFormatting.BOLD));
+			tooltipStrings.add(debug.withStyle(TextFormatting.BOLD));
 		}
 		tooltipStrings.add(new StringTextComponent(mouseX + ", " + mouseY));
 		return tooltipStrings;
@@ -221,7 +221,7 @@ public class DebugRecipeCategory implements IRecipeCategory<DebugRecipe> {
 			ClientPlayerEntity player = minecraft.player;
 			if (player != null) {
 				Screen screen = new InventoryScreen(player);
-				minecraft.displayGuiScreen(screen);
+				minecraft.setScreen(screen);
 			}
 			IJeiRuntime runtime = JeiDebugPlugin.jeiRuntime;
 			if (runtime != null) {

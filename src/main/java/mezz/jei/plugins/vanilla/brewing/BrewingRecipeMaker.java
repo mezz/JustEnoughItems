@@ -60,8 +60,8 @@ public class BrewingRecipeMaker {
 
 		Collection<IBrewingRecipe> brewingRecipes = BrewingRecipeRegistry.getRecipes();
 		brewingRecipes.stream()
-			.filter(r -> r instanceof VanillaBrewingRecipe)
-			.map(r -> (VanillaBrewingRecipe) r)
+			.filter(VanillaBrewingRecipe.class::isInstance)
+			.map(VanillaBrewingRecipe.class::cast)
 			.findFirst()
 			.ifPresent(vanillaBrewingRecipe -> addVanillaBrewingRecipes(recipes, vanillaBrewingRecipe));
 		addModdedBrewingRecipes(brewingRecipes, recipes);
@@ -76,7 +76,7 @@ public class BrewingRecipeMaker {
 		List<ItemStack> potionReagents = ingredientManager.getAllIngredients(VanillaTypes.ITEM).stream()
 			.filter(itemStack -> {
 				try {
-					return PotionBrewing.isReagent(itemStack);
+					return PotionBrewing.isIngredient(itemStack);
 				} catch (RuntimeException | LinkageError e) {
 					String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
 					LOGGER.error("Failed to check if item is a potion reagent {}.", itemStackInfo, e);
@@ -86,8 +86,8 @@ public class BrewingRecipeMaker {
 			.collect(Collectors.toList());
 
 		List<ItemStack> basePotions = new ArrayList<>();
-		for (Ingredient potionItem : PotionBrewing.POTION_ITEMS) {
-			Collections.addAll(basePotions, potionItem.getMatchingStacks());
+		for (Ingredient potionItem : PotionBrewing.ALLOWED_CONTAINERS) {
+			Collections.addAll(basePotions, potionItem.getItems());
 		}
 
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM);
@@ -98,7 +98,7 @@ public class BrewingRecipeMaker {
 				continue;
 			}
 			for (ItemStack input : basePotions) {
-				ItemStack result = PotionUtils.addPotionToItemStack(input.copy(), potion);
+				ItemStack result = PotionUtils.setPotion(input.copy(), potion);
 				knownPotions.add(result);
 			}
 		}
@@ -121,12 +121,12 @@ public class BrewingRecipeMaker {
 				}
 
 				if (potionInput.getItem() == potionOutput.getItem()) {
-					Potion potionOutputType = PotionUtils.getPotionFromItem(potionOutput);
+					Potion potionOutputType = PotionUtils.getPotion(potionOutput);
 					if (potionOutputType == Potions.WATER) {
 						continue;
 					}
 
-					Potion potionInputType = PotionUtils.getPotionFromItem(potionInput);
+					Potion potionInputType = PotionUtils.getPotion(potionInput);
 					ResourceLocation inputId = ForgeRegistries.POTION_TYPES.getKey(potionInputType);
 					ResourceLocation outputId = ForgeRegistries.POTION_TYPES.getKey(potionOutputType);
 					if (Objects.equals(inputId, outputId)) {
@@ -152,11 +152,11 @@ public class BrewingRecipeMaker {
 		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {
 			if (iBrewingRecipe instanceof BrewingRecipe) {
 				BrewingRecipe brewingRecipe = (BrewingRecipe) iBrewingRecipe;
-				ItemStack[] ingredients = brewingRecipe.getIngredient().getMatchingStacks();
+				ItemStack[] ingredients = brewingRecipe.getIngredient().getItems();
 				if (ingredients.length > 0) {
 					Ingredient inputIngredient = brewingRecipe.getInput();
 					ItemStack output = brewingRecipe.getOutput();
-					ItemStack[] inputs = inputIngredient.getMatchingStacks();
+					ItemStack[] inputs = inputIngredient.getItems();
 					IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(Arrays.asList(ingredients), Arrays.asList(inputs), output);
 					recipes.add(recipe);
 				}

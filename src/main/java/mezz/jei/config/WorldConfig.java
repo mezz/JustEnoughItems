@@ -52,7 +52,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	public void saveFilterText() {
 		ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 		if (connection != null) {
-			NetworkManager networkManager = connection.getNetworkManager();
+			NetworkManager networkManager = connection.getConnection();
 			final String worldCategory = ServerInfo.getWorldUid(networkManager);
 			Property property = worldConfig.get(worldCategory, "filterText", defaultValues.filterText);
 			property.set(values.filterText);
@@ -67,7 +67,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	@Override
 	public boolean isOverlayEnabled() {
 		return values.overlayEnabled ||
-			KeyBindings.toggleOverlay.getKey().getKeyCode() == GLFW.GLFW_KEY_UNKNOWN; // if there is no key binding to enable it, don't allow the overlay to be disabled
+			KeyBindings.toggleOverlay.getKey().getValue() == GLFW.GLFW_KEY_UNKNOWN; // if there is no key binding to enable it, don't allow the overlay to be disabled
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 
 		ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 		if (connection != null) {
-			NetworkManager networkManager = connection.getNetworkManager();
+			NetworkManager networkManager = connection.getConnection();
 			final String worldCategory = ServerInfo.getWorldUid(networkManager);
 			Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultValues.overlayEnabled);
 			property.set(values.overlayEnabled);
@@ -106,7 +106,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 			values.bookmarkOverlayEnabled = value;
 			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 			if (connection != null) {
-				NetworkManager networkManager = connection.getNetworkManager();
+				NetworkManager networkManager = connection.getConnection();
 				final String worldCategory = ServerInfo.getWorldUid(networkManager);
 				Property property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
 				property.set(values.bookmarkOverlayEnabled);
@@ -144,7 +144,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 
 			ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 			if (connection != null) {
-				NetworkManager networkManager = connection.getNetworkManager();
+				NetworkManager networkManager = connection.getConnection();
 				final String worldCategory = ServerInfo.getWorldUid(networkManager);
 				Property property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultValues.cheatItemsEnabled);
 				property.set(values.cheatItemsEnabled);
@@ -172,7 +172,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 
 		ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 		if (connection != null) {
-			NetworkManager networkManager = connection.getNetworkManager();
+			NetworkManager networkManager = connection.getConnection();
 			final String worldCategory = ServerInfo.getWorldUid(networkManager);
 			Property property = worldConfig.get(worldCategory, "editModeEnabled", defaultValues.editModeEnabled);
 			property.set(values.editModeEnabled);
@@ -180,6 +180,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 			if (worldConfig.hasChanged()) {
 				// TODO 1.13
 //					worldConfig.save();
+				EventBusHelper.post(new EditModeToggleEvent(values.editModeEnabled));
 			}
 		}
 	}
@@ -195,7 +196,7 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 	public boolean syncConfig() {
 		ClientPlayNetHandler connection = Minecraft.getInstance().getConnection();
 		if (connection != null) {
-			NetworkManager networkManager = connection.getNetworkManager();
+			NetworkManager networkManager = connection.getConnection();
 			return syncWorldConfig(networkManager);
 		}
 		return false;

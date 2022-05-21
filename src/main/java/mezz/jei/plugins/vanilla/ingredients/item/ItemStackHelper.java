@@ -54,6 +54,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	@Nullable
+	@Deprecated
 	public ItemStack getMatch(Iterable<ItemStack> ingredients, ItemStack toMatch) {
 		return getMatch(ingredients, toMatch, UidContext.Ingredient);
 	}
@@ -71,7 +72,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getDisplayName(ItemStack ingredient) {
-		ITextComponent displayNameTextComponent = ingredient.getDisplayName();
+		ITextComponent displayNameTextComponent = ingredient.getHoverName();
 		String displayName = displayNameTextComponent.getString();
 		ErrorUtil.checkNotNull(displayName, "itemStack.getDisplayName()");
 		return displayName;
@@ -179,7 +180,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		Item item = ingredient.getItem();
 		for (ItemGroup itemGroup : item.getCreativeTabs()) {
 			if (itemGroup != null) {
-				String creativeTabName = itemGroup.getGroupName().getString();
+				String creativeTabName = itemGroup.getDisplayName().getString();
 				creativeTabsStrings.add(creativeTabName);
 			}
 		}

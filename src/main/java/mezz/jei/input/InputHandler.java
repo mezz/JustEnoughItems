@@ -49,7 +49,8 @@ public class InputHandler {
 	private final LeftAreaDispatcher leftAreaDispatcher;
 	private final BookmarkList bookmarkList;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
-	private final CombinedMouseHandler clickHandlers;
+	private final IMouseHandler mouseClickHandler;
+	private final IMouseDragHandler mouseDragHandler;
 
 	public InputHandler(
 		RecipesGui recipesGui,
@@ -77,7 +78,7 @@ public class InputHandler {
 		this.showsRecipeFocuses.add(leftAreaDispatcher);
 		this.showsRecipeFocuses.add(new GuiContainerWrapper(guiScreenHelper));
 
-		this.clickHandlers = new CombinedMouseHandler(
+		this.mouseClickHandler = new CombinedMouseHandler(
 			new ClickEditHandler(),
 			ingredientListOverlay.getMouseHandler(),
 			leftAreaDispatcher.getMouseHandler(),
@@ -85,9 +86,11 @@ public class InputHandler {
 			new ClickGlobalHandler(),
 			new GuiAreaClickHandlerGenerator()
 		);
+		this.mouseDragHandler = ingredientListOverlay.getMouseDragHandler();
 	}
 
 	public void registerToEventBus() {
+		EventBusHelper.registerWeakListener(this, GuiScreenEvent.InitGuiEvent.class, InputHandler::onInitGuiEvent);
 		EventBusHelper.registerWeakListener(this, GuiScreenEvent.KeyboardKeyPressedEvent.Pre.class, InputHandler::onGuiKeyPressedEvent);
 		EventBusHelper.registerWeakListener(this, GuiScreenEvent.KeyboardCharTypedEvent.Pre.class, InputHandler::onGuiCharTypedEvent);
 		EventBusHelper.registerWeakListener(this, GuiScreenEvent.KeyboardKeyPressedEvent.Post.class, InputHandler::onGuiKeyboardEvent);
@@ -95,6 +98,13 @@ public class InputHandler {
 		EventBusHelper.registerWeakListener(this, GuiScreenEvent.MouseClickedEvent.Pre.class, InputHandler::onGuiMouseEvent);
 		EventBusHelper.registerWeakListener(this, GuiScreenEvent.MouseReleasedEvent.Pre.class, InputHandler::onGuiMouseEvent);
 		EventBusHelper.registerWeakListener(this, GuiScreenEvent.MouseScrollEvent.Pre.class, InputHandler::onGuiMouseEvent);
+	}
+
+	public void onInitGuiEvent(GuiScreenEvent.InitGuiEvent event) {
+		this.mouseClickHandler.handleMouseClickedOut(0);
+		this.mouseClickHandler.handleMouseClickedOut(1);
+		this.mouseClickHandler.handleMouseClickedOut(2);
+		this.mouseDragHandler.handleDragCanceled();
 	}
 
 	/**
@@ -140,8 +150,12 @@ public class InputHandler {
 			Screen screen = event.getGui();
 			double mouseX = event.getMouseX();
 			double mouseY = event.getMouseY();
-			IMouseHandler handler = this.clickHandlers.handleClick(screen, mouseX, mouseY, mouseButton, MouseClickState.SIMULATE);
-			if (handler != null) {
+			IMouseHandler handler = this.mouseClickHandler.handleClick(screen, mouseX, mouseY, mouseButton, MouseClickState.SIMULATE);
+			IMouseDragHandler dragHandler = null;
+			if (mouseButton == 0) {
+				dragHandler = this.mouseDragHandler.handleDragStart(screen, mouseX, mouseY);
+			}
+			if (handler != null || dragHandler != null) {
 				event.setCanceled(true);
 			}
 		}
@@ -150,8 +164,15 @@ public class InputHandler {
 	public void onGuiMouseEvent(GuiScreenEvent.MouseReleasedEvent.Pre event) {
 		int mouseButton = event.getButton();
 		if (mouseButton > -1) {
-			IMouseHandler handled = this.clickHandlers.handleClick(event.getGui(), event.getMouseX(), event.getMouseY(), mouseButton, MouseClickState.EXECUTE);
-			if (handled != null) {
+			Screen screen = event.getGui();
+			double mouseX = event.getMouseX();
+			double mouseY = event.getMouseY();
+			IMouseHandler handled = this.mouseClickHandler.handleClick(screen, mouseX, mouseY, mouseButton, MouseClickState.EXECUTE);
+			IMouseDragHandler dragHandled = null;
+			if (mouseButton == 0) {
+				dragHandled = this.mouseDragHandler.handleDragComplete(screen, mouseX, mouseY);
+			}
+			if (handled != null || dragHandled != null) {
 				event.setCanceled(true);
 			}
 		}
@@ -169,9 +190,9 @@ public class InputHandler {
 	}
 
 	@Nullable
-	public IClickedIngredient<?> getFocusUnderMouseForClick(double mouseX, double mouseY) {
+	public IClickedIngredient<?> getFocusUnderMouseForClick(double mouseX, double mouseY, int mouseButton) {
 		for (IShowsRecipeFocuses gui : showsRecipeFocuses) {
-			if (gui.canSetFocusWithMouse()) {
+			if (!isConflictingVanillaMouseButton(mouseButton) || gui.canSetFocusWithMouse()) {
 				IClickedIngredient<?> clicked = gui.getIngredientUnderMouse(mouseX, mouseY);
 				if (clicked != null) {
 					return clicked;
@@ -179,6 +200,10 @@ public class InputHandler {
 			}
 		}
 		return null;
+	}
+
+	private static boolean isConflictingVanillaMouseButton(int mouseButton) {
+		return mouseButton <= 2;
 	}
 
 	@Nullable
@@ -198,14 +223,14 @@ public class InputHandler {
 			if (!worldConfig.isEditModeEnabled()) {
 				return null;
 			}
-			IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
+			IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY, mouseButton);
 			if (clicked == null) {
 				return null;
 			}
 			if (!clickState.isSimulate()) {
 				handler(clicked);
 			}
-			return this;
+			return LimitedAreaMouseHandler.create(this, clicked.getArea());
 		}
 
 		private <V> void handler(IClickedIngredient<V> clicked) {
@@ -230,7 +255,7 @@ public class InputHandler {
 	public class ClickGlobalHandler implements IMouseHandler {
 		@Override
 		public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-			InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
+			InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(mouseButton);
 			if (handleGlobalKeybinds(input, clickState)) {
 				return this;
 			}
@@ -262,7 +287,7 @@ public class InputHandler {
 	}
 
 	private boolean handleKeyEvent(int keyCode, int scanCode, int modifiers) {
-		InputMappings.Input input = InputMappings.getInputByCode(keyCode, scanCode);
+		InputMappings.Input input = InputMappings.getKey(keyCode, scanCode);
 		if (ingredientListOverlay.hasKeyboardFocus()) {
 			if (KeyBindings.isInventoryCloseKey(input) || KeyBindings.isEnterKey(keyCode)) {
 				ingredientListOverlay.clearKeyboardFocus();
@@ -334,12 +359,15 @@ public class InputHandler {
 
 	private boolean isContainerTextFieldFocused() {
 		Minecraft minecraft = Minecraft.getInstance();
-		Screen screen = minecraft.currentScreen;
+		if (minecraft == null) {
+			return false;
+		}
+		Screen screen = minecraft.screen;
 		if (screen == null) {
 			return false;
 		}
 		TextFieldWidget textField = ReflectionUtil.getFieldWithClass(screen, TextFieldWidget.class);
-		return textField != null && textField.getVisible() && textField.isFocused();
+		return textField != null && textField.isVisible() && textField.isFocused();
 	}
 
 }

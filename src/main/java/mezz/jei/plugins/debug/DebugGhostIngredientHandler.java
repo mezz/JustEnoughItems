@@ -28,9 +28,9 @@ public class DebugGhostIngredientHandler<T extends ContainerScreen<?>> implement
 		}
 		if (ingredient instanceof ItemStack) {
 			boolean even = true;
-			for (Slot slot : gui.getContainer().inventorySlots) {
+			for (Slot slot : gui.getMenu().slots) {
 				if (even) {
-					Rectangle2d area = new Rectangle2d(gui.getGuiLeft() + slot.xPos, gui.getGuiTop() + slot.yPos, 16, 16);
+					Rectangle2d area = new Rectangle2d(gui.getGuiLeft() + slot.x, gui.getGuiTop() + slot.y, 16, 16);
 					targets.add(new DebugInfoTarget<>("Got an Ingredient in Gui", area));
 				}
 				even = !even;

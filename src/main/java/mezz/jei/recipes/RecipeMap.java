@@ -33,7 +33,7 @@ public class RecipeMap {
 		this.ingredientManager = ingredientManager;
 	}
 
-	public <V> List<ResourceLocation> getRecipeCategories(V ingredient) {
+	public <V> ImmutableList<ResourceLocation> getRecipeCategories(V ingredient) {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 
 		Set<ResourceLocation> recipeCategories = new HashSet<>();

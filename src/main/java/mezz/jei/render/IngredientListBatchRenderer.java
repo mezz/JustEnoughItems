@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.config.IClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemModelMesher;
@@ -38,12 +39,14 @@ public class IngredientListBatchRenderer {
 	private final List<IngredientListElementRenderer<?>> renderOther = new ArrayList<>();
 	private final IEditModeConfig editModeConfig;
 	private final IWorldConfig worldConfig;
+	private final IClientConfig clientConfig;
 
 	private int blocked = 0;
 
-	public IngredientListBatchRenderer(IEditModeConfig editModeConfig, IWorldConfig worldConfig) {
+	public IngredientListBatchRenderer(IEditModeConfig editModeConfig, IWorldConfig worldConfig, IClientConfig clientConfig) {
 		this.editModeConfig = editModeConfig;
 		this.worldConfig = worldConfig;
+		this.clientConfig = clientConfig;
 	}
 
 	public void clear() {
@@ -99,10 +102,10 @@ public class IngredientListBatchRenderer {
 			IIngredientListElement<ItemStack> itemStackElement = (IIngredientListElement<ItemStack>) element;
 			ItemStack itemStack = itemStackElement.getIngredient();
 			IBakedModel bakedModel;
-			ItemModelMesher itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelMesher();
+			ItemModelMesher itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelShaper();
 			try {
 				bakedModel = itemModelMesher.getItemModel(itemStack);
-				bakedModel = bakedModel.getOverrides().getOverrideModel(bakedModel, itemStack, null, null);
+				bakedModel = bakedModel.getOverrides().resolve(bakedModel, itemStack, null, null);
 				Preconditions.checkNotNull(bakedModel, "IBakedModel must not be null.");
 			} catch (Throwable throwable) {
 				String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
@@ -110,10 +113,10 @@ public class IngredientListBatchRenderer {
 				return;
 			}
 
-			if (!bakedModel.isBuiltInRenderer() && !(itemStack.getItem() instanceof ISlowRenderItem)) {
+			if (!bakedModel.isCustomRenderer() && !(itemStack.getItem() instanceof ISlowRenderItem)) {
 				ItemStackFastRenderer renderer = new ItemStackFastRenderer(itemStackElement);
 				ingredientListSlot.setIngredientRenderer(renderer);
-				if (bakedModel.isSideLit()) { //isSideLit
+				if (bakedModel.usesBlockLight()) { //isSideLit
 					renderItems3d.add(renderer);
 				} else {
 					renderItems2d.add(renderer);
@@ -150,18 +153,37 @@ public class IngredientListBatchRenderer {
 	/**
 	 * renders all ItemStacks
 	 */
+	public void render(Minecraft minecraft, MatrixStack stack) {
+		if (clientConfig.isFastItemRenderingEnabled()) {
+			// optimized batch rendering
+			renderBatchedItemStacks(minecraft, stack);
+		} else {
+			for (IngredientListElementRenderer<ItemStack> slot : renderItems3d) {
+				slot.renderSlow(stack, editModeConfig, worldConfig);
+			}
+			for (IngredientListElementRenderer<ItemStack> slot : renderItems2d) {
+				slot.renderSlow(stack, editModeConfig, worldConfig);
+			}
+		}
+
+		// other rendering
+		for (IngredientListElementRenderer<?> slot : renderOther) {
+			slot.renderSlow(stack, editModeConfig, worldConfig);
+		}
+	}
+
 	@SuppressWarnings("deprecation")
-	public void render(Minecraft minecraft, MatrixStack matrixStack) {
-		RenderHelper.enableStandardItemLighting();
+	private void renderBatchedItemStacks(Minecraft minecraft, MatrixStack stack) {
+		RenderHelper.turnBackOn();
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
 		TextureManager textureManager = minecraft.getTextureManager();
-		itemRenderer.zLevel += 50.0F;
+		itemRenderer.blitOffset += 50.0F;
 
-		IRenderTypeBuffer.Impl buffer = minecraft.getRenderTypeBuffers().getBufferSource();
+		IRenderTypeBuffer.Impl buffer = minecraft.renderBuffers().bufferSource();
 
-		textureManager.bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-		textureManager.getTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE).setBlurMipmapDirect(false, false);
+		textureManager.bind(PlayerContainer.BLOCK_ATLAS);
+		textureManager.getTexture(PlayerContainer.BLOCK_ATLAS).setFilter(false, false);
 		RenderSystem.enableRescaleNormal();
 		RenderSystem.enableAlphaTest();
 		RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
@@ -171,28 +193,28 @@ public class IngredientListBatchRenderer {
 		// 3d Items
 		RenderSystem.enableLighting();
 		for (ItemStackFastRenderer slot : renderItems3d) {
-			slot.renderItemAndEffectIntoGUI(buffer, matrixStack, editModeConfig, worldConfig);
+			slot.renderItemAndEffectIntoGUI(buffer, stack, editModeConfig, worldConfig);
 		}
-		buffer.finish();
+		buffer.endBatch();
 
 		// 2d Items
 		RenderSystem.disableLighting();
-		RenderHelper.setupGuiFlatDiffuseLighting();
+		RenderHelper.setupForFlatItems();
 		for (ItemStackFastRenderer slot : renderItems2d) {
-			slot.renderItemAndEffectIntoGUI(buffer, matrixStack, editModeConfig, worldConfig);
+			slot.renderItemAndEffectIntoGUI(buffer, stack, editModeConfig, worldConfig);
 		}
-		buffer.finish();
-		RenderHelper.setupGui3DDiffuseLighting();
+		buffer.endBatch();
+		RenderHelper.setupFor3DItems();
 
 		RenderSystem.disableAlphaTest();
 		RenderSystem.disableBlend();
 		RenderSystem.disableRescaleNormal();
 		RenderSystem.disableLighting();
 
-		textureManager.bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-		textureManager.getTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
+		textureManager.bind(PlayerContainer.BLOCK_ATLAS);
+		textureManager.getTexture(PlayerContainer.BLOCK_ATLAS).restoreLastBlurMipmap();
 
-		itemRenderer.zLevel -= 50.0F;
+		itemRenderer.blitOffset -= 50.0F;
 
 		// overlays
 		for (ItemStackFastRenderer slot : renderItems3d) {
@@ -204,12 +226,6 @@ public class IngredientListBatchRenderer {
 		}
 
 		RenderSystem.disableLighting();
-
-		// other rendering
-		for (IngredientListElementRenderer<?> slot : renderOther) {
-			slot.renderSlow(matrixStack, editModeConfig, worldConfig);
-		}
-
-		RenderHelper.disableStandardItemLighting();
+		RenderHelper.turnOff();
 	}
 }

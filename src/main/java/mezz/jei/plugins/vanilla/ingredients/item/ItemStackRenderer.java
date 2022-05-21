@@ -31,16 +31,16 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	public void render(MatrixStack matrixStack, int xPosition, int yPosition, @Nullable ItemStack ingredient) {
 		if (ingredient != null) {
 			RenderSystem.pushMatrix();
-			RenderSystem.multMatrix(matrixStack.getLast().getMatrix());
+			RenderSystem.multMatrix(matrixStack.last().pose());
 			RenderSystem.enableDepthTest();
-			RenderHelper.enableStandardItemLighting();
+			RenderHelper.turnBackOn();
 			Minecraft minecraft = Minecraft.getInstance();
 			FontRenderer font = getFontRenderer(minecraft, ingredient);
 			ItemRenderer itemRenderer = minecraft.getItemRenderer();
-			itemRenderer.renderItemAndEffectIntoGUI(null, ingredient, xPosition, yPosition);
-			itemRenderer.renderItemOverlayIntoGUI(font, ingredient, xPosition, yPosition, null);
+			itemRenderer.renderAndDecorateFakeItem(ingredient, xPosition, yPosition);
+			itemRenderer.renderGuiItemDecorations(font, ingredient, xPosition, yPosition);
 			RenderSystem.disableBlend();
-			RenderHelper.disableStandardItemLighting();
+			RenderHelper.turnOff();
 			RenderSystem.popMatrix();
 		}
 	}
@@ -50,13 +50,13 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		Minecraft minecraft = Minecraft.getInstance();
 		PlayerEntity player = minecraft.player;
 		try {
-			return ingredient.getTooltip(player, tooltipFlag);
+			return ingredient.getTooltipLines(player, tooltipFlag);
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
 			LOGGER.error("Failed to get tooltip: {}", itemStackInfo, e);
 			List<ITextComponent> list = new ArrayList<>();
 			TranslationTextComponent crash = new TranslationTextComponent("jei.tooltip.error.crash");
-			list.add(crash.mergeStyle(TextFormatting.RED));
+			list.add(crash.withStyle(TextFormatting.RED));
 			return list;
 		}
 	}
@@ -65,7 +65,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	public FontRenderer getFontRenderer(Minecraft minecraft, ItemStack ingredient) {
 		FontRenderer fontRenderer = ingredient.getItem().getFontRenderer(ingredient);
 		if (fontRenderer == null) {
-			fontRenderer = minecraft.fontRenderer;
+			fontRenderer = minecraft.font;
 		}
 		return fontRenderer;
 	}

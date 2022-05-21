@@ -2,6 +2,7 @@ package mezz.jei;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.config.JEIClientConfig;
+import mezz.jei.config.ServerConfig;
 import mezz.jei.events.EventBusHelper;
 import mezz.jei.gui.textures.JeiSpriteUploader;
 import mezz.jei.gui.textures.Textures;
@@ -14,6 +15,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -29,7 +31,7 @@ public class JustEnoughItems {
 	}
 
 	private static void clientStart(IEventBus modEventBus, NetworkHandler networkHandler) {
-		JEIClientConfig.register();
+		JEIClientConfig.register(modEventBus);
 
 		EventBusHelper.addListener(JustEnoughItems.class, modEventBus, ColorHandlerEvent.Block.class, setupEvent -> {
 			Minecraft minecraft = Minecraft.getInstance();
@@ -38,7 +40,7 @@ public class JustEnoughItems {
 			IResourceManager resourceManager = minecraft.getResourceManager();
 			if (resourceManager instanceof IReloadableResourceManager) {
 				IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) resourceManager;
-				reloadableResourceManager.addReloadListener(spriteUploader);
+				reloadableResourceManager.registerReloadListener(spriteUploader);
 			}
 			EventBusHelper.addLifecycleListener(JustEnoughItems.class, modEventBus, FMLLoadCompleteEvent.class, loadCompleteEvent ->
 				new ClientLifecycleHandler(networkHandler, textures)
@@ -47,8 +49,10 @@ public class JustEnoughItems {
 	}
 
 	private static void commonStart(IEventBus modEventBus, NetworkHandler networkHandler) {
-		EventBusHelper.addLifecycleListener(JustEnoughItems.class, modEventBus, FMLCommonSetupEvent.class, event ->
-			networkHandler.createServerPacketHandler()
-		);
+		EventBusHelper.addLifecycleListener(JustEnoughItems.class, modEventBus, FMLCommonSetupEvent.class, event -> {
+			networkHandler.createServerPacketHandler();
+			ModLoadingContext modLoadingContext = ModLoadingContext.get();
+			ServerConfig.register(modEventBus, modLoadingContext);
+		});
 	}
 }

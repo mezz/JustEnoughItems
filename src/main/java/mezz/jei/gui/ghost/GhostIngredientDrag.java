@@ -55,12 +55,27 @@ public class GhostIngredientDrag<T> {
 		}
 	}
 
+	public static boolean farEnoughToDraw(GhostIngredientDrag<?> drag, double mouseX, double mouseY) {
+		final double centerX;
+		final double centerY;
+
+		Rectangle2d origin = drag.getOrigin();
+		if (origin != null) {
+			centerX = origin.getX() + (origin.getWidth() / 2.0);
+			centerY = origin.getY() + (origin.getHeight() / 2.0);
+		} else {
+			centerX = drag.mouseStartX;
+			centerY = drag.mouseStartY;
+		}
+		double mouseXDist = centerX - mouseX;
+		double mouseYDist = centerY - mouseY;
+		double mouseDistSq = mouseXDist * mouseXDist + mouseYDist * mouseYDist;
+		return mouseDistSq > 64.0;
+	}
+
 	@SuppressWarnings("deprecation")
 	public void drawItem(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
-		double mouseXDist = this.mouseStartX - mouseX;
-		double mouseYDist = this.mouseStartY - mouseY;
-		double mouseDistSq = mouseXDist * mouseXDist + mouseYDist * mouseYDist;
-		if (mouseDistSq < 10.0) {
+		if (!farEnoughToDraw(this, mouseX, mouseY)) {
 			return;
 		}
 
@@ -70,9 +85,9 @@ public class GhostIngredientDrag<T> {
 			int xDist = originX - mouseX;
 			int yDist = originY - mouseY;
 			float lineWidth = 2;
-			if (minecraft.currentScreen != null) {
+			if (minecraft.screen != null) {
 				long distanceSq = (long) xDist * xDist + (long) yDist * yDist;
-				int screenDim = minecraft.currentScreen.width * minecraft.currentScreen.height;
+				int screenDim = minecraft.screen.width * minecraft.screen.height;
 				float percentOfDim = Math.min(1, distanceSq / (float) screenDim);
 				lineWidth = 1 + ((1 - (percentOfDim)) * 3);
 			}
@@ -95,9 +110,9 @@ public class GhostIngredientDrag<T> {
 		}
 
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
-		itemRenderer.zLevel += 150.0F;
+		itemRenderer.blitOffset += 150.0F;
 		ingredientRenderer.render(matrixStack, mouseX - 8, mouseY - 8, ingredient);
-		itemRenderer.zLevel -= 150.0F;
+		itemRenderer.blitOffset -= 150.0F;
 	}
 
 	@SuppressWarnings("deprecation")

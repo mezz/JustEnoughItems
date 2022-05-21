@@ -17,8 +17,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 
 import com.google.common.collect.Multimap;
+
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -264,7 +267,7 @@ public final class IngredientSorter implements IIngredientSorter {
 		Item item = itemStack.getItem();	
 		if (item instanceof ArmorItem) {
 			ArmorItem armorItem = (ArmorItem) item;				
-			return armorItem.getEquipmentSlot().getSlotIndex();
+			return armorItem.getSlot().getIndex();
 		}
 		return 0;
 	};
@@ -273,7 +276,7 @@ public final class IngredientSorter implements IIngredientSorter {
 		Item item = itemStack.getItem();	
 		if (item instanceof ArmorItem) {
 			ArmorItem armorItem = (ArmorItem) item;				
-			return armorItem.getDamageReduceAmount();
+			return armorItem.getDefense();
 		}
 		return Integer.MIN_VALUE;
 	};
@@ -302,8 +305,9 @@ public final class IngredientSorter implements IIngredientSorter {
 			//Group things by the most popular tag it has.
 			for (ResourceLocation tag : tags) {			
 				//TODO: make a tag blacklist.
+				//ItemTags.getAllTags().
 				if (!tag.toString().equals("itemfilters:check_nbt")) {
-					int thisTagSize = ItemTags.getCollection().getTagByID(tag).getAllElements().size();
+					int thisTagSize = ItemTags.getAllTags().getTagOrEmpty(tag).getValues().size();
 					if (thisTagSize > maxTagSize) {
 						bestTag = tag.getPath();
 						maxTagSize = thisTagSize;
@@ -318,6 +322,9 @@ public final class IngredientSorter implements IIngredientSorter {
 		//Sort non-tools after the tools.
 		return !getTagForSorting(elementInfo).isEmpty();
 	};
+
+
+	private static Boolean nullToolClassWarned = false;
 
 	private static String getToolClass(ItemStack itemStack)
     {		

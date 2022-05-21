@@ -19,19 +19,19 @@ import mezz.jei.api.registration.IAdvancedRegistration;
 public interface IRecipeManagerPlugin {
 	/**
 	 * Returns a list of Recipe Categories offered for the focus.
-	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipeCategories(IFocus)}.
+	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipeCategories(IFocus, boolean)}.
 	 */
 	<V> List<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus);
 
 	/**
 	 * Returns a list of Recipes in the recipeCategory that have the focus.
-	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipes(IRecipeCategory, IFocus)}.
+	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipes(IRecipeCategory, IFocus, boolean)}.
 	 */
 	<T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus);
 
 	/**
 	 * Returns a list of all Recipes in the recipeCategory.
-	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipes(IRecipeCategory)}.
+	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipes(IRecipeCategory, IFocus, boolean)}.
 	 */
 	<T> List<T> getRecipes(IRecipeCategory<T> recipeCategory);
 }

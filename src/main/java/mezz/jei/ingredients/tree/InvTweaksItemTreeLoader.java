@@ -146,7 +146,7 @@ public class InvTweaksItemTreeLoader extends DefaultHandler {
              CompoundNBT extraData = null;
             if(extraDataAttr != null) {
                 try {
-                    extraData = JsonToNBT.getTagFromJson(extraDataAttr);
+                    extraData = JsonToNBT.parseTag(extraDataAttr);
                 } catch(Exception e) {
                     throw new RuntimeException("Data attribute failed for tree entry '" + name + "'", e);
                 }
@@ -163,7 +163,7 @@ public class InvTweaksItemTreeLoader extends DefaultHandler {
              CompoundNBT extraData = null;
             if(extraDataAttr != null) {
                 try {
-                    extraData = JsonToNBT.getTagFromJson(extraDataAttr.toLowerCase());
+                    extraData = JsonToNBT.parseTag(extraDataAttr.toLowerCase());
                 } catch(Exception e) {
                     throw new RuntimeException("Data attribute failed for tree entry '" + name + "'", e);
                 }

@@ -12,11 +12,11 @@ public final class Translator {
 	}
 
 	public static String translateToLocal(String key) {
-		return I18n.format(key);
+		return I18n.get(key);
 	}
 
 	public static String translateToLocalFormatted(String key, Object... format) {
-		return I18n.format(key, format);
+		return I18n.get(key, format);
 	}
 
 	public static String toLowercaseWithLocale(String string) {
@@ -29,7 +29,7 @@ public final class Translator {
 		if (minecraft != null) {
 			LanguageManager languageManager = minecraft.getLanguageManager();
 			if (languageManager != null) {
-				Language currentLanguage = languageManager.getCurrentLanguage();
+				Language currentLanguage = languageManager.getSelected();
 				if (currentLanguage != null) {
 					return currentLanguage.getJavaLocale();
 				}

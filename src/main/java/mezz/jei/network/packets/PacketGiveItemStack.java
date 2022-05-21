@@ -26,17 +26,17 @@ public class PacketGiveItemStack extends PacketJei {
 
 	@Override
 	public void writePacketData(PacketBuffer buf) {
-		buf.writeItemStack(itemStack);
-		buf.writeEnumValue(giveMode);
+		buf.writeItem(itemStack);
+		buf.writeEnum(giveMode);
 	}
 
 	public static void readPacketData(PacketBuffer buf, PlayerEntity player) {
 		if (player instanceof ServerPlayerEntity) {
 			ServerPlayerEntity sender = (ServerPlayerEntity) player;
 
-			ItemStack itemStack = buf.readItemStack();
+			ItemStack itemStack = buf.readItem();
 			if (!itemStack.isEmpty()) {
-				GiveMode giveMode = buf.readEnumValue(GiveMode.class);
+				GiveMode giveMode = buf.readEnum(GiveMode.class);
 				CommandUtilServer.executeGive(sender, itemStack, giveMode);
 			}
 		}

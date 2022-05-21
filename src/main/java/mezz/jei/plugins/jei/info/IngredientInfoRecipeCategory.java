@@ -98,8 +98,8 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IngredientI
 
 		Minecraft minecraft = Minecraft.getInstance();
 		for (ITextProperties descriptionLine : recipe.getDescription()) {
-			minecraft.fontRenderer.func_238422_b_(matrixStack, LanguageMap.getInstance().func_241870_a(descriptionLine), xPos, yPos, 0xFF000000);
-			yPos += minecraft.fontRenderer.FONT_HEIGHT + lineSpacing;
+			minecraft.font.draw(matrixStack, LanguageMap.getInstance().getVisualOrder(descriptionLine), xPos, yPos, 0xFF000000);
+			yPos += minecraft.font.lineHeight + lineSpacing;
 		}
 	}
 

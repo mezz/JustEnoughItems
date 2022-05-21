@@ -40,15 +40,15 @@ public class BookmarkButton extends GuiIconToggleButton {
 	protected void getTooltips(List<ITextComponent> tooltip) {
 		tooltip.add(new TranslationTextComponent("jei.tooltip.bookmarks"));
 		KeyBinding bookmarkKey = KeyBindings.bookmark;
-		if (bookmarkKey.getKey().getKeyCode() == GLFW.GLFW_KEY_UNKNOWN) {
+		if (bookmarkKey.getKey().getValue() == GLFW.GLFW_KEY_UNKNOWN) {
 			TranslationTextComponent noKey = new TranslationTextComponent("jei.tooltip.bookmarks.usage.nokey");
-			tooltip.add(noKey.mergeStyle(TextFormatting.RED));
+			tooltip.add(noKey.withStyle(TextFormatting.RED));
 		} else if (!bookmarkOverlay.hasRoom()) {
 			TranslationTextComponent notEnoughSpace = new TranslationTextComponent("jei.tooltip.bookmarks.not.enough.space");
-			tooltip.add(notEnoughSpace.mergeStyle(TextFormatting.GOLD));
+			tooltip.add(notEnoughSpace.withStyle(TextFormatting.GOLD));
 		} else {
-			TranslationTextComponent key = new TranslationTextComponent("jei.tooltip.bookmarks.usage.key", new TranslationTextComponent(bookmarkKey.getTranslationKey()));
-			tooltip.add(key.mergeStyle(TextFormatting.GRAY));
+			TranslationTextComponent key = new TranslationTextComponent("jei.tooltip.bookmarks.usage.key", bookmarkKey.getTranslatedKeyMessage());
+			tooltip.add(key.withStyle(TextFormatting.GRAY));
 		}
 	}
 

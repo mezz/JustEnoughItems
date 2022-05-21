@@ -37,8 +37,8 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 		ItemStack firstIngredient = ingredients.get(0);
 		ItemStack firstInput = potionInputs.get(0);
 
-		Potion typeIn = PotionUtils.getPotionFromItem(firstInput);
-		Potion typeOut = PotionUtils.getPotionFromItem(potionOutput);
+		Potion typeIn = PotionUtils.getPotion(firstInput);
+		Potion typeOut = PotionUtils.getPotion(potionOutput);
 		this.hashCode = Objects.hashCode(firstInput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeIn),
 			potionOutput.getItem(), ForgeRegistries.POTION_TYPES.getKey(typeOut),
 			firstIngredient.getItem());
@@ -76,7 +76,7 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 		}
 
 		for (int i = 0; i < ingredients.size(); i++) {
-			if (!ItemStack.areItemStacksEqual(ingredients.get(i), other.ingredients.get(i))) {
+			if (!ItemStack.matches(ingredients.get(i), other.ingredients.get(i))) {
 				return false;
 			}
 		}
@@ -88,8 +88,8 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 		if (potion1.getItem() != potion2.getItem()) {
 			return false;
 		}
-		Potion type1 = PotionUtils.getPotionFromItem(potion1);
-		Potion type2 = PotionUtils.getPotionFromItem(potion2);
+		Potion type1 = PotionUtils.getPotion(potion1);
+		Potion type2 = PotionUtils.getPotion(potion2);
 		ResourceLocation key1 = type1.getRegistryName();
 		ResourceLocation key2 = type2.getRegistryName();
 		return java.util.Objects.equals(key1, key2);
@@ -107,8 +107,8 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 
 	@Override
 	public String toString() {
-		Potion inputType = PotionUtils.getPotionFromItem(potionInputs.get(0));
-		Potion outputType = PotionUtils.getPotionFromItem(potionOutput);
-		return ingredients + " + [" + potionInputs.get(0).getItem() + " " + inputType.getNamePrefixed("") + "] = [" + potionOutput + " " + outputType.getNamePrefixed("") + "]";
+		Potion inputType = PotionUtils.getPotion(potionInputs.get(0));
+		Potion outputType = PotionUtils.getPotion(potionOutput);
+		return ingredients + " + [" + potionInputs.get(0).getItem() + " " + inputType.getName("") + "] = [" + potionOutput + " " + outputType.getName("") + "]";
 	}
 }

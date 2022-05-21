@@ -62,7 +62,7 @@ public class DrawableSprite implements IDrawableStatic {
 
 		Minecraft minecraft = Minecraft.getInstance();
 		TextureManager textureManager = minecraft.getTextureManager();
-		textureManager.bindTexture(Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
+		textureManager.bind(Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
 
 		maskTop += trimTop;
 		maskBottom += trimBottom;
@@ -73,30 +73,30 @@ public class DrawableSprite implements IDrawableStatic {
 		int y = yOffset + maskTop;
 		int width = textureWidth - maskRight - maskLeft;
 		int height = textureHeight - maskBottom - maskTop;
-		float uSize = sprite.getMaxU() - sprite.getMinU();
-		float vSize = sprite.getMaxV() - sprite.getMinV();
+		float uSize = sprite.getU1() - sprite.getU0();
+		float vSize = sprite.getV1() - sprite.getV0();
 
-		float minU = sprite.getMinU() + uSize * (maskLeft / (float) textureWidth);
-		float minV = sprite.getMinV() + vSize * (maskTop / (float) textureHeight);
-		float maxU = sprite.getMaxU() - uSize * (maskRight / (float) textureWidth);
-		float maxV = sprite.getMaxV() - vSize * (maskBottom / (float) textureHeight);
+		float minU = sprite.getU0() + uSize * (maskLeft / (float) textureWidth);
+		float minV = sprite.getV0() + vSize * (maskTop / (float) textureHeight);
+		float maxU = sprite.getU1() - uSize * (maskRight / (float) textureWidth);
+		float maxV = sprite.getV1() - vSize * (maskBottom / (float) textureHeight);
 
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		BufferBuilder bufferBuilder = tessellator.getBuilder();
 		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		Matrix4f matrix = matrixStack.getLast().getMatrix();
-		bufferBuilder.pos(matrix, x, y + height, 0)
-			.tex(minU, maxV)
+		Matrix4f matrix = matrixStack.last().pose();
+		bufferBuilder.vertex(matrix, x, y + height, 0)
+			.uv(minU, maxV)
 			.endVertex();
-		bufferBuilder.pos(matrix, x + width, y + height, 0)
-			.tex(maxU, maxV)
+		bufferBuilder.vertex(matrix, x + width, y + height, 0)
+			.uv(maxU, maxV)
 			.endVertex();
-		bufferBuilder.pos(matrix, x + width, y, 0)
-			.tex(maxU, minV)
+		bufferBuilder.vertex(matrix, x + width, y, 0)
+			.uv(maxU, minV)
 			.endVertex();
-		bufferBuilder.pos(matrix, x, y, 0)
-			.tex(minU, minV)
+		bufferBuilder.vertex(matrix, x, y, 0)
+			.uv(minU, minV)
 			.endVertex();
-		tessellator.draw();
+		tessellator.end();
 	}
 }

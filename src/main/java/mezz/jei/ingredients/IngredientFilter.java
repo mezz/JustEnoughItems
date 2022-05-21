@@ -10,10 +10,10 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.SearchMode;
 import mezz.jei.events.EditModeToggleEvent;
 import mezz.jei.events.EventBusHelper;
@@ -47,6 +47,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
 	private final IngredientBlacklistInternal blacklist;
+	private final IWorldConfig worldConfig;
 	private final IEditModeConfig editModeConfig;
 	private final IIngredientManager ingredientManager;
 	private final IIngredientSorter sorter;
@@ -62,15 +63,17 @@ public class IngredientFilter implements IIngredientGridSource {
 	private final List<IIngredientGridSource.Listener> listeners = new ArrayList<>();
 
 	public IngredientFilter(
-		IngredientBlacklistInternal blacklist,
-		IClientConfig clientConfig,
-		IIngredientFilterConfig config,
-		IEditModeConfig editModeConfig,
-		IIngredientManager ingredientManager,
-		IIngredientSorter sorter,
-		NonNullList<IIngredientListElement<?>> ingredients,
-		IModIdHelper modIdHelper) {
+			IngredientBlacklistInternal blacklist,
+			IWorldConfig worldConfig,
+			IClientConfig clientConfig,
+			IIngredientFilterConfig config,
+			IEditModeConfig editModeConfig,
+			IIngredientManager ingredientManager,
+			IIngredientSorter sorter,
+			NonNullList<IIngredientListElement<?>> ingredients,
+			IModIdHelper modIdHelper) {
 		this.blacklist = blacklist;
+		this.worldConfig = worldConfig;
 		this.editModeConfig = editModeConfig;
 		this.ingredientManager = ingredientManager;
 		this.sorter = sorter;
@@ -94,12 +97,10 @@ public class IngredientFilter implements IIngredientGridSource {
 		}
 
 		EventBusHelper.registerWeakListener(this, EditModeToggleEvent.class, (ingredientFilter, editModeToggleEvent) -> {
-			ingredientFilter.filterCached = null;
 			ingredientFilter.updateHidden();
 		});
 
 		EventBusHelper.registerWeakListener(this, PlayerJoinedWorldEvent.class, (ingredientFilter, playerJoinedWorldEvent) -> {
-			ingredientFilter.filterCached = null;
 			ingredientFilter.updateHidden();
 		});
 
@@ -163,21 +164,14 @@ public class IngredientFilter implements IIngredientGridSource {
 	}
 
 	public void updateHidden() {
+		boolean changed = false;
 		for (IIngredientListElementInfo<?> info : this.elementSearch.getAllIngredients()) {
 			IIngredientListElement<?> element = info.getElement();
-			updateHiddenState(element);
+			changed |= updateHiddenState(element);
 		}
-	}
-
-	public <V> void updateHiddenState(IIngredientListElement<V> element) {
-		V ingredient = element.getIngredient();
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		boolean visible = !blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper) &&
-			ingredientHelper.isIngredientOnServer(ingredient) &&
-			(editModeConfig.isEditModeEnabled() || !editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper));
-		if (element.isVisible() != visible) {
-			element.setVisible(visible);
+		if (changed) {
 			this.filterCached = null;
+			notifyListenersOfChange();
 		}
 	}
 
@@ -208,7 +202,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	//This is used to allow the sorting function to set all item's indexes, precomuting master sort order.
 	public List<IIngredientListElementInfo<?>> getIngredientListPreSort(Comparator<IIngredientListElementInfo<?>> directComparator) {
 		//First step is to get the full list.
-		List<IIngredientListElementInfo<?>> ingredientList = getIngredientListUncached("");
+		List<IIngredientListElementInfo<?>> ingredientList = elementSearch.getAllIngredients();
 		LoggedTimer filterTimer = new LoggedTimer();
 		filterTimer.start("Pre-Sorting.");
 		//Then we sort it.
@@ -413,5 +407,30 @@ public class IngredientFilter implements IIngredientGridSource {
 		for (IIngredientGridSource.Listener listener : listeners) {
 			listener.onChange();
 		}
+	}
+
+	public <V> boolean updateHiddenState(IIngredientListElement<V> element) {
+		V ingredient = element.getIngredient();
+		boolean visible = isIngredientVisible(ingredient);
+		if (element.isVisible() != visible) {
+			element.setVisible(visible);
+			return true;
+		}
+		return false;
+	}
+
+	public <V> boolean isIngredientVisible(V ingredient) {
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
+		return isIngredientVisible(ingredient, ingredientHelper);
+	}
+
+	public <V> boolean isIngredientVisible(V ingredient, IIngredientHelper<V> ingredientHelper) {
+		if (blacklist.isIngredientBlacklistedByApi(ingredient, ingredientHelper)) {
+			return false;
+		}
+		if (!ingredientHelper.isIngredientOnServer(ingredient)) {
+			return false;
+		}
+		return worldConfig.isEditModeEnabled() || !editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
 	}
 }

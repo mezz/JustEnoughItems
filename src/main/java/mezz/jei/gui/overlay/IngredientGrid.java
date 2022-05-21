@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.recipes.RecipesGui;
@@ -69,7 +68,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	) {
 		this.alignment = alignment;
 		this.recipesGui = recipesGui;
-		this.guiIngredientSlots = new IngredientListBatchRenderer(editModeConfig, worldConfig);
+		this.guiIngredientSlots = new IngredientListBatchRenderer(editModeConfig, worldConfig, clientConfig);
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
@@ -84,7 +83,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 	public int maxWidth() {
 		final int columns = this.clientConfig.getMaxColumns();
 		final int ingredientsWidth = columns * INGREDIENT_WIDTH;
-		final int minWidth = ClientConfig.smallestNumColumns * INGREDIENT_WIDTH;
+		final int minWidth = this.clientConfig.getMinColumns() * INGREDIENT_WIDTH;
 		return Math.max(ingredientsWidth, minWidth);
 	}
 
@@ -93,7 +92,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		final int rows = availableArea.getHeight() / INGREDIENT_HEIGHT;
 
 		final int ingredientsWidth = columns * INGREDIENT_WIDTH;
-		final int minWidth = ClientConfig.smallestNumColumns * INGREDIENT_WIDTH;
+		final int minWidth = this.clientConfig.getMinColumns() * INGREDIENT_WIDTH;
 		final int width = Math.max(ingredientsWidth, minWidth);
 		final int height = rows * INGREDIENT_HEIGHT;
 		final int x;
@@ -108,7 +107,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		this.area = new Rectangle2d(x, y, width, height);
 		this.guiIngredientSlots.clear();
 
-		if (rows == 0 || columns < ClientConfig.smallestNumColumns) {
+		if (rows == 0 || columns < this.clientConfig.getMinColumns()) {
 			return false;
 		}
 
@@ -168,7 +167,7 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		if (player == null) {
 			return false;
 		}
-		ItemStack itemStack = player.inventory.getItemStack();
+		ItemStack itemStack = player.inventory.getCarried();
 		if (itemStack.isEmpty()) {
 			return false;
 		}
@@ -237,12 +236,12 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 			if (player == null) {
 				return null;
 			}
-			ItemStack itemStack = player.inventory.getItemStack();
+			ItemStack itemStack = player.inventory.getCarried();
 			if (itemStack.isEmpty()) {
 				return null;
 			}
 			if (!clickState.isSimulate()) {
-				player.inventory.setItemStack(ItemStack.EMPTY);
+				player.inventory.setCarried(ItemStack.EMPTY);
 				PacketJei packet = new PacketDeletePlayerItem(itemStack);
 				Network.sendPacketToServer(packet);
 			}

@@ -3,7 +3,6 @@ package mezz.jei.gui.overlay.bookmarks;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.bookmarks.BookmarkList;
-import mezz.jei.config.ClientConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
@@ -88,14 +87,14 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 		bookmarkButton.drawTooltips(matrixStack, mouseX, mouseY);
 	}
 
-	private static int getMinWidth() {
-		return Math.max(4 * BUTTON_SIZE, ClientConfig.smallestNumColumns * IngredientGrid.INGREDIENT_WIDTH);
+	private static int getMinWidth(IClientConfig clientConfig) {
+		return Math.max(4 * BUTTON_SIZE, clientConfig.getMinColumns() * IngredientGrid.INGREDIENT_WIDTH);
 	}
 
 	public boolean updateBounds(Set<Rectangle2d> guiExclusionAreas) {
 		displayArea = parentArea;
 
-		final int minWidth = getMinWidth();
+		final int minWidth = getMinWidth(this.clientConfig);
 		if (displayArea.getWidth() < minWidth) {
 			return false;
 		}
@@ -192,9 +191,9 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 
 		private boolean handleCheatItemClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
 			Minecraft minecraft = Minecraft.getInstance();
-			InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
+			InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(mouseButton);
 			if (!(screen instanceof RecipesGui) &&
-				(mouseButton == GLFW.GLFW_MOUSE_BUTTON_1 || mouseButton == GLFW.GLFW_MOUSE_BUTTON_2 || minecraft.gameSettings.keyBindPickBlock.isActiveAndMatches(input))) {
+				(mouseButton == GLFW.GLFW_MOUSE_BUTTON_1 || mouseButton == GLFW.GLFW_MOUSE_BUTTON_2 || minecraft.options.keyPickItem.isActiveAndMatches(input))) {
 				IClickedIngredient<?> clicked = getIngredientUnderMouse(mouseX, mouseY);
 				if (clicked != null) {
 					if (worldConfig.isCheatItemsEnabled()) {

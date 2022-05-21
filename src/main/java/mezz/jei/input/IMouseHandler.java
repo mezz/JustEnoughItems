@@ -12,7 +12,7 @@ public interface IMouseHandler {
 	}
 
 	/**
-	 * Called when a mouse is clicked but was handled by some other mouse handler.
+	 * Called when a mouse is clicked but was handled and canceled by some other mouse handler.
 	 */
 	default void handleMouseClickedOut(int mouseButton) {
 

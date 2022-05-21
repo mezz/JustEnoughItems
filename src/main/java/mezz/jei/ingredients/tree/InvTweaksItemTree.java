@@ -8,8 +8,7 @@ import mezz.jei.api.ingredients.tree.IItemTreeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
+import net.minecraft.nbt.*;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
@@ -213,8 +212,10 @@ public class InvTweaksItemTree implements IItemTree {
 
         // Filter items that don't match extra data
         if(extra != null && !items.isEmpty()) {
-            items.stream().filter(item -> !NBTUtil.areNBTEquals(item.getExtraData(), extra, true)).forEach(filteredItems::remove);
+            items.stream().filter(item -> !NBTUtil.compareNbt(item.getExtraData(), extra, true)).forEach(filteredItems::remove);
         }
+
+        
 
         // If there's no matching item, create new ones
         if(filteredItems.isEmpty()) {
@@ -235,9 +236,8 @@ public class InvTweaksItemTree implements IItemTree {
 
         return filteredItems;
 
-    }
+    }   
 
-    
     @Override
     public List<IItemTreeItem> getItems(String id, int damage) {
         return getItems(id, damage, null);
@@ -250,7 +250,7 @@ public class InvTweaksItemTree implements IItemTree {
 
     public int getItemOrder(ItemStack itemStack) {
         List<IItemTreeItem> items = getItems(itemStack.getItem().getRegistryName().toString(),
-            itemStack.getDamage(), itemStack.getTag());
+            itemStack.getDamageValue(), itemStack.getTag());
         return (items.size() > 0) ? items.get(0).getOrder() : Integer.MAX_VALUE;
     }
 
@@ -346,7 +346,7 @@ public class InvTweaksItemTree implements IItemTree {
     	try {
 	    	ResourceLocation tagId = new ResourceLocation(oreName.toLowerCase());
 	    	
-	        for( Item i : ItemTags.getCollection().getTagByID(tagId).getAllElements()) {
+	        for( Item i : ItemTags.getAllTags().getTag(tagId).getValues()) {
 	            if(i != null) {
 	                addItem(category,
 	                        new InvTweaksItemTreeItem(name, i.getRegistryName().toString(), InvTweaksConst.DAMAGE_WILDCARD, null, order, path));
@@ -386,7 +386,7 @@ public class InvTweaksItemTree implements IItemTree {
                     	if (item instanceof ArmorItem) {
 	                        ArmorItem armor = (ArmorItem) item;
 	                        String keyArmorType = extraData.getString("armortype");
-	                        String itemArmorType = armor.getEquipmentSlot().getName().toLowerCase();
+	                        String itemArmorType = armor.getEquipmentSlot(stack).getName().toLowerCase();
 	                        doIt = (keyArmorType.equals(itemArmorType));
 	                        armor = null;
                     	} else {
@@ -402,7 +402,7 @@ public class InvTweaksItemTree implements IItemTree {
                 }
                 //Checks out, add it to the tree:
                 if (doIt) {
-                    int dmg = item.isDamageable() ? InvTweaksConst.DAMAGE_WILDCARD : stack.getDamage();
+                    int dmg = item.isDamageable(stack) ? InvTweaksConst.DAMAGE_WILDCARD : stack.getDamageValue();
                     addItem(category,
                             new InvTweaksItemTreeItem(name, item.getRegistryName().toString(), dmg, null, order, path));
                 }

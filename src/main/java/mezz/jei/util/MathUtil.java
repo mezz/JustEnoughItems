@@ -192,14 +192,14 @@ public final class MathUtil {
 	}
 
 	public static Rectangle2d centerTextArea(Rectangle2d outer, FontRenderer fontRenderer, String text) {
-		int width = fontRenderer.getStringWidth(text);
-		int height = fontRenderer.FONT_HEIGHT;
+		int width = fontRenderer.width(text);
+		int height = fontRenderer.lineHeight;
 		return centerArea(outer, width, height);
 	}
 
 	public static Rectangle2d centerTextArea(Rectangle2d outer, FontRenderer fontRenderer, ITextProperties text) {
-		int width = fontRenderer.getStringPropertyWidth(text);
-		int height = fontRenderer.FONT_HEIGHT;
+		int width = fontRenderer.width(text);
+		int height = fontRenderer.lineHeight;
 		return centerArea(outer, width, height);
 	}
 

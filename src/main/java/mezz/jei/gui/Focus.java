@@ -41,6 +41,17 @@ public final class Focus<V> implements IFocus<V> {
 		return new Focus<>(focus.getMode(), focus.getValue());
 	}
 
+	/**
+	 * Make sure any IFocus coming in through API calls is validated and turned into JEI's Focus.
+	 */
+	@Nullable
+	public static <V> Focus<V> checkNullable(@Nullable IFocus<V> focus) {
+		if (focus == null) {
+			return null;
+		}
+		return check(focus);
+	}
+
 	@Nullable
 	public static <V> Focus<V> cast(@Nullable Focus<?> focus, IIngredientType<V> ingredientType) {
 		if (focus != null) {

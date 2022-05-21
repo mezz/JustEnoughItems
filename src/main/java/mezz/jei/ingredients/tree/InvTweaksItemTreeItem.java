@@ -85,7 +85,7 @@ public class InvTweaksItemTreeItem implements IItemTreeItem {
         }
         IItemTreeItem item = (IItemTreeItem) o;
         return Objects.equals(id, item.getId())
-                && NBTUtil.areNBTEquals(extraData, item.getExtraData(), true);
+                && NBTUtil.compareNbt(extraData, item.getExtraData(), true);
     }
 
     public String toString() {

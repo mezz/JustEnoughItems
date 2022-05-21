@@ -117,12 +117,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 	private static void drawCenteredStringWithShadow(MatrixStack matrixStack, FontRenderer font, String string, Rectangle2d area) {
 		Rectangle2d textArea = MathUtil.centerTextArea(area, font, string);
-		font.drawStringWithShadow(matrixStack, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
+		font.drawShadow(matrixStack, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 
 	private static void drawCenteredStringWithShadow(MatrixStack matrixStack, FontRenderer font, ITextComponent text, Rectangle2d area) {
 		Rectangle2d textArea = MathUtil.centerTextArea(area, font, text);
-		font.drawTextWithShadow(matrixStack, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
+		font.drawShadow(matrixStack, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 
 	public Rectangle2d getArea() {
@@ -162,7 +162,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		final int rightButtonX = guiLeft + xSize - borderPadding - buttonWidth;
 		final int leftButtonX = guiLeft + borderPadding;
 
-		int titleHeight = font.FONT_HEIGHT + borderPadding;
+		int titleHeight = font.lineHeight + borderPadding;
 		int recipeClassButtonTop = guiTop + titleHeight - buttonHeight + 2;
 		nextRecipeCategory.x = rightButtonX;
 		nextRecipeCategory.y = recipeClassButtonTop;
@@ -266,8 +266,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		}
 	}
 
+	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		if (minecraft != null && minecraft.currentScreen == this) {
+		if (minecraft != null && minecraft.screen == this) {
 			if (MathUtil.contains(this.area, mouseX, mouseY)) {
 				return true;
 			}
@@ -292,12 +293,19 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			}
 
 			if (isMouseOver(mouseX, mouseY)) {
-				for (RecipeLayout<?> recipeLayouts : this.recipeLayouts) {
-					GuiIngredient<?> clicked = recipeLayouts.getGuiIngredientUnderMouse(mouseX, mouseY);
+				for (RecipeLayout<?> recipeLayout : this.recipeLayouts) {
+					GuiIngredient<?> clicked = recipeLayout.getGuiIngredientUnderMouse(mouseX, mouseY);
 					if (clicked != null) {
 						Object displayedIngredient = clicked.getDisplayedIngredient();
 						if (displayedIngredient != null) {
-							return ClickedIngredient.create(displayedIngredient, clicked.getRect());
+							Rectangle2d area = clicked.getRect();
+							area = new Rectangle2d(
+									area.getX() + recipeLayout.getPosX(),
+									area.getY() + recipeLayout.getPosY(),
+									area.getWidth(),
+									area.getHeight()
+							);
+							return ClickedIngredient.create(displayedIngredient, area);
 						}
 					}
 				}
@@ -349,7 +357,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			return true;
 		}
 
-		InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
+		InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(mouseButton);
 		if (handleKeybindings(input)) {
 			return true;
 		}
@@ -359,13 +367,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		InputMappings.Input input = InputMappings.getInputByCode(keyCode, scanCode);
+		InputMappings.Input input = InputMappings.getKey(keyCode, scanCode);
 		return handleKeybindings(input);
 	}
 
 	private boolean handleKeybindings(InputMappings.Input input) {
 		if (KeyBindings.isInventoryCloseKey(input) || KeyBindings.isInventoryToggleKey(input)) {
-			closeScreen();
+			onClose();
 			return true;
 		} else if (KeyBindings.recipeBack.isActiveAndMatches(input)) {
 			back();
@@ -395,27 +403,27 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	}
 
 	public boolean isOpen() {
-		return minecraft != null && minecraft.currentScreen == this;
+		return minecraft != null && minecraft.screen == this;
 	}
 
 	private void open() {
 		if (minecraft != null) {
 			if (!isOpen()) {
-				parentScreen = minecraft.currentScreen;
+				parentScreen = minecraft.screen;
 			}
-			minecraft.displayGuiScreen(this);
+			minecraft.setScreen(this);
 		}
 	}
 
 	@Override
-	public void closeScreen() {
+	public void onClose() {
 		if (isOpen() && minecraft != null) {
-			minecraft.displayGuiScreen(parentScreen);
+			minecraft.setScreen(parentScreen);
 			parentScreen = null;
 			logic.clearHistory();
 			return;
 		}
-		super.closeScreen();
+		super.onClose();
 	}
 
 	@Override
@@ -477,7 +485,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 		title = StringUtil.stripStyling(recipeCategory.getTitleAsTextComponent());
 		final int availableTitleWidth = titleArea.getWidth();
-		if (font.getStringPropertyWidth(title) > availableTitleWidth) {
+		if (font.width(title) > availableTitleWidth) {
 			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, font);
 		}
 		Rectangle2d titleStringArea = MathUtil.centerTextArea(this.titleArea, font, title);
@@ -520,7 +528,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 				button.setOnClickHandler((mouseX, mouseY) -> {
 					boolean maxTransfer = Screen.hasShiftDown();
 					if (container != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer)) {
-						closeScreen();
+						onClose();
 					}
 				});
 				addButton(button);
@@ -531,7 +539,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 	@Nullable
 	private Container getParentContainer() {
 		if (parentScreen instanceof ContainerScreen) {
-			return ((ContainerScreen<?>) parentScreen).getContainer();
+			return ((ContainerScreen<?>) parentScreen).getMenu();
 		}
 		return null;
 	}

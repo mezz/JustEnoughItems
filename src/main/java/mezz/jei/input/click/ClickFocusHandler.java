@@ -6,6 +6,7 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.InputHandler;
+import mezz.jei.input.LimitedAreaMouseHandler;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.InputMappings;
 
@@ -23,16 +24,16 @@ public class ClickFocusHandler implements IMouseHandler {
 	@Override
 	@Nullable
 	public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
-		IClickedIngredient<?> clicked = inputHandler.getFocusUnderMouseForClick(mouseX, mouseY);
+		IClickedIngredient<?> clicked = inputHandler.getFocusUnderMouseForClick(mouseX, mouseY, mouseButton);
 		if (clicked == null) {
 			return null;
 		}
 		if (handleMouseClickedFocus(mouseButton, clicked, clickState)) {
-			return this;
+			return LimitedAreaMouseHandler.create(this, clicked.getArea());
 		}
-		InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
+		InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(mouseButton);
 		if (inputHandler.handleFocusKeybinds(clicked, input, clickState)) {
-			return this;
+			return LimitedAreaMouseHandler.create(this, clicked.getArea());
 		}
 		return null;
 	}

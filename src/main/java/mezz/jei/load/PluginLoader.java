@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
@@ -14,6 +15,7 @@ import mezz.jei.config.BookmarkConfig;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
+import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -37,6 +39,7 @@ import mezz.jei.load.registration.VanillaCategoryExtensionRegistration;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
 import mezz.jei.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
+import mezz.jei.recipes.RecipeManagerInternal;
 import mezz.jei.recipes.RecipeManager;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.transfer.RecipeTransferHandlerHelper;
@@ -63,7 +66,7 @@ public class PluginLoader {
 	private final ImmutableListMultimap<ResourceLocation, Object> recipes;
 	private final ImmutableList<IRecipeManagerPlugin> recipeManagerPlugins;
 	@Nullable
-	private RecipeManager recipeManager;
+	private IRecipeManager recipeManager;
 	@Nullable
 	private IngredientFilter ingredientFilter;
 	@Nullable
@@ -136,22 +139,30 @@ public class PluginLoader {
 		return recipeTransferRegistration;
 	}
 
-	public RecipeManager getRecipeManager(RecipeCategorySortingConfig recipeCategorySortingConfig) {
+	public IRecipeManager getRecipeManager(RecipeCategorySortingConfig recipeCategorySortingConfig) {
 		if (recipeManager == null) {
 			timer.start("Building recipe registry");
-			recipeManager = new RecipeManager(recipeCategories, recipes, recipeCatalysts, ingredientManager, recipeManagerPlugins, modIdHelper, recipeCategorySortingConfig);
+			RecipeManagerInternal recipeManagerInternal = new RecipeManagerInternal(
+				recipeCategories,
+				recipes,
+				recipeCatalysts,
+				ingredientManager,
+				recipeManagerPlugins,
+				recipeCategorySortingConfig
+			);
+			this.recipeManager = new RecipeManager(recipeManagerInternal, modIdHelper);
 			timer.stop();
 		}
 		return recipeManager;
 	}
 
-	public IngredientFilter createIngredientFilter(IIngredientSorter ingredientSorter, IEditModeConfig editModeConfig, IIngredientFilterConfig ingredientFilterConfig) {
+	public IngredientFilter createIngredientFilter(IIngredientSorter ingredientSorter, IWorldConfig worldConfig, IEditModeConfig editModeConfig, IIngredientFilterConfig ingredientFilterConfig) {
 		if (ingredientFilter == null) {
 			timer.start("Building ingredient list");
 			NonNullList<IIngredientListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager);
 			timer.stop();
 			timer.start("Building ingredient filter");
-			ingredientFilter = new IngredientFilter(blacklist, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager, ingredientSorter, ingredientList, modIdHelper);
+			ingredientFilter = new IngredientFilter(blacklist, worldConfig, clientConfig, ingredientFilterConfig, editModeConfig, ingredientManager, ingredientSorter, ingredientList, modIdHelper);
 			Internal.setIngredientFilter(ingredientFilter);
 			timer.stop();
 		}

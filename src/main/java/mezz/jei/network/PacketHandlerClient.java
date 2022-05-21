@@ -31,9 +31,11 @@ public class PacketHandlerClient {
 			PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
 			IPacketJeiHandler packetHandler = clientHandlers.get(packetId);
 			Minecraft minecraft = Minecraft.getInstance();
-			PlayerEntity player = minecraft.player;
-			if (player != null) {
-				packetHandler.readPacketData(packetBuffer, player);
+			if (minecraft != null) {
+				PlayerEntity player = minecraft.player;
+				if (player != null) {
+					packetHandler.readPacketData(packetBuffer, player);
+				}
 			}
 		} catch (Throwable e) {
 			LOGGER.error("Packet error", e);

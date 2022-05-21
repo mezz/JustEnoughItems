@@ -30,15 +30,15 @@ public final class ServerInfo {
 		if (worldUid == null) {
 			if (networkManager == null) {
 				worldUid = "default"; // we get here when opening the in-game config before loading a world
-			} else if (networkManager.isLocalChannel()) {
+			} else if (networkManager.isMemoryConnection()) {
 				MinecraftServer minecraftServer = ServerLifecycleHooks.getCurrentServer();
 				if (minecraftServer != null) {
-					worldUid = minecraftServer.anvilConverterForAnvilFile.getSaveName();
+					worldUid = minecraftServer.storageSource.getLevelId();
 				}
 			} else {
-				ServerData serverData = Minecraft.getInstance().getCurrentServerData();
+				ServerData serverData = Minecraft.getInstance().getCurrentServer();
 				if (serverData != null) {
-					worldUid = serverData.serverIP + ' ' + serverData.serverName;
+					worldUid = serverData.ip + ' ' + serverData.name;
 				}
 			}
 

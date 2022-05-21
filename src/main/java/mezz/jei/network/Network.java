@@ -18,13 +18,12 @@ public class Network {
 	@OnlyIn(Dist.CLIENT)
 	public static void sendPacketToServer(PacketJei packet) {
 		Minecraft minecraft = Minecraft.getInstance();
-		//noinspection ConstantConditions
 		if (minecraft != null) {
 			ClientPlayNetHandler netHandler = minecraft.getConnection();
 			if (netHandler != null && ServerInfo.isJeiOnServer()) {
 				Pair<PacketBuffer, Integer> packetData = packet.getPacketData();
 				ICustomPacket<IPacket<?>> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(packetData, PacketHandler.CHANNEL_ID);
-				netHandler.sendPacket(payload.getThis());
+				netHandler.send(payload.getThis());
 			}
 		}
 	}
@@ -32,6 +31,6 @@ public class Network {
 	public static void sendPacketToClient(PacketJei packet, ServerPlayerEntity player) {
 		Pair<PacketBuffer, Integer> packetData = packet.getPacketData();
 		ICustomPacket<IPacket<?>> payload = NetworkDirection.PLAY_TO_CLIENT.buildPacket(packetData, PacketHandler.CHANNEL_ID);
-		player.connection.sendPacket(payload.getThis());
+		player.connection.send(payload.getThis());
 	}
 }

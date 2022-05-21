@@ -1,20 +1,23 @@
 package mezz.jei.config;
 
-import dev.ftb.mods.ftblibrary.config.ConfigGroup;
-import dev.ftb.mods.ftblibrary.config.ui.EditConfigScreen;
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.events.EventBusHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.InventoryScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+import java.util.Optional;
+import java.util.function.BiFunction;
 
 public class JEIClientConfig {
 	private static final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -24,54 +27,41 @@ public class JEIClientConfig {
 	public static final ModIdFormattingConfig modNameFormat = new ModIdFormattingConfig(builder);
 
 	private static final ForgeConfigSpec config = builder.build();
-	private static boolean ftbLibraryLoaded = false;
-	private static final String TRANSLATION_KEY = "config." + ModIds.JEI_ID;
 
-	public static void register() {
-		FMLJavaModLoadingContext.get().getModEventBus().register(JEIClientConfig.class);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, config);
+	public static void register(IEventBus modEventBus) {
+		EventBusHelper.addListener(JEIClientConfig.class, modEventBus, ModConfig.ModConfigEvent.class, JEIClientConfig::reload);
+
+		ModLoadingContext modLoadingContext = ModLoadingContext.get();
+		modLoadingContext.registerConfig(ModConfig.Type.CLIENT, config);
 	}
 
-	@SubscribeEvent
-	public static void commonSetup(FMLCommonSetupEvent event) {
-		ftbLibraryLoaded = ModList.get().isLoaded("ftblibrary");
-	}
-
-	@SubscribeEvent
 	public static void reload(ModConfig.ModConfigEvent event) {
 		if (event.getConfig().getSpec() != config) {
 			return;
 		}
 
 		clientConfig.reload();
-		filterConfig.reload();
 		modNameFormat.reload();
 	}
 
 	public static void openSettings() {
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.player == null) {
+		if (mc == null || mc.player == null) {
 			return;
 		}
 
-		if (ftbLibraryLoaded) {
-			ConfigGroup group = new ConfigGroup(TRANSLATION_KEY);
-
-			clientConfig.buildSettingsGUI(group);
-			filterConfig.buildSettingsGUI(group);
-			modNameFormat.buildSettingsGUI(group);
-
-			EditConfigScreen gui = new EditConfigScreen(group);
-			group.savedCallback = b -> {
-				if (b) {
-					config.save();
-				}
-				mc.displayGuiScreen(new InventoryScreen(mc.player));
-			};
-			gui.openGui();
-		} else {
-			mc.player.sendStatusMessage(new TranslationTextComponent(ModIds.JEI_ID + ".message.ftblibrary")
-				.setStyle(Style.EMPTY.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/ftb-library-forge"))), false);
-		}
+        ModContainer jeiContainer = ModList.get().getModContainerById(ModIds.JEI_ID).get();
+        Optional<BiFunction<Minecraft, Screen, Screen>> configGuiFactory = jeiContainer.getCustomExtension(ExtensionPoint.CONFIGGUIFACTORY);
+        if (configGuiFactory.isPresent()) {
+            mc.setScreen(configGuiFactory.get().apply(mc, mc.screen));
+        } else {
+            ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/configured");
+            Style style = Style.EMPTY
+                    .setUnderlined(true)
+                    .withClickEvent(clickEvent);
+            TranslationTextComponent textComponent = new TranslationTextComponent("jei.message.configured");
+            ITextComponent message = textComponent.setStyle(style);
+            mc.player.displayClientMessage(message, false);
+        }
 	}
 }

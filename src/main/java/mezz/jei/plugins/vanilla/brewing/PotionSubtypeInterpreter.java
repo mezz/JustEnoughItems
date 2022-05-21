@@ -21,10 +21,10 @@ public class PotionSubtypeInterpreter implements IIngredientSubtypeInterpreter<I
 		if (!itemStack.hasTag()) {
 			return IIngredientSubtypeInterpreter.NONE;
 		}
-		Potion potionType = PotionUtils.getPotionFromItem(itemStack);
-		String potionTypeString = potionType.getNamePrefixed("");
+		Potion potionType = PotionUtils.getPotion(itemStack);
+		String potionTypeString = potionType.getName("");
 		StringBuilder stringBuilder = new StringBuilder(potionTypeString);
-		List<EffectInstance> effects = PotionUtils.getEffectsFromStack(itemStack);
+		List<EffectInstance> effects = PotionUtils.getMobEffects(itemStack);
 		for (EffectInstance effect : effects) {
 			stringBuilder.append(";").append(effect);
 		}

@@ -41,7 +41,7 @@ public class BookmarkConfig {
 		for (IIngredientListElement<?> element : ingredientListElements) {
 			Object object = element.getIngredient();
 			if (object instanceof ItemStack) {
-				strings.add(MARKER_STACK + ((ItemStack) object).write(new CompoundNBT()).toString());
+				strings.add(MARKER_STACK + ((ItemStack) object).save(new CompoundNBT()).toString());
 			} else {
 				strings.add(MARKER_OTHER + getUid(ingredientManager, element));
 			}
@@ -76,8 +76,8 @@ public class BookmarkConfig {
 			if (ingredientJsonString.startsWith(MARKER_STACK)) {
 				String itemStackAsJson = ingredientJsonString.substring(MARKER_STACK.length());
 				try {
-					CompoundNBT itemStackAsNbt = JsonToNBT.getTagFromJson(itemStackAsJson);
-					ItemStack itemStack = ItemStack.read(itemStackAsNbt);
+					CompoundNBT itemStackAsNbt = JsonToNBT.parseTag(itemStackAsJson);
+					ItemStack itemStack = ItemStack.of(itemStackAsNbt);
 					if (!itemStack.isEmpty()) {
 						ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);
 						bookmarkList.addToLists(normalized, false);

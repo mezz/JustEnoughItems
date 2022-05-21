@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 
+import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IFilterTextSource;
 import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
@@ -50,6 +51,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 	private final GuiScreenHelper guiScreenHelper;
 	private final IFilterTextSource filterTextSource;
 	private final IWorldConfig worldConfig;
+	private final IClientConfig clientConfig;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
 	private final IMouseHandler mouseHandler;
@@ -60,10 +62,12 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 		IFilterTextSource filterTextSource,
 		GuiScreenHelper guiScreenHelper,
 		IngredientGrid ingredientGrid,
-		IWorldConfig worldConfig
+		IWorldConfig worldConfig,
+		IClientConfig clientConfig
 	) {
 		this.filterTextSource = filterTextSource;
 		this.worldConfig = worldConfig;
+		this.clientConfig = clientConfig;
 		this.ingredientGrid = ingredientGrid;
 		this.ingredientSource = ingredientSource;
 		this.guiScreenHelper = guiScreenHelper;
@@ -144,7 +148,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 	}
 
 	public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
-		InputMappings.Input input = InputMappings.getInputByCode(keyCode, scanCode);
+		InputMappings.Input input = InputMappings.getKey(keyCode, scanCode);
 		if (KeyBindings.nextPage.isActiveAndMatches(input)) {
 			this.pageDelegate.nextPage();
 			return true;
@@ -152,7 +156,10 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 			this.pageDelegate.previousPage();
 			return true;
 		}
-		return checkHotbarKeys(input);
+		if (clientConfig.isCheatToHotbarUsingHotkeysEnabled()) {
+			return checkHotbarKeys(input);
+		}
+		return false;
 	}
 
 	/**
@@ -160,14 +167,14 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 	 * Sets the stack in a hotbar slot to the one that's hovered over.
 	 */
 	protected boolean checkHotbarKeys(InputMappings.Input input) {
-		Screen guiScreen = Minecraft.getInstance().currentScreen;
+		Screen guiScreen = Minecraft.getInstance().screen;
 		if (worldConfig.isCheatItemsEnabled() && guiScreen != null && !(guiScreen instanceof RecipesGui)) {
 			final double mouseX = MouseUtil.getX();
 			final double mouseY = MouseUtil.getY();
 			if (isMouseOver(mouseX, mouseY)) {
-				GameSettings gameSettings = Minecraft.getInstance().gameSettings;
+				GameSettings gameSettings = Minecraft.getInstance().options;
 				for (int hotbarSlot = 0; hotbarSlot < 9; ++hotbarSlot) {
-					if (gameSettings.keyBindsHotbar[hotbarSlot].isActiveAndMatches(input)) {
+					if (gameSettings.keyHotbarSlots[hotbarSlot].isActiveAndMatches(input)) {
 						IClickedIngredient<?> ingredientUnderMouse = getIngredientUnderMouse(mouseX, mouseY);
 						if (ingredientUnderMouse != null) {
 							ItemStack itemStack = ingredientUnderMouse.getCheatItemStack();

@@ -30,9 +30,9 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 
 		// width of the recipe depends on the text, which is different in each language
 		Minecraft minecraft = Minecraft.getInstance();
-		FontRenderer fontRenderer = minecraft.fontRenderer;
+		FontRenderer fontRenderer = minecraft.font;
 		ITextComponent smeltCountText = FuelRecipe.createSmeltCountText(100000);
-		int stringWidth = fontRenderer.getStringWidth(smeltCountText.getString());
+		int stringWidth = fontRenderer.width(smeltCountText.getString());
 
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 134, 18, 34)
 			.addPadding(0, 0, 0, stringWidth + 20)
@@ -92,6 +92,6 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<FuelRecipe> {
 		flame.draw(matrixStack, 1, 0);
 		Minecraft minecraft = Minecraft.getInstance();
 		ITextComponent smeltCountText = recipe.getSmeltCountText();
-		minecraft.fontRenderer.drawText(matrixStack, smeltCountText, 24, 13, 0xFF808080);
+		minecraft.font.draw(matrixStack, smeltCountText, 24, 13, 0xFF808080);
 	}
 }

@@ -58,10 +58,10 @@ public class GuiIconButtonSmall extends Button {
 
 			double xOffset = x + (width - this.icon.getWidth()) / 2.0;
 			double yOffset = y + (height - this.icon.getHeight()) / 2.0;
-			matrixStack.push();
+			matrixStack.pushPose();
 			matrixStack.translate(xOffset, yOffset, 0);
 			this.icon.draw(matrixStack);
-			matrixStack.pop();
+			matrixStack.popPose();
 		}
 	}
 }

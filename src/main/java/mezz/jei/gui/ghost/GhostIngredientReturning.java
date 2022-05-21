@@ -44,7 +44,7 @@ public class GhostIngredientReturning<T> {
 		this.start = start;
 		this.end = end;
 		this.startTime = System.currentTimeMillis();
-		Screen currentScreen = Minecraft.getInstance().currentScreen;
+		Screen currentScreen = Minecraft.getInstance().screen;
 		if (currentScreen != null) {
 			int width = currentScreen.width;
 			float durationPerPixel = DURATION_PER_SCREEN_WIDTH / (float) width;
@@ -64,9 +64,9 @@ public class GhostIngredientReturning<T> {
 		double x = start.x + Math.round(dx * percent);
 		double y = start.y + Math.round(dy * percent);
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
-		itemRenderer.zLevel += 150.0F;
+		itemRenderer.blitOffset += 150.0F;
 		ingredientRenderer.render(matrixStack, (int) x, (int) y, ingredient);
-		itemRenderer.zLevel -= 150.0F;
+		itemRenderer.blitOffset -= 150.0F;
 	}
 
 	public boolean isComplete() {

@@ -32,7 +32,7 @@ public final class KeyBindings {
 	private static final List<KeyBinding> allBindings;
 
 	static InputMappings.Input getKey(int key) {
-		return InputMappings.Type.KEYSYM.getOrMakeInput(key);
+		return InputMappings.Type.KEYSYM.getOrCreate(key);
 	}
 
 	static {
@@ -63,11 +63,11 @@ public final class KeyBindings {
 	}
 
 	public static boolean isInventoryToggleKey(InputMappings.Input input) {
-		return Minecraft.getInstance().gameSettings.keyBindInventory.isActiveAndMatches(input);
+		return Minecraft.getInstance().options.keyInventory.isActiveAndMatches(input);
 	}
 
 	public static boolean isInventoryCloseKey(InputMappings.Input input) {
-		return input.getType() == InputMappings.Type.KEYSYM && input.getKeyCode() == GLFW.GLFW_KEY_ESCAPE;
+		return input.getType() == InputMappings.Type.KEYSYM && input.getValue() == GLFW.GLFW_KEY_ESCAPE;
 	}
 
 	public static boolean isEnterKey(int keyCode) {

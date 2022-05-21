@@ -96,13 +96,13 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 					if (!recipeModId.equals(ingredientModId)) {
 						String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
 						TranslationTextComponent recipeBy = new TranslationTextComponent("jei.tooltip.recipe.by", modName);
-						tooltip.add(recipeBy.mergeStyle(TextFormatting.GRAY));
+						tooltip.add(recipeBy.withStyle(TextFormatting.GRAY));
 					}
 				}
-				boolean showAdvanced = Minecraft.getInstance().gameSettings.advancedItemTooltips || Screen.hasShiftDown();
+				boolean showAdvanced = Minecraft.getInstance().options.advancedItemTooltips || Screen.hasShiftDown();
 				if (showAdvanced) {
 					TranslationTextComponent recipeId = new TranslationTextComponent("jei.tooltip.recipe.id", recipeName.toString());
-					tooltip.add(recipeId.mergeStyle(TextFormatting.DARK_GRAY));
+					tooltip.add(recipeId.withStyle(TextFormatting.DARK_GRAY));
 				}
 			}
 		});
@@ -161,7 +161,7 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
 
-		matrixStack.push();
+		matrixStack.pushPose();
 		matrixStack.translate(posX, posY, 0);
 		{
 			IDrawable categoryBackground = recipeCategory.getBackground();
@@ -176,14 +176,14 @@ public class RecipeLayout<T> implements IRecipeLayoutDrawable {
 				shapelessIcon.draw(matrixStack, background.getWidth());
 			}
 		}
-		matrixStack.pop();
+		matrixStack.popPose();
 
 		for (GuiIngredientGroup<?> guiIngredientGroup : guiIngredientGroups.values()) {
 			guiIngredientGroup.draw(matrixStack, posX, posY, HIGHLIGHT_COLOR, mouseX, mouseY);
 		}
 		if (recipeTransferButton != null) {
 			Minecraft minecraft = Minecraft.getInstance();
-			float partialTicks = minecraft.getRenderPartialTicks();
+			float partialTicks = minecraft.getFrameTime();
 			recipeTransferButton.render(matrixStack, mouseX, mouseY, partialTicks);
 		}
 		RenderSystem.disableBlend();

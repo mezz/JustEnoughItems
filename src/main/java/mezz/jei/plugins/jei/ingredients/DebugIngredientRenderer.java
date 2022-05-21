@@ -29,8 +29,8 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 		if (ingredient != null) {
 			Minecraft minecraft = Minecraft.getInstance();
 			FontRenderer font = getFontRenderer(minecraft, ingredient);
-			font.drawString(matrixStack, "JEI", xPosition, yPosition, 0xFFFF0000);
-			font.drawString(matrixStack, "#" + ingredient.getNumber(), xPosition, yPosition + 8, 0xFFFF0000);
+			font.draw(matrixStack, "JEI", xPosition, yPosition, 0xFFFF0000);
+			font.draw(matrixStack, "#" + ingredient.getNumber(), xPosition, yPosition + 8, 0xFFFF0000);
 			RenderSystem.color4f(1, 1, 1, 1);
 		}
 	}
@@ -41,7 +41,7 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 		String displayName = ingredientHelper.getDisplayName(ingredient);
 		tooltip.add(new StringTextComponent(displayName));
 		StringTextComponent debugIngredient = new StringTextComponent("debug ingredient");
-		tooltip.add(debugIngredient.mergeStyle(TextFormatting.GRAY));
+		tooltip.add(debugIngredient.withStyle(TextFormatting.GRAY));
 		return tooltip;
 	}
 }

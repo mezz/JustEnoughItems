@@ -1,6 +1,35 @@
 package mezz.jei.gui.ingredients;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.Internal;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IGuiIngredient;
+import mezz.jei.api.gui.ingredient.ITooltipCallback;
+import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.gui.Focus;
+import mezz.jei.gui.TooltipRenderer;
+import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.render.IngredientRenderHelper;
+import mezz.jei.util.ErrorUtil;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tags.ITag;
+import net.minecraft.tags.ITagCollection;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -9,40 +38,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.ITagCollection;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-
-import mezz.jei.Internal;
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IGuiIngredient;
-import mezz.jei.api.gui.ingredient.ITooltipCallback;
-import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.recipe.IFocus;
-import mezz.jei.gui.Focus;
-import mezz.jei.gui.TooltipRenderer;
-import mezz.jei.ingredients.IngredientFilter;
-import mezz.jei.ingredients.IngredientManager;
-import mezz.jei.render.IngredientRenderHelper;
-import mezz.jei.util.ErrorUtil;
-import net.minecraft.util.text.TranslationTextComponent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -134,11 +129,10 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 		if (ingredients.isEmpty()) {
 			return ingredients;
 		}
-		IngredientManager ingredientManager = Internal.getIngredientManager();
 		IngredientFilter ingredientFilter = Internal.getIngredientFilter();
 		List<T> visible = new ArrayList<>();
 		for (T ingredient : ingredients) {
-			if (ingredient == null || ingredientManager.isIngredientVisible(ingredient, ingredientFilter)) {
+			if (ingredient == null || ingredientFilter.isIngredientVisible(ingredient)) {
 				visible.add(ingredient);
 			}
 			if (visible.size() > 100) {
@@ -209,7 +203,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 		try {
 			RenderSystem.disableDepthTest();
 
-			RenderHelper.disableStandardItemLighting();
+			RenderHelper.turnOff();
 			fill(matrixStack,
 				xOffset + rect.getX() + xPadding,
 				yOffset + rect.getY() + yPadding,
@@ -224,18 +218,16 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 				tooltipCallback.onTooltip(slotIndex, input, value, tooltip);
 			}
 
-			Minecraft minecraft = Minecraft.getInstance();
-			FontRenderer fontRenderer = ingredientRenderer.getFontRenderer(minecraft, value);
 			if (value instanceof ItemStack) {
 				//noinspection unchecked
 				Collection<ItemStack> itemStacks = (Collection<ItemStack>) this.allIngredients;
 				ResourceLocation tagEquivalent = getTagEquivalent(itemStacks);
 				if (tagEquivalent != null) {
 					final TranslationTextComponent acceptsAny = new TranslationTextComponent("jei.tooltip.recipe.tag", tagEquivalent);
-					tooltip.add(acceptsAny.mergeStyle(TextFormatting.GRAY));
+					tooltip.add(acceptsAny.withStyle(TextFormatting.GRAY));
 				}
 			}
-			TooltipRenderer.drawHoveringText(value, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer, matrixStack);
+			TooltipRenderer.drawHoveringText(value, tooltip, xOffset + mouseX, yOffset + mouseY, matrixStack);
 
 			RenderSystem.enableDepthTest();
 		} catch (RuntimeException e) {
@@ -254,11 +246,11 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 			.map(ItemStack::getItem)
 			.collect(Collectors.toList());
 
-		ITagCollection<Item> collection = ItemTags.getCollection();
-		Collection<ITag<Item>> tags = collection.getIDTagMap().values();
+		ITagCollection<Item> collection = ItemTags.getAllTags();
+		Collection<ITag<Item>> tags = collection.getAllTags().values();
 		for (ITag<Item> tag : tags) {
-			if (tag.getAllElements().equals(items)) {
-				return collection.getDirectIdFromTag(tag);
+			if (tag.getValues().equals(items)) {
+				return collection.getId(tag);
 			}
 		}
 		return null;

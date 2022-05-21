@@ -23,7 +23,7 @@ public class PacketRequestCheatPermission extends PacketJei {
 	public static void readPacketData(PacketBuffer buf, PlayerEntity player) {
 		if (player instanceof ServerPlayerEntity) {
 			ServerPlayerEntity sender = (ServerPlayerEntity) player;
-			boolean hasPermission = CommandUtilServer.hasPermission(sender);
+			boolean hasPermission = CommandUtilServer.hasPermissionForCheatMode(sender);
 			PacketCheatPermission packetCheatPermission = new PacketCheatPermission(hasPermission);
 
 			Network.sendPacketToClient(packetCheatPermission, sender);

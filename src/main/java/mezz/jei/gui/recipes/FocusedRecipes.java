@@ -8,25 +8,24 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class FocusedRecipes<T> {
+	private final IRecipeManager recipeManager;
 	private final IRecipeCategory<T> recipeCategory;
+	private final @Nullable IFocus<?> focus;
+
 	/**
 	 * List of recipes for the currently selected recipeClass
 	 */
-	private final List<T> recipes;
+	private @Nullable List<T> recipes;
 
 	public static <T> FocusedRecipes<T> create(@Nullable IFocus<?> focus, IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
-		final List<T> recipes;
-		if (focus != null) {
-			recipes = recipeManager.getRecipes(recipeCategory, focus);
-		} else {
-			recipes = recipeManager.getRecipes(recipeCategory);
-		}
-		return new FocusedRecipes<>(recipeCategory, recipes);
+		return new FocusedRecipes<>(focus, recipeManager, recipeCategory);
 	}
 
-	private FocusedRecipes(IRecipeCategory<T> recipeCategory, List<T> recipes) {
+	private FocusedRecipes(@Nullable IFocus<?> focus, IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
+		this.focus = focus;
+		this.recipeManager = recipeManager;
 		this.recipeCategory = recipeCategory;
-		this.recipes = recipes;
+		this.recipes = null;
 	}
 
 	public IRecipeCategory<T> getRecipeCategory() {
@@ -34,6 +33,9 @@ public class FocusedRecipes<T> {
 	}
 
 	public List<T> getRecipes() {
+		if (recipes == null) {
+			recipes = recipeManager.getRecipes(recipeCategory, focus, false);
+		}
 		return recipes;
 	}
 }
