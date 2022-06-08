@@ -19,15 +19,15 @@ pipeline {
             }
         }
 
-        stage('Build Forge') {
+        stage('Build') {
             steps {
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Core:build --no-daemon"
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:build --no-daemon"
-            }
-        }
-
-        stage('Build Fabric') {
-            steps {
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Fabric:build --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Common:build --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :CommonApi:build --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :ForgeApi:build --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :FabricApi:build --no-daemon"
             }
         }
 
@@ -40,14 +40,20 @@ pipeline {
 
         stage('Publish Maven') {
             steps {
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Common:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :CommonApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :ForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :FabricApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
             }
         }
 
         stage('Publish CurseForge') {
             steps {
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:publishCurseForge --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Fabric:publishCurseForge --no-daemon"
             }
         }
     }
