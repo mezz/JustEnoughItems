@@ -96,13 +96,13 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 
 	public IntSet getMatches(IFocusGroup focusGroup, RecipeIngredientRole role) {
 		int[] matches = focusGroup.getFocuses(role)
-			.flatMapToInt(this::getMatch)
+			.flatMapToInt(this::getMatches)
 			.distinct()
 			.toArray();
 		return new IntArraySet(matches);
 	}
 
-	private <T> IntStream getMatch(IFocus<T> focus) {
+	private <T> IntStream getMatches(IFocus<T> focus) {
 		List<Optional<ITypedIngredient<?>>> ingredients = getAllIngredients();
 		if (ingredients.isEmpty()) {
 			return IntStream.empty();

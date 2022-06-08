@@ -21,6 +21,8 @@ public interface IKeyBindings {
     IJeiKeyMapping getPreviousPage();
     IJeiKeyMapping getNextPage();
 
+    IJeiKeyMapping getCloseRecipeGui();
+
     IJeiKeyMapping getBookmark();
     IJeiKeyMapping getToggleBookmarkOverlay();
 

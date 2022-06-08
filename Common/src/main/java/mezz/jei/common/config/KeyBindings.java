@@ -47,6 +47,8 @@ public final class KeyBindings implements IKeyBindings {
 
 	private final IJeiKeyMapping copyRecipeId;
 
+	private final IJeiKeyMapping closeRecipeGui;
+
 	// internal only, unregistered and can't be changed because they match vanilla Minecraft hard-coded keys:
 	private final IJeiKeyMapping escapeKey;
 	private final IJeiKeyMapping leftClick;
@@ -239,6 +241,11 @@ public final class KeyBindings implements IKeyBindings {
 			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_DOWN)
 			.register();
 
+		closeRecipeGui = recipeCategory.createMapping("key.jei.closeRecipeGui")
+			.setContext(JeiKeyConflictContext.GUI)
+			.buildKeyboardKey(GLFW.GLFW_KEY_ESCAPE)
+			.register();
+
 		// Dev Tools
 		copyRecipeId = devTools.createMapping("key.jei.copy.recipe.id")
 			.setContext(JeiKeyConflictContext.GUI)
@@ -334,6 +341,11 @@ public final class KeyBindings implements IKeyBindings {
 	@Override
 	public IJeiKeyMapping getNextPage() {
 		return nextPage;
+	}
+
+	@Override
+	public IJeiKeyMapping getCloseRecipeGui() {
+		return closeRecipeGui;
 	}
 
 	@Override
