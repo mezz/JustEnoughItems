@@ -9,18 +9,25 @@ pipeline {
             steps {
                 checkout scm
                 sh "rm -rf Forge/build/libs"
+                sh "rm -rf Fabric/build/libs"
             }
         }
 
         stage('Test') {
             steps {
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Core:cleanTest :Common:cleanTest :Forge:cleanTest :Core:test :Common:test :Forge:test --no-build-cache --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew test --no-daemon"
             }
         }
 
         stage('Build Forge') {
             steps {
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:build --no-daemon"
+            }
+        }
+
+        stage('Build Fabric') {
+            steps {
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Fabric:build --no-daemon"
             }
         }
 
@@ -31,13 +38,14 @@ pipeline {
             }
         }
 
-        stage('Publish Maven Forge') {
+        stage('Publish Maven') {
             steps {
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
             }
         }
 
-        stage('Publish CurseForge Forge') {
+        stage('Publish CurseForge') {
             steps {
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:publishCurseForge --no-daemon"
             }

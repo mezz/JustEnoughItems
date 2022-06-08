@@ -18,13 +18,14 @@ apply {
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
 val forgeVersion: String by extra
-val parchmentVersionForge: String by extra
+val jUnitVersion: String by extra
 val minecraftVersion: String by extra
+val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
-val jUnitVersion: String by extra
+val parchmentVersionForge: String by extra
 
-val baseArchivesName = "${modId}-${minecraftVersion}"
+val baseArchivesName = "${modId}-${minecraftVersion}-forge"
 base {
 	archivesName.set(baseArchivesName)
 }
@@ -54,6 +55,7 @@ java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
 	}
+	withSourcesJar()
 }
 
 dependencies {
@@ -124,54 +126,27 @@ minecraft {
 	}
 }
 
-tasks.withType<Jar> {
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	finalizedBy("reobfJar")
-}
-
-tasks.named<Jar>("jar") {
+tasks.jar {
 	from(sourceSets.main.get().output)
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().output)
 	}
 
-	archiveAppendix.set("forge")
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	finalizedBy("reobfJar")
 }
 
-val sourcesJar = tasks.register<Jar>("sourcesJar") {
+val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	from(sourceSets.main.get().allJava)
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().allJava)
 	}
-
-	archiveAppendix.set("forge")
-	archiveClassifier.set("sources")
-}
-
-val commonApiJar = tasks.register<Jar>("commonApiJar") {
-	from(project(":CommonApi").sourceSets.main.get().output)
-	archiveAppendix.set("common-api")
-}
-
-val commonApiSourcesJar = tasks.register<Jar>("commonApiSourcesJar") {
-	from(project(":CommonApi").sourceSets.main.get().allJava)
-	archiveAppendix.set("common-api")
-	archiveClassifier.set("sources")
-}
-
-val forgeApiJar = tasks.register<Jar>("forgeApiJar") {
-	from(project(":ForgeApi").sourceSets.main.get().output)
-	archiveAppendix.set("forge-api")
-}
-
-val forgeApiSourcesJar = tasks.register<Jar>("forgeApiSourcesJar") {
-	from(project(":ForgeApi").sourceSets.main.get().allJava)
-	archiveAppendix.set("forge-api")
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	archiveClassifier.set("sources")
 }
 
 tasks.register<TaskPublishCurseForge>("publishCurseForge") {
-	dependsOn(tasks.jar.get().path)
+	dependsOn(tasks.jar)
 	dependsOn(":Changelog:makeChangelog")
 
 	apiToken = project.findProperty("curseforge_apikey") ?: "0"
@@ -198,32 +173,25 @@ tasks.named<Test>("test") {
 
 artifacts {
 	archives(tasks.jar.get())
-	archives(sourcesJar.get())
-	archives(commonApiJar.get())
-	archives(commonApiSourcesJar.get())
-	archives(forgeApiJar.get())
-	archives(forgeApiSourcesJar.get())
+	archives(sourcesJarTask.get())
 }
 
 publishing {
 	publications {
-		register<MavenPublication>("fatJar") {
-			val task = tasks.jar.get()
-			artifactId = "${task.archiveBaseName.get()}-${task.archiveAppendix.get()}"
-			artifact(task)
-			artifact(sourcesJar.get())
-		}
-		register<MavenPublication>("commonApi") {
-			val task = commonApiJar.get()
-			artifactId = "${task.archiveBaseName.get()}-${task.archiveAppendix.get()}"
-			artifact(task)
-			artifact(commonApiSourcesJar.get())
-		}
-		register<MavenPublication>("forgeApi") {
-			val task = forgeApiJar.get()
-			artifactId = "${task.archiveBaseName.get()}-${task.archiveAppendix.get()}"
-			artifact(task)
-			artifact(forgeApiSourcesJar.get())
+		register<MavenPublication>("forgeJar") {
+			artifactId = baseArchivesName
+			artifact(tasks.jar.get())
+			artifact(sourcesJarTask.get())
+
+			pom.withXml {
+				val dependenciesNode = asNode().appendNode("dependencies")
+				dependencyProjects.forEach {
+					val dependencyNode = dependenciesNode.appendNode("dependency")
+					dependencyNode.appendNode("groupId", it.group)
+					dependencyNode.appendNode("artifactId", it.base.archivesName)
+					dependencyNode.appendNode("version", it.version)
+				}
+			}
 		}
 	}
 	repositories {
