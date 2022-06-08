@@ -36,6 +36,7 @@ public final class ForgeKeyBindings implements IKeyBindings {
 	private final KeyMapping nextCategory;
 	private final KeyMapping previousRecipePage;
 	private final KeyMapping nextRecipePage;
+	private final KeyMapping closeRecipeGui;
 
 	private final KeyMapping previousPage;
 	private final KeyMapping nextPage;
@@ -121,6 +122,7 @@ public final class ForgeKeyBindings implements IKeyBindings {
 			nextRecipePage = new KeyMapping("key.jei.nextRecipePage", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_PAGE_DOWN), recipeCategoryName),
 			previousCategory = new KeyMapping("key.jei.previousCategory", KeyConflictContext.GUI, KeyModifier.SHIFT, getKey(GLFW.GLFW_KEY_PAGE_UP), recipeCategoryName),
 			nextCategory = new KeyMapping("key.jei.nextCategory", KeyConflictContext.GUI, KeyModifier.SHIFT, getKey(GLFW.GLFW_KEY_PAGE_DOWN), recipeCategoryName),
+			closeRecipeGui = new KeyMapping("key.jei.closeRecipeGui", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_ESCAPE), recipeCategoryName),
 
 			// Dev Tools
 			copyRecipeId = new KeyMapping("key.jei.copy.recipe.id", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), devToolsCategoryName)
@@ -279,6 +281,11 @@ public final class ForgeKeyBindings implements IKeyBindings {
 	@Override
 	public KeyMapping getRightClick() {
 		return rightClick;
+	}
+
+	@Override
+	public KeyMapping getCloseRecipeGui() {
+		return closeRecipeGui;
 	}
 
 	@Override

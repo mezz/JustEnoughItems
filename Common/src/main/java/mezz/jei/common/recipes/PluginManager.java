@@ -33,7 +33,8 @@ public class PluginManager {
 		IRecipeCategory<T> recipeCategory = recipeTypeData.getRecipeCategory();
 
 		Stream<T> recipes = this.plugins.stream()
-			.flatMap(p -> getPluginRecipeStream(p, recipeCategory, focusGroup));
+			.flatMap(p -> getPluginRecipeStream(p, recipeCategory, focusGroup))
+			.distinct();
 
 		if (!includeHidden) {
 			Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
