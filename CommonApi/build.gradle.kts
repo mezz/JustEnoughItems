@@ -4,6 +4,10 @@ plugins {
     `maven-publish`
 }
 
+repositories {
+    mavenCentral()
+}
+
 // gradle.properties
 val minecraftVersion: String by extra
 val modId: String by extra

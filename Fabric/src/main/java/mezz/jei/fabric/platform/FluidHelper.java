@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -59,7 +58,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
         String path = key.getPath();
         path = path.replace("_", " ");
         path = StringUtils.capitalize(path);
-        return new TextComponent(path);
+        return Component.literal(path);
     }
 
     @Override

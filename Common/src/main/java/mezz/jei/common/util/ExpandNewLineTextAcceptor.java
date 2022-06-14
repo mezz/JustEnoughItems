@@ -3,7 +3,7 @@ package mezz.jei.common.util;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
@@ -30,11 +30,11 @@ public class ExpandNewLineTextAcceptor implements FormattedText.StyledContentCon
 					lastComponent = null;
 				} else {
 					//Otherwise, just add the empty line
-					lines.add(TextComponent.EMPTY);
+					lines.add(Component.EMPTY);
 				}
 				continue;
 			}
-			TextComponent textComponent = new TextComponent(s);
+			MutableComponent textComponent = Component.literal(s);
 			textComponent.setStyle(style);
 			if (lastComponent != null) {
 				//If we already have a component that we want to continue with
@@ -44,7 +44,7 @@ public class ExpandNewLineTextAcceptor implements FormattedText.StyledContentCon
 						//If it has a style and the style is different from the style the text component
 						// we are adding has add the last component as a sibling to an empty unstyled
 						// component so that we don't cause the styling to leak into the component we are adding
-						lastComponent = new TextComponent("").append(lastComponent);
+						lastComponent = Component.literal("").append(lastComponent);
 					}
 					lastComponent.append(textComponent);
 					continue;

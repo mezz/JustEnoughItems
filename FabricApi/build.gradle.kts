@@ -6,13 +6,14 @@ plugins {
     java
     idea
     `maven-publish`
-    id("fabric-loom") version("0.11-SNAPSHOT")
+    id("fabric-loom") version("0.12-SNAPSHOT")
 }
 
 // gradle.properties
 val fabricApiVersion: String by extra
 val fabricLoaderVersion: String by extra
 val parchmentVersionFabric: String by extra
+val parchmentMinecraftVersion: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
@@ -55,7 +56,7 @@ dependencies {
     @Suppress("UnstableApiUsage")
     mappings(loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${minecraftVersion}:${parchmentVersionFabric}@zip")
+        parchment("org.parchmentmc.data:parchment-${parchmentMinecraftVersion}:${parchmentVersionFabric}@zip")
     })
     modImplementation(
         group = "net.fabricmc",

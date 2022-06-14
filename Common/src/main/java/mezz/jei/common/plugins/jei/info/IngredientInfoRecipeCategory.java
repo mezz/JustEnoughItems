@@ -20,7 +20,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IJeiIngredientInfoRecipe> {
@@ -33,7 +32,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IJeiIngredi
 		this.background = guiHelper.createBlankDrawable(IngredientInfoRecipe.recipeWidth, IngredientInfoRecipe.recipeHeight);
 		this.icon = textures.getInfoIcon();
 		this.slotBackground = guiHelper.getSlotDrawable();
-		this.localizedName = new TranslatableComponent("gui.jei.category.itemInformation");
+		this.localizedName = Component.translatable("gui.jei.category.itemInformation");
 	}
 
 	@SuppressWarnings("removal")

@@ -11,7 +11,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -49,7 +49,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 			String ingredientModId = ingredientName.getNamespace();
 			if (!recipeModId.equals(ingredientModId)) {
 				String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
-				TranslatableComponent recipeBy = new TranslatableComponent("jei.tooltip.recipe.by", modName);
+				MutableComponent recipeBy = Component.translatable("jei.tooltip.recipe.by", modName);
 				tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
 			}
 		}
@@ -57,7 +57,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 		Minecraft minecraft = Minecraft.getInstance();
 		boolean showAdvanced = minecraft.options.advancedItemTooltips || Screen.hasShiftDown();
 		if (showAdvanced) {
-			TranslatableComponent recipeId = new TranslatableComponent("jei.tooltip.recipe.id", recipeName.toString());
+			MutableComponent recipeId = Component.translatable("jei.tooltip.recipe.id", recipeName.toString());
 			tooltip.add(recipeId.withStyle(ChatFormatting.DARK_GRAY));
 		}
 	}

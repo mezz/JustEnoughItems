@@ -5,7 +5,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,8 +12,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class RegistryWrapper<T extends IForgeRegistryEntry<T>> implements IPlatformRegistry<T> {
-    public static <T, V extends IForgeRegistryEntry<V>> IPlatformRegistry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
+public class RegistryWrapper<T> implements IPlatformRegistry<T> {
+    public static <T, V> IPlatformRegistry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
         ForgeRegistry<V> registry = RegistryManager.ACTIVE.getRegistry(key.location());
         IPlatformRegistry<V> registryWrapper = new RegistryWrapper<>(registry);
         @SuppressWarnings("unchecked")
@@ -58,6 +57,6 @@ public class RegistryWrapper<T extends IForgeRegistryEntry<T>> implements IPlatf
     @Override
     @Nullable
     public ResourceLocation getRegistryName(T entry) {
-        return entry.getRegistryName();
+        return this.forgeRegistry.getKey(entry);
     }
 }

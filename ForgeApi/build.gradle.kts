@@ -5,10 +5,6 @@ plugins {
 	id("org.parchmentmc.librarian.forgegradle") version ("1.+")
 }
 
-repositories {
-	mavenLocal()
-}
-
 // gradle.properties
 val forgeVersion: String by extra
 val minecraftVersion: String by extra

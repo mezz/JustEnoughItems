@@ -7,7 +7,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraftforge.common.crafting.IShapedRecipe;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.jetbrains.annotations.Nullable;
 
 public class RecipeHelper implements IPlatformRecipeHelper {
@@ -42,8 +41,6 @@ public class RecipeHelper implements IPlatformRecipeHelper {
     public ResourceLocation getRegistryNameForRecipe(Object object) {
         if (object instanceof Recipe recipe) {
             return recipe.getId();
-        } else if (object instanceof IForgeRegistryEntry<?> registryEntry) {
-            return registryEntry.getRegistryName();
         }
         return null;
     }

@@ -12,7 +12,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.util.TextHistory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.CommonComponents;
 
 import java.util.Optional;
 
@@ -28,7 +28,7 @@ public class GuiTextFieldFilter extends EditBox {
 
 	public GuiTextFieldFilter(Textures textures) {
 		// TODO narrator string
-		super(Minecraft.getInstance().font, 0, 0, 0, 0, TextComponent.EMPTY);
+		super(Minecraft.getInstance().font, 0, 0, 0, 0, CommonComponents.EMPTY);
 
 		setMaxLength(maxSearchLength);
 		this.hoverChecker = new HoverChecker();

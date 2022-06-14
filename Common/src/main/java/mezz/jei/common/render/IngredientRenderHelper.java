@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
@@ -11,7 +12,6 @@ import net.minecraft.ChatFormatting;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,7 +30,7 @@ public class IngredientRenderHelper {
 		}
 
 		List<Component> tooltip = new ArrayList<>();
-		TranslatableComponent translated = new TranslatableComponent("jei.tooltip.error.crash");
+		MutableComponent translated = Component.translatable("jei.tooltip.error.crash");
 		tooltip.add(translated.withStyle(ChatFormatting.RED));
 		return tooltip;
 	}

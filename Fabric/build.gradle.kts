@@ -9,7 +9,7 @@ plugins {
     java
     idea
     `maven-publish`
-    id("fabric-loom") version("0.11-SNAPSHOT")
+    id("fabric-loom") version("0.12-SNAPSHOT")
     id("net.darkhax.curseforgegradle") version("1.0.8")
 }
 
@@ -23,6 +23,7 @@ val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentVersionFabric: String by extra
+val parchmentMinecraftVersion: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric"
 base {
@@ -65,7 +66,7 @@ dependencies {
     @Suppress("UnstableApiUsage")
     mappings(loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${minecraftVersion}:${parchmentVersionFabric}@zip")
+        parchment("org.parchmentmc.data:parchment-${parchmentMinecraftVersion}:${parchmentVersionFabric}@zip")
     })
     modImplementation(
         group = "net.fabricmc",

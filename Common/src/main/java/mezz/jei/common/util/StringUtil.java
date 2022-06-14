@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +30,7 @@ public final class StringUtil {
 		int ellipsisWidth = fontRenderer.width("...");
 		FormattedText truncatedText = fontRenderer.substrByWidth(text, width - ellipsisWidth);
 		String truncatedTextString = truncatedText.getString();
-		return new TextComponent(truncatedTextString + "...");
+		return Component.literal(truncatedTextString + "...");
 	}
 
 	public static List<FormattedText> splitLines(List<FormattedText> lines, int width) {

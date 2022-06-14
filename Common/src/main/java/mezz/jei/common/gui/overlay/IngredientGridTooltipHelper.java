@@ -16,9 +16,8 @@ import mezz.jei.common.ingredients.IngredientInfo;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.render.IngredientRenderHelper;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +79,7 @@ public final class IngredientGridTooltipHelper {
 		String colorNamesString = colorNamer.getColorNames(colors)
 				.collect(Collectors.joining(", "));
 		if (!colorNamesString.isEmpty()) {
-			Component colorTranslation = new TranslatableComponent("jei.tooltip.item.colors", colorNamesString)
+			Component colorTranslation = Component.translatable("jei.tooltip.item.colors", colorNamesString)
 				.withStyle(ChatFormatting.GRAY);
 			tooltip.add(colorTranslation);
 		}
@@ -88,14 +87,14 @@ public final class IngredientGridTooltipHelper {
 
 	private static void addEditModeInfoToTooltip(List<Component> tooltip, IKeyBindings keyBindings) {
 		List<Component> lines = List.of(
-			TextComponent.EMPTY,
-			new TranslatableComponent("gui.jei.editMode.description")
+			CommonComponents.EMPTY,
+			Component.translatable("gui.jei.editMode.description")
 				.withStyle(ChatFormatting.DARK_GREEN),
-			new TranslatableComponent(
+			Component.translatable(
 				"gui.jei.editMode.description.hide",
 				keyBindings.getToggleHideIngredient().getTranslatedKeyMessage()
 			).withStyle(ChatFormatting.GRAY),
-			new TranslatableComponent(
+			Component.translatable(
 				"gui.jei.editMode.description.hide.wild",
 				keyBindings.getToggleWildcardHideIngredient().getTranslatedKeyMessage()
 			).withStyle(ChatFormatting.GRAY)

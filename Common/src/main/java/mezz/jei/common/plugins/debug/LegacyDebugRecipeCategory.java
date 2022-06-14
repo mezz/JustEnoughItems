@@ -33,7 +33,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -60,7 +60,7 @@ public class LegacyDebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe
 	public LegacyDebugRecipeCategory(IGuiHelper guiHelper, IPlatformFluidHelper<F> platformFluidHelper) {
 		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
 		this.platformFluidHelper = platformFluidHelper;
-		this.localizedName = new TextComponent("debug");
+		this.localizedName = Component.literal("debug");
 
 		ResourceLocation backgroundTexture = new ResourceLocation(ModIds.JEI_ID, Constants.TEXTURE_GUI_PATH + "debug.png");
 		this.tankBackground = guiHelper.drawableBuilder(backgroundTexture, 220, 196, 18, 60)
@@ -167,9 +167,9 @@ public class LegacyDebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe
 
 		guiItemStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
 			if (input) {
-				tooltip.add(new TextComponent(slotIndex + " Input itemStack"));
+				tooltip.add(Component.literal(slotIndex + " Input itemStack"));
 			} else {
-				tooltip.add(new TextComponent(slotIndex + " Output itemStack"));
+				tooltip.add(Component.literal(slotIndex + " Output itemStack"));
 			}
 		});
 
@@ -181,9 +181,9 @@ public class LegacyDebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe
 //		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
 //		guiFluidStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
 //			if (input) {
-//				tooltip.add(new TextComponent(slotIndex + " Input fluidStack"));
+//				tooltip.add(Component.literal(slotIndex + " Input fluidStack"));
 //			} else {
-//				tooltip.add(new TextComponent(slotIndex + " Output fluidStack"));
+//				tooltip.add(Component.literal(slotIndex + " Output fluidStack"));
 //			}
 //		});
 //
@@ -199,9 +199,9 @@ public class LegacyDebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe
 		IGuiIngredientGroup<DebugIngredient> debugIngredientsGroup = recipeLayout.getIngredientsGroup(DebugIngredient.TYPE);
 		debugIngredientsGroup.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
 			if (input) {
-				tooltip.add(new TextComponent(slotIndex + " Input DebugIngredient"));
+				tooltip.add(Component.literal(slotIndex + " Input DebugIngredient"));
 			} else {
-				tooltip.add(new TextComponent(slotIndex + " Output DebugIngredient"));
+				tooltip.add(Component.literal(slotIndex + " Output DebugIngredient"));
 			}
 		});
 
@@ -215,15 +215,15 @@ public class LegacyDebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe
 	@Override
 	public List<Component> getTooltipStrings(DebugRecipe recipe, double mouseX, double mouseY) {
 		List<Component> tooltipStrings = new ArrayList<>();
-		tooltipStrings.add(new TextComponent("Debug Recipe Category Tooltip is very long and going to wrap").withStyle(ChatFormatting.GOLD));
+		tooltipStrings.add(Component.literal("Debug Recipe Category Tooltip is very long and going to wrap").withStyle(ChatFormatting.GOLD));
 
 		if (recipe.checkHover(mouseX, mouseY)) {
-			tooltipStrings.add(new TextComponent("button tooltip!"));
+			tooltipStrings.add(Component.literal("button tooltip!"));
 		} else {
-			TextComponent debug = new TextComponent("tooltip debug");
+			MutableComponent debug = Component.literal("tooltip debug");
 			tooltipStrings.add(debug.withStyle(ChatFormatting.BOLD));
 		}
-		tooltipStrings.add(new TextComponent(mouseX + ", " + mouseY));
+		tooltipStrings.add(Component.literal(mouseX + ", " + mouseY));
 		return tooltipStrings;
 	}
 

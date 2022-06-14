@@ -17,7 +17,6 @@ import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -207,7 +206,7 @@ public final class ServerCommandUtil {
 		int count = stack.getCount();
 		Component stackTextComponent = stack.getDisplayName();
 		Component displayName = player.getDisplayName();
-		TranslatableComponent message = new TranslatableComponent("commands.give.success.single", count, stackTextComponent, displayName);
+		Component message = Component.translatable("commands.give.success.single", count, stackTextComponent, displayName);
 		commandSource.sendSuccess(message, true);
 	}
 

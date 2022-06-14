@@ -46,9 +46,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -81,7 +81,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final List<RecipeLayout<?>> recipeLayouts = new ArrayList<>();
 
 	private String pageString = "1/1";
-	private Component title = TextComponent.EMPTY;
+	private Component title = CommonComponents.EMPTY;
 	private final DrawableNineSliceTexture background;
 
 	private final RecipeCatalysts recipeCatalysts;
@@ -111,7 +111,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IIngredientVisibility ingredientVisibility,
 		IKeyBindings keyBindings
 	) {
-		super(new TextComponent("Recipes"));
+		super(Component.literal("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;
 		this.registeredIngredients = registeredIngredients;
 		this.modIdHelper = modIdHelper;
@@ -268,7 +268,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 
 		if (titleHoverChecker.checkHover(mouseX, mouseY) && !logic.hasAllCategories()) {
-			TranslatableComponent showAllRecipesString = new TranslatableComponent("jei.tooltip.show.all.recipes");
+			MutableComponent showAllRecipesString = Component.translatable("jei.tooltip.show.all.recipes");
 			TooltipRenderer.drawHoveringText(poseStack, List.of(showAllRecipesString), mouseX, mouseY);
 		}
 	}

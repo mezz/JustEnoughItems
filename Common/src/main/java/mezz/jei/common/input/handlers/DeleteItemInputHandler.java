@@ -18,7 +18,7 @@ import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -72,7 +72,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 
 	@SuppressWarnings("MethodMayBeStatic")
 	public void drawTooltips(PoseStack poseStack, int mouseX, int mouseY) {
-		TranslatableComponent deleteItem = new TranslatableComponent("jei.tooltip.delete.item");
+		Component deleteItem = Component.translatable("jei.tooltip.delete.item");
 		TooltipRenderer.drawHoveringText(poseStack, List.of(deleteItem), mouseX, mouseY);
 	}
 

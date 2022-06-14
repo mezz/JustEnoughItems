@@ -10,9 +10,6 @@ plugins {
 	id("org.parchmentmc.librarian.forgegradle") version("1.+")
 	id("net.darkhax.curseforgegradle") version("1.0.8")
 }
-apply {
-	from("buildtools/AppleSiliconSupport.gradle")
-}
 
 // gradle.properties
 val curseHomepageUrl: String by extra
@@ -80,7 +77,8 @@ dependencies {
 }
 
 minecraft {
-	mappings("parchment", parchmentVersionForge)
+//	mappings("parchment", parchmentVersionForge)
+	mappings("official", minecraftVersion)
 
 	accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 

@@ -11,7 +11,7 @@ import mezz.jei.common.input.keys.IJeiKeyMapping;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 
 import java.util.List;
 
@@ -37,16 +37,16 @@ public class BookmarkButton extends GuiIconToggleButton {
 
 	@Override
 	protected void getTooltips(List<Component> tooltip) {
-		tooltip.add(new TranslatableComponent("jei.tooltip.bookmarks"));
+		tooltip.add(Component.translatable("jei.tooltip.bookmarks"));
 		IJeiKeyMapping bookmarkKey = keyBindings.getBookmark();
 		if (bookmarkKey.isUnbound()) {
-			TranslatableComponent noKey = new TranslatableComponent("jei.tooltip.bookmarks.usage.nokey");
+			MutableComponent noKey = Component.translatable("jei.tooltip.bookmarks.usage.nokey");
 			tooltip.add(noKey.withStyle(ChatFormatting.RED));
 		} else if (!bookmarkOverlay.hasRoom()) {
-			TranslatableComponent notEnoughSpace = new TranslatableComponent("jei.tooltip.bookmarks.not.enough.space");
+			MutableComponent notEnoughSpace = Component.translatable("jei.tooltip.bookmarks.not.enough.space");
 			tooltip.add(notEnoughSpace.withStyle(ChatFormatting.GOLD));
 		} else {
-			TranslatableComponent key = new TranslatableComponent(
+			MutableComponent key = Component.translatable(
 				"jei.tooltip.bookmarks.usage.key",
 				bookmarkKey.getTranslatedKeyMessage()
 			);

@@ -14,8 +14,6 @@ import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -106,11 +104,11 @@ public final class CommandUtil {
 		if (chatMessage.length() <= 256) {
 			sender.chat(chatMessage);
 		} else {
-			Component errorMessage = new TranslatableComponent("jei.chat.error.command.too.long");
+			Component errorMessage = Component.translatable("jei.chat.error.command.too.long");
 			errorMessage.getStyle().applyFormat(ChatFormatting.RED);
 			sender.displayClientMessage(errorMessage, false);
 
-			Component chatMessageComponent = new TextComponent(chatMessage);
+			Component chatMessageComponent = Component.literal(chatMessage);
 			chatMessageComponent.getStyle().applyFormat(ChatFormatting.RED);
 			sender.displayClientMessage(chatMessageComponent, false);
 		}

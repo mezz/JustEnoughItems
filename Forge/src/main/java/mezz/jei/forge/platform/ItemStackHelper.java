@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -74,7 +73,7 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
             Minecraft minecraft = Minecraft.getInstance();
             LocalPlayer player = minecraft.player;
             List<Component> tooltip = new ArrayList<>();
-            tooltip.add(new TextComponent("JEI Tooltip Testing for mod name formatting"));
+            tooltip.add(Component.literal("JEI Tooltip Testing for mod name formatting"));
             ItemTooltipEvent tooltipEvent = ForgeEventFactory.onItemTooltip(itemStack, player, tooltip, TooltipFlag.Default.NORMAL);
             return tooltipEvent.getToolTip();
         } catch (LinkageError | RuntimeException e) {

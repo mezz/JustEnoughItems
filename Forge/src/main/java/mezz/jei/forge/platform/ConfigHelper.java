@@ -8,7 +8,6 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.client.ConfigGuiHandler;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
@@ -30,9 +29,9 @@ public class ConfigHelper implements IPlatformConfigHelper {
     public Component getMissingConfigScreenMessage() {
         ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/configured");
         Style style = Style.EMPTY
-            .setUnderlined(true)
+            .withUnderlined(true)
             .withClickEvent(clickEvent);
-        MutableComponent message = new TranslatableComponent("jei.message.configured");
+        MutableComponent message = Component.translatable("jei.message.configured");
         return message.setStyle(style);
     }
 }

@@ -23,7 +23,7 @@ import mezz.jei.common.gui.recipes.ShapelessIcon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -265,7 +265,7 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R> {
 		LocalPlayer player = minecraft.player;
 		ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
 		if (registryName == null) {
-			TranslatableComponent message = new TranslatableComponent("jei.message.copy.recipe.id.failure");
+			MutableComponent message = Component.translatable("jei.message.copy.recipe.id.failure");
 			if (player != null) {
 				player.displayClientMessage(message, false);
 			}
@@ -273,7 +273,7 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R> {
 		}
 		String recipeId = registryName.toString();
 		minecraft.keyboardHandler.setClipboard(recipeId);
-		TranslatableComponent message = new TranslatableComponent("jei.message.copy.recipe.id.success", recipeId);
+		MutableComponent message = Component.translatable("jei.message.copy.recipe.id.success", recipeId);
 		if (player != null) {
 			player.displayClientMessage(message, false);
 		}

@@ -29,8 +29,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -92,38 +91,38 @@ public class JeiDebugPlugin implements IModPlugin {
 				new ItemStack(Blocks.DARK_OAK_DOOR)
 				),
 				VanillaTypes.ITEM_STACK,
-				new TranslatableComponent("description.jei.wooden.door.1"), // actually 2 lines
-				new TranslatableComponent("description.jei.wooden.door.2"),
-				new TranslatableComponent("description.jei.wooden.door.3")
+				Component.translatable("description.jei.wooden.door.1"), // actually 2 lines
+				Component.translatable("description.jei.wooden.door.2"),
+				Component.translatable("description.jei.wooden.door.3")
 			);
 
 			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 			IPlatformFluidHelper<?> platformFluidHelper = jeiHelpers.getPlatformFluidHelper();
 			registerFluidRecipes(registration, platformFluidHelper);
-			registration.addIngredientInfo(new DebugIngredient(1), DebugIngredient.TYPE, new TextComponent("debug"));
+			registration.addIngredientInfo(new DebugIngredient(1), DebugIngredient.TYPE, Component.literal("debug"));
 			registration.addIngredientInfo(new DebugIngredient(2), DebugIngredient.TYPE,
-				new TextComponent("debug colored").withStyle(ChatFormatting.AQUA),
-				new TextComponent("debug\\nSplit and colored").withStyle(ChatFormatting.LIGHT_PURPLE),
-				new TranslatableComponent("description.jei.debug.formatting.1", "various"),
-				new TranslatableComponent("description.jei.debug.formatting.1", "various\\nsplit"),
-				new TranslatableComponent("description.jei.debug.formatting.1", new TextComponent("various colored").withStyle(ChatFormatting.RED)),
-				new TranslatableComponent("description.jei.debug.formatting.1",
-					new TextComponent("various\\nsplit colored").withStyle(ChatFormatting.DARK_AQUA)
+				Component.literal("debug colored").withStyle(ChatFormatting.AQUA),
+				Component.literal("debug\\nSplit and colored").withStyle(ChatFormatting.LIGHT_PURPLE),
+				Component.translatable("description.jei.debug.formatting.1", "various"),
+				Component.translatable("description.jei.debug.formatting.1", "various\\nsplit"),
+				Component.translatable("description.jei.debug.formatting.1", Component.literal("various colored").withStyle(ChatFormatting.RED)),
+				Component.translatable("description.jei.debug.formatting.1",
+					Component.literal("various\\nsplit colored").withStyle(ChatFormatting.DARK_AQUA)
 				),
-				new TranslatableComponent("description.jei.debug.formatting.1", "\\nSplitting at the start"),
-				new TranslatableComponent("description.jei.debug.formatting.1", "various all colored").withStyle(ChatFormatting.RED),
-				new TranslatableComponent("description.jei.debug.formatting.1",
-					new TranslatableComponent("description.jei.debug.formatting.3", "various").withStyle(ChatFormatting.DARK_AQUA)
+				Component.translatable("description.jei.debug.formatting.1", "\\nSplitting at the start"),
+				Component.translatable("description.jei.debug.formatting.1", "various all colored").withStyle(ChatFormatting.RED),
+				Component.translatable("description.jei.debug.formatting.1",
+					Component.translatable("description.jei.debug.formatting.3", "various").withStyle(ChatFormatting.DARK_AQUA)
 				),
-				new TranslatableComponent("description.jei.debug.formatting.2",
-					new TextComponent("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
-					new TextComponent("various").withStyle(ChatFormatting.RED)
+				Component.translatable("description.jei.debug.formatting.2",
+					Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
+					Component.literal("various").withStyle(ChatFormatting.RED)
 				).withStyle(ChatFormatting.BLUE),
-				new TranslatableComponent("description.jei.debug.formatting.1",
-					new TranslatableComponent("description.jei.debug.formatting.3",
-						new TranslatableComponent("description.jei.debug.formatting.2",
-							new TextComponent("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
-							new TextComponent("various").withStyle(ChatFormatting.RED)
+				Component.translatable("description.jei.debug.formatting.1",
+					Component.translatable("description.jei.debug.formatting.3",
+						Component.translatable("description.jei.debug.formatting.2",
+							Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
+							Component.literal("various").withStyle(ChatFormatting.RED)
 						).withStyle(ChatFormatting.DARK_AQUA)
 					)
 				)
@@ -149,7 +148,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	private <T> void registerFluidRecipes(IRecipeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
 		long bucketVolume = platformFluidHelper.bucketVolume();
 		T fluidIngredient = platformFluidHelper.create(Fluids.WATER, bucketVolume, null);
-		registration.addIngredientInfo(fluidIngredient, platformFluidHelper.getFluidIngredientType(), new TextComponent("water"));
+		registration.addIngredientInfo(fluidIngredient, platformFluidHelper.getFluidIngredientType(), Component.literal("water"));
 	}
 
 	@Override

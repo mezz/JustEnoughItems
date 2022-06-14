@@ -7,7 +7,6 @@ import mezz.jei.common.gui.elements.HighResolutionDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +43,7 @@ public class ShapelessIcon {
 	@Nullable
 	public List<Component> getTooltipStrings(int mouseX, int mouseY) {
 		if (hoverChecker.checkHover(mouseX, mouseY)) {
-			return List.of(new TranslatableComponent("jei.tooltip.shapeless.recipe"));
+			return List.of(Component.translatable("jei.tooltip.shapeless.recipe"));
 		}
 		return null;
 	}

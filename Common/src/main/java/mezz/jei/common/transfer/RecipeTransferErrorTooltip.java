@@ -12,13 +12,12 @@ import net.minecraft.ChatFormatting;
 
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.common.gui.TooltipRenderer;
-import net.minecraft.network.chat.TranslatableComponent;
 
 public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 	private final List<Component> message = new ArrayList<>();
 
 	public RecipeTransferErrorTooltip(Component message) {
-		this.message.add(new TranslatableComponent("jei.tooltip.transfer"));
+		this.message.add(Component.translatable("jei.tooltip.transfer"));
 		MutableComponent messageTextComponent = message.copy();
 		this.message.add(messageTextComponent.withStyle(ChatFormatting.RED));
 	}

@@ -16,7 +16,6 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.common.Constants;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
 public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRecipe> {
 	public static final int width = 82;
@@ -30,7 +29,7 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRe
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 220, width, height);
 		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.STONECUTTER));
-		localizedName = new TranslatableComponent("gui.jei.category.stoneCutter");
+		localizedName = Component.translatable("gui.jei.category.stoneCutter");
 	}
 
 	@SuppressWarnings("removal")

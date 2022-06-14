@@ -23,7 +23,6 @@ import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.text.NumberFormat;
@@ -53,7 +52,7 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecip
 		textArea = new ImmutableRect2i(20, 0, textPadding + maxStringWidth, backgroundHeight);
 
 		flameTransparentBackground = textures.getFlameIcon();
-		localizedName = new TranslatableComponent("gui.jei.category.fuel");
+		localizedName = Component.translatable("gui.jei.category.fuel");
 
 		this.cachedFlames = CacheBuilder.newBuilder()
 			.maximumSize(25)
@@ -118,12 +117,12 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecip
 
 	private static Component createSmeltCountText(int burnTime) {
 		if (burnTime == 200) {
-			return new TranslatableComponent("gui.jei.category.fuel.smeltCount.single");
+			return Component.translatable("gui.jei.category.fuel.smeltCount.single");
 		} else {
 			NumberFormat numberInstance = NumberFormat.getNumberInstance();
 			numberInstance.setMaximumFractionDigits(2);
 			String smeltCount = numberInstance.format(burnTime / 200f);
-			return new TranslatableComponent("gui.jei.category.fuel.smeltCount", smeltCount);
+			return Component.translatable("gui.jei.category.fuel.smeltCount", smeltCount);
 		}
 	}
 }

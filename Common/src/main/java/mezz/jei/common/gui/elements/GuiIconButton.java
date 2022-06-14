@@ -12,7 +12,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.CommonComponents;
 
 import java.util.Optional;
 
@@ -24,7 +24,7 @@ public class GuiIconButton extends Button {
 	private final Textures textures;
 
 	public GuiIconButton(IDrawable icon, OnPress pressable, Textures textures) {
-		super(0, 0, 0, 0, TextComponent.EMPTY, pressable);
+		super(0, 0, 0, 0, CommonComponents.EMPTY, pressable);
 		this.icon = icon;
 		this.textures = textures;
 	}

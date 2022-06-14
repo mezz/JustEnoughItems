@@ -13,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,32 +37,32 @@ public class ConfigButton extends GuiIconToggleButton {
 
 	@Override
 	protected void getTooltips(List<Component> tooltip) {
-		tooltip.add(new TranslatableComponent("jei.tooltip.config"));
+		tooltip.add(Component.translatable("jei.tooltip.config"));
 		if (!worldConfig.isOverlayEnabled()) {
-			TranslatableComponent disabled = new TranslatableComponent("jei.tooltip.ingredient.list.disabled");
-			TranslatableComponent disabledFix = new TranslatableComponent(
+			MutableComponent disabled = Component.translatable("jei.tooltip.ingredient.list.disabled");
+			MutableComponent disabledFix = Component.translatable(
 				"jei.tooltip.ingredient.list.disabled.how.to.fix",
 				keyBindings.getToggleOverlay().getTranslatedKeyMessage()
 			);
 			tooltip.add(disabled.withStyle(ChatFormatting.GOLD));
 			tooltip.add(disabledFix.withStyle(ChatFormatting.GOLD));
 		} else if (!isListDisplayed.getAsBoolean()) {
-			TranslatableComponent notEnoughSpace = new TranslatableComponent("jei.tooltip.not.enough.space");
+			MutableComponent notEnoughSpace = Component.translatable("jei.tooltip.not.enough.space");
 			tooltip.add(notEnoughSpace.withStyle(ChatFormatting.GOLD));
 		}
 		if (worldConfig.isCheatItemsEnabled()) {
-			MutableComponent enabled = new TranslatableComponent("jei.tooltip.cheat.mode.button.enabled")
+			MutableComponent enabled = Component.translatable("jei.tooltip.cheat.mode.button.enabled")
 				.withStyle(ChatFormatting.RED);
 			tooltip.add(enabled);
 
 			if (!keyBindings.getToggleCheatMode().isUnbound()) {
-				MutableComponent component = new TranslatableComponent(
+				MutableComponent component = Component.translatable(
 					"jei.tooltip.cheat.mode.how.to.disable.hotkey",
 					keyBindings.getToggleCheatMode().getTranslatedKeyMessage()
 				).withStyle(ChatFormatting.RED);
 				tooltip.add(component);
 			} else if (!keyBindings.getToggleCheatModeConfigButton().isUnbound()) {
-				MutableComponent component = new TranslatableComponent(
+				MutableComponent component = Component.translatable(
 					"jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey",
 					keyBindings.getToggleCheatModeConfigButton().getTranslatedKeyMessage()
 				).withStyle(ChatFormatting.RED);

@@ -21,7 +21,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -170,7 +170,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		List<T> ingredients = getIngredients(ingredientType).toList();
 		ingredientHelper.getTagEquivalent(ingredients)
 			.ifPresent(tagEquivalent -> {
-				final TranslatableComponent acceptsAny = new TranslatableComponent("jei.tooltip.recipe.tag", tagEquivalent);
+				final MutableComponent acceptsAny = Component.translatable("jei.tooltip.recipe.tag", tagEquivalent);
 				tooltip.add(acceptsAny.withStyle(ChatFormatting.GRAY));
 			});
 
