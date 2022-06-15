@@ -52,8 +52,8 @@ pipeline {
 
         stage('Publish CurseForge') {
             steps {
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:publishCurseForge --no-daemon"
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Fabric:publishCurseForge --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:publishCurseForge --no-daemon"
             }
         }
     }
