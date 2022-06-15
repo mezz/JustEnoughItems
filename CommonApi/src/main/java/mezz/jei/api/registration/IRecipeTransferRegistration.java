@@ -31,7 +31,7 @@ public interface IRecipeTransferRegistration {
 	 * @param inventorySlotStart the first slot of the available inventory (usually player inventory)
 	 * @param inventorySlotCount the number of slots of the available inventory
 	 *
-	 * @since 10.0.0
+	 * @since 11.0.0
 	 */
 	<C extends AbstractContainerMenu, R> void addRecipeTransferHandler(Class<? extends C> containerClass, @Nullable MenuType<C> menuType, RecipeType<R> recipeType, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount);
 
