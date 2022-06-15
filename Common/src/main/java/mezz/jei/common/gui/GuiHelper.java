@@ -58,18 +58,9 @@ public class GuiHelper implements IGuiHelper {
 		return new DrawableIngredient<>(ingredient, ingredientRenderer);
 	}
 
-	@SuppressWarnings("removal")
 	@Override
-	public <V> IDrawable createDrawableIngredient(V ingredient) {
-		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		IIngredientType<V> ingredientType = registeredIngredients.getIngredientType(ingredient);
-		IIngredientRenderer<V> ingredientRenderer = registeredIngredients.getIngredientRenderer(ingredientType);
-		return new DrawableIngredient<>(ingredient, ingredientRenderer);
-	}
-
-	@Override
-	public ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1) {
-		return new CraftingGridHelper(craftInputSlot1);
+	public ICraftingGridHelper createCraftingGridHelper() {
+		return new CraftingGridHelper();
 	}
 
 	@Override

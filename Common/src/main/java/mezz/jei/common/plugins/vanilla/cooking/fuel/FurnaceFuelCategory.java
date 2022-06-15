@@ -23,7 +23,6 @@ import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 import java.text.NumberFormat;
 
@@ -68,18 +67,6 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecip
 	@Override
 	public IDrawable getBackground() {
 		return background;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public ResourceLocation getUid() {
-		return getRecipeType().getUid();
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public Class<? extends IJeiFuelingRecipe> getRecipeClass() {
-		return getRecipeType().getRecipeClass();
 	}
 
 	@Override

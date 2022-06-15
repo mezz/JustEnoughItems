@@ -36,48 +36,4 @@ public interface IFocus<V> {
 	 * @since 9.4.0
 	 */
 	<T> Optional<IFocus<T>> checkedCast(IIngredientType<T> ingredientType);
-
-	/**
-	 * The focus mode.
-	 * When a player looks up the recipes to make an item, that item is an {@link Mode#OUTPUT} focus.
-	 * When a player looks up the uses for an item, that item is an {@link Mode#INPUT} focus.
-	 *
-	 * @deprecated Use {@link RecipeIngredientRole} instead.
-	 */
-	@Deprecated(forRemoval = true, since = "9.3.0")
-	enum Mode {
-		INPUT, OUTPUT;
-
-		/**
-		 * Convert this legacy {@link IFocus} {@link Mode} into a {@link RecipeIngredientRole}.
-		 *
-		 * @since 9.3.0
-		 */
-		public RecipeIngredientRole toRole() {
-			return switch (this) {
-				case INPUT -> RecipeIngredientRole.INPUT;
-				case OUTPUT -> RecipeIngredientRole.OUTPUT;
-			};
-		}
-	}
-
-	/**
-	 * The ingredient that is being focused on.
-	 *
-	 * @deprecated use {@link #getTypedValue()} instead.
-	 */
-	@Deprecated(forRemoval = true, since = "9.3.0")
-	default V getValue() {
-		return getTypedValue().getIngredient();
-	}
-
-	/**
-	 * The focus mode.
-	 * When a player looks up the recipes to make an item, that item is an {@link Mode#OUTPUT} focus.
-	 * When a player looks up the uses for an item, that item is an {@link Mode#INPUT} focus.
-	 *
-	 * @deprecated Use {@link #getRole()} instead.
-	 */
-	@Deprecated(forRemoval = true, since = "9.3.0")
-	Mode getMode();
 }

@@ -10,33 +10,30 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.common.Constants;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.recipes.RecipeManager;
 import mezz.jei.common.transfer.BasicRecipeTransferHandler;
 import mezz.jei.common.transfer.BasicRecipeTransferInfo;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.collect.Table;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import org.jetbrains.annotations.Nullable;
 
 public class RecipeTransferRegistration implements IRecipeTransferRegistration {
-	private final Table<Class<?>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers = Table.hashBasedTable();
+	private final Table<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers = Table.hashBasedTable();
 	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IJeiHelpers jeiHelpers;
-	private final RecipeManager recipeManager;
 	private final IConnectionToServer serverConnection;
 
 	public RecipeTransferRegistration(
 		IStackHelper stackHelper,
 		IRecipeTransferHandlerHelper handlerHelper,
 		IJeiHelpers jeiHelpers,
-		RecipeManager recipeManager,
 		IConnectionToServer serverConnection
 	) {
 		this.stackHelper = stackHelper;
 		this.handlerHelper = handlerHelper;
 		this.jeiHelpers = jeiHelpers;
-		this.recipeManager = recipeManager;
 		this.serverConnection = serverConnection;
 	}
 
@@ -51,23 +48,11 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 	}
 
 	@Override
-	public <C extends AbstractContainerMenu, R> void addRecipeTransferHandler(Class<C> containerClass, RecipeType<R> recipeType, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
+	public <C extends AbstractContainerMenu, R> void addRecipeTransferHandler(Class<? extends C> containerClass, @Nullable MenuType<C> menuType, RecipeType<R> recipeType, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
 		ErrorUtil.checkNotNull(containerClass, "containerClass");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 
-		IRecipeTransferInfo<C, R> recipeTransferHelper = new BasicRecipeTransferInfo<>(containerClass, recipeType, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
-		addRecipeTransferHandler(recipeTransferHelper);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated(forRemoval = true, since = "9.5.0")
-	public <C extends AbstractContainerMenu> void addRecipeTransferHandler(Class<C> containerClass, ResourceLocation recipeCategoryUid, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
-		ErrorUtil.checkNotNull(containerClass, "containerClass");
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-
-		RecipeType<?> recipeType = recipeManager.getRecipeType(recipeCategoryUid);
-		IRecipeTransferInfo<C, ?> recipeTransferHelper = new BasicRecipeTransferInfo<>(containerClass, recipeType, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
+		IRecipeTransferInfo<C, R> recipeTransferHelper = new BasicRecipeTransferInfo<>(containerClass, menuType, recipeType, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
 		addRecipeTransferHandler(recipeTransferHelper);
 	}
 
@@ -84,19 +69,7 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 		ErrorUtil.checkNotNull(recipeTransferHandler, "recipeTransferHandler");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 
-		Class<C> containerClass = recipeTransferHandler.getContainerClass();
-		this.recipeTransferHandlers.put(containerClass, recipeType, recipeTransferHandler);
-	}
-
-	@SuppressWarnings({"removal"})
-	@Override
-	@Deprecated(forRemoval = true, since = "9.5.0")
-	public <C extends AbstractContainerMenu, R> void addRecipeTransferHandler(IRecipeTransferHandler<C, R> recipeTransferHandler, ResourceLocation recipeCategoryUid) {
-		ErrorUtil.checkNotNull(recipeTransferHandler, "recipeTransferHandler");
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-
-		Class<C> containerClass = recipeTransferHandler.getContainerClass();
-		RecipeType<?> recipeType = recipeManager.getRecipeType(recipeCategoryUid);
+		Class<? extends C> containerClass = recipeTransferHandler.getContainerClass();
 		this.recipeTransferHandlers.put(containerClass, recipeType, recipeTransferHandler);
 	}
 
@@ -104,11 +77,11 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 	public <C extends AbstractContainerMenu, R> void addUniversalRecipeTransferHandler(IRecipeTransferHandler<C, R> recipeTransferHandler) {
 		ErrorUtil.checkNotNull(recipeTransferHandler, "recipeTransferHandler");
 
-		Class<?> containerClass = recipeTransferHandler.getContainerClass();
+		Class<? extends C> containerClass = recipeTransferHandler.getContainerClass();
 		this.recipeTransferHandlers.put(containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_TYPE, recipeTransferHandler);
 	}
 
-	public ImmutableTable<Class<?>, RecipeType<?>, IRecipeTransferHandler<?, ?>> getRecipeTransferHandlers() {
+	public ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> getRecipeTransferHandlers() {
 		return recipeTransferHandlers.toImmutable();
 	}
 }

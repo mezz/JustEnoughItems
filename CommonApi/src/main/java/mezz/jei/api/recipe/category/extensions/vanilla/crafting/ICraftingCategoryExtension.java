@@ -3,7 +3,6 @@ package mezz.jei.api.recipe.category.extensions.vanilla.crafting;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
-import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
@@ -12,7 +11,6 @@ import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.Nullable;
-import java.util.List;
 
 /**
  * Implement this interface instead of just {@link IRecipeCategoryExtension}
@@ -32,10 +30,7 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	 *
 	 * @since 9.4.0
 	 */
-	default void setRecipe(IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
-		// if this new method is not implemented, call the legacy method
-		setRecipe(builder, craftingGridHelper, focuses.getAllFocuses());
-	}
+	void setRecipe(IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses);
 
 	/**
 	 * Return the registry name of the recipe here.
@@ -65,22 +60,5 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	 */
 	default int getHeight() {
 		return 0;
-	}
-
-	/**
-	 * Override the default {@link IRecipeCategory} behavior.
-	 *
-	 * @see IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)
-	 *
-	 * @since 9.3.0
-	 * @deprecated use {@link #setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, IFocusGroup)}
-	 */
-	@Deprecated(forRemoval = true, since = "9.4.0")
-	default void setRecipe(
-		IRecipeLayoutBuilder builder,
-		ICraftingGridHelper craftingGridHelper,
-		List<? extends IFocus<?>> focuses
-	) {
-
 	}
 }

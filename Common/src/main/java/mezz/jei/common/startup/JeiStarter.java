@@ -45,6 +45,7 @@ import mezz.jei.common.runtime.JeiHelpers;
 import mezz.jei.common.runtime.JeiRuntime;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import java.util.List;
 
@@ -84,8 +85,8 @@ public final class JeiStarter {
 
 		BookmarkList bookmarkList = pluginLoader.createBookmarkList(configData.bookmarkConfig());
 		RecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, vanillaPlugin, configData.recipeCategorySortingConfig(), modIdHelper);
-		ImmutableTable<Class<?>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers =
-			pluginLoader.createRecipeTransferHandlers(plugins, recipeManager);
+		ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers =
+			pluginLoader.createRecipeTransferHandlers(plugins);
 		RecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
 
 		LoggedTimer timer = new LoggedTimer();

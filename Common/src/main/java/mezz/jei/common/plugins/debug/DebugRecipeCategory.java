@@ -69,18 +69,6 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 		this.item = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.ACACIA_LEAVES));
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public ResourceLocation getUid() {
-		return TYPE.getUid();
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public Class<? extends DebugRecipe> getRecipeClass() {
-		return TYPE.getRecipeClass();
-	}
-
 	@Override
 	public RecipeType<DebugRecipe> getRecipeType() {
 		return TYPE;

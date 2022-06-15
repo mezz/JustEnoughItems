@@ -3,7 +3,6 @@ package mezz.jei.common.gui;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
-import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import org.jetbrains.annotations.Nullable;
@@ -12,29 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
-	private final int craftInputSlot1;
-
-	public CraftingGridHelper(int craftInputSlot1) {
-		this.craftInputSlot1 = craftInputSlot1;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public <T> void setInputs(IGuiIngredientGroup<T> ingredientGroup, List<List<T>> inputs) {
-		int size = getShapelessSize(inputs.size());
-		setInputs(ingredientGroup, inputs, size, size);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public <T> void setInputs(IGuiIngredientGroup<T> ingredientGroup, List<List<T>> inputs, int width, int height) {
-		for (int i = 0; i < inputs.size(); i++) {
-			List<T> recipeItem = inputs.get(i);
-			int index = getCraftingIndex(i, width, height);
-			ingredientGroup.set(craftInputSlot1 + index, recipeItem);
-		}
-	}
-
 	@Override
 	public <T> void setInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height) {
 		if (width <= 0 || height <= 0) {

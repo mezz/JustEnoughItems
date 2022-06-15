@@ -31,7 +31,7 @@ public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 			RecipeType<?> recipeType = recipeCategory.getRecipeType();
 			Preconditions.checkNotNull(recipeType, "Recipe type cannot be null %s", recipeCategory);
 			if (recipeTypes.contains(recipeType)) {
-				throw new IllegalArgumentException("A RecipeCategory with type \"" + recipeType.getRecipeClass() + "\" has already been registered.");
+				throw new IllegalArgumentException("A RecipeCategory with type \"" + recipeType.getUid() + "\" has already been registered.");
 			} else {
 				recipeTypes.add(recipeType);
 			}

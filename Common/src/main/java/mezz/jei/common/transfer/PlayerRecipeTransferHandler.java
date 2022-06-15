@@ -7,6 +7,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
@@ -15,10 +16,12 @@ import mezz.jei.common.gui.ingredients.RecipeSlotsView;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<InventoryMenu, CraftingRecipe> {
 	/**
@@ -34,18 +37,23 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 	public PlayerRecipeTransferHandler(IConnectionToServer serverConnection, IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper) {
 		this.serverConnection = serverConnection;
 		this.handlerHelper = handlerHelper;
-		var transferInfo = new BasicRecipeTransferInfo<>(InventoryMenu.class, RecipeTypes.CRAFTING, 1, 4, 9, 36);
+		var transferInfo = new BasicRecipeTransferInfo<>(InventoryMenu.class, null, RecipeTypes.CRAFTING, 1, 4, 9, 36);
 		this.handler = new BasicRecipeTransferHandler<>(serverConnection, stackHelper, handlerHelper, transferInfo);
 	}
 
 	@Override
-	public Class<InventoryMenu> getContainerClass() {
-		return InventoryMenu.class;
+	public Class<? extends InventoryMenu> getContainerClass() {
+		return handler.getContainerClass();
 	}
 
 	@Override
-	public Class<CraftingRecipe> getRecipeClass() {
-		return CraftingRecipe.class;
+	public Optional<MenuType<InventoryMenu>> getMenuType() {
+		return handler.getMenuType();
+	}
+
+	@Override
+	public RecipeType<CraftingRecipe> getRecipeType() {
+		return RecipeTypes.CRAFTING;
 	}
 
 	@Nullable

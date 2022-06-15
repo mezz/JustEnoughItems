@@ -40,22 +40,4 @@ public interface ICraftingGridHelper {
 	 * @since 9.3.0
 	 */
 	<T> void setOutputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, @Nullable List<@Nullable T> outputs);
-
-	/**
-	 * Place inputs ingredients onto the crafting grid in a consistent way.
-	 *
-	 * @deprecated Use {@link #setInputs(IRecipeLayoutBuilder, IIngredientType, List, int, int)} instead.
-	 */
-	@SuppressWarnings("removal")
-	@Deprecated(forRemoval = true, since = "9.3.0")
-	<T> void setInputs(IGuiIngredientGroup<T> ingredientGroup, List<List<T>> inputs);
-
-	/**
-	 * Place inputs ingredients onto the crafting grid in a consistent way.
-	 *
-	 * @deprecated Use {@link #setInputs(IRecipeLayoutBuilder, IIngredientType, List, int, int)} instead.
-	 */
-	@SuppressWarnings("removal")
-	@Deprecated(forRemoval = true, since = "9.3.0")
-	<T> void setInputs(IGuiIngredientGroup<T> ingredientGroup, List<List<T>> inputs, int width, int height);
 }

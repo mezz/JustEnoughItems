@@ -31,12 +31,5 @@ public final class ForgeTypes {
         }
     };
 
-    /**
-     * @since 9.6.0
-     * @deprecated use {@link #FLUID_STACK}
-     */
-    @Deprecated(forRemoval = true, since = "9.7.0")
-    public static final IIngredientType<FluidStack> FLUID = FLUID_STACK;
-
     private ForgeTypes() {}
 }

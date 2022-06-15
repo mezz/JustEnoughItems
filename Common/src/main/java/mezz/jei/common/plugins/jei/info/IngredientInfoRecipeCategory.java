@@ -20,7 +20,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
 
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IJeiIngredientInfoRecipe> {
 	private final IDrawable background;
@@ -33,18 +32,6 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IJeiIngredi
 		this.icon = textures.getInfoIcon();
 		this.slotBackground = guiHelper.getSlotDrawable();
 		this.localizedName = Component.translatable("gui.jei.category.itemInformation");
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public ResourceLocation getUid() {
-		return getRecipeType().getUid();
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public Class<? extends IJeiIngredientInfoRecipe> getRecipeClass() {
-		return getRecipeType().getRecipeClass();
 	}
 
 	@Override

@@ -16,7 +16,6 @@ import mezz.jei.common.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 
@@ -34,18 +33,6 @@ public class CompostableRecipeCategory implements IRecipeCategory<IJeiComposting
 		slot = guiHelper.getSlotDrawable();
 		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.COMPOSTER));
 		localizedName = Component.translatable("gui.jei.category.compostable");
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public ResourceLocation getUid() {
-		return getRecipeType().getUid();
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public Class<? extends IJeiCompostingRecipe> getRecipeClass() {
-		return getRecipeType().getRecipeClass();
 	}
 
 	@Override

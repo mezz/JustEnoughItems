@@ -1,20 +1,20 @@
 package mezz.jei.api.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 
+import java.util.Optional;
+
 /**
- * An extension of {@link IRecipeLayout} for addons that want to draw the layouts themselves somewhere.
+ * For addons that want to draw recipe layouts somewhere themselves.
  *
  * Create an instance with {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocus)}.
  */
-@SuppressWarnings("removal")
-public interface IRecipeLayoutDrawable extends IRecipeLayout {
+public interface IRecipeLayoutDrawable {
 	/**
 	 * Set the position of the recipe layout in screen coordinates.
 	 * To help decide on the position, you can get the width and height of this recipe from {@link IRecipeCategory#getBackground()}.
@@ -41,6 +41,5 @@ public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	 * Returns the ingredient currently under the mouse, if there is one.
 	 * Can be an ItemStack, FluidStack, or any other ingredient type registered with JEI.
 	 */
-	@Nullable
-	<T> T getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<T> ingredientType);
+	<T> Optional<T> getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<T> ingredientType);
 }

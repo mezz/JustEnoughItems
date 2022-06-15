@@ -49,7 +49,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
@@ -453,27 +452,15 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 	}
 
-	@SuppressWarnings({"deprecation", "removal"})
 	@Override
-	public void showCategories(List<ResourceLocation> recipeCategoryUids) {
-		ErrorUtil.checkNotEmpty(recipeCategoryUids, "recipeCategoryUids");
-		List<RecipeType<?>> recipeTypes = recipeManager.getRecipeTypes(recipeCategoryUids);
-		if (logic.setCategoryFocus(recipeTypes)) {
-			open();
-		}
-	}
-
-	@Nullable
-	@Override
-	public <T> T getIngredientUnderMouse(IIngredientType<T> ingredientType) {
+	public <T> Optional<T> getIngredientUnderMouse(IIngredientType<T> ingredientType) {
 		double x = MouseUtil.getX();
 		double y = MouseUtil.getY();
 
 		return getIngredientUnderMouse(x, y)
 			.map(IClickedIngredient::getTypedIngredient)
 			.flatMap(i -> i.getIngredient(ingredientType).stream())
-			.findFirst()
-			.orElse(null);
+			.findFirst();
 	}
 
 	public void back() {

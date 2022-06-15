@@ -30,12 +30,6 @@ public final class VanillaTypes {
 		}
 	};
 
-	/**
-	 * @deprecated use {@link #ITEM_STACK}
-	 */
-	@Deprecated(forRemoval = true, since = "9.7.0")
-	public static final IIngredientType<ItemStack> ITEM = ITEM_STACK;
-
 	private VanillaTypes() {
 
 	}

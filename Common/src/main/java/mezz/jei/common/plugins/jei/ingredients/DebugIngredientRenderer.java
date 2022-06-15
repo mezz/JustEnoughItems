@@ -11,7 +11,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.TooltipFlag;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,19 +28,6 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 		font.draw(poseStack, "JEI", 0, 0, 0xFFFF0000);
 		font.draw(poseStack, "#" + ingredient.getNumber(), 0, 8, 0xFFFF0000);
 		RenderSystem.setShaderColor(1, 1, 1, 1);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable DebugIngredient ingredient) {
-		if (ingredient != null) {
-			stack.pushPose();
-			{
-				stack.translate(xPosition, yPosition, 0);
-				render(stack, ingredient);
-			}
-			stack.popPose();
-		}
 	}
 
 	@Override

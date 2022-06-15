@@ -1,5 +1,6 @@
 package mezz.jei.test.lib;
 
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -29,21 +30,14 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 		return "Test Ingredient Unique Id";
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public String getModId(TestIngredient ingredient) {
-		return "jei_test_mod";
-	}
-
 	@Override
 	public Iterable<Integer> getColors(TestIngredient ingredient) {
 		return List.of(0xFF000000);
 	}
 
-	@SuppressWarnings("removal")
 	@Override
-	public String getResourceId(TestIngredient ingredient) {
-		return "test_ingredient_" + ingredient.getNumber();
+	public ResourceLocation getResourceLocation(TestIngredient ingredient) {
+		return new ResourceLocation("jei_test_mod", "test_ingredient_" + ingredient.getNumber());
 	}
 
 	@Override

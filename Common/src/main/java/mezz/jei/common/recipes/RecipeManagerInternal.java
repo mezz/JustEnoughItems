@@ -96,13 +96,6 @@ public class RecipeManagerInternal {
 		this.pluginManager = new PluginManager(internalRecipeManagerPlugin, plugins);
 	}
 
-	@Deprecated
-	public <T> void addRecipes(ResourceLocation recipeCategoryUid, Collection<T> recipes) {
-		LOGGER.debug("Adding recipes: " + recipeCategoryUid);
-		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipes, recipeCategoryUid);
-		addRecipes(recipeTypeData, recipes);
-	}
-
 	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
 		LOGGER.debug("Adding recipes: " + recipeType.getUid());
 		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipes, recipeType);
@@ -163,16 +156,6 @@ public class RecipeManagerInternal {
 		// hide the category if it has no recipes, or if the recipes have all been hidden
 		Stream<?> visibleRecipes = getRecipesStream(recipeType, focuses, false);
 		return visibleRecipes.findAny().isEmpty();
-	}
-
-	@Deprecated
-	public Stream<IRecipeCategory<?>> getRecipeCategoriesStream(Collection<ResourceLocation> recipeCategoryUids, IFocusGroup focuses, boolean includeHidden) {
-		List<IRecipeCategory<?>> recipeCategories = recipeCategoryUids.stream()
-			.map(this.recipeTypeDataMap::get)
-			.<IRecipeCategory<?>>map(RecipeTypeData::getRecipeCategory)
-			.toList();
-
-		return getRecipeCategoriesCached(recipeCategories, focuses, includeHidden);
 	}
 
 	public Stream<IRecipeCategory<?>> getRecipeCategoriesForTypes(Collection<RecipeType<?>> recipeTypes, IFocusGroup focuses, boolean includeHidden) {

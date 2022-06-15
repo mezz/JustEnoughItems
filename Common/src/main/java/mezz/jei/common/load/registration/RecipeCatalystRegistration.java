@@ -42,21 +42,6 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 		}
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public <T> void addRecipeCatalyst(IIngredientType<T> ingredientType, T catalystIngredient, ResourceLocation... recipeCategoryUids) {
-		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
-		ErrorUtil.checkNotNull(catalystIngredient, "catalystIngredient");
-		ErrorUtil.checkNotEmpty(recipeCategoryUids, "recipeCategoryUids");
-
-		for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
-			ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-			ITypedIngredient<T> typedIngredient = TypedIngredient.createTyped(this.registeredIngredients, ingredientType, catalystIngredient)
-				.orElseThrow(() -> new IllegalArgumentException("Recipe catalyst must not be empty"));
-			this.recipeCatalysts.put(recipeCategoryUid, typedIngredient);
-		}
-	}
-
 	public ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> getRecipeCatalysts() {
 		return recipeCatalysts.toImmutable();
 	}

@@ -18,7 +18,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 
@@ -38,18 +37,6 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 			.addPadding(0, 20, 0, 0)
 			.build();
 		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.ANVIL));
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public ResourceLocation getUid() {
-		return getRecipeType().getUid();
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public Class<? extends IJeiAnvilRecipe> getRecipeClass() {
-		return getRecipeType().getRecipeClass();
 	}
 
 	@Override

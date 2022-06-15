@@ -29,21 +29,6 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 		return value;
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public V getValue() {
-		return value.getIngredient();
-	}
-
-	@SuppressWarnings({"removal"})
-	@Override
-	public IFocus.Mode getMode() {
-		return switch (role) {
-			case INPUT, CATALYST -> IFocus.Mode.INPUT;
-			case OUTPUT, RENDER_ONLY -> IFocus.Mode.OUTPUT;
-		};
-	}
-
 	@Override
 	public RecipeIngredientRole getRole() {
 		return role;
@@ -67,12 +52,20 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 			return (Focus<V>) focus;
 		}
 		ErrorUtil.checkNotNull(focus, "focus");
-		@SuppressWarnings("removal")  // call the old function in case they don't implement the new getTypedValue yet
-		V value = focus.getValue();
-		ErrorUtil.checkNotNull(value, "focus value");
 
-		IIngredientType<V> ingredientType = registeredIngredients.getIngredientType(value);
-		return createFromApi(registeredIngredients, focus.getRole(), ingredientType, value);
+		ITypedIngredient<V> value = focus.getTypedValue();
+		ErrorUtil.checkNotNull(value, "focus typed value");
+
+		IIngredientType<V> type = value.getType();
+		ErrorUtil.checkNotNull(type, "focus type");
+
+		V ingredient = value.getIngredient();
+		ErrorUtil.checkNotNull(type, "focus ingredient");
+
+		RecipeIngredientRole role = focus.getRole();
+		ErrorUtil.checkNotNull(role, "focus typed value role");
+
+		return createFromApi(registeredIngredients, role, type, ingredient);
 	}
 
 	public static <V> Focus<V> createFromApi(RegisteredIngredients registeredIngredients, RecipeIngredientRole role, IIngredientType<V> ingredientType, V value) {

@@ -62,7 +62,7 @@ public interface IGuiHelper {
 	 * Create a crafting grid helper.
 	 * Helps set crafting-grid-style GuiItemStackGroup.
 	 */
-	ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1);
+	ICraftingGridHelper createCraftingGridHelper();
 
 	/**
 	 * Create a timer to help with rendering things that normally depend on ticks.
@@ -72,11 +72,4 @@ public interface IGuiHelper {
 	 * @param countDown     if true, the tick timer will count backwards from maxValue
 	 */
 	ITickTimer createTickTimer(int ticksPerCycle, int maxValue, boolean countDown);
-
-	/**
-	 * Returns a 16x16 drawable for the given ingredient, matching the one JEI draws in the ingredient list.
-	 * @deprecated Use {@link #createDrawableIngredient(IIngredientType, Object)}
-	 */
-	@Deprecated(forRemoval = true, since = "9.1.1")
-	<V> IDrawable createDrawableIngredient(V ingredient);
 }

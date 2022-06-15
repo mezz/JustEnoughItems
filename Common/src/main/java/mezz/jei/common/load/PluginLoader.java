@@ -56,6 +56,7 @@ import mezz.jei.common.util.RecipeErrorUtil;
 import mezz.jei.common.util.StackHelper;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
@@ -82,8 +83,6 @@ public class PluginLoader {
 		PluginCaller.callOnPlugins("Registering item subtypes", plugins, p -> p.registerItemSubtypes(subtypeRegistration));
 		PluginCaller.callOnPlugins("Registering fluid subtypes", plugins, p -> {
 			p.registerFluidSubtypes(subtypeRegistration, fluidHelper);
-			//noinspection removal
-			p.registerFluidSubtypes(subtypeRegistration);
 		});
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeRegistration);
 
@@ -149,9 +148,9 @@ public class PluginLoader {
 		return guiHandlerRegistration.createGuiScreenHelper(registeredIngredients);
 	}
 
-	public ImmutableTable<Class<?>, RecipeType<?>, IRecipeTransferHandler<?, ?>> createRecipeTransferHandlers(List<IModPlugin> plugins, RecipeManager recipeManager) {
+	public ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> createRecipeTransferHandlers(List<IModPlugin> plugins) {
 		IRecipeTransferHandlerHelper handlerHelper = new RecipeTransferHandlerHelper();
-		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(jeiHelpers.getStackHelper(), handlerHelper, jeiHelpers, recipeManager, data.serverConnection());
+		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(jeiHelpers.getStackHelper(), handlerHelper, jeiHelpers, data.serverConnection());
 		PluginCaller.callOnPlugins("Registering recipes transfer handlers", plugins, p -> p.registerRecipeTransferHandlers(recipeTransferRegistration));
 		return recipeTransferRegistration.getRecipeTransferHandlers();
 	}

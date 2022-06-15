@@ -74,15 +74,6 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 		return this;
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public IRecipeSlotBuilder setFluidRenderer(int capacity, boolean showCapacity, int width, int height) {
-		Preconditions.checkArgument(capacity > 0, "capacity must be > 0");
-
-		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
-		return setFluidRenderer(fluidHelper, capacity, showCapacity, width, height);
-	}
-
 	@Override
 	public IRecipeSlotBuilder setFluidRenderer(long capacity, boolean showCapacity, int width, int height) {
 		Preconditions.checkArgument(capacity > 0, "capacity must be > 0");

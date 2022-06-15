@@ -1,25 +1,37 @@
 package mezz.jei.common.transfer;
 
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import mezz.jei.api.recipe.RecipeType;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.resources.ResourceLocation;
-
-import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import java.util.Optional;
 
 public class BasicRecipeTransferInfo<C extends AbstractContainerMenu, R> implements IRecipeTransferInfo<C, R> {
-	private final Class<C> containerClass;
+	private final Class<? extends C> containerClass;
+	@Nullable
+	private final MenuType<C> menuType;
 	private final RecipeType<R> recipeType;
 	private final int recipeSlotStart;
 	private final int recipeSlotCount;
 	private final int inventorySlotStart;
 	private final int inventorySlotCount;
 
-	public BasicRecipeTransferInfo(Class<C> containerClass, RecipeType<R> recipeType, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
+	public BasicRecipeTransferInfo(
+		Class<? extends C> containerClass,
+		@Nullable MenuType<C> menuType,
+		RecipeType<R> recipeType,
+		int recipeSlotStart,
+		int recipeSlotCount,
+		int inventorySlotStart,
+		int inventorySlotCount
+	) {
 		this.containerClass = containerClass;
+		this.menuType = menuType;
 		this.recipeType = recipeType;
 		this.recipeSlotStart = recipeSlotStart;
 		this.recipeSlotCount = recipeSlotCount;
@@ -28,22 +40,13 @@ public class BasicRecipeTransferInfo<C extends AbstractContainerMenu, R> impleme
 	}
 
 	@Override
-	public Class<C> getContainerClass() {
+	public Class<? extends C> getContainerClass() {
 		return containerClass;
 	}
 
-	@SuppressWarnings({"removal"})
 	@Override
-	public Class<R> getRecipeClass() {
-		@SuppressWarnings("unchecked")
-		Class<R> cast = (Class<R>) recipeType.getRecipeClass();
-		return cast;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public ResourceLocation getRecipeCategoryUid() {
-		return recipeType.getUid();
+	public Optional<MenuType<C>> getMenuType() {
+		return Optional.ofNullable(menuType);
 	}
 
 	@Override

@@ -32,18 +32,6 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRe
 		localizedName = Component.translatable("gui.jei.category.stoneCutter");
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public ResourceLocation getUid() {
-		return getRecipeType().getUid();
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public Class<? extends StonecutterRecipe> getRecipeClass() {
-		return getRecipeType().getRecipeClass();
-	}
-
 	@Override
 	public RecipeType<StonecutterRecipe> getRecipeType() {
 		return RecipeTypes.STONECUTTING;

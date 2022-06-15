@@ -1,11 +1,9 @@
 package mezz.jei.api.registration;
 
-import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -36,14 +34,6 @@ public interface IRecipeRegistration {
 	 * @since 9.3.1
 	 */
 	IIngredientVisibility getIngredientVisibility();
-
-	/**
-	 * Add the recipes provided by your plugin.
-	 *
-	 * @deprecated use {@link #addRecipes(RecipeType, List)}
-	 */
-	@Deprecated(forRemoval = true, since = "9.5.0")
-	void addRecipes(Collection<?> recipes, ResourceLocation recipeCategoryUid);
 
 	/**
 	 * Add the recipes provided by your plugin.

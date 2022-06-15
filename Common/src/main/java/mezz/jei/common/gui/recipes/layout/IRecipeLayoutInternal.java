@@ -2,7 +2,6 @@ package mezz.jei.common.gui.recipes.layout;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.deprecated.gui.recipes.layout.RecipeLayoutLegacyAdapter;
 import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
 
@@ -32,7 +31,4 @@ public interface IRecipeLayoutInternal<R> {
     IRecipeCategory<R> getRecipeCategory();
 
     int getPosX();
-
-    @SuppressWarnings("deprecation")
-    RecipeLayoutLegacyAdapter<R> getLegacyAdapter();
 }

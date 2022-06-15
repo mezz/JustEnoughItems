@@ -4,9 +4,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeIngredientRole;
 
 /**
  * Gives access to JEI functions that are available once everything has loaded.
@@ -68,13 +66,4 @@ public interface IJeiRuntime {
 	 * @since 9.3.0
 	 */
 	<T> ITypedIngredient<T> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient);
-
-	/**
-	 * Returns a new focus.
-	 *
-	 * @since 9.3.0
-	 * @deprecated Use {@link IJeiHelpers#getFocusFactory()} instead, it's available to use much earlier.
-	 */
-	@Deprecated(forRemoval = true, since = "9.4.0")
-	<T> IFocus<T> createFocus(RecipeIngredientRole role, IIngredientType<T> ingredientType, T ingredient);
 }

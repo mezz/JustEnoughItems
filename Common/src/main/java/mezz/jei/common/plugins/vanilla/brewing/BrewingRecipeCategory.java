@@ -53,18 +53,6 @@ public class BrewingRecipeCategory implements IRecipeCategory<IJeiBrewingRecipe>
 		slotDrawable = guiHelper.getSlotDrawable();
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public ResourceLocation getUid() {
-		return getRecipeType().getUid();
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public Class<? extends IJeiBrewingRecipe> getRecipeClass() {
-		return getRecipeType().getRecipeClass();
-	}
-
 	@Override
 	public RecipeType<IJeiBrewingRecipe> getRecipeType() {
 		return RecipeTypes.BREWING;

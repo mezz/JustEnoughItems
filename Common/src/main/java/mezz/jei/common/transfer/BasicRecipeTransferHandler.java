@@ -4,6 +4,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
@@ -14,6 +15,7 @@ import mezz.jei.common.util.StringUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,7 +39,12 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IRecipeTransferInfo<C, R> transferInfo;
 
-	public BasicRecipeTransferHandler(IConnectionToServer serverConnection, IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper, IRecipeTransferInfo<C, R> transferInfo) {
+	public BasicRecipeTransferHandler(
+		IConnectionToServer serverConnection,
+		IStackHelper stackHelper,
+		IRecipeTransferHandlerHelper handlerHelper,
+		IRecipeTransferInfo<C, R> transferInfo
+	) {
 		this.serverConnection = serverConnection;
 		this.stackHelper = stackHelper;
 		this.handlerHelper = handlerHelper;
@@ -44,16 +52,18 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 	}
 
 	@Override
-	public Class<C> getContainerClass() {
+	public Class<? extends C> getContainerClass() {
 		return transferInfo.getContainerClass();
 	}
 
 	@Override
-	public Class<R> getRecipeClass() {
-		// TODO: breaking change: make this return Class<? extends R>
-		@SuppressWarnings("unchecked")
-		Class<R> cast = (Class<R>) transferInfo.getRecipeType().getRecipeClass();
-		return cast;
+	public Optional<MenuType<C>> getMenuType() {
+		return transferInfo.getMenuType();
+	}
+
+	@Override
+	public RecipeType<R> getRecipeType() {
+		return transferInfo.getRecipeType();
 	}
 
 	@Nullable

@@ -6,7 +6,6 @@ import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 
 /**
  * Tell JEI how to interpret NBT tags and capabilities when comparing and looking up ingredients.
@@ -39,27 +38,4 @@ public interface ISubtypeRegistration {
 	 * Tells JEI to treat all NBT as relevant to these fluids' subtypes.
 	 */
 	void useNbtForSubtypes(Fluid... fluids);
-
-	/**
-	 * Add an interpreter to compare item subtypes.
-	 * This interpreter should account for nbt and anything else that's relevant to differentiating the item's subtypes.
-	 *
-	 * @param item        the item that has subtypes.
-	 * @param interpreter the interpreter for the item.
-	 * @since 7.6.2
-	 *
-	 * @deprecated use {@link #registerSubtypeInterpreter(IIngredientTypeWithSubtypes, Object, IIngredientSubtypeInterpreter)}
-	 */
-	@Deprecated(forRemoval = true, since = "9.7.0")
-	default void registerSubtypeInterpreter(Item item, IIngredientSubtypeInterpreter<ItemStack> interpreter) {
-		registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, interpreter);
-	}
-
-	/**
-	 * Returns whether an {@link IIngredientSubtypeInterpreter} has been registered for this item.
-	 *
-	 * @deprecated no longer used
-	 */
-	@Deprecated(forRemoval = true, since = "9.7.0")
-	boolean hasSubtypeInterpreter(ItemStack itemStack);
 }

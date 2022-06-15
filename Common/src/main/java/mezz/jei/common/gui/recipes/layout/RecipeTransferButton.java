@@ -50,7 +50,6 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 		}
 	}
 
-	@SuppressWarnings("removal")
 	public void drawToolTip(PoseStack poseStack, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (recipeTransferError == null) {
@@ -60,7 +59,6 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 				RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
 				IRecipeSlotsView recipeSlotsView = recipeSlots.getView();
 				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeSlotsView, recipeLayout.getPosX(), recipeLayout.getPosY());
-				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeLayout.getLegacyAdapter(), recipeLayout.getPosX(), recipeLayout.getPosY());
 			}
 		}
 	}

@@ -79,6 +79,7 @@ import net.minecraft.world.inventory.BlastFurnaceMenu;
 import net.minecraft.world.inventory.BrewingStandMenu;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.FurnaceMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.inventory.SmokerMenu;
 import net.minecraft.world.item.EnchantedBookItem;
@@ -265,16 +266,16 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-		registration.addRecipeTransferHandler(CraftingMenu.class, RecipeTypes.CRAFTING, 1, 9, 10, 36);
-		registration.addRecipeTransferHandler(FurnaceMenu.class, RecipeTypes.SMELTING, 0, 1, 3, 36);
-		registration.addRecipeTransferHandler(FurnaceMenu.class, RecipeTypes.FUELING, 1, 1, 3, 36);
-		registration.addRecipeTransferHandler(SmokerMenu.class, RecipeTypes.SMOKING, 0, 1, 3, 36);
-		registration.addRecipeTransferHandler(SmokerMenu.class, RecipeTypes.FUELING, 1, 1, 3, 36);
-		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, RecipeTypes.BLASTING, 0, 1, 3, 36);
-		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, RecipeTypes.FUELING, 1, 1, 3, 36);
-		registration.addRecipeTransferHandler(BrewingStandMenu.class, RecipeTypes.BREWING, 0, 4, 5, 36);
-		registration.addRecipeTransferHandler(AnvilMenu.class, RecipeTypes.ANVIL, 0, 2, 3, 36);
-		registration.addRecipeTransferHandler(SmithingMenu.class, RecipeTypes.SMITHING, 0, 2, 3, 36);
+		registration.addRecipeTransferHandler(CraftingMenu.class, MenuType.CRAFTING, RecipeTypes.CRAFTING, 1, 9, 10, 36);
+		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, 0, 1, 3, 36);
+		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.FUELING, 1, 1, 3, 36);
+		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.SMOKING, 0, 1, 3, 36);
+		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.FUELING, 1, 1, 3, 36);
+		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, MenuType.BLAST_FURNACE, RecipeTypes.BLASTING, 0, 1, 3, 36);
+		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, MenuType.BLAST_FURNACE, RecipeTypes.FUELING, 1, 1, 3, 36);
+		registration.addRecipeTransferHandler(BrewingStandMenu.class, MenuType.BREWING_STAND, RecipeTypes.BREWING, 0, 4, 5, 36);
+		registration.addRecipeTransferHandler(AnvilMenu.class, MenuType.ANVIL, RecipeTypes.ANVIL, 0, 2, 3, 36);
+		registration.addRecipeTransferHandler(SmithingMenu.class, MenuType.SMITHING, RecipeTypes.SMITHING, 0, 2, 3, 36);
 
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IRecipeTransferHandlerHelper transferHelper = registration.getTransferHelper();

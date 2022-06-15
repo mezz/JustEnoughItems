@@ -55,13 +55,6 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		return StackHelper.getRegistryNameForStack(ingredient);
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public String getModId(ItemStack ingredient) {
-		ResourceLocation resourceLocation = getResourceLocation(ingredient);
-		return resourceLocation.getNamespace();
-	}
-
 	@Override
 	public String getDisplayModId(ItemStack ingredient) {
 		ErrorUtil.checkNotEmpty(ingredient);
@@ -83,13 +76,6 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public Iterable<Integer> getColors(ItemStack ingredient) {
 		return ColorGetter.getColors(ingredient, 2);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public String getResourceId(ItemStack ingredient) {
-		ResourceLocation resourceLocation = getResourceLocation(ingredient);
-		return resourceLocation.getPath();
 	}
 
 	@Override

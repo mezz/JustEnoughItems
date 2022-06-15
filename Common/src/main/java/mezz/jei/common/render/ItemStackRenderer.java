@@ -48,17 +48,6 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		}
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable ItemStack ingredient) {
-		stack.pushPose();
-		{
-			stack.translate(xPosition, yPosition, 0);
-			render(stack, ingredient);
-		}
-		stack.popPose();
-	}
-
 	@Override
 	public List<Component> getTooltip(ItemStack ingredient, TooltipFlag tooltipFlag) {
 		Minecraft minecraft = Minecraft.getInstance();

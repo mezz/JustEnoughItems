@@ -14,15 +14,6 @@ public class FocusFactory implements IFocusFactory {
 		this.registeredIngredients = registeredIngredients;
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public <V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient) {
-		ErrorUtil.checkNotNull(mode, "mode");
-		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		IIngredientType<V> ingredientType = registeredIngredients.getIngredientType(ingredient);
-		return Focus.createFromApi(registeredIngredients, mode.toRole(), ingredientType, ingredient);
-	}
-
 	@Override
 	public <V> IFocus<V> createFocus(RecipeIngredientRole role, IIngredientType<V> ingredientType, V ingredient) {
 		ErrorUtil.checkNotNull(role, "role");

@@ -54,11 +54,8 @@ public class PluginManager {
 	private Stream<ResourceLocation> getPluginRecipeCategoryUidStream(IRecipeManagerPlugin plugin, IFocusGroup focuses) {
 		List<IFocus<?>> allFocuses = focuses.getAllFocuses();
 		return allFocuses.stream()
-			.flatMap(focus -> Stream.concat(
-				getRecipeTypes(plugin, focus).map(RecipeType::getUid),
-				// legacy fallback
-				getRecipeCategoryUids(plugin, focus)
-			));
+			.flatMap(focus -> getRecipeTypes(plugin, focus))
+			.map(RecipeType::getUid);
 	}
 
 	private <T> Stream<T> getPluginRecipeStream(IRecipeManagerPlugin plugin, IRecipeCategory<T> recipeCategory, IFocusGroup focuses) {
@@ -74,15 +71,6 @@ public class PluginManager {
 		return safeCallPlugin(
 			plugin,
 			() -> plugin.getRecipeTypes(focus).stream(),
-			Stream.of()
-		);
-	}
-
-	@SuppressWarnings("removal")
-	private Stream<ResourceLocation> getRecipeCategoryUids(IRecipeManagerPlugin plugin, IFocus<?> focus) {
-		return safeCallPlugin(
-			plugin,
-			() -> plugin.getRecipeCategoryUids(focus).stream(),
 			Stream.of()
 		);
 	}

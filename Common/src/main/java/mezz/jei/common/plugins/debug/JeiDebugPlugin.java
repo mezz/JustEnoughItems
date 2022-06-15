@@ -42,6 +42,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("deprecation")
 @JeiPlugin
 public class JeiDebugPlugin implements IModPlugin {
 	@Nullable
@@ -71,8 +72,7 @@ public class JeiDebugPlugin implements IModPlugin {
 			IPlatformFluidHelper<?> platformFluidHelper = jeiHelpers.getPlatformFluidHelper();
 			registration.addRecipeCategories(
 				new DebugRecipeCategory<>(guiHelper, platformFluidHelper),
-				new DebugFocusRecipeCategory<>(guiHelper, platformFluidHelper),
-				new LegacyDebugRecipeCategory<>(guiHelper, platformFluidHelper)
+				new DebugFocusRecipeCategory<>(guiHelper, platformFluidHelper)
 			);
 		}
 	}
@@ -136,12 +136,6 @@ public class JeiDebugPlugin implements IModPlugin {
 			registration.addRecipes(DebugFocusRecipeCategory.TYPE, List.of(
 				new DebugRecipe()
 			));
-
-			//noinspection removal
-			registration.addRecipes(List.of(
-				new DebugRecipe(),
-				new DebugRecipe()
-			), LegacyDebugRecipeCategory.UID);
 		}
 	}
 

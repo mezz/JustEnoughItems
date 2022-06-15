@@ -37,17 +37,6 @@ public interface IModPlugin {
 	 * If your fluid has subtypes that depend on NBT or capabilities,
 	 * use this to help JEI identify those subtypes correctly.
 	 *
-	 * @deprecated use {@link #registerFluidSubtypes(ISubtypeRegistration, IPlatformFluidHelper)} instead.
-	 */
-	@Deprecated(forRemoval = true, since = "10.1.0")
-	default void registerFluidSubtypes(ISubtypeRegistration registration) {
-
-	}
-
-	/**
-	 * If your fluid has subtypes that depend on NBT or capabilities,
-	 * use this to help JEI identify those subtypes correctly.
-	 *
 	 * @since 10.1.0
 	 */
 	default <T> void registerFluidSubtypes(ISubtypeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {

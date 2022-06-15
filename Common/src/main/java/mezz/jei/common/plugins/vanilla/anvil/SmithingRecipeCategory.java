@@ -15,7 +15,6 @@ import mezz.jei.common.platform.Services;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
-import net.minecraft.resources.ResourceLocation;
 
 import net.minecraft.network.chat.Component;
 
@@ -26,18 +25,6 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
 	public SmithingRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18);
 		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.SMITHING_TABLE));
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public ResourceLocation getUid() {
-		return getRecipeType().getUid();
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public Class<? extends UpgradeRecipe> getRecipeClass() {
-		return getRecipeType().getRecipeClass();
 	}
 
 	@Override

@@ -14,7 +14,6 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
@@ -33,18 +32,6 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
 		this.platformFluidHelper = platformFluidHelper;
 		this.localizedName = Component.literal("debug_focus");
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public ResourceLocation getUid() {
-		return TYPE.getUid();
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public Class<? extends DebugRecipe> getRecipeClass() {
-		return TYPE.getRecipeClass();
 	}
 
 	@Override

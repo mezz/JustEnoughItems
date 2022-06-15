@@ -13,7 +13,6 @@ import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.recipes.collect.RecipeMap;
 import mezz.jei.common.recipes.collect.RecipeTypeData;
 import mezz.jei.common.recipes.collect.RecipeTypeDataMap;
-import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
@@ -34,21 +33,6 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 		this.registeredIngredients = registeredIngredients;
 		this.recipeCategoriesMap = recipeCategoriesMap;
 		this.recipeMaps = recipeMaps;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated
-	public <V> List<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus) {
-		focus = Focus.checkOne(focus, registeredIngredients);
-		ITypedIngredient<V> ingredient = focus.getTypedValue();
-		RecipeIngredientRole role = focus.getRole();
-		RecipeMap recipeMap = this.recipeMaps.get(role);
-		IIngredientHelper<V> ingredientHelper = this.registeredIngredients.getIngredientHelper(ingredient.getType());
-		String ingredientUid = ingredientHelper.getUniqueId(ingredient.getIngredient(), UidContext.Recipe);
-		return recipeMap.getRecipeTypes(ingredientUid)
-			.map(RecipeType::getUid)
-			.toList();
 	}
 
 	@Override

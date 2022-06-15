@@ -14,9 +14,7 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.ingredients.IngredientInfoRecipe;
 import mezz.jei.common.recipes.RecipeManagerInternal;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
-import java.util.Collection;
 import java.util.List;
 
 public class RecipeRegistration implements IRecipeRegistration {
@@ -61,16 +59,6 @@ public class RecipeRegistration implements IRecipeRegistration {
 	@Override
 	public IIngredientVisibility getIngredientVisibility() {
 		return ingredientVisibility;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated
-	public void addRecipes(Collection<?> recipes, ResourceLocation recipeCategoryUid) {
-		ErrorUtil.checkNotNull(recipes, "recipes");
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-
-		this.recipeManager.addRecipes(recipeCategoryUid, recipes);
 	}
 
 	@Override

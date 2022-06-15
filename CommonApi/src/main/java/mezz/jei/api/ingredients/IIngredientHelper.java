@@ -1,8 +1,6 @@
 package mezz.jei.api.ingredients;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -11,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
 /**
  * An ingredient helper allows JEI to get information about ingredients for searching and other purposes.
@@ -25,35 +22,6 @@ public interface IIngredientHelper<V> {
 	 * @return The ingredient type for this {@link IIngredientHelper}.
 	 */
 	IIngredientType<V> getIngredientType();
-
-	/**
-	 * Change one focus into a different focus.
-	 * This can be used to treat lookups of one focus as if it were something else.
-	 *
-	 * @deprecated There isn't a good use for this anymore.
-	 */
-	@Deprecated(forRemoval = true, since = "9.2.0")
-	default IFocus<?> translateFocus(IFocus<V> focus, IFocusFactory focusFactory) {
-		return focus;
-	}
-
-	/**
-	 * Find a matching ingredient from a group of them.
-	 * Used for finding a specific focused ingredient in a recipe.
-	 * Return null if there is no match.
-	 * @since 7.3.0
-	 *
-	 * @deprecated use {@link #getUniqueId(Object, UidContext)} and compare those instead.
-	 */
-	@Nullable
-	@Deprecated(forRemoval = true, since = "9.4.1")
-	default V getMatch(Iterable<V> ingredients, V ingredientToMatch, UidContext context) {
-		String uid = getUniqueId(ingredientToMatch, context);
-		return StreamSupport.stream(ingredients.spliterator(), false)
-			.filter(i -> getUniqueId(i, context).equals(uid))
-			.findFirst()
-			.orElse(null);
-	}
 
 	/**
 	 * Display name used for searching. Normally this is the first line of the tooltip.
@@ -76,13 +44,6 @@ public interface IIngredientHelper<V> {
 	}
 
 	/**
-	 * Return the modId of the mod that created this ingredient.
-	 * @deprecated Use {@link #getResourceLocation(Object)} instead.
-	 */
-	@Deprecated(forRemoval = true, since = "9.2.2")
-	String getModId(V ingredient);
-
-	/**
 	 * Return the modId of the mod that should be displayed.
 	 * This mod id can be different from the one in the resource location.
 	 */
@@ -100,19 +61,10 @@ public interface IIngredientHelper<V> {
 	}
 
 	/**
-	 * Return the resource id of the given ingredient.
-	 * @deprecated Use {@link #getResourceLocation(Object)} instead.
-	 */
-	@Deprecated(forRemoval = true, since = "9.2.2")
-	String getResourceId(V ingredient);
-
-	/**
 	 * Return the registry name of the given ingredient.
 	 * @since 9.2.2
 	 */
-	default ResourceLocation getResourceLocation(V ingredient) {
-		return new ResourceLocation(getModId(ingredient), getResourceId(ingredient));
-	}
+	ResourceLocation getResourceLocation(V ingredient);
 
 	/**
 	 * Called when a player is in cheat mode and clicks an ingredient in the list.

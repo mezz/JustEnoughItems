@@ -58,15 +58,6 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 		this.interpreters.addInterpreter(type, base, interpreter);
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public boolean hasSubtypeInterpreter(ItemStack itemStack) {
-		ErrorUtil.checkNotEmpty(itemStack);
-
-		Item item = itemStack.getItem();
-		return interpreters.contains(VanillaTypes.ITEM_STACK, item);
-	}
-
 	public SubtypeInterpreters getInterpreters() {
 		return interpreters;
 	}

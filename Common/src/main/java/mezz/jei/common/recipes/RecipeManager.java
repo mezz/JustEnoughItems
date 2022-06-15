@@ -3,30 +3,24 @@ package mezz.jei.common.recipes;
 import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeCatalystLookup;
 import mezz.jei.api.recipe.IRecipeCategoriesLookup;
 import mezz.jei.api.recipe.IRecipeLookup;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.focus.Focus;
 import mezz.jei.common.focus.FocusGroup;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.gui.recipes.layout.RecipeLayout;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
@@ -42,18 +36,6 @@ public class RecipeManager implements IRecipeManager {
 		this.textures = textures;
 		this.ingredientVisibility = ingredientVisibility;
 	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated(forRemoval = true, since = "9.3.0")
-	public <V> IFocus<V> createFocus(IFocus.Mode mode, V ingredient) {
-		ErrorUtil.checkNotNull(mode, "mode");
-		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		RecipeIngredientRole role = mode.toRole();
-		IIngredientType<V> ingredientType = registeredIngredients.getIngredientType(ingredient);
-		return Focus.createFromApi(registeredIngredients, role, ingredientType, ingredient);
-	}
-
 	@Override
 	public <R> IRecipeLookup<R> createRecipeLookup(RecipeType<R> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
@@ -70,17 +52,6 @@ public class RecipeManager implements IRecipeManager {
 		return new RecipeCatalystLookup(recipeType, internal);
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated(forRemoval = true, since = "9.5.0")
-	public <T> void addRecipe(T recipe, ResourceLocation recipeCategoryUid) {
-		ErrorUtil.checkNotNull(recipe, "recipe");
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		ErrorUtil.assertMainThread();
-
-		internal.addRecipes(recipeCategoryUid, List.of(recipe));
-	}
-
 	@Override
 	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
@@ -88,98 +59,6 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.assertMainThread();
 
 		internal.addRecipes(recipeType, recipes);
-	}
-
-	@SuppressWarnings("removal")
-	@Deprecated(forRemoval = true, since = "9.5.0")
-	@Override
-	@Nullable
-	public IRecipeCategory<?> getRecipeCategory(ResourceLocation recipeCategoryUid, boolean includeHidden) {
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		return internal.getRecipeCategoriesStream(List.of(recipeCategoryUid), FocusGroup.EMPTY, includeHidden)
-			.findFirst()
-			.orElse(null);
-	}
-
-	@Deprecated
-	public List<RecipeType<?>> getRecipeTypes(Collection<ResourceLocation> recipeCategoryUids) {
-		return recipeCategoryUids.stream()
-			.<RecipeType<?>>map(internal::getTypeForRecipeCategoryUid)
-			.toList();
-	}
-
-	@Deprecated
-	public RecipeType<?> getRecipeType(ResourceLocation recipeCategoryUid) {
-		return internal.getTypeForRecipeCategoryUid(recipeCategoryUid);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated(forRemoval = true, since = "9.5.0")
-	public <V> List<IRecipeCategory<?>> getRecipeCategories(Collection<ResourceLocation> recipeCategoryUids, @Nullable IFocus<V> focus, boolean includeHidden) {
-		ErrorUtil.checkNotNull(recipeCategoryUids, "recipeCategoryUids");
-		IFocusGroup internalFocus = FocusGroup.createFromNullable(focus, registeredIngredients);
-		return internal.getRecipeCategoriesStream(recipeCategoryUids, internalFocus, includeHidden)
-			.collect(Collectors.toList());
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated(forRemoval = true, since = "9.5.0")
-	public <V> List<IRecipeCategory<?>> getRecipeCategories(@Nullable IFocus<V> focus, boolean includeHidden) {
-		IFocusGroup internalFocus = FocusGroup.createFromNullable(focus, registeredIngredients);
-		return internal.getRecipeCategoriesStream(List.of(), internalFocus, includeHidden)
-			.collect(Collectors.toList());
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated(forRemoval = true, since = "9.5.0")
-	public List<IRecipeCategory<?>> getRecipeCategories(Collection<? extends IFocus<?>> focus, boolean includeHidden) {
-		IFocusGroup internalFocus = FocusGroup.create(focus, registeredIngredients);
-		return internal.getRecipeCategoriesStream(List.of(), internalFocus, includeHidden)
-			.collect(Collectors.toList());
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated(forRemoval = true, since = "9.3.0")
-	public <T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, @Nullable IFocus<V> focus, boolean includeHidden) {
-		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		IFocusGroup internalFocus = FocusGroup.createFromNullable(focus, registeredIngredients);
-		return internal.getRecipesStream(recipeCategory.getRecipeType(), internalFocus, includeHidden)
-			.collect(Collectors.toList());
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated(forRemoval = true, since = "9.5.0")
-	public <T> List<T> getRecipes(IRecipeCategory<T> recipeCategory, List<? extends IFocus<?>> focuses, boolean includeHidden) {
-		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		IFocusGroup internalFocus = FocusGroup.create(focuses, registeredIngredients);
-		return internal.getRecipesStream(recipeCategory.getRecipeType(), internalFocus, includeHidden)
-			.collect(Collectors.toList());
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated(forRemoval = true, since = "9.3.0")
-	public List<Object> getRecipeCatalysts(IRecipeCategory<?> recipeCategory, boolean includeHidden) {
-		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		RecipeType<?> recipeType = recipeCategory.getRecipeType();
-		return internal.getRecipeCatalystStream(recipeType, includeHidden)
-			.map(ITypedIngredient::getIngredient)
-			.collect(Collectors.toList());
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated(forRemoval = true, since = "9.5.0")
-	public List<ITypedIngredient<?>> getRecipeCatalystsTyped(IRecipeCategory<?> recipeCategory, boolean includeHidden) {
-		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		RecipeType<?> recipeType = recipeCategory.getRecipeType();
-		return internal.getRecipeCatalystStream(recipeType, includeHidden)
-			.toList();
 	}
 
 	@Override
@@ -200,17 +79,7 @@ public class RecipeManager implements IRecipeManager {
 			textures
 		);
 		Preconditions.checkNotNull(recipeLayout, "Recipe layout crashed during creation, see log.");
-		return recipeLayout.getLegacyAdapter();
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated(forRemoval = true, since = "9.5.0")
-	public <T> void hideRecipe(T recipe, ResourceLocation recipeCategoryUid) {
-		ErrorUtil.checkNotNull(recipe, "recipe");
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		ErrorUtil.assertMainThread();
-		internal.hideRecipe(recipeCategoryUid, recipe);
+		return recipeLayout;
 	}
 
 	@Override
@@ -219,16 +88,6 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.assertMainThread();
 		internal.hideRecipes(recipeType, recipes);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated(forRemoval = true, since = "9.5.0")
-	public <T> void unhideRecipe(T recipe, ResourceLocation recipeCategoryUid) {
-		ErrorUtil.checkNotNull(recipe, "recipe");
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		ErrorUtil.assertMainThread();
-		internal.unhideRecipe(recipe, recipeCategoryUid);
 	}
 
 	@Override
@@ -251,23 +110,5 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.assertMainThread();
 		internal.unhideRecipeCategory(recipeType);
-	}
-
-	@SuppressWarnings("removal")
-	@Deprecated
-	@Override
-	public void hideRecipeCategory(ResourceLocation recipeCategoryUid) {
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		ErrorUtil.assertMainThread();
-		internal.hideRecipeCategory(recipeCategoryUid);
-	}
-
-	@SuppressWarnings("removal")
-	@Deprecated
-	@Override
-	public void unhideRecipeCategory(ResourceLocation recipeCategoryUid) {
-		ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-		ErrorUtil.assertMainThread();
-		internal.unhideRecipeCategory(recipeCategoryUid);
 	}
 }

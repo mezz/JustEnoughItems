@@ -47,7 +47,6 @@ public final class RecipeTransferUtil {
 		return allowsTransfer(error);
 	}
 
-	@SuppressWarnings("removal")
 	@Nullable
 	private static <C extends AbstractContainerMenu, R> IRecipeTransferError transferRecipe(
 		RecipeTransferManager recipeTransferManager,
@@ -72,13 +71,7 @@ public final class RecipeTransferUtil {
 
 		RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
 		IRecipeSlotsView recipeSlotsView = recipeSlots.getView();
-		try {
-			return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlotsView, player, maxTransfer, doTransfer);
-		} catch (UnsupportedOperationException ignored) {
-			// old handlers do not support calling the new transferRecipe method.
-			// call the legacy method instead
-			return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeLayout.getLegacyAdapter(), player, maxTransfer, doTransfer);
-		}
+		return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlotsView, player, maxTransfer, doTransfer);
 	}
 
 	public static boolean allowsTransfer(@Nullable IRecipeTransferError error) {

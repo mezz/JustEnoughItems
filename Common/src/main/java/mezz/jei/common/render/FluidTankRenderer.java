@@ -20,7 +20,6 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -71,19 +70,6 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 
 		RenderSystem.disableBlend();
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable T ingredient) {
-		if (ingredient != null) {
-			stack.pushPose();
-			{
-				stack.translate(xPosition, yPosition, 0);
-				render(stack, ingredient);
-			}
-			stack.popPose();
-		}
 	}
 
 	private void drawFluid(PoseStack poseStack, final int width, final int height, T fluidStack) {

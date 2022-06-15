@@ -76,37 +76,11 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 		return "fluid:" + registryName;
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public String getModId(T ingredient) {
-		Fluid fluid = fluidType.getBase(ingredient);
-		ResourceLocation registryName = registry.getRegistryName(fluid);
-		if (registryName == null) {
-			String ingredientInfo = getErrorInfo(ingredient);
-			throw new IllegalStateException("null registry name for: " + ingredientInfo);
-		}
-
-		return registryName.getNamespace();
-	}
-
 	@Override
 	public Iterable<Integer> getColors(T ingredient) {
 		TextureAtlasSprite fluidStillSprite = platformFluidHelper.getStillFluidSprite(ingredient);
 		int renderColor = platformFluidHelper.getColorTint(ingredient);
 		return colorHelper.getColors(fluidStillSprite, renderColor, 1);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public String getResourceId(T ingredient) {
-		Fluid fluid = fluidType.getBase(ingredient);
-		ResourceLocation registryName = registry.getRegistryName(fluid);
-		if (registryName == null) {
-			String ingredientInfo = getErrorInfo(ingredient);
-			throw new IllegalStateException("null registry name for: " + ingredientInfo);
-		}
-
-		return registryName.getPath();
 	}
 
 	@Override

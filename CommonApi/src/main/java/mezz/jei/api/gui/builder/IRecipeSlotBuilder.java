@@ -68,21 +68,6 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 * @param capacity   maximum amount of fluid that this "tank" can hold
 	 * @param showCapacity set `true` to show the capacity in the tooltip
 	 *
-	 * @since 9.3.0
-	 * @deprecated use {@link #setFluidRenderer(long, boolean, int, int)} instead.
-	 */
-	@Deprecated(forRemoval = true, since = "10.1.0")
-	IRecipeSlotBuilder setFluidRenderer(int capacity, boolean showCapacity, int width, int height);
-
-	/**
-	 * Set the properties of this slot's fluid renderer.
-	 * This will be used to render any fluid ingredients in the slot.
-	 *
-	 * If no fluid renderer is set, the default 16x16 renderer is used.
-	 *
-	 * @param capacity   maximum amount of fluid that this "tank" can hold
-	 * @param showCapacity set `true` to show the capacity in the tooltip
-	 *
 	 * @since 10.1.0
 	 */
 	IRecipeSlotBuilder setFluidRenderer(long capacity, boolean showCapacity, int width, int height);

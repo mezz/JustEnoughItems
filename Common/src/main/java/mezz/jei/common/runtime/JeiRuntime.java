@@ -3,9 +3,7 @@ package mezz.jei.common.runtime;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
@@ -13,7 +11,6 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
-import mezz.jei.common.focus.Focus;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.ErrorUtil;
@@ -51,12 +48,6 @@ public class JeiRuntime implements IJeiRuntime {
 		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
 		this.jeiHelpers = jeiHelpers;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public <T> IFocus<T> createFocus(RecipeIngredientRole role, IIngredientType<T> ingredientType, T ingredient) {
-		return Focus.createFromApi(registeredIngredients, role, ingredientType, ingredient);
 	}
 
 	@Override

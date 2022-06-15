@@ -2,8 +2,10 @@ package mezz.jei.common.gui.recipes.layout;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -12,7 +14,6 @@ import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
-import mezz.jei.common.deprecated.gui.recipes.layout.RecipeLayoutLegacyAdapter;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.IKeyBindings;
@@ -32,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class RecipeLayout<R> implements IRecipeLayoutInternal<R> {
+public class RecipeLayout<R> implements IRecipeLayoutInternal<R>, IRecipeLayoutDrawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int HIGHLIGHT_COLOR = 0x80FFFFFF;
 	private static final int RECIPE_BORDER_PADDING = 4;
@@ -44,8 +45,6 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R> {
 	private final IModIdHelper modIdHelper;
 	private final Textures textures;
 	private final RecipeSlots recipeSlots;
-	@SuppressWarnings("deprecation")
-	private final RecipeLayoutLegacyAdapter<R> legacyAdapter;
 	private final R recipe;
 	private final DrawableNineSliceTexture recipeBorder;
 	@Nullable
@@ -59,10 +58,7 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R> {
 	@Nullable
 	public static <T> RecipeLayout<T> create(int index, IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, RegisteredIngredients registeredIngredients, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, int posX, int posY, Textures textures) {
 		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, focuses, registeredIngredients, ingredientVisibility, modIdHelper, posX, posY, textures);
-		if (
-			recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses) ||
-			recipeLayout.getLegacyAdapter().setRecipeLayout(recipeCategory, recipe)
-		) {
+		if (recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses)) {
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 			if (recipeName != null) {
 				addOutputSlotTooltip(recipeLayout, recipeName, modIdHelper);
@@ -139,7 +135,6 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R> {
 
 		this.recipe = recipe;
 		this.recipeBorder = textures.getRecipeBackground();
-		this.legacyAdapter = new RecipeLayoutLegacyAdapter<>(this, registeredIngredients, ingredientVisibility, focuses, ingredientCycleOffset);
 	}
 
 	@Override
@@ -234,6 +229,12 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R> {
 		final ImmutableRect2i backgroundRect = new ImmutableRect2i(posX, posY, background.getWidth(), background.getHeight());
 		return backgroundRect.contains(mouseX, mouseY) ||
 			(recipeTransferButton != null && recipeTransferButton.isMouseOver(mouseX, mouseY));
+	}
+
+	@Override
+	public <T> Optional<T> getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<T> ingredientType) {
+		return getRecipeSlotUnderMouse(mouseX, mouseY)
+			.flatMap(slot -> slot.getDisplayedIngredient(ingredientType));
 	}
 
 	@Override
@@ -334,8 +335,4 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R> {
 		return this.recipeSlots;
 	}
 
-	@Override
-	public RecipeLayoutLegacyAdapter<R> getLegacyAdapter() {
-		return this.legacyAdapter;
-	}
 }
