@@ -14,8 +14,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.client.IFluidTypeRenderProperties;
+import net.minecraftforge.client.RenderProperties;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -39,8 +41,8 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
     @Override
     public int getColorTint(FluidStack ingredient) {
         Fluid fluid = ingredient.getFluid();
-        FluidAttributes attributes = fluid.getAttributes();
-        return attributes.getColor(ingredient);
+        IFluidTypeRenderProperties renderProperties = RenderProperties.get(fluid);
+        return renderProperties.getColorTint(ingredient);
     }
 
     @Override
@@ -55,14 +57,14 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 
     @Override
     public long bucketVolume() {
-        return FluidAttributes.BUCKET_VOLUME;
+        return FluidType.BUCKET_VOLUME;
     }
 
     @Override
     public TextureAtlasSprite getStillFluidSprite(FluidStack fluidStack) {
         Fluid fluid = fluidStack.getFluid();
-        FluidAttributes attributes = fluid.getAttributes();
-        ResourceLocation fluidStill = attributes.getStillTexture(fluidStack);
+        IFluidTypeRenderProperties renderProperties = RenderProperties.get(fluid);
+        ResourceLocation fluidStill = renderProperties.getStillTexture(fluidStack);
 
         Minecraft minecraft = Minecraft.getInstance();
         return minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
@@ -109,7 +111,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
     @Override
     public FluidStack normalize(FluidStack ingredient) {
         FluidStack copy = this.copy(ingredient);
-        copy.setAmount(FluidAttributes.BUCKET_VOLUME);
+        copy.setAmount(FluidType.BUCKET_VOLUME);
         return copy;
     }
 }
