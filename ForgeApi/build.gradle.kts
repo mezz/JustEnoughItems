@@ -1,15 +1,26 @@
 plugins {
 	java
+	`maven-publish`
 	id("net.minecraftforge.gradle") version ("5.1.+")
 	id("org.parchmentmc.librarian.forgegradle") version ("1.+")
 }
 
+repositories {
+	mavenLocal()
+}
+
 // gradle.properties
 val forgeVersion: String by extra
-val mappingsChannel: String by extra
-val mappingsVersion: String by extra
 val minecraftVersion: String by extra
+val modGroup: String by extra
+val modId: String by extra
 val modJavaVersion: String by extra
+val parchmentVersionForge: String by extra
+
+val baseArchivesName = "${modId}-${minecraftVersion}-forge-api"
+base {
+	archivesName.set(baseArchivesName)
+}
 
 val dependencyProjects: List<Project> = listOf(
 	project(":CommonApi"),
@@ -38,6 +49,7 @@ java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
 	}
+	withSourcesJar()
 }
 
 dependencies {
@@ -52,11 +64,48 @@ dependencies {
 }
 
 minecraft {
-	mappings(mappingsChannel, mappingsVersion)
+	mappings("parchment", parchmentVersionForge)
 
 	// All minecraft configurations in the multi-project must be identical, including ATs,
 	// because of a ForgeGradle bug https://github.com/MinecraftForge/ForgeGradle/issues/844
 	accessTransformer(file("../Forge/src/main/resources/META-INF/accesstransformer.cfg"))
 
 	// no runs are configured for API
+}
+
+tasks.jar {
+	finalizedBy("reobfJar")
+}
+
+val sourcesJar = tasks.named<Jar>("sourcesJar")
+
+artifacts {
+	archives(tasks.jar.get())
+	archives(sourcesJar.get())
+}
+
+publishing {
+	publications {
+		register<MavenPublication>("forgeApi") {
+			artifactId = baseArchivesName
+			artifact(tasks.jar)
+			artifact(sourcesJar)
+
+			pom.withXml {
+				val dependenciesNode = asNode().appendNode("dependencies")
+				dependencyProjects.forEach {
+					val dependencyNode = dependenciesNode.appendNode("dependency")
+					dependencyNode.appendNode("groupId", it.group)
+					dependencyNode.appendNode("artifactId", it.base.archivesName)
+					dependencyNode.appendNode("version", it.version)
+				}
+			}
+		}
+	}
+	repositories {
+		val deployDir = project.findProperty("DEPLOY_DIR")
+		if (deployDir != null) {
+			maven(deployDir)
+		}
+	}
 }

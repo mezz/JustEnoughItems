@@ -8,15 +8,12 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraftforge.fluids.FluidStack;
 
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 
 /**
  * IGuiFluidStackGroup displays one or more {@link FluidStack} in a gui.
  *
  * If multiple FluidStacks are set, they will be displayed in rotation.
- *
- * Get an instance from {@link IRecipeLayout#getFluidStacks()}.
  *
  * @deprecated Update to using {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}
  */

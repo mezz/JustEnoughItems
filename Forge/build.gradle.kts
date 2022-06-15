@@ -15,17 +15,17 @@ apply {
 }
 
 // gradle.properties
-val curseHomepageLink: String by extra
+val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
 val forgeVersion: String by extra
-val mappingsChannel: String by extra
-val mappingsVersion: String by extra
+val jUnitVersion: String by extra
 val minecraftVersion: String by extra
+val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
-val jUnitVersion: String by extra
+val parchmentVersionForge: String by extra
 
-val baseArchivesName = "${modId}-${minecraftVersion}"
+val baseArchivesName = "${modId}-${minecraftVersion}-forge"
 base {
 	archivesName.set(baseArchivesName)
 }
@@ -49,12 +49,13 @@ val dependencyProjects: List<Project> = listOf(
 dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
-project.evaluationDependsOn(project(":Changelog").path)
+project.evaluationDependsOn(":Changelog")
 
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
 	}
+	withSourcesJar()
 }
 
 dependencies {
@@ -79,7 +80,7 @@ dependencies {
 }
 
 minecraft {
-	mappings(mappingsChannel, mappingsVersion)
+	mappings("parchment", parchmentVersionForge)
 
 	accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 
@@ -125,7 +126,7 @@ minecraft {
 	}
 }
 
-tasks.named<Jar>("jar") {
+tasks.jar {
 	from(sourceSets.main.get().output)
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().output)
@@ -135,68 +136,62 @@ tasks.named<Jar>("jar") {
 	finalizedBy("reobfJar")
 }
 
-val apiJar = tasks.register<Jar>("apiJar") {
-	from(project(":CommonApi").sourceSets.main.get().output)
-	from(project(":ForgeApi").sourceSets.main.get().output)
-
-	// TODO: when FG bug is fixed, remove allJava from the api jar.
-	// https://github.com/MinecraftForge/ForgeGradle/issues/369
-	// Gradle should be able to pull them from the -sources jar.
-	from(project(":CommonApi").sourceSets.main.get().allJava)
-	from(project(":ForgeApi").sourceSets.main.get().allJava)
-
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	finalizedBy("reobfJar")
-	archiveClassifier.set("api")
-}
-
-val sourcesJar = tasks.register<Jar>("sourcesJar") {
+val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	from(sourceSets.main.get().allJava)
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().allJava)
 	}
-
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	finalizedBy("reobfJar")
 	archiveClassifier.set("sources")
 }
 
 tasks.register<TaskPublishCurseForge>("publishCurseForge") {
+	dependsOn(tasks.jar)
 	dependsOn(":Changelog:makeChangelog")
 
 	apiToken = project.findProperty("curseforge_apikey") ?: "0"
 
-	val mainFile = upload(curseProjectId, file("${project.buildDir}/libs/$baseArchivesName-$version.jar"))
+	val mainFile = upload(curseProjectId, tasks.jar.get().archiveFile)
 	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
 	mainFile.changelog = file("../Changelog/changelog.html")
-	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
+	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_ALPHA
 	mainFile.addJavaVersion("Java $modJavaVersion")
 	mainFile.addGameVersion(minecraftVersion)
+	mainFile.addModLoader("Forge")
 
 	doLast {
-		project.ext.set("curse_file_url", "${curseHomepageLink}/files/${mainFile.curseFileId}")
+		project.ext.set("curse_file_url", "${curseHomepageUrl}/files/${mainFile.curseFileId}")
 	}
 }
 
 tasks.named<Test>("test") {
 	useJUnitPlatform()
-	include("mezz/jei/**")
-	exclude("mezz/jei/lib/**")
+	include("mezz/jei/test/**")
+	exclude("mezz/jei/test/lib/**")
+	outputs.upToDateWhen { false }
 }
 
 artifacts {
-	archives(apiJar.get())
-	archives(sourcesJar.get())
 	archives(tasks.jar.get())
+	archives(sourcesJarTask.get())
 }
 
 publishing {
 	publications {
-		register<MavenPublication>("maven") {
+		register<MavenPublication>("forgeJar") {
 			artifactId = baseArchivesName
-			artifact(apiJar.get())
-			artifact(sourcesJar.get())
 			artifact(tasks.jar.get())
+			artifact(sourcesJarTask.get())
+
+			pom.withXml {
+				val dependenciesNode = asNode().appendNode("dependencies")
+				dependencyProjects.forEach {
+					val dependencyNode = dependenciesNode.appendNode("dependency")
+					dependencyNode.appendNode("groupId", it.group)
+					dependencyNode.appendNode("artifactId", it.base.archivesName)
+					dependencyNode.appendNode("version", it.version)
+				}
+			}
 		}
 	}
 	repositories {

@@ -1,22 +1,24 @@
 plugins {
 	id("com.diffplug.spotless") version("5.14.3")
+    id("com.dorongold.task-tree") version("2.1.0")
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
 }
 
 // gradle.properties
-val curseHomepageLink: String by extra
+val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
+val fabricLoaderVersion: String by extra
 val forgeVersion: String by extra
 val forgeVersionRange: String by extra
 val githubUrl: String by extra
 val loaderVersionRange: String by extra
-val mappingsChannel: String by extra
-val mappingsVersion: String by extra
+val parchmentVersionForge: String by extra
 val minecraftVersion: String by extra
 val minecraftVersionRange: String by extra
 val modAuthor: String by extra
+val modDescription: String by extra
 val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
@@ -74,15 +76,21 @@ subprojects {
         // this will ensure that this task is redone when the versions change.
         inputs.property("version", version)
 
-        filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta")) {
+        filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta", "fabric.mod.json")) {
             expand(mapOf(
+                "curseHomepageUrl" to curseHomepageUrl,
+                "fabricLoaderVersion" to fabricLoaderVersion,
+                "forgeVersionRange" to forgeVersionRange,
+                "githubUrl" to githubUrl,
+                "loaderVersionRange" to loaderVersionRange,
+                "minecraftVersion" to minecraftVersion,
+                "minecraftVersionRange" to minecraftVersionRange,
+                "modAuthor" to modAuthor,
+                "modDescription" to modDescription,
                 "modId" to modId,
+                "modJavaVersion" to modJavaVersion,
                 "modName" to modName,
                 "version" to version,
-                "minecraftVersionRange" to minecraftVersionRange,
-                "forgeVersionRange" to forgeVersionRange,
-                "loaderVersionRange" to loaderVersionRange,
-                "githubUrl" to githubUrl
             ))
         }
     }

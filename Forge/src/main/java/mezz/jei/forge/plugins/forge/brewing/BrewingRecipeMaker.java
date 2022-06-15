@@ -28,8 +28,8 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.ingredients.IngredientSet;
-import mezz.jei.util.ErrorUtil;
+import mezz.jei.common.ingredients.IngredientSet;
+import mezz.jei.common.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

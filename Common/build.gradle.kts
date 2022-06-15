@@ -1,10 +1,19 @@
 plugins {
     java
     id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT"
+    `maven-publish`
 }
 
 // gradle.properties
+val jUnitVersion: String by extra
 val minecraftVersion: String by extra
+val modId: String by extra
+val modJavaVersion: String by extra
+
+val baseArchivesName = "${modId}-${minecraftVersion}-common"
+base {
+    archivesName.set(baseArchivesName)
+}
 
 val dependencyProjects: List<Project> = listOf(
     project(":Core"),
@@ -35,5 +44,64 @@ dependencies {
     )
     dependencyProjects.forEach {
         implementation(it)
+    }
+    testImplementation(
+        group = "org.junit.jupiter",
+        name = "junit-jupiter-api",
+        version = jUnitVersion
+    )
+    testRuntimeOnly(
+        group = "org.junit.jupiter",
+        name = "junit-jupiter-engine",
+        version = jUnitVersion
+    )
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+    include("mezz/jei/test/**")
+    exclude("mezz/jei/test/lib/**")
+    outputs.upToDateWhen { false }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
+    }
+    withSourcesJar()
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+    javaToolchains {
+        compilerFor {
+            languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
+        }
+    }
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("commonJar") {
+            artifactId = base.archivesName.get()
+            artifact(tasks.jar)
+            artifact(tasks.named("sourcesJar"))
+
+            pom.withXml {
+                val dependenciesNode = asNode().appendNode("dependencies")
+                dependencyProjects.forEach {
+                    val dependencyNode = dependenciesNode.appendNode("dependency")
+                    dependencyNode.appendNode("groupId", it.group)
+                    dependencyNode.appendNode("artifactId", it.base.archivesName.get())
+                    dependencyNode.appendNode("version", it.version)
+                }
+            }
+        }
+    }
+    repositories {
+        val deployDir = project.findProperty("DEPLOY_DIR")
+        if (deployDir != null) {
+            maven(deployDir)
+        }
     }
 }

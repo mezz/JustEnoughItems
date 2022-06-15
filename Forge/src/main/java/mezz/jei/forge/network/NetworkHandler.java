@@ -1,11 +1,10 @@
 package mezz.jei.forge.network;
 
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.core.config.IServerConfig;
-import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.common.network.IConnectionToClient;
-import mezz.jei.network.ServerPacketRouter;
-import mezz.jei.network.ClientPacketRouter;
+import mezz.jei.common.Constants;
+import mezz.jei.common.network.ClientPacketRouter;
+import mezz.jei.common.network.ServerPacketRouter;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -17,12 +16,13 @@ import org.apache.logging.log4j.Logger;
 
 public class NetworkHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
+
 	private static final String NETWORK_PROTOCOL_VERSION = "1.0.0";
 	private final EventNetworkChannel channel;
 
 	public NetworkHandler() {
 		channel = NetworkRegistry.newEventChannel(
-			ServerPacketRouter.CHANNEL_ID,
+			Constants.NETWORK_CHANNEL_ID,
 			() -> NETWORK_PROTOCOL_VERSION,
 			NetworkHandler::isClientAcceptedVersion,
 			NetworkHandler::isServerAcceptedVersion
@@ -37,43 +37,31 @@ public class NetworkHandler {
 		return true;
 	}
 
-	public void createServerPacketHandler(IConnectionToClient connection, IServerConfig config) {
-		ServerPacketRouter packetRouter = new ServerPacketRouter(connection, config);
+	public void registerServerPacketHandler(ServerPacketRouter packetRouter) {
 		channel.addListener((NetworkEvent.ClientCustomPayloadEvent event) -> {
-			try {
-				ServerPlayer player = event.getSource().get().getSender();
-				if (player == null) {
-					LOGGER.error("Packet error, the sender player is missing for event: {}", event);
-					return;
-				}
-				packetRouter.onPacket(event.getPayload(), player);
-			} catch (Throwable e) {
-				try {
-					LOGGER.error("Packet error for event: {}", event, e);
-				} catch (Throwable e2) {
-					e2.addSuppressed(e);
-					LOGGER.error("Packet error", e2);
-				}
+			NetworkEvent.Context context = event.getSource().get();
+			ServerPlayer player = context.getSender();
+			if (player == null) {
+				LOGGER.error("Packet error, the sender player is missing for event: {}", event);
+				return;
 			}
-			event.getSource().get().setPacketHandled(true);
+			packetRouter.onPacket(event.getPayload(), player);
+			context.setPacketHandled(true);
 		});
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void createClientPacketHandler(IConnectionToServer connection, IServerConfig serverConfig, IWorldConfig worldConfig) {
-		ClientPacketRouter packetRouter = new ClientPacketRouter(connection, serverConfig, worldConfig);
+	public void registerClientPacketHandler(ClientPacketRouter packetRouter) {
 		channel.addListener((NetworkEvent.ServerCustomPayloadEvent event) -> {
-			try {
-				packetRouter.onPacket(event.getPayload());
-			} catch (Throwable e) {
-				try {
-					LOGGER.error("Packet error for event: {}", event, e);
-				} catch (Throwable e2) {
-					e2.addSuppressed(e);
-					LOGGER.error("Packet error", e2);
-				}
+			Minecraft minecraft = Minecraft.getInstance();
+			LocalPlayer player = minecraft.player;
+			if (player == null) {
+				LOGGER.error("Packet error, the local player is missing for event: {}", event);
+				return;
 			}
-			event.getSource().get().setPacketHandled(true);
+			packetRouter.onPacket(event.getPayload(), player);
+			NetworkEvent.Context context = event.getSource().get();
+			context.setPacketHandled(true);
 		});
 	}
 }

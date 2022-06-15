@@ -1,26 +1,20 @@
 package mezz.jei.forge;
 
+import mezz.jei.common.network.IConnectionToClient;
+import mezz.jei.common.network.ServerPacketRouter;
 import mezz.jei.core.config.IServerConfig;
-import mezz.jei.forge.config.ServerConfig;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.ConnectionToClient;
-import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.forge.network.NetworkHandler;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 public class JustEnoughItemsCommon {
 	private final NetworkHandler networkHandler;
 	private final IServerConfig serverConfig;
 
-	public JustEnoughItemsCommon(NetworkHandler networkHandler) {
+	public JustEnoughItemsCommon(NetworkHandler networkHandler, IServerConfig serverConfig) {
 		this.networkHandler = networkHandler;
-		ModLoadingContext modLoadingContext = ModLoadingContext.get();
-		serverConfig = ServerConfig.register(modLoadingContext);
-	}
-
-	public IServerConfig getServerConfig() {
-		return serverConfig;
+		this.serverConfig = serverConfig;
 	}
 
 	public void register(PermanentEventSubscriptions subscriptions) {
@@ -29,6 +23,7 @@ public class JustEnoughItemsCommon {
 
 	private void commonSetup() {
 		IConnectionToClient connection = new ConnectionToClient();
-		this.networkHandler.createServerPacketHandler(connection, serverConfig);
+		ServerPacketRouter packetRouter = new ServerPacketRouter(connection, serverConfig);
+		this.networkHandler.registerServerPacketHandler(packetRouter);
 	}
 }

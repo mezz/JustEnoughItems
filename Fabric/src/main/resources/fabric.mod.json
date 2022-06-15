@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "${modId}",
+  "version": "${version}",
+
+  "name": "${modName}",
+  "description": "${modDescription}",
+  "authors": [
+    "${modAuthor}"
+  ],
+  "contact": {
+    "homepage": "${curseHomepageUrl}",
+    "sources": "${githubUrl}"
+  },
+
+  "license": "The MIT License (MIT)",
+  "icon": "assets/modid/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "mezz.jei.fabric.JustEnoughItems"
+    ],
+    "client": [
+      "mezz.jei.fabric.JustEnoughItemsClient"
+    ],
+    "jei_mod_plugin": [
+      "mezz.jei.common.plugins.vanilla.VanillaPlugin",
+      "mezz.jei.common.plugins.jei.JeiInternalPlugin",
+      "mezz.jei.common.plugins.debug.JeiDebugPlugin"
+    ]
+  },
+  "mixins": [
+    "jei.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=${fabricLoaderVersion}",
+    "fabric": "*",
+    "fabric-key-binding-api-v1": "*",
+    "minecraft": "${minecraftVersion}",
+    "java": ">=${modJavaVersion}"
+  }
+}
