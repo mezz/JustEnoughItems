@@ -43,7 +43,7 @@ public class ColorNamer {
 	private String getClosestColorName(Integer color) {
 		return colorNames.get().stream()
 			.min(Comparator.comparing(entry -> {
-				Integer namedColor = entry.color();
+				int namedColor = entry.color();
 				double distance = ColorUtil.slowPerceptualColorDistanceSquared(namedColor, color);
 				return Math.abs(distance);
 			}))
