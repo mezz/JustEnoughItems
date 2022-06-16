@@ -26,8 +26,12 @@ import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.util.ErrorUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final NumberFormat nf = NumberFormat.getIntegerInstance();
 	private static final int TEX_WIDTH = 16;
 	private static final int TEX_HEIGHT = 16;
@@ -177,21 +181,26 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	@Override
 	public List<ITextComponent> getTooltip(FluidStack fluidStack, ITooltipFlag tooltipFlag) {
 		List<ITextComponent> tooltip = new ArrayList<>();
-		Fluid fluidType = fluidStack.getFluid();
-		if (fluidType == null) {
-			return tooltip;
-		}
+		try {
+			Fluid fluidType = fluidStack.getFluid();
+			if (fluidType == null) {
+				return tooltip;
+			}
 
-		ITextComponent displayName = fluidStack.getDisplayName();
-		tooltip.add(displayName);
+			ITextComponent displayName = fluidStack.getDisplayName();
+			tooltip.add(displayName);
 
-		int amount = fluidStack.getAmount();
-		if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
-			TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount.with.capacity", nf.format(amount), nf.format(capacityMb));
-			tooltip.add(amountString.withStyle(TextFormatting.GRAY));
-		} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
-			TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount", nf.format(amount));
-			tooltip.add(amountString.withStyle(TextFormatting.GRAY));
+			int amount = fluidStack.getAmount();
+			if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
+				TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount.with.capacity", nf.format(amount), nf.format(capacityMb));
+				tooltip.add(amountString.withStyle(TextFormatting.GRAY));
+			} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
+				TranslationTextComponent amountString = new TranslationTextComponent("jei.tooltip.liquid.amount", nf.format(amount));
+				tooltip.add(amountString.withStyle(TextFormatting.GRAY));
+			}
+		} catch (RuntimeException e) {
+			String info = ErrorUtil.getIngredientInfo(fluidStack);
+			LOGGER.error("Failed to get tooltip for fluid: " + info, e);
 		}
 
 		return tooltip;
