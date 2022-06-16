@@ -19,6 +19,8 @@ import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Log;
 import mezz.jei.util.Translator;
 
 public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
@@ -168,20 +170,25 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 	@Override
 	public List<String> getTooltip(Minecraft minecraft, FluidStack fluidStack, ITooltipFlag tooltipFlag) {
 		List<String> tooltip = new ArrayList<>();
-		Fluid fluidType = fluidStack.getFluid();
-		if (fluidType == null) {
-			return tooltip;
-		}
+		try {
+			Fluid fluidType = fluidStack.getFluid();
+			if (fluidType == null) {
+				return tooltip;
+			}
 
-		String fluidName = fluidType.getLocalizedName(fluidStack);
-		tooltip.add(fluidName);
+			String fluidName = fluidType.getLocalizedName(fluidStack);
+			tooltip.add(fluidName);
 
-		if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
-			String amount = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount.with.capacity", fluidStack.amount, capacityMb);
-			tooltip.add(TextFormatting.GRAY + amount);
-		} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
-			String amount = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount", fluidStack.amount);
-			tooltip.add(TextFormatting.GRAY + amount);
+			if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
+				String amount = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount.with.capacity", fluidStack.amount, capacityMb);
+				tooltip.add(TextFormatting.GRAY + amount);
+			} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
+				String amount = Translator.translateToLocalFormatted("jei.tooltip.liquid.amount", fluidStack.amount);
+				tooltip.add(TextFormatting.GRAY + amount);
+			}
+		} catch (RuntimeException e) {
+			String info = ErrorUtil.getIngredientInfo(fluidStack);
+			Log.get().error("Failed to get tooltip for fluid: " + info, e);
 		}
 
 		return tooltip;
