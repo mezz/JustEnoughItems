@@ -10,7 +10,10 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.common.Internal;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
+import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -171,22 +174,28 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		List<Component> tooltip = new ArrayList<>();
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluidType = type.getBase(fluidStack);
-		if (fluidType.isSame(Fluids.EMPTY)) {
-			return tooltip;
-		}
+		try {
+			if (fluidType.isSame(Fluids.EMPTY)) {
+				return tooltip;
+			}
 
-		Component displayName = fluidHelper.getDisplayName(fluidStack);
-		tooltip.add(displayName);
+			Component displayName = fluidHelper.getDisplayName(fluidStack);
+			tooltip.add(displayName);
 
-		long amount = fluidHelper.getAmount(fluidStack);
-		long milliBuckets = (amount * 1000) / fluidHelper.bucketVolume();
+			long amount = fluidHelper.getAmount(fluidStack);
+			long milliBuckets = (amount * 1000) / fluidHelper.bucketVolume();
 
-		if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
-			TranslatableComponent amountString = new TranslatableComponent("jei.tooltip.liquid.amount.with.capacity", nf.format(milliBuckets), nf.format(capacity));
-			tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
-		} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
-			TranslatableComponent amountString = new TranslatableComponent("jei.tooltip.liquid.amount", nf.format(milliBuckets));
-			tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
+			if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
+				TranslatableComponent amountString = new TranslatableComponent("jei.tooltip.liquid.amount.with.capacity", nf.format(milliBuckets), nf.format(capacity));
+				tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
+			} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
+				TranslatableComponent amountString = new TranslatableComponent("jei.tooltip.liquid.amount", nf.format(milliBuckets));
+				tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
+			}
+		} catch (RuntimeException e) {
+			RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+			String info = ErrorUtil.getIngredientInfo(fluidStack, type, registeredIngredients);
+			LOGGER.error("Failed to get tooltip for fluid: " + info, e);
 		}
 
 		return tooltip;
