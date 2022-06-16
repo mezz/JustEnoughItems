@@ -23,6 +23,8 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final NumberFormat nf = NumberFormat.getIntegerInstance();
 	private static final int TEXTURE_SIZE = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
