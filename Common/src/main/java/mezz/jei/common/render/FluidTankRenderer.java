@@ -95,24 +95,30 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	private void drawFluid(PoseStack poseStack, final int width, final int height, T fluidStack) {
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluid = type.getBase(fluidStack);
-		if (fluid.isSame(Fluids.EMPTY)) {
-			return;
+		try {
+			if (fluid.isSame(Fluids.EMPTY)) {
+				return;
+			}
+
+			TextureAtlasSprite fluidStillSprite = fluidHelper.getStillFluidSprite(fluidStack);
+
+			int fluidColor = fluidHelper.getColorTint(fluidStack);
+
+			long amount = fluidHelper.getAmount(fluidStack);
+			long scaledAmount = (amount * height) / capacity;
+			if (amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
+				scaledAmount = MIN_FLUID_HEIGHT;
+			}
+			if (scaledAmount > height) {
+				scaledAmount = height;
+			}
+
+			drawTiledSprite(poseStack, width, height, fluidColor, scaledAmount, fluidStillSprite);
+		} catch (RuntimeException e) {
+			RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+			String info = ErrorUtil.getIngredientInfo(fluidStack, type, registeredIngredients);
+			LOGGER.error("Failed to get render fluid: " + info, e);
 		}
-
-		TextureAtlasSprite fluidStillSprite = fluidHelper.getStillFluidSprite(fluidStack);
-
-		int fluidColor = fluidHelper.getColorTint(fluidStack);
-
-		long amount = fluidHelper.getAmount(fluidStack);
-		long scaledAmount = (amount * height) / capacity;
-		if (amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
-			scaledAmount = MIN_FLUID_HEIGHT;
-		}
-		if (scaledAmount > height) {
-			scaledAmount = height;
-		}
-
-		drawTiledSprite(poseStack, width, height, fluidColor, scaledAmount, fluidStillSprite);
 	}
 
 	private static void drawTiledSprite(PoseStack poseStack, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite) {
