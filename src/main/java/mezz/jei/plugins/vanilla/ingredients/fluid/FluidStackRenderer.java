@@ -81,24 +81,29 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		if (fluidStack == null) {
 			return;
 		}
-		Fluid fluid = fluidStack.getFluid();
-		if (fluid == null) {
-			return;
+		try {
+			Fluid fluid = fluidStack.getFluid();
+			if (fluid == null) {
+				return;
+			}
+
+			TextureAtlasSprite fluidStillSprite = getStillFluidSprite(minecraft, fluid);
+
+			int fluidColor = fluid.getColor(fluidStack);
+
+			int scaledAmount = (fluidStack.amount * height) / capacityMb;
+			if (fluidStack.amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
+				scaledAmount = MIN_FLUID_HEIGHT;
+			}
+			if (scaledAmount > height) {
+				scaledAmount = height;
+			}
+
+			drawTiledSprite(minecraft, xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
+		} catch (RuntimeException e) {
+			String info = ErrorUtil.getIngredientInfo(fluidStack);
+			Log.get().error("Failed to render fluid: " + info, e);
 		}
-
-		TextureAtlasSprite fluidStillSprite = getStillFluidSprite(minecraft, fluid);
-
-		int fluidColor = fluid.getColor(fluidStack);
-
-		int scaledAmount = (fluidStack.amount * height) / capacityMb;
-		if (fluidStack.amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
-			scaledAmount = MIN_FLUID_HEIGHT;
-		}
-		if (scaledAmount > height) {
-			scaledAmount = height;
-		}
-
-		drawTiledSprite(minecraft, xPosition, yPosition, width, height, fluidColor, scaledAmount, fluidStillSprite);
 	}
 
 	private void drawTiledSprite(Minecraft minecraft, final int xPosition, final int yPosition, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite) {
