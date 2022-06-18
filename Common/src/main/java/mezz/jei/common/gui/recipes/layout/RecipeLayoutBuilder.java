@@ -96,11 +96,6 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		this.focusLinkedSlots.add(builders);
 	}
 
-	@Override
-	public void createFocusLink(IRecipeSlotBuilder... slots) {
-		createFocusLink((IIngredientAcceptor<?>[]) slots);
-	}
-
 	/**
 	 * Returns `true` if this builder has been used,
 	 * useful for detecting when plugins use the builder or need legacy support.

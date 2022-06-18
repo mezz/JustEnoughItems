@@ -22,13 +22,6 @@ public interface IRecipeLayoutBuilder {
 	 * @return a {@link IRecipeSlotBuilder} that has further methods for adding ingredients, etc.
 	 *
 	 * @since 9.3.0
-	 *
-	 * @apiNote When porting from {@link mezz.jei.api.gui.ingredient.IGuiItemStackGroup} to this new method,
-	 * in most cases you will need to add 1 pixel x and y to your coordinates here.
-	 * For ItemStack ingredients, JEI used to automatically add a 1 pixel offset on all sides,
-	 * so that a 16x16 item would be centered on an 18x18 slot texture background.
-	 * This automatic behavior was confusing and inconsistent with other ingredient types, so
-	 * this new method does not have a hidden automatic 1 pixel offset. Sorry!
 	 */
 	IRecipeSlotBuilder addSlot(RecipeIngredientRole recipeIngredientRole, int x, int y);
 
@@ -83,22 +76,4 @@ public interface IRecipeLayoutBuilder {
 	 * @since 9.5.1
 	 */
 	void createFocusLink(IIngredientAcceptor<?>... slots);
-
-	/**
-	 * Link slots together so that if one slot matches the current focus, the others will be limited too.
-	 * This can only be set on slots that contains the same number of ingredients.
-	 *
-	 * For example:
-	 * Consider a recipe that has an input slot with every plank type
-	 * and an output slot with stairs for each plank type.
-	 *
-	 * The number of inputs and outputs are the same,
-	 * and when the full recipe is displayed it rotates through all the different pairs of planks and their stairs.
-	 *
-	 * If the slots are focus-linked, when the player focuses on acacia planks,
-	 * the linked output slot will only display acacia stairs.
-	 *
-	 * @since 9.4.1
-	 */
-	void createFocusLink(IRecipeSlotBuilder... slots);
 }
