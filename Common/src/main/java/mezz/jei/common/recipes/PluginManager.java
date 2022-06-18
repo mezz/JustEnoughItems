@@ -1,6 +1,7 @@
 package mezz.jei.common.recipes;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.ImmutableList;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
@@ -11,7 +12,8 @@ import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -22,17 +24,21 @@ import java.util.stream.Stream;
 public class PluginManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final List<IRecipeManagerPlugin> plugins = new ArrayList<>();
+	private final ImmutableList<IRecipeManagerPlugin> plugins;
+	private final Set<IRecipeManagerPlugin> disabledPlugins = Collections.newSetFromMap(new IdentityHashMap<>());
 
 	public PluginManager(IRecipeManagerPlugin internalRecipeManagerPlugin, List<IRecipeManagerPlugin> plugins) {
-		this.plugins.add(internalRecipeManagerPlugin);
-		this.plugins.addAll(plugins);
+		this.plugins = ImmutableList.<IRecipeManagerPlugin>builder()
+			.add(internalRecipeManagerPlugin)
+			.addAll(plugins)
+			.build();
 	}
 
 	public <T> Stream<T> getRecipes(RecipeTypeData<T> recipeTypeData, IFocusGroup focusGroup, boolean includeHidden) {
 		IRecipeCategory<T> recipeCategory = recipeTypeData.getRecipeCategory();
 
 		Stream<T> recipes = this.plugins.stream()
+			.filter(p -> !disabledPlugins.contains(p))
 			.flatMap(p -> getPluginRecipeStream(p, recipeCategory, focusGroup))
 			.distinct();
 
@@ -47,6 +53,7 @@ public class PluginManager {
 
 	public Stream<ResourceLocation> getRecipeCategoryUids(IFocusGroup focusGroup) {
 		return this.plugins.stream()
+			.filter(p -> !disabledPlugins.contains(p))
 			.flatMap(p -> getPluginRecipeCategoryUidStream(p, focusGroup))
 			.distinct();
 	}
@@ -114,7 +121,7 @@ public class PluginManager {
 			return result;
 		} catch (RuntimeException | LinkageError e) {
 			LOGGER.error("Recipe registry plugin crashed, it is being disabled: {}", plugin.getClass(), e);
-			this.plugins.remove(plugin);
+			this.disabledPlugins.add(plugin);
 			return defaultValue;
 		}
 	}
