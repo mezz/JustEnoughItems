@@ -69,7 +69,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final IModIdHelper modIdHelper;
 	private final IClientConfig clientConfig;
 	private final IKeyBindings keyBindings;
-	private final RecipeManager recipeManager;
 
 	private int headerHeight;
 
@@ -119,7 +118,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, registeredIngredients, modIdHelper, textures, ingredientVisibility);
 		this.recipeCatalysts = new RecipeCatalysts(textures, ingredientVisibility);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures);
-		this.recipeManager = recipeManager;
 		this.minecraft = Minecraft.getInstance();
 
 		IDrawableStatic arrowNext = textures.getArrowNext();

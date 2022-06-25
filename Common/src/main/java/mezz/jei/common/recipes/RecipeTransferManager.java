@@ -26,7 +26,7 @@ public class RecipeTransferManager {
 
 		MenuType<C> menuType;
 		try {
-			@SuppressWarnings("UnnecessaryLocalVariable")
+			@SuppressWarnings({"UnnecessaryLocalVariable", "unchecked"})
 			MenuType<C> cast = (MenuType<C>) container.getType();
 			menuType = cast;
 		} catch (UnsupportedOperationException ignored) {

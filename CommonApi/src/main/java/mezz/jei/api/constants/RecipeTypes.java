@@ -88,7 +88,6 @@ public final class RecipeTypes {
 	 * The fueling recipe type.
 	 *
 	 * JEI automatically creates a fuel recipe for anything that has a burn time.
-	 * @see Item#getBurnTime
 	 *
 	 * @since 9.5.0
 	 */

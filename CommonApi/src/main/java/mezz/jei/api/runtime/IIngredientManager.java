@@ -43,7 +43,7 @@ public interface IIngredientManager {
 
 	/**
 	 * Returns an unmodifiable collection of all registered ingredient types.
-	 * Without addons, there are {@link VanillaTypes#ITEM} and {@link VanillaTypes#FLUID}.
+	 * Without addons, there is {@link VanillaTypes#ITEM_STACK}.
 	 */
 	Collection<IIngredientType<?>> getRegisteredIngredientTypes();
 

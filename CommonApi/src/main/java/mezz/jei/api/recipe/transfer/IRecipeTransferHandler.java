@@ -1,15 +1,12 @@
 package mezz.jei.api.recipe.transfer;
 
-import mezz.jei.api.recipe.RecipeType;
-import net.minecraft.world.inventory.MenuType;
-import org.jetbrains.annotations.Nullable;
-
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import net.minecraft.resources.ResourceLocation;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-
-import mezz.jei.api.registration.IRecipeTransferRegistration;
+import net.minecraft.world.inventory.MenuType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -21,7 +18,7 @@ import java.util.Optional;
  *
  * Useful functions for implementing a recipe transfer handler can be found in {@link IRecipeTransferHandlerHelper}.
  *
- * To register your recipe transfer handler, use {@link IRecipeTransferRegistration#addRecipeTransferHandler(IRecipeTransferHandler, ResourceLocation)}
+ * To register your recipe transfer handler, use {@link IRecipeTransferRegistration#addRecipeTransferHandler(IRecipeTransferHandler, RecipeType)}
  */
 public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 

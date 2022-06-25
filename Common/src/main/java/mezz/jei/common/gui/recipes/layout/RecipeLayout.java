@@ -57,7 +57,7 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R>, IRecipeLayoutD
 
 	@Nullable
 	public static <T> RecipeLayout<T> create(int index, IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, RegisteredIngredients registeredIngredients, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, int posX, int posY, Textures textures) {
-		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, focuses, registeredIngredients, ingredientVisibility, modIdHelper, posX, posY, textures);
+		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, registeredIngredients, ingredientVisibility, modIdHelper, posX, posY, textures);
 		if (recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses)) {
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 			if (recipeName != null) {
@@ -104,7 +104,6 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R>, IRecipeLayoutD
 		int index,
 		IRecipeCategory<R> recipeCategory,
 		R recipe,
-		IFocusGroup focuses,
 		RegisteredIngredients registeredIngredients,
 		IIngredientVisibility ingredientVisibility,
 		IModIdHelper modIdHelper,

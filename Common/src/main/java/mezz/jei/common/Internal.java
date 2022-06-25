@@ -47,10 +47,6 @@ public final class Internal {
 		Internal.textures = textures;
 	}
 
-	public static boolean hasTextures() {
-		return textures != null;
-	}
-
 	public static Optional<JeiRuntime> getRuntime() {
 		return Optional.ofNullable(runtime);
 	}

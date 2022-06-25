@@ -167,12 +167,6 @@ public class RecipeManagerInternal {
 		return getRecipeCategoriesCached(recipeCategories, focuses, includeHidden);
 	}
 
-	public RecipeType<?> getTypeForRecipeCategoryUid(ResourceLocation uid) {
-		RecipeTypeData<?> categoryData = this.recipeTypeDataMap.get(uid);
-		IRecipeCategory<?> recipeCategory = categoryData.getRecipeCategory();
-		return recipeCategory.getRecipeType();
-	}
-
 	private Stream<IRecipeCategory<?>> getRecipeCategoriesCached(Collection<IRecipeCategory<?>> recipeCategories, IFocusGroup focuses, boolean includeHidden) {
 		if (recipeCategories.isEmpty() && focuses.isEmpty() && !includeHidden) {
 			if (this.recipeCategoriesVisibleCache == null) {
@@ -230,24 +224,10 @@ public class RecipeManagerInternal {
 			.filter(ingredientVisibility::isIngredientVisible);
 	}
 
-	public <T> void hideRecipe(ResourceLocation recipeCategoryUid, T recipe) {
-		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipe, recipeCategoryUid);
-		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
-		hiddenRecipes.add(recipe);
-		recipeCategoriesVisibleCache = null;
-	}
-
 	public <T> void hideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {
 		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipes, recipeType);
 		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
 		hiddenRecipes.addAll(recipes);
-		recipeCategoriesVisibleCache = null;
-	}
-
-	public <T> void unhideRecipe(T recipe, ResourceLocation recipeCategoryUid) {
-		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipe, recipeCategoryUid);
-		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
-		hiddenRecipes.remove(recipe);
 		recipeCategoriesVisibleCache = null;
 	}
 
@@ -267,17 +247,6 @@ public class RecipeManagerInternal {
 		ResourceLocation uid = recipeType.getUid();
 		recipeTypeDataMap.validate(uid);
 		hiddenRecipeCategoryUids.remove(uid);
-		recipeCategoriesVisibleCache = null;
-	}
-
-	public void hideRecipeCategory(ResourceLocation recipeCategoryUid) {
-		hiddenRecipeCategoryUids.add(recipeCategoryUid);
-		recipeCategoriesVisibleCache = null;
-	}
-
-	public void unhideRecipeCategory(ResourceLocation recipeCategoryUid) {
-		recipeTypeDataMap.validate(recipeCategoryUid);
-		hiddenRecipeCategoryUids.remove(recipeCategoryUid);
 		recipeCategoriesVisibleCache = null;
 	}
 }
