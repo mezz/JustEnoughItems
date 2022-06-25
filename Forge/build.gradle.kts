@@ -77,8 +77,7 @@ dependencies {
 }
 
 minecraft {
-//	mappings("parchment", parchmentVersionForge)
-	mappings("official", minecraftVersion)
+	mappings("parchment", parchmentVersionForge)
 
 	accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 
