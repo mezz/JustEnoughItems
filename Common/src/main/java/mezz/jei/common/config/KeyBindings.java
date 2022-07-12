@@ -1,5 +1,6 @@
 package mezz.jei.common.config;
 
+import java.util.function.Consumer;
 import mezz.jei.common.input.IKeyBindings;
 import mezz.jei.common.input.keys.IJeiKeyMapping;
 import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
@@ -8,6 +9,7 @@ import mezz.jei.common.input.keys.JeiKeyModifier;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.Translator;
+import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -55,7 +57,7 @@ public final class KeyBindings implements IKeyBindings {
 	private final IJeiKeyMapping rightClick;
 	private final List<IJeiKeyMapping> enterKey;
 
-	public KeyBindings() {
+	public KeyBindings(Consumer<KeyMapping> registerMethod) {
 		IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
 
 		IJeiKeyMapping showRecipe1;
@@ -96,161 +98,161 @@ public final class KeyBindings implements IKeyBindings {
 			.setContext(JeiKeyConflictContext.GUI)
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 			.buildKeyboardKey(GLFW.GLFW_KEY_O)
-			.register();
+			.register(registerMethod);
 
 		focusSearch = overlay.createMapping("key.jei.focusSearch")
 			.setContext(JeiKeyConflictContext.GUI)
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 			.buildKeyboardKey(GLFW.GLFW_KEY_F)
-			.register();
+			.register(registerMethod);
 
 		previousPage = overlay.createMapping("key.jei.previousPage")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildUnbound()
-			.register();
+			.register(registerMethod);
 
 		nextPage = overlay.createMapping("key.jei.nextPage")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildUnbound()
-			.register();
+			.register(registerMethod);
 
 		toggleBookmarkOverlay = overlay.createMapping("key.jei.toggleBookmarkOverlay")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildUnbound()
-			.register();
+			.register(registerMethod);
 
 		// Mouse Hover
 		bookmark = mouseHover.createMapping("key.jei.bookmark")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
 			.buildKeyboardKey(GLFW.GLFW_KEY_A)
-			.register();
+			.register(registerMethod);
 
 		showRecipe1 = mouseHover.createMapping("key.jei.showRecipe")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
 			.buildKeyboardKey(GLFW.GLFW_KEY_R)
-			.register();
+			.register(registerMethod);
 
 		showRecipe2 = mouseHover.createMapping("key.jei.showRecipe2")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
 			.buildMouseLeft()
-			.register();
+			.register(registerMethod);
 
 		showUses1 = mouseHover.createMapping("key.jei.showUses")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
 			.buildKeyboardKey(GLFW.GLFW_KEY_U)
-			.register();
+			.register(registerMethod);
 
 		showUses2 = mouseHover.createMapping("key.jei.showUses2")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
 			.buildMouseRight()
-			.register();
+			.register(registerMethod);
 
 		// Search Bar
 		hoveredClearSearchBar = search.createMapping("key.jei.clearSearchBar")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_SEARCH)
 			.buildMouseRight()
-			.register();
+			.register(registerMethod);
 
 		previousSearch = search.createMapping("key.jei.previousSearch")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildKeyboardKey(GLFW.GLFW_KEY_UP)
-			.register();
+			.register(registerMethod);
 
 		nextSearch = search.createMapping("key.jei.nextSearch")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildKeyboardKey(GLFW.GLFW_KEY_DOWN)
-			.register();
+			.register(registerMethod);
 
 		// Cheat Mode
 		toggleCheatMode = cheat.createMapping("key.jei.toggleCheatMode")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildUnbound()
-			.register();
+			.register(registerMethod);
 
 		cheatOneItem1 = cheat.createMapping("key.jei.cheatOneItem")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_CHEAT_MODE)
 			.buildMouseLeft()
-			.register();
+			.register(registerMethod);
 
 		cheatOneItem2 = cheat.createMapping("key.jei.cheatOneItem2")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_CHEAT_MODE)
 			.buildMouseRight()
-			.register();
+			.register(registerMethod);
 
 		cheatItemStack1 = cheat.createMapping("key.jei.cheatItemStack")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_CHEAT_MODE)
 			.setModifier(JeiKeyModifier.SHIFT)
 			.buildMouseLeft()
-			.register();
+			.register(registerMethod);
 
 		cheatItemStack2 = cheat.createMapping("key.jei.cheatItemStack2")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_CHEAT_MODE)
 			.buildMouseMiddle()
-			.register();
+			.register(registerMethod);
 
 		// Hovering over config button
 		toggleCheatModeConfigButton = hoverConfig.createMapping("key.jei.toggleCheatModeConfigButton")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_CONFIG_BUTTON)
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 			.buildMouseLeft()
-			.register();
+			.register(registerMethod);
 
 		// Edit Mode
 		toggleEditMode = editMode.createMapping("key.jei.toggleEditMode")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildUnbound()
-			.register();
+			.register(registerMethod);
 
 		toggleHideIngredient = editMode.createMapping("key.jei.toggleHideIngredient")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 			.buildMouseLeft()
-			.register();
+			.register(registerMethod);
 
 		toggleWildcardHideIngredient = editMode.createMapping("key.jei.toggleWildcardHideIngredient")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 			.buildMouseRight()
-			.register();
+			.register(registerMethod);
 
 		// Recipes
 		recipeBack = recipeCategory.createMapping("key.jei.recipeBack")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildKeyboardKey(GLFW.GLFW_KEY_BACKSPACE)
-			.register();
+			.register(registerMethod);
 
 		previousRecipePage = recipeCategory.createMapping("key.jei.previousRecipePage")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_UP)
-			.register();
+			.register(registerMethod);
 
 		nextRecipePage = recipeCategory.createMapping("key.jei.nextRecipePage")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_DOWN)
-			.register();
+			.register(registerMethod);
 
 		previousCategory = recipeCategory.createMapping("key.jei.previousCategory")
 			.setContext(JeiKeyConflictContext.GUI)
 			.setModifier(JeiKeyModifier.SHIFT)
 			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_UP)
-			.register();
+			.register(registerMethod);
 
 		nextCategory = recipeCategory.createMapping("key.jei.nextCategory")
 			.setContext(JeiKeyConflictContext.GUI)
 			.setModifier(JeiKeyModifier.SHIFT)
 			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_DOWN)
-			.register();
+			.register(registerMethod);
 
 		closeRecipeGui = recipeCategory.createMapping("key.jei.closeRecipeGui")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildKeyboardKey(GLFW.GLFW_KEY_ESCAPE)
-			.register();
+			.register(registerMethod);
 
 		// Dev Tools
 		copyRecipeId = devTools.createMapping("key.jei.copy.recipe.id")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildUnbound()
-			.register();
+			.register(registerMethod);
 
 		showRecipe = List.of(showRecipe1, showRecipe2);
 		showUses = List.of(showUses1, showUses2);

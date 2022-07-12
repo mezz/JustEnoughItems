@@ -14,8 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.client.IFluidTypeRenderProperties;
-import net.minecraftforge.client.RenderProperties;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
@@ -41,8 +40,8 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
     @Override
     public int getColorTint(FluidStack ingredient) {
         Fluid fluid = ingredient.getFluid();
-        IFluidTypeRenderProperties renderProperties = RenderProperties.get(fluid);
-        return renderProperties.getColorTint(ingredient);
+        IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
+        return renderProperties.getTintColor(ingredient);
     }
 
     @Override
@@ -63,7 +62,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
     @Override
     public TextureAtlasSprite getStillFluidSprite(FluidStack fluidStack) {
         Fluid fluid = fluidStack.getFluid();
-        IFluidTypeRenderProperties renderProperties = RenderProperties.get(fluid);
+        IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
         ResourceLocation fluidStill = renderProperties.getStillTexture(fluidStack);
 
         Minecraft minecraft = Minecraft.getInstance();

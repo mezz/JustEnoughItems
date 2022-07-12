@@ -13,10 +13,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.EffectRenderer;
-import net.minecraftforge.client.IItemRenderProperties;
-import net.minecraftforge.client.RenderProperties;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.client.extensions.common.IClientMobEffectExtensions;
+import net.minecraftforge.client.model.data.ModelData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -25,8 +24,8 @@ import java.util.Optional;
 public class RenderHelper implements IPlatformRenderHelper {
     @Override
     public Font getFontRenderer(Minecraft minecraft, ItemStack itemStack) {
-        IItemRenderProperties renderProperties = RenderProperties.get(itemStack);
-        Font fontRenderer = renderProperties.getFont(itemStack);
+        IClientItemExtensions renderProperties = IClientItemExtensions.of(itemStack);
+        Font fontRenderer = renderProperties.getFont(itemStack, IClientItemExtensions.FontContext.TOOLTIP);
         if (fontRenderer != null) {
             return fontRenderer;
         }
@@ -35,13 +34,13 @@ public class RenderHelper implements IPlatformRenderHelper {
 
     @Override
     public boolean shouldRender(MobEffectInstance potionEffect) {
-        EffectRenderer effectRenderer = RenderProperties.getEffectRenderer(potionEffect);
-        return effectRenderer.shouldRender(potionEffect);
+        IClientMobEffectExtensions effectRenderer = IClientMobEffectExtensions.of(potionEffect);
+        return effectRenderer.isVisibleInInventory(potionEffect);
     }
 
     @Override
     public TextureAtlasSprite getParticleIcon(BakedModel bakedModel) {
-        return bakedModel.getParticleIcon(EmptyModelData.INSTANCE);
+        return bakedModel.getParticleIcon(ModelData.EMPTY);
     }
 
     @Override

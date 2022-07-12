@@ -1,9 +1,11 @@
 package mezz.jei.fabric.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import java.util.function.Consumer;
 import mezz.jei.common.input.keys.IJeiKeyMapping;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 
 public class FabricJeiKeyMapping implements IJeiKeyMapping {
@@ -52,7 +54,7 @@ public class FabricJeiKeyMapping implements IJeiKeyMapping {
     }
 
     @Override
-    public IJeiKeyMapping register() {
+    public IJeiKeyMapping register(Consumer<KeyMapping> registerMethod) {
         return this;
     }
 }

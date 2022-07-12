@@ -11,7 +11,7 @@ import java.util.Optional;
 public final class ForgeUserInput {
 	private ForgeUserInput() {}
 
-	public static UserInput fromEvent(ScreenEvent.KeyboardKeyEvent keyEvent) {
+	public static UserInput fromEvent(ScreenEvent.KeyPressed keyEvent) {
 		InputConstants.Key input = InputConstants.getKey(keyEvent.getKeyCode(), keyEvent.getScanCode());
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
@@ -19,7 +19,7 @@ public final class ForgeUserInput {
 		return new UserInput(input, mouseX, mouseY, modifiers, InputType.IMMEDIATE);
 	}
 
-	public static Optional<UserInput> fromEvent(ScreenEvent.MouseClickedEvent event) {
+	public static Optional<UserInput> fromEvent(ScreenEvent.MouseButtonPressed event) {
 		int button = event.getButton();
 		if (button < 0) {
 			return Optional.empty();
@@ -29,7 +29,7 @@ public final class ForgeUserInput {
 		return Optional.of(userInput);
 	}
 
-	public static Optional<UserInput> fromEvent(ScreenEvent.MouseReleasedEvent event) {
+	public static Optional<UserInput> fromEvent(ScreenEvent.MouseButtonReleased event) {
 		int button = event.getButton();
 		if (button < 0) {
 			return Optional.empty();
