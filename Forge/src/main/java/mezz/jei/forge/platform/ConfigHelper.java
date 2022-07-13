@@ -8,7 +8,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraftforge.client.ConfigGuiHandler;
+import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 
@@ -21,7 +21,7 @@ public class ConfigHelper implements IPlatformConfigHelper {
         return ModList.get()
             .getModContainerById(ModIds.JEI_ID)
             .map(ModContainer::getModInfo)
-            .flatMap(ConfigGuiHandler::getGuiFactoryFor)
+            .flatMap(ConfigScreenHandler::getScreenFactoryFor)
             .map(f -> f.apply(minecraft, minecraft.screen));
     }
 

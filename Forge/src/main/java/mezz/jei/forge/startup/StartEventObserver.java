@@ -48,7 +48,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		requiredEvents
 			.forEach(eventClass -> subscriptions.register(eventClass, this::onEvent));
 
-		subscriptions.register(ClientPlayerNetworkEvent.LoggedInEvent.class, event -> {
+		subscriptions.register(ClientPlayerNetworkEvent.LoggingIn.class, event -> {
 			if (event.getPlayer() != null) {
 				LOGGER.info("JEI StartEventObserver received {}", event.getClass());
 				if (this.state == State.DISABLED) {
@@ -57,14 +57,14 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 			}
 		});
 
-		subscriptions.register(ClientPlayerNetworkEvent.LoggedOutEvent.class, event -> {
+		subscriptions.register(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
 			if (event.getPlayer() != null) {
 				LOGGER.info("JEI StartEventObserver received {}", event.getClass());
 				transitionState(State.DISABLED);
 			}
 		});
 
-		subscriptions.register(ScreenEvent.InitScreenEvent.Pre.class, event -> {
+		subscriptions.register(ScreenEvent.Init.Pre.class, event -> {
 			if (this.state != State.JEI_STARTED) {
 				Screen screen = event.getScreen();
 				Minecraft minecraft = screen.getMinecraft();

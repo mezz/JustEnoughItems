@@ -1,5 +1,7 @@
 package mezz.jei.forge.startup;
 
+import java.util.HashSet;
+import java.util.Set;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
@@ -16,8 +18,10 @@ import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.forge.network.NetworkHandler;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
@@ -32,13 +36,14 @@ public class ClientLifecycleHandler {
 	private final JeiStarter jeiStarter;
 	private final StartEventObserver startEventObserver = new StartEventObserver(this::startJei, this::stopJei);
 	private final RuntimeEventSubscriptions runtimeSubscriptions;
+	private final Set<KeyMapping> keysToRegister = new HashSet<>();
 
 	public ClientLifecycleHandler(NetworkHandler networkHandler, Textures textures, IServerConfig serverConfig) {
 		Path configDir = FMLPaths.CONFIGDIR.get();
 		Path jeiConfigDir = configDir.resolve(ModIds.JEI_ID);
 
 		IConnectionToServer serverConnection = new ConnectionToServer();
-		KeyBindings keyBindings = new KeyBindings();
+		KeyBindings keyBindings = new KeyBindings(keysToRegister::add);
 
 		ConfigData configData = ConfigData.create(
 			serverConnection,
@@ -64,6 +69,7 @@ public class ClientLifecycleHandler {
 
 	public void register(PermanentEventSubscriptions subscriptions) {
 		this.startEventObserver.register(subscriptions);
+		subscriptions.register(RegisterKeyMappingsEvent.class, event -> keysToRegister.forEach(event::register));
 	}
 
 	public PreparableReloadListener getReloadListener() {

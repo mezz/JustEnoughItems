@@ -37,7 +37,7 @@ public class ClientLifecycleHandler {
 		Path jeiConfigDir = configDir.resolve(ModIds.JEI_ID);
 
 		IConnectionToServer serverConnection = new ConnectionToServer();
-		KeyBindings keyBindings = new KeyBindings();
+		KeyBindings keyBindings = new KeyBindings(keyMapping -> {});
 
 		ConfigData configData = ConfigData.create(
 			serverConnection,
