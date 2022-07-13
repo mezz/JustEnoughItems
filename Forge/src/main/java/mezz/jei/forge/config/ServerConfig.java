@@ -5,11 +5,13 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 
+import java.util.function.Supplier;
+
 public final class ServerConfig implements IServerConfig {
 	// Forge config
-	private final ForgeConfigSpec.BooleanValue enableCheatModeForOp;
-	private final ForgeConfigSpec.BooleanValue enableCheatModeForCreative;
-	private final ForgeConfigSpec.BooleanValue enableCheatModeForGive;
+	private final Supplier<Boolean> enableCheatModeForOp;
+	private final Supplier<Boolean> enableCheatModeForCreative;
+	private final Supplier<Boolean> enableCheatModeForGive;
 
 	public static IServerConfig register(ModLoadingContext modLoadingContext) {
 		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();

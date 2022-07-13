@@ -19,7 +19,7 @@ public class ConfigSchemaBuilder {
         return category;
     }
 
-    public ConfigSchema build(Path path) {
+    public IConfigSchema build(Path path) {
         return new ConfigSchema(path, categoryBuilders);
     }
 }

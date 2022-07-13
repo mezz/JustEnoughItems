@@ -4,7 +4,9 @@ import mezz.jei.common.config.file.ConfigSchema;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.ConfigSerializer;
 import mezz.jei.common.config.file.FileWatcher;
+import mezz.jei.common.config.file.IConfigSchema;
 import mezz.jei.common.gui.overlay.options.HorizontalAlignment;
+import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.util.PathUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,13 +19,13 @@ import java.util.Map;
 public class JEIClientConfigs {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final ClientConfig clientConfig;
-	private final IngredientFilterConfig filterConfig;
-	private final ModIdFormatConfig modIdFormat;
-	private final IngredientGridConfig ingredientListConfig;
-	private final IngredientGridConfig bookmarkListConfig;
+	private final IClientConfig clientConfig;
+	private final IIngredientFilterConfig filterConfig;
+	private final IModIdFormatConfig modIdFormat;
+	private final IIngredientGridConfig ingredientListConfig;
+	private final IIngredientGridConfig bookmarkListConfig;
 
-	private final ConfigSchema schema;
+	private final IConfigSchema schema;
 
 	public JEIClientConfigs(Path configFile) {
 		ConfigSchemaBuilder builder = new ConfigSchemaBuilder();
@@ -46,43 +48,26 @@ public class JEIClientConfigs {
 		} catch (IOException e) {
 			LOGGER.error("Failed to migrate config file from '{}' to new location '{}'", oldConfigFile, configFile, e);
 		}
-
-		Path configPath = schema.getPath();
-		if (!Files.exists(configPath)) {
-			try {
-				Files.createDirectories(configPath.getParent());
-				ConfigSerializer.save(schema);
-			} catch (IOException e) {
-				LOGGER.error("Failed to create config file: '{}'", configFile, e);
-			}
-		}
-
-		try {
-			FileWatcher fileWatcher = new FileWatcher(Map.of(configPath, schema::onFileChanged));
-			Thread thread = new Thread(fileWatcher::run, "JEI Config file watcher");
-			thread.start();
-		} catch (IOException e) {
-			LOGGER.error("Failed to create FileWatcher Thread for config file: '{}'", configFile, e);
-		}
+		schema.register(configFile);
 	}
 
-	public ClientConfig getClientConfig() {
+	public IClientConfig getClientConfig() {
 		return clientConfig;
 	}
 
-	public IngredientFilterConfig getFilterConfig() {
+	public IIngredientFilterConfig getFilterConfig() {
 		return filterConfig;
 	}
 
-	public IngredientGridConfig getIngredientListConfig() {
+	public IIngredientGridConfig getIngredientListConfig() {
 		return ingredientListConfig;
 	}
 
-	public IngredientGridConfig getBookmarkListConfig() {
+	public IIngredientGridConfig getBookmarkListConfig() {
 		return bookmarkListConfig;
 	}
 
-	public ModIdFormatConfig getModIdFormat() {
+	public IModIdFormatConfig getModIdFormat() {
 		return modIdFormat;
 	}
 }

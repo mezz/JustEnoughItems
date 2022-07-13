@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ConfigSchema {
+public class ConfigSchema implements IConfigSchema {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final Path path;
@@ -34,6 +34,7 @@ public class ConfigSchema {
         this.categories = Collections.unmodifiableMap(map);
     }
 
+    @Override
     public void loadIfNeeded() {
         if (!needsLoad.get()) {
             return;
@@ -49,10 +50,11 @@ public class ConfigSchema {
         }
     }
 
-    public void onFileChanged() {
+    private void onFileChanged() {
         needsLoad.set(true);
     }
 
+    @Override
     public Path getPath() {
         return path;
     }
@@ -68,5 +70,26 @@ public class ConfigSchema {
 
     public Set<String> getCategoryNames() {
         return this.categories.keySet();
+    }
+
+    @Override
+    public void register(Path configFile) {
+        Path configPath = getPath();
+        if (!Files.exists(configPath)) {
+            try {
+                Files.createDirectories(configPath.getParent());
+                ConfigSerializer.save(this);
+            } catch (IOException e) {
+                LOGGER.error("Failed to create config file: '{}'", configFile, e);
+            }
+        }
+
+        try {
+            FileWatcher fileWatcher = new FileWatcher(Map.of(configPath, this::onFileChanged));
+            Thread thread = new Thread(fileWatcher::run, "JEI Config file watcher");
+            thread.start();
+        } catch (IOException e) {
+            LOGGER.error("Failed to create FileWatcher Thread for config file: '{}'", configFile, e);
+        }
     }
 }
