@@ -71,7 +71,16 @@ public final class RecipeTransferUtil {
 
 		RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
 		IRecipeSlotsView recipeSlotsView = recipeSlots.getView();
-		return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlotsView, player, maxTransfer, doTransfer);
+
+		try {
+			return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlotsView, player, maxTransfer, doTransfer);
+		} catch (RuntimeException e) {
+			LOGGER.error(
+					"Recipe transfer handler '{}' for container '{}' and recipe type '{}' threw an error: ",
+					transferHandler.getClass(), transferHandler.getContainerClass(), recipeCategory.getRecipeType().getUid(), e
+			);
+			return RecipeTransferErrorInternal.INSTANCE;
+		}
 	}
 
 	public static boolean allowsTransfer(@Nullable IRecipeTransferError error) {
