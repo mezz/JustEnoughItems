@@ -1,9 +1,6 @@
 package mezz.jei.common.config;
 
-import mezz.jei.common.config.file.ConfigSchema;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
-import mezz.jei.common.config.file.ConfigSerializer;
-import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.config.file.IConfigSchema;
 import mezz.jei.common.gui.overlay.options.HorizontalAlignment;
 import mezz.jei.core.config.IClientConfig;
@@ -12,9 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 
 public class JEIClientConfigs {
 	private static final Logger LOGGER = LogManager.getLogger();
