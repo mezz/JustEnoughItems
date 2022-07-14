@@ -4,6 +4,7 @@ import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.fabric.mixin.AbstractContainerScreenAccess;
 import mezz.jei.fabric.mixin.RecipeBookComponentAccess;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
@@ -60,5 +61,10 @@ public class ScreenHelper implements IPlatformScreenHelper {
     public List<RecipeBookTabButton> getTabButtons(RecipeBookComponent recipeBookComponent) {
         var access = (RecipeBookComponentAccess) recipeBookComponent;
         return access.getTabButtons();
+    }
+
+    @Override
+    public void setFocused(AbstractWidget widget, boolean value) {
+        widget.setFocused(value);
     }
 }

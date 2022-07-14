@@ -2,6 +2,7 @@ package mezz.jei.forge.platform;
 
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.util.ImmutableRect2i;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
@@ -51,5 +52,10 @@ public class ScreenHelper implements IPlatformScreenHelper {
     @Override
     public List<RecipeBookTabButton> getTabButtons(RecipeBookComponent recipeBookComponent) {
         return recipeBookComponent.tabButtons;
+    }
+
+    @Override
+    public void setFocused(AbstractWidget widget, boolean value) {
+        widget.setFocused(value);
     }
 }

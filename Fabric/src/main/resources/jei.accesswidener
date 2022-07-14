@@ -1,0 +1,3 @@
+accessWidener	v1	named
+
+accessible method net/minecraft/client/gui/components/AbstractWidget setFocused (Z)V
