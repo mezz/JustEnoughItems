@@ -116,6 +116,8 @@ loom {
             vmArgs("-Dfabric.classPathGroups=${classPathGroupsString}")
         }
     }
+
+    accessWidenerPath.set(file("src/main/resources/jei.accesswidener"))
 }
 
 sourceSets {

@@ -7,13 +7,17 @@ import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.handlers.TextFieldInputHandler;
 import mezz.jei.common.platform.IPlatformInputHelper;
+import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.util.TextHistory;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TextComponent;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class GuiTextFieldFilter extends EditBox {
@@ -25,6 +29,7 @@ public class GuiTextFieldFilter extends EditBox {
 	private ImmutableRect2i backgroundBounds;
 
 	private boolean previousKeyboardRepeatEnabled;
+	private @Nullable AbstractWidget previouslyFocusedWidget;
 
 	public GuiTextFieldFilter(Textures textures) {
 		// TODO narrator string
@@ -80,7 +85,25 @@ public class GuiTextFieldFilter extends EditBox {
 				IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
 				previousKeyboardRepeatEnabled = inputHelper.isSendRepeatsToGui(minecraft.keyboardHandler);
 				minecraft.keyboardHandler.setSendRepeatsToGui(true);
+				Screen screen = minecraft.screen;
+				if (screen != null) {
+					if (screen.getFocused() instanceof AbstractWidget widget) {
+						IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+						screenHelper.setFocused(widget, false);
+						previouslyFocusedWidget = widget;
+					}
+					screen.setFocused(null);
+				}
 			} else {
+				if (previouslyFocusedWidget != null) {
+					Screen screen = minecraft.screen;
+					if (screen != null) {
+						IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+						screenHelper.setFocused(previouslyFocusedWidget, true);
+						screen.setFocused(previouslyFocusedWidget);
+					}
+					previouslyFocusedWidget = null;
+				}
 				minecraft.keyboardHandler.setSendRepeatsToGui(previousKeyboardRepeatEnabled);
 			}
 

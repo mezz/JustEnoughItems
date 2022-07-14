@@ -33,6 +33,7 @@
   "mixins": [
     "jei.mixins.json"
   ],
+  "accessWidener" : "jei.accesswidener",
 
   "depends": {
     "fabricloader": ">=${fabricLoaderVersion}",

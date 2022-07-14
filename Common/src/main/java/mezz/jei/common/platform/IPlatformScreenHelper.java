@@ -1,6 +1,7 @@
 package mezz.jei.common.platform;
 
 import mezz.jei.common.util.ImmutableRect2i;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
@@ -25,4 +26,6 @@ public interface IPlatformScreenHelper {
     ImmutableRect2i getBookArea(RecipeUpdateListener containerScreen);
 
     List<RecipeBookTabButton> getTabButtons(RecipeBookComponent recipeBookComponent);
+
+    void setFocused(AbstractWidget widget, boolean value);
 }
