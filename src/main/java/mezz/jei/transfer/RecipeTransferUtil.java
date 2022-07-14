@@ -59,7 +59,15 @@ public final class RecipeTransferUtil {
 			return RecipeTransferErrorInternal.INSTANCE;
 		}
 
-		return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeLayout, player, maxTransfer, doTransfer);
+		try {
+			return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeLayout, player, maxTransfer, doTransfer);
+		} catch (RuntimeException | LinkageError e) {
+			LOGGER.error(
+				"Recipe transfer handler '{}' for container '{}' and recipe category '{}' threw an error:",
+				transferHandler.getClass(), transferHandler.getContainerClass(), recipeLayout.getRecipeCategory().getUid(), e
+			);
+			return RecipeTransferErrorInternal.INSTANCE;
+		}
 	}
 
 	public static boolean allowsTransfer(@Nullable IRecipeTransferError error) {
