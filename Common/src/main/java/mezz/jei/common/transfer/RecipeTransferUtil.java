@@ -73,11 +73,19 @@ public final class RecipeTransferUtil {
 		RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
 		IRecipeSlotsView recipeSlotsView = recipeSlots.getView();
 		try {
-			return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlotsView, player, maxTransfer, doTransfer);
-		} catch (UnsupportedOperationException ignored) {
-			// old handlers do not support calling the new transferRecipe method.
-			// call the legacy method instead
-			return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeLayout.getLegacyAdapter(), player, maxTransfer, doTransfer);
+			try {
+				return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlotsView, player, maxTransfer, doTransfer);
+			} catch (UnsupportedOperationException ignored) {
+				// old handlers do not support calling the new transferRecipe method.
+				// call the legacy method instead
+				return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeLayout.getLegacyAdapter(), player, maxTransfer, doTransfer);
+			}
+		} catch (RuntimeException e) {
+			LOGGER.error(
+					"Recipe transfer handler '{}' for container '{}' and recipe '{}' threw an error: ",
+					transferHandler.getClass(), transferHandler.getContainerClass(), transferHandler.getRecipeClass(), e
+			);
+			return RecipeTransferErrorInternal.INSTANCE;
 		}
 	}
 
