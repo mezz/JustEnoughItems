@@ -1,7 +1,6 @@
 package mezz.jei.fabric.platform;
 
 import mezz.jei.common.platform.IPlatformRecipeHelper;
-import mezz.jei.fabric.mixin.UpgradeRecipeAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -29,14 +28,12 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 
     @Override
     public Ingredient getBase(UpgradeRecipe recipe) {
-        var access = (UpgradeRecipeAccess) recipe;
-        return access.getBase();
+        return recipe.base;
     }
 
     @Override
     public Ingredient getAddition(UpgradeRecipe recipe) {
-        var access = (UpgradeRecipeAccess) recipe;
-        return access.getAddition();
+        return recipe.addition;
     }
 
     @Override

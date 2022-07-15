@@ -6,19 +6,13 @@
   "mixins": [
   ],
   "client": [
-    "AbstractContainerScreenAccess",
     "AbstractContainerScreenMixin",
     "ClientPacketListenerMixin",
     "EffectRenderingInventoryScreenMixin",
     "GameMixin",
-    "KeyboardHandlerAccess",
     "KeyboardHandlerMixin",
-    "MinecraftAccess",
     "MinecraftMixin",
-    "RecipeBookComponentAccess",
-    "ScreenMixin",
-    "TextureAtlasSpriteAccess",
-    "UpgradeRecipeAccess"
+    "ScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

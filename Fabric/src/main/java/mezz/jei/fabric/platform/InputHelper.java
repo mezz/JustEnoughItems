@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.fabric.input.FabricJeiKeyMappingCategoryBuilder;
-import mezz.jei.fabric.mixin.KeyboardHandlerAccess;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
 
@@ -22,8 +21,7 @@ public class InputHelper implements IPlatformInputHelper {
 
     @Override
     public boolean isSendRepeatsToGui(KeyboardHandler keyboardHandler) {
-        var access = (KeyboardHandlerAccess) keyboardHandler;
-        return access.getSendRepeatsToGui();
+        return keyboardHandler.sendRepeatsToGui;
     }
 
     @Override

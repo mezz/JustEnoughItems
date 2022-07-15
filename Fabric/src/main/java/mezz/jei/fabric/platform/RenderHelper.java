@@ -3,8 +3,6 @@ package mezz.jei.fabric.platform;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.common.platform.IPlatformRenderHelper;
-import mezz.jei.fabric.mixin.MinecraftAccess;
-import mezz.jei.fabric.mixin.TextureAtlasSpriteAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
@@ -39,15 +37,13 @@ public class RenderHelper implements IPlatformRenderHelper {
     @Override
     public ItemColors getItemColors() {
         Minecraft minecraft = Minecraft.getInstance();
-        var access = (MinecraftAccess) minecraft;
-        return access.getItemColors();
+        return minecraft.itemColors;
     }
 
     @Override
     @Nullable
     public NativeImage getMainImage(TextureAtlasSprite sprite) {
-        var access = (TextureAtlasSpriteAccess) sprite;
-        NativeImage[] frames = access.getMainImage();
+        NativeImage[] frames = sprite.mainImage;
         if (frames.length == 0) {
             return null;
         }
