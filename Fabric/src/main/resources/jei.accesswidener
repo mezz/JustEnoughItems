@@ -1,3 +1,23 @@
-accessWidener	v1	named
+accessWidener v1 named
 
 accessible method net/minecraft/client/gui/components/AbstractWidget setFocused (Z)V
+
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen hoveredSlot Lnet/minecraft/world/inventory/Slot;
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen leftPos I
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageWidth I
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageHeight I
+
+accessible field net/minecraft/client/KeyboardHandler sendRepeatsToGui Z
+
+accessible field net/minecraft/client/Minecraft itemColors Lnet/minecraft/client/color/item/ItemColors;
+
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent width I
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent height I
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent xOffset I
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent tabButtons Ljava/util/List;
+
+accessible field net/minecraft/client/renderer/texture/TextureAtlasSprite mainImage [Lcom/mojang/blaze3d/platform/NativeImage;
+
+accessible field net/minecraft/world/item/crafting/UpgradeRecipe base Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/UpgradeRecipe addition Lnet/minecraft/world/item/crafting/Ingredient;
