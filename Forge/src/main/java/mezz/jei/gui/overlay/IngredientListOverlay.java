@@ -75,6 +75,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.searchField.setValue(filterTextSource.getFilterText());
 		this.searchField.setFocused(false);
 		this.searchField.setResponder(filterTextSource::setFilterText);
+		filterTextSource.addListener(this.searchField::setValue);
 
 		ingredientGridSource.addSourceListChangedListener(() -> updateBounds(true));
 
