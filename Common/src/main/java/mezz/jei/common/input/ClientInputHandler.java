@@ -2,6 +2,7 @@ package mezz.jei.common.input;
 
 import mezz.jei.common.input.handlers.CombinedInputHandler;
 import mezz.jei.core.util.ReflectionUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -69,7 +70,7 @@ public class ClientInputHandler {
 		boolean handled = this.inputHandler.handleUserInput(screen, input, keybindings)
 			.isPresent();
 
-		if (input.is(keybindings.getLeftClick())) {
+		if (Minecraft.getInstance().screen == screen && input.is(keybindings.getLeftClick())) {
 			handled |= this.inputHandler.handleDragStart(screen, input)
 				.isPresent();
 		}
