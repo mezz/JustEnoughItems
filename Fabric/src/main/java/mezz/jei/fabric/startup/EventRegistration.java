@@ -73,7 +73,7 @@ public class EventRegistration {
 			return true;
 		}
 		return UserInput.fromVanilla(mouseX, mouseY, button, InputType.EXECUTE)
-			.map(input -> !clientInputHandler.onGuiMouseClicked(screen, input))
+			.map(input -> !clientInputHandler.onGuiMouseReleased(screen, input))
 			.orElse(true);
 	}
 
