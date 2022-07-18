@@ -8,6 +8,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.config.KeyBindings;
 import mezz.jei.ingredients.RegisteredIngredients;
 import mezz.jei.input.UserInput;
 import mezz.jei.input.mouse.IUserInputHandler;
@@ -40,12 +41,15 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		if (!isMouseOver(input.getMouseX(), input.getMouseY())) {
 			return Optional.empty();
 		}
-		if (!input.isSimulate()) {
-			logic.setRecipeCategory(category);
-			SoundManager soundHandler = Minecraft.getInstance().getSoundManager();
-			soundHandler.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+		if (input.is(KeyBindings.leftClick)) {
+			if (!input.isSimulate()) {
+				logic.setRecipeCategory(category);
+				SoundManager soundHandler = Minecraft.getInstance().getSoundManager();
+				soundHandler.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+			}
+			return Optional.of(this);
 		}
-		return Optional.of(this);
+		return Optional.empty();
 	}
 
 	@Override
