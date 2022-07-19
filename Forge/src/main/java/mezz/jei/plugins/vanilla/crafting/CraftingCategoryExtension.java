@@ -31,8 +31,8 @@ public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICra
 
 		int width = getWidth();
 		int height = getHeight();
-		craftingGridHelper.setOutputs(builder, VanillaTypes.ITEM_STACK, List.of(resultItem));
-		craftingGridHelper.setInputs(builder, VanillaTypes.ITEM_STACK, inputs, width, height);
+		craftingGridHelper.createAndSetOutputs(builder, VanillaTypes.ITEM_STACK, List.of(resultItem));
+		craftingGridHelper.createAndSetInputs(builder, VanillaTypes.ITEM_STACK, inputs, width, height);
 	}
 
 	@Nullable

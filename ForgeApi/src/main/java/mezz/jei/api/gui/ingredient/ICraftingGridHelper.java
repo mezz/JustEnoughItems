@@ -19,12 +19,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface ICraftingGridHelper {
 	/**
-	 * Place input ingredients onto the crafting grid in a consistent way.
+	 * Create and place input ingredients onto the crafting grid in a consistent way.
 	 * For shapeless recipes, use a width and height of 0.
 	 *
-	 * @since 9.3.0
+	 * @since 9.7.1
 	 */
-	<T> void setInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height);
+	<T> List<IRecipeSlotBuilder> createAndSetInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height);
 
 	/**
 	 * Place input ingredients onto the slot builders in a consistent way.
@@ -37,8 +37,26 @@ public interface ICraftingGridHelper {
 	/**
 	 * Place output ingredients at the right location.
 	 *
-	 * @since 9.3.0
+	 * @since 9.7.1
 	 */
+	<T> IRecipeSlotBuilder createAndSetOutputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, @Nullable List<@Nullable T> outputs);
+
+	/**
+	 * Place input ingredients onto the crafting grid in a consistent way.
+	 * For shapeless recipes, use a width and height of 0.
+	 *
+	 * @since 9.3.0
+	 * @deprecated Use {@link #createAndSetInputs(IRecipeLayoutBuilder, IIngredientType, List, int, int)} instead.
+	 */
+	@Deprecated(since = "9.7.1", forRemoval = true)
+	<T> void setInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height);
+
+	/**
+	 * Place output ingredients at the right location.
+	 *
+	 * @deprecated Use {@link #createAndSetOutputs(IRecipeLayoutBuilder, IIngredientType, List)} instead.
+	 */
+	@Deprecated(since = "9.7.1", forRemoval = true)
 	<T> void setOutputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, @Nullable List<@Nullable T> outputs);
 
 	/**
