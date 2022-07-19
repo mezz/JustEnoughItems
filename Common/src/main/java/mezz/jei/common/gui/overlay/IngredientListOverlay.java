@@ -50,9 +50,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IngredientGridWithNavigation contents;
 	private final IClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
-	private final IConnectionToServer serverConnection;
+	private final IConnectionToServer connectionToServer;
 	private final GuiScreenHelper guiScreenHelper;
-	private final GuiTextFieldFilter searchField;
+	private final GuiTextFieldFilter textFieldFilter;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private ImmutableRect2i displayArea = ImmutableRect2i.EMPTY;
 	private boolean hasRoom;
@@ -69,7 +69,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
-		IConnectionToServer serverConnection,
+		IConnectionToServer connectionToServer,
 		Textures textures,
 		IKeyBindings keyBindings
 	) {
@@ -77,13 +77,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.contents = contents;
 		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
-		this.serverConnection = serverConnection;
+		this.connectionToServer = connectionToServer;
 
-		this.searchField = new GuiTextFieldFilter(textures);
-		this.searchField.setValue(filterTextSource.getFilterText());
-		this.searchField.setFocused(false);
-		this.searchField.setResponder(filterTextSource::setFilterText);
-		filterTextSource.addListener(this.searchField::setValue);
+		this.textFieldFilter = new GuiTextFieldFilter(textures);
+		this.textFieldFilter.setValue(filterTextSource.getFilterText());
+		this.textFieldFilter.setFocused(false);
+		this.textFieldFilter.setResponder(filterTextSource::setFilterText);
+		filterTextSource.addListener(this.textFieldFilter::setValue);
 
 		ingredientGridSource.addSourceListChangedListener(() -> updateBounds(true));
 
@@ -109,7 +109,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (guiProperties == null) {
 			if (this.guiProperties != null) {
 				this.guiProperties = null;
-				this.searchField.setFocused(false);
+				this.textFieldFilter.setFocused(false);
 				this.ghostIngredientDragManager.stopDrag();
 			}
 		} else {
@@ -144,8 +144,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		final ImmutableRect2i configButtonArea = searchAndConfigArea.keepRight(BUTTON_SIZE);
 
 		int searchTextColor = this.contents.isEmpty() ? 0xFFFF0000 : 0xFFFFFFFF;
-		this.searchField.setTextColor(searchTextColor);
-		this.searchField.updateBounds(searchArea);
+		this.textFieldFilter.setTextColor(searchTextColor);
+		this.textFieldFilter.updateBounds(searchArea);
 
 		this.configButton.updateBounds(configButtonArea);
 
@@ -184,7 +184,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public void drawScreen(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
-			this.searchField.renderButton(poseStack, mouseX, mouseY, partialTicks);
+			this.textFieldFilter.renderButton(poseStack, mouseX, mouseY, partialTicks);
 			this.contents.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
 		}
 		if (this.guiProperties != null) {
@@ -216,7 +216,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public void handleTick() {
 		if (this.isListDisplayed()) {
-			this.searchField.tick();
+			this.textFieldFilter.tick();
 		}
 	}
 
@@ -231,10 +231,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public IUserInputHandler createInputHandler() {
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
 			this.ghostIngredientDragManager.createInputHandler(),
-			this.searchField.createInputHandler(),
+			this.textFieldFilter.createInputHandler(),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler(),
-			new CheatInputHandler(this.contents, worldConfig, clientConfig, serverConnection)
+			new CheatInputHandler(this.contents, worldConfig, clientConfig, connectionToServer)
 		);
 
 		final IUserInputHandler hiddenInputHandler = this.configButton.createInputHandler();
@@ -252,12 +252,12 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	@Override
 	public boolean hasKeyboardFocus() {
-		return isListDisplayed() && this.searchField.isFocused();
+		return isListDisplayed() && this.textFieldFilter.isFocused();
 	}
 
 	@Override
 	public boolean onCharTyped(char codePoint, int modifiers) {
-		return searchField.charTyped(codePoint, modifiers);
+		return textFieldFilter.charTyped(codePoint, modifiers);
 	}
 
 	@Override
