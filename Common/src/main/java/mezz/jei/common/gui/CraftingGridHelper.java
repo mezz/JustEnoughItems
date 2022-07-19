@@ -36,7 +36,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	}
 
 	@Override
-	public <T> void setInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height) {
+	public <T> List<IRecipeSlotBuilder> createAndSetInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height) {
 		if (width <= 0 || height <= 0) {
 			builder.setShapeless();
 		}
@@ -50,6 +50,14 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		}
 
 		setInputs(inputSlots, ingredientType, inputs, width, height);
+
+		return inputSlots;
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public <T> void setInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height) {
+		createAndSetInputs(builder, ingredientType, inputs, width, height);
 	}
 
 	@Override
@@ -73,11 +81,18 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	}
 
 	@Override
-	public <T> void setOutputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, @Nullable List<@Nullable T> outputs) {
+	public <T> IRecipeSlotBuilder createAndSetOutputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, @Nullable List<@Nullable T> outputs) {
 		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 95, 19);
 		if (outputs != null) {
 			outputSlot.addIngredients(ingredientType, outputs);
 		}
+		return outputSlot;
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public <T> void setOutputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, @Nullable List<@Nullable T> outputs) {
+		createAndSetOutputs(builder, ingredientType, outputs);
 	}
 
 	private static int getShapelessSize(int total) {
