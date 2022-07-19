@@ -12,7 +12,7 @@ public class CombinedRecipeFocusSource {
 		this.handlers = List.of(handlers);
 	}
 
-	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(UserInput input, IKeyBindings keyBindings) {
+	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(UserInput input, IInternalKeyMappings keyBindings) {
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
 
@@ -31,7 +31,7 @@ public class CombinedRecipeFocusSource {
 	 * it would conflict with their normal behavior.
 	 * @see IClickedIngredient#canOverrideVanillaClickHandler()
 	 */
-	private static boolean isConflictingVanillaMouseButton(UserInput input, IKeyBindings keyBindings) {
+	private static boolean isConflictingVanillaMouseButton(UserInput input, IInternalKeyMappings keyBindings) {
 		if (input.isMouse()) {
 			Minecraft minecraft = Minecraft.getInstance();
 			return input.is(keyBindings.getLeftClick()) ||

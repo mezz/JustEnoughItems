@@ -16,7 +16,7 @@ import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.gui.recipes.OutputSlotTooltipCallback;
@@ -243,7 +243,7 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R>, IRecipeLayoutD
 		return this.recipeSlots.getHoveredSlot(recipeMouseX, recipeMouseY);
 	}
 
-	public boolean handleInput(UserInput input, IKeyBindings keyBindings) {
+	public boolean handleInput(UserInput input, IInternalKeyMappings keyBindings) {
 		if (!isMouseOver(input.getMouseX(), input.getMouseY())) {
 			return false;
 		}

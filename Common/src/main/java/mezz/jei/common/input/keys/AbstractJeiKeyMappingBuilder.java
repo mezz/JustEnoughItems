@@ -4,25 +4,25 @@ import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
 
 public abstract class AbstractJeiKeyMappingBuilder implements IJeiKeyMappingBuilder {
-    protected abstract IJeiKeyMapping buildMouse(int mouseButton);
+    protected abstract IJeiKeyMappingInternal buildMouse(int mouseButton);
 
     @Override
-    public final IJeiKeyMapping buildMouseLeft() {
+    public final IJeiKeyMappingInternal buildMouseLeft() {
         return buildMouse(InputConstants.MOUSE_BUTTON_LEFT);
     }
 
     @Override
-    public final IJeiKeyMapping buildMouseRight() {
+    public final IJeiKeyMappingInternal buildMouseRight() {
         return buildMouse(InputConstants.MOUSE_BUTTON_RIGHT);
     }
 
     @Override
-    public final IJeiKeyMapping buildMouseMiddle() {
+    public final IJeiKeyMappingInternal buildMouseMiddle() {
         return buildMouse(InputConstants.MOUSE_BUTTON_MIDDLE);
     }
 
     @Override
-    public final IJeiKeyMapping buildUnbound() {
+    public final IJeiKeyMappingInternal buildUnbound() {
         return buildKeyboardKey(GLFW.GLFW_KEY_UNKNOWN);
     }
 }

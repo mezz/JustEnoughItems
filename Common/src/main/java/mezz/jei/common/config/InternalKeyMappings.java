@@ -1,20 +1,20 @@
 package mezz.jei.common.config;
 
 import java.util.function.Consumer;
-import mezz.jei.common.input.IKeyBindings;
-import mezz.jei.common.input.keys.IJeiKeyMapping;
+
+import mezz.jei.api.runtime.IJeiKeyMapping;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
+import mezz.jei.common.input.keys.JeiMultiKeyMapping;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.Translator;
 import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.List;
-
-public final class KeyBindings implements IKeyBindings {
+public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping toggleOverlay;
 	private final IJeiKeyMapping focusSearch;
 	private final IJeiKeyMapping toggleCheatMode;
@@ -34,11 +34,11 @@ public final class KeyBindings implements IKeyBindings {
 	private final IJeiKeyMapping bookmark;
 	private final IJeiKeyMapping toggleBookmarkOverlay;
 
-	private final List<IJeiKeyMapping> showRecipe;
-	private final List<IJeiKeyMapping> showUses;
+	private final IJeiKeyMapping showRecipe;
+	private final IJeiKeyMapping showUses;
 
-	private final List<IJeiKeyMapping> cheatOneItem;
-	private final List<IJeiKeyMapping> cheatItemStack;
+	private final IJeiKeyMapping cheatOneItem;
+	private final IJeiKeyMapping cheatItemStack;
 
 	private final IJeiKeyMapping toggleHideIngredient;
 	private final IJeiKeyMapping toggleWildcardHideIngredient;
@@ -55,9 +55,9 @@ public final class KeyBindings implements IKeyBindings {
 	private final IJeiKeyMapping escapeKey;
 	private final IJeiKeyMapping leftClick;
 	private final IJeiKeyMapping rightClick;
-	private final List<IJeiKeyMapping> enterKey;
+	private final IJeiKeyMapping enterKey;
 
-	public KeyBindings(Consumer<KeyMapping> registerMethod) {
+	public InternalKeyMappings(Consumer<KeyMapping> registerMethod) {
 		IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
 
 		IJeiKeyMapping showRecipe1;
@@ -254,10 +254,10 @@ public final class KeyBindings implements IKeyBindings {
 			.buildUnbound()
 			.register(registerMethod);
 
-		showRecipe = List.of(showRecipe1, showRecipe2);
-		showUses = List.of(showUses1, showUses2);
-		cheatOneItem = List.of(cheatOneItem1, cheatOneItem2);
-		cheatItemStack = List.of(cheatItemStack1, cheatItemStack2);
+		showRecipe = new JeiMultiKeyMapping(showRecipe1, showRecipe2);
+		showUses = new JeiMultiKeyMapping(showUses1, showUses2);
+		cheatOneItem = new JeiMultiKeyMapping(cheatOneItem1, cheatOneItem2);
+		cheatItemStack = new JeiMultiKeyMapping(cheatItemStack1, cheatItemStack2);
 
 		String jeiHiddenInternalCategoryName = "jei.key.category.hidden.internal";
 		IJeiKeyMappingCategoryBuilder jeiHidden = inputHelper.createKeyMappingCategoryBuilder(jeiHiddenInternalCategoryName);
@@ -274,7 +274,7 @@ public final class KeyBindings implements IKeyBindings {
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildMouseRight();
 
-		enterKey = List.of(
+		enterKey = new JeiMultiKeyMapping(
 			jeiHidden.createMapping("key.jei.internal.enter.key")
 				.setContext(JeiKeyConflictContext.GUI)
 				.buildKeyboardKey(GLFW.GLFW_KEY_ENTER),
@@ -361,22 +361,22 @@ public final class KeyBindings implements IKeyBindings {
 	}
 
 	@Override
-	public List<IJeiKeyMapping> getShowRecipe() {
+	public IJeiKeyMapping getShowRecipe() {
 		return showRecipe;
 	}
 
 	@Override
-	public List<IJeiKeyMapping> getShowUses() {
+	public IJeiKeyMapping getShowUses() {
 		return showUses;
 	}
 
 	@Override
-	public List<IJeiKeyMapping> getCheatOneItem() {
+	public IJeiKeyMapping getCheatOneItem() {
 		return cheatOneItem;
 	}
 
 	@Override
-	public List<IJeiKeyMapping> getCheatItemStack() {
+	public IJeiKeyMapping getCheatItemStack() {
 		return cheatItemStack;
 	}
 
@@ -426,7 +426,7 @@ public final class KeyBindings implements IKeyBindings {
 	}
 
 	@Override
-	public List<IJeiKeyMapping> getEnterKey() {
+	public IJeiKeyMapping getEnterKey() {
 		return enterKey;
 	}
 }

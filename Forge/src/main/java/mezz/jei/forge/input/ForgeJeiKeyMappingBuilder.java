@@ -2,7 +2,7 @@ package mezz.jei.forge.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.keys.AbstractJeiKeyMappingBuilder;
-import mezz.jei.common.input.keys.IJeiKeyMapping;
+import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.IJeiKeyMappingBuilder;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
@@ -48,7 +48,7 @@ public class ForgeJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
     }
 
     @Override
-    protected IJeiKeyMapping buildMouse(int mouseButton) {
+    protected IJeiKeyMappingInternal buildMouse(int mouseButton) {
         KeyMapping keyMapping = new KeyMapping(
             description,
             keyConflictContext,
@@ -61,7 +61,7 @@ public class ForgeJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
     }
 
     @Override
-    public IJeiKeyMapping buildKeyboardKey(int key) {
+    public IJeiKeyMappingInternal buildKeyboardKey(int key) {
         KeyMapping keyMapping = new KeyMapping(
             description,
             keyConflictContext,

@@ -13,7 +13,7 @@ import mezz.jei.common.startup.JeiEventHandlers;
 import mezz.jei.common.startup.JeiStarter;
 import mezz.jei.common.startup.StartData;
 import mezz.jei.core.config.IServerConfig;
-import mezz.jei.common.config.KeyBindings;
+import mezz.jei.common.config.InternalKeyMappings;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.network.ConnectionToServer;
@@ -43,7 +43,7 @@ public class ClientLifecycleHandler {
 		Path jeiConfigDir = configDir.resolve(ModIds.JEI_ID);
 
 		IConnectionToServer serverConnection = new ConnectionToServer();
-		KeyBindings keyBindings = new KeyBindings(keysToRegister::add);
+		InternalKeyMappings keyBindings = new InternalKeyMappings(keysToRegister::add);
 
 		ConfigData configData = ConfigData.create(
 			serverConnection,

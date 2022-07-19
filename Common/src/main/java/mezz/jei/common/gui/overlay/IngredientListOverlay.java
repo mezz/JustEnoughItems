@@ -14,7 +14,7 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.ICharTypedHandler;
 import mezz.jei.common.input.IClickedIngredient;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.MouseUtil;
@@ -71,7 +71,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IWorldConfig worldConfig,
 		IConnectionToServer serverConnection,
 		Textures textures,
-		IKeyBindings keyBindings
+		IInternalKeyMappings keyBindings
 	) {
 		this.guiScreenHelper = guiScreenHelper;
 		this.contents = contents;

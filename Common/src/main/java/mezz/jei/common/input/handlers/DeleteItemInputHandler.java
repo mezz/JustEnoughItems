@@ -3,7 +3,7 @@ package mezz.jei.common.input.handlers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.overlay.IIngredientGrid;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.network.IConnectionToServer;
@@ -44,7 +44,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput userInput, IKeyBindings keyBindings) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput userInput, IInternalKeyMappings keyBindings) {
 		double mouseX = userInput.getMouseX();
 		double mouseY = userInput.getMouseY();
 		if (!this.ingredientGrid.isMouseOver(mouseX, mouseY)) {

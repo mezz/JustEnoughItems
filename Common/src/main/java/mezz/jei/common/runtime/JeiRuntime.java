@@ -9,6 +9,7 @@ import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.runtime.IJeiKeyMappings;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.ingredients.RegisteredIngredients;
@@ -26,6 +27,7 @@ public class JeiRuntime implements IJeiRuntime {
 	private final RegisteredIngredients registeredIngredients;
 	private final IIngredientManager ingredientManager;
 	private final IIngredientVisibility ingredientVisibility;
+	private final IJeiKeyMappings keyMappings;
 	private final IJeiHelpers jeiHelpers;
 
 	public JeiRuntime(
@@ -37,7 +39,7 @@ public class JeiRuntime implements IJeiRuntime {
 		RegisteredIngredients registeredIngredients,
 		IIngredientManager ingredientManager,
 		IIngredientVisibility ingredientVisibility,
-		IJeiHelpers jeiHelpers
+		IJeiKeyMappings keyMappings, IJeiHelpers jeiHelpers
 	) {
 		this.recipeManager = recipeManager;
 		this.ingredientListOverlay = ingredientListOverlay;
@@ -47,6 +49,7 @@ public class JeiRuntime implements IJeiRuntime {
 		this.registeredIngredients = registeredIngredients;
 		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
+		this.keyMappings = keyMappings;
 		this.jeiHelpers = jeiHelpers;
 	}
 
@@ -98,5 +101,10 @@ public class JeiRuntime implements IJeiRuntime {
 	@Override
 	public IIngredientVisibility getIngredientVisibility() {
 		return ingredientVisibility;
+	}
+
+	@Override
+	public IJeiKeyMappings getKeyMappings() {
+		return keyMappings;
 	}
 }

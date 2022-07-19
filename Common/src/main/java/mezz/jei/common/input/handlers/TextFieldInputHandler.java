@@ -1,7 +1,7 @@
 package mezz.jei.common.input.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.core.util.TextHistory;
@@ -18,14 +18,14 @@ public class TextFieldInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		if (handleUserInputBoolean(input, keyBindings)) {
 			return Optional.of(this);
 		}
 		return Optional.empty();
 	}
 
-	private boolean handleUserInputBoolean(UserInput input, IKeyBindings keyBindings) {
+	private boolean handleUserInputBoolean(UserInput input, IInternalKeyMappings keyBindings) {
 		if (input.is(keyBindings.getEnterKey()) || input.is(keyBindings.getEscapeKey())) {
 			return handleSetFocused(input, false);
 		}

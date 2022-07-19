@@ -1,19 +1,19 @@
 package mezz.jei.common.config;
 
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 
 public class WorldConfig implements IWorldConfig {
 	private final IConnectionToServer serverConnection;
-	private final IKeyBindings keyBindings;
+	private final IInternalKeyMappings keyBindings;
 	private boolean overlayEnabled = true;
 	private boolean cheatItemsEnabled = false;
 	private boolean editModeEnabled = false;
 	private boolean bookmarkOverlayEnabled = true;
 
-	public WorldConfig(IConnectionToServer serverConnection, IKeyBindings keyBindings) {
+	public WorldConfig(IConnectionToServer serverConnection, IInternalKeyMappings keyBindings) {
 		this.serverConnection = serverConnection;
 		this.keyBindings = keyBindings;
 	}

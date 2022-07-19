@@ -2,11 +2,11 @@ package mezz.jei.forge.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import java.util.function.Consumer;
-import mezz.jei.common.input.keys.IJeiKeyMapping;
+import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 
-public class ForgeJeiKeyMapping implements IJeiKeyMapping {
+public class ForgeJeiKeyMapping implements IJeiKeyMappingInternal {
     private final KeyMapping keyMapping;
 
     public ForgeJeiKeyMapping(KeyMapping keyMapping) {
@@ -29,7 +29,7 @@ public class ForgeJeiKeyMapping implements IJeiKeyMapping {
     }
 
     @Override
-    public IJeiKeyMapping register(Consumer<KeyMapping> registerMethod) {
+    public IJeiKeyMappingInternal register(Consumer<KeyMapping> registerMethod) {
         registerMethod.accept(keyMapping);
         return this;
     }

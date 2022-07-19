@@ -1,7 +1,7 @@
 package mezz.jei.common.gui.overlay;
 
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.core.config.IWorldConfig;
@@ -19,16 +19,16 @@ import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 public class ConfigButton extends GuiIconToggleButton {
-	private final IKeyBindings keyBindings;
+	private final IInternalKeyMappings keyBindings;
 
-	public static ConfigButton create(BooleanSupplier isListDisplayed, IWorldConfig worldConfig, Textures textures, IKeyBindings keyBindings) {
+	public static ConfigButton create(BooleanSupplier isListDisplayed, IWorldConfig worldConfig, Textures textures, IInternalKeyMappings keyBindings) {
 		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), isListDisplayed, worldConfig, textures, keyBindings);
 	}
 
 	private final BooleanSupplier isListDisplayed;
 	private final IWorldConfig worldConfig;
 
-	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, BooleanSupplier isListDisplayed, IWorldConfig worldConfig, Textures textures, IKeyBindings keyBindings) {
+	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, BooleanSupplier isListDisplayed, IWorldConfig worldConfig, Textures textures, IInternalKeyMappings keyBindings) {
 		super(disabledIcon, enabledIcon, textures);
 		this.isListDisplayed = isListDisplayed;
 		this.worldConfig = worldConfig;

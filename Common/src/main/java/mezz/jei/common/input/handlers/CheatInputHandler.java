@@ -1,7 +1,7 @@
 package mezz.jei.common.input.handlers;
 
 import mezz.jei.api.runtime.IRecipesGui;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
@@ -33,7 +33,7 @@ public class CheatInputHandler implements IUserInputHandler {
     }
 
     @Override
-    public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+    public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
         if (!worldConfig.isCheatItemsEnabled() ||
             screen instanceof IRecipesGui
         ) {

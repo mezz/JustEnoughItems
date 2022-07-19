@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.common.config.IEditModeConfig;
@@ -59,7 +59,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		GuiScreenHelper guiScreenHelper,
 		IModIdHelper modIdHelper,
 		IConnectionToServer serverConnection,
-		IKeyBindings keyBindings
+		IInternalKeyMappings keyBindings
 	) {
 		this.gridConfig = gridConfig;
 		this.guiScreenHelper = guiScreenHelper;

@@ -6,7 +6,7 @@ import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.IClickedIngredient;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.core.config.IWorldConfig;
@@ -32,7 +32,7 @@ public class EditInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		if (!worldConfig.isEditModeEnabled()) {
 			return Optional.empty();
 		}
@@ -48,7 +48,7 @@ public class EditInputHandler implements IUserInputHandler {
 		return Optional.empty();
 	}
 
-	private Optional<IUserInputHandler> handle(UserInput input, IKeyBindings keyBindings, IngredientBlacklistType blacklistType) {
+	private Optional<IUserInputHandler> handle(UserInput input, IInternalKeyMappings keyBindings, IngredientBlacklistType blacklistType) {
 		return focusSource.getIngredientUnderMouse(input, keyBindings)
 			.findFirst()
 			.map(clicked -> {

@@ -1,6 +1,6 @@
 package mezz.jei.common.input.handlers;
 
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
@@ -16,7 +16,7 @@ public class GlobalInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		if (input.is(keyBindings.getToggleOverlay())) {
 			if (!input.isSimulate()) {
 				worldConfig.toggleOverlayEnabled();

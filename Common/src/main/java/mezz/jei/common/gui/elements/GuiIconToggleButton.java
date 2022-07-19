@@ -5,7 +5,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.gui.HoverChecker;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -68,7 +68,7 @@ public abstract class GuiIconToggleButton {
 
 	private class UserInputHandler implements IUserInputHandler {
 		@Override
-		public final Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+		public final Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 			if (isMouseOver(input.getMouseX(), input.getMouseY())) {
 				IUserInputHandler handler = button.createInputHandler();
 				return handler.handleUserInput(screen, input, keyBindings)

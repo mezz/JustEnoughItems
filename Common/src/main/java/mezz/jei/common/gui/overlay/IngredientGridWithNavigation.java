@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
@@ -335,7 +335,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		}
 
 		@Override
-		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 			if (input.is(keyBindings.getNextPage())) {
 				this.paged.nextPage();
 				return Optional.of(this);

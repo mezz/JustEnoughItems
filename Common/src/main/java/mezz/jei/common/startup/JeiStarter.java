@@ -134,6 +134,7 @@ public final class JeiStarter {
 			registeredIngredients,
 			ingredientManager,
 			ingredientVisibility,
+			data.keyBindings(),
 			jeiHelpers
 		);
 		Internal.setRuntime(jeiRuntime);

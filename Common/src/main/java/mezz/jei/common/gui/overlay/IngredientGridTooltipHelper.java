@@ -8,7 +8,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.color.ColorNamer;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.core.search.SearchMode;
 import mezz.jei.common.gui.TooltipRenderer;
@@ -28,14 +28,14 @@ public final class IngredientGridTooltipHelper {
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IWorldConfig worldConfig;
 	private final IModIdHelper modIdHelper;
-	private final IKeyBindings keyBindings;
+	private final IInternalKeyMappings keyBindings;
 
 	public IngredientGridTooltipHelper(
 		RegisteredIngredients registeredIngredients,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IWorldConfig worldConfig,
 		IModIdHelper modIdHelper,
-		IKeyBindings keyBindings
+		IInternalKeyMappings keyBindings
 	) {
 		this.registeredIngredients = registeredIngredients;
 		this.ingredientFilterConfig = ingredientFilterConfig;
@@ -85,7 +85,7 @@ public final class IngredientGridTooltipHelper {
 		}
 	}
 
-	private static void addEditModeInfoToTooltip(List<Component> tooltip, IKeyBindings keyBindings) {
+	private static void addEditModeInfoToTooltip(List<Component> tooltip, IInternalKeyMappings keyBindings) {
 		List<Component> lines = List.of(
 			CommonComponents.EMPTY,
 			Component.translatable("gui.jei.editMode.description")

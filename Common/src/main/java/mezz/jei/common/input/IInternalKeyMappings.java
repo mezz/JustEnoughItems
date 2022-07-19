@@ -1,10 +1,9 @@
 package mezz.jei.common.input;
 
-import mezz.jei.common.input.keys.IJeiKeyMapping;
+import mezz.jei.api.runtime.IJeiKeyMapping;
+import mezz.jei.api.runtime.IJeiKeyMappings;
 
-import java.util.List;
-
-public interface IKeyBindings {
+public interface IInternalKeyMappings extends IJeiKeyMappings {
     IJeiKeyMapping getToggleOverlay();
     IJeiKeyMapping getFocusSearch();
     IJeiKeyMapping getToggleCheatMode();
@@ -26,11 +25,14 @@ public interface IKeyBindings {
     IJeiKeyMapping getBookmark();
     IJeiKeyMapping getToggleBookmarkOverlay();
 
-    List<IJeiKeyMapping> getShowRecipe();
-    List<IJeiKeyMapping> getShowUses();
+    @Override
+    IJeiKeyMapping getShowRecipe();
 
-    List<IJeiKeyMapping> getCheatOneItem();
-    List<IJeiKeyMapping> getCheatItemStack();
+    @Override
+    IJeiKeyMapping getShowUses();
+
+    IJeiKeyMapping getCheatOneItem();
+    IJeiKeyMapping getCheatItemStack();
 
     IJeiKeyMapping getToggleHideIngredient();
     IJeiKeyMapping getToggleWildcardHideIngredient();
@@ -45,5 +47,5 @@ public interface IKeyBindings {
     IJeiKeyMapping getEscapeKey();
     IJeiKeyMapping getLeftClick();
     IJeiKeyMapping getRightClick();
-    List<IJeiKeyMapping> getEnterKey();
+    IJeiKeyMapping getEnterKey();
 }

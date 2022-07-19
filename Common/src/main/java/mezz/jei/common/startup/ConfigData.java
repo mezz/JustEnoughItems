@@ -13,7 +13,7 @@ import mezz.jei.common.config.WorldConfig;
 import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.common.config.sorting.ModNameSortingConfig;
 import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
@@ -37,7 +37,7 @@ public record ConfigData(
 ) {
     public static ConfigData create(
         IConnectionToServer serverConnection,
-        IKeyBindings keyBindings,
+        IInternalKeyMappings keyBindings,
         Path configDir
     ) {
         try {

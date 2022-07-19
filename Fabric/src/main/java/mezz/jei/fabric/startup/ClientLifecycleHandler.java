@@ -3,7 +3,7 @@ package mezz.jei.fabric.startup;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
-import mezz.jei.common.config.KeyBindings;
+import mezz.jei.common.config.InternalKeyMappings;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
 import mezz.jei.common.network.IConnectionToServer;
@@ -37,7 +37,7 @@ public class ClientLifecycleHandler {
 		Path jeiConfigDir = configDir.resolve(ModIds.JEI_ID);
 
 		IConnectionToServer serverConnection = new ConnectionToServer();
-		KeyBindings keyBindings = new KeyBindings(keyMapping -> {});
+		InternalKeyMappings keyBindings = new InternalKeyMappings(keyMapping -> {});
 
 		ConfigData configData = ConfigData.create(
 			serverConnection,

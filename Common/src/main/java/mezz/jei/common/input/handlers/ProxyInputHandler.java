@@ -1,7 +1,7 @@
 package mezz.jei.common.input.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
 import net.minecraft.client.gui.screens.Screen;
@@ -17,7 +17,7 @@ public class ProxyInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		return this.source.get().handleUserInput(screen, input, keyBindings);
 	}
 

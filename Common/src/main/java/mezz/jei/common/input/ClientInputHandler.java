@@ -11,10 +11,10 @@ import java.util.List;
 public class ClientInputHandler {
 	private final List<ICharTypedHandler> charTypedHandlers;
 	private final CombinedInputHandler inputHandler;
-	private final IKeyBindings keybindings;
+	private final IInternalKeyMappings keybindings;
 	private final ReflectionUtil reflectionUtil = new ReflectionUtil();
 
-	public ClientInputHandler(List<ICharTypedHandler> charTypedHandlers, CombinedInputHandler inputHandler, IKeyBindings keybindings) {
+	public ClientInputHandler(List<ICharTypedHandler> charTypedHandlers, CombinedInputHandler inputHandler, IInternalKeyMappings keybindings) {
 		this.charTypedHandlers = charTypedHandlers;
 		this.inputHandler = inputHandler;
 		this.keybindings = keybindings;

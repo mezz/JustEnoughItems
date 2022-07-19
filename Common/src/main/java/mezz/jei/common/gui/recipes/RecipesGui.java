@@ -25,7 +25,7 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.ClickedIngredient;
 import mezz.jei.common.input.IClickedIngredient;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.InputType;
@@ -68,7 +68,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final RegisteredIngredients registeredIngredients;
 	private final IModIdHelper modIdHelper;
 	private final IClientConfig clientConfig;
-	private final IKeyBindings keyBindings;
+	private final IInternalKeyMappings keyBindings;
 
 	private int headerHeight;
 
@@ -107,7 +107,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IClientConfig clientConfig,
 		Textures textures,
 		IIngredientVisibility ingredientVisibility,
-		IKeyBindings keyBindings
+		IInternalKeyMappings keyBindings
 	) {
 		super(Component.literal("Recipes"));
 		this.recipeTransferManager = recipeTransferManager;

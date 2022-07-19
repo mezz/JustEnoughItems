@@ -1,7 +1,7 @@
 package mezz.jei.common.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import mezz.jei.common.input.keys.IJeiKeyMapping;
+import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.SharedConstants;
@@ -93,10 +93,6 @@ public class UserInput {
 	public boolean is(KeyMapping keyMapping) {
 		IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
 		return inputHelper.isActiveAndMatches(keyMapping, this.key);
-	}
-
-	public boolean is(Collection<IJeiKeyMapping> keyMappings) {
-		return keyMappings.stream().anyMatch(this::is);
 	}
 
 	public boolean callVanilla(MouseOverable mouseOverable, MouseClickable mouseClickable) {

@@ -61,6 +61,14 @@ public interface IJeiRuntime {
 	IIngredientVisibility getIngredientVisibility();
 
 	/**
+	 * The {@link IJeiKeyMappings} gives access to key mappings used by JEI.
+	 * This can be used by mods that want to use the same keys that players bind for JEI.
+	 *
+	 * @since 11.0.1
+	 */
+	IJeiKeyMappings getKeyMappings();
+
+	/**
 	 * Returns a new typed ingredient.
 	 *
 	 * @since 9.3.0

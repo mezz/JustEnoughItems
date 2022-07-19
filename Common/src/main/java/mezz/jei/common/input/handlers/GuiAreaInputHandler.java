@@ -1,7 +1,7 @@
 package mezz.jei.common.input.handlers;
 
 import mezz.jei.api.runtime.IRecipesGui;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.UserInput;
@@ -27,7 +27,7 @@ public class GuiAreaInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		if (input.is(keyBindings.getLeftClick())) {
 			if (screen instanceof AbstractContainerScreen<?> guiContainer) {
 				IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();

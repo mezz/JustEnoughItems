@@ -2,12 +2,12 @@ package mezz.jei.common.gui.overlay.bookmarks;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.bookmarks.BookmarkList;
 import mezz.jei.common.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.common.input.keys.IJeiKeyMapping;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -16,7 +16,7 @@ import net.minecraft.network.chat.MutableComponent;
 import java.util.List;
 
 public class BookmarkButton extends GuiIconToggleButton {
-	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, Textures textures, IWorldConfig worldConfig, IKeyBindings keyBindings) {
+	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, Textures textures, IWorldConfig worldConfig, IInternalKeyMappings keyBindings) {
 		IDrawableStatic offIcon = textures.getBookmarkButtonDisabledIcon();
 		IDrawableStatic onIcon = textures.getBookmarkButtonEnabledIcon();
 		return new BookmarkButton(offIcon, onIcon, textures, bookmarkOverlay, bookmarkList, worldConfig, keyBindings);
@@ -25,9 +25,9 @@ public class BookmarkButton extends GuiIconToggleButton {
 	private final BookmarkOverlay bookmarkOverlay;
 	private final BookmarkList bookmarkList;
 	private final IWorldConfig worldConfig;
-	private final IKeyBindings keyBindings;
+	private final IInternalKeyMappings keyBindings;
 
-	private BookmarkButton(IDrawable offIcon, IDrawable onIcon, Textures textures, BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IWorldConfig worldConfig, IKeyBindings keyBindings) {
+	private BookmarkButton(IDrawable offIcon, IDrawable onIcon, Textures textures, BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IWorldConfig worldConfig, IInternalKeyMappings keyBindings) {
 		super(offIcon, onIcon, textures);
 		this.bookmarkOverlay = bookmarkOverlay;
 		this.bookmarkList = bookmarkList;

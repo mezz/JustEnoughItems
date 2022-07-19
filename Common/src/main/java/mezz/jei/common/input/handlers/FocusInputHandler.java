@@ -4,7 +4,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.focus.Focus;
-import mezz.jei.common.input.IKeyBindings;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.CombinedRecipeFocusSource;
@@ -23,7 +23,7 @@ public class FocusInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IKeyBindings keyBindings) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		if (input.is(keyBindings.getShowRecipe())) {
 			return handleShow(input, List.of(RecipeIngredientRole.OUTPUT), keyBindings);
 		}
@@ -35,7 +35,7 @@ public class FocusInputHandler implements IUserInputHandler {
 		return Optional.empty();
 	}
 
-	private Optional<IUserInputHandler> handleShow(UserInput input, List<RecipeIngredientRole> roles, IKeyBindings keyBindings) {
+	private Optional<IUserInputHandler> handleShow(UserInput input, List<RecipeIngredientRole> roles, IInternalKeyMappings keyBindings) {
 		return focusSource.getIngredientUnderMouse(input, keyBindings)
 			.findFirst()
 			.map(clicked -> {
