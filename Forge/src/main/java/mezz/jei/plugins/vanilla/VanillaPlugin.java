@@ -110,13 +110,13 @@ public class VanillaPlugin implements IModPlugin {
 	@Nullable
 	private IRecipeCategory<StonecutterRecipe> stonecuttingCategory;
 	@Nullable
-	private IRecipeCategory<SmeltingRecipe> furnaceCategory;
+	private IRecipeCategory<SmeltingRecipe> smeltingCategory;
 	@Nullable
 	private IRecipeCategory<SmokingRecipe> smokingCategory;
 	@Nullable
 	private IRecipeCategory<BlastingRecipe> blastingCategory;
 	@Nullable
-	private IRecipeCategory<CampfireCookingRecipe> campfireCategory;
+	private IRecipeCategory<CampfireCookingRecipe> campfireCookingCategory;
 	@Nullable
 	private IRecipeCategory<UpgradeRecipe> smithingCategory;
 
@@ -168,10 +168,10 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeCategories(
 			craftingCategory = new CraftingRecipeCategory(guiHelper),
 			stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper),
-			furnaceCategory = new FurnaceSmeltingCategory(guiHelper),
+			smeltingCategory = new FurnaceSmeltingCategory(guiHelper),
 			smokingCategory = new SmokingCategory(guiHelper),
 			blastingCategory = new BlastingCategory(guiHelper),
-			campfireCategory = new CampfireCookingCategory(guiHelper),
+			campfireCookingCategory = new CampfireCookingCategory(guiHelper),
 			smithingCategory = new SmithingRecipeCategory(guiHelper),
 			new CompostableRecipeCategory(guiHelper),
 			new FurnaceFuelCategory(guiHelper, textures),
@@ -190,10 +190,10 @@ public class VanillaPlugin implements IModPlugin {
 	public void registerRecipes(IRecipeRegistration registration) {
 		ErrorUtil.checkNotNull(craftingCategory, "craftingCategory");
 		ErrorUtil.checkNotNull(stonecuttingCategory, "stonecuttingCategory");
-		ErrorUtil.checkNotNull(furnaceCategory, "furnaceCategory");
+		ErrorUtil.checkNotNull(smeltingCategory, "smeltingCategory");
 		ErrorUtil.checkNotNull(smokingCategory, "smokingCategory");
 		ErrorUtil.checkNotNull(blastingCategory, "blastingCategory");
-		ErrorUtil.checkNotNull(campfireCategory, "campfireCategory");
+		ErrorUtil.checkNotNull(campfireCookingCategory, "campfireCookingCategory");
 		ErrorUtil.checkNotNull(smithingCategory, "smithingCategory");
 
 		IIngredientManager ingredientManager = registration.getIngredientManager();
@@ -211,10 +211,10 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);
 
 		registration.addRecipes(RecipeTypes.STONECUTTING, vanillaRecipes.getStonecuttingRecipes(stonecuttingCategory));
-		registration.addRecipes(RecipeTypes.SMELTING, vanillaRecipes.getFurnaceRecipes(furnaceCategory));
+		registration.addRecipes(RecipeTypes.SMELTING, vanillaRecipes.getFurnaceRecipes(smeltingCategory));
 		registration.addRecipes(RecipeTypes.SMOKING, vanillaRecipes.getSmokingRecipes(smokingCategory));
 		registration.addRecipes(RecipeTypes.BLASTING, vanillaRecipes.getBlastingRecipes(blastingCategory));
-		registration.addRecipes(RecipeTypes.CAMPFIRE_COOKING, vanillaRecipes.getCampfireCookingRecipes(campfireCategory));
+		registration.addRecipes(RecipeTypes.CAMPFIRE_COOKING, vanillaRecipes.getCampfireCookingRecipes(campfireCookingCategory));
 		registration.addRecipes(RecipeTypes.FUELING, FuelRecipeMaker.getFuelRecipes(ingredientManager));
 		registration.addRecipes(RecipeTypes.ANVIL, AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager));
 		registration.addRecipes(RecipeTypes.SMITHING, vanillaRecipes.getSmithingRecipes(smithingCategory));
