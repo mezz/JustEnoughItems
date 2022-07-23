@@ -156,7 +156,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 				.setFluidRenderer(capacity, false, 16, 58)
 				.setOverlay(tankOverlay, -1, -1)
 				.setBackground(tankBackground, -1, -1)
-				.addIngredient(fluidType, platformFluidHelper.create(Fluids.WATER, amount));
+				.addFluidStack(Fluids.WATER, amount);
 		}
 
 		{

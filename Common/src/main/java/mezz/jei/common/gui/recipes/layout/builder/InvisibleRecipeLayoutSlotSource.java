@@ -8,6 +8,8 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.ingredients.IngredientAcceptor;
 import mezz.jei.common.ingredients.RegisteredIngredients;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -37,6 +39,18 @@ public class InvisibleRecipeLayoutSlotSource implements IRecipeLayoutSlotSource,
 	@Override
 	public <I> InvisibleRecipeLayoutSlotSource addIngredient(IIngredientType<I> ingredientType, I ingredient) {
 		this.ingredients.addIngredient(ingredientType, ingredient);
+		return this;
+	}
+
+	@Override
+	public InvisibleRecipeLayoutSlotSource addFluidStack(Fluid fluid, long amount) {
+		this.ingredients.addFluidStack(fluid, amount);
+		return this;
+	}
+
+	@Override
+	public InvisibleRecipeLayoutSlotSource addFluidStack(Fluid fluid, long amount, CompoundTag tag) {
+		this.ingredients.addFluidStack(fluid, amount, tag);
 		return this;
 	}
 
