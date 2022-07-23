@@ -1,9 +1,12 @@
 package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -67,4 +70,28 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	default THIS addItemStack(ItemStack itemStack) {
 		return addIngredient(VanillaTypes.ITEM_STACK, itemStack);
 	}
+
+	/**
+	 * Convenience helper to add one Fluid ingredient.
+	 *
+	 * To add multiple Fluid ingredients, use {@link IPlatformFluidHelper#create} to create
+	 * the ingredients and {@link IPlatformFluidHelper#getFluidIngredientType()} to get the type,
+	 * and then add them with {@link #addIngredients(IIngredientType, List)}
+	 *
+	 * @see #addFluidStack(Fluid, long, CompoundTag) to add a Fluid with a {@link CompoundTag}.
+	 * @since 11.1.0
+	 */
+	THIS addFluidStack(Fluid fluid, long amount);
+
+	/**
+	 * Convenience helper to add one Fluid ingredient with a {@link CompoundTag}.
+	 *
+	 * To add multiple Fluid ingredients, use {@link IPlatformFluidHelper#create} to create
+	 * the ingredients and {@link IPlatformFluidHelper#getFluidIngredientType()} to get the type,
+	 * and then add them with {@link #addIngredients(IIngredientType, List)}
+	 *
+	 * @see #addFluidStack(Fluid, long) to add a Fluid without a {@link CompoundTag}.
+	 * @since 11.1.0
+	 */
+	THIS addFluidStack(Fluid fluid, long amount, CompoundTag tag);
 }

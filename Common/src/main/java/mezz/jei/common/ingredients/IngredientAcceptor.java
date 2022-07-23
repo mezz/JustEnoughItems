@@ -6,12 +6,17 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -69,6 +74,25 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		addIngredientInternal(ingredientType, ingredient);
+		return this;
+	}
+
+	@Override
+	public IngredientAcceptor addFluidStack(Fluid fluid, long amount) {
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		return addFluidInternal(fluidHelper, fluid, amount, null);
+	}
+
+	@Override
+	public IngredientAcceptor addFluidStack(Fluid fluid, long amount, CompoundTag tag) {
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		return addFluidInternal(fluidHelper, fluid, amount, tag);
+	}
+
+	private <T> IngredientAcceptor addFluidInternal(IPlatformFluidHelperInternal<T> fluidHelper, Fluid fluid, long amount, @Nullable CompoundTag tag) {
+		T fluidStack = fluidHelper.create(fluid, amount, tag);
+		IIngredientTypeWithSubtypes<Fluid, T> fluidIngredientType = fluidHelper.getFluidIngredientType();
+		addIngredientInternal(fluidIngredientType, fluidStack);
 		return this;
 	}
 
