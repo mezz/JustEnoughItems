@@ -2,10 +2,10 @@ package mezz.jei.common.plugins.vanilla.anvil;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.RecipeTypes;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -20,7 +20,6 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -36,7 +35,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18)
 			.addPadding(0, 20, 0, 0)
 			.build();
-		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.ANVIL));
+		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.ANVIL));
 	}
 
 	@Override
@@ -90,10 +89,10 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 	@Override
 	public void draw(IJeiAnvilRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		Optional<ItemStack> leftStack = recipeSlotsView.findSlotByName(leftSlotName)
-			.flatMap(slot1 -> slot1.getDisplayedIngredient(VanillaTypes.ITEM_STACK));
+			.flatMap(IRecipeSlotView::getDisplayedItemStack);
 
 		Optional<ItemStack> rightStack = recipeSlotsView.findSlotByName(rightSlotName)
-			.flatMap(slot -> slot.getDisplayedIngredient(VanillaTypes.ITEM_STACK));
+			.flatMap(IRecipeSlotView::getDisplayedItemStack);
 
 		if (leftStack.isEmpty() || rightStack.isEmpty()) {
 			return;

@@ -1,6 +1,5 @@
 package mezz.jei.common.plugins.vanilla.cooking.fuel;
 
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
@@ -16,7 +15,7 @@ public final class FuelRecipeMaker {
 
 	public static List<IJeiFuelingRecipe> getFuelRecipes(IIngredientManager ingredientManager) {
 		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
-		return ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK).stream()
+		return ingredientManager.getAllItemStacks().stream()
 			.<IJeiFuelingRecipe>mapMulti((stack, consumer) -> {
 				int burnTime = itemStackHelper.getBurnTime(stack);
 				if (burnTime > 0) {

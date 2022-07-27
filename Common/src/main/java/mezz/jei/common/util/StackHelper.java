@@ -1,6 +1,5 @@
 package mezz.jei.common.util;
 
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
@@ -42,7 +41,7 @@ public class StackHelper implements IStackHelper {
 	@Override
 	public String getUniqueIdentifierForStack(ItemStack stack, UidContext context) {
 		String result = getRegistryNameForStack(stack);
-		String subtypeInfo = subtypeManager.getSubtypeInfo(VanillaTypes.ITEM_STACK, stack, context);
+		String subtypeInfo = subtypeManager.getSubtypeInfo(stack, context);
 		if (!subtypeInfo.isEmpty()) {
 			result = result + ':' + subtypeInfo;
 		}

@@ -3,7 +3,6 @@ package mezz.jei.common.plugins.vanilla.crafting;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.RecipeTypes;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
@@ -41,7 +40,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 60, width, height);
-		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.CRAFTING_TABLE));
+		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.CRAFTING_TABLE));
 		localizedName = Component.translatable("gui.jei.category.craftingTable");
 		craftingGridHelper = guiHelper.createCraftingGridHelper();
 	}

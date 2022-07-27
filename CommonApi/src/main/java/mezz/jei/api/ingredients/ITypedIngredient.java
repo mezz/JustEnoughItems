@@ -1,5 +1,8 @@
 package mezz.jei.api.ingredients;
 
+import mezz.jei.api.constants.VanillaTypes;
+import net.minecraft.world.item.ItemStack;
+
 import java.util.Optional;
 
 /**
@@ -31,4 +34,15 @@ public interface ITypedIngredient<T> {
 	 * @since 9.3.3
 	 */
 	<V> Optional<V> getIngredient(IIngredientType<V> ingredientType);
+
+	/**
+	 * @return the ItemStack wrapped by this instance, only this holds an ItemStack ingredient.
+	 * This is useful when handling a wildcard generic instance of `ITypedIngredient<?>`.
+	 *
+	 * @see #getIngredient(IIngredientType) to get other ingredient types
+	 * @since 11.1.1
+	 */
+	default Optional<ItemStack> getItemStack() {
+		return getIngredient(VanillaTypes.ITEM_STACK);
+	}
 }

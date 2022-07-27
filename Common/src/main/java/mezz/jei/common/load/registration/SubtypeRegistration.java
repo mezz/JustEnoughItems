@@ -1,6 +1,5 @@
 package mezz.jei.common.load.registration;
 
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
@@ -24,7 +23,7 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 	@Override
 	public void useNbtForSubtypes(Item... items) {
 		for (Item item : items) {
-			registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, AllNbt.INSTANCE);
+			registerSubtypeInterpreter(item, AllNbt.INSTANCE);
 		}
 	}
 

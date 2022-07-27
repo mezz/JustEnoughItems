@@ -1,8 +1,10 @@
 package mezz.jei.api.runtime;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
@@ -23,4 +25,12 @@ public interface IBookmarkOverlay {
 	 */
 	@Nullable
 	<T> T getIngredientUnderMouse(IIngredientType<T> ingredientType);
+
+	/**
+	 * @return the ingredient that's currently under the mouse, or null if there is none.
+	 */
+	@Nullable
+	default ItemStack getItemStackUnderMouse() {
+		return getIngredientUnderMouse(VanillaTypes.ITEM_STACK);
+	}
 }

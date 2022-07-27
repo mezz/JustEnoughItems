@@ -1,7 +1,6 @@
 package mezz.jei.common.plugins.vanilla.stonecutting;
 
 import mezz.jei.api.constants.RecipeTypes;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -28,7 +27,7 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRe
 	public StoneCuttingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 220, width, height);
-		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.STONECUTTER));
+		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.STONECUTTER));
 		localizedName = Component.translatable("gui.jei.category.stoneCutter");
 	}
 

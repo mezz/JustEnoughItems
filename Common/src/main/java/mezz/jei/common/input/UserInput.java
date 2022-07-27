@@ -7,7 +7,6 @@ import mezz.jei.common.platform.Services;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.KeyMapping;
 
-import java.util.Collection;
 import java.util.Optional;
 
 public class UserInput {

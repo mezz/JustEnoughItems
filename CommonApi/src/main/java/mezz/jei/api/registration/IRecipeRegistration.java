@@ -2,6 +2,7 @@ package mezz.jei.api.registration;
 
 import java.util.List;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientVisibility;
 
@@ -10,6 +11,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
 public interface IRecipeRegistration {
 	/**
@@ -69,4 +71,35 @@ public interface IRecipeRegistration {
 	 * @since 7.6.4
 	 */
 	<T> void addIngredientInfo(List<T> ingredients, IIngredientType<T> ingredientType, Component... descriptionComponents);
+
+	/**
+	 * Add an info page for an ItemStack.
+	 * Description pages show in the recipes for an ItemStack and tell the player a little about it.
+	 *
+	 * @param ingredient            The ItemStack to describe
+	 * @param descriptionComponents Text components for info text.
+	 *                              New lines can be added with "\n" or by giving multiple descriptions.
+	 *                              Long lines are wrapped automatically.
+	 *                              Very long entries will span multiple pages automatically.
+	 * @since 11.1.1
+	 */
+	default void addItemStackInfo(ItemStack ingredient, Component... descriptionComponents) {
+		addIngredientInfo(ingredient, VanillaTypes.ITEM_STACK, descriptionComponents);
+	}
+
+	/**
+	 * Add an info page for multiple ItemStacks together.
+	 * Description pages show in the recipes for an ItemStack and tell the player a little about it.
+	 *
+	 * @param ingredients           The ItemStacks to describe
+	 * @param descriptionComponents Text components for info text.
+	 *                              New lines can be added with "\n" or by giving multiple descriptions.
+	 *                              Long lines are wrapped automatically.
+	 *                              Very long entries will span multiple pages automatically.
+	 * @since 7.6.4
+	 */
+	default void addItemStackInfo(List<ItemStack> ingredients, Component... descriptionComponents) {
+		addIngredientInfo(ingredients, VanillaTypes.ITEM_STACK, descriptionComponents);
+	}
+
 }

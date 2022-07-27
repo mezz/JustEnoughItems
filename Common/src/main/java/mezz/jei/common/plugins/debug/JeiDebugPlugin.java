@@ -3,7 +3,6 @@ package mezz.jei.common.plugins.debug;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
@@ -82,7 +81,7 @@ public class JeiDebugPlugin implements IModPlugin {
 		JeiDebugPlugin.ingredientManager = registration.getIngredientManager();
 
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
-			registration.addIngredientInfo(List.of(
+			registration.addItemStackInfo(List.of(
 				new ItemStack(Blocks.OAK_DOOR),
 				new ItemStack(Blocks.SPRUCE_DOOR),
 				new ItemStack(Blocks.BIRCH_DOOR),
@@ -90,7 +89,6 @@ public class JeiDebugPlugin implements IModPlugin {
 				new ItemStack(Blocks.ACACIA_DOOR),
 				new ItemStack(Blocks.DARK_OAK_DOOR)
 				),
-				VanillaTypes.ITEM_STACK,
 				Component.translatable("description.jei.wooden.door.1"), // actually 2 lines
 				Component.translatable("description.jei.wooden.door.2"),
 				Component.translatable("description.jei.wooden.door.3")
@@ -199,7 +197,7 @@ public class JeiDebugPlugin implements IModPlugin {
 
 		registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
 		registration.addRecipeCatalyst(fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER, bucketVolume, null), DebugRecipeCategory.TYPE);
-		registration.addRecipeCatalyst(VanillaTypes.ITEM_STACK, new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
+		registration.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
 		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
 		registry.getValues()
 			.limit(30)

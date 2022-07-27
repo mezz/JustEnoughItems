@@ -1,6 +1,8 @@
 package mezz.jei.api.recipe;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -49,4 +51,23 @@ public interface IFocusGroup {
 	 * @since 9.4.0
 	 */
 	<T> Stream<IFocus<T>> getFocuses(IIngredientType<T> ingredientType, RecipeIngredientRole role);
+
+	/**
+	 * Get a stream of the current focuses filtered to only ItemStacks.
+	 *
+	 * @since 11.1.1
+	 */
+	default Stream<IFocus<ItemStack>> getItemStackFocuses() {
+		return getFocuses(VanillaTypes.ITEM_STACK);
+	}
+
+	/**
+	 * Get a stream of the current focuses filtered by ItemStack and role.
+	 *
+	 * @since 11.1.1
+	 */
+	default Stream<IFocus<ItemStack>> getItemStackFocuses(RecipeIngredientRole role) {
+		return getFocuses(VanillaTypes.ITEM_STACK, role);
+	}
+
 }
