@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -66,7 +65,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 		ResourceLocation backgroundTexture = new ResourceLocation(ModIds.JEI_ID, Constants.TEXTURE_GUI_PATH + "debug.png");
 		this.tankBackground = guiHelper.createDrawable(backgroundTexture, 220, 196, 18, 60);
 		this.tankOverlay = guiHelper.createDrawable(backgroundTexture, 238, 196, 18, 60);
-		this.item = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.ACACIA_LEAVES));
+		this.item = guiHelper.createDrawableItemStack(new ItemStack(Items.ACACIA_LEAVES));
 	}
 
 	@SuppressWarnings("removal")

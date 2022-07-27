@@ -1,6 +1,8 @@
 package mezz.jei.api.runtime;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -21,8 +23,26 @@ public interface IIngredientFilter {
 	String getFilterText();
 
 	/**
+	 * @return a list containing all ItemStacks that match the current filter.
+	 *
+	 * @see #getFilteredIngredients(IIngredientType) to get a different type of ingredient, not just ItemStack.
+	 *
+	 * @see	IIngredientManager#getAllIngredients(IIngredientType)
+	 * to get all the ingredients known to JEI, not just ones currently shown by the filter.
+	 *
+	 * @since 10.1.3
+	 */
+	default List<ItemStack> getFilteredItemStacks() {
+		return getFilteredIngredients(VanillaTypes.ITEM_STACK);
+	}
+
+	/**
 	 * @return a list containing all ingredients that match the current filter.
-	 * To get all the ingredients known to JEI, see {@link IIngredientManager#getAllIngredients(IIngredientType)}.
+	 *
+	 * @see #getFilteredItemStacks() to just get ItemStacks, not all types of ingredients.
+	 *
+	 * @see	IIngredientManager#getAllIngredients(IIngredientType)
+	 * to get all the ingredients known to JEI, not just ones currently shown by the filter
 	 */
 	<T> List<T> getFilteredIngredients(IIngredientType<T> ingredientType);
 }

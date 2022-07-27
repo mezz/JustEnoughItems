@@ -56,8 +56,8 @@ public class BrewingRecipeMaker {
 
 		Collection<IBrewingRecipe> brewingRecipes = BrewingRecipeRegistry.getRecipes();
 		brewingRecipes.stream()
-			.filter(r -> r instanceof VanillaBrewingRecipe)
-			.map(r -> (VanillaBrewingRecipe) r)
+			.filter(VanillaBrewingRecipe.class::isInstance)
+			.map(VanillaBrewingRecipe.class::cast)
 			.findFirst()
 			.ifPresent(vanillaBrewingRecipe -> addVanillaBrewingRecipes(recipes, vanillaBrewingRecipe));
 		addModdedBrewingRecipes(brewingRecipes, recipes);
@@ -79,7 +79,7 @@ public class BrewingRecipeMaker {
 	}
 
 	private void addVanillaBrewingRecipes(Collection<IJeiBrewingRecipe> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
-		List<ItemStack> potionIngredients = ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK).stream()
+		List<ItemStack> potionIngredients = ingredientManager.getAllItemStacks().stream()
 			.filter(BrewingRecipeMaker::isIngredient)
 			.toList();
 

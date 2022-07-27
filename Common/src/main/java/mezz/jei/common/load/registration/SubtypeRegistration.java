@@ -24,7 +24,7 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 	@Override
 	public void useNbtForSubtypes(Item... items) {
 		for (Item item : items) {
-			registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, AllNbt.INSTANCE);
+			registerSubtypeInterpreter(item, AllNbt.INSTANCE);
 		}
 	}
 

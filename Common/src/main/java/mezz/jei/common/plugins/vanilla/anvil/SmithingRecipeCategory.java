@@ -1,7 +1,6 @@
 package mezz.jei.common.plugins.vanilla.anvil;
 
 import mezz.jei.api.constants.RecipeTypes;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -25,7 +24,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
 
 	public SmithingRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18);
-		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.SMITHING_TABLE));
+		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.SMITHING_TABLE));
 	}
 
 	@SuppressWarnings("removal")

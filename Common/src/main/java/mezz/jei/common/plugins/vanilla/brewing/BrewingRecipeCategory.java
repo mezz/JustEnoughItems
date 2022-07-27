@@ -2,7 +2,6 @@ package mezz.jei.common.plugins.vanilla.brewing;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.RecipeTypes;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -39,7 +38,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<IJeiBrewingRecipe>
 		background = guiHelper.drawableBuilder(location, 0, 0, 64, 60)
 			.addPadding(1, 0, 0, 50)
 			.build();
-		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.BREWING_STAND));
+		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.BREWING_STAND));
 		localizedName = new TranslatableComponent("gui.jei.category.brewing");
 
 		arrow = guiHelper.drawableBuilder(location, 64, 0, 9, 28)

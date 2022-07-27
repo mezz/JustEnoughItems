@@ -1,7 +1,9 @@
 package mezz.jei.api.recipe;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.stream.Stream;
 
@@ -34,4 +36,13 @@ public interface IRecipeCatalystLookup {
 	 * @since 9.5.0
 	 */
 	<S> Stream<S> get(IIngredientType<S> ingredientType);
+
+	/**
+	 * Get the ItemStack recipe catalyst results for this lookup.
+	 *
+	 * @since 10.1.3
+	 */
+	default Stream<ItemStack> getItemStack() {
+		return get(VanillaTypes.ITEM_STACK);
+	}
 }

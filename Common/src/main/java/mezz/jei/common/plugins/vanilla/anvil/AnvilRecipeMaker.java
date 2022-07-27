@@ -1,6 +1,5 @@
 package mezz.jei.common.plugins.vanilla.anvil;
 
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -90,7 +89,7 @@ public final class AnvilRecipeMaker {
 			.map(EnchantmentData::new)
 			.toList();
 
-		return ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK)
+		return ingredientManager.getAllItemStacks()
 			.stream()
 			.filter(ItemStack::isEnchantable)
 			.flatMap(ingredient -> getBookEnchantmentRecipes(vanillaRecipeFactory, enchantmentDatas, ingredient));

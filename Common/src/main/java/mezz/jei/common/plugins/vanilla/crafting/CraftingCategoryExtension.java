@@ -1,6 +1,5 @@
 package mezz.jei.common.plugins.vanilla.crafting;
 
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -30,8 +29,8 @@ public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICra
 
 		int width = getWidth();
 		int height = getHeight();
-		craftingGridHelper.createAndSetOutputs(builder, VanillaTypes.ITEM_STACK, List.of(resultItem));
-		craftingGridHelper.createAndSetInputs(builder, VanillaTypes.ITEM_STACK, inputs, width, height);
+		craftingGridHelper.createAndSetOutputs(builder, List.of(resultItem));
+		craftingGridHelper.createAndSetInputs(builder, inputs, width, height);
 	}
 
 	@Nullable

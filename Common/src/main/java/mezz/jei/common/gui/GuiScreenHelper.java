@@ -1,6 +1,5 @@
 package mezz.jei.common.gui;
 
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
@@ -171,7 +170,7 @@ public class GuiScreenHelper {
 		if (slotUnderMouse == null) {
 			return null;
 		}
-		return typedIngredient.getIngredient(VanillaTypes.ITEM_STACK)
+		return typedIngredient.getItemStack()
 			.filter(i -> ItemStack.matches(slotUnderMouse.getItem(), i))
 			.map(i ->
 				new ImmutableRect2i(

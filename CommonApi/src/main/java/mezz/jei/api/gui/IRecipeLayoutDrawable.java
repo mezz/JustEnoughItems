@@ -3,10 +3,12 @@ package mezz.jei.api.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.Nullable;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * An extension of {@link IRecipeLayout} for addons that want to draw the layouts themselves somewhere.
@@ -36,6 +38,17 @@ public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	 * Hovered recipes should be drawn after other recipes to have the drawn tooltips overlap other elements properly.
 	 */
 	boolean isMouseOver(double mouseX, double mouseY);
+
+	/**
+	 * Returns the ItemStack currently under the mouse, if there is one.
+	 *
+	 * @see #getIngredientUnderMouse(int, int, IIngredientType) to get other types of ingredient.
+	 * @since 10.1.3
+	 */
+	@Nullable
+	default ItemStack getItemStackUnderMouse(int mouseX, int mouseY) {
+		return getIngredientUnderMouse(mouseX, mouseY, VanillaTypes.ITEM_STACK);
+	}
 
 	/**
 	 * Returns the ingredient currently under the mouse, if there is one.

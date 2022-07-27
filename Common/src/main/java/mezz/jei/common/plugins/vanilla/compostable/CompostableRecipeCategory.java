@@ -2,15 +2,14 @@ package mezz.jei.common.plugins.vanilla.compostable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.RecipeTypes;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
 import mezz.jei.common.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -33,7 +32,7 @@ public class CompostableRecipeCategory implements IRecipeCategory<IJeiComposting
 	public CompostableRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(width, height);
 		slot = guiHelper.getSlotDrawable();
-		icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Blocks.COMPOSTER));
+		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.COMPOSTER));
 		localizedName = new TranslatableComponent("gui.jei.category.compostable");
 	}
 

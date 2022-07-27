@@ -1,7 +1,6 @@
 package mezz.jei.common.plugins.vanilla.compostable;
 
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.world.item.Item;
@@ -16,7 +15,7 @@ import java.util.List;
 public class CompostingRecipeMaker {
 	public static List<IJeiCompostingRecipe> getRecipes(IIngredientManager ingredientManager) {
 		Object2FloatMap<ItemLike> compostables = ComposterBlock.COMPOSTABLES;
-		Collection<ItemStack> allIngredients = ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK);
+		Collection<ItemStack> allIngredients = ingredientManager.getAllItemStacks();
 
 		return allIngredients.stream()
 			.<IJeiCompostingRecipe>mapMulti((itemStack, consumer) -> {

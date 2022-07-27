@@ -1,6 +1,5 @@
 package mezz.jei.common.transfer;
 
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
@@ -220,7 +219,7 @@ public final class RecipeTransferUtil {
 	@Nullable
 	public static <T> Map.Entry<T, ItemStack> containsAnyStackIndexed(IStackHelper stackhelper, Map<T, ItemStack> stacks, IRecipeSlotView recipeSlotView) {
 		MatchingIndexed<T> matchingStacks = new MatchingIndexed<>(stacks);
-		List<ItemStack> ingredients = recipeSlotView.getIngredients(VanillaTypes.ITEM_STACK).toList();
+		List<ItemStack> ingredients = recipeSlotView.getItemStacks().toList();
 		MatchingIterable matchingContains = new MatchingIterable(ingredients);
 		return containsStackMatchable(stackhelper, matchingStacks, matchingContains);
 	}

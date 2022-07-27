@@ -1,5 +1,6 @@
 package mezz.jei.api.helpers;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -8,6 +9,7 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Helps with the implementation of GUIs.
@@ -53,7 +55,19 @@ public interface IGuiHelper {
 	IDrawableStatic createBlankDrawable(int width, int height);
 
 	/**
-	 * Returns a 16x16 drawable for the given ingredient, matching the one JEI draws in the ingredient list.
+	 * Returns a 16x16 drawable for the given ItemStack,
+	 * matching the one JEI draws in the ingredient list.
+	 *
+	 * @see #createDrawableIngredient(IIngredientType, Object) for other ingredient types.
+	 * @since 10.1.3
+	 */
+	default IDrawable createDrawableItemStack(ItemStack ingredient) {
+		return createDrawableIngredient(VanillaTypes.ITEM_STACK, ingredient);
+	}
+
+	/**
+	 * Returns a 16x16 drawable for the given ingredient,
+	 * matching the one JEI draws in the ingredient list.
 	 * @since 9.1.1
 	 */
 	<V> IDrawable createDrawableIngredient(IIngredientType<V> type, V ingredient);

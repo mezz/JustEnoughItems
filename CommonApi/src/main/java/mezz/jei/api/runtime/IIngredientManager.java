@@ -7,6 +7,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
 
 /**
@@ -15,6 +16,18 @@ import org.jetbrains.annotations.Unmodifiable;
  * {@link IJeiRuntime#getIngredientManager()}.
  */
 public interface IIngredientManager {
+	/**
+	 * Returns an unmodifiable collection of all the ItemStacks known to JEI.
+	 *
+	 * @see #getAllIngredients(IIngredientType) to get other ingredient types besides ItemStack.
+	 *
+	 * @since 10.1.3
+	 */
+	@Unmodifiable
+	default Collection<ItemStack> getAllItemStacks() {
+		return getAllIngredients(VanillaTypes.ITEM_STACK);
+	}
+
 	/**
 	 * Returns an unmodifiable collection of all the ingredients known to JEI, of the specified type.
 	 */
