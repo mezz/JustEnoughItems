@@ -188,7 +188,7 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R> {
 				shapelessIcon.draw(poseStack);
 			}
 
-			recipeSlots.draw(poseStack, HIGHLIGHT_COLOR, mouseX, mouseY);
+			recipeSlots.draw(poseStack, HIGHLIGHT_COLOR, recipeMouseX, recipeMouseY);
 		}
 		poseStack.popPose();
 
