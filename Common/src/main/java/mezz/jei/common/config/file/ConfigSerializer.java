@@ -19,7 +19,7 @@ public final class ConfigSerializer {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Pattern commentRegex = Pattern.compile("\\s*#.*");
     private static final Pattern categoryRegex = Pattern.compile("\\[(?<category>\\w+)]\\s*");
-    private static final Pattern keyValueRegex = Pattern.compile("\\s*(?<key>[\\w]+)\\s*=\\s*(?<value>.*)");
+    private static final Pattern keyValueRegex = Pattern.compile("\\s*(?<key>\\w+)\\s*=\\s*(?<value>.*)");
 
     private static String getLineErrorString(Path path, int lineNumber, String line, String errorMessage) {
         return """

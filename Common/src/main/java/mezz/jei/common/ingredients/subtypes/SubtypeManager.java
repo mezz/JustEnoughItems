@@ -16,7 +16,6 @@ public class SubtypeManager implements ISubtypeManager {
 	}
 
 	@Override
-	@Nullable
 	public <T> String getSubtypeInfo(IIngredientTypeWithSubtypes<?, T> ingredientType, T ingredient, UidContext context) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");

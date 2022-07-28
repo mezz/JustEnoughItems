@@ -525,7 +525,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 
 		List<? extends GuiEventListener> oldTransferButtons = children().stream()
-			.filter(widget -> widget instanceof RecipeTransferButton)
+			.filter(RecipeTransferButton.class::isInstance)
 			.toList();
 
 		for (GuiEventListener button : oldTransferButtons) {

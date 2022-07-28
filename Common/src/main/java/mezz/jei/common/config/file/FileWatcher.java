@@ -70,7 +70,7 @@ public class FileWatcher {
         notifyChanges();
     }
 
-    private void runIteration() throws IOException, InterruptedException {
+    private void runIteration() throws InterruptedException {
         long time = System.currentTimeMillis();
         if (time > lastRecheckTime + recheckDirectoriesMs) {
             lastRecheckTime = time;

@@ -35,7 +35,6 @@ import java.util.Optional;
 
 public class RecipeLayout<R> implements IRecipeLayoutInternal<R>, IRecipeLayoutDrawable {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int HIGHLIGHT_COLOR = 0x80FFFFFF;
 	private static final int RECIPE_BORDER_PADDING = 4;
 
 	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);

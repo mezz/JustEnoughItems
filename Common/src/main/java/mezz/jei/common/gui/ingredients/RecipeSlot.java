@@ -37,7 +37,6 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	private static final int MAX_DISPLAYED_INGREDIENTS = 100;
 
 	private final RegisteredIngredients registeredIngredients;
-	private final int legacyIngredientIndex;
 	private final RecipeIngredientRole role;
 	private final CycleTimer cycleTimer;
 	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
@@ -70,19 +69,13 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		RecipeIngredientRole role,
 		int xPos,
 		int yPos,
-		int ingredientCycleOffset,
-		int legacyIngredientIndex
+		int ingredientCycleOffset
 	) {
 		this.registeredIngredients = registeredIngredients;
-		this.legacyIngredientIndex = legacyIngredientIndex;
 		this.rendererOverrides = new RendererOverrides();
 		this.role = role;
 		this.rect = new ImmutableRect2i(xPos, yPos, 16, 16);
 		this.cycleTimer = new CycleTimer(ingredientCycleOffset);
-	}
-
-	public int getLegacyIngredientIndex() {
-		return legacyIngredientIndex;
 	}
 
 	@Override

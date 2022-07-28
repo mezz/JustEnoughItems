@@ -33,10 +33,10 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	private final RecipeSlot recipeSlot;
 	private final IIngredientVisibility ingredientVisibility;
 
-	public RecipeSlotBuilder(RegisteredIngredients registeredIngredients, RecipeIngredientRole role, IIngredientVisibility ingredientVisibility, int x, int y, int ingredientCycleOffset, int legacyIngredientIndex) {
+	public RecipeSlotBuilder(RegisteredIngredients registeredIngredients, RecipeIngredientRole role, IIngredientVisibility ingredientVisibility, int x, int y, int ingredientCycleOffset) {
 		this.ingredients = new IngredientAcceptor(registeredIngredients);
 		this.ingredientVisibility = ingredientVisibility;
-		this.recipeSlot = new RecipeSlot(registeredIngredients, role, x, y, ingredientCycleOffset, legacyIngredientIndex);
+		this.recipeSlot = new RecipeSlot(registeredIngredients, role, x, y, ingredientCycleOffset);
 	}
 
 	@Override

@@ -10,9 +10,8 @@ public final class ServerNetworkHandler {
 	public static void registerServerPacketHandler(ServerPacketRouter packetRouter) {
 		ServerPlayNetworking.registerGlobalReceiver(
 			Constants.NETWORK_CHANNEL_ID,
-			(server, player, handler, buf, responseSender) -> {
-				packetRouter.onPacket(buf, player);
-			}
+			(server, player, handler, buf, responseSender) ->
+				packetRouter.onPacket(buf, player)
 		);
 	}
 }
