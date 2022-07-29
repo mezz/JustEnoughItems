@@ -32,7 +32,6 @@
   "jei.tooltip.error.crash": "Descrição do erro, ver registro",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "O JEI deve estar instalado no servidor para utilizar esse comando de bate-papo, longo demais para o Minecraft enviar.",
   "jei.chat.error.no.cheat.permission.1": "Você não tem permissão para usar o modo trapaça do JEI.",
   "jei.chat.error.no.cheat.permission.2": "Permissão dada apenas a jogadores que estão no Modo Criativo ou podem usar o comando /give.",
   

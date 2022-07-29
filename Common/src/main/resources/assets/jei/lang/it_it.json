@@ -33,7 +33,6 @@
   "jei.tooltip.error.crash": "Errore suggerimento, guarda i log",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "Affinche' questo comando possa essere gestito, nel server deve essere installato JEI. Per Minecraft e' troppo lungo",
   "jei.chat.error.no.cheat.permission.1": "Non hai il permesso per abilitare la modalità trucchi della JEI.",
   "jei.chat.error.no.cheat.permission.disabled": "Su questo server, la modalità trucchi della JEI è disabilitata per tutti i giocatori.",
   "jei.chat.error.no.cheat.permission.enabled": "Su questo server, i seguenti tipi di giocatori possono usare la modalità trucchi della JEI:",

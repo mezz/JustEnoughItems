@@ -28,7 +28,6 @@
   "jei.tooltip.error.crash": "Πρόβλημα Επεξήγησης, δες την καταγραφή παιχνιδιού",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "Το JEI πρέπει να υπάρχει στον σερβερ για να χειριστεί αυτή την εντολή τσατ, είναι πολύ μεγάλη για να μπορεί να την στείλει το Minecraft.",
   "jei.chat.error.no.cheat.permission.1": "You do not have permission to use JEI's Cheat Mode.",
   "jei.chat.error.no.cheat.permission.2": "Permission is given to players who can /give items or are in Creative Mode.",
 

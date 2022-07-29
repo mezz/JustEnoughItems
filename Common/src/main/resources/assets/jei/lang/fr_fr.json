@@ -32,7 +32,6 @@
   "jei.tooltip.error.crash": "Erreur d'infobulle, consulter le log",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "JEI doit être sur le serveur pour gérer cette commande de discussion, elle est trop longue pour que Minecraft l'envoie.",
   "jei.chat.error.no.cheat.permission.1": "Vous n'avez pas l'autorisation d'utiliser le mode triche de JEI.",
   "jei.chat.error.no.cheat.permission.2": "L'autorisation est donnée aux joueurs qui peuvent /give des objets ou qui sont en mode créatif.",
 

@@ -32,7 +32,6 @@
   "jei.tooltip.error.crash": "ツールチップのエラー、ログを参照してください",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "このコマンドを実行するにはJEIがサーバーに導入されている必要があります、バニラでは長すぎるため送ることができません。",
   "jei.chat.error.no.cheat.permission.1": "JEIチートモードを使う権限を有していません。",
   "jei.chat.error.no.cheat.permission.2": "権限はgiveコマンドが使用できるか、クリエイティブモードのプレイヤーに与えられます。",
 

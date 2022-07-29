@@ -33,7 +33,6 @@
   "jei.tooltip.error.crash": "Грешка в инструмента, вижте регистрационните файлове",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "JEI трябва да бъде инсталиран на сървъра, за да се справи с тази команда за чат, твърде е дълга, за да се изпрати в Minecraft.",
   "jei.chat.error.no.cheat.permission.1": "Нямате разрешение да използвате режима на измама на JEI.",
   "jei.chat.error.no.cheat.permission.disabled": "На този сървър режимът на измама на JEI е деактивиран за всички играчи.",
   "jei.chat.error.no.cheat.permission.enabled": "На този сървър следните видове играчи могат да използват режима на измама на JEI:",

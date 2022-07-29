@@ -33,7 +33,6 @@
   "jei.tooltip.error.crash": "Błąd z tooltipami, sprawdź logi",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "JEI musi być zainstalowane na serwerze, żeby obsłużyć tę komendę czatu. Jest ona zbyt długa, aby Minecraft mógł ją wysłać.",
   "jei.chat.error.no.cheat.permission.1": "Nie masz uprawnień do używania trybu cheatów JEI.",
   "jei.chat.error.no.cheat.permission.disabled": "Na tym serwerze tryb cheatów JEI jest wyłączony dla wszystkich graczy.",
   "jei.chat.error.no.cheat.permission.enabled": "Na tym serwerze jedynie następujące typy graczy mogą używać trybu cheatów JEI:",

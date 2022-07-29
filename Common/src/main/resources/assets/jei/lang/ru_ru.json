@@ -33,7 +33,6 @@
   "jei.tooltip.error.crash": "Ошибка подсказки, см. файлы отчёта.",
 
   "_comment": "Ошибка сообщений",
-  "jei.chat.error.command.too.long": "Для обработки чат-команды JEI должен быть установлен на сервере, она слишком длинная при использовании Minecraft отправки.",
   "jei.chat.error.no.cheat.permission.1": "Ты не имеешь разрешения на использование Режима жульничества в JEI.",
   "jei.chat.error.no.cheat.permission.disabled": "На этом сервере, режим жульничества в JEI выключен для всех игроков.",
   "jei.chat.error.no.cheat.permission.enabled": "На этом сервере могут использовать режим жульничества в JEI следующие профили игроков:",

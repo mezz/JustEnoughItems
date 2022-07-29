@@ -32,7 +32,6 @@
   "jei.tooltip.error.crash": "Kesalahan tooltip, lihat log",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "JEI harus ada di peladen untuk menangani Perintah Obrolan ini, terlalu lama untuk dikirim Minecraft.",
   "jei.chat.error.no.cheat.permission.1": "Anda tidak memiliki izin untuk menggunakan Mode Curang JEI.",
   "jei.chat.error.no.cheat.permission.2": "Izin diberikan kepada pemain yang dapat / memberikan item atau berada dalam Mode Kreatif.",
 

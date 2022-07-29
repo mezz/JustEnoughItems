@@ -28,7 +28,6 @@
   "jei.tooltip.error.crash": "Työkaluvihjeen virhe, katso lokia",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "JEI:n täytyy olla asennettuna palvelimella, komento on liian pitkä Minecraftille.",
   "jei.chat.error.no.cheat.permission.1": "Sinulla ei ole lupaa käyttää JEI:n huijaustilaa.",
   "jei.chat.error.no.cheat.permission.2": "Lupa myönnetään pelaajille, jotka voivat ottaa /give:llä tavaroita tai ovat luovassa tilassa.",
 

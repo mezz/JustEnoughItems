@@ -32,7 +32,6 @@
   "jei.tooltip.error.crash": "提示错误，请查看日志",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "必须于服务器上安装 JEI 才能处理，这条指令对 Minecraft 来说太长了。",
   "jei.chat.error.no.cheat.permission.1": "你没有使用 JEI 作弊模式的权限。",
   "jei.chat.error.no.cheat.permission.2": "可以使用 /give 或处在创造模式下的玩家拥有此权限。",
 

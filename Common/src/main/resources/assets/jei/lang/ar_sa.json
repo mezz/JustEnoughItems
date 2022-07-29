@@ -28,7 +28,6 @@
   "jei.tooltip.error.crash": "Tooltip error, see log",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": ".على جاي إي آي أن يكون موجودا في السيرفر حتى يمكنه أن يتعامل مع أمر الدردشة هذا، إنه طويل للغاية حتى تتمكن ماينكرافت من إرساله",
   "jei.chat.error.no.cheat.permission.1": "You do not have permission to use JEI's Cheat Mode.",
   "jei.chat.error.no.cheat.permission.2": "Permission is given to players who can /give items or are in Creative Mode.",
 

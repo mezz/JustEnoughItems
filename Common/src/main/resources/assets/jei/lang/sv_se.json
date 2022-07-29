@@ -33,7 +33,6 @@
   "jei.tooltip.error.crash": "Fel i inforuta, se loggen",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "JEI måste vara installerad på servern för att hantera detta chattkommando då det är för lång för Minecraft att skicka.",
   "jei.chat.error.no.cheat.permission.1": "Du har inte behörighet att använda JEI:s fuskläge.",
   "jei.chat.error.no.cheat.permission.disabled": "JEI:s fuskläge har inaktiverats för alla spelare på denna server.",
   "jei.chat.error.no.cheat.permission.enabled": "Följande typer av spelare kan använda JEI:s fuskläge på denna server:",

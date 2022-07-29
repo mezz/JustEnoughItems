@@ -32,7 +32,6 @@
   "jei.tooltip.error.crash": "İpucu hatası, kayıt dosyasına bak.",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "Bu komudu yazabilmek için JEI sunucuda olmalıdır, bu komut Minecraft için çok uzun.",
   "jei.chat.error.no.cheat.permission.1": "JEI'nin hile modunu kullanabilmek için yetkin yok.",
   "jei.chat.error.no.cheat.permission.2": "Yetki, /give komudunu yazabilen ve Yaratıcılık modunda olanlar için geçerlidir.",
 

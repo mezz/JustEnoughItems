@@ -28,7 +28,6 @@
   "jei.tooltip.error.crash": "Помилка підказки, дивіться звіти",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "JEI потрібно встановити на сервер, щоб використовувати цю команду, вона занадто довга для надсилання.",
   "jei.chat.error.no.cheat.permission.1": "У вас нема дозволу на використання режиму шахрая в JEI.",
   "jei.chat.error.no.cheat.permission.2": "Дозвіл видається гравцям, які можуть використовувати команду /give або знаходяться в креативі.",
 

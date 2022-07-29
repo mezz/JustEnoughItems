@@ -33,7 +33,6 @@
   "jei.tooltip.error.crash": "Error de tooltip, comprueba el log",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "JEI debe estar en el servidor para manejar este comando de chat, es demasiado largo para que Minecraft lo envíe.",
   "jei.chat.error.no.cheat.permission.1": "No tienes permiso para usar el modo trampa de JEI.",
   "jei.chat.error.no.cheat.permission.disabled": "En este servidor, el modo trampa de JEI está desactivado para todos los jugadores.",
   "jei.chat.error.no.cheat.permission.enabled": "En este servidor, los siguientes tipos de jugadores pueden utilizar el modo trampa de JEI:",

@@ -33,7 +33,6 @@
   "jei.tooltip.error.crash": "Fehler des Tooltips, siehe Protokoll(Log)",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "JEI muss auf dem Server installiert sein, damit dieser Befehl funktioniert, da er zu lang für Minecraft ist.",
   "jei.chat.error.no.cheat.permission.1": "Dir ist es nicht erlaubt, JEI's Cheat-Modus zu benutzen.",
   "jei.chat.error.no.cheat.permission.disabled": "Auf diesem Server, ist der JEI Cheat Mode für alle Spieler deaktiviert.",
   "jei.chat.error.no.cheat.permission.enabled": "Auf diesem Server, können folgende Spieler den JEI Cheat Mode benutzen:",

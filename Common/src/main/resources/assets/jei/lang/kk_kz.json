@@ -33,7 +33,6 @@
   "jei.tooltip.error.crash": "Кеңес қатесі, журналды тексеріңіз",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "Бұл пәрменді орындауға серверде JEI орнатылған болуы керек. Ол ойын үшін тым ұзын.",
   "jei.chat.error.no.cheat.permission.1": "JEI чит режимін қолдануға рұқсатыңыз жоқ.",
   "jei.chat.error.no.cheat.permission.disabled": "Бұл серверде JEI чит режимі барлық ойыншыда өшірілген.",
   "jei.chat.error.no.cheat.permission.enabled": "Бұл серверде келесі ойыншы түрлері JEI чит режимін қолдана алады:",

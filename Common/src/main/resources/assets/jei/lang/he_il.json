@@ -28,7 +28,6 @@
   "jei.tooltip.error.crash": "בעיה בToolTip יש לבדוק את הלוג",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "JEI חייב ליהיות מותקן בשרת כדי לטפל בפקודת הצ'אט הזאת, לקח למיינקראפט יותר מידי זמן לשלוח.",
   "jei.chat.error.no.cheat.permission.1": "You do not have permission to use JEI's Cheat Mode.",
   "jei.chat.error.no.cheat.permission.2": "Permission is given to players who can /give items or are in Creative Mode.",
 

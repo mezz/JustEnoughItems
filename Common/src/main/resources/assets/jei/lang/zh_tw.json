@@ -33,7 +33,6 @@
   "jei.tooltip.error.crash": "提示錯誤，請查看 log",
 
   "_comment": "錯誤訊息",
-  "jei.chat.error.command.too.long": "JEI 必須安裝在伺服器才能處理這個聊天指令，這對 Minecraft 來說太長了。",
   "jei.chat.error.no.cheat.permission.1": "你沒有使用 JEI 作弊模式的權限。",
   "jei.chat.error.no.cheat.permission.disabled": "這個伺服器禁止玩家使用 JEI 作弊模式。",
   "jei.chat.error.no.cheat.permission.enabled": "這個伺服器允許下列類型的玩家使用 JEI 作弊模式：",
