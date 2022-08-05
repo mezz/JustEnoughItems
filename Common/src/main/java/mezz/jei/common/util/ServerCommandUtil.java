@@ -6,8 +6,6 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.PacketCheatPermission;
-import mezz.jei.common.platform.IPlatformItemStackHelper;
-import mezz.jei.common.platform.Services;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IServerConfig;
 import net.minecraft.commands.CommandSourceStack;
@@ -136,8 +134,7 @@ public final class ServerCommandUtil {
 	}
 
 	private static boolean canStack(ItemStack a, ItemStack b) {
-		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
-		return itemStackHelper.canStack(a, b);
+		return ItemStack.matches(a, b);
 	}
 
 	/**
