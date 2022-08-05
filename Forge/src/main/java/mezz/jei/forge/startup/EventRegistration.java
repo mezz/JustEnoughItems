@@ -52,9 +52,7 @@ public class EventRegistration {
 			Screen screen = event.getScreen();
 			char codePoint = event.getCodePoint();
 			int modifiers = event.getModifiers();
-			if (handler.onKeyboardCharTypedPost(screen, codePoint, modifiers)) {
-				event.setCanceled(true);
-			}
+			handler.onKeyboardCharTypedPost(screen, codePoint, modifiers);
 		});
 
 		subscriptions.register(ScreenEvent.MouseButtonPressed.Pre.class, event ->
