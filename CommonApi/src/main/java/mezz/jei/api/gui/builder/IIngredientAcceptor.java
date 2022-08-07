@@ -74,9 +74,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	/**
 	 * Convenience helper to add one Fluid ingredient.
 	 *
-	 * To add multiple Fluid ingredients, use {@link IPlatformFluidHelper#create} to create
-	 * the ingredients and {@link IPlatformFluidHelper#getFluidIngredientType()} to get the type,
-	 * and then add them with {@link #addIngredients(IIngredientType, List)}
+	 * To add multiple Fluid ingredients, you can call this multiple times.
 	 *
 	 * @see #addFluidStack(Fluid, long, CompoundTag) to add a Fluid with a {@link CompoundTag}.
 	 * @since 11.1.0
@@ -86,9 +84,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	/**
 	 * Convenience helper to add one Fluid ingredient with a {@link CompoundTag}.
 	 *
-	 * To add multiple Fluid ingredients, use {@link IPlatformFluidHelper#create} to create
-	 * the ingredients and {@link IPlatformFluidHelper#getFluidIngredientType()} to get the type,
-	 * and then add them with {@link #addIngredients(IIngredientType, List)}
+	 * To add multiple Fluid ingredients, you can call this multiple times.
 	 *
 	 * @see #addFluidStack(Fluid, long) to add a Fluid without a {@link CompoundTag}.
 	 * @since 11.1.0
