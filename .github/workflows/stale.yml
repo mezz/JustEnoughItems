@@ -22,5 +22,4 @@ jobs:
           days-before-close: 30
           operations-per-run: 30
           ascending: 'true'
-          debug-only: 'true'
           enable-statistics: 'true'
