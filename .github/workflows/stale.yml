@@ -23,7 +23,7 @@ jobs:
           exempt-issue-labels: 'enhancement,bug,minor bug'
           days-before-stale: 90
           days-before-close: 30
-          operations-per-run: 30
+          operations-per-run: 200
           ascending: 'true'
           enable-statistics: 'true'
   lock:
