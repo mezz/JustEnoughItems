@@ -1,0 +1,21 @@
+name: 'Close stale issues and PRs'
+on:
+  schedule:
+    - cron: '05 1 * * *'
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v5.1.1
+        with:
+          stale-issue-message: "This has been automatically marked as stale because it has not had recent activity, and will be closed if no further activity occurs. If this was overlooked, forgotten, or should remain open for any other reason, please reply here to call attention to it and remove the stale status. Thank you for your contributions."
+          close-issue-message: "This has been automatically closed because it has not had recent activity. Please feel free to update or reopen it."
+          stale-issue-label: 'stale'
+          remove-issue-stale-when-updated: 'true'
+          exempt-issue-labels: 'enhancement,bug,minor bug'
+          days-before-stale: 90
+          days-before-close: 30
+          operations-per-run: 30
+          debug-only: 'true'
+          enable-statistics: 'true'
