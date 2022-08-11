@@ -7,6 +7,9 @@ on:
 permissions:
   issues: write
 
+concurrency:
+  group: stale
+
 jobs:
   stale:
     runs-on: ubuntu-latest
@@ -23,3 +26,15 @@ jobs:
           operations-per-run: 30
           ascending: 'true'
           enable-statistics: 'true'
+  lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/lock-threads@v3
+        with:
+          issue-inactive-days: '365'
+          issue-lock-reason: 'resolved'
+          process-only: 'issues'
+          issue-comment: >
+            This issue has been automatically locked since there
+            has not been any recent activity after it was closed.
+            Please open a new issue for related bugs.
