@@ -163,7 +163,7 @@ public class IngredientManager implements IIngredientManager {
 			.flatMap(Optional::stream)
 			.forEach(typedIngredient -> {
 				Optional<IListElementInfo<V>> matchingElementInfo = ingredientFilter.searchForMatchingElement(ingredientHelper, typedIngredient);
-				if (matchingElementInfo.isEmpty()) {
+				if (matchingElementInfo.isEmpty() && clientConfig.isDebugModeEnabled()) {
 					String errorInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
 					LOGGER.error("Could not find a matching ingredient to remove: {}", errorInfo);
 				} else {
