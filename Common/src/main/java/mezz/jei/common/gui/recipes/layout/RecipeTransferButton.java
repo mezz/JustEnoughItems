@@ -33,7 +33,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 		this.recipeLayout = recipeLayout;
 	}
 
-	public void init(RecipeTransferManager recipeTransferManager, @Nullable AbstractContainerMenu container, Player player) {
+	public void update(RecipeTransferManager recipeTransferManager, @Nullable AbstractContainerMenu container, Player player) {
 		if (container != null) {
 			this.recipeTransferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, container, recipeLayout, player);
 		} else {

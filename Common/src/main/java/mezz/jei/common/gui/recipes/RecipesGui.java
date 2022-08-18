@@ -87,6 +87,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	private final HoverChecker titleHoverChecker = new HoverChecker();
 
+	private final List<RecipeTransferButton> recipeTransferButtons;
+
 	private final GuiIconButtonSmall nextRecipeCategory;
 	private final GuiIconButtonSmall previousRecipeCategory;
 	private final GuiIconButtonSmall nextPage;
@@ -110,6 +112,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IInternalKeyMappings keyBindings
 	) {
 		super(Component.literal("Recipes"));
+		this.recipeTransferButtons = new ArrayList<>();
 		this.recipeTransferManager = recipeTransferManager;
 		this.registeredIngredients = registeredIngredients;
 		this.modIdHelper = modIdHelper;
@@ -268,6 +271,20 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			MutableComponent showAllRecipesString = Component.translatable("jei.tooltip.show.all.recipes");
 			TooltipRenderer.drawHoveringText(poseStack, List.of(showAllRecipesString), mouseX, mouseY);
 		}
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+
+		Optional.ofNullable(minecraft)
+			.map(minecraft -> minecraft.player)
+			.ifPresent(localPlayer -> {
+				AbstractContainerMenu container = getParentContainer();
+				for (RecipeTransferButton button : this.recipeTransferButtons) {
+					button.update(recipeTransferManager, container, localPlayer);
+				}
+			});
 	}
 
 	@Override
@@ -524,20 +541,17 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			return;
 		}
 
-		List<? extends GuiEventListener> oldTransferButtons = children().stream()
-			.filter(RecipeTransferButton.class::isInstance)
-			.toList();
-
-		for (GuiEventListener button : oldTransferButtons) {
+		for (GuiEventListener button : this.recipeTransferButtons) {
 			removeWidget(button);
 		}
+		this.recipeTransferButtons.clear();
 
 		AbstractContainerMenu container = getParentContainer();
 
 		for (RecipeLayout<?> recipeLayout : recipeLayouts) {
 			RecipeTransferButton button = recipeLayout.getRecipeTransferButton();
 			if (button != null) {
-				button.init(recipeTransferManager, container, player);
+				button.update(recipeTransferManager, container, player);
 				button.setOnClickHandler((mouseX, mouseY) -> {
 					boolean maxTransfer = Screen.hasShiftDown();
 					if (container != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer)) {
@@ -545,6 +559,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 					}
 				});
 				addRenderableWidget(button);
+				this.recipeTransferButtons.add(button);
 			}
 		}
 	}
