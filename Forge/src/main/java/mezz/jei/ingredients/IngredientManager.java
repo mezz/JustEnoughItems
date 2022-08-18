@@ -166,7 +166,7 @@ public class IngredientManager implements IIngredientManager {
 				if (matchingElementInfo.isEmpty()) {
 					if(clientConfig.isDebugModeEnabled()) {
 						String errorInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
-						LOGGER.error("Could not find a matching ingredient to remove: {}", errorInfo);
+						LOGGER.debug("Could not find a matching ingredient to remove: {}", errorInfo);
 					}
 				} else {
 					if (clientConfig.isDebugModeEnabled()) {
