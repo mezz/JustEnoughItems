@@ -164,8 +164,10 @@ public class IngredientManager implements IIngredientManager {
 			.forEach(typedIngredient -> {
 				Optional<IListElementInfo<V>> matchingElementInfo = ingredientFilter.searchForMatchingElement(ingredientHelper, typedIngredient);
 				if (matchingElementInfo.isEmpty()) {
-					String errorInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
-					LOGGER.error("Could not find a matching ingredient to remove: {}", errorInfo);
+					if (LOGGER.isDebugEnabled()) {
+						String errorInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
+						LOGGER.debug("Could not find a matching ingredient to remove: {}", errorInfo);
+					}
 				} else {
 					if (clientConfig.isDebugModeEnabled()) {
 						LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
