@@ -9,6 +9,7 @@ apply {
 // gradle.properties
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
+val fabricApiVersion: String by extra
 val fabricLoaderVersion: String by extra
 val forgeVersion: String by extra
 val forgeVersionRange: String by extra
@@ -79,6 +80,7 @@ subprojects {
         filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta", "fabric.mod.json")) {
             expand(mapOf(
                 "curseHomepageUrl" to curseHomepageUrl,
+                "fabricApiVersion" to fabricApiVersion,
                 "fabricLoaderVersion" to fabricLoaderVersion,
                 "forgeVersionRange" to forgeVersionRange,
                 "githubUrl" to githubUrl,

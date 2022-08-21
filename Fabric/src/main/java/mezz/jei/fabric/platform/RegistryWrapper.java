@@ -1,7 +1,7 @@
 package mezz.jei.fabric.platform;
 
 import mezz.jei.common.platform.IPlatformRegistry;
-import net.fabricmc.fabric.mixin.registry.sync.AccessorRegistry;
+import net.fabricmc.fabric.mixin.registry.sync.RegistryAccessor;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 public class RegistryWrapper<T> implements IPlatformRegistry<T> {
     public static <T> IPlatformRegistry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
-        WritableRegistry<WritableRegistry<?>> rootRegistry = AccessorRegistry.getROOT();
+        WritableRegistry<WritableRegistry<?>> rootRegistry = RegistryAccessor.getROOT();
         WritableRegistry<?> registry = rootRegistry.get(key.location());
         IPlatformRegistry<?> registryWrapper = new RegistryWrapper<>(registry);
         @SuppressWarnings("unchecked")
