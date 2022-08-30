@@ -37,7 +37,7 @@ public interface IRecipeTransferError {
 	Type getType();
 
 	/**
-	 * Return the RGBA color of the additional button highlight for {@link Type#COSMETIC}.
+	 * Return the ARGB color of the additional button highlight for {@link Type#COSMETIC}.
 	 * For example, return 0 to disable the colored highlight. Default color is orange.
 	 *
 	 * @since 11.2.1
