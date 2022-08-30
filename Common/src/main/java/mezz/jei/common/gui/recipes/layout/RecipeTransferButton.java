@@ -78,7 +78,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		super.render(poseStack, mouseX, mouseY, partialTicks);
 		if (this.visible && this.recipeTransferError != null && this.recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
-			fill(poseStack, this.x, this.y, this.x + this.width, this.y + this.height, 0x80FFA500);
+			fill(poseStack, this.x, this.y, this.x + this.width, this.y + this.height, this.recipeTransferError.getButtonHighlightColor());
 		}
 	}
 
