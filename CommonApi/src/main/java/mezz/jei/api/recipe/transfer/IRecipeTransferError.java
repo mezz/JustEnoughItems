@@ -37,6 +37,14 @@ public interface IRecipeTransferError {
 	Type getType();
 
 	/**
+	 * Return the RGBA color of the additional button highlight for {@link Type#COSMETIC}.
+	 * For example, return 0 to disable the colored highlight. Default color is orange.
+	 */
+	default int getButtonHighlightColor() {
+		return 0x80FFA500;
+	}
+
+	/**
 	 * Called on {@link Type#USER_FACING} errors.
 	 *
 	 * @since 9.3.0
