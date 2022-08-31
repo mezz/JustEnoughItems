@@ -90,6 +90,7 @@ public class GuiEventHandler {
 			int guiLeft = screenHelper.getGuiLeft(guiContainer);
 			int guiTop = screenHelper.getGuiTop(guiContainer);
 			guiScreenHelper.getGuiClickableArea(guiContainer, mouseX - guiLeft, mouseY - guiTop)
+				.filter(IGuiClickableArea::isTooltipEnabled)
 				.map(IGuiClickableArea::getTooltipStrings)
 				.ifPresent(tooltipStrings -> {
 					if (tooltipStrings.isEmpty()) {

@@ -21,6 +21,15 @@ public interface IGuiClickableArea {
 	Rect2i getArea();
 
 	/**
+	 * Returns whether the area should render a tooltip when hovered over.
+	 * The tooltip can be modified by overriding {@link #getTooltipStrings()}.
+	 * This will also disable the default "Show Recipes" message.
+	 */
+	default boolean isTooltipEnabled() {
+		return true;
+	}
+
+	/**
 	 * Returns the strings to be shown on the tooltip when this area is hovered over.
 	 * Return an empty list to display the default "Show Recipes" message.
 	 */
