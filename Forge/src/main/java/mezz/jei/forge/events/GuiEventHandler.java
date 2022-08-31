@@ -109,6 +109,7 @@ public class GuiEventHandler {
 
 		if (screen instanceof AbstractContainerScreen<?> guiContainer) {
 			guiScreenHelper.getGuiClickableArea(guiContainer, event.getMouseX() - guiContainer.getGuiLeft(), event.getMouseY() - guiContainer.getGuiTop())
+				.filter(IGuiClickableArea::isTooltipEnabled)
 				.map(IGuiClickableArea::getTooltipStrings)
 				.ifPresent(tooltipStrings -> {
 					if (tooltipStrings.isEmpty()) {
