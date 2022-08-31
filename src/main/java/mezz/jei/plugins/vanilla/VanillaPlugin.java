@@ -7,6 +7,7 @@ import java.util.Set;
 
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.RecipeTippedArrow;
+import net.minecraft.item.crafting.ShieldRecipes;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -63,6 +64,7 @@ import mezz.jei.plugins.vanilla.crafting.CraftingRecipeChecker;
 import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeWrapper;
 import mezz.jei.plugins.vanilla.crafting.ShapedRecipesWrapper;
 import mezz.jei.plugins.vanilla.crafting.ShapelessRecipeWrapper;
+import mezz.jei.plugins.vanilla.crafting.ShieldDecorationRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.TippedArrowRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.furnace.FurnaceFuelCategory;
@@ -176,6 +178,9 @@ public class VanillaPlugin implements IModPlugin {
 		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientRegistry), VanillaRecipeCategoryUid.BREWING);
 		if (recipeTypes.contains(RecipeTippedArrow.class)) {
 			registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
+		}
+		if (recipeTypes.contains(ShieldRecipes.Decoration.class)) {
+			registry.addRecipes(ShieldDecorationRecipeMaker.getShieldDecorationRecipes(), VanillaRecipeCategoryUid.CRAFTING);
 		}
 		registry.addRecipes(AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientRegistry), VanillaRecipeCategoryUid.ANVIL);
 
