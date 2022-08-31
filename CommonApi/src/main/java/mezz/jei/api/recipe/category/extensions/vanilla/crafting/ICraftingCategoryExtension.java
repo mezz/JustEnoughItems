@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Implement this interface instead of just {@link IRecipeCategoryExtension}
- * to have your recipe extension work as part of {@link RecipeTypes#CRAFTING} as a shapeless recipe.
+ * to have your recipe extension work as part of {@link RecipeTypes#CRAFTING} recipe.
  *
  * For shaped recipes, override {@link #getWidth()} and {@link #getHeight()}.
  *

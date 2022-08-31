@@ -49,6 +49,7 @@ import mezz.jei.common.plugins.vanilla.cooking.fuel.FurnaceFuelCategory;
 import mezz.jei.common.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.common.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.common.plugins.vanilla.crafting.VanillaRecipes;
+import mezz.jei.common.plugins.vanilla.crafting.replacers.ShieldDecorationRecipeMaker;
 import mezz.jei.common.plugins.vanilla.crafting.replacers.ShulkerBoxColoringRecipeMaker;
 import mezz.jei.common.plugins.vanilla.crafting.replacers.SuspiciousStewRecipeMaker;
 import mezz.jei.common.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
@@ -88,6 +89,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
 import net.minecraft.world.item.crafting.ShulkerBoxColoring;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
@@ -318,6 +320,7 @@ public class VanillaPlugin implements IModPlugin {
 		replacers.put(TippedArrowRecipe.class, () -> TippedArrowRecipeMaker.createRecipes(stackHelper));
 		replacers.put(ShulkerBoxColoring.class, ShulkerBoxColoringRecipeMaker::createRecipes);
 		replacers.put(SuspiciousStewRecipe.class, SuspiciousStewRecipeMaker::createRecipes);
+		replacers.put(ShieldDecorationRecipe.class, ShieldDecorationRecipeMaker::createRecipes);
 
 		return unhandledCraftingRecipes.stream()
 			.map(CraftingRecipe::getClass)
