@@ -28,16 +28,19 @@ public class GuiContainerWrapper implements IRecipeFocusSource {
 	@Override
 	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		Screen guiScreen = Minecraft.getInstance().screen;
-		if (!(guiScreen instanceof AbstractContainerScreen<?> guiContainer)) {
+		if (guiScreen == null) {
 			return Stream.empty();
 		}
 		return Stream.concat(
-			guiScreenHelper.getPluginsIngredientUnderMouse(guiContainer, mouseX, mouseY),
-			getSlotIngredientUnderMouse(guiContainer).stream()
+			guiScreenHelper.getPluginsIngredientUnderMouse(guiScreen, mouseX, mouseY),
+			getSlotIngredientUnderMouse(guiScreen).stream()
 		);
 	}
 
-	private Optional<IClickedIngredient<?>> getSlotIngredientUnderMouse(AbstractContainerScreen<?> guiContainer) {
+	private Optional<IClickedIngredient<?>> getSlotIngredientUnderMouse(Screen guiScreen) {
+		if (!(guiScreen instanceof AbstractContainerScreen<?> guiContainer)) {
+			return Optional.empty();
+		}
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 		return Optional.ofNullable(screenHelper.getSlotUnderMouse(guiContainer))
 			.flatMap(slot -> getClickedIngredient(slot, guiContainer));

@@ -115,13 +115,25 @@ public class GuiScreenHelper {
 		}
 	}
 
-	public <T extends AbstractContainerScreen<?>> Stream<IClickedIngredient<?>> getPluginsIngredientUnderMouse(T guiContainer, double mouseX, double mouseY) {
-		return Stream.concat(
-				this.guiContainerHandlers.getActiveGuiHandlerStream(guiContainer)
-					.map(a -> a.getIngredientUnderMouse(guiContainer, mouseX, mouseY)),
-				this.globalGuiHandlers.stream()
-					.map(a -> a.getIngredientUnderMouse(mouseX, mouseY))
-			)
+	public Stream<IClickedIngredient<?>> getPluginsIngredientUnderMouse(Screen guiScreen, double mouseX, double mouseY) {
+		Stream<IClickedIngredient<?>> globalIngredients = this.globalGuiHandlers.stream()
+			.map(a -> a.getIngredientUnderMouse(mouseX, mouseY))
+			.map(i -> createClickedIngredient(i, guiScreen))
+			.flatMap(Optional::stream);
+
+		if (guiScreen instanceof AbstractContainerScreen<?> guiContainer) {
+			Stream<IClickedIngredient<?>> containerIngredients = getGuiContainerHandlerIngredients(guiContainer, mouseX, mouseY);
+			return Stream.concat(
+				containerIngredients,
+				globalIngredients
+			);
+		}
+		return globalIngredients;
+	}
+
+	private <T extends AbstractContainerScreen<?>> Stream<IClickedIngredient<?>> getGuiContainerHandlerIngredients(T guiContainer, double mouseX, double mouseY) {
+		return this.guiContainerHandlers.getActiveGuiHandlerStream(guiContainer)
+			.map(a -> a.getIngredientUnderMouse(guiContainer, mouseX, mouseY))
 			.map(i -> createClickedIngredient(i, guiContainer))
 			.flatMap(Optional::stream);
 	}
@@ -148,13 +160,13 @@ public class GuiScreenHelper {
 		return null;
 	}
 
-	private <T> Optional<IClickedIngredient<?>> createClickedIngredient(@Nullable T ingredient, AbstractContainerScreen<?> guiContainer) {
+	private <T> Optional<IClickedIngredient<?>> createClickedIngredient(@Nullable T ingredient, Screen guiScreen) {
 		if (ingredient == null) {
 			return Optional.empty();
 		}
 		return TypedIngredient.create(registeredIngredients, ingredient)
 			.map(typedIngredient -> {
-				ImmutableRect2i area = getSlotArea(typedIngredient, guiContainer);
+				ImmutableRect2i area = getSlotArea(typedIngredient, guiScreen);
 				return new ClickedIngredient<>(typedIngredient, area, false, false);
 			});
 	}
@@ -164,7 +176,10 @@ public class GuiScreenHelper {
 	}
 
 	@Nullable
-	public static <T> ImmutableRect2i getSlotArea(ITypedIngredient<T> typedIngredient, AbstractContainerScreen<?> guiContainer) {
+	public static <T> ImmutableRect2i getSlotArea(ITypedIngredient<T> typedIngredient, Screen guiScreen) {
+		if (!(guiScreen instanceof AbstractContainerScreen<?> guiContainer)) {
+			return null;
+		}
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 		Slot slotUnderMouse = screenHelper.getSlotUnderMouse(guiContainer);
 		if (slotUnderMouse == null) {
