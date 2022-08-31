@@ -131,7 +131,7 @@ public class GuiEventHandler {
 		if (gui instanceof ContainerScreen) {
 			ContainerScreen<?> guiContainer = (ContainerScreen<?>) gui;
 			IGuiClickableArea guiClickableArea = guiScreenHelper.getGuiClickableArea(guiContainer, event.getMouseX() - guiContainer.getGuiLeft(), event.getMouseY() - guiContainer.getGuiTop());
-			if (guiClickableArea != null) {
+			if (guiClickableArea != null && guiClickableArea.isTooltipEnabled()) {
 				List<ITextComponent> tooltipStrings = guiClickableArea.getTooltipStrings();
 				if (tooltipStrings.isEmpty()) {
 					tooltipStrings = Collections.singletonList(new TranslationTextComponent("jei.tooltip.show.recipes"));
