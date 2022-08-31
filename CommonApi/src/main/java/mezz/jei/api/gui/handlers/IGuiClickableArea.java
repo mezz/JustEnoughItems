@@ -62,11 +62,6 @@ public interface IGuiClickableArea {
 			}
 
 			@Override
-			public boolean isTooltipEnabled() {
-				return false;
-			}
-
-			@Override
 			public void onClick(IFocusFactory focusFactory, IRecipesGui recipesGui) {
 				recipesGui.showTypes(recipeTypesList);
 			}
