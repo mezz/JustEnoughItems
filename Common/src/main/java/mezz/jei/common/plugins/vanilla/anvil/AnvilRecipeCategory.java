@@ -120,15 +120,9 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 	}
 
 	private void drawRepairCost(Minecraft minecraft, PoseStack poseStack, String text, int mainColor) {
-		int shadowColor = 0xFF000000 | (mainColor & 0xFCFCFC) >> 2;
 		int width = minecraft.font.width(text);
 		int x = background.getWidth() - 2 - width;
 		int y = 27;
-
-		// TODO 1.13 match the new GuiRepair style
-		minecraft.font.draw(poseStack, text, x + 1, y, shadowColor);
-		minecraft.font.draw(poseStack, text, x, y + 1, shadowColor);
-		minecraft.font.draw(poseStack, text, x + 1, y + 1, shadowColor);
-		minecraft.font.draw(poseStack, text, x, y, mainColor);
+		minecraft.font.drawShadow(poseStack, text, x, y, mainColor);
 	}
 }
