@@ -5,14 +5,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.gui.ingredients.RecipeSlotsView;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -30,15 +27,13 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 	 */
 	private static final IntSet PLAYER_INV_INDEXES = IntArraySet.of(0, 1, 3, 4);
 
-	private final IConnectionToServer serverConnection;
 	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IRecipeTransferHandler<InventoryMenu, CraftingRecipe> handler;
 
-	public PlayerRecipeTransferHandler(IConnectionToServer serverConnection, IStackHelper stackHelper, IRecipeTransferHandlerHelper handlerHelper) {
-		this.serverConnection = serverConnection;
+	public PlayerRecipeTransferHandler(IRecipeTransferHandlerHelper handlerHelper) {
 		this.handlerHelper = handlerHelper;
-		var transferInfo = new BasicRecipeTransferInfo<>(InventoryMenu.class, null, RecipeTypes.CRAFTING, 1, 4, 9, 36);
-		this.handler = new BasicRecipeTransferHandler<>(serverConnection, stackHelper, handlerHelper, transferInfo);
+		var basicRecipeTransferInfo = handlerHelper.createBasicRecipeTransferInfo(InventoryMenu.class, null, RecipeTypes.CRAFTING, 1, 4, 9, 36);
+		this.handler = handlerHelper.createUnregisteredRecipeTransferHandler(basicRecipeTransferInfo);
 	}
 
 	@Override
@@ -59,7 +54,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 	@Nullable
 	@Override
 	public IRecipeTransferError transferRecipe(InventoryMenu container, CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, Player player, boolean maxTransfer, boolean doTransfer) {
-		if (!serverConnection.isJeiOnServer()) {
+		if (!handlerHelper.recipeTransferHasServerSupport()) {
 			Component tooltipMessage = Component.translatable("jei.tooltip.error.recipe.transfer.no.server");
 			return this.handlerHelper.createUserErrorWithTooltip(tooltipMessage);
 		}
@@ -74,7 +69,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 
 		// filter the crafting table input slots to player inventory input slots
 		List<IRecipeSlotView> filteredSlotViews = filterSlots(slotViews);
-		RecipeSlotsView filteredRecipeSlots = new RecipeSlotsView(filteredSlotViews);
+		IRecipeSlotsView filteredRecipeSlots = this.handlerHelper.createRecipeSlotsView(filteredSlotViews);
 		return this.handler.transferRecipe(container, recipe, filteredRecipeSlots, player, maxTransfer, doTransfer);
 	}
 

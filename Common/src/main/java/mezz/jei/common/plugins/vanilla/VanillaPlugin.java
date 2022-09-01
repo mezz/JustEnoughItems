@@ -29,7 +29,6 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.fluid.FluidIngredientHelper;
 import mezz.jei.common.ingredients.fluid.FluidStackListFactory;
-import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
@@ -279,11 +278,8 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeTransferHandler(AnvilMenu.class, MenuType.ANVIL, RecipeTypes.ANVIL, 0, 2, 3, 36);
 		registration.addRecipeTransferHandler(SmithingMenu.class, MenuType.SMITHING, RecipeTypes.SMITHING, 0, 2, 3, 36);
 
-		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IRecipeTransferHandlerHelper transferHelper = registration.getTransferHelper();
-		IStackHelper stackHelper = jeiHelpers.getStackHelper();
-		IConnectionToServer serverConnection = Internal.getServerConnection();
-		PlayerRecipeTransferHandler recipeTransferHandler = new PlayerRecipeTransferHandler(serverConnection, stackHelper, transferHelper);
+		PlayerRecipeTransferHandler recipeTransferHandler = new PlayerRecipeTransferHandler(transferHelper);
 		registration.addRecipeTransferHandler(recipeTransferHandler, RecipeTypes.CRAFTING);
 	}
 

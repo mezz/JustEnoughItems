@@ -52,8 +52,8 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 		ErrorUtil.checkNotNull(containerClass, "containerClass");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 
-		IRecipeTransferInfo<C, R> recipeTransferHelper = new BasicRecipeTransferInfo<>(containerClass, menuType, recipeType, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
-		addRecipeTransferHandler(recipeTransferHelper);
+		IRecipeTransferInfo<C, R> recipeTransferInfo = new BasicRecipeTransferInfo<>(containerClass, menuType, recipeType, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
+		addRecipeTransferHandler(recipeTransferInfo);
 	}
 
 	@Override
