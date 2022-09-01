@@ -17,10 +17,12 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.gui.recipes.layout.RecipeLayout;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
@@ -110,5 +112,10 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.assertMainThread();
 		internal.unhideRecipeCategory(recipeType);
+	}
+
+	@Override
+	public Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid) {
+		return internal.getRecipeType(recipeUid);
 	}
 }

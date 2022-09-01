@@ -7,7 +7,6 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.recipes.collect.RecipeTypeData;
-import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,17 +44,16 @@ public class PluginManager {
 		return recipes;
 	}
 
-	public Stream<ResourceLocation> getRecipeCategoryUids(IFocusGroup focusGroup) {
+	public Stream<RecipeType<?>> getRecipeTypes(IFocusGroup focusGroup) {
 		return this.plugins.stream()
-			.flatMap(p -> getPluginRecipeCategoryUidStream(p, focusGroup))
+			.flatMap(p -> getPluginRecipeTypeStream(p, focusGroup))
 			.distinct();
 	}
 
-	private Stream<ResourceLocation> getPluginRecipeCategoryUidStream(IRecipeManagerPlugin plugin, IFocusGroup focuses) {
+	private Stream<RecipeType<?>> getPluginRecipeTypeStream(IRecipeManagerPlugin plugin, IFocusGroup focuses) {
 		List<IFocus<?>> allFocuses = focuses.getAllFocuses();
 		return allFocuses.stream()
-			.flatMap(focus -> getRecipeTypes(plugin, focus))
-			.map(RecipeType::getUid);
+			.flatMap(focus -> getRecipeTypes(plugin, focus));
 	}
 
 	private <T> Stream<T> getPluginRecipeStream(IRecipeManagerPlugin plugin, IRecipeCategory<T> recipeCategory, IFocusGroup focuses) {

@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -42,7 +43,7 @@ public class RecipeManagerInternal {
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
 	private final EnumMap<RecipeIngredientRole, RecipeMap> recipeMaps;
 	private final PluginManager pluginManager;
-	private final Set<ResourceLocation> hiddenRecipeCategoryUids = new HashSet<>();
+	private final Set<RecipeType<?>> hiddenRecipeTypes = new HashSet<>();
 
 	@Nullable
 	@Unmodifiable
@@ -142,7 +143,7 @@ public class RecipeManagerInternal {
 	public boolean isCategoryHidden(IRecipeCategory<?> recipeCategory, IFocusGroup focuses) {
 		// hide the category if it has been explicitly hidden
 		RecipeType<?> recipeType = recipeCategory.getRecipeType();
-		if (hiddenRecipeCategoryUids.contains(recipeType.getUid())) {
+		if (hiddenRecipeTypes.contains(recipeType)) {
 			return true;
 		}
 
@@ -192,7 +193,7 @@ public class RecipeManagerInternal {
 			}
 		} else {
 			// focus => get all recipe categories from plugins with the focus
-			categoryStream = this.pluginManager.getRecipeCategoryUids(focuses)
+			categoryStream = this.pluginManager.getRecipeTypes(focuses)
 				.map(recipeTypeDataMap::get)
 				.map(RecipeTypeData::getRecipeCategory);
 
@@ -239,14 +240,17 @@ public class RecipeManagerInternal {
 	}
 
 	public void hideRecipeCategory(RecipeType<?> recipeType) {
-		hiddenRecipeCategoryUids.add(recipeType.getUid());
+		hiddenRecipeTypes.add(recipeType);
 		recipeCategoriesVisibleCache = null;
 	}
 
 	public void unhideRecipeCategory(RecipeType<?> recipeType) {
-		ResourceLocation uid = recipeType.getUid();
-		recipeTypeDataMap.validate(uid);
-		hiddenRecipeCategoryUids.remove(uid);
+		recipeTypeDataMap.validate(recipeType);
+		hiddenRecipeTypes.remove(recipeType);
 		recipeCategoriesVisibleCache = null;
+	}
+
+	public Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid) {
+		return recipeTypeDataMap.getType(recipeUid);
 	}
 }

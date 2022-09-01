@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class RecipeTypeDataMap {
@@ -31,24 +32,11 @@ public class RecipeTypeDataMap {
 			);
 	}
 
-	public RecipeTypeData<?> get(ResourceLocation recipeCategoryUid) {
-		RecipeTypeData<?> recipeTypeData = uidMap.get(recipeCategoryUid);
-		if (recipeTypeData == null) {
-			throw new IllegalStateException("There is no recipe category registered for: " + recipeCategoryUid);
-		}
-		return recipeTypeData;
-	}
-
 	public <T> RecipeTypeData<T> get(RecipeType<T> recipeType) {
-		ResourceLocation uid = recipeType.getUid();
+		RecipeTypeData<?> data = this.uidMap.get(recipeType.getUid());
 		@SuppressWarnings("unchecked")
-		RecipeTypeData<T> recipeTypeData = (RecipeTypeData<T>) get(uid);
+		RecipeTypeData<T> recipeTypeData = (RecipeTypeData<T>) data;
 		return recipeTypeData;
-	}
-
-	public <T> RecipeTypeData<T> get(Iterable<T> recipes, ResourceLocation recipeCategoryUid) {
-		RecipeTypeData<?> recipeTypeData = get(recipeCategoryUid);
-		return validate(recipes, recipeTypeData);
 	}
 
 	public <T> RecipeTypeData<T> get(Iterable<? extends T> recipes, RecipeType<T> recipeType) {
@@ -58,11 +46,6 @@ public class RecipeTypeDataMap {
 
 	public <T> RecipeTypeData<T> get(T recipe, RecipeType<T> recipeType) {
 		RecipeTypeData<T> recipeTypeData = get(recipeType);
-		return validate(List.of(recipe), recipeTypeData);
-	}
-
-	public <T> RecipeTypeData<T> get(T recipe, ResourceLocation recipeCategoryUid) {
-		RecipeTypeData<?> recipeTypeData = get(recipeCategoryUid);
 		return validate(List.of(recipe), recipeTypeData);
 	}
 
@@ -80,9 +63,16 @@ public class RecipeTypeDataMap {
 		return castRecipeTypeData;
 	}
 
-	public void validate(ResourceLocation recipeCategoryUid) {
-		if (!uidMap.containsKey(recipeCategoryUid)) {
-			throw new IllegalStateException("There is no recipe category registered for: " + recipeCategoryUid);
+	public void validate(RecipeType<?> recipeType) {
+		if (!uidMap.containsKey(recipeType.getUid())) {
+			throw new IllegalStateException("There is no recipe type registered for: " + recipeType.getUid());
 		}
+	}
+
+	public Optional<RecipeType<?>> getType(ResourceLocation recipeTypeUid) {
+		RecipeTypeData<?> data = uidMap.get(recipeTypeUid);
+		return Optional.ofNullable(data)
+			.map(RecipeTypeData::getRecipeCategory)
+			.map(IRecipeCategory::getRecipeType);
 	}
 }

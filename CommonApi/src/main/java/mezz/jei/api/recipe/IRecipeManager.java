@@ -4,10 +4,12 @@ import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The {@link IRecipeManager} offers several functions for retrieving and handling recipes.
@@ -112,4 +114,15 @@ public interface IRecipeManager {
 	 * @param focus          the focus of the recipe layout.
 	 */
 	<T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus);
+
+	/**
+	 * Get the registered recipe type for the given unique id.
+	 *
+	 * This is useful for integrating with other mods that do not share their
+	 * recipe types directly from their API.
+	 *
+	 * @see RecipeType#getUid()
+	 * @since 11.2.3
+	 */
+	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
 }
