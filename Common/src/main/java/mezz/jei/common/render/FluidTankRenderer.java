@@ -87,6 +87,9 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		}
 
 		TextureAtlasSprite fluidStillSprite = fluidHelper.getStillFluidSprite(fluidStack);
+		if (fluidStillSprite == null) {
+			return;
+		}
 
 		int fluidColor = fluidHelper.getColorTint(fluidStack);
 
@@ -161,16 +164,14 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 
 	@Override
 	public List<Component> getTooltip(T fluidStack, TooltipFlag tooltipFlag) {
-		List<Component> tooltip = new ArrayList<>();
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluidType = type.getBase(fluidStack);
 		try {
 			if (fluidType.isSame(Fluids.EMPTY)) {
-				return tooltip;
+				return new ArrayList<>();
 			}
 
-			Component displayName = fluidHelper.getDisplayName(fluidStack);
-			tooltip.add(displayName);
+			List<Component> tooltip = fluidHelper.getTooltip(fluidStack, tooltipFlag);
 
 			long amount = fluidHelper.getAmount(fluidStack);
 			long milliBuckets = (amount * 1000) / fluidHelper.bucketVolume();
@@ -182,13 +183,14 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 				MutableComponent amountString = Component.translatable("jei.tooltip.liquid.amount", nf.format(milliBuckets));
 				tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
 			}
+			return tooltip;
 		} catch (RuntimeException e) {
 			RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
 			String info = ErrorUtil.getIngredientInfo(fluidStack, type, registeredIngredients);
 			LOGGER.error("Failed to get tooltip for fluid: " + info, e);
 		}
 
-		return tooltip;
+		return new ArrayList<>();
 	}
 
 	@Override

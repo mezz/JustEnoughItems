@@ -1,29 +1,29 @@
 package mezz.jei.fabric.platform;
 
 import mezz.jei.api.fabric.constants.FabricTypes;
+import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
-import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
-import mezz.jei.fabric.ingredients.fluid.JeiFluidIngredient;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.render.FluidTankRenderer;
-import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
-import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
+import mezz.jei.fabric.ingredients.fluid.JeiFluidIngredient;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings("UnstableApiUsage")
 public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngredient> {
     @Override
     public IIngredientTypeWithSubtypes<Fluid, IJeiFluidIngredient> getFluidIngredientType() {
@@ -41,34 +41,35 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
     }
 
     @Override
+    @Nullable
     public TextureAtlasSprite getStillFluidSprite(IJeiFluidIngredient ingredient) {
-        FluidRenderHandlerRegistry registry = FluidRenderHandlerRegistry.INSTANCE;
-        Fluid fluid = ingredient.getFluid();
-        FluidRenderHandler handler = registry.get(fluid);
-        FluidState defaultFluidState = fluid.defaultFluidState();
-        TextureAtlasSprite[] fluidSprites = handler.getFluidSprites(null, null, defaultFluidState);
-        return fluidSprites[0];
+        FluidVariant fluidVariant = getFluidVariant(ingredient);
+        return FluidVariantRendering.getSprite(fluidVariant);
     }
 
     @Override
     public Component getDisplayName(IJeiFluidIngredient ingredient) {
-        // TODO: better Fabric Fluid display name
-        Fluid fluid = ingredient.getFluid();
-        ResourceLocation key = Registry.FLUID.getKey(fluid);
-        String path = key.getPath();
-        path = path.replace("_", " ");
-        path = StringUtils.capitalize(path);
-        return Component.literal(path);
+        FluidVariant fluidVariant = getFluidVariant(ingredient);
+        return FluidVariantAttributes.getName(fluidVariant);
     }
 
     @Override
     public int getColorTint(IJeiFluidIngredient ingredient) {
-        FluidRenderHandlerRegistry registry = FluidRenderHandlerRegistry.INSTANCE;
-        Fluid fluid = ingredient.getFluid();
-        FluidRenderHandler handler = registry.get(fluid);
-        FluidState defaultFluidState = fluid.defaultFluidState();
-        int fluidColor = handler.getFluidColor(null, null, defaultFluidState);
+        FluidVariant fluidVariant = getFluidVariant(ingredient);
+        int fluidColor = FluidVariantRendering.getColor(fluidVariant);
         return fluidColor | 0xFF000000;
+    }
+
+    @Override
+    public List<Component> getTooltip(IJeiFluidIngredient ingredient, TooltipFlag tooltipFlag) {
+        FluidVariant fluidVariant = getFluidVariant(ingredient);
+        return FluidVariantRendering.getTooltip(fluidVariant, tooltipFlag);
+    }
+
+    private FluidVariant getFluidVariant(IJeiFluidIngredient ingredient) {
+        Fluid fluid = ingredient.getFluid();
+        CompoundTag tag = ingredient.getTag().orElse(null);
+        return FluidVariant.of(fluid, tag);
     }
 
     @Override

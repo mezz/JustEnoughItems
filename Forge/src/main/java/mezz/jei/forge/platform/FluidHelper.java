@@ -7,18 +7,25 @@ import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.render.FluidTankRenderer;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
@@ -52,6 +59,29 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
     @Override
     public Optional<CompoundTag> getTag(FluidStack ingredient) {
         return Optional.ofNullable(ingredient.getTag());
+    }
+
+    @Override
+    public List<Component> getTooltip(FluidStack ingredient, TooltipFlag tooltipFlag) {
+        List<Component> tooltip = new ArrayList<>();
+        Fluid fluid = ingredient.getFluid();
+        if (fluid.isSame(Fluids.EMPTY)) {
+            return tooltip;
+        }
+
+        Component displayName = getDisplayName(ingredient);
+        tooltip.add(displayName);
+
+        if (tooltipFlag.isAdvanced()) {
+            ResourceLocation resourceLocation = ForgeRegistries.FLUIDS.getKey(fluid);
+            if (resourceLocation != null) {
+                MutableComponent advancedId = Component.literal(resourceLocation.toString())
+                    .withStyle(ChatFormatting.DARK_GRAY);
+                tooltip.add(advancedId);
+            }
+        }
+
+        return tooltip;
     }
 
     @Override

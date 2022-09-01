@@ -62,9 +62,9 @@ public final class ModIdHelper implements IModIdHelper {
 		MutableComponent jeiDebug = Component.literal("JEI Debug:");
 		MutableComponent info = Component.literal("info: " + ingredientHelper.getErrorInfo(ingredient));
 		MutableComponent uid = Component.literal("uid: " + ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
-		tooltip.add(jeiDebug.withStyle(ChatFormatting.GRAY));
-		tooltip.add(info.withStyle(ChatFormatting.GRAY));
-		tooltip.add(uid.withStyle(ChatFormatting.GRAY));
+		tooltip.add(jeiDebug.withStyle(ChatFormatting.DARK_GRAY));
+		tooltip.add(info.withStyle(ChatFormatting.DARK_GRAY));
+		tooltip.add(uid.withStyle(ChatFormatting.DARK_GRAY));
 		return tooltip;
 	}
 

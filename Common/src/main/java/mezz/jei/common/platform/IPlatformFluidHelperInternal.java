@@ -6,7 +6,10 @@ import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T> {
@@ -15,6 +18,7 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
 
     IIngredientRenderer<T> createRenderer(long capacity, boolean showCapacity, int width, int height);
 
+    @Nullable
     TextureAtlasSprite getStillFluidSprite(T ingredient);
 
     Component getDisplayName(T ingredient);
@@ -24,6 +28,8 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
     long getAmount(T ingredient);
 
     Optional<CompoundTag> getTag(T ingredient);
+
+    List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag);
 
     T copy(T ingredient);
 

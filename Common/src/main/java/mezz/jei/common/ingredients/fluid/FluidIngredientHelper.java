@@ -23,6 +23,7 @@ import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -79,6 +80,9 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	@Override
 	public Iterable<Integer> getColors(T ingredient) {
 		TextureAtlasSprite fluidStillSprite = platformFluidHelper.getStillFluidSprite(ingredient);
+		if (fluidStillSprite == null) {
+			return List.of();
+		}
 		int renderColor = platformFluidHelper.getColorTint(ingredient);
 		return colorHelper.getColors(fluidStillSprite, renderColor, 1);
 	}
