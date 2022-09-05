@@ -68,3 +68,6 @@ JEI is an item and recipe viewing mod for Minecraft, built from the ground up fo
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="BOTH"
+
+[modproperties.jei]
+    catalogueImageIcon="jei-icon.png"
