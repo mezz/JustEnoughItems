@@ -3,8 +3,8 @@ package mezz.jei.forge.platform;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -54,10 +54,8 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
     }
 
     @Override
-    public List<Component> getTestTooltip(ItemStack itemStack) {
+    public List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
         try {
-            Minecraft minecraft = Minecraft.getInstance();
-            LocalPlayer player = minecraft.player;
             List<Component> tooltip = new ArrayList<>();
             tooltip.add(Component.literal("JEI Tooltip Testing for mod name formatting"));
             ItemTooltipEvent tooltipEvent = ForgeEventFactory.onItemTooltip(itemStack, player, tooltip, TooltipFlag.Default.NORMAL);

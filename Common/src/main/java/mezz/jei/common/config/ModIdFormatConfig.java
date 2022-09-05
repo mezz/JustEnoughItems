@@ -9,6 +9,8 @@ import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.core.util.function.CachedSupplierTransformer;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -67,7 +69,9 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 
     private String detectModNameTooltipFormatting() {
         IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
-        List<Component> tooltip = itemStackHelper.getTestTooltip(new ItemStack(Items.APPLE));
+        Minecraft minecraft = Minecraft.getInstance();
+        LocalPlayer player = minecraft.player;
+        List<Component> tooltip = itemStackHelper.getTestTooltip(player, new ItemStack(Items.APPLE));
         if (tooltip.size() <= 1) {
             return "";
         }
