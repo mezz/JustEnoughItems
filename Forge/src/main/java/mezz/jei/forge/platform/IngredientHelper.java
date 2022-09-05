@@ -8,8 +8,10 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 public class IngredientHelper implements IPlatformIngredientHelper {
@@ -30,5 +32,10 @@ public class IngredientHelper implements IPlatformIngredientHelper {
     @Override
     public Ingredient createNbtIngredient(ItemStack stack, IStackHelper stackHelper) {
         return new JeiIngredient(stack, stackHelper);
+    }
+
+    @Override
+    public List<Ingredient> getPotionContainers() {
+        return PotionBrewing.ALLOWED_CONTAINERS;
     }
 }

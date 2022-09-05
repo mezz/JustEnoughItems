@@ -1,5 +1,8 @@
 package mezz.jei.fabric.platform;
 
+import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
+import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -8,6 +11,8 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class RecipeHelper implements IPlatformRecipeHelper {
     @Override
@@ -43,5 +48,10 @@ public class RecipeHelper implements IPlatformRecipeHelper {
             return recipe.getId();
         }
         return null;
+    }
+
+    @Override
+    public List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory) {
+        return BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory);
     }
 }
