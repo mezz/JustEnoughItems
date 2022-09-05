@@ -2,7 +2,6 @@ package mezz.jei.forge.platform;
 
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.util.ErrorUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;

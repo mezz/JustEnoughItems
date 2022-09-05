@@ -1,7 +1,6 @@
 package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
