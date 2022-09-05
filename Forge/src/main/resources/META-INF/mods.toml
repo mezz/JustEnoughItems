@@ -68,3 +68,6 @@ ${modDescription}
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="BOTH"
+
+[modproperties.jei]
+    catalogueImageIcon="jei-icon.png"
