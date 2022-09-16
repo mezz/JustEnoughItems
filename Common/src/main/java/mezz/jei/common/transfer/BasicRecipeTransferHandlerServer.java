@@ -39,7 +39,7 @@ public final class BasicRecipeTransferHandlerServer {
 			return;
 		}
 
-		Map<Slot, Pair<Slot, ItemStack>> recipeSlotToRequiredItemStack = calculateRequiredStacks(transferOperations, player);
+		Map<Slot, ItemStackWithSlotHint> recipeSlotToRequiredItemStack = calculateRequiredStacks(transferOperations, player);
 		if (recipeSlotToRequiredItemStack == null) {
 			return;
 		}
@@ -133,8 +133,8 @@ public final class BasicRecipeTransferHandlerServer {
 	}
 
 	@Nullable
-	private static Map<Slot, Pair<Slot, ItemStack>> calculateRequiredStacks(List<TransferOperation> transferOperations, Player player) {
-		Map<Slot, Pair<Slot, ItemStack>> recipeSlotToRequired = new HashMap<>(transferOperations.size());
+	private static Map<Slot, ItemStackWithSlotHint> calculateRequiredStacks(List<TransferOperation> transferOperations, Player player) {
+		Map<Slot, ItemStackWithSlotHint> recipeSlotToRequired = new HashMap<>(transferOperations.size());
 		for (TransferOperation transferOperation : transferOperations) {
 			Slot recipeSlot = transferOperation.craftingSlot();
 			Slot inventorySlot = transferOperation.inventorySlot();
@@ -157,7 +157,7 @@ public final class BasicRecipeTransferHandlerServer {
 			}
 			ItemStack stack = slotStack.copy();
 			stack.setCount(1);
-			recipeSlotToRequired.put(recipeSlot, new Pair<>(inventorySlot, stack));
+			recipeSlotToRequired.put(recipeSlot, new ItemStackWithSlotHint(inventorySlot, stack));
 		}
 		return recipeSlotToRequired;
 	}
@@ -165,7 +165,7 @@ public final class BasicRecipeTransferHandlerServer {
 	@Nonnull
 	private static Map<Slot, ItemStack> takeItemsFromInventory(
 		Player player,
-		Map<Slot, Pair<Slot, ItemStack>> recipeSlotToRequiredItemStack,
+		Map<Slot, ItemStackWithSlotHint> recipeSlotToRequiredItemStack,
 		List<Slot> craftingSlots,
 		List<Slot> inventorySlots,
 		boolean transferAsCompleteSets,
@@ -209,7 +209,7 @@ public final class BasicRecipeTransferHandlerServer {
 
 	private static Map<Slot, ItemStack> removeOneSetOfItemsFromInventory(
 		Player player,
-		Map<Slot, Pair<Slot, ItemStack>> recipeSlotToRequiredItemStack,
+		Map<Slot, ItemStackWithSlotHint> recipeSlotToRequiredItemStack,
 		List<Slot> craftingSlots,
 		List<Slot> inventorySlots,
 		boolean transferAsCompleteSets
@@ -225,10 +225,10 @@ public final class BasicRecipeTransferHandlerServer {
 		// us to simply ignore the map's contents when a complete set isn't found.
 		final Map<Slot, ItemStack> foundItemsInSet = new HashMap<>(recipeSlotToRequiredItemStack.size());
 
-		for (Map.Entry<Slot, Pair<Slot, ItemStack>> entry : recipeSlotToRequiredItemStack.entrySet()) { // for each item in set
+		for (Map.Entry<Slot, ItemStackWithSlotHint> entry : recipeSlotToRequiredItemStack.entrySet()) { // for each item in set
 			final Slot recipeSlot = entry.getKey();
-			final ItemStack requiredStack = entry.getValue().second();
-			final Slot hint = entry.getValue().first();
+			final ItemStack requiredStack = entry.getValue().stack;
+			final Slot hint = entry.getValue().hint;
 
 			// Locate a slot that has what we need.
 			final Slot slot = getSlotWithStack(player, requiredStack, craftingSlots, inventorySlots, hint);
@@ -287,7 +287,11 @@ public final class BasicRecipeTransferHandlerServer {
 		Slot slot = getSlotWithStack(player, craftingSlots, stack);
 
 		if (slot == null) {
-			if (!hint.getItem().isEmpty() && ItemStack.isSameItemSameTags(stack, hint.getItem()) && hint.mayPickup(player)) {
+			if (
+				hint.mayPickup(player) &&
+				!hint.getItem().isEmpty() &&
+				ItemStack.isSameItemSameTags(stack, hint.getItem())
+			) {
 				return hint;
 			}
 
@@ -358,4 +362,6 @@ public final class BasicRecipeTransferHandlerServer {
 		}
 		return null;
 	}
+
+	private record ItemStackWithSlotHint(Slot hint, ItemStack stack) {}
 }

@@ -17,7 +17,6 @@ import mezz.jei.common.recipes.RecipeTransferManager;
 import mezz.jei.common.util.ItemStackMatchable;
 import mezz.jei.common.util.MatchingIterable;
 import mezz.jei.common.util.StringUtil;
-import mezz.jei.core.util.Pair;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -194,7 +193,7 @@ public final class RecipeTransferUtil {
 
 		// Find groups of slots for each recipe input, so each ingredient knows list of slots it can take item from
 		// and also split them between "equal" groups
-		Map<IRecipeSlotView, Map<ItemStack, ArrayList<Map.Entry<Slot, ItemStack>>>> relevantSlots = new IdentityHashMap<>();
+		Map<IRecipeSlotView, Map<ItemStack, ArrayList<PhantomSlotState>>> relevantSlots = new IdentityHashMap<>();
 
 		for (Map.Entry<Slot, ItemStack> slotTuple : availableItemStacks.entrySet()) {
 			for (IRecipeSlotView ingredient : requiredItemStacks) {
@@ -212,7 +211,7 @@ public final class RecipeTransferUtil {
 							}
 						}))
 						.computeIfAbsent(slotTuple.getValue(), it -> new ArrayList<>())
-						.add(slotTuple);
+						.add(new PhantomSlotState(slotTuple.getKey(), slotTuple.getValue()));
 				}
 			}
 		}
@@ -229,42 +228,36 @@ public final class RecipeTransferUtil {
 		// We need to get following structure:
 		// Ingredient1 -> listOf(MostItems(LeastItemsInSlot, MoreItemsInSlot, ...), LesserItems(), ...)
 
-		Map<IRecipeSlotView, ArrayList<Pair<Long, ArrayList<Map.Entry<Slot, ItemStack>>>>> bestMatches = new Object2ObjectArrayMap<>();
+		Map<IRecipeSlotView, ArrayList<PhantomSlotStateList>> bestMatches = new Object2ObjectArrayMap<>();
 
-		for (Map.Entry<IRecipeSlotView, Map<ItemStack, ArrayList<Map.Entry<Slot, ItemStack>>>> entry : relevantSlots.entrySet()) {
-			ArrayList<Pair<Long, ArrayList<Map.Entry<Slot, ItemStack>>>> countedAndSorted = new ArrayList<>();
+		for (Map.Entry<IRecipeSlotView, Map<ItemStack, ArrayList<PhantomSlotState>>> entry : relevantSlots.entrySet()) {
+			ArrayList<PhantomSlotStateList> countedAndSorted = new ArrayList<>();
 
-			for (Map.Entry<ItemStack, ArrayList<Map.Entry<Slot, ItemStack>>> foundSlots : entry.getValue().entrySet()) {
-				long groupSize = 0L;
-
-				for (Map.Entry<Slot, ItemStack> tuple : foundSlots.getValue()) {
-					groupSize += tuple.getValue().getCount();
-				}
-
-				countedAndSorted.add(new Pair<>(groupSize, foundSlots.getValue()));
-
+			for (Map.Entry<ItemStack, ArrayList<PhantomSlotState>> foundSlots : entry.getValue().entrySet()) {
 				// Ascending sort
 				// if counts are equal, push slots with lesser index to top
 				foundSlots.getValue().sort((o1, o2) -> {
-					int compare = Integer.compare(o1.getValue().getCount(), o2.getValue().getCount());
+					int compare = Integer.compare(o1.itemStack.getCount(), o2.itemStack.getCount());
 
 					if (compare == 0) {
-						return Integer.compare(o1.getKey().index, o2.getKey().index);
+						return Integer.compare(o1.slot.index, o2.slot.index);
 					}
 
 					return compare;
 				});
+
+				countedAndSorted.add(new PhantomSlotStateList(foundSlots.getValue()));
 			}
 
 			// Descending sort
 			// if counts are equal, push groups with lowest slot index to top
 			countedAndSorted.sort((o1, o2) -> {
-				int compare = Long.compare(o2.first(), o1.first());
+				int compare = Long.compare(o2.totalItemCount, o1.totalItemCount);
 
 				if (compare == 0) {
 					return Integer.compare(
-						o1.second().stream().mapToInt(it -> it.getKey().index).min().orElse(0),
-						o2.second().stream().mapToInt(it -> it.getKey().index).min().orElse(0)
+						o1.stateList.stream().mapToInt(it -> it.slot.index).min().orElse(0),
+						o2.stateList.stream().mapToInt(it -> it.slot.index).min().orElse(0)
 					);
 				}
 
@@ -290,18 +283,17 @@ public final class RecipeTransferUtil {
 
 			Slot craftingSlot = craftingSlots.get(i);
 
-			Map.Entry<Slot, ItemStack> matching = bestMatches
+			PhantomSlotState matching = bestMatches
 				.get(requiredItemStack)
 				.stream()
-				.flatMap(it -> it.second().stream())
-				.filter(it -> !it.getValue().isEmpty())
+				.flatMap(PhantomSlotStateList::stream)
 				.findFirst().orElse(null);
 
 			if (matching == null) {
 				transferOperations.missingItems.add(requiredItemStack);
 			} else {
-				Slot matchingSlot = matching.getKey();
-				ItemStack matchingStack = matching.getValue();
+				Slot matchingSlot = matching.slot;
+				ItemStack matchingStack = matching.itemStack;
 				matchingStack.shrink(1);
 				transferOperations.results.add(new TransferOperation(matchingSlot, craftingSlot));
 			}
@@ -372,6 +364,18 @@ public final class RecipeTransferUtil {
 					};
 				}
 			};
+		}
+	}
+
+	private record PhantomSlotState(Slot slot, ItemStack itemStack) {}
+
+	private record PhantomSlotStateList(List<PhantomSlotState> stateList, long totalItemCount) {
+		public PhantomSlotStateList(List<PhantomSlotState> states) {
+			this(states, states.stream().mapToLong(it -> it.itemStack.getCount()).sum());
+		}
+
+		public Stream<PhantomSlotState> stream() {
+			return this.stateList.stream().filter(it -> !it.itemStack.isEmpty());
 		}
 	}
 }
