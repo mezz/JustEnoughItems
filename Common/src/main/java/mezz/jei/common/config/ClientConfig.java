@@ -4,10 +4,11 @@ import com.google.common.base.Preconditions;
 import mezz.jei.common.color.ColorGetter;
 import mezz.jei.common.color.ColorName;
 import mezz.jei.common.color.ColorNamer;
-import mezz.jei.common.config.file.ConfigCategoryBuilder;
-import mezz.jei.common.config.file.ConfigSchemaBuilder;
+import mezz.jei.common.config.file.IConfigCategoryBuilder;
+import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.config.file.serializers.ColorNameSerializer;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
+import mezz.jei.common.config.file.serializers.ListSerializer;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IngredientSortStage;
@@ -28,10 +29,10 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Integer> maxRecipeGuiHeight;
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
 
-	public ClientConfig(ConfigSchemaBuilder schema) {
+	public ClientConfig(IConfigSchemaBuilder schema) {
 		instance = this;
 
-		ConfigCategoryBuilder advanced = schema.addCategory("advanced");
+		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
 		debugModeEnabled = advanced.addBoolean(
 			"DebugMode",
 			false,
@@ -65,20 +66,20 @@ public final class ClientConfig implements IClientConfig {
 			"Max. recipe gui height"
 		);
 
-		ConfigCategoryBuilder colors = schema.addCategory("colors");
+		IConfigCategoryBuilder colors = schema.addCategory("colors");
 		Supplier<List<ColorName>> searchColors = colors.addList(
 			"SearchColors",
 			ColorGetter.getColorDefaults(),
-			ColorNameSerializer.INSTANCE,
+			new ListSerializer<>(ColorNameSerializer.INSTANCE),
 			"Color values to search for"
 		);
 		ColorNamer.create(searchColors);
 
-		ConfigCategoryBuilder sorting = schema.addCategory("sorting");
+		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
 		ingredientSorterStages = sorting.addList(
 			"IngredientSortStages",
 			IngredientSortStage.defaultStages,
-			new EnumSerializer<>(IngredientSortStage.class),
+			new ListSerializer<>(new EnumSerializer<>(IngredientSortStage.class)),
 			"Sorting order for the ingredient list"
 		);
 	}

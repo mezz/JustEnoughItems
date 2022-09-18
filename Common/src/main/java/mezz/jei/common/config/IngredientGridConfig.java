@@ -2,6 +2,8 @@ package mezz.jei.common.config;
 
 import mezz.jei.common.config.file.ConfigCategoryBuilder;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
+import mezz.jei.common.config.file.IConfigCategoryBuilder;
+import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.gui.overlay.options.HorizontalAlignment;
 import mezz.jei.common.gui.overlay.options.NavigationVisibility;
 import mezz.jei.common.gui.overlay.options.VerticalAlignment;
@@ -28,8 +30,8 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private final Supplier<NavigationVisibility> buttonNavigationVisibility;
 	private final Supplier<Boolean> drawBackground;
 
-	public IngredientGridConfig(String categoryName, ConfigSchemaBuilder builder, HorizontalAlignment defaultHorizontalAlignment) {
-		ConfigCategoryBuilder category = builder.addCategory(categoryName);
+	public IngredientGridConfig(String categoryName, IConfigSchemaBuilder builder, HorizontalAlignment defaultHorizontalAlignment) {
+		IConfigCategoryBuilder category = builder.addCategory(categoryName);
 		maxRows = category.addInteger(
 			"MaxRows",
 			defaultNumRows,

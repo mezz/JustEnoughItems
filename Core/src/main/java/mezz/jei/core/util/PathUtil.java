@@ -14,19 +14,12 @@ public class PathUtil {
         return String.join("_", filename.split(unsafeFileChars));
     }
 
-    public static boolean migrateConfigLocation(Path newFile, Path oldFile) throws IOException {
-        if (Files.exists(newFile) || !Files.exists(oldFile)) {
-            return false;
-        }
-        moveAtomicReplace(oldFile, newFile);
-        return true;
-    }
-
-    public static Path writeUsingTempFile(Path path, Iterable<? extends CharSequence> lines) throws IOException {
+    public static void writeUsingTempFile(Path path, Iterable<? extends CharSequence> lines) throws IOException {
+        Files.createDirectories(path.getParent());
         Path tempFile = Files.createTempFile(path.getParent(), null, null);
         try {
             Files.write(tempFile, lines);
-            return moveAtomicReplace(tempFile, path);
+            moveAtomicReplace(tempFile, path);
         } finally {
             if (Files.exists(tempFile)) {
                 Files.delete(tempFile);
@@ -34,14 +27,15 @@ public class PathUtil {
         }
     }
 
-    private static Path moveAtomicReplace(Path source, Path target) throws IOException {
+    private static void moveAtomicReplace(Path source, Path target) throws IOException {
         if (atomicMoveSupported) {
             try {
-                return Files.move(source, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                Files.move(source, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                return;
             } catch (AtomicMoveNotSupportedException ignored) {
                 atomicMoveSupported = false;
             }
         }
-        return Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+        Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
     }
 }

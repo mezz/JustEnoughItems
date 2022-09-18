@@ -2,18 +2,15 @@ package mezz.jei.common.config.file;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ConfigSchema implements IConfigSchema {
@@ -43,7 +40,7 @@ public class ConfigSchema implements IConfigSchema {
 
         if (Files.exists(path)) {
             try {
-                ConfigSerializer.load(this);
+                ConfigSerializer.load(path, categories);
             } catch (IOException e) {
                 LOGGER.error("Failed to load config schema for: %s".formatted(path), e);
             }
@@ -55,37 +52,18 @@ public class ConfigSchema implements IConfigSchema {
     }
 
     @Override
-    public Path getPath() {
-        return path;
-    }
-
-    @Nullable
-    public ConfigCategory getCategory(String categoryName) {
-        return this.categories.get(categoryName);
-    }
-
-    public Collection<ConfigCategory> getCategories() {
-        return this.categories.values();
-    }
-
-    public Set<String> getCategoryNames() {
-        return this.categories.keySet();
-    }
-
-    @Override
     public void register(Path configFile) {
-        Path configPath = getPath();
-        if (!Files.exists(configPath)) {
+        if (!Files.exists(path)) {
             try {
-                Files.createDirectories(configPath.getParent());
-                ConfigSerializer.save(this);
+                ConfigSerializer.save(path, categories.values());
             } catch (IOException e) {
                 LOGGER.error("Failed to create config file: '{}'", configFile, e);
             }
         }
 
         try {
-            FileWatcher fileWatcher = new FileWatcher(Map.of(configPath, this::onFileChanged));
+            Map<Path, Runnable> callbacks = Map.of(path, this::onFileChanged);
+            FileWatcher fileWatcher = new FileWatcher(callbacks);
             Thread thread = new Thread(fileWatcher::run, "JEI Config file watcher");
             thread.start();
         } catch (IOException e) {

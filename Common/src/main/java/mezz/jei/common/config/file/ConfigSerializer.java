@@ -5,6 +5,7 @@ import mezz.jei.common.config.file.serializers.IConfigValueSerializer;
 import mezz.jei.core.util.PathUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +13,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,8 +30,7 @@ public final class ConfigSerializer {
                Line #%s: "%s\"""".formatted(errorMessage, path, lineNumber, line);
     }
 
-    public static void load(ConfigSchema schema) throws IOException {
-        Path path = schema.getPath();
+    public static void load(Path path, @Unmodifiable Map<String, ConfigCategory> categories) throws IOException {
         LOGGER.info("Loading config file: {}", path);
         List<String> lines = Files.readAllLines(path);
 
@@ -43,7 +44,7 @@ public final class ConfigSerializer {
             Matcher categoryMatcher = categoryRegex.matcher(line);
             if (categoryMatcher.matches()) {
                 String categoryName = categoryMatcher.group("category");
-                category = schema.getCategory(categoryName);
+                category = categories.get(categoryName);
                 if (category == null) {
                     LOGGER.error(getLineErrorString(path, lineNumber, line,
                         """
@@ -52,7 +53,7 @@ public final class ConfigSerializer {
                         Skipping all values until the first valid category is declared."""
                         .formatted(
                             categoryName,
-                            String.join(", ", schema.getCategoryNames())
+                            String.join(", ", categories.keySet())
                         )
                     ));
                 }
@@ -105,14 +106,14 @@ public final class ConfigSerializer {
         }
     }
 
-    public static void save(ConfigSchema schema) throws IOException {
-        Collection<ConfigCategory> categories = schema.getCategories();
+    public static void save(Path path, Collection<ConfigCategory> categories) throws IOException {
         List<String> serialized = new ArrayList<>();
-        for (ConfigCategory category : categories) {
-            serializeCategory(serialized, category);
-            serialized.add("");
-        }
-        Path path = schema.getPath();
+        categories.stream()
+            .sorted()
+            .forEach(category -> {
+                serializeCategory(serialized, category);
+                serialized.add("");
+            });
         LOGGER.info("Saving config file: {}", path);
         PathUtil.writeUsingTempFile(path, serialized);
     }

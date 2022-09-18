@@ -13,7 +13,7 @@ public class ConfigValue<T> {
     private final IConfigValueSerializer<T> serializer;
     private volatile T currentValue;
     @Nullable
-    private ConfigSchema schema;
+    private Runnable loadCallback;
 
     public ConfigValue(String name, T defaultValue, IConfigValueSerializer<T> serializer, String description) {
         this.name = name;
@@ -23,8 +23,8 @@ public class ConfigValue<T> {
         this.serializer = serializer;
     }
 
-    public void setSchema(ConfigSchema schema) {
-        this.schema = schema;
+    public void setLoadCallback(Runnable loadCallback) {
+        this.loadCallback = loadCallback;
     }
 
     public String getName() {
@@ -40,8 +40,8 @@ public class ConfigValue<T> {
     }
 
     public T getValue() {
-        if (schema != null) {
-            schema.loadIfNeeded();
+        if (loadCallback != null) {
+            loadCallback.run();
         }
         return currentValue;
     }

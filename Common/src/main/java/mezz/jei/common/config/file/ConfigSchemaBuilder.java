@@ -6,11 +6,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ConfigSchemaBuilder {
+public class ConfigSchemaBuilder implements IConfigSchemaBuilder {
     private final Set<String> categoryNames = new HashSet<>();
     private final List<ConfigCategoryBuilder> categoryBuilders = new ArrayList<>();
+    private final Path configFile;
 
-    public ConfigCategoryBuilder addCategory(String name) {
+    public ConfigSchemaBuilder(Path configFile) {
+        this.configFile = configFile;
+    }
+
+    @Override
+    public IConfigCategoryBuilder addCategory(String name) {
         if (!categoryNames.add(name)) {
             throw new IllegalArgumentException("There is already a category named: " + name);
         }
@@ -19,7 +25,8 @@ public class ConfigSchemaBuilder {
         return category;
     }
 
-    public IConfigSchema build(Path path) {
-        return new ConfigSchema(path, categoryBuilders);
+    @Override
+    public IConfigSchema build() {
+        return new ConfigSchema(configFile, categoryBuilders);
     }
 }

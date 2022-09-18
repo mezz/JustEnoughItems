@@ -49,7 +49,7 @@ public record ConfigData(
 
         Path configFile = configDir.resolve("jei-client.ini");
         JEIClientConfigs jeiClientConfigs = new JEIClientConfigs(configFile);
-        jeiClientConfigs.register(configDir, configFile);
+        jeiClientConfigs.register(configFile);
 
         IBookmarkConfig bookmarkConfig = new BookmarkConfig(configDir);
         IEditModeConfig editModeConfig = new EditModeConfig(configDir.resolve("blacklist.cfg"));

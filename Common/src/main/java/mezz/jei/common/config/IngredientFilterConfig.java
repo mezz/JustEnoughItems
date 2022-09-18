@@ -2,6 +2,8 @@ package mezz.jei.common.config;
 
 import mezz.jei.common.config.file.ConfigCategoryBuilder;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
+import mezz.jei.common.config.file.IConfigCategoryBuilder;
+import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.core.search.SearchMode;
 
 import java.util.function.Supplier;
@@ -15,8 +17,8 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	public final Supplier<SearchMode> resourceLocationSearchMode;
 	public final Supplier<Boolean> searchAdvancedTooltips;
 
-	public IngredientFilterConfig(ConfigSchemaBuilder builder) {
-		ConfigCategoryBuilder search = builder.addCategory("search");
+	public IngredientFilterConfig(IConfigSchemaBuilder builder) {
+		IConfigCategoryBuilder search = builder.addCategory("search");
 		modNameSearchMode = search.addEnum(
 			"ModNameSearchMode",
 			SearchMode.REQUIRE_PREFIX,

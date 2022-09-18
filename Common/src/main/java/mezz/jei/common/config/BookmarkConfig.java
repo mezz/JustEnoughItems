@@ -11,7 +11,6 @@ import mezz.jei.common.ingredients.IngredientInfo;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.ServerConfigPathUtil;
-import mezz.jei.core.util.PathUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
@@ -48,10 +47,6 @@ public class BookmarkConfig implements IBookmarkConfig {
 		return configPath.resolve("bookmarks.ini");
 	}
 
-	private static Path getOldPath(Path jeiConfigurationDir) {
-		return jeiConfigurationDir.resolve("bookmarks.ini");
-	}
-
 	public BookmarkConfig(Path jeiConfigurationDir) {
 		this.jeiConfigurationDir = jeiConfigurationDir;
 	}
@@ -82,20 +77,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 	@Override
 	public void loadBookmarks(RegisteredIngredients registeredIngredients, BookmarkList bookmarkList) {
 		Path path = getPath(jeiConfigurationDir);
-		if (path == null) {
-			return;
-		}
-		if (!Files.exists(path)) {
-			Path oldPath = getOldPath(jeiConfigurationDir);
-			try {
-				if (PathUtil.migrateConfigLocation(path, oldPath)) {
-					LOGGER.info("Successfully migrated config file from '{}' to new location '{}'", oldPath, path);
-				}
-			} catch (IOException e) {
-				LOGGER.error("Failed to migrate config file from '{}' to new location '{}'", oldPath, path, e);
-			}
-		}
-		if (!Files.exists(path)) {
+		if (path == null || !Files.exists(path)) {
 			return;
 		}
 		List<String> ingredientJsonStrings;
