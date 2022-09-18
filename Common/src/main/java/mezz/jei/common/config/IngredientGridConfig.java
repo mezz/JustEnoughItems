@@ -1,7 +1,5 @@
 package mezz.jei.common.config;
 
-import mezz.jei.common.config.file.ConfigCategoryBuilder;
-import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.gui.overlay.options.HorizontalAlignment;
