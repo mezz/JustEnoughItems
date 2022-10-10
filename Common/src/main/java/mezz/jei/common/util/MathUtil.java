@@ -201,28 +201,4 @@ public final class MathUtil {
 		double b = start.y - end.y;
 		return Math.sqrt(a * a + b * b);
 	}
-
-	public static boolean equalRects(Collection<Rect2i> a, Collection<ImmutableRect2i> b) {
-		if (a.size() != b.size()) {
-			return false;
-		}
-		for (Rect2i aRect : a) {
-			if (!containsRect(b, aRect)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private static boolean containsRect(Collection<ImmutableRect2i> rects, Rect2i aRect) {
-		for (ImmutableRect2i bRect : rects) {
-			if (aRect.getX() == bRect.getX() &&
-				aRect.getY() == bRect.getY() &&
-				aRect.getWidth() == bRect.getWidth() &&
-				aRect.getHeight() == bRect.getHeight()) {
-				return true;
-			}
-		}
-		return false;
-	}
 }

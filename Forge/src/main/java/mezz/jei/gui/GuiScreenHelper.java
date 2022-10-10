@@ -15,14 +15,12 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -78,12 +76,11 @@ public class GuiScreenHelper {
 	}
 
 	public boolean updateGuiExclusionAreas(Screen screen) {
-		Set<Rect2i> guiAreas = getPluginsExclusionAreas(screen);
-		if (!MathUtil.equalRects(guiAreas, this.guiExclusionAreas)) {
-			// make a defensive copy because Rect2i is mutable
-			this.guiExclusionAreas = guiAreas.stream()
-				.map(ImmutableRect2i::new)
-				.collect(Collectors.toUnmodifiableSet());
+		Set<ImmutableRect2i> guiAreas = getPluginsExclusionAreas(screen)
+			.collect(Collectors.toUnmodifiableSet());
+
+		if (!guiAreas.equals(this.guiExclusionAreas)) {
+			this.guiExclusionAreas = guiAreas;
 			return true;
 		}
 		return false;
@@ -98,17 +95,15 @@ public class GuiScreenHelper {
 		return MathUtil.contains(guiExclusionAreas, mouseX, mouseY);
 	}
 
-	private Set<Rect2i> getPluginsExclusionAreas(Screen screen) {
-		Set<Rect2i> globalGuiHandlerExclusionAreas = globalGuiHandlers.stream()
+	private Stream<ImmutableRect2i> getPluginsExclusionAreas(Screen screen) {
+		Stream<ImmutableRect2i> globalGuiHandlerExclusionAreas = globalGuiHandlers.stream()
 			.map(IGlobalGuiHandler::getGuiExtraAreas)
 			.flatMap(Collection::stream)
-			.collect(Collectors.toSet());
+			.map(ImmutableRect2i::new);
 
 		if (screen instanceof AbstractContainerScreen<?> guiContainer) {
-			Collection<Rect2i> guiExtraAreas = this.guiContainerHandlers.getGuiExtraAreas(guiContainer);
-			Set<Rect2i> areas = new HashSet<>(guiExtraAreas);
-			areas.addAll(globalGuiHandlerExclusionAreas);
-			return areas;
+			Stream<ImmutableRect2i> guiExtraAreas = this.guiContainerHandlers.getGuiExtraAreas(guiContainer);
+			return Stream.concat(globalGuiHandlerExclusionAreas, guiExtraAreas);
 		} else {
 			return globalGuiHandlerExclusionAreas;
 		}
