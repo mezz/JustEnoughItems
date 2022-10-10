@@ -50,7 +50,6 @@ public class GuiTextFieldFilter extends EditBox {
 		this.width = area.getWidth() - 12;
 		this.height = area.getHeight();
 		this.hoverChecker.updateBounds(area);
-		setHighlightPos(getCursorPosition());
 	}
 
 	@Override
