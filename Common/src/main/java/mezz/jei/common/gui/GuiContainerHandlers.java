@@ -2,9 +2,9 @@ package mezz.jei.common.gui;
 
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,11 +57,11 @@ public class GuiContainerHandlers {
 			.findFirst();
 	}
 
-	public <C extends AbstractContainerMenu, T extends AbstractContainerScreen<C>> Collection<Rect2i> getGuiExtraAreas(T guiContainer) {
+	public <C extends AbstractContainerMenu, T extends AbstractContainerScreen<C>> Stream<ImmutableRect2i> getGuiExtraAreas(T guiContainer) {
 		return getActiveGuiHandlerStream(guiContainer)
 			.map(guiContainerHandler -> guiContainerHandler.getGuiExtraAreas(guiContainer))
 			.flatMap(Collection::stream)
-			.toList();
+			.map(ImmutableRect2i::new);
 	}
 
 	private static class Entry<T extends AbstractContainerScreen<?>> {
