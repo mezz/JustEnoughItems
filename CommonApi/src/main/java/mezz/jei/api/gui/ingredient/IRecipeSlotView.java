@@ -7,11 +7,8 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
