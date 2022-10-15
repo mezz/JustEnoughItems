@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -109,7 +110,7 @@ public final class ConfigSerializer {
     public static void save(Path path, Collection<ConfigCategory> categories) throws IOException {
         List<String> serialized = new ArrayList<>();
         categories.stream()
-            .sorted()
+            .sorted(Comparator.comparing(ConfigCategory::getName))
             .forEach(category -> {
                 serializeCategory(serialized, category);
                 serialized.add("");
