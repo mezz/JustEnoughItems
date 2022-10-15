@@ -53,11 +53,10 @@ public class EditModeConfig implements IEditModeConfig {
 	private void saveBlacklist() {
 		if (blacklistConfigFile != null) {
 			try {
-				Files.createFile(blacklistConfigFile);
-				LOGGER.debug("Created blacklist config file: {}", blacklistConfigFile);
 				Files.write(blacklistConfigFile, blacklist);
+				LOGGER.debug("Saved blacklist config to file: {}", blacklistConfigFile);
 			} catch (IOException e) {
-				LOGGER.error("Failed to save blacklist to file {}", blacklistConfigFile, e);
+				LOGGER.error("Failed to save blacklist config to file {}", blacklistConfigFile, e);
 			}
 		}
 	}
