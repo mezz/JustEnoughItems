@@ -79,17 +79,19 @@ public final class CraftingRecipeChecker {
 			ItemStack recipeOutput = recipe.getRecipeOutput();
 			//noinspection ConstantConditions
 			if (recipeOutput == null || recipeOutput.isEmpty()) {
-				if (!recipe.isDynamic()) {
+				if (!recipe.isDynamic() && Log.get().isDebugEnabled()) {
 					String recipeInfo = getInfo(recipe);
-					Log.get().error("Recipe has no output. {}", recipeInfo);
+					Log.get().debug("Skipping Recipe because it has no output. {}", recipeInfo);
 				}
 				return false;
 			}
 			List<Ingredient> ingredients = recipe.getIngredients();
 			//noinspection ConstantConditions
 			if (ingredients == null) {
-				String recipeInfo = getInfo(recipe);
-				Log.get().error("Recipe has no input Ingredients. {}", recipeInfo);
+				if (Log.get().isDebugEnabled()) {
+					String recipeInfo = getInfo(recipe);
+					Log.get().debug("Skipping Recipe because it has no input Ingredients. {}", recipeInfo);
+				}
 				return false;
 			}
 			int inputCount = getInputCount(ingredients, stackHelper);
@@ -100,12 +102,16 @@ public final class CraftingRecipeChecker {
 			} else if (inputCount == INVALID_COUNT) {
 				return false;
 			} else if (inputCount > 9) {
-				String recipeInfo = getInfo(recipe);
-				Log.get().error("Recipe has too many inputs. {}", recipeInfo);
+				if (Log.get().isDebugEnabled()) {
+					String recipeInfo = getInfo(recipe);
+					Log.get().debug("Skipping Recipe because it has too many inputs. {}", recipeInfo);
+				}
 				return false;
 			} else if (inputCount == 0) {
-				String recipeInfo = getInfo(recipe);
-				Log.get().error("Recipe has no inputs. {}", recipeInfo);
+				if (Log.get().isDebugEnabled()) {
+					String recipeInfo = getInfo(recipe);
+					Log.get().debug("Skipping Recipe because it has no inputs. {}", recipeInfo);
+				}
 				return false;
 			}
 			return true;
