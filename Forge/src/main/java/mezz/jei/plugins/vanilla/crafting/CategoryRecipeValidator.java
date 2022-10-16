@@ -36,26 +36,38 @@ public final class CategoryRecipeValidator<T extends Recipe<?>> {
 		}
 		ItemStack recipeOutput = recipe.getResultItem();
 		if (recipeOutput == null || recipeOutput.isEmpty()) {
-			String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
-			LOGGER.error("Recipe has no output. {}", recipeInfo);
+			if (LOGGER.isDebugEnabled()) {
+				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
+				LOGGER.debug("Skipping Recipe because it has no output. {}", recipeInfo);
+			}
 			return false;
 		}
 		List<Ingredient> ingredients = recipe.getIngredients();
 		if (ingredients == null) {
-			String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
-			LOGGER.error("Recipe has no input Ingredients. {}", recipeInfo);
+			if (LOGGER.isDebugEnabled()) {
+				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
+				LOGGER.debug("Skipping Recipe because it has no input Ingredients. {}", recipeInfo);
+			}
 			return false;
 		}
 		int inputCount = getInputCount(ingredients);
 		if (inputCount == INVALID_COUNT) {
+			if (LOGGER.isDebugEnabled()) {
+				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
+				LOGGER.debug("Skipping Recipe because it contains invalid inputs. {}", recipeInfo);
+			}
 			return false;
 		} else if (inputCount > maxInputs) {
-			String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
-			LOGGER.error("Recipe has too many inputs. {}", recipeInfo);
+			if (LOGGER.isDebugEnabled()) {
+				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
+				LOGGER.debug("Skipping Recipe because it has too many inputs. {}", recipeInfo);
+			}
 			return false;
 		} else if (inputCount == 0 && maxInputs > 0) {
-			String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
-			LOGGER.error("Recipe has no inputs. {}", recipeInfo);
+			if (LOGGER.isDebugEnabled()) {
+				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
+				LOGGER.debug("Skipping Recipe because it has no inputs. {}", recipeInfo);
+			}
 			return false;
 		}
 		return true;
