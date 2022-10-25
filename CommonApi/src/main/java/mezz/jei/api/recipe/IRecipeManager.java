@@ -117,7 +117,7 @@ public interface IRecipeManager {
 
 	/**
 	 * Get the registered recipe type for the given unique id.
-	 *
+	 * <p>
 	 * This is useful for integrating with other mods that do not share their
 	 * recipe types directly from their API.
 	 *

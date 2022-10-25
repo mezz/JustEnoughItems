@@ -2,10 +2,14 @@ package mezz.jei.api.helpers;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.IFocusFactory;
+import mezz.jei.api.recipe.RecipeType;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.Optional;
 
 /**
  * {@link IJeiHelpers} provides helpers and tools for addon mods.
- *
+ * <p>
  * An instance is passed to your {@link IModPlugin}'s registration methods.
  */
 public interface IJeiHelpers {
@@ -37,4 +41,15 @@ public interface IJeiHelpers {
 	 * @since 10.1.0
 	 */
 	IPlatformFluidHelper<?> getPlatformFluidHelper();
+
+	/**
+	 * Get the registered recipe type for the given unique id.
+	 * <p>
+	 * This is useful for integrating with other mods that do not share their
+	 * recipe types directly from their API.
+	 *
+	 * @see RecipeType#getUid()
+	 * @since 11.4.0
+	 */
+	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
 }

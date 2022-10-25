@@ -1,5 +1,6 @@
 package mezz.jei.common.load.registration;
 
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeType;
@@ -17,15 +18,22 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 	private final ListMultiMap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts = new ListMultiMap<>();
 	private final RegisteredIngredients registeredIngredients;
 	private final IIngredientManager ingredientManager;
+	private final IJeiHelpers jeiHelpers;
 
-	public RecipeCatalystRegistration(RegisteredIngredients registeredIngredients, IIngredientManager ingredientManager) {
+	public RecipeCatalystRegistration(RegisteredIngredients registeredIngredients, IIngredientManager ingredientManager, IJeiHelpers jeiHelpers) {
 		this.registeredIngredients = registeredIngredients;
 		this.ingredientManager = ingredientManager;
+		this.jeiHelpers = jeiHelpers;
 	}
 
 	@Override
 	public IIngredientManager getIngredientManager() {
 		return ingredientManager;
+	}
+
+	@Override
+	public IJeiHelpers getJeiHelpers() {
+		return jeiHelpers;
 	}
 
 	@Override

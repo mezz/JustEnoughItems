@@ -8,6 +8,9 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
  * This is given to your {@link IModPlugin#registerCategories(IRecipeCategoryRegistration)}.
  */
 public interface IRecipeCategoryRegistration {
+	/**
+	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
+	 */
 	IJeiHelpers getJeiHelpers();
 
 	/**
