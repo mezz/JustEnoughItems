@@ -5,6 +5,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.common.runtime.JeiHelpers;
 import mezz.jei.common.util.ErrorUtil;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -17,9 +18,9 @@ import java.util.Set;
 public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 	private final List<IRecipeCategory<?>> recipeCategories = new ArrayList<>();
 	private final Set<RecipeType<?>> recipeTypes = new HashSet<>();
-	private final IJeiHelpers jeiHelpers;
+	private final JeiHelpers jeiHelpers;
 
-	public RecipeCategoryRegistration(IJeiHelpers jeiHelpers) {
+	public RecipeCategoryRegistration(JeiHelpers jeiHelpers) {
 		this.jeiHelpers = jeiHelpers;
 	}
 
@@ -38,6 +39,7 @@ public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 		}
 
 		Collections.addAll(this.recipeCategories, recipeCategories);
+		this.jeiHelpers.setRecipeCategories(Collections.unmodifiableCollection(this.recipeCategories));
 	}
 
 	@Override

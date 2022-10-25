@@ -15,6 +15,9 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
  * Get the instance passed in to your plugin's {@link IModPlugin#registerRecipeTransferHandlers}.
  */
 public interface IRecipeTransferRegistration {
+	/**
+	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
+	 */
 	IJeiHelpers getJeiHelpers();
 
 	IRecipeTransferHandlerHelper getTransferHelper();

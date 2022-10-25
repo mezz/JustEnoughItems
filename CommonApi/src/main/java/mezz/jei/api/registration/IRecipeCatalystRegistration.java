@@ -1,6 +1,7 @@
 package mezz.jei.api.registration;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -13,6 +14,12 @@ public interface IRecipeCatalystRegistration {
 	 * @since 9.5.5
 	 */
 	IIngredientManager getIngredientManager();
+
+	/**
+	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
+	 * @since 10.2.0
+	 */
+	IJeiHelpers getJeiHelpers();
 
 	/**
 	 * Add an association between an {@link ItemStack} and what it can craft.
