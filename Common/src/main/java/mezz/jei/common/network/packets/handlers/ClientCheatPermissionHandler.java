@@ -10,6 +10,9 @@ import net.minecraft.client.player.LocalPlayer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Client-side-only functions related to cheat permissions
+ */
 public class ClientCheatPermissionHandler {
     public static void handleHasCheatPermission(ClientPacketContext context, boolean hasPermission) {
         if (!hasPermission) {

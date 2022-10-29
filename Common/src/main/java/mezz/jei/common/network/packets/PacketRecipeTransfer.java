@@ -7,6 +7,7 @@ import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.common.transfer.BasicRecipeTransferHandlerServer;
 import mezz.jei.common.transfer.TransferOperation;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -14,6 +15,7 @@ import net.minecraft.world.inventory.Slot;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class PacketRecipeTransfer extends PacketJei {
 	public final Collection<TransferOperation> transferOperations;
@@ -62,7 +64,7 @@ public class PacketRecipeTransfer extends PacketJei {
 		buf.writeBoolean(requireCompleteSets);
 	}
 
-	public static void readPacketData(ServerPacketData data) {
+	public static CompletableFuture<Void> readPacketData(ServerPacketData data) {
 		ServerPacketContext context = data.context();
 		ServerPlayer player = context.player();
 		FriendlyByteBuf buf = data.buf();
@@ -93,13 +95,16 @@ public class PacketRecipeTransfer extends PacketJei {
 		boolean maxTransfer = buf.readBoolean();
 		boolean requireCompleteSets = buf.readBoolean();
 
-		BasicRecipeTransferHandlerServer.setItems(
-			player,
-			transferOperations,
-			craftingSlots,
-			inventorySlots,
-			maxTransfer,
-			requireCompleteSets
+		MinecraftServer server = player.server;
+		return server.submit(() ->
+			BasicRecipeTransferHandlerServer.setItems(
+				player,
+				transferOperations,
+				craftingSlots,
+				inventorySlots,
+				maxTransfer,
+				requireCompleteSets
+			)
 		);
 	}
 

@@ -7,7 +7,11 @@ import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.common.util.ServerCommandUtil;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.concurrent.CompletableFuture;
 
 public class PacketGiveItemStack extends PacketJei {
 	private final ItemStack itemStack;
@@ -29,13 +33,13 @@ public class PacketGiveItemStack extends PacketJei {
 		buf.writeEnum(giveMode);
 	}
 
-	public static void readPacketData(ServerPacketData data) {
+	public static CompletableFuture<Void> readPacketData(ServerPacketData data) {
 		FriendlyByteBuf buf = data.buf();
 		ItemStack itemStack = buf.readItem();
-		if (!itemStack.isEmpty()) {
-			GiveMode giveMode = buf.readEnum(GiveMode.class);
-			ServerPacketContext context = data.context();
-			ServerCommandUtil.executeGive(context, itemStack, giveMode);
-		}
+		GiveMode giveMode = buf.readEnum(GiveMode.class);
+		ServerPacketContext context = data.context();
+		ServerPlayer player = context.player();
+		MinecraftServer server = player.server;
+		return server.submit(() -> ServerCommandUtil.executeGive(context, itemStack, giveMode));
 	}
 }
