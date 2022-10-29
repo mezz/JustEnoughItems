@@ -1,5 +1,6 @@
 package mezz.jei.common.network.packets;
 
+import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.IPacketId;
 import mezz.jei.common.network.PacketIdServer;
 import mezz.jei.common.network.ServerPacketContext;
@@ -10,13 +11,18 @@ import mezz.jei.core.config.IServerConfig;
 import mezz.jei.common.util.ServerCommandUtil;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class PacketDeletePlayerItem extends PacketJei {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final ItemStack itemStack;
 
 	public PacketDeletePlayerItem(ItemStack itemStack) {
@@ -35,19 +41,45 @@ public class PacketDeletePlayerItem extends PacketJei {
 		buf.writeVarInt(itemId);
 	}
 
-	public static void readPacketData(ServerPacketData data) {
-		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
+	public static CompletableFuture<Void> readPacketData(ServerPacketData data) {
 		FriendlyByteBuf buf = data.buf();
 		ServerPacketContext context = data.context();
 		ServerPlayer player = context.player();
-		IServerConfig serverConfig = context.serverConfig();
 		int itemId = buf.readVarInt();
-		Optional<Item> value = registry.getValue(itemId);
-		if (value.isPresent() && ServerCommandUtil.hasPermissionForCheatMode(player, serverConfig)) {
+
+		return Services.PLATFORM
+			.getRegistry(Registry.ITEM_REGISTRY)
+			.getValue(itemId)
+			.map(item -> {
+				MinecraftServer server = player.server;
+				return server.submit(() -> deletePlayerItem(player, context, item));
+			})
+			.orElseGet(() -> {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Player '{} ({})' tried to delete Item ID '{}' but no item is registered with that ID.", player.getName(), player.getUUID(), itemId);
+				}
+				return CompletableFuture.completedFuture(null);
+			});
+	}
+
+	private static void deletePlayerItem(ServerPlayer player, ServerPacketContext context, Item item) {
+		IServerConfig serverConfig = context.serverConfig();
+		if (ServerCommandUtil.hasPermissionForCheatMode(player, serverConfig)) {
 			ItemStack playerItem = player.containerMenu.getCarried();
-			if (playerItem.getItem() == value.get()) {
+			if (playerItem.getItem() == item) {
 				player.containerMenu.setCarried(ItemStack.EMPTY);
+			} else {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Player '{} ({})' tried to delete Item '{}' but is currently holding a different ItemStack '{}'.", player.getName(), player.getUUID(), item, playerItem.getDisplayName());
+				}
 			}
+		} else {
+			if (LOGGER.isDebugEnabled()) {
+				ItemStack playerItem = player.containerMenu.getCarried();
+				LOGGER.debug("Player '{} ({})' tried to delete ItemStack '{}' but does not have permission.", player.getName(), player.getUUID(), playerItem.getDisplayName());
+			}
+			IConnectionToClient connection = context.connection();
+			connection.sendPacketToClient(new PacketCheatPermission(false), player);
 		}
 	}
 }

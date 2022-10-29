@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.EnumMap;
+import java.util.Optional;
 
 public class ClientPacketRouter {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -27,20 +28,31 @@ public class ClientPacketRouter {
 	}
 
 	public void onPacket(FriendlyByteBuf packetBuffer, LocalPlayer player) {
-		PacketIdClient packetId = null;
+		getPacketId(packetBuffer)
+			.ifPresent(packetId -> {
+				IClientPacketHandler packetHandler = clientHandlers.get(packetId);
+				ClientPacketContext context = new ClientPacketContext(player, connection, serverConfig, worldConfig);
+				ClientPacketData data = new ClientPacketData(packetBuffer, context);
+				try {
+					packetHandler.readPacketData(data)
+						.exceptionally(e -> {
+							LOGGER.error("Packet error while executing packet on the client thread: {}", packetId.name(), e);
+							return null;
+						});
+				} catch (Throwable e) {
+					LOGGER.error("Packet error when reading packet: {}", packetId.name(), e);
+				}
+			});
+	}
+
+	private Optional<PacketIdClient> getPacketId(FriendlyByteBuf packetBuffer) {
 		try {
 			int packetIdOrdinal = packetBuffer.readByte();
-			packetId = PacketIdClient.VALUES[packetIdOrdinal];
-			IClientPacketHandler packetHandler = clientHandlers.get(packetId);
-			ClientPacketContext context = new ClientPacketContext(player, connection, serverConfig, worldConfig);
-			ClientPacketData data = new ClientPacketData(packetBuffer, context);
-			packetHandler.readPacketData(data);
-		} catch (Throwable e) {
-			if (packetId != null) {
-				LOGGER.error("Packet error when reading packet: {}", packetId.name(), e);
-			} else {
-				LOGGER.error("Packet error", e);
-			}
+			PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
+			return Optional.of(packetId);
+		} catch (RuntimeException e) {
+			LOGGER.error("Packet error when trying to read packet id", e);
+			return Optional.empty();
 		}
 	}
 }

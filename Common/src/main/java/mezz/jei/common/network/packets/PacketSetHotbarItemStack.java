@@ -8,8 +8,12 @@ import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.concurrent.CompletableFuture;
 
 public class PacketSetHotbarItemStack extends PacketJei {
 	private final ItemStack itemStack;
@@ -33,13 +37,13 @@ public class PacketSetHotbarItemStack extends PacketJei {
 		buf.writeVarInt(hotbarSlot);
 	}
 
-	public static void readPacketData(ServerPacketData data) {
+	public static CompletableFuture<Void> readPacketData(ServerPacketData data) {
 		FriendlyByteBuf buf = data.buf();
 		ItemStack itemStack = buf.readItem();
-		if (!itemStack.isEmpty()) {
-			int hotbarSlot = buf.readVarInt();
-			ServerPacketContext context = data.context();
-			ServerCommandUtil.setHotbarSlot(context, itemStack, hotbarSlot);
-		}
+		int hotbarSlot = buf.readVarInt();
+		ServerPacketContext context = data.context();
+		ServerPlayer player = context.player();
+		MinecraftServer server = player.server;
+		return server.submit(() -> ServerCommandUtil.setHotbarSlot(context, itemStack, hotbarSlot));
 	}
 }
