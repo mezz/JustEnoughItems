@@ -25,21 +25,26 @@ public class PacketHandlerClient {
 	}
 
 	public void onPacket(NetworkEvent.ServerCustomPayloadEvent event) {
-		try {
-			PacketBuffer packetBuffer = new PacketBuffer(event.getPayload());
-			int packetIdOrdinal = packetBuffer.readByte();
-			PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
-			IPacketJeiHandler packetHandler = clientHandlers.get(packetId);
-			Minecraft minecraft = Minecraft.getInstance();
-			if (minecraft != null) {
-				PlayerEntity player = minecraft.player;
-				if (player != null) {
-					packetHandler.readPacketData(packetBuffer, player);
+		NetworkEvent.Context context = event.getSource().get();
+		PacketBuffer packetBuffer = new PacketBuffer(event.getPayload().copy());
+		context.enqueueWork(() -> {
+			try {
+				int packetIdOrdinal = packetBuffer.readByte();
+				PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
+				IPacketJeiHandler packetHandler = clientHandlers.get(packetId);
+				Minecraft minecraft = Minecraft.getInstance();
+				if (minecraft != null) {
+					PlayerEntity player = minecraft.player;
+					if (player != null) {
+						packetHandler.readPacketData(packetBuffer, player);
+					}
 				}
+			} catch (Throwable e) {
+				LOGGER.error("Packet error", e);
+			} finally {
+				packetBuffer.release();
 			}
-		} catch (Throwable e) {
-			LOGGER.error("Packet error", e);
-		}
-		event.getSource().get().setPacketHandled(true);
+		});
+		context.setPacketHandled(true);
 	}
 }

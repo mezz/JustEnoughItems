@@ -33,21 +33,26 @@ public class PacketHandler {
 	}
 
 	public void onPacket(NetworkEvent.ClientCustomPayloadEvent event) {
-		PacketBuffer packetBuffer = new PacketBuffer(event.getPayload());
 		NetworkEvent.Context context = event.getSource().get();
 		ServerPlayerEntity player = context.getSender();
 		if (player == null) {
 			LOGGER.error("Packet error, the sender player is missing for event: {}", event);
+			context.setPacketHandled(true);
 			return;
 		}
-		try {
-			int packetIdOrdinal = packetBuffer.readByte();
-			PacketIdServer packetId = PacketIdServer.VALUES[packetIdOrdinal];
-			IPacketJeiHandler packetHandler = serverHandlers.get(packetId);
-			packetHandler.readPacketData(packetBuffer, player);
-		} catch (Throwable e) {
-			LOGGER.error("Packet error for event: {}", event, e);
-		}
-		event.getSource().get().setPacketHandled(true);
+		PacketBuffer packetBuffer = new PacketBuffer(event.getPayload().copy());
+		context.enqueueWork(() -> {
+			try {
+				int packetIdOrdinal = packetBuffer.readByte();
+				PacketIdServer packetId = PacketIdServer.VALUES[packetIdOrdinal];
+				IPacketJeiHandler packetHandler = serverHandlers.get(packetId);
+				packetHandler.readPacketData(packetBuffer, player);
+			} catch (Throwable e) {
+				LOGGER.error("Packet error for event: {}", event, e);
+			} finally {
+				packetBuffer.release();
+			}
+		});
+		context.setPacketHandled(true);
 	}
 }
