@@ -10,6 +10,7 @@ import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public class ForgeRegistryWrapper<T extends IForgeRegistryEntry<T>> implements IPlatformRegistry<T> {
     public static <T, V extends IForgeRegistryEntry<V>> IPlatformRegistry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
@@ -43,8 +44,9 @@ public class ForgeRegistryWrapper<T extends IForgeRegistryEntry<T>> implements I
     }
 
     @Override
-    public T getValue(int id) {
-        return this.forgeRegistry.getValue(id);
+    public Optional<T> getValue(int id) {
+        T value = this.forgeRegistry.getValue(id);
+        return Optional.ofNullable(value);
     }
 
     @Override

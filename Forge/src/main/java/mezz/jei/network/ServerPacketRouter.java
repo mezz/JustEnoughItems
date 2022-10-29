@@ -15,10 +15,15 @@ import mezz.jei.network.packets.PacketSetHotbarItemStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumMap;
+import java.util.Optional;
 
 public class ServerPacketRouter {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public static final ResourceLocation CHANNEL_ID = new ResourceLocation(ModIds.JEI_ID, "channel");
 
 	public final EnumMap<PacketIdServer, IServerPacketHandler> handlers = new EnumMap<>(PacketIdServer.class);
@@ -36,12 +41,31 @@ public class ServerPacketRouter {
 	}
 
 	public void onPacket(FriendlyByteBuf packetBuffer, ServerPlayer player) {
-		int packetIdOrdinal = packetBuffer.readByte();
-		PacketIdServer packetId = PacketIdServer.VALUES[packetIdOrdinal];
-		IServerPacketHandler packetHandler = handlers.get(packetId);
+		getPacketId(packetBuffer)
+			.ifPresent(packetId -> {
+				IServerPacketHandler packetHandler = handlers.get(packetId);
+				ServerPacketContext context = new ServerPacketContext(player, serverConfig, connection);
+				ServerPacketData data = new ServerPacketData(packetBuffer, context);
+				try {
+					packetHandler.readPacketData(data)
+						.exceptionally(e -> {
+							LOGGER.error("Packet error while executing packet on the server thread: {}", packetId.name(), e);
+							return null;
+						});
+				} catch (Throwable e) {
+					LOGGER.error("Packet error when reading packet: {}", packetId.name(), e);
+				}
+			});
+	}
 
-		ServerPacketContext context = new ServerPacketContext(player, serverConfig, connection);
-		ServerPacketData data = new ServerPacketData(packetBuffer, context);
-		packetHandler.readPacketData(data);
+	private Optional<PacketIdServer> getPacketId(FriendlyByteBuf packetBuffer) {
+		try {
+			int packetIdOrdinal = packetBuffer.readByte();
+			PacketIdServer packetId = PacketIdServer.VALUES[packetIdOrdinal];
+			return Optional.of(packetId);
+		} catch (RuntimeException e) {
+			LOGGER.error("Packet error when trying to read packet id", e);
+			return Optional.empty();
+		}
 	}
 }

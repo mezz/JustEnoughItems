@@ -13,11 +13,16 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumMap;
+import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientPacketRouter {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public final EnumMap<PacketIdClient, IClientPacketHandler> clientHandlers = new EnumMap<>(PacketIdClient.class);
 	private final IConnectionToServer connection;
 	private final IServerConfig serverConfig;
@@ -31,15 +36,36 @@ public class ClientPacketRouter {
 	}
 
 	public void onPacket(FriendlyByteBuf packetBuffer) {
-		int packetIdOrdinal = packetBuffer.readByte();
-		PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
-		IClientPacketHandler packetHandler = clientHandlers.get(packetId);
 		Minecraft minecraft = Minecraft.getInstance();
 		LocalPlayer player = minecraft.player;
-		if (player != null) {
-			ClientPacketContext context = new ClientPacketContext(player, connection, serverConfig, worldConfig);
-			ClientPacketData data = new ClientPacketData(packetBuffer, context);
-			packetHandler.readPacketData(data);
+		if (player == null) {
+			return;
+		}
+		getPacketId(packetBuffer)
+			.ifPresent(packetId -> {
+				IClientPacketHandler packetHandler = clientHandlers.get(packetId);
+				ClientPacketContext context = new ClientPacketContext(player, connection, serverConfig, worldConfig);
+				ClientPacketData data = new ClientPacketData(packetBuffer, context);
+				try {
+					packetHandler.readPacketData(data)
+						.exceptionally(e -> {
+							LOGGER.error("Packet error while executing packet on the client thread: {}", packetId.name(), e);
+							return null;
+						});
+				} catch (Throwable e) {
+					LOGGER.error("Packet error when reading packet: {}", packetId.name(), e);
+				}
+			});
+	}
+
+	private Optional<PacketIdClient> getPacketId(FriendlyByteBuf packetBuffer) {
+		try {
+			int packetIdOrdinal = packetBuffer.readByte();
+			PacketIdClient packetId = PacketIdClient.VALUES[packetIdOrdinal];
+			return Optional.of(packetId);
+		} catch (RuntimeException e) {
+			LOGGER.error("Packet error when trying to read packet id", e);
+			return Optional.empty();
 		}
 	}
 }

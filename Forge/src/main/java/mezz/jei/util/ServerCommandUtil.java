@@ -99,12 +99,21 @@ public final class ServerCommandUtil {
 		ServerPlayer sender = context.player();
 		IServerConfig serverConfig = context.serverConfig();
 		if (hasPermissionForCheatMode(sender, serverConfig)) {
+			if (itemStack.isEmpty()) {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Player '{} ({})' tried to give an empty ItemStack.", sender.getName(), sender.getUUID());
+				}
+				return;
+			}
 			if (giveMode == GiveMode.INVENTORY) {
 				giveToInventory(sender, itemStack);
 			} else if (giveMode == GiveMode.MOUSE_PICKUP) {
 				mousePickupItemStack(sender, itemStack);
 			}
 		} else {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Player '{} ({})' tried to cheat an ItemStack '{}' but does not have permission.", sender.getName(), sender.getUUID(), itemStack.getDisplayName());
+			}
 			IConnectionToClient connection = context.connection();
 			connection.sendPacketToClient(new PacketCheatPermission(false), sender);
 		}
@@ -118,8 +127,16 @@ public final class ServerCommandUtil {
 		ServerPlayer sender = context.player();
 		IServerConfig serverConfig = context.serverConfig();
 		if (hasPermissionForCheatMode(sender, serverConfig)) {
+			if (itemStack.isEmpty()) {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Player '{} ({})' tried to set an empty ItemStack to the hotbar slot: {}", sender.getName(), sender.getUUID(), hotbarSlot);
+				}
+				return;
+			}
 			if (!Inventory.isHotbarSlot(hotbarSlot)) {
-				LOGGER.error("Tried to set slot that is not in the hotbar: {}", hotbarSlot);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Player '{} ({})' tried to set slot that is not in the hotbar: {}", sender.getName(), sender.getUUID(), hotbarSlot);
+				}
 				return;
 			}
 			ItemStack stackInSlot = sender.getInventory().getItem(hotbarSlot);
@@ -132,6 +149,9 @@ public final class ServerCommandUtil {
 			sender.inventoryMenu.broadcastChanges();
 			notifyGive(sender, itemStackCopy);
 		} else {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Player '{} ({})' tried to cheat an item '{}' to their hotbar but does not have permission.", sender.getName(), sender.getUUID(), itemStack.getDisplayName());
+			}
 			IConnectionToClient connection = context.connection();
 			connection.sendPacketToClient(new PacketCheatPermission(false), sender);
 		}

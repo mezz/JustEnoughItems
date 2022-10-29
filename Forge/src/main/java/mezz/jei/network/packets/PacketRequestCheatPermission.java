@@ -10,7 +10,10 @@ import mezz.jei.core.config.IServerConfig;
 import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.util.ServerCommandUtil;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.concurrent.CompletableFuture;
 
 public class PacketRequestCheatPermission extends PacketJei {
 	@Override
@@ -23,14 +26,17 @@ public class PacketRequestCheatPermission extends PacketJei {
 		// the packet itself is the only data needed
 	}
 
-	public static void readPacketData(ServerPacketData data) {
+	public static CompletableFuture<Void> readPacketData(ServerPacketData data) {
 		ServerPacketContext context = data.context();
 		ServerPlayer player = context.player();
 		IServerConfig serverConfig = context.serverConfig();
-		boolean hasPermission = ServerCommandUtil.hasPermissionForCheatMode(player, serverConfig);
-		PacketCheatPermission packetCheatPermission = new PacketCheatPermission(hasPermission);
+		MinecraftServer server = player.server;
+		return server.submit(() -> {
+			boolean hasPermission = ServerCommandUtil.hasPermissionForCheatMode(player, serverConfig);
+			PacketCheatPermission packetCheatPermission = new PacketCheatPermission(hasPermission);
 
-		IConnectionToClient connection = context.connection();
-		connection.sendPacketToClient(packetCheatPermission, player);
+			IConnectionToClient connection = context.connection();
+			connection.sendPacketToClient(packetCheatPermission, player);
+		});
 	}
 }

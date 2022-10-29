@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface IPlatformRegistry<T> {
     Collection<T> getValues();
@@ -13,7 +14,7 @@ public interface IPlatformRegistry<T> {
 
     int getId(T entry);
 
-    T getValue(int id);
+    Optional<T> getValue(int id);
 
     boolean contains(T entry);
 }
