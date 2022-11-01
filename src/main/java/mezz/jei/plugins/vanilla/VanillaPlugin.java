@@ -290,7 +290,7 @@ public class VanillaPlugin implements IModPlugin {
 		replacers.put(ShulkerBoxColoringRecipe.class, ShulkerBoxColoringRecipeMaker::createRecipes);
 		replacers.put(SuspiciousStewRecipe.class, SuspiciousStewRecipeMaker::createRecipes);
 
-		return validRecipes.parallelStream()
+		return validRecipes.stream()
 			.map(ICraftingRecipe::getClass)
 			.distinct()
 			.filter(replacers::containsKey)
