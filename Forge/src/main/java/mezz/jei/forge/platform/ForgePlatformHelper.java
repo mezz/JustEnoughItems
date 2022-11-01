@@ -42,4 +42,3 @@ public class ForgePlatformHelper implements IPlatformHelper {
         return configHelper;
     }
 }
-

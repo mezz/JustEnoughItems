@@ -1,7 +1,6 @@
 package mezz.jei.core.search;
 
 import mezz.jei.core.collect.SetMultiMap;
-import mezz.jei.core.search.ISearchStorage;
 import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
 
 import java.util.Collection;

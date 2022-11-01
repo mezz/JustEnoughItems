@@ -1,6 +1,5 @@
 package mezz.jei.load.registration;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
