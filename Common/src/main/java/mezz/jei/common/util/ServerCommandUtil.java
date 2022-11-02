@@ -153,8 +153,10 @@ public final class ServerCommandUtil {
 		}
 	}
 
-	private static boolean canStack(ItemStack a, ItemStack b) {
-		return ItemStack.matches(a, b);
+	public static boolean canStack(ItemStack a, ItemStack b) {
+		ItemStack singleStack = a.copy();
+		singleStack.setCount(1);
+		return ItemEntity.areMergable(singleStack, b);
 	}
 
 	/**

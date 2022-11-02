@@ -10,6 +10,7 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.common.util.CheatUtil;
+import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
@@ -91,7 +92,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 			return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY)
 				.findFirst()
 				.map(CheatUtil::getCheatItemStack)
-				.map(i -> !ItemStack.matches(itemStack, i))
+				.map(i -> !ServerCommandUtil.canStack(itemStack, i))
 				.orElse(true);
 		}
 		return true;
