@@ -44,6 +44,9 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 
 	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput userInput, IKeyBindings keyBindings) {
+		if (!userInput.is(keyBindings.getLeftClick())) {
+			return Optional.empty();
+		}
 		double mouseX = userInput.getMouseX();
 		double mouseY = userInput.getMouseY();
 		if (!this.ingredientGrid.isMouseOver(mouseX, mouseY)) {
