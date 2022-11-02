@@ -152,7 +152,10 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 		return area.contains(mouseX, mouseY);
 	}
 
-	public boolean handleMouseClicked(int mouseX, int mouseY) {
+	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
+		if (mouseButton != 0) {
+			return false;
+		}
 		if (isMouseOver(mouseX, mouseY)) {
 			Minecraft minecraft = Minecraft.getMinecraft();
 			if (shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
