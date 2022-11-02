@@ -3,7 +3,6 @@ package mezz.jei.fabric.platform;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -25,16 +24,6 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
     public int getBurnTime(ItemStack itemStack) {
         Map<Item, Integer> fuels = AbstractFurnaceBlockEntity.getFuel();
         return fuels.getOrDefault(itemStack.getItem(), 0);
-    }
-
-    @Override
-    public boolean canStack(ItemStack a, ItemStack b) {
-        if (a.isEmpty() || !a.sameItem(b) || a.hasTag() != b.hasTag()) {
-            return false;
-        }
-
-        CompoundTag tag = a.getTag();
-        return tag == null || tag.equals(b.getTag());
     }
 
     @Override

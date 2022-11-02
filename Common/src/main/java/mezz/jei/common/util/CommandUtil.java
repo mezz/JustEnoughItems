@@ -7,19 +7,14 @@ import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IClientConfig;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -68,7 +63,7 @@ public final class CommandUtil {
 	}
 
 	/**
-	 * Fallback for when JEI is not on the server, tries to use the /give command
+	 * Fallback for when JEI is not on the server.
 	 * Uses the Creative Inventory Action Packet when in creative, which doesn't require the player to be op.
 	 */
 	private static void giveStackVanilla(ItemStack itemStack, int amount) {
@@ -85,34 +80,9 @@ public final class CommandUtil {
 
 		LocalPlayer sender = Minecraft.getInstance().player;
 		if (sender != null) {
-			if (sender.createCommandSourceStack().hasPermission(2)) {
-				sendGiveAction(sender, itemStack, amount);
-			} else if (sender.isCreative()) {
+			if (sender.isCreative()) {
 				sendCreativeInventoryActions(sender, itemStack, amount);
-			} else {
-				// try this in case the vanilla server has permissions set so regular players can use /give
-				sendGiveAction(sender, itemStack, amount);
 			}
-		}
-	}
-
-	private static void sendGiveAction(LocalPlayer sender, ItemStack itemStack, int amount) {
-		String[] commandParameters = ServerCommandUtil.getGiveCommandParameters(sender, itemStack, amount);
-		String fullCommand = "/give " + StringUtils.join(commandParameters, " ");
-		sendChatMessage(sender, fullCommand);
-	}
-
-	private static void sendChatMessage(LocalPlayer sender, String chatMessage) {
-		if (chatMessage.length() <= 256) {
-			sender.chat(chatMessage);
-		} else {
-			Component errorMessage = new TranslatableComponent("jei.chat.error.command.too.long");
-			errorMessage.getStyle().applyFormat(ChatFormatting.RED);
-			sender.displayClientMessage(errorMessage, false);
-
-			Component chatMessageComponent = new TextComponent(chatMessage);
-			chatMessageComponent.getStyle().applyFormat(ChatFormatting.RED);
-			sender.displayClientMessage(chatMessageComponent, false);
 		}
 	}
 

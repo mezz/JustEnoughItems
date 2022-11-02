@@ -3,22 +3,16 @@ package mezz.jei.common.util;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.ServerPacketContext;
-import mezz.jei.common.platform.IPlatformItemStackHelper;
-import mezz.jei.common.platform.IPlatformRegistry;
-import mezz.jei.common.platform.Services;
+import mezz.jei.common.network.packets.PacketCheatPermission;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IServerConfig;
-import mezz.jei.common.network.IConnectionToClient;
-import mezz.jei.common.network.packets.PacketCheatPermission;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.item.ItemInput;
-import net.minecraft.core.Registry;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -27,15 +21,12 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Server-side-safe utilities for commands.
@@ -44,28 +35,6 @@ public final class ServerCommandUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private ServerCommandUtil() {
-	}
-
-	public static String[] getGiveCommandParameters(Player sender, ItemStack itemStack, int amount) {
-		Component senderName = sender.getName();
-		Item item = itemStack.getItem();
-		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
-		ResourceLocation itemResourceLocation = registry.getRegistryName(item);
-		if (itemResourceLocation == null) {
-			String stackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			throw new IllegalArgumentException("item.getRegistryName() returned null for: " + stackInfo);
-		}
-
-		List<String> commandStrings = new ArrayList<>();
-		commandStrings.add(senderName.getString());
-		String itemArgument = itemResourceLocation.toString();
-		CompoundTag tagCompound = itemStack.getTag();
-		if (tagCompound != null) {
-			itemArgument += tagCompound;
-		}
-		commandStrings.add(itemArgument);
-		commandStrings.add(String.valueOf(amount));
-		return commandStrings.toArray(new String[0]);
 	}
 
 	public static boolean hasPermissionForCheatMode(ServerPlayer sender, IServerConfig serverConfig) {
@@ -185,9 +154,10 @@ public final class ServerCommandUtil {
 		}
 	}
 
-	private static boolean canStack(ItemStack a, ItemStack b) {
-		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
-		return itemStackHelper.canStack(a, b);
+	public static boolean canStack(ItemStack a, ItemStack b) {
+		ItemStack singleStack = a.copy();
+		singleStack.setCount(1);
+		return ItemEntity.areMergable(singleStack, b);
 	}
 
 	/**
