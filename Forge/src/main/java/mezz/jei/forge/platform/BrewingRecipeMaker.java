@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -59,9 +60,13 @@ public class BrewingRecipeMaker {
 				if (ingredients.length > 0) {
 					Ingredient inputIngredient = brewingRecipe.getInput();
 					ItemStack output = brewingRecipe.getOutput();
-					ItemStack[] inputs = inputIngredient.getItems();
-					IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(List.of(ingredients), List.of(inputs), output);
-					recipes.add(recipe);
+					List<ItemStack> inputs = Arrays.stream(inputIngredient.getItems())
+						.filter(i -> !i.isEmpty())
+						.toList();
+					if (!output.isEmpty() && !inputs.isEmpty()) {
+						IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(List.of(ingredients), inputs, output);
+						recipes.add(recipe);
+					}
 				}
 			} else if (!(iBrewingRecipe instanceof VanillaBrewingRecipe)) {
 				Class<?> recipeClass = iBrewingRecipe.getClass();
