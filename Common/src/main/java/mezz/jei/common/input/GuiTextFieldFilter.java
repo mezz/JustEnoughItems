@@ -2,7 +2,6 @@ package mezz.jei.common.input;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.common.gui.HoverChecker;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.handlers.TextFieldInputHandler;
@@ -24,7 +23,7 @@ public class GuiTextFieldFilter extends EditBox {
 	private static final int maxSearchLength = 128;
 	private static final TextHistory history = new TextHistory();
 
-	private final HoverChecker hoverChecker;
+	private ImmutableRect2i area;
 	private final DrawableNineSliceTexture background;
 	private ImmutableRect2i backgroundBounds;
 
@@ -36,8 +35,7 @@ public class GuiTextFieldFilter extends EditBox {
 		super(Minecraft.getInstance().font, 0, 0, 0, 0, CommonComponents.EMPTY);
 
 		setMaxLength(maxSearchLength);
-		this.hoverChecker = new HoverChecker();
-
+		this.area = ImmutableRect2i.EMPTY;
 		this.background = textures.getSearchBackground();
 		this.backgroundBounds = ImmutableRect2i.EMPTY;
 		setBordered(false);
@@ -49,7 +47,7 @@ public class GuiTextFieldFilter extends EditBox {
 		this.y = area.getY() + (area.getHeight() - 8) / 2;
 		this.width = area.getWidth() - 12;
 		this.height = area.getHeight();
-		this.hoverChecker.updateBounds(area);
+		this.area = area;
 	}
 
 	@Override
@@ -66,7 +64,7 @@ public class GuiTextFieldFilter extends EditBox {
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return hoverChecker.checkHover(mouseX, mouseY);
+		return area.contains(mouseX, mouseY);
 	}
 
 	public IUserInputHandler createInputHandler() {
@@ -120,4 +118,7 @@ public class GuiTextFieldFilter extends EditBox {
 		super.renderButton(poseStack, mouseX, mouseY, partialTicks);
 	}
 
+	public ImmutableRect2i getArea() {
+		return area;
+	}
 }

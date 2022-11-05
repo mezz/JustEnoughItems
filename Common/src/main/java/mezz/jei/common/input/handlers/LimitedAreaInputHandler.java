@@ -1,5 +1,6 @@
 package mezz.jei.common.input.handlers;
 
+import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
@@ -27,6 +28,14 @@ public class LimitedAreaInputHandler implements IUserInputHandler {
 	}
 
 	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+			.add("area", this.area)
+			.add("handler", this.handler)
+			.toString();
+	}
+
+	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		if (this.area.contains(input.getMouseX(), input.getMouseY())) {
 			return this.handler.handleUserInput(screen, input, keyBindings)
@@ -41,33 +50,10 @@ public class LimitedAreaInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
+	public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
 		if (this.area.contains(mouseX, mouseY)) {
 			return this.handler.handleMouseScrolled(mouseX, mouseY, scrollDelta);
 		}
-		return false;
-	}
-
-	@Override
-	public Optional<IUserInputHandler> handleDragStart(Screen screen, UserInput input) {
-		if (this.area.contains(input.getMouseX(), input.getMouseY())) {
-			return this.handler.handleDragStart(screen, input)
-				.map(handled -> this);
-		}
 		return Optional.empty();
-	}
-
-	@Override
-	public Optional<IUserInputHandler> handleDragComplete(Screen screen, UserInput input) {
-		if (this.area.contains(input.getMouseX(), input.getMouseY())) {
-			return this.handler.handleDragComplete(screen, input)
-				.map(handled -> this);
-		}
-		return Optional.empty();
-	}
-
-	@Override
-	public void handleDragCanceled() {
-		this.handler.handleDragCanceled();
 	}
 }

@@ -29,11 +29,12 @@ import mezz.jei.common.input.CombinedRecipeFocusSource;
 import mezz.jei.common.input.GuiContainerWrapper;
 import mezz.jei.common.input.ICharTypedHandler;
 import mezz.jei.common.input.handlers.BookmarkInputHandler;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
+import mezz.jei.common.input.handlers.DragRouter;
 import mezz.jei.common.input.handlers.EditInputHandler;
 import mezz.jei.common.input.handlers.FocusInputHandler;
 import mezz.jei.common.input.handlers.GlobalInputHandler;
 import mezz.jei.common.input.handlers.GuiAreaInputHandler;
+import mezz.jei.common.input.handlers.UserInputRouter;
 import mezz.jei.common.load.PluginCaller;
 import mezz.jei.common.load.PluginHelper;
 import mezz.jei.common.load.PluginLoader;
@@ -157,7 +158,8 @@ public final class JeiStarter {
 			ingredientListOverlay
 		);
 
-		CombinedInputHandler userInputHandler = new CombinedInputHandler(
+		UserInputRouter userInputRouter = new UserInputRouter(
+			configData.clientConfig(),
 			new EditInputHandler(recipeFocusSource, registeredIngredients, ingredientFilter, configData.worldConfig(), configData.editModeConfig()),
 			ingredientListOverlay.createInputHandler(),
 			leftAreaDispatcher.createInputHandler(),
@@ -166,7 +168,11 @@ public final class JeiStarter {
 			new GlobalInputHandler(configData.worldConfig()),
 			new GuiAreaInputHandler(registeredIngredients, guiScreenHelper, recipesGui)
 		);
-		ClientInputHandler clientInputHandler = new ClientInputHandler(charTypedHandlers, userInputHandler, data.keyBindings());
+
+		DragRouter dragRouter = new DragRouter(
+			ingredientListOverlay.createDragHandler()
+		);
+		ClientInputHandler clientInputHandler = new ClientInputHandler(charTypedHandlers, userInputRouter, dragRouter, data.keyBindings());
 
 		// This needs to be run after all of the "Ingredients are being added at runtime" items.
 		ingredientSorter.doPreSort(ingredientFilter, registeredIngredients);

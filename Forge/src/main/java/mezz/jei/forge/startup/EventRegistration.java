@@ -23,7 +23,7 @@ public class EventRegistration {
 	}
 
 	private static void registerClientInputHandler(RuntimeEventSubscriptions subscriptions, ClientInputHandler handler) {
-		subscriptions.register(ScreenEvent.Init.class, event -> handler.onInitGui());
+		subscriptions.register(ScreenEvent.Init.Post.class, event -> handler.onInitGui());
 
 		subscriptions.register(ScreenEvent.KeyPressed.Pre.class, event -> {
 			Screen screen = event.getScreen();

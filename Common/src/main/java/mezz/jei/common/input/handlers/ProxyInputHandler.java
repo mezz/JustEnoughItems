@@ -1,5 +1,6 @@
 package mezz.jei.common.input.handlers;
 
+import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
@@ -17,6 +18,13 @@ public class ProxyInputHandler implements IUserInputHandler {
 	}
 
 	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+			.add("source", this.source.get())
+			.toString();
+	}
+
+	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		return this.source.get().handleUserInput(screen, input, keyBindings);
 	}
@@ -27,22 +35,7 @@ public class ProxyInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
+	public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
 		return this.source.get().handleMouseScrolled(mouseX, mouseY, scrollDelta);
-	}
-
-	@Override
-	public Optional<IUserInputHandler> handleDragStart(Screen screen, UserInput input) {
-		return this.source.get().handleDragStart(screen, input);
-	}
-
-	@Override
-	public Optional<IUserInputHandler> handleDragComplete(Screen screen, UserInput input) {
-		return this.source.get().handleDragComplete(screen, input);
-	}
-
-	@Override
-	public void handleDragCanceled() {
-		this.source.get().handleDragCanceled();
 	}
 }

@@ -6,9 +6,9 @@ import java.util.List;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.gui.HoverChecker;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.network.chat.Component;
 
 public abstract class RecipeGuiTab implements IUserInputHandler {
@@ -18,18 +18,17 @@ public abstract class RecipeGuiTab implements IUserInputHandler {
 	private final Textures textures;
 	protected final int x;
 	protected final int y;
-	private final HoverChecker hoverChecker;
+	private final ImmutableRect2i area;
 
 	public RecipeGuiTab(Textures textures, int x, int y) {
 		this.textures = textures;
 		this.x = x;
 		this.y = y;
-		this.hoverChecker = new HoverChecker();
-		this.hoverChecker.updateBounds(y, y + TAB_HEIGHT, x, x + TAB_WIDTH);
+		this.area = new ImmutableRect2i(x, y, TAB_WIDTH, TAB_HEIGHT);
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return hoverChecker.checkHover(mouseX, mouseY);
+		return area.contains(mouseX, mouseY);
 	}
 
 	public abstract boolean isSelected(IRecipeCategory<?> selectedCategory);

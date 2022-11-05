@@ -16,7 +16,6 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.focus.FocusGroup;
 import mezz.jei.common.gui.GuiProperties;
-import mezz.jei.common.gui.HoverChecker;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.elements.GuiIconButtonSmall;
@@ -85,8 +84,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final RecipeCatalysts recipeCatalysts;
 	private final RecipeGuiTabs recipeGuiTabs;
 
-	private final HoverChecker titleHoverChecker = new HoverChecker();
-
 	private final List<RecipeTransferButton> recipeTransferButtons;
 
 	private final GuiIconButtonSmall nextRecipeCategory;
@@ -98,6 +95,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private Screen parentScreen;
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i titleArea = ImmutableRect2i.EMPTY;
+	private ImmutableRect2i titleStringArea = ImmutableRect2i.EMPTY;
 
 	private boolean init = false;
 
@@ -267,7 +265,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			hoveredRecipeCatalyst.drawOverlays(poseStack, 0, 0, mouseX, mouseY, modIdHelper);
 		}
 
-		if (titleHoverChecker.checkHover(mouseX, mouseY) && !logic.hasAllCategories()) {
+		if (titleStringArea.contains(mouseX, mouseY) && !logic.hasAllCategories()) {
 			MutableComponent showAllRecipesString = Component.translatable("jei.tooltip.show.all.recipes");
 			TooltipRenderer.drawHoveringText(poseStack, List.of(showAllRecipesString), mouseX, mouseY);
 		}
@@ -377,7 +375,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
 		if (isMouseOver(mouseX, mouseY)) {
-			if (titleHoverChecker.checkHover(mouseX, mouseY)) {
+			if (titleStringArea.contains(mouseX, mouseY)) {
 				if (input.is(keyBindings.getLeftClick()) && logic.setCategoryFocus()) {
 					return true;
 				}
@@ -513,8 +511,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		if (font.width(title) > availableTitleWidth) {
 			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, font);
 		}
-		ImmutableRect2i titleStringArea = MathUtil.centerTextArea(this.titleArea, font, title);
-		titleHoverChecker.updateBounds(titleStringArea);
+		this.titleStringArea = MathUtil.centerTextArea(this.titleArea, font, title);
 
 		int spacingY = recipeBackground.getHeight() + recipeSpacing;
 

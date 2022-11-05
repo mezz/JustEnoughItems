@@ -8,8 +8,8 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.common.input.IDragHandler;
 import mezz.jei.common.input.IRecipeFocusSource;
-import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IWorldConfig;
@@ -122,13 +122,13 @@ public class GhostIngredientDragManager {
 		return true;
 	}
 
-	public IUserInputHandler createInputHandler() {
-		return new UserInputHandler();
+	public IDragHandler createDragHandler() {
+		return new DragHandler();
 	}
 
-	private class UserInputHandler implements IUserInputHandler {
+	private class DragHandler implements IDragHandler {
 		@Override
-		public Optional<IUserInputHandler> handleDragStart(Screen screen, UserInput input) {
+		public Optional<IDragHandler> handleDragStart(Screen screen, UserInput input) {
 			Minecraft minecraft = Minecraft.getInstance();
 			LocalPlayer player = minecraft.player;
 			if (player == null) {
@@ -148,9 +148,9 @@ public class GhostIngredientDragManager {
 		}
 
 		@Override
-		public Optional<IUserInputHandler> handleDragComplete(Screen screen, UserInput input) {
+		public boolean handleDragComplete(Screen screen, UserInput input) {
 			if (ghostIngredientDrag == null) {
-				return Optional.empty();
+				return false;
 			}
 			boolean success = ghostIngredientDrag.onClick(input);
 			double mouseX = input.getMouseX();
@@ -161,10 +161,7 @@ public class GhostIngredientDragManager {
 			}
 			ghostIngredientDrag = null;
 			hoveredIngredientTargets = null;
-			if (success) {
-				return Optional.of(this);
-			}
-			return Optional.empty();
+			return success;
 		}
 
 		@Override

@@ -14,10 +14,13 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.ICharTypedHandler;
 import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.common.input.IDragHandler;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.MouseUtil;
+import mezz.jei.common.input.handlers.NullDragHandler;
+import mezz.jei.common.input.handlers.ProxyDragHandler;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
@@ -230,7 +233,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public IUserInputHandler createInputHandler() {
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
-			this.ghostIngredientDragManager.createInputHandler(),
 			this.searchField.createInputHandler(),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler(),
@@ -247,6 +249,17 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 				return displayedInputHandler;
 			}
 			return hiddenInputHandler;
+		});
+	}
+
+	public IDragHandler createDragHandler() {
+		final IDragHandler displayedDragHandler = this.ghostIngredientDragManager.createDragHandler();
+
+		return new ProxyDragHandler(() -> {
+			if (isListDisplayed()) {
+				return displayedDragHandler;
+			}
+			return NullDragHandler.INSTANCE;
 		});
 	}
 

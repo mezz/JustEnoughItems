@@ -5,6 +5,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.handlers.LimitedAreaInputHandler;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
@@ -27,6 +28,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Collection;
 import java.util.List;
@@ -320,18 +322,18 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		}
 
 		@Override
-		public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
+		public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
 			if (!mouseOverable.isMouseOver(mouseX, mouseY)) {
-				return false;
+				return Optional.empty();
 			}
 			if (scrollDelta < 0) {
 				this.paged.nextPage();
-				return true;
+				return Optional.of(this);
 			} else if (scrollDelta > 0) {
 				this.paged.previousPage();
-				return true;
+				return Optional.of(this);
 			}
-			return false;
+			return Optional.empty();
 		}
 
 		@Override
@@ -375,13 +377,16 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			}
 
 			return this.focusSource.getIngredientUnderMouse(mouseX, mouseY)
-				.map(CheatUtil::getCheatItemStack)
-				.filter(i -> !i.isEmpty())
-				.findFirst()
-				.map(itemStack -> {
-					commandUtil.setHotbarStack(itemStack, hotbarSlot);
-					return this;
-				});
+				.flatMap(clickedIngredient -> {
+					ItemStack cheatItemStack = CheatUtil.getCheatItemStack(clickedIngredient);
+					if (!cheatItemStack.isEmpty()) {
+						commandUtil.setHotbarStack(cheatItemStack, hotbarSlot);
+						ImmutableRect2i area = clickedIngredient.getArea();
+						return Stream.of(LimitedAreaInputHandler.create(this, area));
+					}
+					return Stream.empty();
+				})
+				.findFirst();
 		}
 
 		private static int getHotbarSlotForInput(UserInput input, Options gameSettings) {

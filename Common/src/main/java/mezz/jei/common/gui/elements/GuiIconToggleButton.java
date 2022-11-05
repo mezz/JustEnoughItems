@@ -2,7 +2,6 @@ package mezz.jei.common.gui.elements;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.common.gui.HoverChecker;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -20,14 +19,13 @@ public abstract class GuiIconToggleButton {
 	private final IDrawable offIcon;
 	private final IDrawable onIcon;
 	private final GuiIconButton button;
-	private final HoverChecker hoverChecker;
+	private ImmutableRect2i area;
 
 	public GuiIconToggleButton(IDrawable offIcon, IDrawable onIcon, Textures textures) {
 		this.offIcon = offIcon;
 		this.onIcon = onIcon;
 		this.button = new GuiIconButton(new DrawableBlank(0, 0), b -> {}, textures);
-		this.hoverChecker = new HoverChecker();
-		this.hoverChecker.updateBounds(this.button);
+		this.area = ImmutableRect2i.EMPTY;
 	}
 
 	public void updateBounds(ImmutableRect2i area) {
@@ -35,7 +33,7 @@ public abstract class GuiIconToggleButton {
 		this.button.setHeight(area.getHeight());
 		this.button.x = area.getX();
 		this.button.y = area.getY();
-		this.hoverChecker.updateBounds(this.button);
+		this.area = area;
 	}
 
 	public void draw(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
@@ -45,7 +43,7 @@ public abstract class GuiIconToggleButton {
 	}
 
 	public final boolean isMouseOver(double mouseX, double mouseY) {
-		return this.hoverChecker.checkHover(mouseX, mouseY);
+		return this.area.contains(mouseX, mouseY);
 	}
 
 	public IUserInputHandler createInputHandler() {
