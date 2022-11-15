@@ -71,14 +71,14 @@ public class PacketRecipeTransfer extends PacketJei {
 		AbstractContainerMenu container = player.containerMenu;
 
 		int transferOperationsSize = buf.readVarInt();
-		List<TransferOperation> transferOperations = new ArrayList<>(transferOperationsSize);
+		List<TransferOperation> transferOperations = new ArrayList<>();
 		for (int i = 0; i < transferOperationsSize; i++) {
 			TransferOperation transferOperation = TransferOperation.readPacketData(buf, container);
 			transferOperations.add(transferOperation);
 		}
 
 		int craftingSlotsSize = buf.readVarInt();
-		List<Slot> craftingSlots = new ArrayList<>(craftingSlotsSize);
+		List<Slot> craftingSlots = new ArrayList<>();
 		for (int i = 0; i < craftingSlotsSize; i++) {
 			int slotIndex = buf.readVarInt();
 			Slot slot = container.getSlot(slotIndex);
