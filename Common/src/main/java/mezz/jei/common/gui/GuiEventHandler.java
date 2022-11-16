@@ -7,7 +7,7 @@ import mezz.jei.common.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.common.input.MouseUtil;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.LimitedLogger;
+import mezz.jei.core.util.LimitedLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientVisibility;
@@ -37,7 +38,6 @@ import mezz.jei.common.util.StringUtil;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.common.gui.recipes.layout.RecipeLayout;
 import mezz.jei.common.gui.recipes.layout.RecipeTransferButton;
-import mezz.jei.common.recipes.RecipeManager;
 import mezz.jei.common.recipes.RecipeTransferManager;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import net.minecraft.client.Minecraft;
@@ -100,7 +100,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private boolean init = false;
 
 	public RecipesGui(
-		RecipeManager recipeManager,
+		IRecipeManager recipeManager,
 		RecipeTransferManager recipeTransferManager,
 		RegisteredIngredients registeredIngredients,
 		IModIdHelper modIdHelper,
