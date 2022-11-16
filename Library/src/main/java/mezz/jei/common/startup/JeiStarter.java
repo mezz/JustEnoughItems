@@ -5,6 +5,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
@@ -88,7 +89,7 @@ public final class JeiStarter {
 		RecipeManager recipeManager = pluginLoader.createRecipeManager(plugins, vanillaPlugin, configData.recipeCategorySortingConfig(), modIdHelper);
 		ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers =
 			pluginLoader.createRecipeTransferHandlers(plugins);
-		RecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
+		IRecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");

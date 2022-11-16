@@ -6,14 +6,13 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.gui.ingredients.IngredientLookupState;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.focus.FocusGroup;
 import mezz.jei.common.gui.recipes.layout.RecipeLayout;
-import mezz.jei.common.recipes.RecipeTransferManager;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -28,7 +27,7 @@ import java.util.stream.Stream;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeManager recipeManager;
-	private final RecipeTransferManager recipeTransferManager;
+	private final IRecipeTransferManager recipeTransferManager;
 	private final IRecipeLogicStateListener stateListener;
 	private final RegisteredIngredients registeredIngredients;
 	private final IModIdHelper modIdHelper;
@@ -41,7 +40,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	public RecipeGuiLogic(
 		IRecipeManager recipeManager,
-		RecipeTransferManager recipeTransferManager,
+		IRecipeTransferManager recipeTransferManager,
 		IRecipeLogicStateListener stateListener,
 		RegisteredIngredients registeredIngredients,
 		IModIdHelper modIdHelper,
@@ -75,7 +74,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Nonnegative
-	private static int getRecipeCategoryIndexToShowFirst(List<IRecipeCategory<?>> recipeCategories, RecipeTransferManager recipeTransferManager) {
+	private static int getRecipeCategoryIndexToShowFirst(List<IRecipeCategory<?>> recipeCategories, IRecipeTransferManager recipeTransferManager) {
 		Minecraft minecraft = Minecraft.getInstance();
 		LocalPlayer player = minecraft.player;
 		if (player != null) {
@@ -84,8 +83,8 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			if (openContainer != null) {
 				for (int i = 0; i < recipeCategories.size(); i++) {
 					IRecipeCategory<?> recipeCategory = recipeCategories.get(i);
-					IRecipeTransferHandler<?, ?> recipeTransferHandler = recipeTransferManager.getRecipeTransferHandler(openContainer, recipeCategory);
-					if (recipeTransferHandler != null) {
+					var recipeTransferHandler = recipeTransferManager.getRecipeTransferHandler(openContainer, recipeCategory);
+					if (recipeTransferHandler.isPresent()) {
 						return i;
 					}
 				}

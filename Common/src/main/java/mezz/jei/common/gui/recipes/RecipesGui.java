@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.focus.FocusGroup;
@@ -38,7 +39,6 @@ import mezz.jei.common.util.StringUtil;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.common.gui.recipes.layout.RecipeLayout;
 import mezz.jei.common.gui.recipes.layout.RecipeTransferButton;
-import mezz.jei.common.recipes.RecipeTransferManager;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -63,7 +63,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private static final int buttonWidth = 13;
 	private static final int buttonHeight = 13;
 
-	private final RecipeTransferManager recipeTransferManager;
+	private final IRecipeTransferManager recipeTransferManager;
 	private final RegisteredIngredients registeredIngredients;
 	private final IModIdHelper modIdHelper;
 	private final IClientConfig clientConfig;
@@ -101,7 +101,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	public RecipesGui(
 		IRecipeManager recipeManager,
-		RecipeTransferManager recipeTransferManager,
+		IRecipeTransferManager recipeTransferManager,
 		RegisteredIngredients registeredIngredients,
 		IModIdHelper modIdHelper,
 		IClientConfig clientConfig,

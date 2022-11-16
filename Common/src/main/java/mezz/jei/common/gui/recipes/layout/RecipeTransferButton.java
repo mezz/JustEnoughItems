@@ -4,12 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.GuiIconButtonSmall;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.gui.recipes.IOnClickHandler;
-import mezz.jei.common.recipes.RecipeTransferManager;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import net.minecraft.network.chat.Component;
@@ -33,7 +33,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 		this.recipeLayout = recipeLayout;
 	}
 
-	public void update(RecipeTransferManager recipeTransferManager, @Nullable AbstractContainerMenu container, Player player) {
+	public void update(IRecipeTransferManager recipeTransferManager, @Nullable AbstractContainerMenu container, Player player) {
 		if (container != null) {
 			this.recipeTransferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, container, recipeLayout, player);
 		} else {
