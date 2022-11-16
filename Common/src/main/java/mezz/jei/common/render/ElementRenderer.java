@@ -1,10 +1,11 @@
 package mezz.jei.common.render;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
+import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.util.ImmutableRect2i;
 
-import javax.annotation.Nonnull;
+import java.util.Optional;
 
 public class ElementRenderer<T> implements IClickedIngredient<T> {
 	private static final ImmutableRect2i DEFAULT_AREA = new ImmutableRect2i(0, 0, 16, 16);
@@ -31,8 +32,11 @@ public class ElementRenderer<T> implements IClickedIngredient<T> {
 	}
 
 	@Override
-	@Nonnull
-	public ImmutableRect2i getArea() {
+	public Optional<IImmutableRect2i> getArea() {
+		return Optional.of(area);
+	}
+
+	public IImmutableRect2i getElementArea() {
 		return area;
 	}
 

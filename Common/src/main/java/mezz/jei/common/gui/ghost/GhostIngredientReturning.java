@@ -2,7 +2,7 @@ package mezz.jei.common.gui.ghost;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -24,7 +24,7 @@ public class GhostIngredientReturning<T> {
 
 	@Nullable
 	public static <T> GhostIngredientReturning<T> create(GhostIngredientDrag<T> ghostIngredientDrag, double mouseX, double mouseY) {
-		ImmutableRect2i origin = ghostIngredientDrag.getOrigin();
+		IImmutableRect2i origin = ghostIngredientDrag.getOrigin();
 		if (origin != null) {
 			IIngredientRenderer<T> ingredientRenderer = ghostIngredientDrag.getIngredientRenderer();
 			T ingredient = ghostIngredientDrag.getIngredient();

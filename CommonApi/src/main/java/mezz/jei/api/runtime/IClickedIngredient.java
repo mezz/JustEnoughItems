@@ -1,15 +1,15 @@
-package mezz.jei.common.input;
+package mezz.jei.api.runtime;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.util.ImmutableRect2i;
-import org.jetbrains.annotations.Nullable;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
+
+import java.util.Optional;
 
 public interface IClickedIngredient<V> {
 
 	ITypedIngredient<V> getTypedIngredient();
 
-	@Nullable
-	ImmutableRect2i getArea();
+	Optional<IImmutableRect2i> getArea();
 
 	boolean allowsCheating();
 

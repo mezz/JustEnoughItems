@@ -1,6 +1,7 @@
 package mezz.jei.common.input.handlers;
 
 import mezz.jei.api.runtime.IRecipesGui;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
@@ -61,7 +62,8 @@ public class CheatInputHandler implements IUserInputHandler {
                         commandUtil.giveStack(itemStack, giveAmount);
                     }
                 }
-                return LimitedAreaInputHandler.create(this, clicked.getArea());
+                IImmutableRect2i area = clicked.getArea().orElse(null);
+                return LimitedAreaInputHandler.create(this, area);
             });
     }
 

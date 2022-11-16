@@ -7,8 +7,9 @@ import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.gui.GuiContainerHandlers;
-import mezz.jei.common.gui.GuiScreenHelper;
+import mezz.jei.common.gui.ScreenHelper;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -71,7 +72,7 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 		this.ghostIngredientHandlers.put(guiClass, handler);
 	}
 
-	public GuiScreenHelper createGuiScreenHelper(IRegisteredIngredients registeredIngredients) {
-		return new GuiScreenHelper(registeredIngredients, globalGuiHandlers, guiContainerHandlers, ghostIngredientHandlers, guiScreenHandlers);
+	public IScreenHelper createGuiScreenHelper(IRegisteredIngredients registeredIngredients) {
+		return new ScreenHelper(registeredIngredients, globalGuiHandlers, guiContainerHandlers, ghostIngredientHandlers, guiScreenHandlers);
 	}
 }

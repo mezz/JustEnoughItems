@@ -13,13 +13,13 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
 import mezz.jei.common.bookmarks.BookmarkList;
 import mezz.jei.common.config.IBookmarkConfig;
 import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.common.focus.FocusFactory;
 import mezz.jei.common.gui.GuiHelper;
-import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.textures.Textures;
@@ -143,7 +143,7 @@ public class PluginLoader {
 		return recipeCategoryRegistration.getRecipeCategories();
 	}
 
-	public GuiScreenHelper createGuiScreenHelper(List<IModPlugin> plugins) {
+	public IScreenHelper createGuiScreenHelper(List<IModPlugin> plugins) {
 		GuiHandlerRegistration guiHandlerRegistration = new GuiHandlerRegistration();
 		PluginCaller.callOnPlugins("Registering gui handlers", plugins, p -> p.registerGuiHandlers(guiHandlerRegistration));
 		return guiHandlerRegistration.createGuiScreenHelper(registeredIngredients);

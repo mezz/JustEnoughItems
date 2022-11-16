@@ -2,6 +2,7 @@ package mezz.jei.common.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.gui.overlay.IngredientListOverlay;
 import mezz.jei.common.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.common.input.MouseUtil;
@@ -24,16 +25,16 @@ public class GuiEventHandler {
 	private static final LimitedLogger missingBackgroundLogger = new LimitedLogger(LOGGER, Duration.ofHours(1));
 
 	private final IngredientListOverlay ingredientListOverlay;
-	private final GuiScreenHelper guiScreenHelper;
+	private final IScreenHelper screenHelper;
 	private final LeftAreaDispatcher leftAreaDispatcher;
 	private boolean drawnOnBackground = false;
 
 	public GuiEventHandler(
-		GuiScreenHelper guiScreenHelper,
+		IScreenHelper screenHelper,
 		LeftAreaDispatcher leftAreaDispatcher,
 		IngredientListOverlay ingredientListOverlay
 	) {
-		this.guiScreenHelper = guiScreenHelper;
+		this.screenHelper = screenHelper;
 		this.leftAreaDispatcher = leftAreaDispatcher;
 		this.ingredientListOverlay = ingredientListOverlay;
 	}
@@ -50,7 +51,7 @@ public class GuiEventHandler {
 
 	public void onDrawBackgroundPost(Screen screen, PoseStack poseStack) {
 		Minecraft minecraft = Minecraft.getInstance();
-		boolean exclusionAreasChanged = guiScreenHelper.updateGuiExclusionAreas(screen);
+		boolean exclusionAreasChanged = screenHelper.updateGuiExclusionAreas(screen);
 		ingredientListOverlay.updateScreen(screen, exclusionAreasChanged);
 		leftAreaDispatcher.updateScreen(screen, exclusionAreasChanged);
 
@@ -89,7 +90,7 @@ public class GuiEventHandler {
 			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 			int guiLeft = screenHelper.getGuiLeft(guiContainer);
 			int guiTop = screenHelper.getGuiTop(guiContainer);
-			guiScreenHelper.getGuiClickableArea(guiContainer, mouseX - guiLeft, mouseY - guiTop)
+			this.screenHelper.getGuiClickableArea(guiContainer, mouseX - guiLeft, mouseY - guiTop)
 				.filter(IGuiClickableArea::isTooltipEnabled)
 				.map(IGuiClickableArea::getTooltipStrings)
 				.ifPresent(tooltipStrings -> {

@@ -1,5 +1,6 @@
 package mezz.jei.common.input;
 
+import mezz.jei.api.runtime.IClickedIngredient;
 import net.minecraft.client.Minecraft;
 
 import java.util.List;

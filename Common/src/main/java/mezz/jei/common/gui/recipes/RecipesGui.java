@@ -25,7 +25,7 @@ import mezz.jei.common.gui.elements.GuiIconButtonSmall;
 import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.ClickedIngredient;
-import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;

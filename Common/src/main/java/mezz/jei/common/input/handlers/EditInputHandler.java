@@ -3,9 +3,10 @@ package mezz.jei.common.input.handlers;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.common.ingredients.IngredientFilter;
-import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
@@ -55,7 +56,8 @@ public class EditInputHandler implements IUserInputHandler {
 				if (!input.isSimulate()) {
 					execute(clicked, blacklistType);
 				}
-				return LimitedAreaInputHandler.create(this, clicked.getArea());
+				IImmutableRect2i area = clicked.getArea().orElse(null);
+				return LimitedAreaInputHandler.create(this, area);
 			});
 	}
 

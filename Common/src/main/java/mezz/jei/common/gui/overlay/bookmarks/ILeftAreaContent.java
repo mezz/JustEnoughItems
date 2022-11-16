@@ -1,14 +1,12 @@
 package mezz.jei.common.gui.overlay.bookmarks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-
-import java.util.Set;
-
+import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 
-import mezz.jei.common.input.IRecipeFocusSource;
+import java.util.Set;
 
 public interface ILeftAreaContent extends IRecipeFocusSource {
 

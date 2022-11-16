@@ -2,9 +2,9 @@ package mezz.jei.common.startup;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.bookmarks.BookmarkList;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
@@ -22,7 +22,7 @@ public final class OverlayHelper {
         IIngredientGridSource ingredientFilter,
         IRegisteredIngredients registeredIngredients,
         IIngredientGridConfig ingredientGridConfig,
-        GuiScreenHelper guiScreenHelper,
+        IScreenHelper screenHelper,
         IModIdHelper modIdHelper,
         DrawableNineSliceTexture background,
         DrawableNineSliceTexture slotBackground
@@ -35,7 +35,7 @@ public final class OverlayHelper {
             configData.ingredientFilterConfig(),
             configData.clientConfig(),
             configData.worldConfig(),
-            guiScreenHelper,
+            screenHelper,
             modIdHelper,
             data.serverConnection(),
             data.keyBindings()
@@ -43,7 +43,7 @@ public final class OverlayHelper {
 
         return new IngredientGridWithNavigation(
             ingredientFilter,
-            guiScreenHelper,
+            screenHelper,
             ingredientListGrid,
             configData.worldConfig(),
             configData.clientConfig(),
@@ -58,7 +58,7 @@ public final class OverlayHelper {
     public static IngredientListOverlay createIngredientListOverlay(
         StartData data,
         IRegisteredIngredients registeredIngredients,
-        GuiScreenHelper guiScreenHelper,
+        IScreenHelper screenHelper,
         IIngredientGridSource ingredientFilter,
         IFilterTextSource filterTextSource,
         IModIdHelper modIdHelper
@@ -71,7 +71,7 @@ public final class OverlayHelper {
             ingredientFilter,
             registeredIngredients,
             configData.ingredientListConfig(),
-            guiScreenHelper,
+            screenHelper,
             modIdHelper,
             textures.getIngredientListBackground(),
             textures.getIngredientListSlotBackground()
@@ -81,7 +81,7 @@ public final class OverlayHelper {
             ingredientFilter,
             filterTextSource,
             registeredIngredients,
-            guiScreenHelper,
+            screenHelper,
             ingredientListGridNavigation,
             configData.clientConfig(),
             configData.worldConfig(),
@@ -94,7 +94,7 @@ public final class OverlayHelper {
     public static BookmarkOverlay createBookmarkOverlay(
         StartData data,
         IRegisteredIngredients registeredIngredients,
-        GuiScreenHelper guiScreenHelper,
+        IScreenHelper screenHelper,
         BookmarkList bookmarkList,
         IModIdHelper modIdHelper
     ) {
@@ -107,7 +107,7 @@ public final class OverlayHelper {
             bookmarkList,
             registeredIngredients,
             configData.bookmarkListConfig(),
-            guiScreenHelper,
+            screenHelper,
             modIdHelper,
             textures.getBookmarkListBackground(),
             textures.getBookmarkListSlotBackground()
@@ -119,7 +119,7 @@ public final class OverlayHelper {
             bookmarkListGridNavigation,
             configData.clientConfig(),
             configData.worldConfig(),
-            guiScreenHelper,
+            screenHelper,
             data.serverConnection(),
             data.keyBindings()
         );

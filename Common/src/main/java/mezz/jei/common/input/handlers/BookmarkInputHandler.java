@@ -1,5 +1,6 @@
 package mezz.jei.common.input.handlers;
 
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.bookmarks.BookmarkList;
 import mezz.jei.common.input.CombinedRecipeFocusSource;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -34,7 +35,9 @@ public class BookmarkInputHandler implements IUserInputHandler {
 					bookmarkList.remove(clicked.getTypedIngredient()) ||
 					bookmarkList.add(clicked.getTypedIngredient())
 				) {
-					return Optional.of(LimitedAreaInputHandler.create(this, clicked.getArea()));
+					IImmutableRect2i area = clicked.getArea().orElse(null);
+					IUserInputHandler handler = LimitedAreaInputHandler.create(this, area);
+					return Optional.of(handler);
 				}
 				return Optional.empty();
 			});

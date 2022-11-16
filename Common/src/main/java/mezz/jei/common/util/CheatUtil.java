@@ -4,7 +4,7 @@ import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.api.runtime.IClickedIngredient;
 import net.minecraft.world.item.ItemStack;
 
 public class CheatUtil {

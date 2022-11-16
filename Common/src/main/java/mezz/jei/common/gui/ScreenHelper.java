@@ -1,5 +1,6 @@
 package mezz.jei.common.gui;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
@@ -7,9 +8,11 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.input.ClickedIngredient;
-import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -29,7 +32,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class GuiScreenHelper {
+public class ScreenHelper implements IScreenHelper {
 	private final IRegisteredIngredients registeredIngredients;
 	private final List<IGlobalGuiHandler> globalGuiHandlers;
 	private final GuiContainerHandlers guiContainerHandlers;
@@ -37,7 +40,7 @@ public class GuiScreenHelper {
 	private final Map<Class<?>, IScreenHandler<?>> guiScreenHandlers;
 	private Set<ImmutableRect2i> guiExclusionAreas = Collections.emptySet();
 
-	public GuiScreenHelper(
+	public ScreenHelper(
 		IRegisteredIngredients registeredIngredients,
 		List<IGlobalGuiHandler> globalGuiHandlers,
 		GuiContainerHandlers guiContainerHandlers,
@@ -51,16 +54,14 @@ public class GuiScreenHelper {
 		this.guiScreenHandlers = guiScreenHandlers;
 	}
 
-	@Nullable
-	public <T extends Screen> IGuiProperties getGuiProperties(@Nullable T screen) {
-		if (screen == null) {
-			return null;
-		}
+	@Override
+	public <T extends Screen> Optional<IGuiProperties> getGuiProperties(T screen) {
 		{
 			@SuppressWarnings("unchecked")
 			IScreenHandler<T> handler = (IScreenHandler<T>) guiScreenHandlers.get(screen.getClass());
 			if (handler != null) {
-				return handler.apply(screen);
+				IGuiProperties properties = handler.apply(screen);
+				return Optional.ofNullable(properties);
 			}
 		}
 		for (Map.Entry<Class<?>, IScreenHandler<?>> entry : guiScreenHandlers.entrySet()) {
@@ -69,13 +70,15 @@ public class GuiScreenHelper {
 				@SuppressWarnings("unchecked")
 				IScreenHandler<T> handler = (IScreenHandler<T>) entry.getValue();
 				if (handler != null) {
-					return handler.apply(screen);
+					IGuiProperties properties = handler.apply(screen);
+					return Optional.ofNullable(properties);
 				}
 			}
 		}
-		return null;
+		return Optional.empty();
 	}
 
+	@Override
 	public boolean updateGuiExclusionAreas(Screen screen) {
 		Set<ImmutableRect2i> guiAreas = getPluginsExclusionAreas(screen)
 			.collect(Collectors.toUnmodifiableSet());
@@ -87,10 +90,12 @@ public class GuiScreenHelper {
 		return false;
 	}
 
-	public Set<ImmutableRect2i> getGuiExclusionAreas() {
+	@Override
+	public Set<? extends IImmutableRect2i> getGuiExclusionAreas() {
 		return guiExclusionAreas;
 	}
 
+	@Override
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public boolean isInGuiExclusionArea(double mouseX, double mouseY) {
 		return MathUtil.contains(guiExclusionAreas, mouseX, mouseY);
@@ -110,7 +115,24 @@ public class GuiScreenHelper {
 		}
 	}
 
-	public Stream<IClickedIngredient<?>> getPluginsIngredientUnderMouse(Screen guiScreen, double mouseX, double mouseY) {
+	@Override
+	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(Screen screen, double mouseX, double mouseY) {
+		return Stream.concat(
+			getPluginsIngredientUnderMouse(screen, mouseX, mouseY),
+			getSlotIngredientUnderMouse(screen).stream()
+		);
+	}
+
+	private Optional<IClickedIngredient<?>> getSlotIngredientUnderMouse(Screen guiScreen) {
+		if (!(guiScreen instanceof AbstractContainerScreen<?> guiContainer)) {
+			return Optional.empty();
+		}
+		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+		return Optional.ofNullable(screenHelper.getSlotUnderMouse(guiContainer))
+			.flatMap(slot -> getClickedIngredient(slot, guiContainer));
+	}
+
+	private Stream<IClickedIngredient<?>> getPluginsIngredientUnderMouse(Screen guiScreen, double mouseX, double mouseY) {
 		Stream<IClickedIngredient<?>> globalIngredients = this.globalGuiHandlers.stream()
 			.map(a -> a.getIngredientUnderMouse(mouseX, mouseY))
 			.map(i -> createClickedIngredient(i, guiScreen))
@@ -126,6 +148,21 @@ public class GuiScreenHelper {
 		return globalIngredients;
 	}
 
+	private Optional<IClickedIngredient<?>> getClickedIngredient(Slot slot, AbstractContainerScreen<?> guiContainer) {
+		ItemStack stack = slot.getItem();
+		return TypedIngredient.createTyped(this.registeredIngredients, VanillaTypes.ITEM_STACK, stack)
+			.map(typedIngredient -> {
+				IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+				ImmutableRect2i slotArea = new ImmutableRect2i(
+					screenHelper.getGuiLeft(guiContainer) + slot.x,
+					screenHelper.getGuiTop(guiContainer) + slot.y,
+					16,
+					16
+				);
+				return new ClickedIngredient<>(typedIngredient, slotArea, false, false);
+			});
+	}
+
 	private <T extends AbstractContainerScreen<?>> Stream<IClickedIngredient<?>> getGuiContainerHandlerIngredients(T guiContainer, double mouseX, double mouseY) {
 		return this.guiContainerHandlers.getActiveGuiHandlerStream(guiContainer)
 			.map(a -> a.getIngredientUnderMouse(guiContainer, mouseX, mouseY))
@@ -133,13 +170,13 @@ public class GuiScreenHelper {
 			.flatMap(Optional::stream);
 	}
 
-	@Nullable
-	public <T extends Screen> IGhostIngredientHandler<T> getGhostIngredientHandler(T guiScreen) {
+	@Override
+	public <T extends Screen> Optional<IGhostIngredientHandler<T>> getGhostIngredientHandler(T guiScreen) {
 		{
 			@SuppressWarnings("unchecked")
 			IGhostIngredientHandler<T> handler = (IGhostIngredientHandler<T>) ghostIngredientHandlers.get(guiScreen.getClass());
 			if (handler != null) {
-				return handler;
+				return Optional.of(handler);
 			}
 		}
 		for (Map.Entry<Class<?>, IGhostIngredientHandler<?>> entry : ghostIngredientHandlers.entrySet()) {
@@ -148,11 +185,11 @@ public class GuiScreenHelper {
 				@SuppressWarnings("unchecked")
 				IGhostIngredientHandler<T> handler = (IGhostIngredientHandler<T>) entry.getValue();
 				if (handler != null) {
-					return handler;
+					return Optional.of(handler);
 				}
 			}
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	private <T> Optional<IClickedIngredient<?>> createClickedIngredient(@Nullable T ingredient, Screen guiScreen) {
@@ -166,6 +203,7 @@ public class GuiScreenHelper {
 			});
 	}
 
+	@Override
 	public Optional<IGuiClickableArea> getGuiClickableArea(AbstractContainerScreen<?> guiContainer, double guiMouseX, double guiMouseY) {
 		return this.guiContainerHandlers.getGuiClickableArea(guiContainer, guiMouseX, guiMouseY);
 	}

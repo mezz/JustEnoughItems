@@ -2,9 +2,9 @@ package mezz.jei.common.gui.overlay.bookmarks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiProperties;
-import mezz.jei.common.gui.GuiScreenHelper;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.gui.GuiProperties;
-import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.handlers.NullInputHandler;
@@ -14,20 +14,22 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class LeftAreaDispatcher implements IRecipeFocusSource {
 	private static final int BORDER_MARGIN = 6;
 
 	private final ILeftAreaContent contents;
-	private final GuiScreenHelper guiScreenHelper;
+	private final IScreenHelper screenHelper;
 	@Nullable
 	private IGuiProperties guiProperties;
 	private boolean canShow = false;
 
-	public LeftAreaDispatcher(GuiScreenHelper guiScreenHelper, ILeftAreaContent contents) {
-		this.guiScreenHelper = guiScreenHelper;
+	public LeftAreaDispatcher(IScreenHelper screenHelper, ILeftAreaContent contents) {
+		this.screenHelper = screenHelper;
 		this.contents = contents;
 	}
 
@@ -45,24 +47,26 @@ public class LeftAreaDispatcher implements IRecipeFocusSource {
 
 	public void updateScreen(@Nullable Screen guiScreen, boolean forceUpdate) {
 		canShow = false;
-		IGuiProperties currentGuiProperties = guiScreenHelper.getGuiProperties(guiScreen);
-		if (currentGuiProperties == null) {
-			guiProperties = null;
-		} else {
-			if (forceUpdate || !GuiProperties.areEqual(guiProperties, currentGuiProperties)) {
-				Set<ImmutableRect2i> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
-				guiProperties = currentGuiProperties;
-				ImmutableRect2i displayArea = makeDisplayArea(guiProperties);
-				if (displayArea.isEmpty()) {
-					canShow = false;
+
+		Optional.ofNullable(guiScreen)
+			.flatMap(screenHelper::getGuiProperties)
+			.ifPresentOrElse(currentGuiProperties -> {
+				if (forceUpdate || !GuiProperties.areEqual(guiProperties, currentGuiProperties)) {
+					Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas().stream()
+						.map(ImmutableRect2i::convert)
+						.collect(Collectors.toUnmodifiableSet());
+					guiProperties = currentGuiProperties;
+					ImmutableRect2i displayArea = makeDisplayArea(guiProperties);
+					if (!displayArea.isEmpty()) {
+						contents.updateBounds(displayArea, guiExclusionAreas);
+						canShow = true;
+					}
 				} else {
-					contents.updateBounds(displayArea, guiExclusionAreas);
 					canShow = true;
 				}
-			} else {
-				canShow = true;
-			}
-		}
+			}, () -> {
+				guiProperties = null;
+			});
 	}
 
 	private static ImmutableRect2i makeDisplayArea(IGuiProperties guiProperties) {

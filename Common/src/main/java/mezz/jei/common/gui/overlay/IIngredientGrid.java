@@ -1,6 +1,6 @@
 package mezz.jei.common.gui.overlay;
 
-import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.api.runtime.IClickedIngredient;
 
 import java.util.stream.Stream;
 

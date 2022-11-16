@@ -2,10 +2,10 @@ package mezz.jei.common.input.handlers;
 
 import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.screens.Screen;
 
 import org.jetbrains.annotations.Nullable;
@@ -13,16 +13,16 @@ import java.util.Optional;
 
 public class LimitedAreaInputHandler implements IUserInputHandler {
 	private final IUserInputHandler handler;
-	private final ImmutableRect2i area;
+	private final IImmutableRect2i area;
 
-	public static IUserInputHandler create(IUserInputHandler handler, @Nullable ImmutableRect2i area) {
+	public static IUserInputHandler create(IUserInputHandler handler, @Nullable IImmutableRect2i area) {
 		if (area == null) {
 			return handler;
 		}
 		return new LimitedAreaInputHandler(handler, area);
 	}
 
-	private LimitedAreaInputHandler(IUserInputHandler handler, ImmutableRect2i area) {
+	private LimitedAreaInputHandler(IUserInputHandler handler, IImmutableRect2i area) {
 		this.handler = handler;
 		this.area = area;
 	}

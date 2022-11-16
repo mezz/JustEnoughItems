@@ -8,9 +8,9 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.gui.GuiComponent;
 
@@ -101,7 +101,7 @@ public class IngredientListRenderer {
 
 	private <T> void renderIngredient(PoseStack poseStack, ElementRenderer<T> slot, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
 		ITypedIngredient<T> typedIngredient = slot.getTypedIngredient();
-		ImmutableRect2i area = slot.getArea();
+		IImmutableRect2i area = slot.getElementArea();
 		int slotPadding = slot.getPadding();
 		if (worldConfig.isEditModeEnabled()) {
 			renderEditMode(poseStack, area, slotPadding, editModeConfig, typedIngredient, ingredientHelper);
@@ -123,7 +123,7 @@ public class IngredientListRenderer {
 		}
 	}
 
-	private static <T> void renderEditMode(PoseStack poseStack, ImmutableRect2i area, int padding, IEditModeConfig editModeConfig, ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
+	private static <T> void renderEditMode(PoseStack poseStack, IImmutableRect2i area, int padding, IEditModeConfig editModeConfig, ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
 		if (editModeConfig.isIngredientOnConfigBlacklist(typedIngredient, ingredientHelper)) {
 			GuiComponent.fill(poseStack, area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
 			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);

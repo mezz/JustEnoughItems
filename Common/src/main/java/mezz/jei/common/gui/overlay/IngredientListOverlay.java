@@ -6,32 +6,32 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.GuiProperties;
-import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.input.GuiTextFieldFilter;
 import mezz.jei.common.input.ICharTypedHandler;
-import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.input.IDragHandler;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.MouseUtil;
+import mezz.jei.common.input.handlers.CheatInputHandler;
+import mezz.jei.common.input.handlers.CombinedInputHandler;
 import mezz.jei.common.input.handlers.NullDragHandler;
+import mezz.jei.common.input.handlers.NullInputHandler;
 import mezz.jei.common.input.handlers.ProxyDragHandler;
+import mezz.jei.common.input.handlers.ProxyInputHandler;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.common.input.GuiTextFieldFilter;
-import mezz.jei.common.input.handlers.CheatInputHandler;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
-import mezz.jei.common.input.handlers.NullInputHandler;
-import mezz.jei.common.input.handlers.ProxyInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFocusSource, ICharTypedHandler {
@@ -54,7 +55,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
 	private final IConnectionToServer serverConnection;
-	private final GuiScreenHelper guiScreenHelper;
+	private final IScreenHelper screenHelper;
 	private final GuiTextFieldFilter searchField;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private ImmutableRect2i displayArea = ImmutableRect2i.EMPTY;
@@ -68,7 +69,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IIngredientGridSource ingredientGridSource,
 		IFilterTextSource filterTextSource,
 		IRegisteredIngredients registeredIngredients,
-		GuiScreenHelper guiScreenHelper,
+		IScreenHelper screenHelper,
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
@@ -76,7 +77,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		Textures textures,
 		IInternalKeyMappings keyBindings
 	) {
-		this.guiScreenHelper = guiScreenHelper;
+		this.screenHelper = screenHelper;
 		this.contents = contents;
 		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
@@ -91,7 +92,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		ingredientGridSource.addSourceListChangedListener(() -> updateBounds(true));
 
 		this.configButton = ConfigButton.create(this::isListDisplayed, worldConfig, textures, keyBindings);
-		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, registeredIngredients, worldConfig);
+		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, screenHelper, registeredIngredients, worldConfig);
 	}
 
 	@Override
@@ -108,19 +109,20 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	public void updateScreen(@Nullable Screen guiScreen, boolean exclusionAreasChanged) {
-		IGuiProperties guiProperties = guiScreenHelper.getGuiProperties(guiScreen);
-		if (guiProperties == null) {
-			if (this.guiProperties != null) {
-				this.guiProperties = null;
-				this.searchField.setFocused(false);
-				this.ghostIngredientDragManager.stopDrag();
-			}
-		} else {
-			final boolean guiPropertiesChanged = this.guiProperties == null || !GuiProperties.areEqual(this.guiProperties, guiProperties);
-			if (exclusionAreasChanged || guiPropertiesChanged) {
-				updateNewScreen(guiProperties, guiPropertiesChanged);
-			}
-		}
+		Optional.ofNullable(guiScreen)
+			.flatMap(screenHelper::getGuiProperties)
+			.ifPresentOrElse(guiProperties -> {
+				final boolean guiPropertiesChanged = this.guiProperties == null || !GuiProperties.areEqual(this.guiProperties, guiProperties);
+				if (exclusionAreasChanged || guiPropertiesChanged) {
+					updateNewScreen(guiProperties, guiPropertiesChanged);
+				}
+			}, () -> {
+				if (this.guiProperties != null) {
+					this.guiProperties = null;
+					this.searchField.setFocused(false);
+					this.ghostIngredientDragManager.stopDrag();
+				}
+			});
 	}
 
 	private void updateNewScreen(IGuiProperties guiProperties, boolean guiPropertiesChanged) {
@@ -139,7 +141,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, this.guiProperties);
 
 		final ImmutableRect2i availableContentsArea = getAvailableContentsArea(searchBarCentered);
-		final Set<ImmutableRect2i> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
+		final Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas().stream()
+			.map(ImmutableRect2i::convert)
+			.collect(Collectors.toUnmodifiableSet());
 		this.hasRoom = this.contents.updateBounds(availableContentsArea, guiExclusionAreas);
 
 		final ImmutableRect2i searchAndConfigArea = getSearchAndConfigArea(searchBarCentered, guiProperties);

@@ -6,12 +6,12 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.gui.GuiScreenHelper;
-import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
+import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.input.IDragHandler;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -26,7 +26,7 @@ import java.util.Optional;
 
 public class GhostIngredientDragManager {
 	private final IRecipeFocusSource source;
-	private final GuiScreenHelper guiScreenHelper;
+	private final IScreenHelper screenHelper;
 	private final IRegisteredIngredients registeredIngredients;
 	private final IWorldConfig worldConfig;
 	private final List<GhostIngredientReturning<?>> ghostIngredientsReturning = new ArrayList<>();
@@ -37,9 +37,9 @@ public class GhostIngredientDragManager {
 	@Nullable
 	private List<IGhostIngredientHandler.Target<Object>> hoveredIngredientTargets;
 
-	public GhostIngredientDragManager(IRecipeFocusSource source, GuiScreenHelper guiScreenHelper, IRegisteredIngredients registeredIngredients, IWorldConfig worldConfig) {
+	public GhostIngredientDragManager(IRecipeFocusSource source, IScreenHelper screenHelper, IRegisteredIngredients registeredIngredients, IWorldConfig worldConfig) {
 		this.source = source;
-		this.guiScreenHelper = guiScreenHelper;
+		this.screenHelper = screenHelper;
 		this.registeredIngredients = registeredIngredients;
 		this.worldConfig = worldConfig;
 	}
@@ -72,10 +72,11 @@ public class GhostIngredientDragManager {
 				this.hoveredIngredientTargets = null;
 				Screen currentScreen = minecraft.screen;
 				if (currentScreen != null && hovered != null) {
-					IGhostIngredientHandler<Screen> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
-					if (handler != null && handler.shouldHighlightTargets()) {
-						this.hoveredIngredientTargets = handler.getTargets(currentScreen, hovered, false);
-					}
+					screenHelper.getGhostIngredientHandler(currentScreen)
+						.filter(IGhostIngredientHandler::shouldHighlightTargets)
+						.ifPresent(handler -> {
+							this.hoveredIngredientTargets = handler.getTargets(currentScreen, hovered, false);
+						});
 				}
 			}
 			if (this.hoveredIngredientTargets != null && !worldConfig.isCheatItemsEnabled()) {
@@ -104,22 +105,22 @@ public class GhostIngredientDragManager {
 	}
 
 	private <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked, UserInput input) {
-		IGhostIngredientHandler<T> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
-		if (handler == null) {
-			return false;
-		}
-		ITypedIngredient<V> value = clicked.getTypedIngredient();
-		V ingredient = value.getIngredient();
-		IIngredientType<V> type = value.getType();
+		return screenHelper.getGhostIngredientHandler(currentScreen)
+			.map(handler -> {
+				ITypedIngredient<V> value = clicked.getTypedIngredient();
+				V ingredient = value.getIngredient();
+				IIngredientType<V> type = value.getType();
 
-		List<IGhostIngredientHandler.Target<V>> targets = handler.getTargets(currentScreen, ingredient, true);
-		if (targets.isEmpty()) {
-			return false;
-		}
-		IIngredientRenderer<V> ingredientRenderer = registeredIngredients.getIngredientRenderer(type);
-		ImmutableRect2i clickedArea = clicked.getArea();
-		this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, input.getMouseX(), input.getMouseY(), clickedArea);
-		return true;
+				List<IGhostIngredientHandler.Target<V>> targets = handler.getTargets(currentScreen, ingredient, true);
+				if (targets.isEmpty()) {
+					return false;
+				}
+				IIngredientRenderer<V> ingredientRenderer = registeredIngredients.getIngredientRenderer(type);
+				IImmutableRect2i clickedArea = clicked.getArea().orElse(null);
+				this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, input.getMouseX(), input.getMouseY(), clickedArea);
+				return true;
+			})
+			.orElse(false);
 	}
 
 	public IDragHandler createDragHandler() {

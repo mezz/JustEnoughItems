@@ -6,24 +6,25 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.ingredients.GuiIngredientProperties;
-import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.handlers.DeleteItemInputHandler;
-import mezz.jei.common.render.IngredientListRenderer;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.render.ElementRenderer;
+import mezz.jei.common.render.IngredientListRenderer;
 import mezz.jei.common.render.IngredientListSlot;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.core.config.IClientConfig;
+import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -43,7 +44,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
 
 	private final IIngredientGridConfig gridConfig;
-	private final GuiScreenHelper guiScreenHelper;
+	private final IScreenHelper screenHelper;
 	private final IngredientListRenderer ingredientListRenderer;
 	private final DeleteItemInputHandler deleteItemHandler;
 	private final IngredientGridTooltipHelper tooltipHelper;
@@ -56,13 +57,13 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
-		GuiScreenHelper guiScreenHelper,
+		IScreenHelper screenHelper,
 		IModIdHelper modIdHelper,
 		IConnectionToServer serverConnection,
 		IInternalKeyMappings keyBindings
 	) {
 		this.gridConfig = gridConfig;
-		this.guiScreenHelper = guiScreenHelper;
+		this.screenHelper = screenHelper;
 		this.ingredientListRenderer = new IngredientListRenderer(editModeConfig, worldConfig, registeredIngredients);
 		this.tooltipHelper = new IngredientGridTooltipHelper(registeredIngredients, ingredientFilterConfig, worldConfig, modIdHelper, keyBindings);
 		this.deleteItemHandler = new DeleteItemInputHandler(this, worldConfig, clientConfig, serverConnection);
@@ -149,6 +150,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 					.map(IngredientListSlot::getIngredientRenderer)
 					.flatMap(Optional::stream)
 					.map(ElementRenderer::getArea)
+					.flatMap(Optional::stream)
 					.findFirst()
 					.ifPresent(area -> drawHighlight(poseStack, area));
 			}
@@ -159,7 +161,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlight(PoseStack, int, int, int)}
 	 * but with a custom area width and height
 	 */
-	public static void drawHighlight(PoseStack poseStack, ImmutableRect2i area) {
+	public static void drawHighlight(PoseStack poseStack, IImmutableRect2i area) {
 		RenderSystem.disableDepthTest();
 		RenderSystem.colorMask(true, true, true, false);
 		GuiComponent.fill(poseStack, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF);
@@ -185,7 +187,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return area.contains(mouseX, mouseY) &&
-			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
+			!screenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
 	@Override

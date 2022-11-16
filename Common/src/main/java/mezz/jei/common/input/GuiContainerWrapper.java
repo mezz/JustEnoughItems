@@ -1,28 +1,17 @@
 package mezz.jei.common.input;
 
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
-import mezz.jei.common.gui.GuiScreenHelper;
-import mezz.jei.common.ingredients.TypedIngredient;
-import mezz.jei.common.platform.IPlatformScreenHelper;
-import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.api.runtime.IScreenHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 public class GuiContainerWrapper implements IRecipeFocusSource {
-	private final IRegisteredIngredients registeredIngredients;
-	private final GuiScreenHelper guiScreenHelper;
+	private final IScreenHelper screenHelper;
 
-	public GuiContainerWrapper(IRegisteredIngredients registeredIngredients, GuiScreenHelper guiScreenHelper) {
-		this.registeredIngredients = registeredIngredients;
-		this.guiScreenHelper = guiScreenHelper;
+	public GuiContainerWrapper(IScreenHelper screenHelper) {
+		this.screenHelper = screenHelper;
 	}
 
 	@Override
@@ -31,33 +20,6 @@ public class GuiContainerWrapper implements IRecipeFocusSource {
 		if (guiScreen == null) {
 			return Stream.empty();
 		}
-		return Stream.concat(
-			guiScreenHelper.getPluginsIngredientUnderMouse(guiScreen, mouseX, mouseY),
-			getSlotIngredientUnderMouse(guiScreen).stream()
-		);
-	}
-
-	private Optional<IClickedIngredient<?>> getSlotIngredientUnderMouse(Screen guiScreen) {
-		if (!(guiScreen instanceof AbstractContainerScreen<?> guiContainer)) {
-			return Optional.empty();
-		}
-		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-		return Optional.ofNullable(screenHelper.getSlotUnderMouse(guiContainer))
-			.flatMap(slot -> getClickedIngredient(slot, guiContainer));
-	}
-
-	private Optional<IClickedIngredient<?>> getClickedIngredient(Slot slot, AbstractContainerScreen<?> guiContainer) {
-		ItemStack stack = slot.getItem();
-		return TypedIngredient.createTyped(this.registeredIngredients, VanillaTypes.ITEM_STACK, stack)
-			.map(typedIngredient -> {
-				IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-				ImmutableRect2i slotArea = new ImmutableRect2i(
-					screenHelper.getGuiLeft(guiContainer) + slot.x,
-					screenHelper.getGuiTop(guiContainer) + slot.y,
-					16,
-					16
-				);
-				return new ClickedIngredient<>(typedIngredient, slotArea, false, false);
-			});
+		return screenHelper.getIngredientUnderMouse(guiScreen, mouseX, mouseY);
 	}
 }

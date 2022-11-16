@@ -4,28 +4,29 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.bookmarks.BookmarkList;
-import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.core.config.IClientConfig;
-import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
-import mezz.jei.common.input.MouseUtil;
 import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.MouseUtil;
 import mezz.jei.common.input.handlers.CheatInputHandler;
 import mezz.jei.common.input.handlers.CombinedInputHandler;
 import mezz.jei.common.input.handlers.ProxyInputHandler;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.core.config.IClientConfig;
+import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IBookmarkOverlay {
@@ -55,7 +56,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
-		GuiScreenHelper guiScreenHelper,
+		IScreenHelper screenHelper,
 		IConnectionToServer serverConnection,
 		IInternalKeyMappings keyBindings
 	) {
@@ -66,7 +67,9 @@ public class BookmarkOverlay implements IRecipeFocusSource, ILeftAreaContent, IB
 		this.contents = contents;
 		bookmarkList.addSourceListChangedListener(() -> {
 			worldConfig.setBookmarkEnabled(!bookmarkList.isEmpty());
-			Set<ImmutableRect2i> guiExclusionAreas = guiScreenHelper.getGuiExclusionAreas();
+			Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas().stream()
+				.map(ImmutableRect2i::convert)
+				.collect(Collectors.toUnmodifiableSet());
 			this.hasRoom = updateBounds(guiExclusionAreas);
 		});
 	}

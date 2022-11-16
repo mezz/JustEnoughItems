@@ -3,6 +3,7 @@ package mezz.jei.common.input.handlers;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IRecipesGui;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.focus.Focus;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
@@ -45,7 +46,8 @@ public class FocusInputHandler implements IUserInputHandler {
 						.toList();
 					recipesGui.show(focuses);
 				}
-				return LimitedAreaInputHandler.create(this, clicked.getArea());
+				IImmutableRect2i area = clicked.getArea().orElse(null);
+				return LimitedAreaInputHandler.create(this, area);
 			});
 	}
 }

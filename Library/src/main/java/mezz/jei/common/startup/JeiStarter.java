@@ -10,12 +10,12 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
 import mezz.jei.common.bookmarks.BookmarkList;
 import mezz.jei.common.filter.FilterTextSource;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.GuiEventHandler;
-import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.overlay.IngredientListOverlay;
 import mezz.jei.common.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.common.gui.overlay.bookmarks.LeftAreaDispatcher;
@@ -93,12 +93,12 @@ public final class JeiStarter {
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
-		GuiScreenHelper guiScreenHelper = pluginLoader.createGuiScreenHelper(plugins);
+		IScreenHelper screenHelper = pluginLoader.createGuiScreenHelper(plugins);
 
 		IngredientListOverlay ingredientListOverlay = OverlayHelper.createIngredientListOverlay(
 			data,
 			registeredIngredients,
-			guiScreenHelper,
+			screenHelper,
 			ingredientFilter,
 			filterTextSource,
 			modIdHelper
@@ -107,7 +107,7 @@ public final class JeiStarter {
 		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
 			data,
 			registeredIngredients,
-			guiScreenHelper,
+			screenHelper,
 			bookmarkList,
 			modIdHelper
 		);
@@ -144,15 +144,15 @@ public final class JeiStarter {
 
 		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime));
 
-		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher(guiScreenHelper, bookmarkOverlay);
+		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher(screenHelper, bookmarkOverlay);
 
-		GuiEventHandler guiEventHandler = new GuiEventHandler(guiScreenHelper, leftAreaDispatcher, ingredientListOverlay);
+		GuiEventHandler guiEventHandler = new GuiEventHandler(screenHelper, leftAreaDispatcher, ingredientListOverlay);
 
 		CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
 			recipesGui,
 			ingredientListOverlay,
 			leftAreaDispatcher,
-			new GuiContainerWrapper(registeredIngredients, guiScreenHelper)
+			new GuiContainerWrapper(screenHelper)
 		);
 
 		List<ICharTypedHandler> charTypedHandlers = List.of(
@@ -167,7 +167,7 @@ public final class JeiStarter {
 			new FocusInputHandler(recipeFocusSource, recipesGui),
 			new BookmarkInputHandler(recipeFocusSource, bookmarkList),
 			new GlobalInputHandler(configData.worldConfig()),
-			new GuiAreaInputHandler(registeredIngredients, guiScreenHelper, recipesGui)
+			new GuiAreaInputHandler(registeredIngredients, screenHelper, recipesGui)
 		);
 
 		DragRouter dragRouter = new DragRouter(

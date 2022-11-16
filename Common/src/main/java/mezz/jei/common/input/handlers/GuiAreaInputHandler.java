@@ -2,8 +2,8 @@ package mezz.jei.common.input.handlers;
 
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.runtime.IRecipesGui;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.focus.FocusFactory;
@@ -17,12 +17,12 @@ import java.util.Optional;
 
 public class GuiAreaInputHandler implements IUserInputHandler {
 	private final FocusFactory focusFactory;
-	private final GuiScreenHelper guiScreenHelper;
+	private final IScreenHelper screenHelper;
 	private final IRecipesGui recipesGui;
 
-	public GuiAreaInputHandler(IRegisteredIngredients registeredIngredients, GuiScreenHelper guiScreenHelper, IRecipesGui recipesGui) {
+	public GuiAreaInputHandler(IRegisteredIngredients registeredIngredients, IScreenHelper screenHelper, IRecipesGui recipesGui) {
 		this.focusFactory = new FocusFactory(registeredIngredients);
-		this.guiScreenHelper = guiScreenHelper;
+		this.screenHelper = screenHelper;
 		this.recipesGui = recipesGui;
 	}
 
@@ -35,7 +35,7 @@ public class GuiAreaInputHandler implements IUserInputHandler {
 				final int guiTop = screenHelper.getGuiTop(guiContainer);
 				final double guiMouseX = input.getMouseX() - guiLeft;
 				final double guiMouseY = input.getMouseY() - guiTop;
-				return guiScreenHelper.getGuiClickableArea(guiContainer, guiMouseX, guiMouseY)
+				return this.screenHelper.getGuiClickableArea(guiContainer, guiMouseX, guiMouseY)
 					.map(clickableArea -> {
 						if (!input.isSimulate()) {
 							clickableArea.onClick(focusFactory, recipesGui);

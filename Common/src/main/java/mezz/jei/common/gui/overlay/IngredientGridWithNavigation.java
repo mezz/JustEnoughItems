@@ -3,27 +3,28 @@ package mezz.jei.common.gui.overlay;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.input.handlers.LimitedAreaInputHandler;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.PageNavigation;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.recipes.RecipesGui;
-import mezz.jei.common.input.IClickedIngredient;
+import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IPaged;
 import mezz.jei.common.input.IRecipeFocusSource;
-import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.handlers.CombinedInputHandler;
+import mezz.jei.common.input.handlers.LimitedAreaInputHandler;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.CheatUtil;
 import mezz.jei.common.util.CommandUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.core.config.IClientConfig;
+import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -47,7 +48,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private int firstItemIndex = 0;
 	private final IngredientGridPaged pageDelegate;
 	private final PageNavigation navigation;
-	private final GuiScreenHelper guiScreenHelper;
+	private final IScreenHelper screenHelper;
 	private final IIngredientGridConfig gridConfig;
 	private final IWorldConfig worldConfig;
 	private final IClientConfig clientConfig;
@@ -62,7 +63,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public IngredientGridWithNavigation(
 		IIngredientGridSource ingredientSource,
-		GuiScreenHelper guiScreenHelper,
+		IScreenHelper screenHelper,
 		IngredientGrid ingredientGrid,
 		IWorldConfig worldConfig,
 		IClientConfig clientConfig,
@@ -76,7 +77,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.clientConfig = clientConfig;
 		this.ingredientGrid = ingredientGrid;
 		this.ingredientSource = ingredientSource;
-		this.guiScreenHelper = guiScreenHelper;
+		this.screenHelper = screenHelper;
 		this.gridConfig = gridConfig;
 		this.pageDelegate = new IngredientGridPaged();
 		this.navigation = new PageNavigation(this.pageDelegate, false, textures);
@@ -193,7 +194,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.backgroundArea.contains(mouseX, mouseY) &&
-			!guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY);
+			!screenHelper.isInGuiExclusionArea(mouseX, mouseY);
 	}
 
 	public IUserInputHandler createInputHandler() {
@@ -381,7 +382,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 					ItemStack cheatItemStack = CheatUtil.getCheatItemStack(clickedIngredient);
 					if (!cheatItemStack.isEmpty()) {
 						commandUtil.setHotbarStack(cheatItemStack, hotbarSlot);
-						ImmutableRect2i area = clickedIngredient.getArea();
+						IImmutableRect2i area = clickedIngredient.getArea().orElse(null);
 						return Stream.of(LimitedAreaInputHandler.create(this, area));
 					}
 					return Stream.empty();
