@@ -2,8 +2,8 @@ package mezz.jei.common.util;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
@@ -27,7 +27,7 @@ public final class ErrorUtil {
 	private ErrorUtil() {
 	}
 
-	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType, RegisteredIngredients registeredIngredients) {
+	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType, IRegisteredIngredients registeredIngredients) {
 		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 		return ingredientHelper.getErrorInfo(ingredient);
 	}
@@ -150,7 +150,7 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient, RegisteredIngredients registeredIngredients) {
+	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient, IRegisteredIngredients registeredIngredients) {
 		IIngredientType<T> ingredientType = registeredIngredients.getIngredientType(ingredient);
 		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 

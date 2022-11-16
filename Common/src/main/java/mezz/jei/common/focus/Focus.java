@@ -1,11 +1,11 @@
 package mezz.jei.common.focus;
 
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.ErrorUtil;
 
@@ -47,7 +47,7 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 	/**
 	 * Make sure any IFocus coming in through API calls is validated and turned into JEI's Focus.
 	 */
-	public static <V> Focus<V> checkOne(IFocus<V> focus, RegisteredIngredients registeredIngredients) {
+	public static <V> Focus<V> checkOne(IFocus<V> focus, IRegisteredIngredients registeredIngredients) {
 		if (focus instanceof Focus) {
 			return (Focus<V>) focus;
 		}
@@ -68,7 +68,7 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 		return createFromApi(registeredIngredients, role, type, ingredient);
 	}
 
-	public static <V> Focus<V> createFromApi(RegisteredIngredients registeredIngredients, RecipeIngredientRole role, IIngredientType<V> ingredientType, V value) {
+	public static <V> Focus<V> createFromApi(IRegisteredIngredients registeredIngredients, RecipeIngredientRole role, IIngredientType<V> ingredientType, V value) {
 		Optional<ITypedIngredient<V>> typedIngredient = TypedIngredient.createTyped(registeredIngredients, ingredientType, value)
 			.flatMap(i -> TypedIngredient.deepCopy(registeredIngredients, i));
 

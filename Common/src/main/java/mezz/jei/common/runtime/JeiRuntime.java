@@ -2,6 +2,7 @@ package mezz.jei.common.runtime;
 
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IBookmarkOverlay;
@@ -12,7 +13,6 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IJeiKeyMappings;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.ErrorUtil;
 
@@ -24,7 +24,7 @@ public class JeiRuntime implements IJeiRuntime {
 	private final IBookmarkOverlay bookmarkOverlay;
 	private final IRecipesGui recipesGui;
 	private final IIngredientFilter ingredientFilter;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final IIngredientManager ingredientManager;
 	private final IIngredientVisibility ingredientVisibility;
 	private final IJeiKeyMappings keyMappings;
@@ -36,7 +36,7 @@ public class JeiRuntime implements IJeiRuntime {
 		IBookmarkOverlay bookmarkOverlay,
 		IRecipesGui recipesGui,
 		IIngredientFilter ingredientFilter,
-		RegisteredIngredients registeredIngredients,
+		IRegisteredIngredients registeredIngredients,
 		IIngredientManager ingredientManager,
 		IIngredientVisibility ingredientVisibility,
 		IJeiKeyMappings keyMappings, IJeiHelpers jeiHelpers

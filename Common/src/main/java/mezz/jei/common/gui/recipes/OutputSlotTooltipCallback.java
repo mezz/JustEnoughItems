@@ -4,9 +4,9 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -20,12 +20,12 @@ import java.util.Optional;
 public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 	private final ResourceLocation recipeName;
 	private final IModIdHelper modIdHelper;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 
 	public OutputSlotTooltipCallback(
 		ResourceLocation recipeName,
 		IModIdHelper modIdHelper,
-		RegisteredIngredients registeredIngredients
+		IRegisteredIngredients registeredIngredients
 	) {
 		this.recipeName = recipeName;
 		this.modIdHelper = modIdHelper;

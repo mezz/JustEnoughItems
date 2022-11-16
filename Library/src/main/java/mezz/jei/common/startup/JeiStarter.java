@@ -3,6 +3,7 @@ package mezz.jei.common.startup;
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
@@ -24,7 +25,6 @@ import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.IngredientFilterApi;
 import mezz.jei.common.ingredients.IngredientSorter;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.ClientInputHandler;
 import mezz.jei.common.input.CombinedRecipeFocusSource;
 import mezz.jei.common.input.GuiContainerWrapper;
@@ -81,7 +81,7 @@ public final class JeiStarter {
 		PluginLoader pluginLoader = new PluginLoader(data, filterTextSource, modIdHelper, ingredientSorter);
 		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 
-		RegisteredIngredients registeredIngredients = pluginLoader.getRegisteredIngredients();
+		IRegisteredIngredients registeredIngredients = pluginLoader.getRegisteredIngredients();
 
 		IngredientFilter ingredientFilter = pluginLoader.getIngredientFilter();
 

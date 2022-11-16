@@ -1,10 +1,10 @@
 package mezz.jei.common.plugins.debug;
 
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.Internal;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -25,7 +25,7 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 		List<Target<I>> targets = new ArrayList<>();
 		targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(0, 0, 20, 20)));
 		if (doStart) {
-			RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+			IRegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
 			IIngredientType<I> ingredientType = registeredIngredients.getIngredientType(ingredient);
 			IIngredientHelper<I> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 			LOGGER.info("Ghost Ingredient Handling Starting with {}", ingredientHelper.getErrorInfo(ingredient));
@@ -68,7 +68,7 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 
 		@Override
 		public void accept(I ingredient) {
-			RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+			IRegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
 			IIngredientType<I> ingredientType = registeredIngredients.getIngredientType(ingredient);
 			IIngredientHelper<I> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 			LOGGER.info("{}: {}", message, ingredientHelper.getErrorInfo(ingredient));

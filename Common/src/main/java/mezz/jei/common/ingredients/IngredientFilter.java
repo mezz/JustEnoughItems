@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientVisibility;
@@ -45,7 +46,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
 	private final IFilterTextSource filterTextSource;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final IIngredientSorter sorter;
 	private final IIngredientVisibility ingredientVisibility;
 
@@ -61,7 +62,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		IFilterTextSource filterTextSource,
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
-		RegisteredIngredients registeredIngredients,
+		IRegisteredIngredients registeredIngredients,
 		IIngredientSorter sorter,
 		NonNullList<IListElement<?>> ingredients,
 		IModIdHelper modIdHelper,

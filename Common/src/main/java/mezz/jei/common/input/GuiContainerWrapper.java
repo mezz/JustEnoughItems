@@ -1,8 +1,8 @@
 package mezz.jei.common.input;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.gui.GuiScreenHelper;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
@@ -17,10 +17,10 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class GuiContainerWrapper implements IRecipeFocusSource {
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final GuiScreenHelper guiScreenHelper;
 
-	public GuiContainerWrapper(RegisteredIngredients registeredIngredients, GuiScreenHelper guiScreenHelper) {
+	public GuiContainerWrapper(IRegisteredIngredients registeredIngredients, GuiScreenHelper guiScreenHelper) {
 		this.registeredIngredients = registeredIngredients;
 		this.guiScreenHelper = guiScreenHelper;
 	}

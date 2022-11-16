@@ -1,10 +1,10 @@
 package mezz.jei.common.input.handlers;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.common.ingredients.IngredientFilter;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.IClickedIngredient;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
@@ -18,12 +18,12 @@ import java.util.Optional;
 
 public class EditInputHandler implements IUserInputHandler {
 	private final CombinedRecipeFocusSource focusSource;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final IngredientFilter ingredientFilter;
 	private final IWorldConfig worldConfig;
 	private final IEditModeConfig editModeConfig;
 
-	public EditInputHandler(CombinedRecipeFocusSource focusSource, RegisteredIngredients registeredIngredients, IngredientFilter ingredientFilter, IWorldConfig worldConfig, IEditModeConfig editModeConfig) {
+	public EditInputHandler(CombinedRecipeFocusSource focusSource, IRegisteredIngredients registeredIngredients, IngredientFilter ingredientFilter, IWorldConfig worldConfig, IEditModeConfig editModeConfig) {
 		this.focusSource = focusSource;
 		this.registeredIngredients = registeredIngredients;
 		this.ingredientFilter = ingredientFilter;

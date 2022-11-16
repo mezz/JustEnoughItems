@@ -10,11 +10,11 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.TooltipRenderer;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.render.IngredientRenderHelper;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -36,7 +36,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int MAX_DISPLAYED_INGREDIENTS = 100;
 
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final RecipeIngredientRole role;
 	private final CycleTimer cycleTimer;
 	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
@@ -65,7 +65,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 	private String slotName;
 
 	public RecipeSlot(
-		RegisteredIngredients registeredIngredients,
+		IRegisteredIngredients registeredIngredients,
 		RecipeIngredientRole role,
 		int xPos,
 		int yPos,

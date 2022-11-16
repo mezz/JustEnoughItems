@@ -3,11 +3,11 @@ package mezz.jei.common.gui.recipes.layout.builder;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.ingredients.IngredientAcceptor;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +19,7 @@ public class InvisibleRecipeLayoutSlotSource implements IRecipeLayoutSlotSource,
 	private final IngredientAcceptor ingredients;
 	private final RecipeIngredientRole role;
 
-	public InvisibleRecipeLayoutSlotSource(RegisteredIngredients registeredIngredients, RecipeIngredientRole role) {
+	public InvisibleRecipeLayoutSlotSource(IRegisteredIngredients registeredIngredients, RecipeIngredientRole role) {
 		this.ingredients = new IngredientAcceptor(registeredIngredients);
 		this.role = role;
 	}

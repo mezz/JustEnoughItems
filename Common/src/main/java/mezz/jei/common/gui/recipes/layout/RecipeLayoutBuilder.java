@@ -6,11 +6,11 @@ import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.ingredients.IIngredientSupplier;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.gui.recipes.layout.builder.IRecipeLayoutSlotSource;
 import mezz.jei.common.gui.recipes.layout.builder.InvisibleRecipeLayoutSlotSource;
 import mezz.jei.common.gui.recipes.layout.builder.RecipeSlotBuilder;
@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSupplier {
 	private final List<IRecipeLayoutSlotSource> slots = new ArrayList<>();
 	private final List<List<IRecipeLayoutSlotSource>> focusLinkedSlots = new ArrayList<>();
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final IIngredientVisibility ingredientVisibility;
 	private final int ingredientCycleOffset;
 	private boolean shapeless = false;
@@ -34,7 +34,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 	private int shapelessX = -1;
 	private int shapelessY = -1;
 
-	public RecipeLayoutBuilder(RegisteredIngredients registeredIngredients, IIngredientVisibility ingredientVisibility, int ingredientCycleOffset) {
+	public RecipeLayoutBuilder(IRegisteredIngredients registeredIngredients, IIngredientVisibility ingredientVisibility, int ingredientCycleOffset) {
 		this.registeredIngredients = registeredIngredients;
 		this.ingredientVisibility = ingredientVisibility;
 		this.ingredientCycleOffset = ingredientCycleOffset;

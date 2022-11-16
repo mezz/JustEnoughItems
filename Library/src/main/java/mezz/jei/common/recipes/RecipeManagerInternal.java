@@ -1,6 +1,7 @@
 package mezz.jei.common.recipes;
 
 import com.google.common.collect.ImmutableListMultimap;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -10,7 +11,6 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.common.ingredients.IIngredientSupplier;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.recipes.collect.RecipeMap;
 import mezz.jei.common.recipes.collect.RecipeTypeData;
 import mezz.jei.common.recipes.collect.RecipeTypeDataMap;
@@ -38,7 +38,7 @@ public class RecipeManagerInternal {
 	@Unmodifiable
 	private final List<IRecipeCategory<?>> recipeCategories;
 	private final IIngredientVisibility ingredientVisibility;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final RecipeTypeDataMap recipeTypeDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
 	private final EnumMap<RecipeIngredientRole, RecipeMap> recipeMaps;
@@ -52,7 +52,7 @@ public class RecipeManagerInternal {
 	public RecipeManagerInternal(
 		List<IRecipeCategory<?>> recipeCategories,
 		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
-		RegisteredIngredients registeredIngredients,
+		IRegisteredIngredients registeredIngredients,
 		List<IRecipeManagerPlugin> plugins,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		IIngredientVisibility ingredientVisibility

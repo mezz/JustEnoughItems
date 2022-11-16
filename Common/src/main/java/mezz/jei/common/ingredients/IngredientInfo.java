@@ -1,17 +1,18 @@
 package mezz.jei.common.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
-public class IngredientInfo<T> {
+public class IngredientInfo<T> implements IIngredientInfo<T> {
 	private final IIngredientType<T> ingredientType;
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
@@ -26,18 +27,22 @@ public class IngredientInfo<T> {
 		this.ingredientSet.addAll(ingredients);
 	}
 
+	@Override
 	public IIngredientType<T> getIngredientType() {
 		return ingredientType;
 	}
 
+	@Override
 	public IIngredientHelper<T> getIngredientHelper() {
 		return ingredientHelper;
 	}
 
+	@Override
 	public IIngredientRenderer<T> getIngredientRenderer() {
 		return ingredientRenderer;
 	}
 
+	@Override
 	@Unmodifiable
 	public Collection<T> getAllIngredients() {
 		return Collections.unmodifiableCollection(ingredientSet);
@@ -51,8 +56,8 @@ public class IngredientInfo<T> {
 		this.ingredientSet.removeAll(ingredients);
 	}
 
-	@Nullable
-	public T getIngredientByUid(String uid) {
-		return ingredientSet.getByUid(uid);
+	public Optional<T> getIngredientByUid(String uid) {
+		T ingredient = ingredientSet.getByUid(uid);
+		return Optional.ofNullable(ingredient);
 	}
 }

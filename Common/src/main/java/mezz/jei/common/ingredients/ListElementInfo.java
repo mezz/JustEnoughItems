@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.ingredients.IListElement;
@@ -36,7 +37,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	private int sortedIndex = Integer.MAX_VALUE;
 
 	@Nullable
-	public static <V> IListElementInfo<V> create(IListElement<V> element, RegisteredIngredients registeredIngredients, IModIdHelper modIdHelper) {
+	public static <V> IListElementInfo<V> create(IListElement<V> element, IRegisteredIngredients registeredIngredients, IModIdHelper modIdHelper) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
 		try {
@@ -102,7 +103,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public final List<String> getTooltipStrings(IIngredientFilterConfig config, RegisteredIngredients registeredIngredients) {
+	public final List<String> getTooltipStrings(IIngredientFilterConfig config, IRegisteredIngredients registeredIngredients) {
 		String modName = this.modNames.get(0);
 		String modId = this.modIds.get(0);
 		String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
@@ -113,7 +114,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public Collection<String> getTagStrings(RegisteredIngredients registeredIngredients) {
+	public Collection<String> getTagStrings(IRegisteredIngredients registeredIngredients) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
 		Collection<ResourceLocation> tags = ingredientHelper.getTags(value.getIngredient());
@@ -123,14 +124,14 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public Collection<ResourceLocation> getTagIds(RegisteredIngredients registeredIngredients) {
+	public Collection<ResourceLocation> getTagIds(IRegisteredIngredients registeredIngredients) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
 		return ingredientHelper.getTags(value.getIngredient());
 	}
 
 	@Override
-	public Collection<String> getCreativeTabsStrings(RegisteredIngredients registeredIngredients) {
+	public Collection<String> getCreativeTabsStrings(IRegisteredIngredients registeredIngredients) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
 		Collection<String> creativeTabsStrings = ingredientHelper.getCreativeTabNames(value.getIngredient());
@@ -140,7 +141,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public Collection<String> getColorStrings(RegisteredIngredients registeredIngredients) {
+	public Collection<String> getColorStrings(IRegisteredIngredients registeredIngredients) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
 		return IngredientInformationUtil.getColorStrings(value.getIngredient(), ingredientHelper);

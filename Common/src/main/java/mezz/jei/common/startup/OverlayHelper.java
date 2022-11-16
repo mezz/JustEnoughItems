@@ -1,6 +1,7 @@
 package mezz.jei.common.startup;
 
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.bookmarks.BookmarkList;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.GuiScreenHelper;
@@ -12,7 +13,6 @@ import mezz.jei.common.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.common.gui.overlay.IngredientListOverlay;
 import mezz.jei.common.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 
 public final class OverlayHelper {
     private OverlayHelper() {}
@@ -20,7 +20,7 @@ public final class OverlayHelper {
     public static IngredientGridWithNavigation createIngredientGridWithNavigation(
         StartData data,
         IIngredientGridSource ingredientFilter,
-        RegisteredIngredients registeredIngredients,
+        IRegisteredIngredients registeredIngredients,
         IIngredientGridConfig ingredientGridConfig,
         GuiScreenHelper guiScreenHelper,
         IModIdHelper modIdHelper,
@@ -57,7 +57,7 @@ public final class OverlayHelper {
 
     public static IngredientListOverlay createIngredientListOverlay(
         StartData data,
-        RegisteredIngredients registeredIngredients,
+        IRegisteredIngredients registeredIngredients,
         GuiScreenHelper guiScreenHelper,
         IIngredientGridSource ingredientFilter,
         IFilterTextSource filterTextSource,
@@ -93,7 +93,7 @@ public final class OverlayHelper {
 
     public static BookmarkOverlay createBookmarkOverlay(
         StartData data,
-        RegisteredIngredients registeredIngredients,
+        IRegisteredIngredients registeredIngredients,
         GuiScreenHelper guiScreenHelper,
         BookmarkList bookmarkList,
         IModIdHelper modIdHelper

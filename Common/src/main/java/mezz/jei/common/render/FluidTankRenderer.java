@@ -10,8 +10,8 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.Internal;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.ChatFormatting;
@@ -185,7 +185,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 			}
 			return tooltip;
 		} catch (RuntimeException e) {
-			RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+			IRegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
 			String info = ErrorUtil.getIngredientInfo(fluidStack, type, registeredIngredients);
 			LOGGER.error("Failed to get tooltip for fluid: " + info, e);
 		}

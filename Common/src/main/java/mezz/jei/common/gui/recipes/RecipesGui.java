@@ -7,6 +7,7 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -23,7 +24,6 @@ import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.elements.GuiIconButtonSmall;
 import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.ClickedIngredient;
 import mezz.jei.common.input.IClickedIngredient;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -64,7 +64,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private static final int buttonHeight = 13;
 
 	private final IRecipeTransferManager recipeTransferManager;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final IModIdHelper modIdHelper;
 	private final IClientConfig clientConfig;
 	private final IInternalKeyMappings keyBindings;
@@ -102,7 +102,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public RecipesGui(
 		IRecipeManager recipeManager,
 		IRecipeTransferManager recipeTransferManager,
-		RegisteredIngredients registeredIngredients,
+		IRegisteredIngredients registeredIngredients,
 		IModIdHelper modIdHelper,
 		IClientConfig clientConfig,
 		Textures textures,

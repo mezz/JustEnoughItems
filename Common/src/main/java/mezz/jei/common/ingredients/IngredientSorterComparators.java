@@ -1,6 +1,7 @@
 package mezz.jei.common.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.common.config.sorting.ModNameSortingConfig;
@@ -22,13 +23,13 @@ import java.util.stream.Collectors;
 
 public class IngredientSorterComparators {
 	private final IngredientFilter ingredientFilter;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final ModNameSortingConfig modNameSortingConfig;
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
 
 	public IngredientSorterComparators(
 		IngredientFilter ingredientFilter,
-		RegisteredIngredients registeredIngredients,
+		IRegisteredIngredients registeredIngredients,
 		ModNameSortingConfig modNameSortingConfig,
 		IngredientTypeSortingConfig ingredientTypeSortingConfig
 	) {

@@ -4,9 +4,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.gui.GuiScreenHelper;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.IClickedIngredient;
 import mezz.jei.common.input.IDragHandler;
 import mezz.jei.common.input.IRecipeFocusSource;
@@ -27,7 +27,7 @@ import java.util.Optional;
 public class GhostIngredientDragManager {
 	private final IRecipeFocusSource source;
 	private final GuiScreenHelper guiScreenHelper;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final IWorldConfig worldConfig;
 	private final List<GhostIngredientReturning<?>> ghostIngredientsReturning = new ArrayList<>();
 	@Nullable
@@ -37,7 +37,7 @@ public class GhostIngredientDragManager {
 	@Nullable
 	private List<IGhostIngredientHandler.Target<Object>> hoveredIngredientTargets;
 
-	public GhostIngredientDragManager(IRecipeFocusSource source, GuiScreenHelper guiScreenHelper, RegisteredIngredients registeredIngredients, IWorldConfig worldConfig) {
+	public GhostIngredientDragManager(IRecipeFocusSource source, GuiScreenHelper guiScreenHelper, IRegisteredIngredients registeredIngredients, IWorldConfig worldConfig) {
 		this.source = source;
 		this.guiScreenHelper = guiScreenHelper;
 		this.registeredIngredients = registeredIngredients;

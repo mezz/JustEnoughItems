@@ -9,21 +9,21 @@ import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableBuilder;
 import mezz.jei.common.gui.elements.DrawableIngredient;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.TickTimer;
 import net.minecraft.resources.ResourceLocation;
 
 public class GuiHelper implements IGuiHelper {
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final IDrawableStatic slotDrawable;
 
-	public GuiHelper(RegisteredIngredients registeredIngredients, Textures textures) {
+	public GuiHelper(IRegisteredIngredients registeredIngredients, Textures textures) {
 		this.registeredIngredients = registeredIngredients;
 		this.slotDrawable = textures.getSlotDrawable();
 	}

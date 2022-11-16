@@ -2,10 +2,10 @@ package mezz.jei.common.load.registration;
 
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
 import net.minecraft.resources.ResourceLocation;
 
@@ -16,11 +16,11 @@ import mezz.jei.common.util.ErrorUtil;
 
 public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 	private final ListMultiMap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts = new ListMultiMap<>();
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final IIngredientManager ingredientManager;
 	private final IJeiHelpers jeiHelpers;
 
-	public RecipeCatalystRegistration(RegisteredIngredients registeredIngredients, IIngredientManager ingredientManager, IJeiHelpers jeiHelpers) {
+	public RecipeCatalystRegistration(IRegisteredIngredients registeredIngredients, IIngredientManager ingredientManager, IJeiHelpers jeiHelpers) {
 		this.registeredIngredients = registeredIngredients;
 		this.ingredientManager = ingredientManager;
 		this.jeiHelpers = jeiHelpers;

@@ -3,12 +3,12 @@ package mezz.jei.common.config;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.bookmarks.BookmarkList;
-import mezz.jei.common.ingredients.IngredientInfo;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import net.minecraft.nbt.CompoundTag;
@@ -52,7 +52,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 	}
 
 	@Override
-	public void saveBookmarks(RegisteredIngredients registeredIngredients, List<ITypedIngredient<?>> ingredientList) {
+	public void saveBookmarks(IRegisteredIngredients registeredIngredients, List<ITypedIngredient<?>> ingredientList) {
 		Path path = getPath(jeiConfigurationDir);
 		if (path == null) {
 			return;
@@ -75,7 +75,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 	}
 
 	@Override
-	public void loadBookmarks(RegisteredIngredients registeredIngredients, BookmarkList bookmarkList) {
+	public void loadBookmarks(IRegisteredIngredients registeredIngredients, BookmarkList bookmarkList) {
 		Path path = getPath(jeiConfigurationDir);
 		if (path == null || !Files.exists(path)) {
 			return;
@@ -128,22 +128,21 @@ public class BookmarkConfig implements IBookmarkConfig {
 		bookmarkList.notifyListenersOfChange();
 	}
 
-	private static <T> String getUid(RegisteredIngredients registeredIngredients, ITypedIngredient<T> typedIngredient) {
+	private static <T> String getUid(IRegisteredIngredients registeredIngredients, ITypedIngredient<T> typedIngredient) {
 		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(typedIngredient.getType());
 		return ingredientHelper.getUniqueId(typedIngredient.getIngredient(), UidContext.Ingredient);
 	}
 
-	private static Optional<ITypedIngredient<?>> getNormalizedIngredientByUid(RegisteredIngredients registeredIngredients, Collection<IIngredientType<?>> ingredientTypes, String uid) {
+	private static Optional<ITypedIngredient<?>> getNormalizedIngredientByUid(IRegisteredIngredients registeredIngredients, Collection<IIngredientType<?>> ingredientTypes, String uid) {
 		return ingredientTypes.stream()
 			.map(t -> getNormalizedIngredientByUid(registeredIngredients, t, uid))
 			.flatMap(Optional::stream)
 			.findFirst();
 	}
 
-	private static <T> Optional<ITypedIngredient<?>> getNormalizedIngredientByUid(RegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, String uid) {
-		IngredientInfo<T> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
-		T ingredient = ingredientInfo.getIngredientByUid(uid);
-		return Optional.ofNullable(ingredient)
+	private static <T> Optional<ITypedIngredient<?>> getNormalizedIngredientByUid(IRegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, String uid) {
+		IIngredientInfo<T> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
+		return ingredientInfo.getIngredientByUid(uid)
 			.map(i -> {
 				IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 				return ingredientHelper.normalizeIngredient(i);

@@ -7,6 +7,7 @@ import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocus;
@@ -30,7 +31,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class IngredientAcceptor implements IIngredientAcceptor<IngredientAcceptor> {
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	/**
 	 * A list of ingredients, including "blank" ingredients represented by {@link Optional#empty()}.
 	 * Blank ingredients are drawn as "nothing" in a rotation of ingredients, but aren't considered in lookups.
@@ -38,7 +39,7 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	private final List<Optional<ITypedIngredient<?>>> ingredients = new ArrayList<>();
 	private final Set<IIngredientType<?>> types = new HashSet<>();
 
-	public IngredientAcceptor(RegisteredIngredients registeredIngredients) {
+	public IngredientAcceptor(IRegisteredIngredients registeredIngredients) {
 		this.registeredIngredients = registeredIngredients;
 	}
 

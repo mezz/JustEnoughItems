@@ -2,12 +2,12 @@ package mezz.jei.common.recipes.collect;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.core.collect.SetMultiMap;
 import mezz.jei.common.ingredients.IIngredientSupplier;
-import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.core.collect.SetMultiMap;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
@@ -23,10 +23,10 @@ public class RecipeMap {
 	private final SetMultiMap<String, RecipeType<?>> ingredientUidToCategoryMap = new SetMultiMap<>();
 	private final SetMultiMap<String, RecipeType<?>> categoryCatalystUidToRecipeCategoryMap = new SetMultiMap<>();
 	private final Comparator<RecipeType<?>> recipeTypeComparator;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final RecipeIngredientRole role;
 
-	public RecipeMap(Comparator<RecipeType<?>> recipeTypeComparator, RegisteredIngredients registeredIngredients, RecipeIngredientRole role) {
+	public RecipeMap(Comparator<RecipeType<?>> recipeTypeComparator, IRegisteredIngredients registeredIngredients, RecipeIngredientRole role) {
 		this.recipeTypeComparator = recipeTypeComparator;
 		this.registeredIngredients = registeredIngredients;
 		this.role = role;

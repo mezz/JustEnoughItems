@@ -3,21 +3,21 @@ package mezz.jei.common.recipes;
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.recipes.collect.RecipeMap;
 
 import java.util.List;
 
 public class RecipeCatalystBuilder {
 	private final ImmutableListMultimap.Builder<IRecipeCategory<?>, ITypedIngredient<?>> recipeCategoryCatalystsBuilder = ImmutableListMultimap.builder();
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final RecipeMap recipeCatalystMap;
 
-	public RecipeCatalystBuilder(RegisteredIngredients registeredIngredients, RecipeMap recipeCatalystMap) {
+	public RecipeCatalystBuilder(IRegisteredIngredients registeredIngredients, RecipeMap recipeCatalystMap) {
 		this.registeredIngredients = registeredIngredients;
 		this.recipeCatalystMap = recipeCatalystMap;
 	}

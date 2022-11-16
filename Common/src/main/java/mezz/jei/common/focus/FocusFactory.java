@@ -1,16 +1,16 @@
 package mezz.jei.common.focus;
 
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
 
 public class FocusFactory implements IFocusFactory {
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 
-	public FocusFactory(RegisteredIngredients registeredIngredients) {
+	public FocusFactory(IRegisteredIngredients registeredIngredients) {
 		this.registeredIngredients = registeredIngredients;
 	}
 

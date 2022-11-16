@@ -6,21 +6,21 @@ import java.util.List;
 import java.util.Optional;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.config.IBookmarkConfig;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
 import net.minecraft.world.item.ItemStack;
 
 public class BookmarkList implements IIngredientGridSource {
 	private final List<ITypedIngredient<?>> list = new LinkedList<>();
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final IBookmarkConfig bookmarkConfig;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 
-	public BookmarkList(RegisteredIngredients registeredIngredients, IBookmarkConfig bookmarkConfig) {
+	public BookmarkList(IRegisteredIngredients registeredIngredients, IBookmarkConfig bookmarkConfig) {
 		this.registeredIngredients = registeredIngredients;
 		this.bookmarkConfig = bookmarkConfig;
 	}

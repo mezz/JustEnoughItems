@@ -1,9 +1,9 @@
 package mezz.jei.common.input.handlers;
 
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.gui.GuiScreenHelper;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.focus.FocusFactory;
@@ -20,7 +20,7 @@ public class GuiAreaInputHandler implements IUserInputHandler {
 	private final GuiScreenHelper guiScreenHelper;
 	private final IRecipesGui recipesGui;
 
-	public GuiAreaInputHandler(RegisteredIngredients registeredIngredients, GuiScreenHelper guiScreenHelper, IRecipesGui recipesGui) {
+	public GuiAreaInputHandler(IRegisteredIngredients registeredIngredients, GuiScreenHelper guiScreenHelper, IRecipesGui recipesGui) {
 		this.focusFactory = new FocusFactory(registeredIngredients);
 		this.guiScreenHelper = guiScreenHelper;
 		this.recipesGui = recipesGui;

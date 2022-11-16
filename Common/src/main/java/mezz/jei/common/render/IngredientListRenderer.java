@@ -3,12 +3,12 @@ package mezz.jei.common.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.config.IEditModeConfig;
-import mezz.jei.common.ingredients.IngredientInfo;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IWorldConfig;
@@ -26,11 +26,11 @@ public class IngredientListRenderer {
 	private final ElementRenderersByType renderers = new ElementRenderersByType();
 	private final IEditModeConfig editModeConfig;
 	private final IWorldConfig worldConfig;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 
 	private int blocked = 0;
 
-	public IngredientListRenderer(IEditModeConfig editModeConfig, IWorldConfig worldConfig, RegisteredIngredients registeredIngredients) {
+	public IngredientListRenderer(IEditModeConfig editModeConfig, IWorldConfig worldConfig, IRegisteredIngredients registeredIngredients) {
 		this.editModeConfig = editModeConfig;
 		this.worldConfig = worldConfig;
 		this.registeredIngredients = registeredIngredients;
@@ -91,7 +91,7 @@ public class IngredientListRenderer {
 
 	private <T> void renderIngredientType(PoseStack poseStack, IIngredientType<T> ingredientType) {
 		Collection<ElementRenderer<T>> slots = renderers.get(ingredientType);
-		IngredientInfo<T> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
+		IIngredientInfo<T> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
 		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
 		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
 		for (ElementRenderer<T> slot : slots) {

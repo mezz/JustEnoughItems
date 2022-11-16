@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.recipes.collect.RecipeMap;
 import mezz.jei.common.recipes.collect.RecipeTypeData;
 import mezz.jei.common.recipes.collect.RecipeTypeDataMap;
@@ -21,12 +21,12 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.focus.Focus;
 
 public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final RecipeTypeDataMap recipeCategoriesMap;
 	private final EnumMap<RecipeIngredientRole, RecipeMap> recipeMaps;
 
 	public InternalRecipeManagerPlugin(
-		RegisteredIngredients registeredIngredients,
+		IRegisteredIngredients registeredIngredients,
 		RecipeTypeDataMap recipeCategoriesMap,
 		EnumMap<RecipeIngredientRole, RecipeMap> recipeMaps
 	) {

@@ -2,6 +2,7 @@ package mezz.jei.common.ingredients;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -45,7 +46,7 @@ public class IngredientManager implements IIngredientManager {
 	public <V> Collection<V> getAllIngredients(IIngredientType<V> ingredientType) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 
-		IngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
+		IIngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
 		return ingredientInfo.getAllIngredients();
 	}
 
@@ -61,7 +62,7 @@ public class IngredientManager implements IIngredientManager {
 	public <V> IIngredientHelper<V> getIngredientHelper(IIngredientType<V> ingredientType) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 
-		IngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
+		IIngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
 		return ingredientInfo.getIngredientHelper();
 	}
 
@@ -77,8 +78,7 @@ public class IngredientManager implements IIngredientManager {
 	public <V> IIngredientRenderer<V> getIngredientRenderer(IIngredientType<V> ingredientType) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 
-		IngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
-		return ingredientInfo.getIngredientRenderer();
+		return this.registeredIngredients.getIngredientRenderer(ingredientType);
 	}
 
 	@Override

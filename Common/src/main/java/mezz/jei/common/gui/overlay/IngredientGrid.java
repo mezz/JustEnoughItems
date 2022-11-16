@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
@@ -14,7 +15,6 @@ import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.ingredients.GuiIngredientProperties;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.IClickedIngredient;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
@@ -50,7 +50,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
 	public IngredientGrid(
-		RegisteredIngredients registeredIngredients,
+		IRegisteredIngredients registeredIngredients,
 		IIngredientGridConfig gridConfig,
 		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,

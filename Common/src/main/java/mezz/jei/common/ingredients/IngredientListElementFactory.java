@@ -1,6 +1,8 @@
 package mezz.jei.common.ingredients;
 
+import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.gui.ingredients.IListElement;
 import net.minecraft.core.NonNullList;
@@ -18,7 +20,7 @@ public final class IngredientListElementFactory {
 	private IngredientListElementFactory() {
 	}
 
-	public static NonNullList<IListElement<?>> createBaseList(RegisteredIngredients registeredIngredients) {
+	public static NonNullList<IListElement<?>> createBaseList(IRegisteredIngredients registeredIngredients) {
 		NonNullList<IListElement<?>> ingredientListElements = NonNullList.create();
 
 		for (IIngredientType<?> ingredientType : registeredIngredients.getIngredientTypes()) {
@@ -28,7 +30,7 @@ public final class IngredientListElementFactory {
 		return ingredientListElements;
 	}
 
-	public static <V> List<IListElement<V>> createList(RegisteredIngredients registeredIngredients, IIngredientType<V> ingredientType, Collection<V> ingredients) {
+	public static <V> List<IListElement<V>> createList(IRegisteredIngredients registeredIngredients, IIngredientType<V> ingredientType, Collection<V> ingredients) {
 		return ingredients.stream()
 			.map(i -> TypedIngredient.createTyped(registeredIngredients, ingredientType, i))
 			.flatMap(Optional::stream)
@@ -41,8 +43,8 @@ public final class IngredientListElementFactory {
 		return new ListElement<>(typedIngredient, orderIndex);
 	}
 
-	private static <V> void addToBaseList(NonNullList<IListElement<?>> baseList, RegisteredIngredients registeredIngredients, IIngredientType<V> ingredientType) {
-		IngredientInfo<V> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
+	private static <V> void addToBaseList(NonNullList<IListElement<?>> baseList, IRegisteredIngredients registeredIngredients, IIngredientType<V> ingredientType) {
+		IIngredientInfo<V> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
 		Collection<V> ingredients = ingredientInfo.getAllIngredients();
 		LOGGER.debug("Registering ingredients: " + ingredientType.getIngredientClass().getSimpleName());
 		ingredients.stream()

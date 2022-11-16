@@ -3,6 +3,7 @@ package mezz.jei.common.ingredients;
 import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public final class TypedIngredient<T> implements ITypedIngredient<T> {
-	private static <T> void assertIsValidIngredient(RegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, T ingredient) {
+	private static <T> void assertIsValidIngredient(IRegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, T ingredient) {
 		Preconditions.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredient, "ingredient");
 
@@ -35,7 +36,7 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		}
 	}
 
-	public static <T> Optional<ITypedIngredient<?>> create(RegisteredIngredients registeredIngredients, @Nullable T ingredient) {
+	public static <T> Optional<ITypedIngredient<?>> create(IRegisteredIngredients registeredIngredients, @Nullable T ingredient) {
 		if (isBlankIngredient(ingredient)) {
 			return Optional.empty();
 		}
@@ -45,7 +46,7 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return Optional.of(typedIngredient);
 	}
 
-	public static <T> Optional<ITypedIngredient<?>> create(RegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, @Nullable T ingredient) {
+	public static <T> Optional<ITypedIngredient<?>> create(IRegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, @Nullable T ingredient) {
 		if (isBlankIngredient(ingredient)) {
 			return Optional.empty();
 		}
@@ -54,7 +55,7 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return Optional.of(typedIngredient);
 	}
 
-	public static <T> Optional<ITypedIngredient<T>> createTyped(RegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, @Nullable T ingredient) {
+	public static <T> Optional<ITypedIngredient<T>> createTyped(IRegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, @Nullable T ingredient) {
 		if (isBlankIngredient(ingredient)) {
 			return Optional.empty();
 		}
@@ -63,13 +64,13 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return Optional.of(typedIngredient);
 	}
 
-	public static <T> Optional<ITypedIngredient<T>> normalize(RegisteredIngredients registeredIngredients, ITypedIngredient<T> value) {
+	public static <T> Optional<ITypedIngredient<T>> normalize(IRegisteredIngredients registeredIngredients, ITypedIngredient<T> value) {
 		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
 		T ingredient = ingredientHelper.normalizeIngredient(value.getIngredient());
 		return TypedIngredient.createTyped(registeredIngredients, value.getType(), ingredient);
 	}
 
-	public static <T> Optional<ITypedIngredient<T>> deepCopy(RegisteredIngredients registeredIngredients, ITypedIngredient<T> value) {
+	public static <T> Optional<ITypedIngredient<T>> deepCopy(IRegisteredIngredients registeredIngredients, ITypedIngredient<T> value) {
 		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
 		T ingredient = ingredientHelper.copyIngredient(value.getIngredient());
 		return TypedIngredient.createTyped(registeredIngredients, value.getType(), ingredient);

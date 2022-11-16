@@ -3,6 +3,7 @@ package mezz.jei.common.gui.overlay;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.common.filter.IFilterTextSource;
@@ -11,7 +12,6 @@ import mezz.jei.common.gui.GuiScreenHelper;
 import mezz.jei.common.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.ICharTypedHandler;
 import mezz.jei.common.input.IClickedIngredient;
 import mezz.jei.common.input.IDragHandler;
@@ -67,7 +67,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public IngredientListOverlay(
 		IIngredientGridSource ingredientGridSource,
 		IFilterTextSource filterTextSource,
-		RegisteredIngredients registeredIngredients,
+		IRegisteredIngredients registeredIngredients,
 		GuiScreenHelper guiScreenHelper,
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,

@@ -1,6 +1,7 @@
 package mezz.jei.common.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.common.util.MathUtil;
@@ -22,7 +23,7 @@ public class IngredientInfoRecipe implements IJeiIngredientInfoRecipe {
 	private final List<ITypedIngredient<?>> ingredients;
 
 	public static <T> List<IJeiIngredientInfoRecipe> create(
-		RegisteredIngredients registeredIngredients,
+		IRegisteredIngredients registeredIngredients,
 		List<T> ingredients,
 		IIngredientType<T> ingredientType,
 		Component... descriptionComponents

@@ -1,8 +1,10 @@
 package mezz.jei.common.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
@@ -10,7 +12,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class RegisteredIngredients {
+public class RegisteredIngredients implements IRegisteredIngredients {
 	/** preserves a stable ordering of the types */
 	@Unmodifiable
 	private final List<IIngredientType<?>> orderedTypes;
@@ -34,6 +36,7 @@ public class RegisteredIngredients {
 			.collect(Collectors.toMap(IIngredientType::getIngredientClass, Function.identity()));
 	}
 
+	@Override
 	public <V> IngredientInfo<V> getIngredientInfo(IIngredientType<V> ingredientType) {
 		@SuppressWarnings("unchecked")
 		IngredientInfo<V> ingredientInfo = (IngredientInfo<V>) typeToInfo.get(ingredientType);
@@ -43,21 +46,25 @@ public class RegisteredIngredients {
 		return ingredientInfo;
 	}
 
+	@Override
 	public <V> IIngredientHelper<V> getIngredientHelper(IIngredientType<V> ingredientType) {
-		IngredientInfo<V> ingredientInfo = getIngredientInfo(ingredientType);
+		IIngredientInfo<V> ingredientInfo = getIngredientInfo(ingredientType);
 		return ingredientInfo.getIngredientHelper();
 	}
 
+	@Override
 	public <V> IIngredientRenderer<V> getIngredientRenderer(IIngredientType<V> ingredientType) {
-		IngredientInfo<V> ingredientInfo = getIngredientInfo(ingredientType);
+		IIngredientInfo<V> ingredientInfo = getIngredientInfo(ingredientType);
 		return ingredientInfo.getIngredientRenderer();
 	}
 
+	@Override
 	@Unmodifiable
 	public List<IIngredientType<?>> getIngredientTypes() {
 		return this.orderedTypes;
 	}
 
+	@Override
 	public <V> IIngredientType<V> getIngredientType(V ingredient) {
 		@SuppressWarnings("unchecked")
 		Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();

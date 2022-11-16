@@ -1,11 +1,11 @@
 package mezz.jei.common.recipes;
 
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeCategoriesLookup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.focus.FocusGroup;
 import mezz.jei.common.util.ErrorUtil;
 
@@ -15,13 +15,13 @@ import java.util.stream.Stream;
 
 public class RecipeCategoriesLookup implements IRecipeCategoriesLookup {
 	private final RecipeManagerInternal recipeManager;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 
 	private boolean includeHidden = false;
 	private Collection<RecipeType<?>> recipeTypes = List.of();
 	private IFocusGroup focusGroup = FocusGroup.EMPTY;
 
-	public RecipeCategoriesLookup(RecipeManagerInternal recipeManager, RegisteredIngredients registeredIngredients) {
+	public RecipeCategoriesLookup(RecipeManagerInternal recipeManager, IRegisteredIngredients registeredIngredients) {
 		this.recipeManager = recipeManager;
 		this.registeredIngredients = registeredIngredients;
 	}

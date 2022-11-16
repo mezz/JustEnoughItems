@@ -2,6 +2,7 @@ package mezz.jei.common.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.IEditModeConfig;
@@ -11,13 +12,13 @@ public class IngredientVisibility implements IIngredientVisibility {
 	private final IngredientBlacklistInternal blacklist;
 	private final IWorldConfig worldConfig;
 	private final IEditModeConfig editModeConfig;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 
 	public IngredientVisibility(
 		IngredientBlacklistInternal blacklist,
 		IWorldConfig worldConfig,
 		IEditModeConfig editModeConfig,
-		RegisteredIngredients registeredIngredients
+		IRegisteredIngredients registeredIngredients
 	) {
 		this.blacklist = blacklist;
 		this.worldConfig = worldConfig;

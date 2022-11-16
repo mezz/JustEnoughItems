@@ -3,6 +3,7 @@ package mezz.jei.common.gui.recipes;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.Internal;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -10,7 +11,6 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.input.ClickedIngredient;
@@ -82,7 +82,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	}
 
 	private <T> RecipeSlot createSlot(ITypedIngredient<T> typedIngredient, int index, int maxIngredientsPerColumn) {
-		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+		IRegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
 		int column = index / maxIngredientsPerColumn;
 		int row = index % maxIngredientsPerColumn;
 		int xPos = left + borderSize + (column * ingredientSize) + ingredientBorderSize;

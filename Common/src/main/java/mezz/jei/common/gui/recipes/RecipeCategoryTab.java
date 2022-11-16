@@ -2,6 +2,7 @@ package mezz.jei.common.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -9,7 +10,6 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
@@ -86,7 +86,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	private static <T> void renderIngredient(PoseStack poseStack, int iconX, int iconY, ITypedIngredient<T> ingredient) {
-		RegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+		IRegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
 		IIngredientRenderer<T> ingredientRenderer = registeredIngredients.getIngredientRenderer(ingredient.getType());
 		poseStack.pushPose();
 		{

@@ -8,6 +8,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -16,7 +17,6 @@ import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.ingredients.IngredientAcceptor;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
@@ -33,7 +33,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	private final RecipeSlot recipeSlot;
 	private final IIngredientVisibility ingredientVisibility;
 
-	public RecipeSlotBuilder(RegisteredIngredients registeredIngredients, RecipeIngredientRole role, IIngredientVisibility ingredientVisibility, int x, int y, int ingredientCycleOffset) {
+	public RecipeSlotBuilder(IRegisteredIngredients registeredIngredients, RecipeIngredientRole role, IIngredientVisibility ingredientVisibility, int x, int y, int ingredientCycleOffset) {
 		this.ingredients = new IngredientAcceptor(registeredIngredients);
 		this.ingredientVisibility = ingredientVisibility;
 		this.recipeSlot = new RecipeSlot(registeredIngredients, role, x, y, ingredientCycleOffset);

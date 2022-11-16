@@ -2,12 +2,12 @@ package mezz.jei.common.search;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.core.search.LimitedStringStorage;
 import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.core.search.SearchMode;
 import mezz.jei.common.ingredients.IListElementInfo;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class ElementPrefixParser {
 
 	private final Char2ObjectMap<PrefixInfo<IListElementInfo<?>>> map = new Char2ObjectOpenHashMap<>();
 
-	public ElementPrefixParser(RegisteredIngredients registeredIngredients, IIngredientFilterConfig config) {
+	public ElementPrefixParser(IRegisteredIngredients registeredIngredients, IIngredientFilterConfig config) {
 		addPrefix(new PrefixInfo<>(
 			'@',
 			config::getModNameSearchMode,

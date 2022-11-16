@@ -1,6 +1,7 @@
 package mezz.jei.common.gui.recipes;
 
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
@@ -10,7 +11,6 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.gui.ingredients.IngredientLookupState;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.focus.FocusGroup;
 import mezz.jei.common.gui.recipes.layout.RecipeLayout;
 import mezz.jei.common.util.MathUtil;
@@ -29,7 +29,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeManager recipeManager;
 	private final IRecipeTransferManager recipeTransferManager;
 	private final IRecipeLogicStateListener stateListener;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final IModIdHelper modIdHelper;
 
 	private boolean initialState = true;
@@ -42,7 +42,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		IRecipeManager recipeManager,
 		IRecipeTransferManager recipeTransferManager,
 		IRecipeLogicStateListener stateListener,
-		RegisteredIngredients registeredIngredients,
+		IRegisteredIngredients registeredIngredients,
 		IModIdHelper modIdHelper,
 		Textures textures,
 		IIngredientVisibility ingredientVisibility

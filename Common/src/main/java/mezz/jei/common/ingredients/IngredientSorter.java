@@ -1,5 +1,6 @@
 package mezz.jei.common.ingredients;
 
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.common.config.sorting.ModNameSortingConfig;
 import mezz.jei.core.config.IClientConfig;
@@ -26,7 +27,7 @@ public final class IngredientSorter implements IIngredientSorter {
 	}
 
 	@Override
-	public void doPreSort(IngredientFilter ingredientFilter, RegisteredIngredients registeredIngredients) {
+	public void doPreSort(IngredientFilter ingredientFilter, IRegisteredIngredients registeredIngredients) {
 		IngredientSorterComparators comparators = new IngredientSorterComparators(ingredientFilter, registeredIngredients, this.modNameSortingConfig, this.ingredientTypeSortingConfig);
 
 		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
@@ -45,7 +46,7 @@ public final class IngredientSorter implements IIngredientSorter {
 	}
 
 	@Override
-	public Comparator<IListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, RegisteredIngredients registeredIngredients) {
+	public Comparator<IListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IRegisteredIngredients registeredIngredients) {
 		if (!this.isCacheValid) {
 			doPreSort(ingredientFilter, registeredIngredients);
 		}

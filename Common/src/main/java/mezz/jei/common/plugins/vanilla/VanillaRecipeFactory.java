@@ -2,7 +2,7 @@ package mezz.jei.common.plugins.vanilla;
 
 import java.util.List;
 
-import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import net.minecraft.world.item.ItemStack;
 
 import mezz.jei.api.constants.VanillaTypes;
@@ -17,7 +17,7 @@ import mezz.jei.common.util.ErrorUtil;
 public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	private final BrewingRecipeUtil brewingRecipeUtil;
 
-	public VanillaRecipeFactory(RegisteredIngredients registeredIngredients) {
+	public VanillaRecipeFactory(IRegisteredIngredients registeredIngredients) {
 		IIngredientHelper<ItemStack> ingredientHelper = registeredIngredients.getIngredientHelper(VanillaTypes.ITEM_STACK);
 		this.brewingRecipeUtil = new BrewingRecipeUtil(ingredientHelper);
 	}

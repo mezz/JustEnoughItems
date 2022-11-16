@@ -3,6 +3,7 @@ package mezz.jei.common.recipes;
 import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeCatalystLookup;
@@ -14,7 +15,6 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.focus.FocusGroup;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.gui.recipes.layout.RecipeLayout;
 import net.minecraft.resources.ResourceLocation;
@@ -27,11 +27,11 @@ import java.util.Optional;
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
 	private final IModIdHelper modIdHelper;
-	private final RegisteredIngredients registeredIngredients;
+	private final IRegisteredIngredients registeredIngredients;
 	private final Textures textures;
 	private final IIngredientVisibility ingredientVisibility;
 
-	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, RegisteredIngredients registeredIngredients, Textures textures, IIngredientVisibility ingredientVisibility) {
+	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, IRegisteredIngredients registeredIngredients, Textures textures, IIngredientVisibility ingredientVisibility) {
 		this.internal = internal;
 		this.modIdHelper = modIdHelper;
 		this.registeredIngredients = registeredIngredients;

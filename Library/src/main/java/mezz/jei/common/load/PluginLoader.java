@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
@@ -198,7 +199,7 @@ public class PluginLoader {
 		return ingredientVisibility;
 	}
 
-	public RegisteredIngredients getRegisteredIngredients() {
+	public IRegisteredIngredients getRegisteredIngredients() {
 		return registeredIngredients;
 	}
 

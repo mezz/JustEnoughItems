@@ -1,8 +1,8 @@
 package mezz.jei.common;
 
 import com.google.common.base.Preconditions;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.runtime.JeiHelpers;
 import mezz.jei.common.runtime.JeiRuntime;
@@ -19,7 +19,7 @@ public final class Internal {
 	@Nullable
 	private static JeiRuntime runtime;
 	@Nullable
-	private static RegisteredIngredients registeredIngredients;
+	private static IRegisteredIngredients registeredIngredients;
 	@Nullable
 	private static Textures textures;
 	@Nullable
@@ -55,12 +55,12 @@ public final class Internal {
 		Internal.runtime = runtime;
 	}
 
-	public static RegisteredIngredients getRegisteredIngredients() {
+	public static IRegisteredIngredients getRegisteredIngredients() {
 		Preconditions.checkState(registeredIngredients != null, "RegisteredIngredients has not been created yet.");
 		return registeredIngredients;
 	}
 
-	public static void setRegisteredIngredients(RegisteredIngredients registeredIngredients) {
+	public static void setRegisteredIngredients(IRegisteredIngredients registeredIngredients) {
 		Internal.registeredIngredients = registeredIngredients;
 	}
 
