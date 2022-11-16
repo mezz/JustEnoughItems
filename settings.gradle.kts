@@ -31,5 +31,7 @@ include(
 	"Changelog",
 	"Common", "CommonApi",
 	"Forge", "ForgeApi",
-	"Fabric", "FabricApi"
+	"Fabric", "FabricApi",
+	"Library", "LibraryApi",
+	"Gui", "GuiApi"
 )

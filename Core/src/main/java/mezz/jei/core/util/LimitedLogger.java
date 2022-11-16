@@ -1,4 +1,4 @@
-package mezz.jei.common.util;
+package mezz.jei.core.util;
 
 import java.time.Duration;
 import java.util.HashMap;

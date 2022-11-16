@@ -29,6 +29,11 @@ dependencies {
         name = "fastutil",
         version = "8.5.6"
     )
+    implementation(
+        group = "org.apache.logging.log4j",
+        name = "log4j-api",
+        version = "2.17.0"
+    )
     testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter-api",
