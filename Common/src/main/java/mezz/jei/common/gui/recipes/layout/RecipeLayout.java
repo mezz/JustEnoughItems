@@ -54,17 +54,16 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R>, IRecipeLayoutD
 	private int posX;
 	private int posY;
 
-	@Nullable
-	public static <T> RecipeLayout<T> create(int index, IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, IRegisteredIngredients registeredIngredients, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, int posX, int posY, Textures textures) {
+	public static <T> Optional<RecipeLayout<T>> create(int index, IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, IRegisteredIngredients registeredIngredients, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, int posX, int posY, Textures textures) {
 		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, registeredIngredients, ingredientVisibility, modIdHelper, posX, posY, textures);
 		if (recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses)) {
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 			if (recipeName != null) {
 				addOutputSlotTooltip(recipeLayout, recipeName, modIdHelper);
 			}
-			return recipeLayout;
+			return Optional.of(recipeLayout);
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	private boolean setRecipeLayout(
@@ -215,7 +214,7 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R>, IRecipeLayoutD
 			if (tooltipStrings.isEmpty() && shapelessIcon != null) {
 				tooltipStrings = shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY);
 			}
-			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
+			if (!tooltipStrings.isEmpty()) {
 				TooltipRenderer.drawHoveringText(poseStack, tooltipStrings, mouseX, mouseY);
 			}
 		}
@@ -303,9 +302,8 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R>, IRecipeLayoutD
 		this.shapelessIcon.setPosition(shapelessX, shapelessY);
 	}
 
-	@Nullable
-	public RecipeTransferButton getRecipeTransferButton() {
-		return recipeTransferButton;
+	public Optional<RecipeTransferButton> getRecipeTransferButton() {
+		return Optional.ofNullable(recipeTransferButton);
 	}
 
 	@Override

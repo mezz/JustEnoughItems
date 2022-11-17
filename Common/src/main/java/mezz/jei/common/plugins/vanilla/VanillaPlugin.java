@@ -110,6 +110,7 @@ import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -152,11 +153,9 @@ public class VanillaPlugin implements IModPlugin {
 				IPlatformRegistry<Enchantment> enchantmentRegistry = Services.PLATFORM.getRegistry(Registry.ENCHANTMENT_REGISTRY);
 				ResourceLocation resourceLocation = ResourceLocation.tryParse(id);
 				if (resourceLocation != null) {
-					Enchantment enchantment = enchantmentRegistry.getValue(resourceLocation);
-					if (enchantment != null) {
-						String enchantmentUid = enchantment.getDescriptionId() + ".lvl" + compoundnbt.getShort("lvl");
-						enchantmentNames.add(enchantmentUid);
-					}
+					enchantmentRegistry.getValue(resourceLocation)
+						.map(enchantment -> enchantment.getDescriptionId() + ".lvl" + compoundnbt.getShort("lvl"))
+						.ifPresent(enchantmentNames::add);
 				}
 			}
 			enchantmentNames.sort(null);
@@ -307,9 +306,8 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeCatalyst(new ItemStack(Blocks.COMPOSTER), RecipeTypes.COMPOSTING);
 	}
 
-	@Nullable
-	public CraftingRecipeCategory getCraftingCategory() {
-		return craftingCategory;
+	public Optional<CraftingRecipeCategory> getCraftingCategory() {
+		return Optional.ofNullable(craftingCategory);
 	}
 
 	/**

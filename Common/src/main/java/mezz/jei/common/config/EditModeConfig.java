@@ -7,7 +7,6 @@ import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.core.config.IngredientBlacklistType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,47 +23,18 @@ public class EditModeConfig implements IEditModeConfig {
 	private static final String[] defaultBlacklist = new String[]{};
 
 	private final Set<String> blacklist = new LinkedHashSet<>();
+	private final ISerializer serializer;
 
-	@Nullable
-	private final Path blacklistConfigFile;
-
-	public EditModeConfig(@Nullable Path blacklistConfigFile) {
+	public EditModeConfig(ISerializer serializer) {
 		Collections.addAll(blacklist, defaultBlacklist);
-		if (blacklistConfigFile != null) {
-			this.blacklistConfigFile = blacklistConfigFile;
-			loadBlacklistConfig();
-		} else {
-			this.blacklistConfigFile = null;
-		}
-	}
-
-	private void loadBlacklistConfig() {
-		if (blacklistConfigFile != null && Files.exists(blacklistConfigFile)) {
-			try {
-				List<String> strings = Files.readAllLines(blacklistConfigFile);
-				blacklist.clear();
-				blacklist.addAll(strings);
-			} catch (IOException e) {
-				LOGGER.error("Failed to load blacklist from file {}", blacklistConfigFile, e);
-			}
-		}
-	}
-
-	private void saveBlacklist() {
-		if (blacklistConfigFile != null) {
-			try {
-				Files.write(blacklistConfigFile, blacklist);
-				LOGGER.debug("Saved blacklist config to file: {}", blacklistConfigFile);
-			} catch (IOException e) {
-				LOGGER.error("Failed to save blacklist config to file {}", blacklistConfigFile, e);
-			}
-		}
+		this.serializer = serializer;
+		this.serializer.load(this);
 	}
 
 	@Override
 	public <V> void addIngredientToConfigBlacklist(IngredientFilter ingredientFilter, ITypedIngredient<V> typedIngredient, IngredientBlacklistType blacklistType, IIngredientHelper<V> ingredientHelper) {
 		if (addIngredientToConfigBlacklistInternal(ingredientFilter, typedIngredient, blacklistType, ingredientHelper)) {
-			saveBlacklist();
+			serializer.save(this);
 		}
 	}
 
@@ -152,7 +122,7 @@ public class EditModeConfig implements IEditModeConfig {
 		final String uid = getIngredientUid(typedIngredient, blacklistType, ingredientHelper);
 		updated |= blacklist.remove(uid);
 		if (updated) {
-			saveBlacklist();
+			serializer.save(this);
 		}
 	}
 
@@ -177,5 +147,39 @@ public class EditModeConfig implements IEditModeConfig {
 			case ITEM -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
 			case WILDCARD -> ingredientHelper.getWildcardId(ingredient);
 		};
+	}
+
+	public interface ISerializer {
+		void save(EditModeConfig config);
+		void load(EditModeConfig config);
+	}
+
+	public static class FileSerializer implements ISerializer {
+		private final Path path;
+
+		public FileSerializer(Path path) {
+			this.path = path;
+		}
+
+		@Override
+		public void save(EditModeConfig config) {
+			try {
+				Files.write(path, config.blacklist);
+				LOGGER.debug("Saved blacklist config to file: {}", path);
+			} catch (IOException e) {
+				LOGGER.error("Failed to save blacklist config to file {}", path, e);
+			}
+		}
+
+		@Override
+		public void load(EditModeConfig config) {
+			try {
+				List<String> strings = Files.readAllLines(path);
+				config.blacklist.clear();
+				config.blacklist.addAll(strings);
+			} catch (IOException e) {
+				LOGGER.error("Failed to load blacklist from file {}", path, e);
+			}
+		}
 	}
 }

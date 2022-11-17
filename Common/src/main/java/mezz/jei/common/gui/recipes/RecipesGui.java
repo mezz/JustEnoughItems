@@ -246,6 +246,21 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		nextPage.render(poseStack, mouseX, mouseY, partialTicks);
 		previousPage.render(poseStack, mouseX, mouseY, partialTicks);
 
+		Optional<RecipeLayout<?>> hoveredRecipeLayout = drawLayouts(poseStack, mouseX, mouseY);
+		Optional<RecipeSlot> hoveredRecipeCatalyst = recipeCatalysts.draw(poseStack, mouseX, mouseY);
+
+		recipeGuiTabs.draw(minecraft, poseStack, mouseX, mouseY);
+
+		hoveredRecipeLayout.ifPresent(l -> l.drawOverlays(poseStack, mouseX, mouseY));
+		hoveredRecipeCatalyst.ifPresent(h -> h.drawOverlays(poseStack, 0, 0, mouseX, mouseY, modIdHelper));
+
+		if (titleStringArea.contains(mouseX, mouseY) && !logic.hasAllCategories()) {
+			MutableComponent showAllRecipesString = Component.translatable("jei.tooltip.show.all.recipes");
+			TooltipRenderer.drawHoveringText(poseStack, List.of(showAllRecipesString), mouseX, mouseY);
+		}
+	}
+
+	private Optional<RecipeLayout<?>> drawLayouts(PoseStack poseStack, int mouseX, int mouseY) {
 		RecipeLayout<?> hoveredLayout = null;
 		for (RecipeLayout<?> recipeLayout : recipeLayouts) {
 			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
@@ -253,22 +268,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			}
 			recipeLayout.drawRecipe(poseStack, mouseX, mouseY);
 		}
-
-		RecipeSlot hoveredRecipeCatalyst = recipeCatalysts.draw(poseStack, mouseX, mouseY);
-
-		recipeGuiTabs.draw(minecraft, poseStack, mouseX, mouseY);
-
-		if (hoveredLayout != null) {
-			hoveredLayout.drawOverlays(poseStack, mouseX, mouseY);
-		}
-		if (hoveredRecipeCatalyst != null) {
-			hoveredRecipeCatalyst.drawOverlays(poseStack, 0, 0, mouseX, mouseY, modIdHelper);
-		}
-
-		if (titleStringArea.contains(mouseX, mouseY) && !logic.hasAllCategories()) {
-			MutableComponent showAllRecipesString = Component.translatable("jei.tooltip.show.all.recipes");
-			TooltipRenderer.drawHoveringText(poseStack, List.of(showAllRecipesString), mouseX, mouseY);
-		}
+		return Optional.ofNullable(hoveredLayout);
 	}
 
 	@Override
@@ -278,7 +278,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		Optional.ofNullable(minecraft)
 			.map(minecraft -> minecraft.player)
 			.ifPresent(localPlayer -> {
-				AbstractContainerMenu container = getParentContainer();
+				AbstractContainerMenu container = getParentContainer().orElse(null);
 				for (RecipeTransferButton button : this.recipeTransferButtons) {
 					button.update(recipeTransferManager, container, localPlayer);
 				}
@@ -543,30 +543,30 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 		this.recipeTransferButtons.clear();
 
-		AbstractContainerMenu container = getParentContainer();
+		AbstractContainerMenu container = getParentContainer().orElse(null);
 
-		for (RecipeLayout<?> recipeLayout : recipeLayouts) {
-			RecipeTransferButton button = recipeLayout.getRecipeTransferButton();
-			if (button != null) {
-				button.update(recipeTransferManager, container, player);
-				button.setOnClickHandler((mouseX, mouseY) -> {
-					boolean maxTransfer = Screen.hasShiftDown();
-					if (container != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer)) {
-						onClose();
-					}
-				});
-				addRenderableWidget(button);
-				this.recipeTransferButtons.add(button);
-			}
-		}
+		recipeLayouts.forEach(recipeLayout ->
+			recipeLayout.getRecipeTransferButton()
+				.ifPresent(button -> {
+					button.update(recipeTransferManager, container, player);
+					button.setOnClickHandler((mouseX, mouseY) -> {
+						boolean maxTransfer = Screen.hasShiftDown();
+						if (container != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer)) {
+							onClose();
+						}
+					});
+					addRenderableWidget(button);
+					this.recipeTransferButtons.add(button);
+				})
+		);
 	}
 
-	@Nullable
-	private AbstractContainerMenu getParentContainer() {
+	private Optional<AbstractContainerMenu> getParentContainer() {
 		if (parentScreen instanceof AbstractContainerScreen<?> screen) {
-			return screen.getMenu();
+			AbstractContainerMenu menu = screen.getMenu();
+			return Optional.of(menu);
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	@Override

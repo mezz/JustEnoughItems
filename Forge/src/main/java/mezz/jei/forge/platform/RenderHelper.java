@@ -49,13 +49,13 @@ public class RenderHelper implements IPlatformRenderHelper {
     }
 
     @Override
-    @Nullable
-    public NativeImage getMainImage(TextureAtlasSprite sprite) {
+    public Optional<NativeImage> getMainImage(TextureAtlasSprite sprite) {
         NativeImage[] frames = sprite.mainImage;
         if (frames.length == 0) {
-            return null;
+            return Optional.empty();
         }
-        return frames[0];
+        NativeImage frame = frames[0];
+        return Optional.ofNullable(frame);
     }
 
     @Override

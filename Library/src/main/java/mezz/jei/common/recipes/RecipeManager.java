@@ -1,6 +1,5 @@
 package mezz.jei.common.recipes;
 
-import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
@@ -68,7 +67,7 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		IFocusGroup focusGroup = FocusGroup.createFromNullable(focus, registeredIngredients);
-		RecipeLayout<T> recipeLayout = RecipeLayout.create(
+		return RecipeLayout.create(
 			-1,
 			recipeCategory,
 			recipe,
@@ -79,9 +78,7 @@ public class RecipeManager implements IRecipeManager {
 			0,
 			0,
 			textures
-		);
-		Preconditions.checkNotNull(recipeLayout, "Recipe layout crashed during creation, see log.");
-		return recipeLayout;
+		).orElseThrow(() -> new NullPointerException("Recipe layout crashed during creation, see log."));
 	}
 
 	@Override

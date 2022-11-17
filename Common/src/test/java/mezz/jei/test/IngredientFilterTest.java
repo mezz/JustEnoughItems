@@ -81,7 +81,7 @@ public class IngredientFilterTest {
 		this.registeredIngredients = registeredIngredientsBuilder.build();
 		this.baseList = IngredientListElementFactory.createBaseList(registeredIngredients);
 
-		this.editModeConfig = new EditModeConfig(null);
+		this.editModeConfig = new EditModeConfig(new NullSerializer());
 
 		IWorldConfig worldConfig = new TestWorldConfig();
 
@@ -260,6 +260,18 @@ public class IngredientFilterTest {
 
 		for (TestIngredient ingredient : ingredientsToRemove) {
 			Assertions.assertFalse(ingredientVisibility.isIngredientVisible(TestIngredient.TYPE, ingredient));
+		}
+	}
+
+	private static class NullSerializer implements EditModeConfig.ISerializer {
+		@Override
+		public void save(EditModeConfig config) {
+
+		}
+
+		@Override
+		public void load(EditModeConfig config) {
+
 		}
 	}
 }

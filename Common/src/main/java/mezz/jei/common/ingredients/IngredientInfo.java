@@ -56,8 +56,8 @@ public class IngredientInfo<T> implements IIngredientInfo<T> {
 		this.ingredientSet.removeAll(ingredients);
 	}
 
+	@Override
 	public Optional<T> getIngredientByUid(String uid) {
-		T ingredient = ingredientSet.getByUid(uid);
-		return Optional.ofNullable(ingredient);
+		return ingredientSet.getByUid(uid);
 	}
 }

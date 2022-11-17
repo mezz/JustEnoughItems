@@ -7,9 +7,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IPlatformRecipeHelper {
     <T extends CraftingRecipe> int getWidth(T recipe);
@@ -18,8 +18,7 @@ public interface IPlatformRecipeHelper {
     Ingredient getBase(UpgradeRecipe recipe);
     Ingredient getAddition(UpgradeRecipe recipe);
 
-    @Nullable
-    ResourceLocation getRegistryNameForRecipe(Object object);
+    Optional<ResourceLocation> getRegistryNameForRecipe(Object object);
 
     List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory);
 }

@@ -2,13 +2,13 @@ package mezz.jei.common.gui.ghost;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.phys.Vec2;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 /**
  * Renders an item returning to the ingredient list after a failed ghost drag.
@@ -22,17 +22,15 @@ public class GhostIngredientReturning<T> {
 	private final long startTime;
 	private final long duration;
 
-	@Nullable
-	public static <T> GhostIngredientReturning<T> create(GhostIngredientDrag<T> ghostIngredientDrag, double mouseX, double mouseY) {
-		IImmutableRect2i origin = ghostIngredientDrag.getOrigin();
-		if (origin != null) {
-			IIngredientRenderer<T> ingredientRenderer = ghostIngredientDrag.getIngredientRenderer();
-			T ingredient = ghostIngredientDrag.getIngredient();
-			Vec2 end = new Vec2(origin.getX(), origin.getY());
-			Vec2 start = new Vec2((float) mouseX - 8, (float) mouseY - 8);
-			return new GhostIngredientReturning<>(ingredientRenderer, ingredient, start, end);
-		}
-		return null;
+	public static <T> Optional<GhostIngredientReturning<T>> create(GhostIngredientDrag<T> ghostIngredientDrag, double mouseX, double mouseY) {
+		return ghostIngredientDrag.getOrigin()
+			.map(origin -> {
+				IIngredientRenderer<T> ingredientRenderer = ghostIngredientDrag.getIngredientRenderer();
+				T ingredient = ghostIngredientDrag.getIngredient();
+				Vec2 end = new Vec2(origin.getX(), origin.getY());
+				Vec2 start = new Vec2((float) mouseX - 8, (float) mouseY - 8);
+				return new GhostIngredientReturning<>(ingredientRenderer, ingredient, start, end);
+			});
 	}
 
 	private GhostIngredientReturning(IIngredientRenderer<T> ingredientRenderer, T ingredient, Vec2 start, Vec2 end) {

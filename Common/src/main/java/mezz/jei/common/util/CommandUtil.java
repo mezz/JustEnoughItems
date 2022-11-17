@@ -3,17 +3,12 @@ package mezz.jei.common.util;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketGiveItemStack;
 import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
-import mezz.jei.common.platform.IPlatformRegistry;
-import mezz.jei.common.platform.Services;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -72,11 +67,6 @@ public final class CommandUtil {
 			LOGGER.error("Empty itemStack: {}", stackInfo, new IllegalArgumentException());
 			return;
 		}
-
-		Item item = itemStack.getItem();
-		IPlatformRegistry<Item> itemRegistry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
-		ResourceLocation itemResourceLocation = itemRegistry.getRegistryName(item);
-		ErrorUtil.checkNotNull(itemResourceLocation, "itemStack.getItem().getRegistryName()");
 
 		LocalPlayer sender = Minecraft.getInstance().player;
 		if (sender != null) {

@@ -1,7 +1,6 @@
 package mezz.jei.common.platform;
 
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -9,8 +8,7 @@ import java.util.stream.Stream;
 public interface IPlatformRegistry<T> {
     Stream<T> getValues();
 
-    @Nullable
-    T getValue(ResourceLocation resourceLocation);
+    Optional<T> getValue(ResourceLocation resourceLocation);
 
     int getId(T entry);
 
@@ -18,6 +16,5 @@ public interface IPlatformRegistry<T> {
 
     boolean contains(T entry);
 
-    @Nullable
-    ResourceLocation getRegistryName(T entry);
+    Optional<ResourceLocation> getRegistryName(T entry);
 }

@@ -32,7 +32,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -83,7 +82,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		LOGGER.info("Adding {} ingredients", ingredients.size());
 		ingredients.stream()
 			.map(i -> ListElementInfo.create(i, registeredIngredients, modIdHelper))
-			.filter(Objects::nonNull)
+			.flatMap(Optional::stream)
 			.forEach(this::addIngredient);
 		LOGGER.info("Added {} ingredients", ingredients.size());
 

@@ -9,17 +9,18 @@ import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
+import java.util.Optional;
 
 public class GhostIngredientDrag<T> {
 	private static final int targetColor = 0x4013C90A;
@@ -59,19 +60,15 @@ public class GhostIngredientDrag<T> {
 	}
 
 	public static boolean farEnoughToDraw(GhostIngredientDrag<?> drag, double mouseX, double mouseY) {
-		final double centerX;
-		final double centerY;
+		Vec2 center = drag.getOrigin()
+			.map(origin -> new Vec2(
+				origin.getX() + (origin.getWidth() / 2.0f),
+				origin.getY() + (origin.getHeight() / 2.0f)
+			))
+			.orElseGet(() -> new Vec2((float) drag.mouseStartX, (float) drag.mouseStartY));
 
-		IImmutableRect2i origin = drag.getOrigin();
-		if (origin != null) {
-			centerX = origin.getX() + (origin.getWidth() / 2.0);
-			centerY = origin.getY() + (origin.getHeight() / 2.0);
-		} else {
-			centerX = drag.mouseStartX;
-			centerY = drag.mouseStartY;
-		}
-		double mouseXDist = centerX - mouseX;
-		double mouseYDist = centerY - mouseY;
+		double mouseXDist = center.x - mouseX;
+		double mouseYDist = center.y - mouseY;
 		double mouseDistSq = mouseXDist * mouseXDist + mouseYDist * mouseYDist;
 		return mouseDistSq > 64.0;
 	}
@@ -167,8 +164,7 @@ public class GhostIngredientDrag<T> {
 		return ingredient;
 	}
 
-	@Nullable
-	public IImmutableRect2i getOrigin() {
-		return origin;
+	public Optional<IImmutableRect2i> getOrigin() {
+		return Optional.ofNullable(origin);
 	}
 }

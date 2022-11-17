@@ -7,7 +7,6 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.network.chat.Component;
 
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -33,11 +32,10 @@ public class ShapelessIcon {
 		this.icon.draw(poseStack, area.getX(), area.getY());
 	}
 
-	@Nullable
 	public List<Component> getTooltipStrings(int mouseX, int mouseY) {
 		if (this.area.contains(mouseX, mouseY)) {
 			return List.of(Component.translatable("jei.tooltip.shapeless.recipe"));
 		}
-		return null;
+		return List.of();
 	}
 }

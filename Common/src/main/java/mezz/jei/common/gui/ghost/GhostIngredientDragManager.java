@@ -157,8 +157,8 @@ public class GhostIngredientDragManager {
 			double mouseX = input.getMouseX();
 			double mouseY = input.getMouseY();
 			if (!success && GhostIngredientDrag.farEnoughToDraw(ghostIngredientDrag, mouseX, mouseY)) {
-				GhostIngredientReturning<?> returning = GhostIngredientReturning.create(ghostIngredientDrag, mouseX, mouseY);
-				ghostIngredientsReturning.add(returning);
+				GhostIngredientReturning.create(ghostIngredientDrag, mouseX, mouseY)
+					.ifPresent(ghostIngredientsReturning::add);
 			}
 			ghostIngredientDrag = null;
 			hoveredIngredientTargets = null;

@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,8 +73,8 @@ public final class ConfigSerializer {
             if (keyValueMatcher.matches()) {
                 String key = keyValueMatcher.group("key");
                 String value = keyValueMatcher.group("value");
-                ConfigValue<?> configValue = category.getConfigValue(key);
-                if (configValue == null) {
+                Optional<ConfigValue<?>> configValue = category.getConfigValue(key);
+                if (configValue.isEmpty()) {
                     LOGGER.error(getLineErrorString(path, lineNumber, line,
                         """
                         '%s' is not a valid config key for config category '%s'.
@@ -86,7 +87,7 @@ public final class ConfigSerializer {
                     ));
                 } else {
                     value = value.trim();
-                    List<String> errors = configValue.setFromSerializedValue(value);
+                    List<String> errors = configValue.get().setFromSerializedValue(value);
                     if (!errors.isEmpty()) {
                         String errorMessage = """
                             Encountered Errors when deserializing value '%s':

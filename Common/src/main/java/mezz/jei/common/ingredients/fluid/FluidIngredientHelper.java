@@ -11,7 +11,6 @@ import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.TagUtil;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
@@ -56,7 +55,8 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	@Override
 	public String getUniqueId(T ingredient, UidContext context) {
 		Fluid fluid = fluidType.getBase(ingredient);
-		ResourceLocation registryName = registry.getRegistryName(fluid);
+		ResourceLocation registryName = getRegistryName(ingredient, fluid);
+
 		StringBuilder result = new StringBuilder()
 			.append("fluid:")
 			.append(registryName);
@@ -73,30 +73,32 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	@Override
 	public String getWildcardId(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
-		ResourceLocation registryName = registry.getRegistryName(fluid);
+		ResourceLocation registryName = getRegistryName(ingredient, fluid);
 		return "fluid:" + registryName;
 	}
 
 	@Override
 	public Iterable<Integer> getColors(T ingredient) {
-		TextureAtlasSprite fluidStillSprite = platformFluidHelper.getStillFluidSprite(ingredient);
-		if (fluidStillSprite == null) {
-			return List.of();
-		}
-		int renderColor = platformFluidHelper.getColorTint(ingredient);
-		return colorHelper.getColors(fluidStillSprite, renderColor, 1);
+		return platformFluidHelper.getStillFluidSprite(ingredient)
+			.map(fluidStillSprite -> {
+				int renderColor = platformFluidHelper.getColorTint(ingredient);
+				return colorHelper.getColors(fluidStillSprite, renderColor, 1);
+			})
+			.orElseGet(List::of);
 	}
 
 	@Override
 	public ResourceLocation getResourceLocation(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
-		ResourceLocation registryName = registry.getRegistryName(fluid);
-		if (registryName == null) {
-			String ingredientInfo = getErrorInfo(ingredient);
-			throw new IllegalStateException("null registry name for: " + ingredientInfo);
-		}
+		return getRegistryName(ingredient, fluid);
+	}
 
-		return registryName;
+	private ResourceLocation getRegistryName(T ingredient, Fluid fluid) {
+		return registry.getRegistryName(fluid)
+			.orElseThrow(() -> {
+				String ingredientInfo = getErrorInfo(ingredient);
+				throw new IllegalStateException("null registry name for: " + ingredientInfo);
+			});
 	}
 
 	@Override

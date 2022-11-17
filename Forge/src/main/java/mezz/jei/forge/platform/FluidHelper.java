@@ -9,6 +9,7 @@ import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.render.FluidTankRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -90,13 +91,16 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
     }
 
     @Override
-    public TextureAtlasSprite getStillFluidSprite(FluidStack fluidStack) {
+    public Optional<TextureAtlasSprite> getStillFluidSprite(FluidStack fluidStack) {
         Fluid fluid = fluidStack.getFluid();
         IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
         ResourceLocation fluidStill = renderProperties.getStillTexture(fluidStack);
 
-        Minecraft minecraft = Minecraft.getInstance();
-        return minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
+        TextureAtlasSprite sprite = Minecraft.getInstance()
+            .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+            .apply(fluidStill);
+        return Optional.of(sprite)
+            .filter(s -> s.getName() != MissingTextureAtlasSprite.getLocation());
     }
 
     @Override

@@ -16,7 +16,6 @@ import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,19 +31,18 @@ public class BookmarkConfig implements IBookmarkConfig {
 	private static final String MARKER_STACK = "T:";
 	private final Path jeiConfigurationDir;
 
-	@Nullable
-	private static Path getPath(Path jeiConfigurationDir) {
-		Path configPath = ServerConfigPathUtil.getWorldPath(jeiConfigurationDir);
-		if (configPath == null) {
-			return null;
-		}
-		try {
-			configPath = Files.createDirectories(configPath);
-		} catch (IOException e) {
-			LOGGER.error("Unable to create bookmark config folder: {}", configPath);
-			return null;
-		}
-		return configPath.resolve("bookmarks.ini");
+	private static Optional<Path> getPath(Path jeiConfigurationDir) {
+		return ServerConfigPathUtil.getWorldPath(jeiConfigurationDir)
+			.flatMap(configPath -> {
+				try {
+					configPath = Files.createDirectories(configPath);
+				} catch (IOException e) {
+					LOGGER.error("Unable to create bookmark config folder: {}", configPath);
+					return Optional.empty();
+				}
+				Path path = configPath.resolve("bookmarks.ini");
+				return Optional.of(path);
+			});
 	}
 
 	public BookmarkConfig(Path jeiConfigurationDir) {
@@ -53,79 +51,79 @@ public class BookmarkConfig implements IBookmarkConfig {
 
 	@Override
 	public void saveBookmarks(IRegisteredIngredients registeredIngredients, List<ITypedIngredient<?>> ingredientList) {
-		Path path = getPath(jeiConfigurationDir);
-		if (path == null) {
-			return;
-		}
+		getPath(jeiConfigurationDir)
+			.ifPresent(path -> {
+				List<String> strings = new ArrayList<>();
+				for (ITypedIngredient<?> typedIngredient : ingredientList) {
+					if (typedIngredient.getIngredient() instanceof ItemStack stack) {
+						strings.add(MARKER_STACK + stack.save(new CompoundTag()));
+					} else {
+						strings.add(MARKER_OTHER + getUid(registeredIngredients, typedIngredient));
+					}
+				}
 
-		List<String> strings = new ArrayList<>();
-		for (ITypedIngredient<?> typedIngredient : ingredientList) {
-			if (typedIngredient.getIngredient() instanceof ItemStack stack) {
-				strings.add(MARKER_STACK + stack.save(new CompoundTag()));
-			} else {
-				strings.add(MARKER_OTHER + getUid(registeredIngredients, typedIngredient));
-			}
-		}
-
-		try {
-			Files.write(path, strings);
-		} catch (IOException e) {
-			LOGGER.error("Failed to save bookmarks list to file {}", path, e);
-		}
+				try {
+					Files.write(path, strings);
+				} catch (IOException e) {
+					LOGGER.error("Failed to save bookmarks list to file {}", path, e);
+				}
+			});
 	}
 
 	@Override
 	public void loadBookmarks(IRegisteredIngredients registeredIngredients, BookmarkList bookmarkList) {
-		Path path = getPath(jeiConfigurationDir);
-		if (path == null || !Files.exists(path)) {
-			return;
-		}
-		List<String> ingredientJsonStrings;
-		try {
-			ingredientJsonStrings = Files.readAllLines(path);
-		} catch (IOException e) {
-			LOGGER.error("Failed to load bookmarks from file {}", path, e);
-			return;
-		}
-
-		Collection<IIngredientType<?>> otherIngredientTypes = new ArrayList<>(registeredIngredients.getIngredientTypes());
-		otherIngredientTypes.remove(VanillaTypes.ITEM_STACK);
-
-		IIngredientHelper<ItemStack> itemStackHelper = registeredIngredients.getIngredientHelper(VanillaTypes.ITEM_STACK);
-
-		for (String ingredientJsonString : ingredientJsonStrings) {
-			if (ingredientJsonString.startsWith(MARKER_STACK)) {
-				String itemStackAsJson = ingredientJsonString.substring(MARKER_STACK.length());
+		getPath(jeiConfigurationDir)
+			.ifPresent(path -> {
+				if (!Files.exists(path)) {
+					return;
+				}
+				List<String> ingredientJsonStrings;
 				try {
-					CompoundTag itemStackAsNbt = TagParser.parseTag(itemStackAsJson);
-					ItemStack itemStack = ItemStack.of(itemStackAsNbt);
-					if (!itemStack.isEmpty()) {
-						ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);
-						Optional<ITypedIngredient<ItemStack>> typedIngredient = TypedIngredient.createTyped(registeredIngredients, VanillaTypes.ITEM_STACK, normalized);
+					ingredientJsonStrings = Files.readAllLines(path);
+				} catch (IOException e) {
+					LOGGER.error("Failed to load bookmarks from file {}", path, e);
+					return;
+				}
+
+				Collection<IIngredientType<?>> otherIngredientTypes = new ArrayList<>(registeredIngredients.getIngredientTypes());
+				otherIngredientTypes.remove(VanillaTypes.ITEM_STACK);
+
+				IIngredientHelper<ItemStack> itemStackHelper = registeredIngredients.getIngredientHelper(VanillaTypes.ITEM_STACK);
+
+				for (String ingredientJsonString : ingredientJsonStrings) {
+					if (ingredientJsonString.startsWith(MARKER_STACK)) {
+						String itemStackAsJson = ingredientJsonString.substring(MARKER_STACK.length());
+						try {
+							CompoundTag itemStackAsNbt = TagParser.parseTag(itemStackAsJson);
+							ItemStack itemStack = ItemStack.of(itemStackAsNbt);
+							if (!itemStack.isEmpty()) {
+								ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);
+								Optional<ITypedIngredient<ItemStack>> typedIngredient = TypedIngredient.createTyped(registeredIngredients, VanillaTypes.ITEM_STACK, normalized);
+								if (typedIngredient.isEmpty()) {
+									LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
+								} else {
+									bookmarkList.addToList(typedIngredient.get(), false);
+								}
+							} else {
+								LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
+							}
+						} catch (CommandSyntaxException e) {
+							LOGGER.error("Failed to load bookmarked ItemStack from json string:\n{}", itemStackAsJson, e);
+						}
+					} else if (ingredientJsonString.startsWith(MARKER_OTHER)) {
+						String uid = ingredientJsonString.substring(MARKER_OTHER.length());
+						Optional<ITypedIngredient<?>> typedIngredient = getNormalizedIngredientByUid(registeredIngredients, otherIngredientTypes, uid);
 						if (typedIngredient.isEmpty()) {
-							LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
+							LOGGER.error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);
 						} else {
 							bookmarkList.addToList(typedIngredient.get(), false);
 						}
 					} else {
-						LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
+						LOGGER.error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);
 					}
-				} catch (CommandSyntaxException e) {
-					LOGGER.error("Failed to load bookmarked ItemStack from json string:\n{}", itemStackAsJson, e);
 				}
-			} else if (ingredientJsonString.startsWith(MARKER_OTHER)) {
-				String uid = ingredientJsonString.substring(MARKER_OTHER.length());
-				Optional<ITypedIngredient<?>> typedIngredient = getNormalizedIngredientByUid(registeredIngredients, otherIngredientTypes, uid);
-				if (typedIngredient.isEmpty()) {
-					LOGGER.error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);
-				} else {
-					bookmarkList.addToList(typedIngredient.get(), false);
-				}
-			} else {
-				LOGGER.error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);
-			}
-		}
-		bookmarkList.notifyListenersOfChange();
+				bookmarkList.notifyListenersOfChange();
+			});
 	}
 
 	private static <T> String getUid(IRegisteredIngredients registeredIngredients, ITypedIngredient<T> typedIngredient) {

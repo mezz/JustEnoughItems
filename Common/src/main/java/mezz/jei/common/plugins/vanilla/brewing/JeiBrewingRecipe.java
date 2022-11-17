@@ -1,6 +1,5 @@
 package mezz.jei.common.plugins.vanilla.brewing;
 
-import com.google.common.base.Objects;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
@@ -11,6 +10,7 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 	private final List<ItemStack> ingredients;
@@ -27,7 +27,7 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 
 		brewingRecipeUtil.addRecipe(potionInputs, potionOutput);
 
-		this.hashCode = Objects.hashCode(
+		this.hashCode = Objects.hash(
 			ingredients.stream().map(ItemStack::getItem).toList(),
 			potionInputs.stream().map(ItemStack::getItem).toList(),
 			potionOutput.getItem()
@@ -87,9 +87,9 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 		Potion type1 = PotionUtils.getPotion(potion1);
 		Potion type2 = PotionUtils.getPotion(potion2);
 		IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registry.POTION_REGISTRY);
-		ResourceLocation key1 = potionRegistry.getRegistryName(type1);
-		ResourceLocation key2 = potionRegistry.getRegistryName(type2);
-		return java.util.Objects.equals(key1, key2);
+		ResourceLocation key1 = potionRegistry.getRegistryName(type1).orElse(null);
+		ResourceLocation key2 = potionRegistry.getRegistryName(type2).orElse(null);
+		return Objects.equals(key1, key2);
 	}
 
 	@Override

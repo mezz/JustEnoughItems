@@ -41,10 +41,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
     }
 
     @Override
-    @Nullable
-    public TextureAtlasSprite getStillFluidSprite(IJeiFluidIngredient ingredient) {
+    public Optional<TextureAtlasSprite> getStillFluidSprite(IJeiFluidIngredient ingredient) {
         FluidVariant fluidVariant = getFluidVariant(ingredient);
-        return FluidVariantRendering.getSprite(fluidVariant);
+        TextureAtlasSprite sprite = FluidVariantRendering.getSprite(fluidVariant);
+        return Optional.ofNullable(sprite);
     }
 
     @Override

@@ -63,9 +63,10 @@ public final class JeiStarter {
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
 		List<IModPlugin> plugins = data.plugins();
-		VanillaPlugin vanillaPlugin = PluginHelper.getPluginWithClass(VanillaPlugin.class, plugins);
-		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins);
-		ErrorUtil.checkNotNull(vanillaPlugin, "vanilla plugin");
+		VanillaPlugin vanillaPlugin = PluginHelper.getPluginWithClass(VanillaPlugin.class, plugins)
+			.orElseThrow(() -> new IllegalStateException("vanilla plugin not found"));
+		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins)
+			.orElse(null);
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
 
 		ConfigData configData = data.configData();

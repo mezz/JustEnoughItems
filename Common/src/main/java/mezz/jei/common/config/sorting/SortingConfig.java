@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 public abstract class SortingConfig<T> {
@@ -36,35 +37,39 @@ public abstract class SortingConfig<T> {
 		}
 	}
 
-	@Nullable
-	private List<T> loadSortedFromFile() {
+	private Optional<List<T>> loadSortedFromFile() {
 		if (Files.exists(path)) {
 			try {
-				return this.serializer.read(path);
+				List<T> result = this.serializer.read(path);
+				return Optional.of(result);
 			} catch (IOException e) {
 				LOGGER.error("Failed to load from file: {}", path, e);
 			}
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	private void load(Collection<T> allValues) {
-		final List<T> sortedOnFile = loadSortedFromFile();
-		final Comparator<T> sortOrder;
-		if (sortedOnFile == null) {
-			sortOrder = getDefaultSortOrder();
-		} else {
-			Comparator<T> existingOrder = Comparator.comparingInt(t -> indexOfSort(sortedOnFile.indexOf(t)));
-			Comparator<T> defaultOrder = getDefaultSortOrder();
-			sortOrder = existingOrder.thenComparing(defaultOrder);
-		}
+		final Optional<List<T>> previousSorted = loadSortedFromFile();
+
+		final Comparator<T> defaultOrder = getDefaultSortOrder();
+		final Comparator<T> sortOrder = previousSorted
+			.map(s -> {
+				Comparator<T> existingOrder = Comparator.comparingInt(t -> indexOfSort(s.indexOf(t)));
+				return existingOrder.thenComparing(defaultOrder);
+			})
+			.orElse(defaultOrder);
 
 		this.sorted = allValues.stream()
 			.distinct()
 			.sorted(sortOrder)
 			.toList();
 
-		if (!Objects.equals(sortedOnFile, this.sorted)) {
+		final boolean changed = previousSorted
+			.map(s -> !Objects.equals(s, this.sorted))
+			.orElse(true);
+
+		if (changed) {
 			save(this.sorted);
 		}
 	}

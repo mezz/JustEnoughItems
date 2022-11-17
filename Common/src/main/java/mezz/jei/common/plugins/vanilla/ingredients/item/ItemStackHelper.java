@@ -60,17 +60,17 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		ErrorUtil.checkNotEmpty(ingredient);
 
 		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
-		String modId = itemStackHelper.getCreatorModId(ingredient);
-		if (modId == null) {
-			IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
-			ResourceLocation registryName = registry.getRegistryName(ingredient.getItem());
-			if (registryName == null) {
+		return itemStackHelper.getCreatorModId(ingredient)
+			.or(() ->
+				Services.PLATFORM
+				.getRegistry(Registry.ITEM_REGISTRY)
+				.getRegistryName(ingredient.getItem())
+				.map(ResourceLocation::getNamespace)
+			)
+			.orElseThrow(() -> {
 				String stackInfo = getErrorInfo(ingredient);
 				throw new IllegalStateException("null registryName for: " + stackInfo);
-			}
-			modId = registryName.getNamespace();
-		}
-		return modId;
+			});
 	}
 
 	@Override
@@ -83,14 +83,13 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		ErrorUtil.checkNotEmpty(ingredient);
 
 		Item item = ingredient.getItem();
-		IPlatformRegistry<Item> itemRegistry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
-		ResourceLocation name = itemRegistry.getRegistryName(item);
-		if (name == null) {
-			String stackInfo = getErrorInfo(ingredient);
-			throw new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
-		}
-
-		return name;
+		return Services.PLATFORM
+			.getRegistry(Registry.ITEM_REGISTRY)
+			.getRegistryName(item)
+			.orElseThrow(() -> {
+				String stackInfo = getErrorInfo(ingredient);
+				throw new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
+			});
 	}
 
 	@Override

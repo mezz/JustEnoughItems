@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public final class ColorGetter implements IColorHelper {
 
@@ -133,34 +134,33 @@ public final class ColorGetter implements IColorHelper {
 		if (colorCount <= 0) {
 			return Collections.emptyList();
 		}
-		final NativeImage bufferedImage = getNativeImage(textureAtlasSprite);
-		if (bufferedImage == null) {
-			return Collections.emptyList();
-		}
-		final List<Integer> colors = new ArrayList<>(colorCount);
-		final int[][] palette = ColorThief.getPalette(bufferedImage, colorCount, 2, false);
-		for (int[] colorInt : palette) {
-			int red = (int) ((colorInt[0] - 1) * (float) (renderColor >> 16 & 255) / 255.0F);
-			int green = (int) ((colorInt[1] - 1) * (float) (renderColor >> 8 & 255) / 255.0F);
-			int blue = (int) ((colorInt[2] - 1) * (float) (renderColor & 255) / 255.0F);
-			red = Mth.clamp(red, 0, 255);
-			green = Mth.clamp(green, 0, 255);
-			blue = Mth.clamp(blue, 0, 255);
-			int color = ((0xFF) << 24) |
-				((red & 0xFF) << 16) |
-				((green & 0xFF) << 8) |
-				(blue & 0xFF);
-			colors.add(color);
-		}
-		return colors;
+		return getNativeImage(textureAtlasSprite)
+			.map(bufferedImage -> {
+				final List<Integer> colors = new ArrayList<>(colorCount);
+				final int[][] palette = ColorThief.getPalette(bufferedImage, colorCount, 2, false);
+				for (int[] colorInt : palette) {
+					int red = (int) ((colorInt[0] - 1) * (float) (renderColor >> 16 & 255) / 255.0F);
+					int green = (int) ((colorInt[1] - 1) * (float) (renderColor >> 8 & 255) / 255.0F);
+					int blue = (int) ((colorInt[2] - 1) * (float) (renderColor & 255) / 255.0F);
+					red = Mth.clamp(red, 0, 255);
+					green = Mth.clamp(green, 0, 255);
+					blue = Mth.clamp(blue, 0, 255);
+					int color = ((0xFF) << 24) |
+						((red & 0xFF) << 16) |
+						((green & 0xFF) << 8) |
+						(blue & 0xFF);
+					colors.add(color);
+				}
+				return colors;
+			})
+			.orElseGet(Collections::emptyList);
 	}
 
-	@Nullable
-	private static NativeImage getNativeImage(TextureAtlasSprite textureAtlasSprite) {
+	private static Optional<NativeImage> getNativeImage(TextureAtlasSprite textureAtlasSprite) {
 		final int iconWidth = textureAtlasSprite.getWidth();
 		final int iconHeight = textureAtlasSprite.getHeight();
 		if (iconWidth <= 0 || iconHeight <= 0) {
-			return null;
+			return Optional.empty();
 		}
 
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();

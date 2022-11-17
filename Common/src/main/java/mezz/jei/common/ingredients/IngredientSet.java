@@ -1,12 +1,12 @@
 package mezz.jei.common.ingredients;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -59,9 +59,9 @@ public class IngredientSet<V> extends AbstractSet<V> {
 		return ingredients.containsKey(uid);
 	}
 
-	@Nullable
-	public V getByUid(String uid) {
-		return ingredients.get(uid);
+	public Optional<V> getByUid(String uid) {
+		V v = ingredients.get(uid);
+		return Optional.ofNullable(v);
 	}
 
 	@Override

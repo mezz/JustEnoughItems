@@ -15,13 +15,13 @@ import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -36,12 +36,12 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	private final ResourceLocation resourceLocation;
 	private int sortedIndex = Integer.MAX_VALUE;
 
-	@Nullable
-	public static <V> IListElementInfo<V> create(IListElement<V> element, IRegisteredIngredients registeredIngredients, IModIdHelper modIdHelper) {
+	public static <V> Optional<IListElementInfo<V>> create(IListElement<V> element, IRegisteredIngredients registeredIngredients, IModIdHelper modIdHelper) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
 		try {
-			return new ListElementInfo<>(element, ingredientHelper, modIdHelper);
+			ListElementInfo<V> info = new ListElementInfo<>(element, ingredientHelper, modIdHelper);
+			return Optional.of(info);
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
@@ -49,7 +49,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 			} catch (RuntimeException e2) {
 				LOGGER.warn("Found a broken ingredient.", e2);
 			}
-			return null;
+			return Optional.empty();
 		}
 	}
 

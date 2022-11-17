@@ -86,23 +86,21 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 			return;
 		}
 
-		TextureAtlasSprite fluidStillSprite = fluidHelper.getStillFluidSprite(fluidStack);
-		if (fluidStillSprite == null) {
-			return;
-		}
+		fluidHelper.getStillFluidSprite(fluidStack)
+			.ifPresent(fluidStillSprite -> {
+				int fluidColor = fluidHelper.getColorTint(fluidStack);
 
-		int fluidColor = fluidHelper.getColorTint(fluidStack);
+				long amount = fluidHelper.getAmount(fluidStack);
+				long scaledAmount = (amount * height) / capacity;
+				if (amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
+					scaledAmount = MIN_FLUID_HEIGHT;
+				}
+				if (scaledAmount > height) {
+					scaledAmount = height;
+				}
 
-		long amount = fluidHelper.getAmount(fluidStack);
-		long scaledAmount = (amount * height) / capacity;
-		if (amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
-			scaledAmount = MIN_FLUID_HEIGHT;
-		}
-		if (scaledAmount > height) {
-			scaledAmount = height;
-		}
-
-		drawTiledSprite(poseStack, width, height, fluidColor, scaledAmount, fluidStillSprite);
+				drawTiledSprite(poseStack, width, height, fluidColor, scaledAmount, fluidStillSprite);
+			});
 	}
 
 	private static void drawTiledSprite(PoseStack poseStack, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite) {

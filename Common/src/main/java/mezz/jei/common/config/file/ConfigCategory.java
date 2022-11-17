@@ -1,6 +1,5 @@
 package mezz.jei.common.config.file;
 
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -8,6 +7,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class ConfigCategory {
@@ -28,9 +28,9 @@ public class ConfigCategory {
         return name;
     }
 
-    @Nullable
-    public ConfigValue<?> getConfigValue(String configValueName) {
-        return valueMap.get(configValueName);
+    public Optional<ConfigValue<?>> getConfigValue(String configValueName) {
+        ConfigValue<?> configValue = valueMap.get(configValueName);
+        return Optional.ofNullable(configValue);
     }
 
     public Collection<ConfigValue<?>> getConfigValues() {

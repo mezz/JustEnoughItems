@@ -117,14 +117,14 @@ public class IngredientManager implements IIngredientManager {
 				}
 			} else {
 				IListElement<V> element = IngredientListElementFactory.createOrderedElement(value);
-				IListElementInfo<V> info = ListElementInfo.create(element, this.registeredIngredients, modIdHelper);
-				if (info != null) {
-					blacklist.removeIngredientFromBlacklist(value, ingredientHelper);
-					ingredientFilter.addIngredient(info);
-					if (clientConfig.isDebugModeEnabled()) {
-						LOGGER.debug("Added ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
-					}
-				}
+				ListElementInfo.create(element, this.registeredIngredients, modIdHelper)
+					.ifPresent(info -> {
+						blacklist.removeIngredientFromBlacklist(value, ingredientHelper);
+						ingredientFilter.addIngredient(info);
+						if (clientConfig.isDebugModeEnabled()) {
+							LOGGER.debug("Added ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
+						}
+					});
 			}
 		}
 		ingredientFilter.invalidateCache();

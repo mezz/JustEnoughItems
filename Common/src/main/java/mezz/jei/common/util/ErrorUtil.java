@@ -38,29 +38,27 @@ public final class ErrorUtil {
 			return "null";
 		}
 		Item item = itemStack.getItem();
-		final String itemName;
 		IPlatformRegistry<Item> itemRegistry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
-		ResourceLocation registryName = itemRegistry.getRegistryName(item);
-		if (registryName != null) {
-			itemName = registryName.toString();
-		} else if (item instanceof BlockItem) {
-			final String blockName;
-			Block block = ((BlockItem) item).getBlock();
-			if (block == null) {
-				blockName = "null";
-			} else {
-				IPlatformRegistry<Block> blockRegistry = Services.PLATFORM.getRegistry(Registry.BLOCK_REGISTRY);
-				ResourceLocation blockRegistryName = blockRegistry.getRegistryName(block);
-				if (blockRegistryName != null) {
-					blockName = blockRegistryName.toString();
+
+		final String itemName = itemRegistry.getRegistryName(item)
+			.map(ResourceLocation::toString)
+			.orElseGet(() -> {
+				if (item instanceof BlockItem) {
+					final String blockName;
+					Block block = ((BlockItem) item).getBlock();
+					if (block == null) {
+						blockName = "null";
+					} else {
+						IPlatformRegistry<Block> blockRegistry = Services.PLATFORM.getRegistry(Registry.BLOCK_REGISTRY);
+						blockName = blockRegistry.getRegistryName(block)
+							.map(ResourceLocation::toString)
+							.orElseGet(() -> block.getClass().getName());
+					}
+					return "BlockItem(" + blockName + ")";
 				} else {
-					blockName = block.getClass().getName();
+					return item.getClass().getName();
 				}
-			}
-			itemName = "BlockItem(" + blockName + ")";
-		} else {
-			itemName = item.getClass().getName();
-		}
+			});
 
 		CompoundTag nbt = itemStack.getTag();
 		if (nbt != null) {

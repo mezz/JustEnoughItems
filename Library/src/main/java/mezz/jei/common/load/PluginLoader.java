@@ -51,7 +51,6 @@ import mezz.jei.common.runtime.JeiHelpers;
 import mezz.jei.common.startup.ConfigData;
 import mezz.jei.common.startup.StartData;
 import mezz.jei.common.transfer.RecipeTransferHandlerHelper;
-import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.common.util.RecipeErrorUtil;
 import mezz.jei.common.util.StackHelper;
@@ -136,8 +135,8 @@ public class PluginLoader {
 	private List<IRecipeCategory<?>> createRecipeCategories(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin) {
 		RecipeCategoryRegistration recipeCategoryRegistration = new RecipeCategoryRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering categories", plugins, p -> p.registerCategories(recipeCategoryRegistration));
-		CraftingRecipeCategory craftingCategory = vanillaPlugin.getCraftingCategory();
-		ErrorUtil.checkNotNull(craftingCategory, "vanilla crafting category");
+		CraftingRecipeCategory craftingCategory = vanillaPlugin.getCraftingCategory()
+			.orElseThrow(() -> new NullPointerException("vanilla crafting category"));
 		VanillaCategoryExtensionRegistration vanillaCategoryExtensionRegistration = new VanillaCategoryExtensionRegistration(craftingCategory);
 		PluginCaller.callOnPlugins("Registering vanilla category extensions", plugins, p -> p.registerVanillaCategoryExtensions(vanillaCategoryExtensionRegistration));
 		return recipeCategoryRegistration.getRecipeCategories();

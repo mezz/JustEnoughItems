@@ -128,7 +128,7 @@ public class ScreenHelper implements IScreenHelper {
 			return Optional.empty();
 		}
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-		return Optional.ofNullable(screenHelper.getSlotUnderMouse(guiContainer))
+		return screenHelper.getSlotUnderMouse(guiContainer)
 			.flatMap(slot -> getClickedIngredient(slot, guiContainer));
 	}
 
@@ -198,7 +198,7 @@ public class ScreenHelper implements IScreenHelper {
 		}
 		return TypedIngredient.create(registeredIngredients, ingredient)
 			.map(typedIngredient -> {
-				ImmutableRect2i area = getSlotArea(typedIngredient, guiScreen);
+				ImmutableRect2i area = getSlotArea(typedIngredient, guiScreen).orElse(null);
 				return new ClickedIngredient<>(typedIngredient, area, false, false);
 			});
 	}
@@ -208,27 +208,24 @@ public class ScreenHelper implements IScreenHelper {
 		return this.guiContainerHandlers.getGuiClickableArea(guiContainer, guiMouseX, guiMouseY);
 	}
 
-	@Nullable
-	public static <T> ImmutableRect2i getSlotArea(ITypedIngredient<T> typedIngredient, Screen guiScreen) {
+	public static <T> Optional<ImmutableRect2i> getSlotArea(ITypedIngredient<T> typedIngredient, Screen guiScreen) {
 		if (!(guiScreen instanceof AbstractContainerScreen<?> guiContainer)) {
-			return null;
+			return Optional.empty();
 		}
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-		Slot slotUnderMouse = screenHelper.getSlotUnderMouse(guiContainer);
-		if (slotUnderMouse == null) {
-			return null;
-		}
-		return typedIngredient.getItemStack()
-			.filter(i -> ItemStack.matches(slotUnderMouse.getItem(), i))
-			.map(i ->
-				new ImmutableRect2i(
-					screenHelper.getGuiLeft(guiContainer) + slotUnderMouse.x,
-					screenHelper.getGuiTop(guiContainer) + slotUnderMouse.y,
-					16,
-					16
-				)
-			)
-			.orElse(null);
+		return screenHelper.getSlotUnderMouse(guiContainer)
+			.flatMap(slotUnderMouse ->
+				typedIngredient.getItemStack()
+					.filter(i -> ItemStack.matches(slotUnderMouse.getItem(), i))
+					.map(i ->
+						new ImmutableRect2i(
+							screenHelper.getGuiLeft(guiContainer) + slotUnderMouse.x,
+							screenHelper.getGuiTop(guiContainer) + slotUnderMouse.y,
+							16,
+							16
+						)
+					)
+			);
 	}
 
 }

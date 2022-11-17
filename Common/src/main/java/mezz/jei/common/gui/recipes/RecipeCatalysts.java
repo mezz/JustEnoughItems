@@ -16,7 +16,6 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.input.ClickedIngredient;
 import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.input.IRecipeFocusSource;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,8 +97,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		return recipeSlot;
 	}
 
-	@Nullable
-	public RecipeSlot draw(PoseStack poseStack, int mouseX, int mouseY) {
+	public Optional<RecipeSlot> draw(PoseStack poseStack, int mouseX, int mouseY) {
 		int ingredientCount = recipeSlots.size();
 		if (ingredientCount > 0) {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -120,9 +118,9 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 				}
 				recipeSlot.draw(poseStack);
 			}
-			return hovered;
+			return Optional.ofNullable(hovered);
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	private Stream<RecipeSlot> getHovered(double mouseX, double mouseY) {

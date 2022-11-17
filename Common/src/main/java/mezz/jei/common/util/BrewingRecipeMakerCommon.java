@@ -114,8 +114,8 @@ public class BrewingRecipeMakerCommon {
                     }
 
                     Potion potionInputType = PotionUtils.getPotion(potionInput);
-                    ResourceLocation inputId = potionRegistry.getRegistryName(potionInputType);
-                    ResourceLocation outputId = potionRegistry.getRegistryName(potionOutputType);
+                    ResourceLocation inputId = potionRegistry.getRegistryName(potionInputType).orElse(null);
+                    ResourceLocation outputId = potionRegistry.getRegistryName(potionOutputType).orElse(null);
                     if (Objects.equals(inputId, outputId)) {
                         continue;
                     }

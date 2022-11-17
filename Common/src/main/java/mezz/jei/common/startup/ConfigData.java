@@ -52,7 +52,8 @@ public record ConfigData(
         jeiClientConfigs.register(configFile);
 
         IBookmarkConfig bookmarkConfig = new BookmarkConfig(configDir);
-        IEditModeConfig editModeConfig = new EditModeConfig(configDir.resolve("blacklist.cfg"));
+        Path blacklistPath = configDir.resolve("blacklist.cfg");
+        IEditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(blacklistPath));
         RecipeCategorySortingConfig recipeCategorySortingConfig = new RecipeCategorySortingConfig(configDir.resolve("recipe-category-sort-order.ini"));
         ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(configDir.resolve("ingredient-list-mod-sort-order.ini"));
         IngredientTypeSortingConfig ingredientTypeSortingConfig = new IngredientTypeSortingConfig(configDir.resolve("ingredient-list-type-sort-order.ini"));

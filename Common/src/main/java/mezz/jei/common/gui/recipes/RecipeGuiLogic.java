@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import javax.annotation.Nonnegative;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Stack;
 import java.util.stream.Stream;
 
@@ -196,7 +197,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		for (int recipeIndex = firstRecipeIndex; recipeIndex < recipes.size() && recipeLayouts.size() < state.getRecipesPerPage(); recipeIndex++) {
 			T recipe = recipes.get(recipeIndex);
 			int index = recipeWidgetIndex++;
-			RecipeLayout<T> recipeLayout = RecipeLayout.create(
+			Optional<RecipeLayout<T>> optionalRecipeLayout = RecipeLayout.create(
 				index,
 				recipeCategory,
 				recipe,
@@ -208,10 +209,8 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 				recipePosY,
 				textures
 			);
-			if (recipeLayout == null) {
-				brokenRecipes.add(recipe);
-			} else {
-				recipeLayouts.add(recipeLayout);
+			optionalRecipeLayout.ifPresentOrElse(recipeLayouts::add, () -> brokenRecipes.add(recipe));
+			if (optionalRecipeLayout.isPresent()) {
 				recipePosY += spacingY;
 			}
 		}
