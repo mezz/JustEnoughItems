@@ -163,7 +163,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		super.init();
 
 		final int xSize = 198;
-		int ySize = this.height - 68;
+		int ySize;
+		if (this.clientConfig.isCenterSearchBarEnabled()) {
+			ySize = this.height - 76;
+		} else {
+			ySize = this.height - 68;
+		}
 		int extraSpace = 0;
 		final int maxHeight = this.clientConfig.getMaxRecipeGuiHeight();
 		if (ySize > maxHeight) {
