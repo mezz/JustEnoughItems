@@ -22,6 +22,7 @@ import mezz.jei.common.render.ElementRenderer;
 import mezz.jei.common.render.IngredientListRenderer;
 import mezz.jei.common.render.IngredientListSlot;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
@@ -77,61 +78,68 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return this.ingredientListRenderer.size();
 	}
 
-	public int maxWidth() {
-		return this.gridConfig.getMaxColumns() * INGREDIENT_WIDTH;
-	}
-
-	public int maxHeight() {
-		return this.gridConfig.getMaxRows() * INGREDIENT_HEIGHT;
-	}
-
-	/**
-	 * @return true if there is enough space for this in the given availableArea
-	 */
-	public boolean updateBounds(ImmutableRect2i availableArea, Collection<ImmutableRect2i> exclusionAreas) {
+	public void updateBounds(ImmutableRect2i availableArea, Collection<ImmutableRect2i> exclusionAreas) {
 		this.ingredientListRenderer.clear();
 
-		this.area = calculateBounds(this.gridConfig, availableArea, INGREDIENT_WIDTH, INGREDIENT_HEIGHT);
-		if (this.area.isEmpty()) {
-			return false;
-		}
+		this.area = calculateBounds(this.gridConfig, availableArea);
 
 		for (int y = this.area.getY(); y < this.area.getY() + this.area.getHeight(); y += INGREDIENT_HEIGHT) {
 			for (int x = this.area.getX(); x < this.area.getX() + this.area.getWidth(); x += INGREDIENT_WIDTH) {
 				IngredientListSlot ingredientListSlot = new IngredientListSlot(x, y, INGREDIENT_WIDTH, INGREDIENT_HEIGHT, INGREDIENT_PADDING);
 				ImmutableRect2i stackArea = ingredientListSlot.getArea();
-				final boolean blocked = MathUtil.intersects(exclusionAreas, stackArea);
+				final boolean blocked = MathUtil.intersects(exclusionAreas, stackArea.expandBy(2));
 				ingredientListSlot.setBlocked(blocked);
 				this.ingredientListRenderer.add(ingredientListSlot);
 			}
 		}
-
-		return true;
 	}
 
-	private static ImmutableRect2i calculateBounds(IIngredientGridConfig config, ImmutableRect2i availableArea, int ingredientWidth, int ingredientHeight) {
-		final int columns = Math.min(availableArea.getWidth() / ingredientWidth, config.getMaxColumns());
-		final int rows = Math.min(availableArea.getHeight() / ingredientHeight, config.getMaxRows());
+	private static ImmutableSize2i calculateSize(IIngredientGridConfig config, ImmutableRect2i availableArea) {
+		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, config.getMaxColumns());
+		final int rows = Math.min(availableArea.getHeight() / INGREDIENT_HEIGHT, config.getMaxRows());
 		if (rows < config.getMinRows() || columns < config.getMinColumns()) {
-			return ImmutableRect2i.EMPTY;
+			return ImmutableSize2i.EMPTY;
 		}
+		return new ImmutableSize2i(
+			columns * INGREDIENT_WIDTH,
+			rows * INGREDIENT_HEIGHT
+		);
+	}
 
-		final int width = columns * ingredientWidth;
-		final int height = rows * ingredientHeight;
+	public static ImmutableSize2i calculateMinimumSize(IIngredientGridConfig config) {
+		return new ImmutableSize2i(
+			config.getMinColumns() * INGREDIENT_WIDTH,
+			config.getMinRows() * INGREDIENT_HEIGHT
+		);
+	}
 
-		final int x = switch (config.getHorizontalAlignment()) {
-			case LEFT -> availableArea.getX();
-			case CENTER -> availableArea.getX() + ((availableArea.getWidth() - width) / 2);
-			case RIGHT -> availableArea.getX() + (availableArea.getWidth() - width);
-		};
+	public static ImmutableRect2i calculateBounds(IIngredientGridConfig config, ImmutableRect2i availableArea) {
+		ImmutableSize2i size = calculateSize(config, availableArea);
+		return MathUtil.align(size, availableArea, config.getHorizontalAlignment(), config.getVerticalAlignment());
+	}
 
-		final int y = switch (config.getVerticalAlignment()) {
-			case TOP -> availableArea.getY();
-			case CENTER -> availableArea.getY() + ((availableArea.getHeight() - height) / 2);
-			case BOTTOM -> availableArea.getY() + (availableArea.getHeight() - height);
-		};
+	public record SlotInfo(int total, int blocked) {
+		public float percentBlocked() {
+			return blocked / (float) total;
+		}
+	}
 
-		return new ImmutableRect2i(x, y, width, height);
+	public static SlotInfo calculateBlockedSlotPercentage(IIngredientGridConfig config, ImmutableRect2i availableArea, Collection<ImmutableRect2i> exclusionAreas) {
+		ImmutableRect2i area = calculateBounds(config, availableArea);
+
+		int total = 0;
+		int blocked = 0;
+		for (int y = area.getY(); y < area.getY() + area.getHeight(); y += INGREDIENT_HEIGHT) {
+			for (int x = area.getX(); x < area.getX() + area.getWidth(); x += INGREDIENT_WIDTH) {
+				IngredientListSlot ingredientListSlot = new IngredientListSlot(x, y, INGREDIENT_WIDTH, INGREDIENT_HEIGHT, INGREDIENT_PADDING);
+				ImmutableRect2i stackArea = ingredientListSlot.getArea();
+				if (MathUtil.intersects(exclusionAreas, stackArea.expandBy(2))) {
+					blocked++;
+				}
+				total++;
+			}
+		}
+		return new SlotInfo(total, blocked);
 	}
 
 	public ImmutableRect2i getArea() {
@@ -208,5 +216,9 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 
 	public void set(int firstItemIndex, List<ITypedIngredient<?>> ingredientList) {
 		this.ingredientListRenderer.set(firstItemIndex, ingredientList);
+	}
+
+	public boolean hasRoom() {
+		return !this.area.isEmpty();
 	}
 }

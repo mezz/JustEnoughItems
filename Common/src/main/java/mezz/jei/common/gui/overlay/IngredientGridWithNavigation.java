@@ -22,7 +22,9 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.CheatUtil;
 import mezz.jei.common.util.CommandUtil;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.common.util.MaximalRectangle;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.KeyMapping;
@@ -31,7 +33,6 @@ import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -42,6 +43,7 @@ import java.util.stream.Stream;
  */
 public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private static final int NAVIGATION_HEIGHT = 20;
+	private static final int BORDER_MARGIN = 6;
 	private static final int BORDER_PADDING = 5;
 	private static final int INNER_PADDING = 2;
 
@@ -88,6 +90,10 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.ingredientSource.addSourceListChangedListener(() -> updateLayout(true));
 	}
 
+	public boolean hasRoom() {
+		return this.ingredientGrid.hasRoom();
+	}
+
 	public void updateLayout(boolean resetToFirstPage) {
 		if (resetToFirstPage) {
 			firstItemIndex = 0;
@@ -100,78 +106,127 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.navigation.updatePageNumber();
 	}
 
-	private static ImmutableRect2i cropToAvoidNavigationArea(ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, int maxWidth, int maxHeight) {
-		if (guiExclusionAreas.isEmpty()) {
-			return availableArea;
+	private static ImmutableRect2i avoidExclusionAreas(
+		ImmutableRect2i availableArea,
+		ImmutableRect2i estimatedNavigationArea,
+		Set<ImmutableRect2i> guiExclusionAreas,
+		ImmutableSize2i minSize,
+		IIngredientGridConfig gridConfig
+	) {
+		ImmutableRect2i largestSafeArea = MaximalRectangle.getLargestRectangle(
+			availableArea,
+			guiExclusionAreas,
+			minSize,
+			IngredientGrid.INGREDIENT_HEIGHT / 2
+		);
+
+		final boolean intersectsNavigationArea = guiExclusionAreas.stream()
+			.anyMatch(rectangle2d -> MathUtil.intersects(rectangle2d, estimatedNavigationArea));
+		if (intersectsNavigationArea) {
+			return largestSafeArea;
 		}
 
-		final ImmutableRect2i estimatedNavigationArea = availableArea.keepTop(NAVIGATION_HEIGHT + INNER_PADDING);
-
-		final Collection<ImmutableRect2i> intersectsNavigationArea = guiExclusionAreas.stream()
-			.filter(rectangle2d -> MathUtil.intersects(rectangle2d, estimatedNavigationArea))
-			.toList();
-
-		if (intersectsNavigationArea.isEmpty()) {
-			return availableArea;
-		}
-
-		return MathUtil.cropToAvoidIntersection(intersectsNavigationArea, availableArea, maxWidth, maxHeight);
-	}
-
-	/**
-	 * @return true if there is enough space for the grid in the given availableArea
-	 */
-	private boolean updateGridBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, boolean navigationEnabled) {
-		final ImmutableRect2i gridArea;
-		if (navigationEnabled) {
-			gridArea = cropToAvoidNavigationArea(availableArea, guiExclusionAreas, this.ingredientGrid.maxWidth(), this.ingredientGrid.maxHeight())
-				.cropTop(NAVIGATION_HEIGHT + INNER_PADDING)
-				.insetBy(INNER_PADDING);
+		IngredientGrid.SlotInfo slotInfo = IngredientGrid.calculateBlockedSlotPercentage(gridConfig, availableArea, guiExclusionAreas);
+		IngredientGrid.SlotInfo safeSlotInfo = IngredientGrid.calculateBlockedSlotPercentage(gridConfig, largestSafeArea, guiExclusionAreas);
+		if (slotInfo.percentBlocked() > 0.15 || safeSlotInfo.total() >= slotInfo.total()) {
+			return largestSafeArea;
 		} else {
-			gridArea = availableArea.insetBy(INNER_PADDING);
+			return availableArea;
 		}
-		return this.ingredientGrid.updateBounds(gridArea, guiExclusionAreas);
 	}
 
-	public boolean updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas) {
-		ImmutableRect2i availableGridArea;
+	private static ImmutableSize2i calculateMinimumSize(IIngredientGridConfig gridConfig, boolean navigationEnabled) {
+		ImmutableSize2i minimumArea = IngredientGrid.calculateMinimumSize(gridConfig)
+			.expandBy(2 * BORDER_MARGIN);
 		if (gridConfig.drawBackground()) {
-			availableGridArea = availableArea.insetBy(BORDER_PADDING + INNER_PADDING);
-		} else {
-			availableGridArea = availableArea;
+			minimumArea = minimumArea.expandBy(2 * (BORDER_PADDING + INNER_PADDING));
 		}
+		if (navigationEnabled) {
+			return minimumArea.addHeight(NAVIGATION_HEIGHT + INNER_PADDING);
+		}
+		return minimumArea;
+	}
+
+	private void updateGridBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, boolean navigationEnabled) {
+		ImmutableRect2i availableGridArea = availableArea.insetBy(BORDER_MARGIN);
+		if (gridConfig.drawBackground()) {
+			availableGridArea = availableGridArea
+				.insetBy(BORDER_PADDING + INNER_PADDING);
+		}
+
+		ImmutableRect2i estimatedGridArea = IngredientGrid.calculateBounds(gridConfig, availableGridArea);
+
+		if (!estimatedGridArea.isEmpty()) {
+			ImmutableRect2i slotBackgroundArea = calculateSlotBackgroundArea(estimatedGridArea, this.gridConfig);
+			ImmutableRect2i estimatedNavigationArea = calculateNavigationArea(slotBackgroundArea, navigationEnabled);
+			if (gridConfig.drawBackground()) {
+				estimatedNavigationArea.expandBy(BORDER_PADDING + INNER_PADDING);
+			}
+
+			ImmutableSize2i minimumSize = calculateMinimumSize(gridConfig, navigationEnabled);
+
+			availableGridArea = avoidExclusionAreas(
+				availableArea,
+				estimatedNavigationArea,
+				guiExclusionAreas,
+				minimumSize,
+				gridConfig
+			)
+				.insetBy(BORDER_MARGIN)
+				.cropTop(NAVIGATION_HEIGHT + INNER_PADDING);
+
+			if (gridConfig.drawBackground()) {
+				availableGridArea = availableGridArea.insetBy(BORDER_PADDING + INNER_PADDING);
+			}
+		}
+
+		this.ingredientGrid.updateBounds(availableGridArea, guiExclusionAreas);
+	}
+
+	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas) {
 		final boolean navigationEnabled =
 			switch (this.gridConfig.getButtonNavigationVisibility()) {
 				case ENABLED -> true;
 				case DISABLED -> false;
-				case AUTO_HIDE ->
-					updateGridBounds(availableGridArea, guiExclusionAreas, false) &&
-						this.pageDelegate.getPageCount() > 1;
+				case AUTO_HIDE -> {
+					updateGridBounds(availableArea, guiExclusionAreas, false);
+					yield hasRoom() && this.pageDelegate.getPageCount() > 1;
+				}
 			};
-		final boolean gridHasRoom = updateGridBounds(availableGridArea, guiExclusionAreas, navigationEnabled);
-		if (!gridHasRoom) {
-			return false;
-		}
-
-		this.slotBackgroundArea = this.ingredientGrid.getArea();
-		if (gridConfig.drawBackground()) {
-			this.slotBackgroundArea = this.slotBackgroundArea.expandBy(INNER_PADDING);
-		}
-
-		ImmutableRect2i navigationArea = ImmutableRect2i.EMPTY;
 		if (navigationEnabled) {
-			navigationArea = this.slotBackgroundArea
-				.keepTop(NAVIGATION_HEIGHT)
-				.moveUp(NAVIGATION_HEIGHT + INNER_PADDING);
+			updateGridBounds(availableArea, guiExclusionAreas, true);
 		}
+		if (!hasRoom()) {
+			return;
+		}
+
+		this.slotBackgroundArea = calculateSlotBackgroundArea(this.ingredientGrid.getArea(), this.gridConfig);
+
+		ImmutableRect2i navigationArea = calculateNavigationArea(this.slotBackgroundArea, navigationEnabled);
 		this.navigation.updateBounds(navigationArea);
 
 		this.backgroundArea = MathUtil.union(this.slotBackgroundArea, navigationArea);
 		if (gridConfig.drawBackground()) {
 			this.backgroundArea = this.backgroundArea.expandBy(BORDER_PADDING);
 		}
+	}
 
-		return true;
+	private static ImmutableRect2i calculateSlotBackgroundArea(ImmutableRect2i ingredientGridArea, IIngredientGridConfig gridConfig) {
+		if (gridConfig.drawBackground()) {
+			return ingredientGridArea.expandBy(INNER_PADDING);
+		} else {
+			return ingredientGridArea;
+		}
+	}
+
+	private static ImmutableRect2i calculateNavigationArea(ImmutableRect2i slotBackgroundArea, boolean navigationEnabled) {
+		if (!navigationEnabled) {
+			return ImmutableRect2i.EMPTY;
+		}
+
+		return slotBackgroundArea
+			.keepTop(NAVIGATION_HEIGHT)
+			.moveUp(NAVIGATION_HEIGHT + INNER_PADDING);
 	}
 
 	public ImmutableRect2i getBackgroundArea() {

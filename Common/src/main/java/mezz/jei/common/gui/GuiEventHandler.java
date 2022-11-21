@@ -1,15 +1,20 @@
 package mezz.jei.common.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.overlay.IngredientListOverlay;
-import mezz.jei.common.gui.overlay.bookmarks.LeftAreaDispatcher;
+import mezz.jei.common.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.common.input.MouseUtil;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.RectDebugger;
+import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.util.LimitedLogger;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -19,47 +24,51 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 
 public class GuiEventHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final LimitedLogger missingBackgroundLogger = new LimitedLogger(LOGGER, Duration.ofHours(1));
 
 	private final IngredientListOverlay ingredientListOverlay;
+	private final IClientConfig config;
 	private final IScreenHelper screenHelper;
-	private final LeftAreaDispatcher leftAreaDispatcher;
+	private final BookmarkOverlay bookmarkOverlay;
 	private boolean drawnOnBackground = false;
 
 	public GuiEventHandler(
 		IScreenHelper screenHelper,
-		LeftAreaDispatcher leftAreaDispatcher,
-		IngredientListOverlay ingredientListOverlay
+		BookmarkOverlay bookmarkOverlay,
+		IngredientListOverlay ingredientListOverlay,
+		IClientConfig config
 	) {
 		this.screenHelper = screenHelper;
-		this.leftAreaDispatcher = leftAreaDispatcher;
+		this.bookmarkOverlay = bookmarkOverlay;
 		this.ingredientListOverlay = ingredientListOverlay;
+		this.config = config;
 	}
 
 	public void onGuiInit(Screen screen) {
 		ingredientListOverlay.updateScreen(screen, false);
-		leftAreaDispatcher.updateScreen(screen, false);
+		bookmarkOverlay.updateScreen(screen, false);
 	}
 
 	public void onGuiOpen(Screen screen) {
 		ingredientListOverlay.updateScreen(screen, false);
-		leftAreaDispatcher.updateScreen(screen, false);
+		bookmarkOverlay.updateScreen(screen, false);
 	}
 
 	public void onDrawBackgroundPost(Screen screen, PoseStack poseStack) {
 		Minecraft minecraft = Minecraft.getInstance();
 		boolean exclusionAreasChanged = screenHelper.updateGuiExclusionAreas(screen);
 		ingredientListOverlay.updateScreen(screen, exclusionAreasChanged);
-		leftAreaDispatcher.updateScreen(screen, exclusionAreasChanged);
+		bookmarkOverlay.updateScreen(screen, exclusionAreasChanged);
 
 		drawnOnBackground = true;
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
 		ingredientListOverlay.drawScreen(minecraft, poseStack, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
-		leftAreaDispatcher.drawScreen(minecraft, poseStack, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
+		bookmarkOverlay.drawScreen(minecraft, poseStack, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
 	}
 
 	/**
@@ -74,7 +83,7 @@ public class GuiEventHandler {
 		Minecraft minecraft = Minecraft.getInstance();
 
 		ingredientListOverlay.updateScreen(screen, false);
-		leftAreaDispatcher.updateScreen(screen, false);
+		bookmarkOverlay.updateScreen(screen, false);
 
 		if (!drawnOnBackground) {
 			if (screen instanceof AbstractContainerScreen) {
@@ -82,7 +91,7 @@ public class GuiEventHandler {
 				missingBackgroundLogger.log(Level.WARN, guiName, "GUI did not draw the dark background layer behind itself, this may result in display issues: {}", guiName);
 			}
 			ingredientListOverlay.drawScreen(minecraft, poseStack, mouseX, mouseY, minecraft.getFrameTime());
-			leftAreaDispatcher.drawScreen(minecraft, poseStack, mouseX, mouseY, minecraft.getFrameTime());
+			bookmarkOverlay.drawScreen(minecraft, poseStack, mouseX, mouseY, minecraft.getFrameTime());
 		}
 		drawnOnBackground = false;
 
@@ -102,7 +111,11 @@ public class GuiEventHandler {
 		}
 
 		ingredientListOverlay.drawTooltips(minecraft, poseStack, mouseX, mouseY);
-		leftAreaDispatcher.drawTooltips(minecraft, poseStack, mouseX, mouseY);
+		bookmarkOverlay.drawTooltips(minecraft, poseStack, mouseX, mouseY);
+
+		if (config.isDebugModeEnabled()) {
+			drawDebugInfoForScreen(screen, poseStack);
+		}
 	}
 
 	public void onClientTick() {
@@ -111,5 +124,40 @@ public class GuiEventHandler {
 
 	public boolean renderCompactPotionIndicators() {
 		return ingredientListOverlay.isListDisplayed();
+	}
+
+	private void drawDebugInfoForScreen(Screen screen, PoseStack poseStack) {
+		RectDebugger.INSTANCE.draw(poseStack);
+
+		screenHelper.getGuiProperties(screen)
+			.ifPresent(guiProperties -> {
+				Set<? extends IImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas();
+
+				RenderSystem.disableDepthTest();
+
+				// draw the gui exclusion areas
+				for (IImmutableRect2i area : guiExclusionAreas) {
+					GuiComponent.fill(
+						poseStack,
+						area.getX(),
+						area.getY(),
+						area.getX() + area.getWidth(),
+						area.getY() + area.getHeight(),
+						0x44FF0000
+					);
+				}
+
+				// draw the gui area
+				GuiComponent.fill(
+					poseStack,
+					guiProperties.getGuiLeft(),
+					guiProperties.getGuiTop(),
+					guiProperties.getGuiLeft() + guiProperties.getGuiXSize(),
+					guiProperties.getGuiTop() + guiProperties.getGuiYSize(),
+					0x22CCCC00
+				);
+
+				RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+			});
 	}
 }

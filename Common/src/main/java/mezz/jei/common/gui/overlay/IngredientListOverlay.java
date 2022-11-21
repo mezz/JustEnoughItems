@@ -58,12 +58,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IScreenHelper screenHelper;
 	private final GuiTextFieldFilter searchField;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
-	private ImmutableRect2i displayArea = ImmutableRect2i.EMPTY;
-	private boolean hasRoom;
-
-	// properties of the gui we're next to
-	@Nullable
-	private IGuiProperties guiProperties;
+	private final ScreenPropertiesCache screenPropertiesCache;
 
 	public IngredientListOverlay(
 		IIngredientGridSource ingredientGridSource,
@@ -78,6 +73,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IInternalKeyMappings keyBindings
 	) {
 		this.screenHelper = screenHelper;
+		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		this.contents = contents;
 		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
@@ -89,7 +85,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.searchField.setResponder(filterTextSource::setFilterText);
 		filterTextSource.addListener(this.searchField::setValue);
 
-		ingredientGridSource.addSourceListChangedListener(() -> updateBounds(true));
+		ingredientGridSource.addSourceListChangedListener(() -> {
+			Minecraft minecraft = Minecraft.getInstance();
+			Screen screen = minecraft.screen;
+			updateScreen(screen, true);
+		});
 
 		this.configButton = ConfigButton.create(this::isListDisplayed, worldConfig, textures, keyBindings);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, screenHelper, registeredIngredients, worldConfig);
@@ -97,56 +97,41 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	@Override
 	public boolean isListDisplayed() {
-		return worldConfig.isOverlayEnabled() && this.guiProperties != null && this.hasRoom;
+		return worldConfig.isOverlayEnabled() &&
+			screenPropertiesCache.hasValidScreen() &&
+			contents.hasRoom();
 	}
 
 	private static ImmutableRect2i createDisplayArea(IGuiProperties guiProperties) {
 		ImmutableRect2i screenRectangle = GuiProperties.getScreenRectangle(guiProperties);
 		int guiRight = GuiProperties.getGuiRight(guiProperties);
-		return screenRectangle
-			.cropLeft(guiRight)
-			.insetBy(BORDER_MARGIN);
+		return screenRectangle.cropLeft(guiRight);
 	}
 
-	public void updateScreen(@Nullable Screen guiScreen, boolean exclusionAreasChanged) {
-		Optional.ofNullable(guiScreen)
-			.flatMap(screenHelper::getGuiProperties)
-			.ifPresentOrElse(guiProperties -> {
-				final boolean guiPropertiesChanged = this.guiProperties == null || !GuiProperties.areEqual(this.guiProperties, guiProperties);
-				if (exclusionAreasChanged || guiPropertiesChanged) {
-					updateNewScreen(guiProperties, guiPropertiesChanged);
-				}
-			}, () -> {
-				if (this.guiProperties != null) {
-					this.guiProperties = null;
-					this.searchField.setFocused(false);
+	public void updateScreen(@Nullable Screen guiScreen, boolean forceUpdate) {
+		screenPropertiesCache.updateScreen(guiScreen, forceUpdate, optionalGuiProperties -> {
+			optionalGuiProperties
+				.ifPresentOrElse(guiProperties -> {
+					ImmutableRect2i displayArea = createDisplayArea(guiProperties);
+					updateBounds(guiProperties, displayArea);
+				}, () -> {
 					this.ghostIngredientDragManager.stopDrag();
-				}
-			});
+					this.searchField.setFocused(false);
+				});
+		});
 	}
 
-	private void updateNewScreen(IGuiProperties guiProperties, boolean guiPropertiesChanged) {
-		this.guiProperties = guiProperties;
-		this.displayArea = createDisplayArea(guiProperties);
-		if (guiPropertiesChanged) {
-			this.ghostIngredientDragManager.stopDrag();
-		}
-		updateBounds(false);
-	}
+	private void updateBounds(IGuiProperties guiProperties, ImmutableRect2i displayArea) {
+		final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, guiProperties);
 
-	private void updateBounds(boolean resetToFirstPage) {
-		if (this.guiProperties == null) {
-			return;
-		}
-		final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, this.guiProperties);
-
-		final ImmutableRect2i availableContentsArea = getAvailableContentsArea(searchBarCentered);
+		final ImmutableRect2i availableContentsArea = getAvailableContentsArea(displayArea, searchBarCentered);
 		final Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas().stream()
 			.map(ImmutableRect2i::convert)
 			.collect(Collectors.toUnmodifiableSet());
-		this.hasRoom = this.contents.updateBounds(availableContentsArea, guiExclusionAreas);
+		this.contents.updateBounds(availableContentsArea, guiExclusionAreas);
+		this.contents.updateLayout(false);
 
-		final ImmutableRect2i searchAndConfigArea = getSearchAndConfigArea(searchBarCentered, guiProperties);
+		final ImmutableRect2i searchAndConfigArea = getSearchAndConfigArea(displayArea, searchBarCentered, guiProperties);
 		final ImmutableRect2i searchArea = searchAndConfigArea.cropRight(BUTTON_SIZE);
 		final ImmutableRect2i configButtonArea = searchAndConfigArea.keepRight(BUTTON_SIZE);
 
@@ -155,10 +140,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.searchField.updateBounds(searchArea);
 
 		this.configButton.updateBounds(configButtonArea);
-
-		if (this.hasRoom) {
-			this.contents.updateLayout(resetToFirstPage);
-		}
 	}
 
 	private static boolean isSearchBarCentered(IClientConfig clientConfig, IGuiProperties guiProperties) {
@@ -166,26 +147,27 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			GuiProperties.getGuiBottom(guiProperties) + SEARCH_HEIGHT < guiProperties.getScreenHeight();
 	}
 
-	private ImmutableRect2i getAvailableContentsArea(boolean searchBarCentered) {
+	private ImmutableRect2i getAvailableContentsArea(ImmutableRect2i displayArea, boolean searchBarCentered) {
 		if (searchBarCentered) {
-			return this.displayArea;
+			return displayArea;
 		}
-		return this.displayArea.cropBottom(SEARCH_HEIGHT + INNER_PADDING);
+		return displayArea.cropBottom(SEARCH_HEIGHT + INNER_PADDING);
 	}
 
-	private ImmutableRect2i getSearchAndConfigArea(boolean searchBarCentered, IGuiProperties guiProperties) {
+	private ImmutableRect2i getSearchAndConfigArea(ImmutableRect2i displayArea, boolean searchBarCentered, IGuiProperties guiProperties) {
+		displayArea = displayArea.insetBy(BORDER_MARGIN);
 		if (searchBarCentered) {
 			ImmutableRect2i guiRectangle = GuiProperties.getGuiRectangle(guiProperties);
-			return this.displayArea
+			return displayArea
 				.keepBottom(SEARCH_HEIGHT)
 				.matchWidthAndX(guiRectangle);
-		} else if (this.hasRoom) {
+		} else if (this.contents.hasRoom()) {
 			final ImmutableRect2i contentsArea = this.contents.getBackgroundArea();
-			return this.displayArea
+			return displayArea
 				.keepBottom(SEARCH_HEIGHT)
 				.matchWidthAndX(contentsArea);
 		} else {
-			return this.displayArea.keepBottom(SEARCH_HEIGHT);
+			return displayArea.keepBottom(SEARCH_HEIGHT);
 		}
 	}
 
@@ -194,7 +176,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			this.searchField.renderButton(poseStack, mouseX, mouseY, partialTicks);
 			this.contents.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
 		}
-		if (this.guiProperties != null) {
+		if (this.screenPropertiesCache.hasValidScreen()) {
 			this.configButton.draw(poseStack, mouseX, mouseY, partialTicks);
 		}
 	}
@@ -204,7 +186,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			this.ghostIngredientDragManager.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 			this.contents.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 		}
-		if (this.guiProperties != null) {
+		if (this.screenPropertiesCache.hasValidScreen()) {
 			this.configButton.drawTooltips(poseStack, mouseX, mouseY);
 		}
 	}
@@ -243,16 +225,16 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			new CheatInputHandler(this.contents, worldConfig, clientConfig, serverConnection)
 		);
 
-		final IUserInputHandler hiddenInputHandler = this.configButton.createInputHandler();
+		final IUserInputHandler configButtonInputHandler = this.configButton.createInputHandler();
 
 		return new ProxyInputHandler(() -> {
-			if (this.guiProperties == null) {
-				return NullInputHandler.INSTANCE;
-			}
 			if (isListDisplayed()) {
 				return displayedInputHandler;
 			}
-			return hiddenInputHandler;
+			if (this.screenPropertiesCache.hasValidScreen()) {
+				return configButtonInputHandler;
+			}
+			return NullInputHandler.INSTANCE;
 		});
 	}
 

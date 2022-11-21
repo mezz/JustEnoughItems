@@ -17,6 +17,7 @@ import mezz.jei.common.input.ClickedIngredient;
 import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.input.IRecipeFocusSource;
 
+import javax.annotation.Nonnegative;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,8 +53,9 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		return this.recipeSlots.isEmpty();
 	}
 
+	@Nonnegative
 	public int getWidth() {
-		return width - overlapSize;
+		return Math.max(0, width - overlapSize);
 	}
 
 	public void updateLayout(List<ITypedIngredient<?>> ingredients, RecipesGui recipesGui) {

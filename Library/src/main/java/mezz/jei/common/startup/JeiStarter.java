@@ -18,7 +18,6 @@ import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.GuiEventHandler;
 import mezz.jei.common.gui.overlay.IngredientListOverlay;
 import mezz.jei.common.gui.overlay.bookmarks.BookmarkOverlay;
-import mezz.jei.common.gui.overlay.bookmarks.LeftAreaDispatcher;
 import mezz.jei.common.gui.recipes.RecipesGui;
 import mezz.jei.common.helpers.ModIdHelper;
 import mezz.jei.common.ingredients.IIngredientSorter;
@@ -145,14 +144,12 @@ public final class JeiStarter {
 
 		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime));
 
-		LeftAreaDispatcher leftAreaDispatcher = new LeftAreaDispatcher(screenHelper, bookmarkOverlay);
-
-		GuiEventHandler guiEventHandler = new GuiEventHandler(screenHelper, leftAreaDispatcher, ingredientListOverlay);
+		GuiEventHandler guiEventHandler = new GuiEventHandler(screenHelper, bookmarkOverlay, ingredientListOverlay, configData.clientConfig());
 
 		CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
 			recipesGui,
 			ingredientListOverlay,
-			leftAreaDispatcher,
+			bookmarkOverlay,
 			new GuiContainerWrapper(screenHelper)
 		);
 
@@ -164,7 +161,7 @@ public final class JeiStarter {
 			configData.clientConfig(),
 			new EditInputHandler(recipeFocusSource, registeredIngredients, ingredientFilter, configData.worldConfig(), configData.editModeConfig()),
 			ingredientListOverlay.createInputHandler(),
-			leftAreaDispatcher.createInputHandler(),
+			bookmarkOverlay.createInputHandler(),
 			new FocusInputHandler(recipeFocusSource, recipesGui),
 			new BookmarkInputHandler(recipeFocusSource, bookmarkList),
 			new GlobalInputHandler(configData.worldConfig()),
