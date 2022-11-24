@@ -1,146 +1,108 @@
 package mezz.jei.common.util;
 
-
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class MaximalRectangle {
-    public static ImmutableRect2i getLargestRectangle(
+    public static Stream<ImmutableRect2i> getLargestRectangles(
         ImmutableRect2i area,
         Collection<ImmutableRect2i> exclusionAreas,
-        ImmutableSize2i minSize,
         int samplingScale
     ) {
-        MaximalRectangle maximalRectangle = new MaximalRectangle(area, exclusionAreas, minSize, samplingScale);
-        return maximalRectangle.getLargestRectangle();
+        exclusionAreas = exclusionAreas.stream()
+            .filter(a -> MathUtil.intersects(a, area))
+            .collect(Collectors.toUnmodifiableSet());
+
+        if (exclusionAreas.isEmpty()) {
+            return Stream.of(area);
+        }
+
+        MaximalRectangle maximalRectangle = new MaximalRectangle(area, samplingScale, exclusionAreas);
+        return maximalRectangle.getLargestRectangles();
     }
 
-    private final int xOffset;
-    private final int yOffset;
+    private final ImmutableRect2i area;
+    private final int rows;
+    private final int columns;
     private final int samplingScale;
-    private final int minCellRangeWidth;
-    private final int minCellRangeHeight;
-    private final CellState[][] inputMatrix;
+    private final boolean[][] blockedAreas;
 
-    private enum CellState {
-        OPEN, BLOCKED
-    }
-
-    private static class CellRange {
-        private final int column;
-        private final int row;
-        private final int width;
-        private final int height;
-
-        public CellRange(int column, int row, int width, int height) {
-            this.column = column;
-            this.row = row;
-            this.width = width;
-            this.height = height;
-        }
-
-        public int getArea() {
-            return width * height;
-        }
-
-        public ImmutableRect2i getOutput(int xOffset, int yOffset, int samplingScale) {
-            return new ImmutableRect2i(
-                xOffset + (column * samplingScale),
-                yOffset + (row * samplingScale),
-                width * samplingScale,
-                height * samplingScale
-            );
-        }
-    }
-
-    private MaximalRectangle(
-        ImmutableRect2i area,
-        Collection<ImmutableRect2i> exclusionAreas,
-        ImmutableSize2i minSize,
-        int samplingScale
-    ) {
-        this.xOffset = area.getX();
-        this.yOffset = area.getY();
+    private MaximalRectangle(ImmutableRect2i area, int samplingScale, Collection<ImmutableRect2i> exclusionAreas) {
+        this.area = area;
         this.samplingScale = samplingScale;
-        this.minCellRangeWidth = MathUtil.divideCeil(minSize.getWidth(), samplingScale);
-        this.minCellRangeHeight = MathUtil.divideCeil(minSize.getHeight(), samplingScale);
-        int rows = area.getHeight() / samplingScale;
-        int columns = area.getWidth() / samplingScale;
-        this.inputMatrix = new CellState[rows][columns];
+
+        this.rows = area.getHeight() / samplingScale;
+        this.columns = area.getWidth() / samplingScale;
+        this.blockedAreas = new boolean[rows][columns];
         for (int row = 0; row < rows; row++) {
             for (int column = 0; column < columns; column++) {
-                CellRange cellRange = new CellRange(column, row, 1, 1);
-                ImmutableRect2i cell = cellRange.getOutput(xOffset, yOffset, samplingScale);
-                boolean intersects = MathUtil.intersects(exclusionAreas, cell);
-                this.inputMatrix[row][column] = intersects ? CellState.BLOCKED : CellState.OPEN;
+                ImmutableRect2i rect = getRect(row, column, 1, 1);
+                boolean intersects = MathUtil.intersects(exclusionAreas, rect);
+                blockedAreas[row][column] = intersects;
             }
         }
     }
 
-    private ImmutableRect2i getLargestRectangle() {
-        int numRows = this.inputMatrix.length;
-        if (numRows == 0) {
+    private ImmutableRect2i getRect(int row, int column, int width, int height) {
+        if (width == 0 || height == 0) {
             return ImmutableRect2i.EMPTY;
         }
-        int numColumns = this.inputMatrix[0].length;
-        if (numColumns == 0) {
-            return ImmutableRect2i.EMPTY;
+        return new ImmutableRect2i(
+            area.getX() + (column * samplingScale),
+            area.getY() + (row * samplingScale),
+            width * samplingScale,
+            height * samplingScale
+        );
+    }
+
+    private Stream<ImmutableRect2i> getLargestRectangles() {
+        if (rows == 0 || columns == 0) {
+            return Stream.empty();
         }
 
-        CellRange max = new CellRange(0, 0, 0, 0);
-        int maxArea = 0;
+        int[] heights = new int[columns];
+        int[] leftIndexes = new int[columns];
+        int[] rightIndexes = new int[columns];
+        Arrays.fill(rightIndexes, columns);
 
-        int[] heights = new int[numColumns];
-        int[] leftIndexes = new int[numColumns];
-        int[] rightIndexes = new int[numColumns];
-        Arrays.fill(rightIndexes, numColumns);
+        return IntStream.range(0, rows)
+            .boxed()
+            .flatMap(row -> {
+                int currentLeftIndex = 0;
+                for (int column = 0; column < columns; column++) {
+                    if (blockedAreas[row][column]) {
+                        heights[column] = 0;
+                        leftIndexes[column] = 0;
+                        currentLeftIndex = column + 1;
+                    } else {
+                        heights[column]++;
+                        leftIndexes[column] = Math.max(leftIndexes[column], currentLeftIndex);
+                    }
+                }
 
-        for (int row = 0; row < numRows; row++) {
-            int currentLeftIndex = 0;
-            for (int column = 0; column < numColumns; column++) {
-                if (this.inputMatrix[row][column] == CellState.OPEN) {
-                    heights[column]++;
-                    leftIndexes[column] = Math.max(leftIndexes[column], currentLeftIndex);
-                } else {
-                    heights[column] = 0;
-                    leftIndexes[column] = 0;
-                    currentLeftIndex = column + 1;
+                int currentRightIndex = columns;
+                for (int column = columns - 1; column >= 0; column--) {
+                    if (blockedAreas[row][column]) {
+                        rightIndexes[column] = columns;
+                        currentRightIndex = column;
+                    } else {
+                        rightIndexes[column] = Math.min(rightIndexes[column], currentRightIndex);
+                    }
                 }
-            }
 
-            int currentRightIndex = numColumns;
-            for (int column = numColumns - 1; column >= 0; column--) {
-                if (this.inputMatrix[row][column] == CellState.OPEN) {
-                    rightIndexes[column] = Math.min(rightIndexes[column], currentRightIndex);
-                } else {
-                    rightIndexes[column] = numColumns;
-                    currentRightIndex = column;
-                }
-            }
+                return IntStream.range(0, columns)
+                    .mapToObj(column -> {
+                        int rightIndex = rightIndexes[column];
+                        int leftIndex = leftIndexes[column];
+                        int width = (rightIndex - leftIndex);
+                        int height = heights[column];
 
-            for (int column = 0; column < numColumns; column++) {
-                int rightIndex = rightIndexes[column];
-                int leftIndex = leftIndexes[column];
-                int width = (rightIndex - leftIndex);
-                if (width < minCellRangeWidth) {
-                    continue;
-                }
-                int height = heights[column];
-                if (height < minCellRangeHeight) {
-                    continue;
-                }
-                int area = width * height;
-                if (maxArea < area) {
-                    maxArea = area;
-                    max = new CellRange(
-                        leftIndex,
-                        row - height + 1,
-                        width,
-                        height
-                    );
-                }
-            }
-        }
-        return max.getOutput(xOffset, yOffset, samplingScale);
+                        return getRect(row - height + 1, leftIndex, width, height);
+                    })
+                    .filter(r -> !r.isEmpty());
+            });
     }
 }

@@ -22,9 +22,9 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.CheatUtil;
 import mezz.jei.common.util.CommandUtil;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.MaximalRectangle;
+import mezz.jei.common.util.RectDebugger;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.KeyMapping;
@@ -33,6 +33,7 @@ import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -110,15 +111,19 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		ImmutableRect2i availableArea,
 		ImmutableRect2i estimatedNavigationArea,
 		Set<ImmutableRect2i> guiExclusionAreas,
-		ImmutableSize2i minSize,
 		IIngredientGridConfig gridConfig
 	) {
-		ImmutableRect2i largestSafeArea = MaximalRectangle.getLargestRectangle(
+		final int maxDimension = Math.max(availableArea.getWidth(), availableArea.getHeight());
+		final int samplingScale = Math.max(IngredientGrid.INGREDIENT_HEIGHT / 2, maxDimension / 25);
+
+		ImmutableRect2i largestSafeArea = MaximalRectangle.getLargestRectangles(
 			availableArea,
 			guiExclusionAreas,
-			minSize,
-			IngredientGrid.INGREDIENT_HEIGHT / 2
-		);
+			samplingScale
+		)
+			.max(Comparator.comparingInt((ImmutableRect2i rect) -> IngredientGrid.calculateSize(gridConfig, rect).getArea())
+				.thenComparing(ImmutableRect2i::getArea))
+			.orElse(ImmutableRect2i.EMPTY);
 
 		final boolean intersectsNavigationArea = guiExclusionAreas.stream()
 			.anyMatch(rectangle2d -> MathUtil.intersects(rectangle2d, estimatedNavigationArea));
@@ -128,23 +133,11 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 		IngredientGrid.SlotInfo slotInfo = IngredientGrid.calculateBlockedSlotPercentage(gridConfig, availableArea, guiExclusionAreas);
 		IngredientGrid.SlotInfo safeSlotInfo = IngredientGrid.calculateBlockedSlotPercentage(gridConfig, largestSafeArea, guiExclusionAreas);
-		if (slotInfo.percentBlocked() > 0.15 || safeSlotInfo.total() >= slotInfo.total()) {
+		if (slotInfo.percentBlocked() > 0.25 || safeSlotInfo.total() > slotInfo.total()) {
 			return largestSafeArea;
 		} else {
 			return availableArea;
 		}
-	}
-
-	private static ImmutableSize2i calculateMinimumSize(IIngredientGridConfig gridConfig, boolean navigationEnabled) {
-		ImmutableSize2i minimumArea = IngredientGrid.calculateMinimumSize(gridConfig)
-			.expandBy(2 * BORDER_MARGIN);
-		if (gridConfig.drawBackground()) {
-			minimumArea = minimumArea.expandBy(2 * (BORDER_PADDING + INNER_PADDING));
-		}
-		if (navigationEnabled) {
-			return minimumArea.addHeight(NAVIGATION_HEIGHT + INNER_PADDING);
-		}
-		return minimumArea;
 	}
 
 	private void updateGridBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, boolean navigationEnabled) {
@@ -163,13 +156,10 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 				estimatedNavigationArea.expandBy(BORDER_PADDING + INNER_PADDING);
 			}
 
-			ImmutableSize2i minimumSize = calculateMinimumSize(gridConfig, navigationEnabled);
-
 			availableGridArea = avoidExclusionAreas(
 				availableArea,
 				estimatedNavigationArea,
 				guiExclusionAreas,
-				minimumSize,
 				gridConfig
 			)
 				.insetBy(BORDER_MARGIN)

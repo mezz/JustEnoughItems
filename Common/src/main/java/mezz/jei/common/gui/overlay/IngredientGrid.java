@@ -94,7 +94,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		}
 	}
 
-	private static ImmutableSize2i calculateSize(IIngredientGridConfig config, ImmutableRect2i availableArea) {
+	public static ImmutableSize2i calculateSize(IIngredientGridConfig config, ImmutableRect2i availableArea) {
 		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, config.getMaxColumns());
 		final int rows = Math.min(availableArea.getHeight() / INGREDIENT_HEIGHT, config.getMaxRows());
 		if (rows < config.getMinRows() || columns < config.getMinColumns()) {
@@ -103,13 +103,6 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return new ImmutableSize2i(
 			columns * INGREDIENT_WIDTH,
 			rows * INGREDIENT_HEIGHT
-		);
-	}
-
-	public static ImmutableSize2i calculateMinimumSize(IIngredientGridConfig config) {
-		return new ImmutableSize2i(
-			config.getMinColumns() * INGREDIENT_WIDTH,
-			config.getMinRows() * INGREDIENT_HEIGHT
 		);
 	}
 

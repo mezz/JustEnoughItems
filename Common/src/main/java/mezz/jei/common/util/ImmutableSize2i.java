@@ -23,15 +23,7 @@ public class ImmutableSize2i {
         return height;
     }
 
-    public ImmutableSize2i addWidth(@Nonnegative int amount) {
-        return new ImmutableSize2i(width + amount, height);
-    }
-
-    public ImmutableSize2i addHeight(@Nonnegative int amount) {
-        return new ImmutableSize2i(width, height + amount);
-    }
-
-    public ImmutableSize2i expandBy(int amount) {
-        return new ImmutableSize2i(width + amount, height + amount);
+    public int getArea() {
+        return width * height;
     }
 }
