@@ -29,11 +29,6 @@ public class TestWorldConfig implements IWorldConfig {
 	}
 
 	@Override
-	public boolean isDeleteItemsInCheatModeActive() {
-		return false;
-	}
-
-	@Override
 	public void toggleCheatItemsEnabled() {
 		throw new UnsupportedOperationException();
 	}

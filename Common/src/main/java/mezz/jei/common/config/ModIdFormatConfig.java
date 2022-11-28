@@ -1,7 +1,9 @@
 package mezz.jei.common.config;
 
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
+import mezz.jei.common.config.file.IConfigSchema;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.config.file.serializers.ChatFormattingSerializer;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.Items;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -28,7 +31,11 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
     @Nullable
     private String cachedOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
 
-    public ModIdFormatConfig(IConfigSchemaBuilder builder) {
+    private final IConfigSchema schema;
+
+    public ModIdFormatConfig(Path configFile) {
+        IConfigSchemaBuilder builder = new ConfigSchemaBuilder(configFile);
+
         IConfigCategoryBuilder modName = builder.addCategory("modname");
         Supplier<List<ChatFormatting>> configValue = modName.addList(
             "ModNameFormat",
@@ -37,6 +44,12 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
             "Formatting for mod name tooltip"
         );
         this.modNameFormat = new CachedSupplierTransformer<>(configValue, ModIdFormatConfig::toFormatString);
+
+        schema = builder.build();
+    }
+
+    public void register() {
+        schema.register();
     }
 
     private static String toFormatString(List<ChatFormatting> values) {

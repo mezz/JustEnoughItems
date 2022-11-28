@@ -7,8 +7,6 @@ public interface IClientConfig {
     int defaultRecipeGuiHeight = 350;
     boolean defaultCenterSearchBar = false;
 
-    boolean isDebugModeEnabled();
-
 	boolean isCenterSearchBarEnabled();
 
 	boolean isLowMemorySlowSearchEnabled();

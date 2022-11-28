@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.ingredients.IngredientAcceptor;
 import net.minecraft.nbt.CompoundTag;
@@ -60,7 +61,7 @@ public class InvisibleRecipeLayoutSlotSource implements IRecipeLayoutSlotSource,
 	}
 
 	@Override
-	public void setRecipeSlots(RecipeSlots recipeSlots, IntSet focusMatches) {
+	public void setRecipeSlots(RecipeSlots recipeSlots, IntSet focusMatches, IIngredientVisibility ingredientVisibility) {
 		// invisible, don't set the slots
 	}
 

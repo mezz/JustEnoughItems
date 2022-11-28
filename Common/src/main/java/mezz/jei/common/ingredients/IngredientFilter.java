@@ -2,14 +2,16 @@ package mezz.jei.common.ingredients;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.filter.IFilterTextSource;
@@ -19,7 +21,9 @@ import mezz.jei.common.search.ElementSearchLowMem;
 import mezz.jei.common.search.IElementSearch;
 import mezz.jei.common.search.ElementPrefixParser;
 import mezz.jei.common.util.Translator;
+import mezz.jei.core.config.IClientConfig;
 import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -27,6 +31,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -39,7 +44,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class IngredientFilter implements IIngredientGridSource {
+public class IngredientFilter implements IIngredientGridSource, IIngredientManager.IIngredientListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
@@ -47,6 +52,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	private final IFilterTextSource filterTextSource;
 	private final IRegisteredIngredients registeredIngredients;
 	private final IIngredientSorter sorter;
+	private final IModIdHelper modIdHelper;
 	private final IIngredientVisibility ingredientVisibility;
 
 	private final IElementSearch elementSearch;
@@ -70,6 +76,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		this.filterTextSource = filterTextSource;
 		this.registeredIngredients = registeredIngredients;
 		this.sorter = sorter;
+		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
 		this.elementPrefixParser = new ElementPrefixParser(registeredIngredients, config);
 
@@ -295,6 +302,54 @@ public class IngredientFilter implements IIngredientGridSource {
 			return Optional.of(cast);
 		}
 		return Optional.empty();
+	}
+
+	@Override
+	public ResourceLocation getUid() {
+		return new ResourceLocation(ModIds.JEI_ID, "ingredient_filter");
+	}
+
+	@Override
+	public <V> void onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
+		for (ITypedIngredient<V> value : ingredients) {
+			Optional<IListElementInfo<V>> matchingElementInfo = searchForMatchingElement(ingredientHelper, value);
+			if (matchingElementInfo.isPresent()) {
+				IListElement<V> matchingElement = matchingElementInfo.get().getElement();
+				updateHiddenState(matchingElement);
+				if (DebugConfig.isDebugModeEnabled()) {
+					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
+				}
+			} else {
+				IListElement<V> element = IngredientListElementFactory.createOrderedElement(value);
+				ListElementInfo.create(element, this.registeredIngredients, modIdHelper)
+					.ifPresent(info -> {
+						addIngredient(info);
+						if (DebugConfig.isDebugModeEnabled()) {
+							LOGGER.debug("Added ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
+						}
+					});
+			}
+		}
+		invalidateCache();
+	}
+
+	@Override
+	public <V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
+		for (ITypedIngredient<V> typedIngredient : ingredients) {
+			Optional<IListElementInfo<V>> matchingElementInfo = searchForMatchingElement(ingredientHelper, typedIngredient);
+			if (matchingElementInfo.isEmpty()) {
+				String errorInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
+				LOGGER.error("Could not find a matching ingredient to remove: {}", errorInfo);
+			} else {
+				if (DebugConfig.isDebugModeEnabled()) {
+					LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
+				}
+				IListElement<V> matchingElement = matchingElementInfo.get().getElement();
+				matchingElement.setVisible(false);
+			}
+		}
+
+		invalidateCache();
 	}
 
 	private record SearchTokens(List<ElementPrefixParser.TokenInfo> toSearch, List<ElementPrefixParser.TokenInfo> toRemove) {}

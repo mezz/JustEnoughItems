@@ -26,7 +26,6 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 	private final List<IRecipeLayoutSlotSource> slots = new ArrayList<>();
 	private final List<List<IRecipeLayoutSlotSource>> focusLinkedSlots = new ArrayList<>();
 	private final IRegisteredIngredients registeredIngredients;
-	private final IIngredientVisibility ingredientVisibility;
 	private final int ingredientCycleOffset;
 	private boolean shapeless = false;
 	private int recipeTransferX = -1;
@@ -34,15 +33,14 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 	private int shapelessX = -1;
 	private int shapelessY = -1;
 
-	public RecipeLayoutBuilder(IRegisteredIngredients registeredIngredients, IIngredientVisibility ingredientVisibility, int ingredientCycleOffset) {
+	public RecipeLayoutBuilder(IRegisteredIngredients registeredIngredients, int ingredientCycleOffset) {
 		this.registeredIngredients = registeredIngredients;
-		this.ingredientVisibility = ingredientVisibility;
 		this.ingredientCycleOffset = ingredientCycleOffset;
 	}
 
 	@Override
 	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role, int x, int y) {
-		RecipeSlotBuilder slotBuilder = new RecipeSlotBuilder(registeredIngredients, role, ingredientVisibility, x, y, ingredientCycleOffset);
+		RecipeSlotBuilder slotBuilder = new RecipeSlotBuilder(registeredIngredients, role, x, y, ingredientCycleOffset);
 		this.slots.add(slotBuilder);
 		return slotBuilder;
 	}
@@ -103,7 +101,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		return !this.slots.isEmpty() || !this.focusLinkedSlots.isEmpty();
 	}
 
-	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, IFocusGroup focuses) {
+	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, IFocusGroup focuses, IIngredientVisibility ingredientVisibility) {
 		if (this.shapeless) {
 			if (this.shapelessX >= 0 && this.shapelessY >= 0) {
 				recipeLayout.setShapeless(this.shapelessX, this.shapelessY);
@@ -117,7 +115,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 
 		for (IRecipeLayoutSlotSource slot : this.slots) {
 			IntSet focusMatches = slot.getMatches(focuses);
-			slot.setRecipeSlots(recipeLayout.getRecipeSlots(), focusMatches);
+			slot.setRecipeSlots(recipeLayout.getRecipeSlots(), focusMatches, ingredientVisibility);
 		}
 
 		for (List<IRecipeLayoutSlotSource> slots : this.focusLinkedSlots) {
@@ -126,7 +124,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 				focusMatches.addAll(slot.getMatches(focuses));
 			}
 			for (IRecipeLayoutSlotSource slot : slots) {
-				slot.setRecipeSlots(recipeLayout.getRecipeSlots(), focusMatches);
+				slot.setRecipeSlots(recipeLayout.getRecipeSlots(), focusMatches, ingredientVisibility);
 			}
 		}
 	}

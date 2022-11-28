@@ -79,7 +79,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 	}
 
 	public boolean shouldDeleteItemOnClick(Minecraft minecraft, double mouseX, double mouseY) {
-		if (!worldConfig.isDeleteItemsInCheatModeActive()) {
+		if (!worldConfig.isCheatItemsEnabled() || !serverConnection.isJeiOnServer()) {
 			return false;
 		}
 		Player player = minecraft.player;

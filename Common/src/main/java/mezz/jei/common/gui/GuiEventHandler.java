@@ -5,13 +5,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
+import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.gui.overlay.IngredientListOverlay;
 import mezz.jei.common.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.common.input.MouseUtil;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.RectDebugger;
-import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.util.LimitedLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -31,7 +31,6 @@ public class GuiEventHandler {
 	private static final LimitedLogger missingBackgroundLogger = new LimitedLogger(LOGGER, Duration.ofHours(1));
 
 	private final IngredientListOverlay ingredientListOverlay;
-	private final IClientConfig config;
 	private final IScreenHelper screenHelper;
 	private final BookmarkOverlay bookmarkOverlay;
 	private boolean drawnOnBackground = false;
@@ -39,13 +38,11 @@ public class GuiEventHandler {
 	public GuiEventHandler(
 		IScreenHelper screenHelper,
 		BookmarkOverlay bookmarkOverlay,
-		IngredientListOverlay ingredientListOverlay,
-		IClientConfig config
+		IngredientListOverlay ingredientListOverlay
 	) {
 		this.screenHelper = screenHelper;
 		this.bookmarkOverlay = bookmarkOverlay;
 		this.ingredientListOverlay = ingredientListOverlay;
-		this.config = config;
 	}
 
 	public void onGuiInit(Screen screen) {
@@ -113,7 +110,7 @@ public class GuiEventHandler {
 		ingredientListOverlay.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 		bookmarkOverlay.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 
-		if (config.isDebugModeEnabled()) {
+		if (DebugConfig.isDebugModeEnabled()) {
 			drawDebugInfoForScreen(screen, poseStack);
 		}
 	}

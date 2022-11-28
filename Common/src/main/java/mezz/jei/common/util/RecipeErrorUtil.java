@@ -6,7 +6,6 @@ import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.ingredients.IIngredientSupplier;
-import mezz.jei.common.ingredients.IngredientVisibilityDummy;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
@@ -39,7 +38,7 @@ public final class RecipeErrorUtil {
 			return recipeInfoBuilder.toString();
 		}
 
-		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, registeredIngredients, IngredientVisibilityDummy.INSTANCE);
+		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, registeredIngredients);
 		if (ingredientSupplier == null) {
 			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
 			return recipeInfoBuilder.toString();

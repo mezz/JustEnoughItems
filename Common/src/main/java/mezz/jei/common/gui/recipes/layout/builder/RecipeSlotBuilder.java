@@ -31,11 +31,9 @@ import java.util.stream.Stream;
 public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotSource {
 	private final IngredientAcceptor ingredients;
 	private final RecipeSlot recipeSlot;
-	private final IIngredientVisibility ingredientVisibility;
 
-	public RecipeSlotBuilder(IRegisteredIngredients registeredIngredients, RecipeIngredientRole role, IIngredientVisibility ingredientVisibility, int x, int y, int ingredientCycleOffset) {
+	public RecipeSlotBuilder(IRegisteredIngredients registeredIngredients, RecipeIngredientRole role, int x, int y, int ingredientCycleOffset) {
 		this.ingredients = new IngredientAcceptor(registeredIngredients);
-		this.ingredientVisibility = ingredientVisibility;
 		this.recipeSlot = new RecipeSlot(registeredIngredients, role, x, y, ingredientCycleOffset);
 	}
 
@@ -131,7 +129,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	}
 
 	@Override
-	public void setRecipeSlots(RecipeSlots recipeSlots, IntSet focusMatches) {
+	public void setRecipeSlots(RecipeSlots recipeSlots, IntSet focusMatches, IIngredientVisibility ingredientVisibility) {
 		List<Optional<ITypedIngredient<?>>> allIngredients = this.ingredients.getAllIngredients();
 		recipeSlot.set(allIngredients, focusMatches, ingredientVisibility);
 

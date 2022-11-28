@@ -2,10 +2,13 @@ package mezz.jei.common;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
+import mezz.jei.common.config.InternalKeyMappings;
+import mezz.jei.common.config.WorldConfig;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.runtime.JeiHelpers;
 import mezz.jei.common.runtime.JeiRuntime;
+import mezz.jei.core.config.IWorldConfig;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -24,6 +27,10 @@ public final class Internal {
 	private static Textures textures;
 	@Nullable
 	private static IConnectionToServer serverConnection;
+	@Nullable
+	private static InternalKeyMappings keyMappings;
+	@Nullable
+	private static IWorldConfig worldConfig;
 
 	private Internal() {
 
@@ -71,5 +78,21 @@ public final class Internal {
 
 	public static void setServerConnection(IConnectionToServer serverConnection) {
 		Internal.serverConnection = serverConnection;
+	}
+
+	public static InternalKeyMappings getKeyMappings() {
+		Preconditions.checkState(keyMappings != null, "Key Mappings have not been created yet.");
+		return keyMappings;
+	}
+
+	public static void setKeyMappings(InternalKeyMappings keyMappings) {
+		Internal.keyMappings = keyMappings;
+	}
+
+	public static IWorldConfig getWorldConfig() {
+		if (worldConfig == null) {
+			worldConfig = new WorldConfig();
+		}
+		return worldConfig;
 	}
 }

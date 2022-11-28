@@ -111,4 +111,11 @@ public interface IModPlugin {
 	default void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 
 	}
+
+	/**
+	 * Called when jei's runtime features are no longer available, after a user quits or logs out of a world.
+	 */
+	default void onRuntimeUnavailable() {
+
+	}
 }

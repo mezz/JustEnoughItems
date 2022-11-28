@@ -1,33 +1,25 @@
 package mezz.jei.common.input.handlers;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.common.config.IEditModeConfig;
-import mezz.jei.common.ingredients.IngredientFilter;
 import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.common.config.IEditModeConfig;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
+import mezz.jei.common.input.CombinedRecipeFocusSource;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.core.config.IngredientBlacklistType;
-import mezz.jei.common.input.CombinedRecipeFocusSource;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
 
 public class EditInputHandler implements IUserInputHandler {
 	private final CombinedRecipeFocusSource focusSource;
-	private final IRegisteredIngredients registeredIngredients;
-	private final IngredientFilter ingredientFilter;
 	private final IWorldConfig worldConfig;
 	private final IEditModeConfig editModeConfig;
 
-	public EditInputHandler(CombinedRecipeFocusSource focusSource, IRegisteredIngredients registeredIngredients, IngredientFilter ingredientFilter, IWorldConfig worldConfig, IEditModeConfig editModeConfig) {
+	public EditInputHandler(CombinedRecipeFocusSource focusSource, IWorldConfig worldConfig, IEditModeConfig editModeConfig) {
 		this.focusSource = focusSource;
-		this.registeredIngredients = registeredIngredients;
-		this.ingredientFilter = ingredientFilter;
 		this.worldConfig = worldConfig;
 		this.editModeConfig = editModeConfig;
 	}
@@ -39,36 +31,34 @@ public class EditInputHandler implements IUserInputHandler {
 		}
 
 		if (input.is(keyBindings.getToggleHideIngredient())) {
-			return handle(input, keyBindings, IngredientBlacklistType.ITEM);
+			return handle(input, keyBindings, IEditModeConfig.Mode.ITEM);
 		}
 
 		if (input.is(keyBindings.getToggleWildcardHideIngredient())) {
-			return handle(input, keyBindings, IngredientBlacklistType.WILDCARD);
+			return handle(input, keyBindings, IEditModeConfig.Mode.WILDCARD);
 		}
 
 		return Optional.empty();
 	}
 
-	private Optional<IUserInputHandler> handle(UserInput input, IInternalKeyMappings keyBindings, IngredientBlacklistType blacklistType) {
+	private Optional<IUserInputHandler> handle(UserInput input, IInternalKeyMappings keyBindings, IEditModeConfig.Mode mode) {
 		return focusSource.getIngredientUnderMouse(input, keyBindings)
 			.findFirst()
 			.map(clicked -> {
 				if (!input.isSimulate()) {
-					execute(clicked, blacklistType);
+					execute(clicked, mode);
 				}
 				IImmutableRect2i area = clicked.getArea().orElse(null);
 				return LimitedAreaInputHandler.create(this, area);
 			});
 	}
 
-	private <V> void execute(IClickedIngredient<V> clicked, IngredientBlacklistType blacklistType) {
+	private <V> void execute(IClickedIngredient<V> clicked, IEditModeConfig.Mode mode) {
 		ITypedIngredient<V> typedIngredient = clicked.getTypedIngredient();
-		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(typedIngredient.getType());
-
-		if (editModeConfig.isIngredientOnConfigBlacklist(typedIngredient, ingredientHelper)) {
-			editModeConfig.removeIngredientFromConfigBlacklist(ingredientFilter, typedIngredient, blacklistType, ingredientHelper);
+		if (editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient)) {
+			editModeConfig.showIngredientUsingConfigFile(typedIngredient, mode);
 		} else {
-			editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, typedIngredient, blacklistType, ingredientHelper);
+			editModeConfig.hideIngredientUsingConfigFile(typedIngredient, mode);
 		}
 	}
 }

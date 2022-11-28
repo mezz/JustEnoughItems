@@ -1,11 +1,15 @@
 package mezz.jei.fabric.platform;
 
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.core.util.function.CachedSupplier;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
+
+import java.nio.file.Path;
 
 public class PlatformHelper implements IPlatformHelper {
     private final CachedSupplier<ItemStackHelper> itemStackHelper = new CachedSupplier<>(ItemStackHelper::new);
@@ -66,5 +70,12 @@ public class PlatformHelper implements IPlatformHelper {
     @Override
     public ModHelper getModHelper() {
         return modHelper.get();
+    }
+
+    @Override
+    public Path getConfigDir() {
+        return FabricLoader.getInstance()
+            .getConfigDir()
+            .resolve(ModIds.JEI_ID);
     }
 }

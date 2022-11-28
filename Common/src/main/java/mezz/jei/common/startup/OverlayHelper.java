@@ -2,79 +2,100 @@ package mezz.jei.common.startup;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
+import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.bookmarks.BookmarkList;
+import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.filter.IFilterTextSource;
+import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.gui.overlay.IngredientGrid;
 import mezz.jei.common.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.common.gui.overlay.IngredientListOverlay;
 import mezz.jei.common.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.core.config.IClientConfig;
+import mezz.jei.core.config.IWorldConfig;
 
 public final class OverlayHelper {
     private OverlayHelper() {}
 
     public static IngredientGridWithNavigation createIngredientGridWithNavigation(
-        StartData data,
         IIngredientGridSource ingredientFilter,
         IRegisteredIngredients registeredIngredients,
         IIngredientGridConfig ingredientGridConfig,
         IScreenHelper screenHelper,
         IModIdHelper modIdHelper,
         DrawableNineSliceTexture background,
-        DrawableNineSliceTexture slotBackground
+        DrawableNineSliceTexture slotBackground,
+        IInternalKeyMappings keyMappings,
+        IEditModeConfig editModeConfig,
+        IIngredientFilterConfig ingredientFilterConfig,
+        IClientConfig clientConfig,
+        IWorldConfig worldConfig,
+        IConnectionToServer serverConnection,
+        Textures textures
     ) {
-        ConfigData configData = data.configData();
         IngredientGrid ingredientListGrid = new IngredientGrid(
             registeredIngredients,
             ingredientGridConfig,
-            configData.editModeConfig(),
-            configData.ingredientFilterConfig(),
-            configData.clientConfig(),
-            configData.worldConfig(),
+            editModeConfig,
+            ingredientFilterConfig,
+            clientConfig,
+            worldConfig,
             screenHelper,
             modIdHelper,
-            data.serverConnection(),
-            data.keyBindings()
+            serverConnection,
+            keyMappings
         );
 
         return new IngredientGridWithNavigation(
             ingredientFilter,
             screenHelper,
             ingredientListGrid,
-            configData.worldConfig(),
-            configData.clientConfig(),
-            data.serverConnection(),
+            worldConfig,
+            clientConfig,
+            serverConnection,
             ingredientGridConfig,
             background,
             slotBackground,
-            data.textures()
+            textures
         );
     }
 
     public static IngredientListOverlay createIngredientListOverlay(
-        StartData data,
         IRegisteredIngredients registeredIngredients,
         IScreenHelper screenHelper,
         IIngredientGridSource ingredientFilter,
         IFilterTextSource filterTextSource,
-        IModIdHelper modIdHelper
+        IModIdHelper modIdHelper,
+        IInternalKeyMappings keyMappings,
+        IIngredientGridConfig ingredientGridConfig,
+        IClientConfig clientConfig,
+        IWorldConfig worldConfig,
+        IEditModeConfig editModeConfig,
+        IConnectionToServer serverConnection,
+        IIngredientFilterConfig ingredientFilterConfig,
+        Textures textures
     ) {
-        ConfigData configData = data.configData();
-
-        Textures textures = data.textures();
         IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
-            data,
             ingredientFilter,
             registeredIngredients,
-            configData.ingredientListConfig(),
+            ingredientGridConfig,
             screenHelper,
             modIdHelper,
             textures.getIngredientListBackground(),
-            textures.getIngredientListSlotBackground()
+            textures.getIngredientListSlotBackground(),
+            keyMappings,
+            editModeConfig,
+            ingredientFilterConfig,
+            clientConfig,
+            worldConfig,
+            serverConnection,
+            textures
         );
 
         return new IngredientListOverlay(
@@ -83,45 +104,54 @@ public final class OverlayHelper {
             registeredIngredients,
             screenHelper,
             ingredientListGridNavigation,
-            configData.clientConfig(),
-            configData.worldConfig(),
-            data.serverConnection(),
+            clientConfig,
+            worldConfig,
+            serverConnection,
             textures,
-            data.keyBindings()
+            keyMappings
         );
     }
 
     public static BookmarkOverlay createBookmarkOverlay(
-        StartData data,
         IRegisteredIngredients registeredIngredients,
         IScreenHelper screenHelper,
         BookmarkList bookmarkList,
-        IModIdHelper modIdHelper
+        IModIdHelper modIdHelper,
+        IInternalKeyMappings keyMappings,
+        IIngredientGridConfig bookmarkListConfig,
+        IEditModeConfig editModeConfig,
+        IIngredientFilterConfig ingredientFilterConfig,
+        IClientConfig clientConfig,
+        IWorldConfig worldConfig,
+        IConnectionToServer serverConnection,
+        Textures textures
     ) {
-        ConfigData configData = data.configData();
-
-        Textures textures = data.textures();
-
         IngredientGridWithNavigation bookmarkListGridNavigation = createIngredientGridWithNavigation(
-            data,
             bookmarkList,
             registeredIngredients,
-            configData.bookmarkListConfig(),
+            bookmarkListConfig,
             screenHelper,
             modIdHelper,
             textures.getBookmarkListBackground(),
-            textures.getBookmarkListSlotBackground()
+            textures.getBookmarkListSlotBackground(),
+            keyMappings,
+            editModeConfig,
+            ingredientFilterConfig,
+            clientConfig,
+            worldConfig,
+            serverConnection,
+            textures
         );
 
         return new BookmarkOverlay(
             bookmarkList,
             textures,
             bookmarkListGridNavigation,
-            configData.clientConfig(),
-            configData.worldConfig(),
+            clientConfig,
+            worldConfig,
             screenHelper,
-            data.serverConnection(),
-            data.keyBindings()
+            serverConnection,
+            keyMappings
         );
     }
 }

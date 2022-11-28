@@ -52,12 +52,12 @@ public class ConfigSchema implements IConfigSchema {
     }
 
     @Override
-    public void register(Path configFile) {
+    public void register() {
         if (!Files.exists(path)) {
             try {
                 ConfigSerializer.save(path, categories.values());
             } catch (IOException e) {
-                LOGGER.error("Failed to create config file: '{}'", configFile, e);
+                LOGGER.error("Failed to create config file: '{}'", path, e);
             }
         }
 
@@ -67,7 +67,7 @@ public class ConfigSchema implements IConfigSchema {
             Thread thread = new Thread(fileWatcher::run, "JEI Config file watcher");
             thread.start();
         } catch (IOException e) {
-            LOGGER.error("Failed to create FileWatcher Thread for config file: '{}'", configFile, e);
+            LOGGER.error("Failed to create FileWatcher Thread for config file: '{}'", path, e);
         }
     }
 }

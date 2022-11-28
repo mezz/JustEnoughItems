@@ -2,14 +2,13 @@ package mezz.jei.common.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.config.IEditModeConfig;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.gui.GuiComponent;
@@ -93,18 +92,17 @@ public class IngredientListRenderer {
 		Collection<ElementRenderer<T>> slots = renderers.get(ingredientType);
 		IIngredientInfo<T> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
 		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
-		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
 		for (ElementRenderer<T> slot : slots) {
-			renderIngredient(poseStack, slot, ingredientRenderer, ingredientHelper);
+			renderIngredient(poseStack, slot, ingredientRenderer);
 		}
 	}
 
-	private <T> void renderIngredient(PoseStack poseStack, ElementRenderer<T> slot, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
+	private <T> void renderIngredient(PoseStack poseStack, ElementRenderer<T> slot, IIngredientRenderer<T> ingredientRenderer) {
 		ITypedIngredient<T> typedIngredient = slot.getTypedIngredient();
 		IImmutableRect2i area = slot.getElementArea();
 		int slotPadding = slot.getPadding();
 		if (worldConfig.isEditModeEnabled()) {
-			renderEditMode(poseStack, area, slotPadding, editModeConfig, typedIngredient, ingredientHelper);
+			renderEditMode(poseStack, area, slotPadding, editModeConfig, typedIngredient);
 			RenderSystem.enableBlend();
 		}
 
@@ -123,8 +121,8 @@ public class IngredientListRenderer {
 		}
 	}
 
-	private static <T> void renderEditMode(PoseStack poseStack, IImmutableRect2i area, int padding, IEditModeConfig editModeConfig, ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
-		if (editModeConfig.isIngredientOnConfigBlacklist(typedIngredient, ingredientHelper)) {
+	private static <T> void renderEditMode(PoseStack poseStack, IImmutableRect2i area, int padding, IEditModeConfig editModeConfig, ITypedIngredient<T> typedIngredient) {
+		if (editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient)) {
 			GuiComponent.fill(poseStack, area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
 			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 		}

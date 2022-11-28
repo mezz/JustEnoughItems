@@ -3,28 +3,28 @@ package mezz.jei.test;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.config.EditModeConfig;
-import mezz.jei.common.ingredients.RegisteredIngredients;
-import mezz.jei.core.config.IClientConfig;
-import mezz.jei.common.config.IEditModeConfig;
-import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.core.config.IngredientBlacklistType;
-import mezz.jei.common.gui.ingredients.IListElement;
+import mezz.jei.common.config.EditModeConfigInternal;
 import mezz.jei.common.filter.FilterTextSource;
 import mezz.jei.common.filter.IFilterTextSource;
-import mezz.jei.common.ingredients.IListElementInfo;
+import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.ingredients.IIngredientSorter;
+import mezz.jei.common.ingredients.IListElementInfo;
 import mezz.jei.common.ingredients.IngredientBlacklistInternal;
 import mezz.jei.common.ingredients.IngredientFilter;
+import mezz.jei.common.ingredients.IngredientInfo;
 import mezz.jei.common.ingredients.IngredientListElementFactory;
 import mezz.jei.common.ingredients.IngredientManager;
 import mezz.jei.common.ingredients.IngredientVisibility;
-import mezz.jei.common.load.registration.RegisteredIngredientsBuilder;
-import mezz.jei.common.ingredients.IngredientInfo;
+import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.subtypes.SubtypeManager;
+import mezz.jei.common.load.registration.RegisteredIngredientsBuilder;
 import mezz.jei.common.load.registration.SubtypeRegistration;
+import mezz.jei.common.util.Translator;
+import mezz.jei.core.config.IClientConfig;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.test.lib.TestClientConfig;
 import mezz.jei.test.lib.TestIngredient;
 import mezz.jei.test.lib.TestIngredientFilterConfig;
@@ -32,16 +32,15 @@ import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
 import mezz.jei.test.lib.TestWorldConfig;
-import mezz.jei.common.util.Translator;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.TooltipFlag;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -60,7 +59,7 @@ public class IngredientFilterTest {
 	@Nullable
 	private NonNullList<IListElement<?>> baseList;
 	@Nullable
-	private IEditModeConfig editModeConfig;
+	private EditModeConfigInternal editModeConfig;
 	@Nullable
 	private FilterTextSource filterTextSource;
 
@@ -81,7 +80,7 @@ public class IngredientFilterTest {
 		this.registeredIngredients = registeredIngredientsBuilder.build();
 		this.baseList = IngredientListElementFactory.createBaseList(registeredIngredients);
 
-		this.editModeConfig = new EditModeConfig(new NullSerializer());
+		this.editModeConfig = new EditModeConfigInternal(new NullSerializer());
 
 		IWorldConfig worldConfig = new TestWorldConfig();
 
@@ -100,7 +99,8 @@ public class IngredientFilterTest {
 			ingredientVisibility
 		);
 
-		this.ingredientManager = new IngredientManager(modIdHelper, blacklist, clientConfig, registeredIngredients, ingredientFilter);
+		this.ingredientManager = new IngredientManager(registeredIngredients);
+		this.ingredientManager.addIngredientListener(ingredientFilter);
 	}
 
 	@Test
@@ -173,7 +173,7 @@ public class IngredientFilterTest {
 		@SuppressWarnings("unchecked")
 		ITypedIngredient<TestIngredient> blacklistedIngredient = (ITypedIngredient<TestIngredient>) typedIngredient;
 		TestIngredientHelper testIngredientHelper = new TestIngredientHelper();
-		editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, blacklistedIngredient, IngredientBlacklistType.ITEM, testIngredientHelper);
+		editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, blacklistedIngredient, IEditModeConfig.Mode.ITEM, testIngredientHelper);
 
 		ingredientFilter.updateHidden();
 
@@ -263,14 +263,14 @@ public class IngredientFilterTest {
 		}
 	}
 
-	private static class NullSerializer implements EditModeConfig.ISerializer {
+	private static class NullSerializer implements EditModeConfigInternal.ISerializer {
 		@Override
-		public void save(EditModeConfig config) {
+		public void save(EditModeConfigInternal config) {
 
 		}
 
 		@Override
-		public void load(EditModeConfig config) {
+		public void load(EditModeConfigInternal config) {
 
 		}
 	}

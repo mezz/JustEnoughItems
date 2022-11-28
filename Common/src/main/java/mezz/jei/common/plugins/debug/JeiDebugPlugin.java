@@ -19,7 +19,7 @@ import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.config.ClientConfig;
+import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.common.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.common.plugins.jei.ingredients.DebugIngredientListFactory;
@@ -56,7 +56,7 @@ public class JeiDebugPlugin implements IModPlugin {
 
 	@Override
 	public void registerIngredients(IModIngredientRegistration registration) {
-		if (ClientConfig.getInstance().isDebugModeEnabled()) {
+		if (DebugConfig.isDebugModeEnabled()) {
 			DebugIngredientHelper ingredientHelper = new DebugIngredientHelper();
 			DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer(ingredientHelper);
 			registration.register(DebugIngredient.TYPE, Collections.emptyList(), ingredientHelper, ingredientRenderer);
@@ -65,7 +65,7 @@ public class JeiDebugPlugin implements IModPlugin {
 
 	@Override
 	public void registerCategories(IRecipeCategoryRegistration registration) {
-		if (ClientConfig.getInstance().isDebugModeEnabled()) {
+		if (DebugConfig.isDebugModeEnabled()) {
 			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 			IPlatformFluidHelper<?> platformFluidHelper = jeiHelpers.getPlatformFluidHelper();
@@ -80,7 +80,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	public void registerRecipes(IRecipeRegistration registration) {
 		JeiDebugPlugin.ingredientManager = registration.getIngredientManager();
 
-		if (ClientConfig.getInstance().isDebugModeEnabled()) {
+		if (DebugConfig.isDebugModeEnabled()) {
 			registration.addItemStackInfo(List.of(
 				new ItemStack(Blocks.OAK_DOOR),
 				new ItemStack(Blocks.SPRUCE_DOOR),
@@ -145,7 +145,7 @@ public class JeiDebugPlugin implements IModPlugin {
 
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-		if (ClientConfig.getInstance().isDebugModeEnabled()) {
+		if (DebugConfig.isDebugModeEnabled()) {
 			registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<>() {
 				@Override
 				public List<Rect2i> getGuiExtraAreas(BrewingStandScreen containerScreen) {
@@ -186,7 +186,7 @@ public class JeiDebugPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-		if (ClientConfig.getInstance().isDebugModeEnabled()) {
+		if (DebugConfig.isDebugModeEnabled()) {
 			IPlatformFluidHelper<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 			registerRecipeCatalysts(registration, fluidHelper);
 		}
@@ -213,7 +213,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 		JeiDebugPlugin.jeiRuntime = jeiRuntime;
 
-		if (ClientConfig.getInstance().isDebugModeEnabled()) {
+		if (DebugConfig.isDebugModeEnabled()) {
 			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
 			ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create());
 		}

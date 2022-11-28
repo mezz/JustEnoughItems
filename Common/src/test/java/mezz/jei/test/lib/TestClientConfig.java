@@ -14,11 +14,6 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isDebugModeEnabled() {
-		return false;
-	}
-
-	@Override
 	public boolean isCenterSearchBarEnabled() {
 		return false;
 	}

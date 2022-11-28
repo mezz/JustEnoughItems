@@ -1,10 +1,10 @@
 package mezz.jei.forge.network;
 
-import mezz.jei.common.Constants;
 import mezz.jei.common.network.ClientPacketRouter;
 import mezz.jei.common.network.ServerPacketRouter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -17,16 +17,21 @@ import org.apache.logging.log4j.Logger;
 public class NetworkHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private static final String NETWORK_PROTOCOL_VERSION = "1.0.0";
+	private final ResourceLocation channelId;
 	private final EventNetworkChannel channel;
 
-	public NetworkHandler() {
-		channel = NetworkRegistry.newEventChannel(
-			Constants.NETWORK_CHANNEL_ID,
-			() -> NETWORK_PROTOCOL_VERSION,
+	public NetworkHandler(ResourceLocation channelId, String protocolVersion) {
+		this.channelId = channelId;
+		this.channel = NetworkRegistry.newEventChannel(
+			channelId,
+			() -> protocolVersion,
 			NetworkHandler::isClientAcceptedVersion,
 			NetworkHandler::isServerAcceptedVersion
 		);
+	}
+
+	public ResourceLocation getChannelId() {
+		return channelId;
 	}
 
 	private static boolean isClientAcceptedVersion(String version) {

@@ -9,11 +9,13 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.common.ingredients.IIngredientSupplier;
 import mezz.jei.common.recipes.collect.RecipeMap;
 import mezz.jei.common.recipes.collect.RecipeTypeData;
 import mezz.jei.common.recipes.collect.RecipeTypeDataMap;
+import mezz.jei.common.runtime.JeiRuntime;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.IngredientSupplierHelper;
 import mezz.jei.common.util.RecipeErrorUtil;
@@ -37,7 +39,6 @@ public class RecipeManagerInternal {
 
 	@Unmodifiable
 	private final List<IRecipeCategory<?>> recipeCategories;
-	private final IIngredientVisibility ingredientVisibility;
 	private final IRegisteredIngredients registeredIngredients;
 	private final RecipeTypeDataMap recipeTypeDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
@@ -54,13 +55,11 @@ public class RecipeManagerInternal {
 		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
 		IRegisteredIngredients registeredIngredients,
 		List<IRecipeManagerPlugin> plugins,
-		RecipeCategorySortingConfig recipeCategorySortingConfig,
-		IIngredientVisibility ingredientVisibility
+		RecipeCategorySortingConfig recipeCategorySortingConfig
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
 		this.registeredIngredients = registeredIngredients;
-		this.ingredientVisibility = ingredientVisibility;
 
 		Collection<RecipeType<?>> recipeTypes = recipeCategories.stream()
 			.<RecipeType<?>>map(IRecipeCategory::getRecipeType)
@@ -112,7 +111,7 @@ public class RecipeManagerInternal {
 				if (hiddenRecipes.contains(recipe) || !recipeCategory.isHandled(recipe)) {
 					return false;
 				}
-				IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, registeredIngredients, ingredientVisibility);
+				IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, registeredIngredients);
 				if (ingredientSupplier == null) {
 					return false;
 				}
@@ -221,6 +220,8 @@ public class RecipeManagerInternal {
 		if (includeHidden) {
 			return catalysts.stream();
 		}
+		JeiRuntime jeiRuntime = Internal.getRuntime().orElseThrow();
+		IIngredientVisibility ingredientVisibility = jeiRuntime.getIngredientVisibility();
 		return catalysts.stream()
 			.filter(ingredientVisibility::isIngredientVisible);
 	}

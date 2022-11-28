@@ -5,6 +5,7 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.filter.IFilterTextSource;
@@ -14,7 +15,6 @@ import mezz.jei.common.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.GuiTextFieldFilter;
 import mezz.jei.common.input.ICharTypedHandler;
-import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.input.IDragHandler;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
@@ -57,6 +57,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IConnectionToServer serverConnection;
 	private final IScreenHelper screenHelper;
 	private final GuiTextFieldFilter searchField;
+	private final IInternalKeyMappings keyBindings;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private final ScreenPropertiesCache screenPropertiesCache;
 
@@ -80,6 +81,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.serverConnection = serverConnection;
 
 		this.searchField = new GuiTextFieldFilter(textures);
+		this.keyBindings = keyBindings;
 		this.searchField.setValue(filterTextSource.getFilterText());
 		this.searchField.setFocused(false);
 		this.searchField.setResponder(filterTextSource::setFilterText);
@@ -97,7 +99,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	@Override
 	public boolean isListDisplayed() {
-		return worldConfig.isOverlayEnabled() &&
+		// if there is no key binding to toggle it, force the overlay to display if possible
+		return (worldConfig.isOverlayEnabled() || keyBindings.getToggleOverlay().isUnbound()) &&
 			screenPropertiesCache.hasValidScreen() &&
 			contents.hasRoom();
 	}

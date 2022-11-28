@@ -3,8 +3,10 @@ package mezz.jei.api.runtime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 
 /**
  * Gives access to JEI functions that are available once everything has loaded.
@@ -20,24 +22,28 @@ public interface IJeiRuntime {
 	 * The {@link IRecipesGui} is JEI's gui for displaying recipes.
 	 * Use this interface to open the gui and display recipes.
 	 */
+	@Deprecated
 	IRecipesGui getRecipesGui();
 
 	/**
 	 * The {@link IIngredientFilter} is JEI's filter that can be set by players or controlled by mods.
 	 * Use this interface to get information from and interact with it.
 	 */
+	@Deprecated
 	IIngredientFilter getIngredientFilter();
 
 	/**
 	 * The {@link IIngredientListOverlay} is JEI's gui that displays all the ingredients next to an open container gui.
 	 * Use this interface to get information from and interact with it.
 	 */
+	@Deprecated
 	IIngredientListOverlay getIngredientListOverlay();
 
 	/**
 	 * The {@link IBookmarkOverlay} is JEI's gui that displays all the bookmarked ingredients next to an open container gui.
 	 * Use this interface to get information from it.
 	 */
+	@Deprecated
 	IBookmarkOverlay getBookmarkOverlay();
 
 	/**
@@ -74,4 +80,10 @@ public interface IJeiRuntime {
 	 * @since 9.3.0
 	 */
 	<T> ITypedIngredient<T> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient);
+
+	IScreenHelper getScreenHelper();
+
+	IRecipeTransferManager getRecipeTransferManager();
+
+	IRegisteredIngredients getRegisteredIngredients();
 }

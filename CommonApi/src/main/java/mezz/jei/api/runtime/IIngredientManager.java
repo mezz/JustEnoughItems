@@ -7,6 +7,8 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -81,4 +83,14 @@ public interface IIngredientManager {
 	 * Helper method to get ingredient type from a legacy ingredient class.
 	 */
 	<V> IIngredientType<V> getIngredientType(Class<? extends V> ingredientClass);
+
+	void addIngredientListener(IIngredientListener listener);
+
+	void removeIngredientListener(IIngredientListener listener);
+
+	interface IIngredientListener {
+		ResourceLocation getUid();
+		<V> void onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients);
+		<V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients);
+	}
 }

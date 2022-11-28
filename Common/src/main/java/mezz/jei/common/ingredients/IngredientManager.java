@@ -1,44 +1,31 @@
 package mezz.jei.common.ingredients;
 
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.core.config.IClientConfig;
-import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.util.ErrorUtil;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class IngredientManager implements IIngredientManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final IModIdHelper modIdHelper;
-	private final IngredientBlacklistInternal blacklist;
-	private final IClientConfig clientConfig;
 	private final RegisteredIngredients registeredIngredients;
-	private final IngredientFilter ingredientFilter;
+	private final Map<ResourceLocation, IIngredientListener> listeners = new HashMap<>();
 
-	public IngredientManager(
-		IModIdHelper modIdHelper,
-		IngredientBlacklistInternal blacklist,
-		IClientConfig clientConfig,
-		RegisteredIngredients registeredIngredients,
-		IngredientFilter ingredientFilter
-	) {
-		this.modIdHelper = modIdHelper;
-		this.blacklist = blacklist;
-		this.clientConfig = clientConfig;
+	public IngredientManager(RegisteredIngredients registeredIngredients) {
 		this.registeredIngredients = registeredIngredients;
-		this.ingredientFilter = ingredientFilter;
 	}
 
 	@Override
@@ -98,36 +85,18 @@ public class IngredientManager implements IIngredientManager {
 
 		ingredientInfo.addIngredients(ingredients);
 
-		List<ITypedIngredient<V>> typedIngredients = ingredients.stream()
-			.map(i -> TypedIngredient.createTyped(this.registeredIngredients, ingredientType, i))
-			.map(Optional::orElseThrow)
-			.toList();
+		if (!this.listeners.isEmpty()) {
+			List<ITypedIngredient<V>> typedIngredients = ingredients.stream()
+				.map(i -> TypedIngredient.createTyped(this.registeredIngredients, ingredientType, i))
+				.map(Optional::orElseThrow)
+				.toList();
 
-		IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
+			IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 
-		for (ITypedIngredient<V> value : typedIngredients) {
-			Optional<IListElementInfo<V>> matchingElementInfo = ingredientFilter.searchForMatchingElement(ingredientHelper, value);
-			if (matchingElementInfo.isPresent()) {
-				IListElement<V> matchingElement = matchingElementInfo.get().getElement();
-				ITypedIngredient<V> typedIngredient = matchingElement.getTypedIngredient();
-				blacklist.removeIngredientFromBlacklist(typedIngredient, ingredientHelper);
-				ingredientFilter.updateHiddenState(matchingElement);
-				if (clientConfig.isDebugModeEnabled()) {
-					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
-				}
-			} else {
-				IListElement<V> element = IngredientListElementFactory.createOrderedElement(value);
-				ListElementInfo.create(element, this.registeredIngredients, modIdHelper)
-					.ifPresent(info -> {
-						blacklist.removeIngredientFromBlacklist(value, ingredientHelper);
-						ingredientFilter.addIngredient(info);
-						if (clientConfig.isDebugModeEnabled()) {
-							LOGGER.debug("Added ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
-						}
-					});
+			for (IIngredientListener listener : this.listeners.values()) {
+				listener.onIngredientsAdded(ingredientHelper, typedIngredients);
 			}
 		}
-		ingredientFilter.invalidateCache();
 	}
 
 	@Override
@@ -156,24 +125,29 @@ public class IngredientManager implements IIngredientManager {
 
 		ingredientInfo.removeIngredients(ingredients);
 
-		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientType);
+		if (!this.listeners.isEmpty()) {
+			List<ITypedIngredient<V>> typedIngredients = ingredients.stream()
+				.map(i -> TypedIngredient.createTyped(this.registeredIngredients, ingredientType, i))
+				.map(Optional::orElseThrow)
+				.toList();
 
-		ingredients.stream()
-			.map(i -> TypedIngredient.createTyped(this.registeredIngredients, ingredientType, i))
-			.flatMap(Optional::stream)
-			.forEach(typedIngredient -> {
-				ingredientFilter.searchForMatchingElement(ingredientHelper, typedIngredient)
-					.map(IListElementInfo::getElement)
-					.ifPresent(e -> e.setVisible(false));
+			IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 
-				blacklist.addIngredientToBlacklist(typedIngredient, ingredientHelper);
-
-				if (clientConfig.isDebugModeEnabled()) {
-					LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
-				}
-			});
-
-		ingredientFilter.invalidateCache();
+			for (IIngredientListener listener : this.listeners.values()) {
+				listener.onIngredientsRemoved(ingredientHelper, typedIngredients);
+			}
+		}
 	}
 
+	@Override
+	public void addIngredientListener(IIngredientListener listener) {
+		ErrorUtil.checkNotNull(listener, "listener");
+		this.listeners.put(listener.getUid(), listener);
+	}
+
+	@Override
+	public void removeIngredientListener(IIngredientListener listener) {
+		ErrorUtil.checkNotNull(listener, "listener");
+		this.listeners.remove(listener.getUid(), listener);
+	}
 }

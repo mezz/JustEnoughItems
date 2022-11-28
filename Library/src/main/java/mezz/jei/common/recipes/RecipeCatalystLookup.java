@@ -31,7 +31,7 @@ public class RecipeCatalystLookup implements IRecipeCatalystLookup {
 
 	@Override
 	public <V> Stream<V> get(IIngredientType<V> ingredientType) {
-		return recipeManager.getRecipeCatalystStream(recipeType, includeHidden)
+		return get()
 			.map(i -> i.getIngredient(ingredientType))
 			.flatMap(Optional::stream);
 	}

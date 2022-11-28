@@ -21,7 +21,6 @@ public final class ClientConfig implements IClientConfig {
 	@Nullable
 	private static IClientConfig instance;
 
-	private final Supplier<Boolean> debugModeEnabled;
 	private final Supplier<Boolean> centerSearchBarEnabled;
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
@@ -33,11 +32,6 @@ public final class ClientConfig implements IClientConfig {
 		instance = this;
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
-		debugModeEnabled = advanced.addBoolean(
-			"DebugMode",
-			false,
-			"Debug mode enabled"
-		);
 		centerSearchBarEnabled = advanced.addBoolean(
 			"CenterSearch",
 			defaultCenterSearchBar,
@@ -91,11 +85,6 @@ public final class ClientConfig implements IClientConfig {
 	public static IClientConfig getInstance() {
 		Preconditions.checkNotNull(instance);
 		return instance;
-	}
-
-	@Override
-	public boolean isDebugModeEnabled() {
-		return debugModeEnabled.get();
 	}
 
 	@Override

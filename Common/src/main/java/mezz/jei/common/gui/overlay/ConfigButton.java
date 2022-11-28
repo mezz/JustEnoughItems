@@ -1,7 +1,10 @@
 package mezz.jei.common.gui.overlay;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.core.config.IWorldConfig;
@@ -82,6 +85,10 @@ public class ConfigButton extends GuiIconToggleButton {
 			if (!input.isSimulate()) {
 				if (input.is(keyBindings.getToggleCheatModeConfigButton())) {
 					worldConfig.toggleCheatItemsEnabled();
+					if (worldConfig.isCheatItemsEnabled()) {
+						IConnectionToServer serverConnection = Internal.getServerConnection();
+						serverConnection.sendPacketToServer(new PacketRequestCheatPermission());
+					}
 				} else {
 					openSettings();
 				}

@@ -8,48 +8,46 @@ import mezz.jei.core.config.IClientConfig;
 
 import java.nio.file.Path;
 
-public class JEIClientConfigs {
+public class JeiClientConfigs implements IJeiClientConfigs {
 	private final IClientConfig clientConfig;
-	private final IIngredientFilterConfig filterConfig;
-	private final IModIdFormatConfig modIdFormat;
+	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IIngredientGridConfig ingredientListConfig;
 	private final IIngredientGridConfig bookmarkListConfig;
 
 	private final IConfigSchema schema;
 
-	public JEIClientConfigs(Path configFile) {
+	public JeiClientConfigs(Path configFile) {
 		IConfigSchemaBuilder builder = new ConfigSchemaBuilder(configFile);
 
 		clientConfig = new ClientConfig(builder);
-		filterConfig = new IngredientFilterConfig(builder);
-		modIdFormat = new ModIdFormatConfig(builder);
+		ingredientFilterConfig = new IngredientFilterConfig(builder);
 		ingredientListConfig = new IngredientGridConfig("IngredientList", builder, HorizontalAlignment.RIGHT);
 		bookmarkListConfig = new IngredientGridConfig("BookmarkList", builder, HorizontalAlignment.LEFT);
 
 		schema = builder.build();
 	}
 
-	public void register(Path configFile) {
-		schema.register(configFile);
+	public void register() {
+		schema.register();
 	}
 
+	@Override
 	public IClientConfig getClientConfig() {
 		return clientConfig;
 	}
 
-	public IIngredientFilterConfig getFilterConfig() {
-		return filterConfig;
+	@Override
+	public IIngredientFilterConfig getIngredientFilterConfig() {
+		return ingredientFilterConfig;
 	}
 
+	@Override
 	public IIngredientGridConfig getIngredientListConfig() {
 		return ingredientListConfig;
 	}
 
+	@Override
 	public IIngredientGridConfig getBookmarkListConfig() {
 		return bookmarkListConfig;
-	}
-
-	public IModIdFormatConfig getModIdFormat() {
-		return modIdFormat;
 	}
 }

@@ -15,20 +15,11 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
-import mezz.jei.common.bookmarks.BookmarkList;
-import mezz.jei.common.config.IBookmarkConfig;
 import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.common.focus.FocusFactory;
 import mezz.jei.common.gui.GuiHelper;
-import mezz.jei.common.gui.ingredients.IListElement;
-import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.ingredients.IIngredientSorter;
-import mezz.jei.common.ingredients.IngredientBlacklistInternal;
-import mezz.jei.common.ingredients.IngredientFilter;
-import mezz.jei.common.ingredients.IngredientListElementFactory;
 import mezz.jei.common.ingredients.IngredientManager;
-import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.subtypes.SubtypeManager;
 import mezz.jei.common.load.registration.AdvancedRegistration;
@@ -48,13 +39,11 @@ import mezz.jei.common.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.common.recipes.RecipeManager;
 import mezz.jei.common.recipes.RecipeManagerInternal;
 import mezz.jei.common.runtime.JeiHelpers;
-import mezz.jei.common.startup.ConfigData;
 import mezz.jei.common.startup.StartData;
 import mezz.jei.common.transfer.RecipeTransferHandlerHelper;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.common.util.RecipeErrorUtil;
 import mezz.jei.common.util.StackHelper;
-import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Unmodifiable;
@@ -67,15 +56,10 @@ public class PluginLoader {
 	private final RegisteredIngredients registeredIngredients;
 	private final IIngredientManager ingredientManager;
 	private final JeiHelpers jeiHelpers;
-	private final IIngredientVisibility ingredientVisibility;
-	private final IngredientFilter ingredientFilter;
 
-	public PluginLoader(StartData data, IFilterTextSource filterTextSource, IModIdHelper modIdHelper, IIngredientSorter ingredientSorter) {
+	public PluginLoader(StartData data, IModIdHelper modIdHelper) {
 		this.data = data;
 		this.timer = new LoggedTimer();
-		ConfigData configData = data.configData();
-
-		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		List<IModPlugin> plugins = data.plugins();
@@ -92,37 +76,7 @@ public class PluginLoader {
 		Internal.setRegisteredIngredients(this.registeredIngredients);
 		RecipeErrorUtil.setRegisteredIngredients(this.registeredIngredients);
 
-		this.ingredientVisibility = new IngredientVisibility(
-			blacklist,
-			configData.worldConfig(),
-			configData.editModeConfig(),
-			this.registeredIngredients
-		);
-
-		this.timer.start("Building ingredient list");
-		NonNullList<IListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(this.registeredIngredients);
-		this.timer.stop();
-
-		this.timer.start("Building ingredient filter");
-		this.ingredientFilter = new IngredientFilter(
-			filterTextSource,
-			configData.clientConfig(),
-			configData.ingredientFilterConfig(),
-			registeredIngredients,
-			ingredientSorter,
-			ingredientList,
-			modIdHelper,
-			ingredientVisibility
-		);
-		this.timer.stop();
-
-		this.ingredientManager = new IngredientManager(
-			modIdHelper,
-			blacklist,
-			configData.clientConfig(),
-			registeredIngredients,
-			ingredientFilter
-		);
+		this.ingredientManager = new IngredientManager(registeredIngredients);
 
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(registeredIngredients, data.textures());
@@ -159,7 +113,8 @@ public class PluginLoader {
 		List<IModPlugin> plugins,
 		VanillaPlugin vanillaPlugin,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
-		IModIdHelper modIdHelper
+		IModIdHelper modIdHelper,
+		IIngredientVisibility ingredientVisibility
 	) {
 		List<IRecipeCategory<?>> recipeCategories = createRecipeCategories(plugins, vanillaPlugin);
 
@@ -177,8 +132,7 @@ public class PluginLoader {
 			recipeCatalysts,
 			registeredIngredients,
 			recipeManagerPlugins,
-			recipeCategorySortingConfig,
-			ingredientVisibility
+			recipeCategorySortingConfig
 		);
 		timer.stop();
 
@@ -187,15 +141,7 @@ public class PluginLoader {
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
 		Textures textures = data.textures();
-		return new RecipeManager(recipeManagerInternal, modIdHelper, registeredIngredients, textures, ingredientVisibility);
-	}
-
-	public IngredientFilter getIngredientFilter() {
-		return ingredientFilter;
-	}
-
-	public IIngredientVisibility getIngredientVisibility() {
-		return ingredientVisibility;
+		return new RecipeManager(recipeManagerInternal, modIdHelper, registeredIngredients, textures);
 	}
 
 	public IRegisteredIngredients getRegisteredIngredients() {
@@ -208,13 +154,5 @@ public class PluginLoader {
 
 	public JeiHelpers getJeiHelpers() {
 		return jeiHelpers;
-	}
-
-	public BookmarkList createBookmarkList(IBookmarkConfig bookmarkConfig) {
-		timer.start("Building bookmarks");
-		BookmarkList bookmarkList = new BookmarkList(registeredIngredients, bookmarkConfig);
-		bookmarkConfig.loadBookmarks(registeredIngredients, bookmarkList);
-		timer.stop();
-		return bookmarkList;
 	}
 }

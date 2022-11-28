@@ -1,10 +1,10 @@
 package mezz.jei.common.input.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.core.config.IClientConfig;
 import net.minecraft.client.gui.screens.Screen;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,17 +16,15 @@ import java.util.Optional;
 public class UserInputRouter {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final IClientConfig config;
     private final CombinedInputHandler combinedInputHandler;
     private final Map<InputConstants.Key, IUserInputHandler> pending = new HashMap<>();
 
-    public UserInputRouter(IClientConfig config, IUserInputHandler... inputHandlers) {
-        this.config = config;
+    public UserInputRouter(IUserInputHandler... inputHandlers) {
         this.combinedInputHandler = new CombinedInputHandler(inputHandlers);
     }
 
     public boolean handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-        if (config.isDebugModeEnabled()) {
+        if (DebugConfig.isDebugModeEnabled()) {
             LOGGER.debug("Received user input: {}", input);
         }
         return switch (input.getClickState()) {
@@ -44,14 +42,14 @@ public class UserInputRouter {
     private boolean handleImmediateClick(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
         IUserInputHandler oldClick = this.pending.remove(input.getKey());
         if (oldClick != null) {
-            if (config.isDebugModeEnabled()) {
+            if (DebugConfig.isDebugModeEnabled()) {
                 LOGGER.debug("Canceled previous user input: {}", oldClick);
             }
         }
 
         return this.combinedInputHandler.handleUserInput(screen, input, keyBindings)
             .map(callback -> {
-                if (config.isDebugModeEnabled()) {
+                if (DebugConfig.isDebugModeEnabled()) {
                     LOGGER.debug("Immediate click handled by: {}\n{}", callback, input);
                 }
                 return true;
@@ -70,7 +68,7 @@ public class UserInputRouter {
     private boolean handleSimulateClick(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
         IUserInputHandler oldClick = this.pending.remove(input.getKey());
         if (oldClick != null) {
-            if (config.isDebugModeEnabled()) {
+            if (DebugConfig.isDebugModeEnabled()) {
                 LOGGER.debug("Canceled pending user input: {}", oldClick);
             }
         }
@@ -78,7 +76,7 @@ public class UserInputRouter {
         return this.combinedInputHandler.handleUserInput(screen, input, keyBindings)
             .map(callback -> {
                 this.pending.put(input.getKey(), callback);
-                if (config.isDebugModeEnabled()) {
+                if (DebugConfig.isDebugModeEnabled()) {
                     LOGGER.debug("Click successfully simulated by: {}\n{}", callback, input);
                 }
                 return true;
@@ -90,7 +88,7 @@ public class UserInputRouter {
         return Optional.ofNullable(this.pending.remove(input.getKey()))
             .flatMap(inputHandler -> inputHandler.handleUserInput(screen, input, keyBindings))
             .map(callback -> {
-                if (config.isDebugModeEnabled()) {
+                if (DebugConfig.isDebugModeEnabled()) {
                     LOGGER.debug("Click successfully executed by: {}\n{}", callback, input);
                 }
                 return true;
@@ -109,7 +107,7 @@ public class UserInputRouter {
     public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
         return this.combinedInputHandler.handleMouseScrolled(mouseX, mouseY, scrollDelta)
             .map(callback -> {
-                if (config.isDebugModeEnabled()) {
+                if (DebugConfig.isDebugModeEnabled()) {
                     LOGGER.debug("Scroll handled by: {}", callback);
                 }
                 return true;

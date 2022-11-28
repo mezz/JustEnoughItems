@@ -1,11 +1,15 @@
 package mezz.jei.forge.platform;
 
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.core.util.function.CachedSupplier;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
+import net.minecraftforge.fml.loading.FMLPaths;
+
+import java.nio.file.Path;
 
 public class PlatformHelper implements IPlatformHelper {
     private final CachedSupplier<ItemStackHelper> itemStackHelper = new CachedSupplier<>(ItemStackHelper::new);
@@ -66,5 +70,10 @@ public class PlatformHelper implements IPlatformHelper {
     @Override
     public ModHelper getModHelper() {
         return modHelper.get();
+    }
+
+    @Override
+    public Path getConfigDir() {
+        return FMLPaths.CONFIGDIR.get().resolve(ModIds.JEI_ID);
     }
 }

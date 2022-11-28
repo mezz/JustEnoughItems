@@ -40,7 +40,6 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R>, IRecipeLayoutD
 	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);
 	private final IRecipeCategory<R> recipeCategory;
 	private final IRegisteredIngredients registeredIngredients;
-	private final IIngredientVisibility ingredientVisibility;
 	private final IModIdHelper modIdHelper;
 	private final Textures textures;
 	private final RecipeSlots recipeSlots;
@@ -55,8 +54,8 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R>, IRecipeLayoutD
 	private int posY;
 
 	public static <T> Optional<RecipeLayout<T>> create(int index, IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, IRegisteredIngredients registeredIngredients, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, int posX, int posY, Textures textures) {
-		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, registeredIngredients, ingredientVisibility, modIdHelper, posX, posY, textures);
-		if (recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses)) {
+		RecipeLayout<T> recipeLayout = new RecipeLayout<>(index, recipeCategory, recipe, registeredIngredients, modIdHelper, posX, posY, textures);
+		if (recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses, ingredientVisibility)) {
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 			if (recipeName != null) {
 				addOutputSlotTooltip(recipeLayout, recipeName, modIdHelper);
@@ -69,13 +68,14 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R>, IRecipeLayoutD
 	private boolean setRecipeLayout(
 		IRecipeCategory<R> recipeCategory,
 		R recipe,
-		IFocusGroup focuses
+		IFocusGroup focuses,
+		IIngredientVisibility ingredientVisibility
 	) {
-		RecipeLayoutBuilder builder = new RecipeLayoutBuilder(registeredIngredients, ingredientVisibility, this.ingredientCycleOffset);
+		RecipeLayoutBuilder builder = new RecipeLayoutBuilder(registeredIngredients, this.ingredientCycleOffset);
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
 			if (builder.isUsed()) {
-				builder.setRecipeLayout(this, focuses);
+				builder.setRecipeLayout(this, focuses, ingredientVisibility);
 				return true;
 			}
 		} catch (RuntimeException | LinkageError e) {
@@ -103,7 +103,6 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R>, IRecipeLayoutD
 		IRecipeCategory<R> recipeCategory,
 		R recipe,
 		IRegisteredIngredients registeredIngredients,
-		IIngredientVisibility ingredientVisibility,
 		IModIdHelper modIdHelper,
 		int posX,
 		int posY,
@@ -111,7 +110,6 @@ public class RecipeLayout<R> implements IRecipeLayoutInternal<R>, IRecipeLayoutD
 	) {
 		this.recipeCategory = recipeCategory;
 		this.registeredIngredients = registeredIngredients;
-		this.ingredientVisibility = ingredientVisibility;
 		this.modIdHelper = modIdHelper;
 		this.textures = textures;
 		this.recipeSlots = new RecipeSlots();

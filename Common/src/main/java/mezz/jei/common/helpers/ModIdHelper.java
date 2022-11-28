@@ -1,16 +1,13 @@
 package mezz.jei.common.helpers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.config.ModIdFormatConfig;
+import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IModIdFormatConfig;
+import mezz.jei.common.config.ModIdFormatConfig;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.core.config.IClientConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -18,12 +15,13 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class ModIdHelper implements IModIdHelper {
-	private final IClientConfig config;
 	private final IModIdFormatConfig modIdFormattingConfig;
 
-	public ModIdHelper(IClientConfig config, IModIdFormatConfig modIdFormattingConfig) {
-		this.config = config;
+	public ModIdHelper(IModIdFormatConfig modIdFormattingConfig) {
 		this.modIdFormattingConfig = modIdFormattingConfig;
 	}
 
@@ -35,7 +33,7 @@ public final class ModIdHelper implements IModIdHelper {
 
 	@Override
 	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
-		if (config.isDebugModeEnabled() && Minecraft.getInstance().options.advancedItemTooltips) {
+		if (DebugConfig.isDebugModeEnabled() && Minecraft.getInstance().options.advancedItemTooltips) {
 			tooltip = addDebugInfo(tooltip, ingredient, ingredientHelper);
 		}
 		if (!isDisplayingModNameEnabled()) {

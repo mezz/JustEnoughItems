@@ -7,6 +7,7 @@ public interface IFilterTextSource {
 
 	void addListener(Listener listener);
 
+	@FunctionalInterface
 	interface Listener {
 		void onChange(String filterText);
 	}
