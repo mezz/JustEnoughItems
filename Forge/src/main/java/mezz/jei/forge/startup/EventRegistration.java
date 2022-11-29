@@ -1,10 +1,10 @@
 package mezz.jei.forge.startup;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.common.gui.GuiEventHandler;
+import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.common.input.ClientInputHandler;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.common.startup.JeiEventHandlers;
+import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.input.ForgeUserInput;
 import net.minecraft.client.gui.screens.Screen;

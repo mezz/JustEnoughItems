@@ -9,7 +9,7 @@ import mezz.jei.common.config.InternalKeyMappings;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.startup.JeiEventHandlers;
+import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.startup.EventRegistration;
 import net.minecraft.resources.ResourceLocation;

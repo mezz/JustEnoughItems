@@ -1,10 +1,10 @@
-package mezz.jei.common.startup;
+package mezz.jei.gui.startup;
 
 import mezz.jei.common.config.BookmarkConfig;
 import mezz.jei.common.config.EditModeConfigInternal;
 import mezz.jei.common.config.IBookmarkConfig;
-import mezz.jei.common.config.IJeiClientConfigs;
-import mezz.jei.common.config.JeiClientConfigs;
+import mezz.jei.gui.config.IJeiClientConfigs;
+import mezz.jei.gui.config.JeiClientConfigs;
 import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.common.config.sorting.ModNameSortingConfig;
 import mezz.jei.common.platform.Services;

@@ -1,6 +1,6 @@
-package mezz.jei.common.startup;
+package mezz.jei.gui.startup;
 
-import mezz.jei.common.gui.GuiEventHandler;
+import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.common.input.ClientInputHandler;
 
 public record JeiEventHandlers(
