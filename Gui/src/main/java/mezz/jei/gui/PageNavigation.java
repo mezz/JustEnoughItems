@@ -1,7 +1,7 @@
-package mezz.jei.common.gui;
+package mezz.jei.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.common.gui.elements.GuiIconButton;
+import mezz.jei.gui.elements.GuiIconButton;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IPaged;
 import mezz.jei.common.input.IUserInputHandler;

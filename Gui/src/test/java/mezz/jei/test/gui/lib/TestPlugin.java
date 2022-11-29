@@ -1,14 +1,13 @@
-package mezz.jei.test.lib;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
-import net.minecraft.resources.ResourceLocation;
+package mezz.jei.test.gui.lib;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 @JeiPlugin
 public class TestPlugin implements IModPlugin {

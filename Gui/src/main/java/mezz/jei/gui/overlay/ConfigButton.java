@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.overlay;
+package mezz.jei.gui.overlay;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.Internal;
@@ -8,7 +8,7 @@ import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.common.gui.elements.GuiIconToggleButton;
+import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.UserInput;
 import net.minecraft.ChatFormatting;

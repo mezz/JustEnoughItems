@@ -1,9 +1,11 @@
-package mezz.jei.common.config;
+package mezz.jei.gui.config;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.config.EditModeConfigInternal;
+import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.common.ingredients.IngredientFilter;
 
 public class EditModeConfig implements IEditModeConfig {

@@ -1,13 +1,14 @@
-package mezz.jei.common.input.handlers;
+package mezz.jei.gui.input.handlers;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.common.input.CombinedRecipeFocusSource;
+import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.handlers.LimitedAreaInputHandler;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.gui.screens.Screen;
 

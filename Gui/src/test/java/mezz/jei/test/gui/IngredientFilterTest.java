@@ -1,12 +1,19 @@
-package mezz.jei.test;
+package mezz.jei.test.gui;
+
+import mezz.jei.test.gui.lib.TestClientConfig;
+import mezz.jei.test.gui.lib.TestIngredient;
+import mezz.jei.test.gui.lib.TestIngredientFilterConfig;
+import mezz.jei.test.gui.lib.TestIngredientHelper;
+import mezz.jei.test.gui.lib.TestModIdHelper;
+import mezz.jei.test.gui.lib.TestPlugin;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.EditModeConfigInternal;
+import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.common.filter.FilterTextSource;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.ingredients.IListElement;
@@ -25,13 +32,7 @@ import mezz.jei.common.load.registration.SubtypeRegistration;
 import mezz.jei.common.util.Translator;
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.test.lib.TestClientConfig;
-import mezz.jei.test.lib.TestIngredient;
-import mezz.jei.test.lib.TestIngredientFilterConfig;
-import mezz.jei.test.lib.TestIngredientHelper;
-import mezz.jei.test.lib.TestModIdHelper;
-import mezz.jei.test.lib.TestPlugin;
-import mezz.jei.test.lib.TestWorldConfig;
+import mezz.jei.test.gui.lib.TestWorldConfig;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;

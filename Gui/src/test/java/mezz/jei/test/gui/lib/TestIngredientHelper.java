@@ -1,13 +1,12 @@
-package mezz.jei.test.lib;
-
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
+package mezz.jei.test.gui.lib;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 	@Override

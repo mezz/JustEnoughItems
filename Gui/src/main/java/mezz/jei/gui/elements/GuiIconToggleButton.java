@@ -1,8 +1,9 @@
-package mezz.jei.common.gui.elements;
+package mezz.jei.gui.elements;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.gui.TooltipRenderer;
+import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;

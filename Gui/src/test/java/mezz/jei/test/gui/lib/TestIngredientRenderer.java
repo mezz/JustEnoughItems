@@ -1,4 +1,4 @@
-package mezz.jei.test.lib;
+package mezz.jei.test.gui.lib;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientRenderer;

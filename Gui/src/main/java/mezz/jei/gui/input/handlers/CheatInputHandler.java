@@ -1,4 +1,4 @@
-package mezz.jei.common.input.handlers;
+package mezz.jei.gui.input.handlers;
 
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
@@ -6,6 +6,7 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.handlers.LimitedAreaInputHandler;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.CheatUtil;
 import mezz.jei.common.util.CommandUtil;

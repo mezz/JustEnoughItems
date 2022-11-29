@@ -4,7 +4,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.bookmarks.BookmarkList;
-import mezz.jei.common.gui.elements.GuiIconToggleButton;
+import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
