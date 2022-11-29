@@ -1,7 +1,5 @@
 package mezz.jei.common.ingredients;
 
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -13,13 +11,13 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.filter.IFilterTextSource;
+import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
+import mezz.jei.common.search.ElementPrefixParser;
 import mezz.jei.common.search.ElementSearch;
 import mezz.jei.common.search.ElementSearchLowMem;
 import mezz.jei.common.search.IElementSearch;
-import mezz.jei.common.search.ElementPrefixParser;
 import mezz.jei.common.util.Translator;
 import mezz.jei.core.config.IClientConfig;
 import net.minecraft.core.NonNullList;
@@ -212,62 +210,6 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			.toList();
 	}
 
-	/**
-	 * Scans up and down the element list to find matches that touch the given element.
-	 */
-	public <T> List<ITypedIngredient<T>> searchForWildcardMatches(
-		ITypedIngredient<T> typedIngredient,
-		IIngredientHelper<T> ingredientHelper,
-		Function<ITypedIngredient<T>, String> wildcardUidFunction
-	) {
-		IIngredientType<T> ingredientType = typedIngredient.getType();
-		Optional<IListElementInfo<T>> searchResult = searchForMatchingElement(ingredientHelper, typedIngredient);
-		if (searchResult.isEmpty()) {
-			return List.of();
-		}
-
-		final String wildcardUid = wildcardUidFunction.apply(typedIngredient);
-		{
-			String itemUid = ingredientHelper.getUniqueId(typedIngredient.getIngredient(), UidContext.Ingredient);
-			if (itemUid.equals(wildcardUid)) {
-				return List.of(searchResult.get().getTypedIngredient());
-			}
-		}
-
-		IntSet matchingIndexes = new IntOpenHashSet();
-		List<ITypedIngredient<T>> matchingElements = new ArrayList<>();
-
-		IListElementInfo<T> matchingElement = searchResult.get();
-		List<ITypedIngredient<?>> ingredientList = this.getIngredientListUncached("");
-		final int startingIndex = ingredientList.indexOf(matchingElement.getTypedIngredient());
-		matchingIndexes.add(startingIndex);
-		matchingElements.add(matchingElement.getTypedIngredient());
-
-		// scan down the list then up the list,
-		// adding matches until we find something that doesn't match or that we have already
-
-		for (int i = startingIndex - 1; i >= 0 && !matchingIndexes.contains(i); i--) {
-			ITypedIngredient<?> ingredient = ingredientList.get(i);
-			Optional<ITypedIngredient<T>> match = checkForMatch(ingredient, ingredientType, wildcardUid, wildcardUidFunction);
-			if (match.isEmpty()) {
-				break;
-			}
-			matchingIndexes.add(i);
-			matchingElements.add(match.get());
-		}
-
-		for (int i = startingIndex + 1; i < ingredientList.size() && !matchingIndexes.contains(i); i++) {
-			ITypedIngredient<?> ingredient = ingredientList.get(i);
-			Optional<ITypedIngredient<T>> match = checkForMatch(ingredient, ingredientType, wildcardUid, wildcardUidFunction);
-			if (match.isEmpty()) {
-				break;
-			}
-			matchingIndexes.add(i);
-			matchingElements.add(match.get());
-		}
-		return matchingElements;
-	}
-
 	private static <T> Optional<IListElementInfo<T>> checkForMatch(IListElementInfo<?> info, IIngredientType<T> ingredientType, String uid, Function<ITypedIngredient<T>, String> uidFunction) {
 		return optionalCast(info, ingredientType)
 			.filter(cast -> {
@@ -282,23 +224,6 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		if (typedIngredient.getType() == ingredientType) {
 			@SuppressWarnings("unchecked")
 			IListElementInfo<T> cast = (IListElementInfo<T>) info;
-			return Optional.of(cast);
-		}
-		return Optional.empty();
-	}
-
-	private static <T> Optional<ITypedIngredient<T>> checkForMatch(ITypedIngredient<?> typedIngredient, IIngredientType<T> ingredientType, String uid, Function<ITypedIngredient<T>, String> uidFunction) {
-		return optionalCast(typedIngredient, ingredientType)
-			.filter(cast -> {
-				String elementUid = uidFunction.apply(cast);
-				return uid.equals(elementUid);
-			});
-	}
-
-	private static <T> Optional<ITypedIngredient<T>> optionalCast(ITypedIngredient<?> typedIngredient, IIngredientType<T> ingredientType) {
-		if (typedIngredient.getType() == ingredientType) {
-			@SuppressWarnings("unchecked")
-			ITypedIngredient<T> cast = (ITypedIngredient<T>) typedIngredient;
 			return Optional.of(cast);
 		}
 		return Optional.empty();

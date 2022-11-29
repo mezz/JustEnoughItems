@@ -174,7 +174,7 @@ public class IngredientFilterTest {
 		@SuppressWarnings("unchecked")
 		ITypedIngredient<TestIngredient> blacklistedIngredient = (ITypedIngredient<TestIngredient>) typedIngredient;
 		TestIngredientHelper testIngredientHelper = new TestIngredientHelper();
-		editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, blacklistedIngredient, IEditModeConfig.Mode.ITEM, testIngredientHelper);
+		editModeConfig.addIngredientToConfigBlacklist(blacklistedIngredient, IEditModeConfig.Mode.ITEM, testIngredientHelper);
 
 		ingredientFilter.updateHidden();
 

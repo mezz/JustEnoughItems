@@ -117,7 +117,7 @@ public class JeiGuiStarter {
         ingredientManager.addIngredientListener(ingredientFilter);
         timer.stop();
 
-        EditModeConfig editModeConfig = new EditModeConfig(editModeConfigInternal, ingredientManager, ingredientFilter);
+        EditModeConfig editModeConfig = new EditModeConfig(editModeConfigInternal, ingredientManager);
 
         IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
         internalRuntimeHack.setIngredientFilter(ingredientFilterApi);
