@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.overlay.bookmarks;
+package mezz.jei.gui.overlay.bookmarks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiProperties;
@@ -9,7 +9,7 @@ import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.bookmarks.BookmarkList;
 import mezz.jei.common.gui.elements.GuiIconToggleButton;
-import mezz.jei.common.gui.overlay.IngredientGridWithNavigation;
+import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.common.gui.overlay.ScreenPropertiesCache;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;

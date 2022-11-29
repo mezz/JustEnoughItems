@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.overlay.bookmarks;
+package mezz.jei.gui.overlay.bookmarks;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;

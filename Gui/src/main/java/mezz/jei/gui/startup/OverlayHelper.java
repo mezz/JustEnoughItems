@@ -1,4 +1,4 @@
-package mezz.jei.common.startup;
+package mezz.jei.gui.startup;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
@@ -11,9 +11,9 @@ import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.gui.overlay.IngredientGrid;
-import mezz.jei.common.gui.overlay.IngredientGridWithNavigation;
-import mezz.jei.common.gui.overlay.IngredientListOverlay;
-import mezz.jei.common.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.overlay.IngredientGridWithNavigation;
+import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
