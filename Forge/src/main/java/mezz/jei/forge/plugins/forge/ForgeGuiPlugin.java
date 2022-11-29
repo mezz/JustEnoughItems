@@ -9,9 +9,7 @@ import mezz.jei.common.config.InternalKeyMappings;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.startup.GuiConfigData;
 import mezz.jei.common.startup.JeiEventHandlers;
-import mezz.jei.forge.JustEnoughItemsClient;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.startup.EventRegistration;
 import net.minecraft.resources.ResourceLocation;
@@ -19,7 +17,6 @@ import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.file.Path;
 
 @JeiPlugin
 public class ForgeGuiPlugin implements IModPlugin {

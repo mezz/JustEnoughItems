@@ -7,7 +7,6 @@ import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.JeiClientConfigs;
 import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.common.config.sorting.ModNameSortingConfig;
-import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.Services;
 
 import java.io.IOException;
