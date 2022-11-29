@@ -1,8 +1,11 @@
-package mezz.jei.common.gui.recipes;
+package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.common.gui.recipes.IRecipeGuiLogic;
+import mezz.jei.common.gui.recipes.RecipeCategoryTab;
+import mezz.jei.common.gui.recipes.RecipeGuiTab;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.gui.PageNavigation;
 import mezz.jei.common.gui.TooltipRenderer;
@@ -43,13 +46,13 @@ public class RecipeGuiTabs implements IPaged {
 		this.inputHandler = this.pageNavigation.createInputHandler();
 	}
 
-	public void initLayout(RecipesGui recipesGui) {
+	public void initLayout(ImmutableRect2i recipeGuiArea) {
 		List<IRecipeCategory<?>> categories = this.recipeGuiLogic.getRecipeCategories();
 		if (categories.isEmpty()) {
 			return;
 		}
 
-		final ImmutableRect2i tabsArea = recipesGui.getArea()
+		final ImmutableRect2i tabsArea = recipeGuiArea
 			.keepTop(RecipeGuiTab.TAB_HEIGHT)
 			// move up above the recipe area and overlap the recipe gui
 			.moveUp(RecipeGuiTab.TAB_HEIGHT - TAB_GUI_OVERLAP)

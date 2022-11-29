@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.ghost;
+package mezz.jei.gui.ghost;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
@@ -9,6 +9,8 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.common.gui.ghost.GhostIngredientDrag;
+import mezz.jei.common.gui.ghost.GhostIngredientReturning;
 import mezz.jei.common.input.IDragHandler;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.UserInput;

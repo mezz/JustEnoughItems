@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.recipes;
+package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -58,11 +58,10 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		return Math.max(0, width - overlapSize);
 	}
 
-	public void updateLayout(List<ITypedIngredient<?>> ingredients, RecipesGui recipesGui) {
+	public void updateLayout(List<ITypedIngredient<?>> ingredients, ImmutableRect2i recipeArea) {
 		this.recipeSlots.clear();
 
 		if (!ingredients.isEmpty()) {
-			ImmutableRect2i recipeArea = recipesGui.getArea();
 			int availableHeight = recipeArea.getHeight() - 8;
 			int borderHeight = (2 * borderSize) + (2 * ingredientBorderSize);
 			int maxIngredientsPerColumn = (availableHeight - borderHeight) / ingredientSize;

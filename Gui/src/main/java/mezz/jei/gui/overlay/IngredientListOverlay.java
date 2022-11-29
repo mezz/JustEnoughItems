@@ -11,7 +11,7 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.GuiProperties;
 import mezz.jei.common.gui.elements.GuiIconToggleButton;
-import mezz.jei.common.gui.ghost.GhostIngredientDragManager;
+import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.common.gui.overlay.ConfigButton;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.gui.overlay.ScreenPropertiesCache;

@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.overlay;
+package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -13,6 +13,8 @@ import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.common.gui.overlay.IIngredientGrid;
+import mezz.jei.common.gui.overlay.IngredientGridTooltipHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;

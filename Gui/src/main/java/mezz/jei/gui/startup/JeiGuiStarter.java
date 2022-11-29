@@ -26,7 +26,7 @@ import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
-import mezz.jei.common.gui.recipes.RecipesGui;
+import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.IIngredientSorter;
 import mezz.jei.common.ingredients.IngredientFilter;

@@ -10,7 +10,6 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.GuiProperties;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.gui.recipes.RecipesGui;
 import mezz.jei.common.plugins.jei.info.IngredientInfoRecipeCategory;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
@@ -36,6 +35,5 @@ public class JeiInternalPlugin implements IModPlugin {
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
 		registration.addGuiScreenHandler(AbstractContainerScreen.class, GuiProperties::create);
-		registration.addGuiScreenHandler(RecipesGui.class, RecipesGui::getProperties);
 	}
 }

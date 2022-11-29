@@ -10,7 +10,7 @@ import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
-import mezz.jei.common.gui.overlay.IngredientGrid;
+import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;

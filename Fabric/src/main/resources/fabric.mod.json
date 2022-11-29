@@ -28,7 +28,8 @@
       "mezz.jei.common.plugins.vanilla.VanillaPlugin",
       "mezz.jei.common.plugins.jei.JeiInternalPlugin",
       "mezz.jei.common.plugins.debug.JeiDebugPlugin",
-      "mezz.jei.fabric.plugins.fabric.FabricGuiPlugin"
+      "mezz.jei.fabric.plugins.fabric.FabricGuiPlugin",
+      "mezz.jei.gui.plugins.JeiGuiPlugin"
     ]
   },
   "mixins": [
