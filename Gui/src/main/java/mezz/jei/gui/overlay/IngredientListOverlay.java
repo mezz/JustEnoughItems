@@ -32,7 +32,7 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

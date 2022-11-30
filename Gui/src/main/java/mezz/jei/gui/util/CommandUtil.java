@@ -1,10 +1,13 @@
-package mezz.jei.common.util;
+package mezz.jei.gui.util;
 
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketGiveItemStack;
 import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
+import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.GiveAmount;
+import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.core.config.GiveMode;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.gui.config.IClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;

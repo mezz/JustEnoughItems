@@ -1,4 +1,4 @@
-package mezz.jei.common.render;
+package mezz.jei.gui.overlay;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.util.IImmutableRect2i;

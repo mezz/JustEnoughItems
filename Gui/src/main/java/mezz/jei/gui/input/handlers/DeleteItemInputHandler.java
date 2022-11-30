@@ -1,4 +1,4 @@
-package mezz.jei.common.input.handlers;
+package mezz.jei.gui.input.handlers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.common.gui.TooltipRenderer;
@@ -12,7 +12,7 @@ import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.common.util.CheatUtil;
 import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.core.config.GiveMode;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

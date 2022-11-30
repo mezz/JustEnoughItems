@@ -1,4 +1,4 @@
-package mezz.jei.common.ingredients;
+package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -14,12 +14,15 @@ import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
+import mezz.jei.common.ingredients.IListElementInfo;
+import mezz.jei.common.ingredients.IngredientListElementFactory;
+import mezz.jei.common.ingredients.ListElementInfo;
 import mezz.jei.common.search.ElementPrefixParser;
 import mezz.jei.common.search.ElementSearch;
 import mezz.jei.common.search.ElementSearchLowMem;
 import mezz.jei.common.search.IElementSearch;
 import mezz.jei.common.util.Translator;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.gui.config.IClientConfig;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;

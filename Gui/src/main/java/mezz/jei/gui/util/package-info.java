@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.common.bookmarks;
+package mezz.jei.gui.util;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

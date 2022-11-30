@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.recipes;
+package mezz.jei.gui.recipes;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
@@ -9,6 +9,8 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.gui.recipes.FocusedRecipes;
+import mezz.jei.common.gui.recipes.IRecipeLogicStateListener;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.gui.ingredients.IngredientLookupState;
 import mezz.jei.common.focus.FocusGroup;

@@ -1,4 +1,4 @@
-package mezz.jei.common.config;
+package mezz.jei.gui.config;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.common.color.ColorGetter;
@@ -10,7 +10,6 @@ import mezz.jei.common.config.file.serializers.ColorNameSerializer;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
 import mezz.jei.core.config.GiveMode;
-import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IngredientSortStage;
 import org.jetbrains.annotations.Nullable;
 

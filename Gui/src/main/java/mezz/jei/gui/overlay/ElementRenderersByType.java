@@ -1,4 +1,4 @@
-package mezz.jei.common.render;
+package mezz.jei.gui.overlay;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.core.collect.ListMultiMap;

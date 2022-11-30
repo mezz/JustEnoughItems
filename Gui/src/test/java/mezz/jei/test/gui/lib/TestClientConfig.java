@@ -1,7 +1,7 @@
 package mezz.jei.test.gui.lib;
 
 import mezz.jei.core.config.GiveMode;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.core.config.IngredientSortStage;
 
 import java.util.List;

@@ -1,8 +1,8 @@
-package mezz.jei.common.config;
+package mezz.jei.gui.config;
 
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.bookmarks.BookmarkList;
+import mezz.jei.gui.bookmarks.BookmarkList;
 
 import java.util.List;
 

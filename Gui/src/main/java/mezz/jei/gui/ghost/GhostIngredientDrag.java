@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.ghost;
+package mezz.jei.gui.ghost;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;

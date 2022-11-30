@@ -1,9 +1,10 @@
-package mezz.jei.common.ingredients;
+package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.common.config.sorting.ModNameSortingConfig;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.common.ingredients.IListElementInfo;
+import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.core.config.IngredientSortStage;
 
 import java.util.Comparator;

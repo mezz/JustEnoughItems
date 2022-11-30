@@ -4,9 +4,9 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.bookmarks.BookmarkList;
+import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.gui.config.IIngredientGridConfig;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
@@ -17,7 +17,7 @@ import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 
 public final class OverlayHelper {

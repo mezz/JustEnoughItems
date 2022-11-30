@@ -1,4 +1,4 @@
-package mezz.jei.common.bookmarks;
+package mezz.jei.gui.bookmarks;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -9,7 +9,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.config.IBookmarkConfig;
+import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.ingredients.TypedIngredient;
 import net.minecraft.world.item.ItemStack;

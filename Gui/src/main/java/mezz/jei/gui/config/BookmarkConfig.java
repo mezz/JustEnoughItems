@@ -1,4 +1,4 @@
-package mezz.jei.common.config;
+package mezz.jei.gui.config;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.constants.VanillaTypes;
@@ -8,7 +8,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.bookmarks.BookmarkList;
+import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import net.minecraft.nbt.CompoundTag;

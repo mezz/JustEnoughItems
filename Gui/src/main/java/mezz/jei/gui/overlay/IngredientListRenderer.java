@@ -1,4 +1,4 @@
-package mezz.jei.common.render;
+package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;

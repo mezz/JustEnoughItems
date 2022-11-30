@@ -1,7 +1,7 @@
 package mezz.jei.gui.input.handlers;
 
 import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.common.bookmarks.BookmarkList;
+import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;

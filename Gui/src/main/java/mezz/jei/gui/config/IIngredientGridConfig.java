@@ -1,4 +1,4 @@
-package mezz.jei.common.config;
+package mezz.jei.gui.config;
 
 import mezz.jei.common.gui.overlay.options.HorizontalAlignment;
 import mezz.jei.common.gui.overlay.options.NavigationVisibility;
