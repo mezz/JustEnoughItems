@@ -162,17 +162,14 @@ public class IngredientManager implements IIngredientManager {
 			.map(i -> TypedIngredient.createTyped(this.registeredIngredients, ingredientType, i))
 			.flatMap(Optional::stream)
 			.forEach(typedIngredient -> {
-				Optional<IListElementInfo<V>> matchingElementInfo = ingredientFilter.searchForMatchingElement(ingredientHelper, typedIngredient);
-				if (matchingElementInfo.isEmpty()) {
-					String errorInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
-					LOGGER.error("Could not find a matching ingredient to remove: {}", errorInfo);
-				} else {
-					if (clientConfig.isDebugModeEnabled()) {
-						LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
-					}
-					IListElement<V> matchingElement = matchingElementInfo.get().getElement();
-					blacklist.addIngredientToBlacklist(matchingElement.getTypedIngredient(), ingredientHelper);
-					matchingElement.setVisible(false);
+				ingredientFilter.searchForMatchingElement(ingredientHelper, typedIngredient)
+					.map(IListElementInfo::getElement)
+					.ifPresent(e -> e.setVisible(false));
+
+				blacklist.addIngredientToBlacklist(typedIngredient, ingredientHelper);
+
+				if (clientConfig.isDebugModeEnabled()) {
+					LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
 				}
 			});
 
