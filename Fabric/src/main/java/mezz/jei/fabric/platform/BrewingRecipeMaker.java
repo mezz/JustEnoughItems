@@ -3,7 +3,7 @@ package mezz.jei.fabric.platform;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.util.BrewingRecipeMakerCommon;
+import mezz.jei.library.util.BrewingRecipeMakerCommon;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 

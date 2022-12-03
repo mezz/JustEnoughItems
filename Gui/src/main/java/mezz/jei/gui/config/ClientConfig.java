@@ -1,12 +1,8 @@
 package mezz.jei.gui.config;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.common.color.ColorGetter;
-import mezz.jei.common.color.ColorName;
-import mezz.jei.common.color.ColorNamer;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
-import mezz.jei.common.config.file.serializers.ColorNameSerializer;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
 import mezz.jei.core.config.GiveMode;
@@ -58,15 +54,6 @@ public final class ClientConfig implements IClientConfig {
 			Integer.MAX_VALUE,
 			"Max. recipe gui height"
 		);
-
-		IConfigCategoryBuilder colors = schema.addCategory("colors");
-		Supplier<List<ColorName>> searchColors = colors.addList(
-			"SearchColors",
-			ColorGetter.getColorDefaults(),
-			new ListSerializer<>(ColorNameSerializer.INSTANCE),
-			"Color values to search for"
-		);
-		ColorNamer.create(searchColors);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
 		ingredientSorterStages = sorting.addList(

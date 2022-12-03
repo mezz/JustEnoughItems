@@ -10,11 +10,13 @@ public final class DebugConfig {
 	@Nullable
 	private static DebugConfig instance;
 
+	public static void create(IConfigSchemaBuilder schema) {
+		instance = new DebugConfig(schema);
+	}
+
 	private final Supplier<Boolean> debugModeEnabled;
 
-	public DebugConfig(IConfigSchemaBuilder schema) {
-		instance = this;
-
+	private DebugConfig(IConfigSchemaBuilder schema) {
 		IConfigCategoryBuilder advanced = schema.addCategory("debug");
 		debugModeEnabled = advanced.addBoolean(
 			"DebugMode",

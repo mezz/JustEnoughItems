@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.library.network.packets.handlers;
+package mezz.jei.library;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

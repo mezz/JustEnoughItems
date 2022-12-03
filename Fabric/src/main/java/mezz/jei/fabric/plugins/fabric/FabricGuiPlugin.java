@@ -3,6 +3,8 @@ package mezz.jei.fabric.plugins.fabric;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.api.helpers.IColorHelper;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.InternalKeyMappings;
@@ -31,8 +33,10 @@ public class FabricGuiPlugin implements IModPlugin {
         IConnectionToServer serverConnection = Internal.getServerConnection();
         Textures textures = Internal.getTextures();
         InternalKeyMappings keyMappings = Internal.getKeyMappings();
+        IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
+        IColorHelper colorHelper = jeiHelpers.getColorHelper();
 
-        JeiEventHandlers eventHandlers = JeiGuiStarter.start(jeiRuntime, serverConnection, textures, keyMappings);
+        JeiEventHandlers eventHandlers = JeiGuiStarter.start(jeiRuntime, serverConnection, textures, keyMappings, colorHelper);
 
         eventRegistration.setEventHandlers(eventHandlers);
     }

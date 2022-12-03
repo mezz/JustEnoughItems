@@ -1,10 +1,10 @@
 package mezz.jei.common.plugins.vanilla.ingredients.item;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.color.ColorGetter;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
@@ -17,17 +17,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	private final StackHelper stackHelper;
+	private final IColorHelper colorHelper;
 
-	public ItemStackHelper(StackHelper stackHelper) {
+	public ItemStackHelper(StackHelper stackHelper, IColorHelper colorHelper) {
 		this.stackHelper = stackHelper;
+		this.colorHelper = colorHelper;
 	}
 
 	@Override
@@ -75,7 +77,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public Iterable<Integer> getColors(ItemStack ingredient) {
-		return ColorGetter.getColors(ingredient, 2);
+		return colorHelper.getColors(ingredient, 2);
 	}
 
 	@Override

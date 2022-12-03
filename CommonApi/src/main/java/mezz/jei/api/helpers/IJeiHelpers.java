@@ -35,6 +35,8 @@ public interface IJeiHelpers {
 	 */
 	IFocusFactory getFocusFactory();
 
+	IColorHelper getColorHelper();
+
 	/**
 	 * Helps with handling fluid ingredients on multiple platforms (Forge and Fabric).
 	 *

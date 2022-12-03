@@ -25,7 +25,7 @@
       "mezz.jei.fabric.JustEnoughItemsClient"
     ],
     "jei_mod_plugin": [
-      "mezz.jei.common.plugins.vanilla.VanillaPlugin",
+      "mezz.jei.library.plugins.vanilla.VanillaPlugin",
       "mezz.jei.common.plugins.jei.JeiInternalPlugin",
       "mezz.jei.common.plugins.debug.JeiDebugPlugin",
       "mezz.jei.fabric.plugins.fabric.FabricGuiPlugin",

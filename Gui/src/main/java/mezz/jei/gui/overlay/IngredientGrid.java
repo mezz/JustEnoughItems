@@ -2,29 +2,30 @@ package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.config.IEditModeConfig;
+import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
+import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.gui.config.IIngredientGridConfig;
 import mezz.jei.common.gui.ingredients.GuiIngredientProperties;
-import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.gui.overlay.IIngredientGrid;
 import mezz.jei.common.gui.overlay.IngredientGridTooltipHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.gui.input.handlers.DeleteItemInputHandler;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
-import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.gui.config.IIngredientGridConfig;
+import mezz.jei.gui.input.handlers.DeleteItemInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -60,12 +61,13 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		IScreenHelper screenHelper,
 		IModIdHelper modIdHelper,
 		IConnectionToServer serverConnection,
-		IInternalKeyMappings keyBindings
+		IInternalKeyMappings keyBindings,
+		IColorHelper colorHelper
 	) {
 		this.gridConfig = gridConfig;
 		this.screenHelper = screenHelper;
 		this.ingredientListRenderer = new IngredientListRenderer(editModeConfig, worldConfig, registeredIngredients);
-		this.tooltipHelper = new IngredientGridTooltipHelper(registeredIngredients, ingredientFilterConfig, worldConfig, modIdHelper, keyBindings);
+		this.tooltipHelper = new IngredientGridTooltipHelper(registeredIngredients, ingredientFilterConfig, worldConfig, modIdHelper, keyBindings, colorHelper);
 		this.deleteItemHandler = new DeleteItemInputHandler(this, worldConfig, clientConfig, serverConnection);
 	}
 

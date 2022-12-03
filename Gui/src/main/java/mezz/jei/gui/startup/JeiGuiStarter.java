@@ -1,5 +1,6 @@
 package mezz.jei.gui.startup;
 
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
@@ -11,45 +12,45 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
-import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.gui.config.EditModeConfig;
 import mezz.jei.common.config.EditModeConfigInternal;
-import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.gui.config.IIngredientGridConfig;
-import mezz.jei.gui.config.IJeiClientConfigs;
 import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.common.config.sorting.ModNameSortingConfig;
 import mezz.jei.common.filter.FilterTextSource;
 import mezz.jei.common.filter.IFilterTextSource;
-import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.common.gui.ingredients.IListElement;
-import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
-import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.gui.ingredients.IIngredientSorter;
-import mezz.jei.gui.ingredients.IngredientFilter;
-import mezz.jei.gui.ingredients.IngredientFilterApi;
 import mezz.jei.common.ingredients.IngredientListElementFactory;
-import mezz.jei.gui.ingredients.IngredientSorter;
 import mezz.jei.common.input.ClientInputHandler;
-import mezz.jei.gui.input.CombinedRecipeFocusSource;
-import mezz.jei.gui.input.GuiContainerWrapper;
 import mezz.jei.common.input.ICharTypedHandler;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.gui.input.handlers.BookmarkInputHandler;
 import mezz.jei.common.input.handlers.DragRouter;
-import mezz.jei.gui.input.handlers.EditInputHandler;
-import mezz.jei.gui.input.handlers.FocusInputHandler;
 import mezz.jei.common.input.handlers.GlobalInputHandler;
 import mezz.jei.common.input.handlers.GuiAreaInputHandler;
 import mezz.jei.common.input.handlers.UserInputRouter;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.runtime.JeiRuntime;
 import mezz.jei.common.util.LoggedTimer;
-import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.config.EditModeConfig;
+import mezz.jei.gui.config.IBookmarkConfig;
+import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.gui.config.IIngredientGridConfig;
+import mezz.jei.gui.config.IJeiClientConfigs;
+import mezz.jei.gui.events.GuiEventHandler;
+import mezz.jei.gui.ingredients.IIngredientSorter;
+import mezz.jei.gui.ingredients.IngredientFilter;
+import mezz.jei.gui.ingredients.IngredientFilterApi;
+import mezz.jei.gui.ingredients.IngredientSorter;
+import mezz.jei.gui.input.CombinedRecipeFocusSource;
+import mezz.jei.gui.input.GuiContainerWrapper;
+import mezz.jei.gui.input.handlers.BookmarkInputHandler;
+import mezz.jei.gui.input.handlers.EditInputHandler;
+import mezz.jei.gui.input.handlers.FocusInputHandler;
+import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,7 +64,8 @@ public class JeiGuiStarter {
         IJeiRuntime jeiRuntime,
         IConnectionToServer serverConnection,
         Textures textures,
-        IInternalKeyMappings keyMappings
+        IInternalKeyMappings keyMappings,
+        IColorHelper colorHelper
     ) {
         LoggedTimer timer = new LoggedTimer();
 
@@ -135,7 +137,8 @@ public class JeiGuiStarter {
             editModeConfig,
             serverConnection,
             ingredientFilterConfig,
-            textures
+            textures,
+            colorHelper
         );
         internalRuntimeHack.setIngredientListOverlay(ingredientListOverlay);
 
@@ -154,7 +157,8 @@ public class JeiGuiStarter {
             clientConfig,
             worldConfig,
             serverConnection,
-            textures
+            textures,
+            colorHelper
         );
         internalRuntimeHack.setBookmarkOverlay(bookmarkOverlay);
 

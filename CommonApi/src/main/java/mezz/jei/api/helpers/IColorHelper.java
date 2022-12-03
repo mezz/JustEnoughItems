@@ -2,6 +2,7 @@ package mezz.jei.api.helpers;
 
 import java.util.List;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Helper class for getting colors for sprites for purposes of implementing {@link mezz.jei.api.ingredients.IIngredientHelper#getColors(Object)}.
@@ -19,4 +20,8 @@ public interface IColorHelper {
      * @return A list of the main colors for the given sprite when overlayed with a specific tint color.
      */
     List<Integer> getColors(TextureAtlasSprite textureAtlasSprite, int renderColor, int colorCount);
+
+    List<Integer> getColors(ItemStack itemStack, int colorCount);
+
+    String getClosestColorName(int color);
 }

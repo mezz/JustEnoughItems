@@ -1,24 +1,25 @@
 package mezz.jei.gui.startup;
 
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
-import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.common.config.IEditModeConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.gui.config.IIngredientGridConfig;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
+import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.gui.config.IIngredientGridConfig;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
-import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.gui.config.IClientConfig;
-import mezz.jei.core.config.IWorldConfig;
 
 public final class OverlayHelper {
     private OverlayHelper() {}
@@ -37,7 +38,8 @@ public final class OverlayHelper {
         IClientConfig clientConfig,
         IWorldConfig worldConfig,
         IConnectionToServer serverConnection,
-        Textures textures
+        Textures textures,
+        IColorHelper colorHelper
     ) {
         IngredientGrid ingredientListGrid = new IngredientGrid(
             registeredIngredients,
@@ -49,7 +51,8 @@ public final class OverlayHelper {
             screenHelper,
             modIdHelper,
             serverConnection,
-            keyMappings
+            keyMappings,
+            colorHelper
         );
 
         return new IngredientGridWithNavigation(
@@ -79,7 +82,8 @@ public final class OverlayHelper {
         IEditModeConfig editModeConfig,
         IConnectionToServer serverConnection,
         IIngredientFilterConfig ingredientFilterConfig,
-        Textures textures
+        Textures textures,
+        IColorHelper colorHelper
     ) {
         IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
             ingredientFilter,
@@ -95,7 +99,8 @@ public final class OverlayHelper {
             clientConfig,
             worldConfig,
             serverConnection,
-            textures
+            textures,
+            colorHelper
         );
 
         return new IngredientListOverlay(
@@ -124,7 +129,8 @@ public final class OverlayHelper {
         IClientConfig clientConfig,
         IWorldConfig worldConfig,
         IConnectionToServer serverConnection,
-        Textures textures
+        Textures textures,
+        IColorHelper colorHelper
     ) {
         IngredientGridWithNavigation bookmarkListGridNavigation = createIngredientGridWithNavigation(
             bookmarkList,
@@ -140,7 +146,8 @@ public final class OverlayHelper {
             clientConfig,
             worldConfig,
             serverConnection,
-            textures
+            textures,
+            colorHelper
         );
 
         return new BookmarkOverlay(

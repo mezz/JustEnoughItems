@@ -1,5 +1,6 @@
 package mezz.jei.common.runtime;
 
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -22,6 +23,7 @@ public class JeiHelpers implements IJeiHelpers {
 	private final IStackHelper stackHelper;
 	private final IModIdHelper modIdHelper;
 	private final IFocusFactory focusFactory;
+	private final IColorHelper colorHelper;
 	private final IPlatformFluidHelper<?> platformFluidHelper;
 	private @Nullable Collection<IRecipeCategory<?>> recipeCategories;
 
@@ -29,12 +31,14 @@ public class JeiHelpers implements IJeiHelpers {
 		GuiHelper guiHelper,
 		IStackHelper stackHelper,
 		IModIdHelper modIdHelper,
-		IFocusFactory focusFactory
+		IFocusFactory focusFactory,
+		IColorHelper colorHelper
 	) {
 		this.guiHelper = guiHelper;
 		this.stackHelper = stackHelper;
 		this.modIdHelper = modIdHelper;
 		this.focusFactory = focusFactory;
+		this.colorHelper = colorHelper;
 		this.platformFluidHelper = Services.PLATFORM.getFluidHelper();
 	}
 
@@ -60,6 +64,11 @@ public class JeiHelpers implements IJeiHelpers {
 	@Override
 	public IFocusFactory getFocusFactory() {
 		return focusFactory;
+	}
+
+	@Override
+	public IColorHelper getColorHelper() {
+		return colorHelper;
 	}
 
 	@Override

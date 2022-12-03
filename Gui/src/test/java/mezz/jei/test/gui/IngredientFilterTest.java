@@ -1,6 +1,8 @@
 package mezz.jei.test.gui;
 
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.test.gui.lib.TestClientConfig;
+import mezz.jei.test.gui.lib.TestColorHelper;
 import mezz.jei.test.gui.lib.TestIngredient;
 import mezz.jei.test.gui.lib.TestIngredientFilterConfig;
 import mezz.jei.test.gui.lib.TestIngredientHelper;
@@ -72,7 +74,8 @@ public class IngredientFilterTest {
 		testPlugin.registerItemSubtypes(subtypeRegistration);
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeRegistration);
 
-		RegisteredIngredientsBuilder registeredIngredientsBuilder = new RegisteredIngredientsBuilder(subtypeManager);
+		IColorHelper colorHelper = new TestColorHelper();
+		RegisteredIngredientsBuilder registeredIngredientsBuilder = new RegisteredIngredientsBuilder(subtypeManager, colorHelper);
 		testPlugin.registerIngredients(registeredIngredientsBuilder);
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
