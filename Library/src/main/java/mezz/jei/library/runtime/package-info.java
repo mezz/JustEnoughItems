@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.common.startup;
+package mezz.jei.library.runtime;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

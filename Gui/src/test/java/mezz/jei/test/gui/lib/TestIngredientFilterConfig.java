@@ -1,6 +1,6 @@
 package mezz.jei.test.gui.lib;
 
-import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.core.search.SearchMode;
 
 public class TestIngredientFilterConfig implements IIngredientFilterConfig {

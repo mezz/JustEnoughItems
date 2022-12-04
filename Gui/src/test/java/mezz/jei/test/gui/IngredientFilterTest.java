@@ -22,7 +22,7 @@ import mezz.jei.common.filter.FilterTextSource;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IIngredientSorter;
-import mezz.jei.common.ingredients.IListElementInfo;
+import mezz.jei.gui.ingredients.IListElementInfo;
 import mezz.jei.common.ingredients.IngredientBlacklistInternal;
 import mezz.jei.gui.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.IngredientInfo;

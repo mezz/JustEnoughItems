@@ -22,28 +22,24 @@ public interface IJeiRuntime {
 	 * The {@link IRecipesGui} is JEI's gui for displaying recipes.
 	 * Use this interface to open the gui and display recipes.
 	 */
-	@Deprecated
 	IRecipesGui getRecipesGui();
 
 	/**
 	 * The {@link IIngredientFilter} is JEI's filter that can be set by players or controlled by mods.
 	 * Use this interface to get information from and interact with it.
 	 */
-	@Deprecated
 	IIngredientFilter getIngredientFilter();
 
 	/**
 	 * The {@link IIngredientListOverlay} is JEI's gui that displays all the ingredients next to an open container gui.
 	 * Use this interface to get information from and interact with it.
 	 */
-	@Deprecated
 	IIngredientListOverlay getIngredientListOverlay();
 
 	/**
 	 * The {@link IBookmarkOverlay} is JEI's gui that displays all the bookmarked ingredients next to an open container gui.
 	 * Use this interface to get information from it.
 	 */
-	@Deprecated
 	IBookmarkOverlay getBookmarkOverlay();
 
 	/**
@@ -88,4 +84,12 @@ public interface IJeiRuntime {
 	IRegisteredIngredients getRegisteredIngredients();
 
 	IEditModeConfig getEditModeConfig();
+
+	void setIngredientListOverlay(IIngredientListOverlay ingredientListOverlay);
+
+	void setBookmarkOverlay(IBookmarkOverlay bookmarkOverlay);
+
+	void setRecipesGui(IRecipesGui recipesGui);
+
+	void setIngredientFilter(IIngredientFilter ingredientFilter);
 }

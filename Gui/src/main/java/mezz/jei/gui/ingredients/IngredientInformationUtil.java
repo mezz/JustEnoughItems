@@ -1,8 +1,8 @@
-package mezz.jei.common.ingredients;
+package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.common.util.Translator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

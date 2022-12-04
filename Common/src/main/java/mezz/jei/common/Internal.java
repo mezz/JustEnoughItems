@@ -6,18 +6,13 @@ import mezz.jei.common.config.InternalKeyMappings;
 import mezz.jei.common.config.WorldConfig;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.runtime.JeiRuntime;
 import mezz.jei.core.config.IWorldConfig;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 /**
  * For JEI internal use only, these are normally accessed from the API.
  */
 public final class Internal {
-	@Nullable
-	private static JeiRuntime runtime;
 	@Nullable
 	private static IRegisteredIngredients registeredIngredients;
 	@Nullable
@@ -40,14 +35,6 @@ public final class Internal {
 
 	public static void setTextures(Textures textures) {
 		Internal.textures = textures;
-	}
-
-	public static Optional<JeiRuntime> getRuntime() {
-		return Optional.ofNullable(runtime);
-	}
-
-	public static void setRuntime(@Nullable JeiRuntime runtime) {
-		Internal.runtime = runtime;
 	}
 
 	public static IRegisteredIngredients getRegisteredIngredients() {

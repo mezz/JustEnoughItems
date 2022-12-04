@@ -16,10 +16,14 @@ import mezz.jei.gui.startup.JeiGuiStarter;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 @JeiPlugin
 public class FabricGuiPlugin implements IModPlugin {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static @Nullable IJeiRuntime runtime;
 
     private final EventRegistration eventRegistration = new EventRegistration();
 
@@ -30,6 +34,7 @@ public class FabricGuiPlugin implements IModPlugin {
 
     @Override
     public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+        runtime = jeiRuntime;
         IConnectionToServer serverConnection = Internal.getServerConnection();
         Textures textures = Internal.getTextures();
         InternalKeyMappings keyMappings = Internal.getKeyMappings();
@@ -43,7 +48,12 @@ public class FabricGuiPlugin implements IModPlugin {
 
     @Override
     public void onRuntimeUnavailable() {
+        runtime = null;
         LOGGER.info("Stopping JEI GUI");
         eventRegistration.clear();
+    }
+
+    public static Optional<IJeiRuntime> getRuntime() {
+        return Optional.ofNullable(runtime);
     }
 }

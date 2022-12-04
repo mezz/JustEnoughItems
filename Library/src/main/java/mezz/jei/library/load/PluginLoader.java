@@ -27,7 +27,7 @@ import mezz.jei.common.ingredients.subtypes.SubtypeManager;
 import mezz.jei.common.load.PluginCaller;
 import mezz.jei.common.load.registration.AdvancedRegistration;
 import mezz.jei.common.load.registration.RecipeCatalystRegistration;
-import mezz.jei.common.load.registration.RecipeCategoryRegistration;
+import mezz.jei.library.load.registration.RecipeCategoryRegistration;
 import mezz.jei.common.load.registration.RecipeTransferRegistration;
 import mezz.jei.common.load.registration.RegisteredIngredientsBuilder;
 import mezz.jei.common.load.registration.SubtypeRegistration;
@@ -35,7 +35,7 @@ import mezz.jei.common.load.registration.VanillaCategoryExtensionRegistration;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
-import mezz.jei.common.runtime.JeiHelpers;
+import mezz.jei.library.runtime.JeiHelpers;
 import mezz.jei.common.transfer.RecipeTransferHandlerHelper;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.common.util.StackHelper;
@@ -132,7 +132,8 @@ public class PluginLoader {
 			recipeCatalysts,
 			registeredIngredients,
 			recipeManagerPlugins,
-			recipeCategorySortingConfig
+			recipeCategorySortingConfig,
+			ingredientVisibility
 		);
 		timer.stop();
 
@@ -141,7 +142,7 @@ public class PluginLoader {
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
 		Textures textures = data.textures();
-		return new RecipeManager(recipeManagerInternal, modIdHelper, registeredIngredients, textures);
+		return new RecipeManager(recipeManagerInternal, modIdHelper, registeredIngredients, textures, ingredientVisibility);
 	}
 
 	public IRegisteredIngredients getRegisteredIngredients() {

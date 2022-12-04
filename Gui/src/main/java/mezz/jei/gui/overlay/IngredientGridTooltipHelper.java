@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.overlay;
+package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.helpers.IColorHelper;
@@ -9,7 +9,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.render.IngredientRenderHelper;

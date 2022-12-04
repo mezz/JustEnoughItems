@@ -1,7 +1,6 @@
 package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.ingredients.IRegisteredIngredients;
-import mezz.jei.common.ingredients.IListElementInfo;
 
 import java.util.Comparator;
 

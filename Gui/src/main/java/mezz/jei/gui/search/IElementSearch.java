@@ -1,6 +1,6 @@
-package mezz.jei.common.search;
+package mezz.jei.gui.search;
 
-import mezz.jei.common.ingredients.IListElementInfo;
+import mezz.jei.gui.ingredients.IListElementInfo;
 
 import java.util.Collection;
 import java.util.Set;

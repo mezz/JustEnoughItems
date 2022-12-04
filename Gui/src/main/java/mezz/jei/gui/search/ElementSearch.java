@@ -1,4 +1,4 @@
-package mezz.jei.common.search;
+package mezz.jei.gui.search;
 
 import mezz.jei.core.search.CombinedSearchables;
 import mezz.jei.core.search.ISearchStorage;
@@ -6,7 +6,7 @@ import mezz.jei.core.search.ISearchable;
 import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.core.search.PrefixedSearchable;
 import mezz.jei.core.search.SearchMode;
-import mezz.jei.common.ingredients.IListElementInfo;
+import mezz.jei.gui.ingredients.IListElementInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

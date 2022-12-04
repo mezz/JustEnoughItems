@@ -1,15 +1,15 @@
-package mezz.jei.common.search;
+package mezz.jei.gui.search;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
-import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.common.util.Translator;
 import mezz.jei.core.search.LimitedStringStorage;
 import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.core.search.SearchMode;
-import mezz.jei.common.ingredients.IListElementInfo;
+import mezz.jei.gui.ingredients.IListElementInfo;
 import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
 
 import java.util.ArrayList;

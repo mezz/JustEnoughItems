@@ -23,8 +23,8 @@ import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.load.PluginCaller;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.plugins.jei.JeiInternalPlugin;
-import mezz.jei.common.runtime.JeiHelpers;
-import mezz.jei.common.runtime.JeiRuntime;
+import mezz.jei.library.runtime.JeiHelpers;
+import mezz.jei.library.runtime.JeiRuntime;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.core.config.IWorldConfig;
@@ -136,7 +136,6 @@ public final class JeiStarter {
 			recipeTransferManager,
 			editModeConfig
 		);
-		Internal.setRuntime(jeiRuntime);
 		timer.stop();
 
 		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime));
@@ -148,6 +147,5 @@ public final class JeiStarter {
 		LOGGER.info("Stopping JEI");
 		List<IModPlugin> plugins = data.plugins();
 		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
-		Internal.setRuntime(null);
 	}
 }

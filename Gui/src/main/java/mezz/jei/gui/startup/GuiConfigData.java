@@ -1,7 +1,7 @@
 package mezz.jei.gui.startup;
 
-import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
-import mezz.jei.common.config.sorting.ModNameSortingConfig;
+import mezz.jei.gui.config.IngredientTypeSortingConfig;
+import mezz.jei.gui.config.ModNameSortingConfig;
 import mezz.jei.common.platform.Services;
 import mezz.jei.gui.config.BookmarkConfig;
 import mezz.jei.gui.config.IBookmarkConfig;

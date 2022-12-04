@@ -1,11 +1,11 @@
-package mezz.jei.common.load.registration;
+package mezz.jei.library.load.registration;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.common.runtime.JeiHelpers;
+import mezz.jei.library.runtime.JeiHelpers;
 import mezz.jei.common.util.ErrorUtil;
 import org.jetbrains.annotations.Unmodifiable;
 

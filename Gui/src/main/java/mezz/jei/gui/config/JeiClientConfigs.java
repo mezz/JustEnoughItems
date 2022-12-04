@@ -1,7 +1,5 @@
 package mezz.jei.gui.config;
 
-import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.config.IngredientFilterConfig;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.IConfigSchema;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;

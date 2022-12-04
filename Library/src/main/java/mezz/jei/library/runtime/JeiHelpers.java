@@ -1,4 +1,4 @@
-package mezz.jei.common.runtime;
+package mezz.jei.library.runtime;
 
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;

@@ -10,7 +10,6 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.common.Internal;
 import mezz.jei.common.gui.ingredients.RecipeSlots;
 import mezz.jei.common.gui.recipes.layout.IRecipeLayoutInternal;
 import mezz.jei.common.util.StringUtil;
@@ -56,10 +55,6 @@ public final class RecipeTransferUtil {
 		boolean maxTransfer,
 		boolean doTransfer
 	) {
-		if (Internal.getRuntime().isEmpty()) {
-			return RecipeTransferErrorInternal.INSTANCE;
-		}
-
 		IRecipeCategory<R> recipeCategory = recipeLayout.getRecipeCategory();
 
 		return recipeTransferManager.getRecipeTransferHandler(container, recipeCategory)

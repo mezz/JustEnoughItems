@@ -1,4 +1,4 @@
-package mezz.jei.common.runtime;
+package mezz.jei.library.runtime;
 
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -141,18 +141,22 @@ public class JeiRuntime implements IJeiRuntime {
 		return editModeConfig;
 	}
 
+	@Override
 	public void setIngredientListOverlay(IIngredientListOverlay ingredientListOverlay) {
 		this.ingredientListOverlay = ingredientListOverlay;
 	}
 
+	@Override
 	public void setBookmarkOverlay(IBookmarkOverlay bookmarkOverlay) {
 		this.bookmarkOverlay = bookmarkOverlay;
 	}
 
+	@Override
 	public void setRecipesGui(IRecipesGui recipesGui) {
 		this.recipesGui = recipesGui;
 	}
 
+	@Override
 	public void setIngredientFilter(IIngredientFilter ingredientFilter) {
 		this.ingredientFilter = ingredientFilter;
 	}

@@ -12,11 +12,10 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.Internal;
 import mezz.jei.common.focus.FocusGroup;
+import mezz.jei.common.gui.recipes.layout.RecipeLayout;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.gui.recipes.layout.RecipeLayout;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,12 +28,14 @@ public class RecipeManager implements IRecipeManager {
 	private final IModIdHelper modIdHelper;
 	private final IRegisteredIngredients registeredIngredients;
 	private final Textures textures;
+	private final IIngredientVisibility ingredientVisibility;
 
-	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, IRegisteredIngredients registeredIngredients, Textures textures) {
+	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, IRegisteredIngredients registeredIngredients, Textures textures, IIngredientVisibility ingredientVisibility) {
 		this.internal = internal;
 		this.modIdHelper = modIdHelper;
 		this.registeredIngredients = registeredIngredients;
 		this.textures = textures;
+		this.ingredientVisibility = ingredientVisibility;
 	}
 
 	@Override
@@ -67,9 +68,6 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		IFocusGroup focusGroup = FocusGroup.createFromNullable(focus, registeredIngredients);
-		IIngredientVisibility ingredientVisibility = Internal.getRuntime()
-			.orElseThrow()
-			.getIngredientVisibility();
 		return RecipeLayout.create(
 			-1,
 			recipeCategory,

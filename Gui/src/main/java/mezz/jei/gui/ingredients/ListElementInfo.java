@@ -1,4 +1,4 @@
-package mezz.jei.common.ingredients;
+package mezz.jei.gui.ingredients;
 
 import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -6,7 +6,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.util.Translator;
 import net.minecraft.resources.ResourceLocation;

@@ -1,10 +1,11 @@
-package mezz.jei.common.config.sorting;
+package mezz.jei.gui.config;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.config.sorting.MappedSortingConfig;
 import mezz.jei.common.config.sorting.serializers.SortingSerializers;
-import mezz.jei.common.ingredients.IListElementInfo;
+import mezz.jei.gui.ingredients.IListElementInfo;
 
 import java.nio.file.Path;
 import java.util.Comparator;

@@ -6,16 +6,13 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
-import mezz.jei.api.runtime.IEditModeConfig;
-import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
-import mezz.jei.common.config.sorting.ModNameSortingConfig;
 import mezz.jei.common.filter.FilterTextSource;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.ingredients.IListElement;
@@ -29,14 +26,16 @@ import mezz.jei.common.input.handlers.GlobalInputHandler;
 import mezz.jei.common.input.handlers.GuiAreaInputHandler;
 import mezz.jei.common.input.handlers.UserInputRouter;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.runtime.JeiRuntime;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.gui.config.IIngredientGridConfig;
 import mezz.jei.gui.config.IJeiClientConfigs;
+import mezz.jei.gui.config.IngredientTypeSortingConfig;
+import mezz.jei.gui.config.ModNameSortingConfig;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.ingredients.IIngredientSorter;
 import mezz.jei.gui.ingredients.IngredientFilter;
@@ -79,8 +78,6 @@ public class JeiGuiStarter {
         IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
         IEditModeConfig editModeConfig = jeiRuntime.getEditModeConfig();
 
-        JeiRuntime internalRuntimeHack = (JeiRuntime) jeiRuntime;
-
         IFilterTextSource filterTextSource = new FilterTextSource();
 
         timer.start("Building ingredient list");
@@ -121,7 +118,7 @@ public class JeiGuiStarter {
         timer.stop();
 
         IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
-        internalRuntimeHack.setIngredientFilter(ingredientFilterApi);
+        jeiRuntime.setIngredientFilter(ingredientFilterApi);
 
         IngredientListOverlay ingredientListOverlay = OverlayHelper.createIngredientListOverlay(
             registeredIngredients,
@@ -139,7 +136,7 @@ public class JeiGuiStarter {
             textures,
             colorHelper
         );
-        internalRuntimeHack.setIngredientListOverlay(ingredientListOverlay);
+        jeiRuntime.setIngredientListOverlay(ingredientListOverlay);
 
         BookmarkList bookmarkList = new BookmarkList(registeredIngredients, bookmarkConfig);
         bookmarkConfig.loadBookmarks(registeredIngredients, bookmarkList);
@@ -159,7 +156,7 @@ public class JeiGuiStarter {
             textures,
             colorHelper
         );
-        internalRuntimeHack.setBookmarkOverlay(bookmarkOverlay);
+        jeiRuntime.setBookmarkOverlay(bookmarkOverlay);
 
         GuiEventHandler guiEventHandler = new GuiEventHandler(
             screenHelper,
@@ -177,7 +174,7 @@ public class JeiGuiStarter {
             ingredientVisibility,
             keyMappings
         );
-        internalRuntimeHack.setRecipesGui(recipesGui);
+        jeiRuntime.setRecipesGui(recipesGui);
 
         CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
             recipesGui,
