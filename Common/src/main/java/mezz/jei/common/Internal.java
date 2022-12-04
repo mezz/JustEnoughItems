@@ -9,6 +9,8 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IWorldConfig;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 /**
  * For JEI internal use only, these are normally accessed from the API.
  */
@@ -37,9 +39,8 @@ public final class Internal {
 		Internal.textures = textures;
 	}
 
-	public static IRegisteredIngredients getRegisteredIngredients() {
-		Preconditions.checkState(registeredIngredients != null, "RegisteredIngredients has not been created yet.");
-		return registeredIngredients;
+	public static Optional<IRegisteredIngredients> getRegisteredIngredients() {
+		return Optional.ofNullable(registeredIngredients);
 	}
 
 	public static void setRegisteredIngredients(IRegisteredIngredients registeredIngredients) {

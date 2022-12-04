@@ -26,6 +26,7 @@ import mezz.jei.common.input.handlers.GlobalInputHandler;
 import mezz.jei.common.input.handlers.GuiAreaInputHandler;
 import mezz.jei.common.input.handlers.UserInputRouter;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.CheatUtil;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.bookmarks.BookmarkList;
@@ -120,6 +121,7 @@ public class JeiGuiStarter {
         IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
         jeiRuntime.setIngredientFilter(ingredientFilterApi);
 
+        CheatUtil cheatUtil = new CheatUtil(registeredIngredients);
         IngredientListOverlay ingredientListOverlay = OverlayHelper.createIngredientListOverlay(
             registeredIngredients,
             screenHelper,
@@ -134,7 +136,8 @@ public class JeiGuiStarter {
             serverConnection,
             ingredientFilterConfig,
             textures,
-            colorHelper
+            colorHelper,
+            cheatUtil
         );
         jeiRuntime.setIngredientListOverlay(ingredientListOverlay);
 
@@ -154,7 +157,8 @@ public class JeiGuiStarter {
             worldConfig,
             serverConnection,
             textures,
-            colorHelper
+            colorHelper,
+            cheatUtil
         );
         jeiRuntime.setBookmarkOverlay(bookmarkOverlay);
 

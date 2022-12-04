@@ -10,7 +10,7 @@ import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.gui.GuiHelper;
+import mezz.jei.library.gui.GuiHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.resources.ResourceLocation;
 

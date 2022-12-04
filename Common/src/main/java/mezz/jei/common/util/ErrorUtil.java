@@ -4,6 +4,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.common.Internal;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public final class ErrorUtil {
 	private ErrorUtil() {
@@ -30,6 +32,12 @@ public final class ErrorUtil {
 	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType, IRegisteredIngredients registeredIngredients) {
 		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 		return ingredientHelper.getErrorInfo(ingredient);
+	}
+
+	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType) {
+		return Internal.getRegisteredIngredients()
+			.map(registeredIngredients -> getIngredientInfo(ingredient, ingredientType, registeredIngredients))
+			.orElse("Unable to get ingredient Info because IRegisteredIngredients are missing");
 	}
 
 	@SuppressWarnings("ConstantConditions")

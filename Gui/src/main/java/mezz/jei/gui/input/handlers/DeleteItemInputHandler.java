@@ -29,17 +29,20 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 	private final IWorldConfig worldConfig;
 	private final IClientConfig clientConfig;
 	private final IConnectionToServer serverConnection;
+	private final CheatUtil cheatUtil;
 
 	public DeleteItemInputHandler(
 		IIngredientGrid ingredientGrid,
 		IWorldConfig worldConfig,
 		IClientConfig clientConfig,
-		IConnectionToServer serverConnection
+		IConnectionToServer serverConnection,
+		CheatUtil cheatUtil
 	) {
 		this.ingredientGrid = ingredientGrid;
 		this.worldConfig = worldConfig;
 		this.clientConfig = clientConfig;
 		this.serverConnection = serverConnection;
+		this.cheatUtil = cheatUtil;
 	}
 
 	@Override
@@ -94,7 +97,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 		if (giveMode == GiveMode.MOUSE_PICKUP) {
 			return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY)
 				.findFirst()
-				.map(CheatUtil::getCheatItemStack)
+				.map(cheatUtil::getCheatItemStack)
 				.map(i -> !ServerCommandUtil.canStack(itemStack, i))
 				.orElse(true);
 		}

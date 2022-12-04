@@ -10,6 +10,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.InternalKeyMappings;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.fabric.JustEnoughItemsClient;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.fabric.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiGuiStarter;

@@ -3,6 +3,7 @@ package mezz.jei.gui.recipes;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.PageNavigation;
@@ -30,6 +31,7 @@ public class RecipeGuiTabs implements IPaged {
 	private final List<RecipeGuiTab> tabs = new ArrayList<>();
 	private final PageNavigation pageNavigation;
 	private final Textures textures;
+	private final IRegisteredIngredients registeredIngredients;
 	private IUserInputHandler inputHandler;
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
@@ -37,10 +39,11 @@ public class RecipeGuiTabs implements IPaged {
 	private int pageNumber = 0;
 	private int categoriesPerPage = 1;
 
-	public RecipeGuiTabs(IRecipeGuiLogic recipeGuiLogic, Textures textures) {
+	public RecipeGuiTabs(IRecipeGuiLogic recipeGuiLogic, Textures textures, IRegisteredIngredients registeredIngredients) {
 		this.recipeGuiLogic = recipeGuiLogic;
 		this.pageNavigation = new PageNavigation(this, true, textures);
 		this.textures = textures;
+		this.registeredIngredients = registeredIngredients;
 		this.inputHandler = this.pageNavigation.createInputHandler();
 	}
 
@@ -93,7 +96,7 @@ public class RecipeGuiTabs implements IPaged {
 				break;
 			}
 			IRecipeCategory<?> category = categories.get(index);
-			RecipeGuiTab tab = new RecipeCategoryTab(recipeGuiLogic, category, textures, tabX, area.getY());
+			RecipeGuiTab tab = new RecipeCategoryTab(recipeGuiLogic, category, textures, tabX, area.getY(), registeredIngredients);
 			this.tabs.add(tab);
 			inputHandlers.add(tab);
 			tabX += RecipeGuiTab.TAB_WIDTH;

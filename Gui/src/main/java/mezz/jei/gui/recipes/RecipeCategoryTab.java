@@ -3,7 +3,6 @@ package mezz.jei.gui.recipes;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
-import mezz.jei.common.Internal;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -29,11 +28,13 @@ import java.util.Optional;
 public class RecipeCategoryTab extends RecipeGuiTab {
 	private final IRecipeGuiLogic logic;
 	private final IRecipeCategory<?> category;
+	private final IRegisteredIngredients registeredIngredients;
 
-	public RecipeCategoryTab(IRecipeGuiLogic logic, IRecipeCategory<?> category, Textures textures, int x, int y) {
+	public RecipeCategoryTab(IRecipeGuiLogic logic, IRecipeCategory<?> category, Textures textures, int x, int y, IRegisteredIngredients registeredIngredients) {
 		super(textures, x, y);
 		this.logic = logic;
 		this.category = category;
+		this.registeredIngredients = registeredIngredients;
 	}
 
 	@Override
@@ -70,7 +71,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 				.findFirst();
 			if (firstCatalyst.isPresent()) {
 				ITypedIngredient<?> ingredient = firstCatalyst.get();
-				renderIngredient(poseStack, iconX, iconY, ingredient);
+				renderIngredient(poseStack, iconX, iconY, ingredient, registeredIngredients);
 			} else {
 				String text = category.getTitle().getString().substring(0, 2);
 				Minecraft minecraft = Minecraft.getInstance();
@@ -85,8 +86,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		}
 	}
 
-	private static <T> void renderIngredient(PoseStack poseStack, int iconX, int iconY, ITypedIngredient<T> ingredient) {
-		IRegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+	private static <T> void renderIngredient(PoseStack poseStack, int iconX, int iconY, ITypedIngredient<T> ingredient, IRegisteredIngredients registeredIngredients) {
 		IIngredientRenderer<T> ingredientRenderer = registeredIngredients.getIngredientRenderer(ingredient.getType());
 		poseStack.pushPose();
 		{

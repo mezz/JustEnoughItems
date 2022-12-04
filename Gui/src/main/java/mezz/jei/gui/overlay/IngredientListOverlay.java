@@ -10,6 +10,7 @@ import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.GuiProperties;
+import mezz.jei.common.util.CheatUtil;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
@@ -60,6 +61,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IScreenHelper screenHelper;
 	private final GuiTextFieldFilter searchField;
 	private final IInternalKeyMappings keyBindings;
+	private final CheatUtil cheatUtil;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private final ScreenPropertiesCache screenPropertiesCache;
 
@@ -73,7 +75,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IWorldConfig worldConfig,
 		IConnectionToServer serverConnection,
 		Textures textures,
-		IInternalKeyMappings keyBindings
+		IInternalKeyMappings keyBindings,
+		CheatUtil cheatUtil
 	) {
 		this.screenHelper = screenHelper;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
@@ -84,6 +87,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 		this.searchField = new GuiTextFieldFilter(textures);
 		this.keyBindings = keyBindings;
+		this.cheatUtil = cheatUtil;
 		this.searchField.setValue(filterTextSource.getFilterText());
 		this.searchField.setFocused(false);
 		this.searchField.setResponder(filterTextSource::setFilterText);
@@ -227,7 +231,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			this.searchField.createInputHandler(),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler(),
-			new CheatInputHandler(this.contents, worldConfig, clientConfig, serverConnection)
+			new CheatInputHandler(this.contents, worldConfig, clientConfig, serverConnection, cheatUtil)
 		);
 
 		final IUserInputHandler configButtonInputHandler = this.configButton.createInputHandler();

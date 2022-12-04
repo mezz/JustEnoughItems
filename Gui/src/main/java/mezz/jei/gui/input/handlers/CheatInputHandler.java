@@ -22,15 +22,17 @@ public class CheatInputHandler implements IUserInputHandler {
     private final IRecipeFocusSource showsRecipeFocuses;
     private final IWorldConfig worldConfig;
     private final CommandUtil commandUtil;
+    private final CheatUtil cheatUtil;
 
     public CheatInputHandler(
         IRecipeFocusSource showsRecipeFocuses,
         IWorldConfig worldConfig,
         IClientConfig clientConfig,
-        IConnectionToServer serverConnection
-    ) {
+        IConnectionToServer serverConnection,
+        CheatUtil cheatUtil) {
         this.showsRecipeFocuses = showsRecipeFocuses;
         this.worldConfig = worldConfig;
+        this.cheatUtil = cheatUtil;
         this.commandUtil = new CommandUtil(clientConfig, serverConnection);
     }
 
@@ -58,7 +60,7 @@ public class CheatInputHandler implements IUserInputHandler {
             .findFirst()
             .map(clicked -> {
                 if (!input.isSimulate()) {
-                    ItemStack itemStack = CheatUtil.getCheatItemStack(clicked);
+                    ItemStack itemStack = cheatUtil.getCheatItemStack(clicked);
                     if (!itemStack.isEmpty()) {
                         commandUtil.giveStack(itemStack, giveAmount);
                     }

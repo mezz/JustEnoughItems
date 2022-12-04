@@ -119,7 +119,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.keyBindings = keyBindings;
 		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, registeredIngredients, modIdHelper, textures, ingredientVisibility);
 		this.recipeCatalysts = new RecipeCatalysts(textures, ingredientVisibility);
-		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures);
+		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures, registeredIngredients);
 		this.minecraft = Minecraft.getInstance();
 
 		IDrawableStatic arrowNext = textures.getArrowNext();
@@ -531,7 +531,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		pageString = logic.getPageString();
 
 		List<ITypedIngredient<?>> recipeCatalystIngredients = logic.getRecipeCatalysts().toList();
-		recipeCatalysts.updateLayout(recipeCatalystIngredients, this.area);
+		recipeCatalysts.updateLayout(recipeCatalystIngredients, this.area, this.registeredIngredients);
 		recipeGuiTabs.initLayout(this.area);
 	}
 

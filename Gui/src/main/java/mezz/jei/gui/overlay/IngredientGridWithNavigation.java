@@ -53,6 +53,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private final PageNavigation navigation;
 	private final IScreenHelper screenHelper;
 	private final IIngredientGridConfig gridConfig;
+	private final CheatUtil cheatUtil;
 	private final IWorldConfig worldConfig;
 	private final IClientConfig clientConfig;
 	private final IngredientGrid ingredientGrid;
@@ -74,7 +75,8 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		IIngredientGridConfig gridConfig,
 		DrawableNineSliceTexture background,
 		DrawableNineSliceTexture slotBackground,
-		Textures textures
+		Textures textures,
+		CheatUtil cheatUtil
 	) {
 		this.worldConfig = worldConfig;
 		this.clientConfig = clientConfig;
@@ -82,6 +84,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.ingredientSource = ingredientSource;
 		this.screenHelper = screenHelper;
 		this.gridConfig = gridConfig;
+		this.cheatUtil = cheatUtil;
 		this.pageDelegate = new IngredientGridPaged();
 		this.navigation = new PageNavigation(this.pageDelegate, false, textures);
 		this.background = background;
@@ -244,7 +247,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public IUserInputHandler createInputHandler() {
 		return new CombinedInputHandler(
-			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.worldConfig, this.clientConfig, this.commandUtil, this::isMouseOver),
+			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.worldConfig, this.clientConfig, this.commandUtil, this.cheatUtil, this::isMouseOver),
 			this.ingredientGrid.getInputHandler(),
 			this.navigation.createInputHandler()
 		);
@@ -350,14 +353,15 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		private final IClientConfig clientConfig;
 		private final UserInput.MouseOverable mouseOverable;
 		private final CommandUtil commandUtil;
+		private final CheatUtil cheatUtil;
 
 		private UserInputHandler(
-				IngredientGridPaged paged,
-				IRecipeFocusSource focusSource,
-				IWorldConfig worldConfig,
-				IClientConfig clientConfig,
-				CommandUtil commandUtil,
-				UserInput.MouseOverable mouseOverable
+			IngredientGridPaged paged,
+			IRecipeFocusSource focusSource,
+			IWorldConfig worldConfig,
+			IClientConfig clientConfig,
+			CommandUtil commandUtil,
+			CheatUtil cheatUtil, UserInput.MouseOverable mouseOverable
 		) {
 			this.paged = paged;
 			this.focusSource = focusSource;
@@ -365,6 +369,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			this.clientConfig = clientConfig;
 			this.mouseOverable = mouseOverable;
 			this.commandUtil = commandUtil;
+			this.cheatUtil = cheatUtil;
 		}
 
 		@Override
@@ -424,7 +429,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 			return this.focusSource.getIngredientUnderMouse(mouseX, mouseY)
 				.flatMap(clickedIngredient -> {
-					ItemStack cheatItemStack = CheatUtil.getCheatItemStack(clickedIngredient);
+					ItemStack cheatItemStack = cheatUtil.getCheatItemStack(clickedIngredient);
 					if (!cheatItemStack.isEmpty()) {
 						commandUtil.setHotbarStack(cheatItemStack, hotbarSlot);
 						IImmutableRect2i area = clickedIngredient.getArea().orElse(null);

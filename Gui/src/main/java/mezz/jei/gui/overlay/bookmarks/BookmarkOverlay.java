@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.util.CheatUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
@@ -60,12 +61,13 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		IWorldConfig worldConfig,
 		IScreenHelper screenHelper,
 		IConnectionToServer serverConnection,
-		IInternalKeyMappings keyBindings
+		IInternalKeyMappings keyBindings,
+		CheatUtil cheatUtil
 	) {
 		this.bookmarkList = bookmarkList;
 		this.worldConfig = worldConfig;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, textures, worldConfig, keyBindings);
-		this.cheatInputHandler = new CheatInputHandler(this, worldConfig, clientConfig, serverConnection);
+		this.cheatInputHandler = new CheatInputHandler(this, worldConfig, clientConfig, serverConnection, cheatUtil);
 		this.contents = contents;
 		this.screenHelper = screenHelper;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);

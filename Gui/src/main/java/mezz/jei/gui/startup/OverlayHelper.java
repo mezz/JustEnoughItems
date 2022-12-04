@@ -5,6 +5,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.IEditModeConfig;
+import mezz.jei.common.util.CheatUtil;
 import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
@@ -39,7 +40,8 @@ public final class OverlayHelper {
         IWorldConfig worldConfig,
         IConnectionToServer serverConnection,
         Textures textures,
-        IColorHelper colorHelper
+        IColorHelper colorHelper,
+        CheatUtil cheatUtil
     ) {
         IngredientGrid ingredientListGrid = new IngredientGrid(
             registeredIngredients,
@@ -52,7 +54,8 @@ public final class OverlayHelper {
             modIdHelper,
             serverConnection,
             keyMappings,
-            colorHelper
+            colorHelper,
+            cheatUtil
         );
 
         return new IngredientGridWithNavigation(
@@ -65,7 +68,8 @@ public final class OverlayHelper {
             ingredientGridConfig,
             background,
             slotBackground,
-            textures
+            textures,
+            cheatUtil
         );
     }
 
@@ -83,7 +87,8 @@ public final class OverlayHelper {
         IConnectionToServer serverConnection,
         IIngredientFilterConfig ingredientFilterConfig,
         Textures textures,
-        IColorHelper colorHelper
+        IColorHelper colorHelper,
+        CheatUtil cheatUtil
     ) {
         IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
             ingredientFilter,
@@ -100,7 +105,8 @@ public final class OverlayHelper {
             worldConfig,
             serverConnection,
             textures,
-            colorHelper
+            colorHelper,
+            cheatUtil
         );
 
         return new IngredientListOverlay(
@@ -113,7 +119,8 @@ public final class OverlayHelper {
             worldConfig,
             serverConnection,
             textures,
-            keyMappings
+            keyMappings,
+            cheatUtil
         );
     }
 
@@ -130,7 +137,8 @@ public final class OverlayHelper {
         IWorldConfig worldConfig,
         IConnectionToServer serverConnection,
         Textures textures,
-        IColorHelper colorHelper
+        IColorHelper colorHelper,
+        CheatUtil cheatUtil
     ) {
         IngredientGridWithNavigation bookmarkListGridNavigation = createIngredientGridWithNavigation(
             bookmarkList,
@@ -147,7 +155,8 @@ public final class OverlayHelper {
             worldConfig,
             serverConnection,
             textures,
-            colorHelper
+            colorHelper,
+            cheatUtil
         );
 
         return new BookmarkOverlay(
@@ -158,7 +167,8 @@ public final class OverlayHelper {
             worldConfig,
             screenHelper,
             serverConnection,
-            keyMappings
+            keyMappings,
+            cheatUtil
         );
     }
 }

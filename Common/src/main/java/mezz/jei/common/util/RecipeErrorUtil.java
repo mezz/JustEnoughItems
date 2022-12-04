@@ -27,11 +27,12 @@ public final class RecipeErrorUtil {
 		String recipeName = getNameForRecipe(recipe);
 		recipeInfoBuilder.append(recipeName);
 
-		IRegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
-		if (registeredIngredients == null) {
+		var registeredIngredientsOptional = Internal.getRegisteredIngredients();
+		if (registeredIngredientsOptional.isEmpty()) {
 			recipeInfoBuilder.append("\nRegistered ingredients have not been set");
 			return recipeInfoBuilder.toString();
 		}
+		IRegisteredIngredients registeredIngredients = registeredIngredientsOptional.get();
 
 		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, registeredIngredients);
 		if (ingredientSupplier == null) {

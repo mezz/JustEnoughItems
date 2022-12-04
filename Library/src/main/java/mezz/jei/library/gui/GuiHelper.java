@@ -1,4 +1,4 @@
-package mezz.jei.common.gui;
+package mezz.jei.library.gui;
 
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -10,6 +10,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
+import mezz.jei.common.gui.CraftingGridHelper;
 import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableBuilder;

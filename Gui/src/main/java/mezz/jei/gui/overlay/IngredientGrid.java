@@ -11,6 +11,7 @@ import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.api.runtime.IEditModeConfig;
+import mezz.jei.common.util.CheatUtil;
 import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.common.gui.overlay.IIngredientGrid;
@@ -61,13 +62,14 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		IModIdHelper modIdHelper,
 		IConnectionToServer serverConnection,
 		IInternalKeyMappings keyBindings,
-		IColorHelper colorHelper
+		IColorHelper colorHelper,
+		CheatUtil cheatUtil
 	) {
 		this.gridConfig = gridConfig;
 		this.screenHelper = screenHelper;
 		this.ingredientListRenderer = new IngredientListRenderer(editModeConfig, worldConfig, registeredIngredients);
 		this.tooltipHelper = new IngredientGridTooltipHelper(registeredIngredients, ingredientFilterConfig, worldConfig, modIdHelper, keyBindings, colorHelper);
-		this.deleteItemHandler = new DeleteItemInputHandler(this, worldConfig, clientConfig, serverConnection);
+		this.deleteItemHandler = new DeleteItemInputHandler(this, worldConfig, clientConfig, serverConnection, cheatUtil);
 	}
 
 	public IUserInputHandler getInputHandler() {

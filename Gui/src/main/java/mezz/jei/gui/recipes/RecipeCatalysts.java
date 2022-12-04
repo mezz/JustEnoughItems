@@ -4,18 +4,17 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
-import mezz.jei.common.Internal;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.input.ClickedIngredient;
+import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
-import mezz.jei.common.input.ClickedIngredient;
-import mezz.jei.api.runtime.IClickedIngredient;
-import mezz.jei.common.input.IRecipeFocusSource;
 
 import javax.annotation.Nonnegative;
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		return Math.max(0, width - overlapSize);
 	}
 
-	public void updateLayout(List<ITypedIngredient<?>> ingredients, ImmutableRect2i recipeArea) {
+	public void updateLayout(List<ITypedIngredient<?>> ingredients, ImmutableRect2i recipeArea, IRegisteredIngredients registeredIngredients) {
 		this.recipeSlots.clear();
 
 		if (!ingredients.isEmpty()) {
@@ -75,14 +74,13 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 			for (int i = 0; i < ingredients.size(); i++) {
 				ITypedIngredient<?> ingredientForSlot = ingredients.get(i);
-				RecipeSlot recipeSlot = createSlot(ingredientForSlot, i, maxIngredientsPerColumn);
+				RecipeSlot recipeSlot = createSlot(ingredientForSlot, i, maxIngredientsPerColumn, registeredIngredients);
 				this.recipeSlots.add(recipeSlot);
 			}
 		}
 	}
 
-	private <T> RecipeSlot createSlot(ITypedIngredient<T> typedIngredient, int index, int maxIngredientsPerColumn) {
-		IRegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
+	private <T> RecipeSlot createSlot(ITypedIngredient<T> typedIngredient, int index, int maxIngredientsPerColumn, IRegisteredIngredients registeredIngredients) {
 		int column = index / maxIngredientsPerColumn;
 		int row = index % maxIngredientsPerColumn;
 		int xPos = left + borderSize + (column * ingredientSize) + ingredientBorderSize;

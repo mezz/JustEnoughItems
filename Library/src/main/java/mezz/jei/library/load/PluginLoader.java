@@ -19,7 +19,7 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.common.focus.FocusFactory;
-import mezz.jei.common.gui.GuiHelper;
+import mezz.jei.library.gui.GuiHelper;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.IngredientManager;
 import mezz.jei.common.ingredients.RegisteredIngredients;

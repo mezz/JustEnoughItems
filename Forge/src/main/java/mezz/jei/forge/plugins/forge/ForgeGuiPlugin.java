@@ -8,6 +8,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.InternalKeyMappings;
+import mezz.jei.forge.JustEnoughItemsClient;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
@@ -39,8 +40,9 @@ public class ForgeGuiPlugin implements IModPlugin {
         }
 
         IConnectionToServer serverConnection = Internal.getServerConnection();
-        Textures textures = Internal.getTextures();
         InternalKeyMappings keyMappings = Internal.getKeyMappings();
+
+        Textures textures = Internal.getTextures();
         IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
         IColorHelper colorHelper = jeiHelpers.getColorHelper();
 
