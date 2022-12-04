@@ -1,4 +1,4 @@
-package mezz.jei.common.recipes;
+package mezz.jei.library.recipes;
 
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -8,7 +8,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.recipes.collect.RecipeMap;
+import mezz.jei.library.recipes.collect.RecipeMap;
 
 import java.util.List;
 

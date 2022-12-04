@@ -13,7 +13,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.common.Constants;
-import mezz.jei.common.recipes.ExtendableRecipeCategoryHelper;
+import mezz.jei.library.recipes.ExtendableRecipeCategoryHelper;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

@@ -1,4 +1,4 @@
-package mezz.jei.common.recipes;
+package mezz.jei.library.recipes;
 
 import com.google.common.base.Stopwatch;
 import mezz.jei.api.recipe.IFocus;
@@ -6,7 +6,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.recipes.collect.RecipeTypeData;
+import mezz.jei.library.recipes.collect.RecipeTypeData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

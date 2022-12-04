@@ -1,4 +1,4 @@
-package mezz.jei.common.recipes.collect;
+package mezz.jei.library.recipes.collect;
 
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.ITypedIngredient;

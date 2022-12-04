@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.common.recipes.collect;
+package mezz.jei.library.recipes.collect;
 
 import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
 

@@ -1,4 +1,4 @@
-package mezz.jei.common.recipes;
+package mezz.jei.library.recipes;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -10,9 +10,9 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.common.recipes.collect.RecipeMap;
-import mezz.jei.common.recipes.collect.RecipeTypeData;
-import mezz.jei.common.recipes.collect.RecipeTypeDataMap;
+import mezz.jei.library.recipes.collect.RecipeMap;
+import mezz.jei.library.recipes.collect.RecipeTypeData;
+import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
