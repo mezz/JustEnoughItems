@@ -2,7 +2,7 @@ package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientFilter;
-import mezz.jei.common.filter.IFilterTextSource;
+import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.common.util.ErrorUtil;
 
 import java.util.List;

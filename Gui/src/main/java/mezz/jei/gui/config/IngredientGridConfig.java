@@ -1,10 +1,10 @@
 package mezz.jei.gui.config;
 
-import mezz.jei.common.config.file.IConfigCategoryBuilder;
-import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.gui.overlay.options.HorizontalAlignment;
 import mezz.jei.common.gui.overlay.options.NavigationVisibility;
 import mezz.jei.common.gui.overlay.options.VerticalAlignment;
+import mezz.jei.core.config.file.IConfigCategoryBuilder;
+import mezz.jei.core.config.file.IConfigSchemaBuilder;
 
 import java.util.function.Supplier;
 

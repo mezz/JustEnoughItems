@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Optional;
 
 public final class ErrorUtil {
 	private ErrorUtil() {

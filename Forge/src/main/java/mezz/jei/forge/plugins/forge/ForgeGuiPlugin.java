@@ -8,7 +8,6 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.InternalKeyMappings;
-import mezz.jei.forge.JustEnoughItemsClient;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;

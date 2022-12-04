@@ -8,7 +8,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.filter.IFilterTextSource;
+import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.common.gui.GuiProperties;
 import mezz.jei.common.util.CheatUtil;
 import mezz.jei.gui.elements.GuiIconToggleButton;

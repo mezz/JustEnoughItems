@@ -12,7 +12,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.gui.config.IIngredientFilterConfig;
-import mezz.jei.common.filter.IFilterTextSource;
+import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.ingredients.IngredientListElementFactory;

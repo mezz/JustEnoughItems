@@ -12,7 +12,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.render.IngredientRenderHelper;
+import mezz.jei.common.gui.ingredients.IngredientTooltipHelper;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.core.search.SearchMode;
 import net.minecraft.ChatFormatting;
@@ -61,7 +61,7 @@ public final class IngredientGridTooltipHelper {
 	public <T> List<Component> getTooltip(T ingredient, IIngredientInfo<T> ingredientInfo) {
 		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
 		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
-		List<Component> ingredientTooltipSafe = IngredientRenderHelper.getIngredientTooltipSafe(ingredient, ingredientRenderer, ingredientHelper, modIdHelper);
+		List<Component> ingredientTooltipSafe = IngredientTooltipHelper.getIngredientTooltipSafe(ingredient, ingredientRenderer, ingredientHelper, modIdHelper);
 		List<Component> tooltip = new ArrayList<>(ingredientTooltipSafe);
 
 		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {

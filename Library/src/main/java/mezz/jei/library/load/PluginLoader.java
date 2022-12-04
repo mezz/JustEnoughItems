@@ -19,19 +19,19 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.common.focus.FocusFactory;
+import mezz.jei.common.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.gui.GuiHelper;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.IngredientManager;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.subtypes.SubtypeManager;
-import mezz.jei.common.load.PluginCaller;
-import mezz.jei.common.load.registration.AdvancedRegistration;
-import mezz.jei.common.load.registration.RecipeCatalystRegistration;
+import mezz.jei.library.load.registration.AdvancedRegistration;
+import mezz.jei.library.load.registration.RecipeCatalystRegistration;
 import mezz.jei.library.load.registration.RecipeCategoryRegistration;
-import mezz.jei.common.load.registration.RecipeTransferRegistration;
-import mezz.jei.common.load.registration.RegisteredIngredientsBuilder;
-import mezz.jei.common.load.registration.SubtypeRegistration;
-import mezz.jei.common.load.registration.VanillaCategoryExtensionRegistration;
+import mezz.jei.library.load.registration.RecipeTransferRegistration;
+import mezz.jei.library.load.registration.RegisteredIngredientsBuilder;
+import mezz.jei.library.load.registration.SubtypeRegistration;
+import mezz.jei.library.load.registration.VanillaCategoryExtensionRegistration;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
@@ -70,7 +70,8 @@ public class PluginLoader {
 		PluginCaller.callOnPlugins("Registering fluid subtypes", plugins, p ->
 			p.registerFluidSubtypes(subtypeRegistration, fluidHelper)
 		);
-		SubtypeManager subtypeManager = new SubtypeManager(subtypeRegistration);
+		SubtypeInterpreters subtypeInterpreters = subtypeRegistration.getInterpreters();
+		SubtypeManager subtypeManager = new SubtypeManager(subtypeInterpreters);
 
 		RegisteredIngredientsBuilder registeredIngredientsBuilder = new RegisteredIngredientsBuilder(subtypeManager, colorHelper);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(registeredIngredientsBuilder));

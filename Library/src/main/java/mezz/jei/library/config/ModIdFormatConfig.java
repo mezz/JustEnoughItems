@@ -2,9 +2,9 @@ package mezz.jei.library.config;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.config.IModIdFormatConfig;
-import mezz.jei.common.config.file.IConfigCategoryBuilder;
-import mezz.jei.common.config.file.IConfigSchemaBuilder;
-import mezz.jei.common.config.file.serializers.ChatFormattingSerializer;
+import mezz.jei.core.config.file.IConfigCategoryBuilder;
+import mezz.jei.core.config.file.IConfigSchemaBuilder;
+import mezz.jei.library.config.file.serializers.ChatFormattingSerializer;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.core.util.function.CachedSupplierTransformer;

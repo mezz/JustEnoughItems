@@ -57,8 +57,8 @@ import mezz.jei.library.plugins.vanilla.crafting.replacers.TippedArrowRecipeMake
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackListFactory;
 import mezz.jei.library.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
-import mezz.jei.common.render.FluidTankRenderer;
-import mezz.jei.common.render.ItemStackRenderer;
+import mezz.jei.library.render.FluidTankRenderer;
+import mezz.jei.library.render.ItemStackRenderer;
 import mezz.jei.common.transfer.PlayerRecipeTransferHandler;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.StackHelper;

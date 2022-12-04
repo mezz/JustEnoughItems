@@ -15,7 +15,6 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.TooltipRenderer;
-import mezz.jei.common.render.IngredientRenderHelper;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.ChatFormatting;
@@ -155,7 +154,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 
 	private <T> List<Component> getTooltip(T value, IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer, IModIdHelper modIdHelper) {
 		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
-		List<Component> tooltip = IngredientRenderHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
+		List<Component> tooltip = IngredientTooltipHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
 		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onTooltip(this, tooltip);
 		}

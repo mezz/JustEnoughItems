@@ -1,8 +1,8 @@
 package mezz.jei.library.config.file.serializers;
 
 import mezz.jei.library.color.ColorName;
-import mezz.jei.common.config.file.serializers.DeserializeResult;
-import mezz.jei.common.config.file.serializers.IConfigValueSerializer;
+import mezz.jei.core.config.file.serializers.DeserializeResult;
+import mezz.jei.core.config.file.serializers.IConfigValueSerializer;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
