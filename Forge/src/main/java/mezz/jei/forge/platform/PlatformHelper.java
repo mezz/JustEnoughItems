@@ -9,6 +9,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraftforge.fml.loading.FMLPaths;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class PlatformHelper implements IPlatformHelper {
@@ -73,7 +75,16 @@ public class PlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public Path getConfigDir() {
-        return FMLPaths.CONFIGDIR.get().resolve(ModIds.JEI_ID);
+    public Path createConfigDir() {
+        Path configDir = FMLPaths.CONFIGDIR
+            .get()
+            .resolve(ModIds.JEI_ID);
+
+        try {
+            Files.createDirectories(configDir);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to create JEI config directory: " + configDir, e);
+        }
+        return configDir;
     }
 }

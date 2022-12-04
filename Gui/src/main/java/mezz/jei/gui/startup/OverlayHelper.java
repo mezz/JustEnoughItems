@@ -4,7 +4,7 @@ import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.config.IEditModeConfig;
+import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;

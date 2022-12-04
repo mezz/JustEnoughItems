@@ -11,8 +11,8 @@ public class ColorHelper implements IColorHelper {
     private final ColorGetter colorGetter;
     private final ColorNameConfig colorNameConfig;
 
-    public ColorHelper(ColorGetter colorGetter, ColorNameConfig colorNameConfig) {
-        this.colorGetter = colorGetter;
+    public ColorHelper(ColorNameConfig colorNameConfig) {
+        this.colorGetter = new ColorGetter();
         this.colorNameConfig = colorNameConfig;
     }
 

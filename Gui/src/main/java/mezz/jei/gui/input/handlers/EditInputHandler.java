@@ -2,7 +2,7 @@ package mezz.jei.gui.input.handlers;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickedIngredient;
-import mezz.jei.common.config.IEditModeConfig;
+import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.common.input.IInternalKeyMappings;

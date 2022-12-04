@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.common.Internal;
 import mezz.jei.common.ingredients.IngredientInfo;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.util.ErrorUtil;
@@ -62,6 +63,8 @@ public class RegisteredIngredientsBuilder implements IModIngredientRegistration 
 	}
 
 	public RegisteredIngredients build() {
-		return new RegisteredIngredients(ingredientInfos);
+		RegisteredIngredients registeredIngredients = new RegisteredIngredients(ingredientInfos);
+		Internal.setRegisteredIngredients(registeredIngredients);
+		return registeredIngredients;
 	}
 }

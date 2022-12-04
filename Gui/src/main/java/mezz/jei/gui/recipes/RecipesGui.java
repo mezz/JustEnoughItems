@@ -255,7 +255,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		Optional<RecipeLayout<?>> hoveredRecipeLayout = drawLayouts(poseStack, mouseX, mouseY);
 		Optional<RecipeSlot> hoveredRecipeCatalyst = recipeCatalysts.draw(poseStack, mouseX, mouseY);
 
-		recipeGuiTabs.draw(minecraft, poseStack, mouseX, mouseY);
+		recipeGuiTabs.draw(minecraft, poseStack, mouseX, mouseY, modIdHelper);
 
 		hoveredRecipeLayout.ifPresent(l -> l.drawOverlays(poseStack, mouseX, mouseY));
 		hoveredRecipeCatalyst.ifPresent(h -> h.drawOverlays(poseStack, 0, 0, mouseX, mouseY, modIdHelper));

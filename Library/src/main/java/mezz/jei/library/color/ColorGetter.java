@@ -1,7 +1,6 @@
 package mezz.jei.library.color;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import mezz.jei.common.color.ColorThief;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;

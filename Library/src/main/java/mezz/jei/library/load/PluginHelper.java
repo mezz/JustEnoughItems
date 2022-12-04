@@ -1,6 +1,6 @@
 package mezz.jei.library.load;
 
-import mezz.jei.common.plugins.jei.JeiInternalPlugin;
+import mezz.jei.library.plugins.jei.JeiInternalPlugin;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;

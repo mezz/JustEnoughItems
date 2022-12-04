@@ -1,6 +1,8 @@
 package mezz.jei.test.gui;
 
 import mezz.jei.api.helpers.IColorHelper;
+import mezz.jei.common.ingredients.IngredientVisibility;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.test.gui.lib.TestClientConfig;
 import mezz.jei.test.gui.lib.TestColorHelper;
 import mezz.jei.test.gui.lib.TestIngredient;
@@ -14,8 +16,8 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.config.EditModeConfigInternal;
-import mezz.jei.common.config.IEditModeConfig;
+import mezz.jei.common.config.EditModeConfig;
+import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.common.filter.FilterTextSource;
 import mezz.jei.common.filter.IFilterTextSource;
 import mezz.jei.common.gui.ingredients.IListElement;
@@ -26,14 +28,12 @@ import mezz.jei.gui.ingredients.IngredientFilter;
 import mezz.jei.common.ingredients.IngredientInfo;
 import mezz.jei.common.ingredients.IngredientListElementFactory;
 import mezz.jei.common.ingredients.IngredientManager;
-import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.subtypes.SubtypeManager;
 import mezz.jei.common.load.registration.RegisteredIngredientsBuilder;
 import mezz.jei.common.load.registration.SubtypeRegistration;
 import mezz.jei.common.util.Translator;
 import mezz.jei.gui.config.IClientConfig;
-import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.test.gui.lib.TestWorldConfig;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -62,7 +62,7 @@ public class IngredientFilterTest {
 	@Nullable
 	private NonNullList<IListElement<?>> baseList;
 	@Nullable
-	private EditModeConfigInternal editModeConfig;
+	private EditModeConfig editModeConfig;
 	@Nullable
 	private FilterTextSource filterTextSource;
 
@@ -82,9 +82,11 @@ public class IngredientFilterTest {
 		IModIdHelper modIdHelper = new TestModIdHelper();
 		IClientConfig clientConfig = new TestClientConfig(false);
 		this.registeredIngredients = registeredIngredientsBuilder.build();
+
 		this.baseList = IngredientListElementFactory.createBaseList(registeredIngredients);
 
-		this.editModeConfig = new EditModeConfigInternal(new NullSerializer());
+		this.ingredientManager = new IngredientManager(registeredIngredients);
+		this.editModeConfig = new EditModeConfig(new NullSerializer(), ingredientManager);
 
 		IWorldConfig worldConfig = new TestWorldConfig();
 
@@ -104,8 +106,8 @@ public class IngredientFilterTest {
 			colorHelper
 		);
 
-		this.ingredientManager = new IngredientManager(registeredIngredients);
 		this.ingredientManager.addIngredientListener(ingredientFilter);
+		this.ingredientManager.addIngredientListener(blacklist);
 	}
 
 	@Test
@@ -268,14 +270,14 @@ public class IngredientFilterTest {
 		}
 	}
 
-	private static class NullSerializer implements EditModeConfigInternal.ISerializer {
+	private static class NullSerializer implements EditModeConfig.ISerializer {
 		@Override
-		public void save(EditModeConfigInternal config) {
+		public void save(EditModeConfig config) {
 
 		}
 
 		@Override
-		public void load(EditModeConfigInternal config) {
+		public void load(EditModeConfig config) {
 
 		}
 	}

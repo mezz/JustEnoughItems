@@ -3,6 +3,7 @@ package mezz.jei.api.registration;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -14,13 +15,17 @@ import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 
 public interface IGuiHandlerRegistration {
+	IJeiHelpers getJeiHelpers();
+
 	/**
 	 * Add a handler to give JEI extra information about how to layout the item list next to a specific type of {@link AbstractContainerScreen}.
 	 * Multiple handlers can be registered for one {@link AbstractContainerScreen}.
 	 *
 	 * @see #addGenericGuiContainerHandler(Class, IGuiContainerHandler) for handlers that use Java Generics
 	 */
-	<T extends AbstractContainerScreen<?>> void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler);
+	<T extends AbstractContainerScreen<?>>
+
+	void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler);
 
 	/**
 	 * Same as {@link #addGuiContainerHandler(Class, IGuiContainerHandler)} but for handlers that use Java Generics to

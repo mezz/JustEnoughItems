@@ -10,7 +10,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.common.config.IEditModeConfig;
+import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.common.gui.overlay.IIngredientGrid;

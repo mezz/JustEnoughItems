@@ -1,6 +1,7 @@
 package mezz.jei.api.helpers;
 
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.resources.ResourceLocation;
@@ -54,4 +55,6 @@ public interface IJeiHelpers {
 	 * @since 11.4.0
 	 */
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
+
+	IRegisteredIngredients getRegisteredIngredients();
 }

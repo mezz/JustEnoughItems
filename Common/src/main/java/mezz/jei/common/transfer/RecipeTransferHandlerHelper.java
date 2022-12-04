@@ -21,6 +21,12 @@ import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;
 
 public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper {
+	private final IStackHelper stackHelper;
+
+	public RecipeTransferHandlerHelper(IStackHelper stackHelper) {
+		this.stackHelper = stackHelper;
+	}
+
 	@Override
 	public IRecipeTransferError createInternalError() {
 		return RecipeTransferErrorInternal.INSTANCE;
@@ -52,7 +58,6 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	public <C extends AbstractContainerMenu, R> IRecipeTransferHandler<C, R> createUnregisteredRecipeTransferHandler(IRecipeTransferInfo<C, R> recipeTransferInfo) {
 		ErrorUtil.checkNotNull(recipeTransferInfo, "recipeTransferInfo");
 		IConnectionToServer serverConnection = Internal.getServerConnection();
-		IStackHelper stackHelper = Internal.getHelpers().getStackHelper();
 		return new BasicRecipeTransferHandler<>(serverConnection, stackHelper, this, recipeTransferInfo);
 
 	}

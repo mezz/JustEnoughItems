@@ -9,6 +9,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class PlatformHelper implements IPlatformHelper {
@@ -73,9 +75,15 @@ public class PlatformHelper implements IPlatformHelper {
     }
 
     @Override
-    public Path getConfigDir() {
-        return FabricLoader.getInstance()
+    public Path createConfigDir() {
+        Path configDir = FabricLoader.getInstance()
             .getConfigDir()
             .resolve(ModIds.JEI_ID);
+        try {
+            Files.createDirectories(configDir);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to create JEI config directory: " + configDir, e);
+        }
+        return configDir;
     }
 }

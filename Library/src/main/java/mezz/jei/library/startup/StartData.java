@@ -11,7 +11,6 @@ public record StartData(
     List<IModPlugin> plugins,
     Textures textures,
     IConnectionToServer serverConnection,
-    IInternalKeyMappings keyBindings,
-    ConfigData configData
+    IInternalKeyMappings keyBindings
 ) {
 }

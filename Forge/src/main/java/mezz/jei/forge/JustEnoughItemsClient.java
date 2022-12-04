@@ -6,9 +6,6 @@ import mezz.jei.common.config.InternalKeyMappings;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
-import mezz.jei.library.startup.ConfigData;
-import mezz.jei.library.startup.JeiStarter;
-import mezz.jei.library.startup.StartData;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
@@ -16,6 +13,8 @@ import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.forge.network.NetworkHandler;
 import mezz.jei.forge.startup.ForgePluginFinder;
 import mezz.jei.forge.startup.StartEventObserver;
+import mezz.jei.library.startup.JeiStarter;
+import mezz.jei.library.startup.StartData;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -48,7 +47,6 @@ public class JustEnoughItemsClient {
 		ConnectionToServer serverConnection = new ConnectionToServer(networkHandler);
 		Internal.setServerConnection(serverConnection);
 
-		ConfigData configData = ConfigData.create();
 		IWorldConfig worldConfig = Internal.getWorldConfig();
 
 		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig, worldConfig);
@@ -62,8 +60,7 @@ public class JustEnoughItemsClient {
 			plugins,
 			textures,
 			serverConnection,
-			keyMappings,
-			configData
+			keyMappings
 		);
 
 		JeiStarter jeiStarter = new JeiStarter(startData);

@@ -5,19 +5,19 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.config.EditModeConfigInternal;
+import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.core.config.IWorldConfig;
 
 public class IngredientVisibility implements IIngredientVisibility {
 	private final IngredientBlacklistInternal blacklist;
 	private final IWorldConfig worldConfig;
-	private final EditModeConfigInternal editModeConfig;
+	private final IEditModeConfig editModeConfig;
 	private final IRegisteredIngredients registeredIngredients;
 
 	public IngredientVisibility(
 		IngredientBlacklistInternal blacklist,
 		IWorldConfig worldConfig,
-		EditModeConfigInternal editModeConfig,
+		IEditModeConfig editModeConfig,
 		IRegisteredIngredients registeredIngredients
 	) {
 		this.blacklist = blacklist;
@@ -48,6 +48,6 @@ public class IngredientVisibility implements IIngredientVisibility {
 		if (!ingredientHelper.isIngredientOnServer(typedIngredient.getIngredient())) {
 			return false;
 		}
-		return worldConfig.isEditModeEnabled() || !editModeConfig.isIngredientOnConfigBlacklist(typedIngredient, ingredientHelper);
+		return worldConfig.isEditModeEnabled() || !editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient);
 	}
 }

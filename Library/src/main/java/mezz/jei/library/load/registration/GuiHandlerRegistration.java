@@ -5,6 +5,7 @@ import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IScreenHandler;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IScreenHelper;
@@ -27,6 +28,11 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 	private final List<IGlobalGuiHandler> globalGuiHandlers = new ArrayList<>();
 	private final Map<Class<?>, IScreenHandler<?>> guiScreenHandlers = new HashMap<>();
 	private final Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers = new HashMap<>();
+	private final IJeiHelpers jeiHelpers;
+
+	public GuiHandlerRegistration(IJeiHelpers jeiHelpers) {
+		this.jeiHelpers = jeiHelpers;
+	}
 
 	@Override
 	public <T extends AbstractContainerScreen<?>> void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler) {
@@ -74,5 +80,10 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 
 	public IScreenHelper createGuiScreenHelper(IRegisteredIngredients registeredIngredients) {
 		return new ScreenHelper(registeredIngredients, globalGuiHandlers, guiContainerHandlers, ghostIngredientHandlers, guiScreenHandlers);
+	}
+
+	@Override
+	public IJeiHelpers getJeiHelpers() {
+		return jeiHelpers;
 	}
 }

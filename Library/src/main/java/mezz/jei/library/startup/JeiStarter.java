@@ -2,35 +2,47 @@ package mezz.jei.library.startup;
 
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
-import mezz.jei.common.helpers.ModIdHelper;
+import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.config.EditModeConfig;
+import mezz.jei.common.config.file.ConfigSchemaBuilder;
+import mezz.jei.common.config.file.IConfigSchemaBuilder;
+import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.common.ingredients.IngredientBlacklistInternal;
 import mezz.jei.common.ingredients.IngredientVisibility;
 import mezz.jei.common.load.PluginCaller;
-import mezz.jei.library.load.PluginHelper;
-import mezz.jei.library.load.PluginLoader;
-import mezz.jei.common.plugins.jei.JeiInternalPlugin;
-import mezz.jei.library.plugins.vanilla.VanillaPlugin;
-import mezz.jei.library.recipes.RecipeManager;
-import mezz.jei.library.recipes.RecipeTransferManager;
+import mezz.jei.common.platform.Services;
+import mezz.jei.library.plugins.jei.JeiInternalPlugin;
 import mezz.jei.common.runtime.JeiHelpers;
 import mezz.jei.common.runtime.JeiRuntime;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.library.color.ColorHelper;
+import mezz.jei.library.config.ColorNameConfig;
+import mezz.jei.library.config.ModIdFormatConfig;
+import mezz.jei.library.helpers.ModIdHelper;
+import mezz.jei.library.load.PluginHelper;
+import mezz.jei.library.load.PluginLoader;
+import mezz.jei.library.plugins.vanilla.VanillaPlugin;
+import mezz.jei.library.recipes.RecipeManager;
+import mezz.jei.library.recipes.RecipeTransferManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public final class JeiStarter {
@@ -59,11 +71,28 @@ public final class JeiStarter {
 			.orElse(null);
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
 
-		ConfigData configData = data.configData();
+		Path configDir = Services.PLATFORM.createConfigDir();
+
+		IConfigSchemaBuilder debugFileBuilder = new ConfigSchemaBuilder(configDir.resolve("jei-debug.ini"));
+		DebugConfig.create(debugFileBuilder);
+		debugFileBuilder.build().register();
+
+		IConfigSchemaBuilder modFileBuilder = new ConfigSchemaBuilder(configDir.resolve("jei-mod-id-format.ini"));
+		ModIdFormatConfig modIdFormatConfig = new ModIdFormatConfig(modFileBuilder);
+		modFileBuilder.build().register();
+
+		IConfigSchemaBuilder colorFileBuilder = new ConfigSchemaBuilder(configDir.resolve("jei-colors.ini"));
+		ColorNameConfig colorNameConfig = new ColorNameConfig(colorFileBuilder);
+		colorFileBuilder.build().register();
+
+		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
+
+		RecipeCategorySortingConfig recipeCategorySortingConfig = new RecipeCategorySortingConfig(configDir.resolve("recipe-category-sort-order.ini"));
+
 		IWorldConfig worldConfig = Internal.getWorldConfig();
 
-		IModIdHelper modIdHelper = new ModIdHelper(configData.modIdFormatConfig());
-		PluginLoader pluginLoader = new PluginLoader(data, modIdHelper);
+		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig);
+		PluginLoader pluginLoader = new PluginLoader(data, modIdHelper, colorHelper);
 		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 
 		IRegisteredIngredients registeredIngredients = pluginLoader.getRegisteredIngredients();
@@ -72,17 +101,19 @@ public final class JeiStarter {
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		ingredientManager.addIngredientListener(blacklist);
 
+		IEditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.cfg")), ingredientManager);
+
 		IIngredientVisibility ingredientVisibility = new IngredientVisibility(
 			blacklist,
 			worldConfig,
-			configData.editModeConfig(),
+			editModeConfig,
 			registeredIngredients
 		);
 
 		RecipeManager recipeManager = pluginLoader.createRecipeManager(
 			plugins,
 			vanillaPlugin,
-			configData.recipeCategorySortingConfig(),
+			recipeCategorySortingConfig,
 			modIdHelper,
 			ingredientVisibility
 		);
@@ -92,7 +123,7 @@ public final class JeiStarter {
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
-		IScreenHelper screenHelper = pluginLoader.createGuiScreenHelper(plugins);
+		IScreenHelper screenHelper = pluginLoader.createGuiScreenHelper(plugins, jeiHelpers);
 
 		JeiRuntime jeiRuntime = new JeiRuntime(
 			recipeManager,
@@ -102,7 +133,8 @@ public final class JeiStarter {
 			data.keyBindings(),
 			jeiHelpers,
 			screenHelper,
-			recipeTransferManager
+			recipeTransferManager,
+			editModeConfig
 		);
 		Internal.setRuntime(jeiRuntime);
 		timer.stop();

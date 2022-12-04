@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.List;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IUserInputHandler;
@@ -39,5 +40,5 @@ public abstract class RecipeGuiTab implements IUserInputHandler {
 		tab.draw(poseStack, x, y);
 	}
 
-	public abstract List<Component> getTooltip();
+	public abstract List<Component> getTooltip(IModIdHelper modIdHelper);
 }

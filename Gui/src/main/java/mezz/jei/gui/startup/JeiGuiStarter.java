@@ -12,7 +12,7 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
-import mezz.jei.common.config.EditModeConfigInternal;
+import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.common.config.sorting.ModNameSortingConfig;
@@ -33,7 +33,6 @@ import mezz.jei.common.runtime.JeiRuntime;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.gui.config.EditModeConfig;
 import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.gui.config.IIngredientGridConfig;
@@ -71,13 +70,15 @@ public class JeiGuiStarter {
 
         LOGGER.info("Starting JEI GUI");
         IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
+        IRegisteredIngredients registeredIngredients = jeiHelpers.getRegisteredIngredients();
         IScreenHelper screenHelper = jeiRuntime.getScreenHelper();
         IRecipeTransferManager recipeTransferManager = jeiRuntime.getRecipeTransferManager();
-        IRegisteredIngredients registeredIngredients = jeiRuntime.getRegisteredIngredients();
         IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
         IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
         IIngredientVisibility ingredientVisibility = jeiRuntime.getIngredientVisibility();
         IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
+        IEditModeConfig editModeConfig = jeiRuntime.getEditModeConfig();
+
         JeiRuntime internalRuntimeHack = (JeiRuntime) jeiRuntime;
 
         IFilterTextSource filterTextSource = new FilterTextSource();
@@ -91,7 +92,6 @@ public class JeiGuiStarter {
         ModNameSortingConfig modNameSortingConfig = configData.modNameSortingConfig();
         IngredientTypeSortingConfig ingredientTypeSortingConfig = configData.ingredientTypeSortingConfig();
         IWorldConfig worldConfig = Internal.getWorldConfig();
-        EditModeConfigInternal editModeConfigInternal = configData.editModeConfigInternal();
         IBookmarkConfig bookmarkConfig = configData.bookmarkConfig();
 
         IJeiClientConfigs jeiClientConfigs = configData.jeiClientConfigs();
@@ -119,8 +119,6 @@ public class JeiGuiStarter {
         );
         ingredientManager.addIngredientListener(ingredientFilter);
         timer.stop();
-
-        EditModeConfig editModeConfig = new EditModeConfig(editModeConfigInternal, ingredientManager);
 
         IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
         internalRuntimeHack.setIngredientFilter(ingredientFilterApi);

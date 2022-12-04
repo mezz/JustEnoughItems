@@ -106,7 +106,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	@Override
-	public List<Component> getTooltip() {
+	public List<Component> getTooltip(IModIdHelper modIdHelper) {
 		List<Component> tooltip = new ArrayList<>();
 		Component title = category.getTitle();
 		//noinspection ConstantConditions
@@ -116,7 +116,6 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 
 		ResourceLocation uid = category.getRecipeType().getUid();
 		String modId = uid.getNamespace();
-		IModIdHelper modIdHelper = Internal.getHelpers().getModIdHelper();
 		if (modIdHelper.isDisplayingModNameEnabled()) {
 			String modName = modIdHelper.getFormattedModNameForModId(modId);
 			tooltip.add(Component.literal(modName));

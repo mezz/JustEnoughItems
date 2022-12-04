@@ -5,27 +5,21 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.common.Internal;
 import mezz.jei.common.ingredients.IIngredientSupplier;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 public final class RecipeErrorUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
-	@Nullable
-	private static IRegisteredIngredients registeredIngredients;
 
 	private RecipeErrorUtil() {
-	}
-
-	public static void setRegisteredIngredients(IRegisteredIngredients registeredIngredients) {
-		RecipeErrorUtil.registeredIngredients = registeredIngredients;
 	}
 
 	public static <T> String getInfoFromRecipe(T recipe, IRecipeCategory<T> recipeCategory) {
@@ -33,6 +27,7 @@ public final class RecipeErrorUtil {
 		String recipeName = getNameForRecipe(recipe);
 		recipeInfoBuilder.append(recipeName);
 
+		IRegisteredIngredients registeredIngredients = Internal.getRegisteredIngredients();
 		if (registeredIngredients == null) {
 			recipeInfoBuilder.append("\nRegistered ingredients have not been set");
 			return recipeInfoBuilder.toString();

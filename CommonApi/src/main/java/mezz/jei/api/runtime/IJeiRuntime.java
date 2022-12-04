@@ -86,4 +86,6 @@ public interface IJeiRuntime {
 	IRecipeTransferManager getRecipeTransferManager();
 
 	IRegisteredIngredients getRegisteredIngredients();
+
+	IEditModeConfig getEditModeConfig();
 }

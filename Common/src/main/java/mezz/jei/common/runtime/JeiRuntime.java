@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IBookmarkOverlay;
+import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -27,6 +28,7 @@ import java.util.Optional;
 public class JeiRuntime implements IJeiRuntime {
 	private final IRecipeManager recipeManager;
 	private final IRecipeTransferManager recipeTransferManager;
+	private final IEditModeConfig editModeConfig;
 	private final IRegisteredIngredients registeredIngredients;
 	private final IIngredientManager ingredientManager;
 	private final IIngredientVisibility ingredientVisibility;
@@ -46,10 +48,12 @@ public class JeiRuntime implements IJeiRuntime {
 		IJeiKeyMappings keyMappings,
 		IJeiHelpers jeiHelpers,
 		IScreenHelper screenHelper,
-		IRecipeTransferManager recipeTransferManager
+		IRecipeTransferManager recipeTransferManager,
+		IEditModeConfig editModeConfig
 	) {
 		this.recipeManager = recipeManager;
 		this.recipeTransferManager = recipeTransferManager;
+		this.editModeConfig = editModeConfig;
 		this.ingredientListOverlay = IngredientListOverlayDummy.INSTANCE;
 		this.ingredientVisibility = ingredientVisibility;
 		this.bookmarkOverlay = BookmarkOverlayDummy.INSTANCE;
@@ -130,6 +134,11 @@ public class JeiRuntime implements IJeiRuntime {
 	@Override
 	public IRegisteredIngredients getRegisteredIngredients() {
 		return registeredIngredients;
+	}
+
+	@Override
+	public IEditModeConfig getEditModeConfig() {
+		return editModeConfig;
 	}
 
 	public void setIngredientListOverlay(IIngredientListOverlay ingredientListOverlay) {

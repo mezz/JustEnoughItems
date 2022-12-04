@@ -26,5 +26,5 @@ public interface IPlatformHelper {
 
     IPlatformModHelper getModHelper();
 
-    Path getConfigDir();
+    Path createConfigDir();
 }

@@ -2,6 +2,7 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.PageNavigation;
@@ -104,7 +105,7 @@ public class RecipeGuiTabs implements IPaged {
 		pageNavigation.updatePageNumber();
 	}
 
-	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, IModIdHelper modIdHelper) {
 		IRecipeCategory<?> selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -126,7 +127,7 @@ public class RecipeGuiTabs implements IPaged {
 		pageNavigation.draw(minecraft, poseStack, mouseX, mouseY, minecraft.getFrameTime());
 
 		if (hovered != null) {
-			List<Component> tooltip = hovered.getTooltip();
+			List<Component> tooltip = hovered.getTooltip(modIdHelper);
 			TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY);
 		}
 	}

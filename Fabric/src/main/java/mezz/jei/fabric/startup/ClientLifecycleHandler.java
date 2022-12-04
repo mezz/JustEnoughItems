@@ -6,14 +6,13 @@ import mezz.jei.common.config.InternalKeyMappings;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.library.startup.ConfigData;
-import mezz.jei.library.startup.JeiStarter;
-import mezz.jei.library.startup.StartData;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
 import mezz.jei.fabric.network.ClientNetworkHandler;
 import mezz.jei.fabric.network.ConnectionToServer;
+import mezz.jei.library.startup.JeiStarter;
+import mezz.jei.library.startup.StartData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import org.apache.logging.log4j.LogManager;
@@ -38,15 +37,12 @@ public class ClientLifecycleHandler {
 		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig, worldConfig);
 		ClientNetworkHandler.registerClientPacketHandler(packetRouter);
 
-		ConfigData configData = ConfigData.create();
-
 		List<IModPlugin> plugins = FabricPluginFinder.getModPlugins();
 		StartData startData = new StartData(
 			plugins,
 			textures,
 			serverConnection,
-			keyMappings,
-			configData
+			keyMappings
 		);
 
 		this.jeiStarter = new JeiStarter(startData);

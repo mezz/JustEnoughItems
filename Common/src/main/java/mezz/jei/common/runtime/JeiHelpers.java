@@ -6,6 +6,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.helpers.IStackHelper;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -24,6 +25,7 @@ public class JeiHelpers implements IJeiHelpers {
 	private final IModIdHelper modIdHelper;
 	private final IFocusFactory focusFactory;
 	private final IColorHelper colorHelper;
+	private final IRegisteredIngredients registeredIngredients;
 	private final IPlatformFluidHelper<?> platformFluidHelper;
 	private @Nullable Collection<IRecipeCategory<?>> recipeCategories;
 
@@ -32,13 +34,15 @@ public class JeiHelpers implements IJeiHelpers {
 		IStackHelper stackHelper,
 		IModIdHelper modIdHelper,
 		IFocusFactory focusFactory,
-		IColorHelper colorHelper
+		IColorHelper colorHelper,
+		IRegisteredIngredients registeredIngredients
 	) {
 		this.guiHelper = guiHelper;
 		this.stackHelper = stackHelper;
 		this.modIdHelper = modIdHelper;
 		this.focusFactory = focusFactory;
 		this.colorHelper = colorHelper;
+		this.registeredIngredients = registeredIngredients;
 		this.platformFluidHelper = Services.PLATFORM.getFluidHelper();
 	}
 
@@ -84,5 +88,10 @@ public class JeiHelpers implements IJeiHelpers {
 				.filter(t -> t.getUid().equals(uid))
 				.findFirst()
 			);
+	}
+
+	@Override
+	public IRegisteredIngredients getRegisteredIngredients() {
+		return registeredIngredients;
 	}
 }
