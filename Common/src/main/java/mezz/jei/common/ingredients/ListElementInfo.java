@@ -1,7 +1,6 @@
 package mezz.jei.common.ingredients;
 
 import com.google.common.collect.ImmutableSet;
-
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -11,10 +10,8 @@ import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.util.Translator;
 import net.minecraft.resources.ResourceLocation;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -141,10 +138,11 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public Collection<String> getColorStrings(IRegisteredIngredients registeredIngredients) {
+	public Iterable<Integer> getColors(IRegisteredIngredients registeredIngredients) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
-		return IngredientInformationUtil.getColorStrings(value.getIngredient(), ingredientHelper);
+		V ingredient = value.getIngredient();
+		return ingredientHelper.getColors(ingredient);
 	}
 
 	@Override

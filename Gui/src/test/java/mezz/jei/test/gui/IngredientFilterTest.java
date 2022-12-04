@@ -100,7 +100,8 @@ public class IngredientFilterTest {
 			ingredientListSorter,
 			baseList,
 			modIdHelper,
-			ingredientVisibility
+			ingredientVisibility,
+			colorHelper
 		);
 
 		this.ingredientManager = new IngredientManager(registeredIngredients);

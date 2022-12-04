@@ -2,7 +2,6 @@ package mezz.jei.common.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.common.color.ColorNamer;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.util.Translator;
 import net.minecraft.ChatFormatting;
@@ -11,7 +10,6 @@ import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -47,12 +45,4 @@ public final class IngredientInformationUtil {
 		return (withoutFormattingCodes == null) ? "" : withoutFormattingCodes;
 	}
 
-	public static <V> Collection<String> getColorStrings(V ingredient, IIngredientHelper<V> ingredientHelper) {
-		Iterable<Integer> colors = ingredientHelper.getColors(ingredient);
-		ColorNamer colorNamer = ColorNamer.getInstance();
-		return colorNamer.getColorNames(colors)
-				.map(Translator::toLowercaseWithLocale)
-				.distinct()
-				.toList();
-	}
 }

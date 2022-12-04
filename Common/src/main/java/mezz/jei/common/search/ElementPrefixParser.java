@@ -2,8 +2,10 @@ package mezz.jei.common.search;
 
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.util.Translator;
 import mezz.jei.core.search.LimitedStringStorage;
 import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.core.search.SearchMode;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 public class ElementPrefixParser {
 	public static final PrefixInfo<IListElementInfo<?>> NO_PREFIX = new PrefixInfo<>(
@@ -25,7 +28,7 @@ public class ElementPrefixParser {
 
 	private final Char2ObjectMap<PrefixInfo<IListElementInfo<?>>> map = new Char2ObjectOpenHashMap<>();
 
-	public ElementPrefixParser(IRegisteredIngredients registeredIngredients, IIngredientFilterConfig config) {
+	public ElementPrefixParser(IRegisteredIngredients registeredIngredients, IIngredientFilterConfig config, IColorHelper colorHelper) {
 		addPrefix(new PrefixInfo<>(
 			'@',
 			config::getModNameSearchMode,
@@ -53,7 +56,14 @@ public class ElementPrefixParser {
 		addPrefix(new PrefixInfo<>(
 			'^',
 			config::getColorSearchMode,
-			e -> e.getColorStrings(registeredIngredients),
+			e -> {
+				Iterable<Integer> colors = e.getColors(registeredIngredients);
+				return StreamSupport.stream(colors.spliterator(), false)
+					.map(colorHelper::getClosestColorName)
+					.map(Translator::toLowercaseWithLocale)
+					.distinct()
+					.toList();
+			},
 			LimitedStringStorage::new
 		));
 		addPrefix(new PrefixInfo<>(

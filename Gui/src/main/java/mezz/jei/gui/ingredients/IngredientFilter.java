@@ -1,6 +1,7 @@
 package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -72,14 +73,15 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		IIngredientSorter sorter,
 		NonNullList<IListElement<?>> ingredients,
 		IModIdHelper modIdHelper,
-		IIngredientVisibility ingredientVisibility
+		IIngredientVisibility ingredientVisibility,
+		IColorHelper colorHelper
 	) {
 		this.filterTextSource = filterTextSource;
 		this.registeredIngredients = registeredIngredients;
 		this.sorter = sorter;
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
-		this.elementPrefixParser = new ElementPrefixParser(registeredIngredients, config);
+		this.elementPrefixParser = new ElementPrefixParser(registeredIngredients, config, colorHelper);
 
 		if (clientConfig.isLowMemorySlowSearchEnabled()) {
 			this.elementSearch = new ElementSearchLowMem();

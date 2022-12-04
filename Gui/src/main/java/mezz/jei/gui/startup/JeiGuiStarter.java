@@ -114,7 +114,8 @@ public class JeiGuiStarter {
             ingredientSorter,
             ingredientList,
             modIdHelper,
-            ingredientVisibility
+            ingredientVisibility,
+            colorHelper
         );
         ingredientManager.addIngredientListener(ingredientFilter);
         timer.stop();

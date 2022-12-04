@@ -28,7 +28,7 @@ public interface IListElementInfo<V> {
 
 	Collection<String> getCreativeTabsStrings(IRegisteredIngredients registeredIngredients);
 
-	Collection<String> getColorStrings(IRegisteredIngredients registeredIngredients);
+	Iterable<Integer> getColors(IRegisteredIngredients registeredIngredients);
 
 	ResourceLocation getResourceLocation();
 
