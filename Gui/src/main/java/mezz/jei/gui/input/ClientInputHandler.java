@@ -1,7 +1,10 @@
-package mezz.jei.common.input;
+package mezz.jei.gui.input;
 
-import mezz.jei.common.input.handlers.DragRouter;
-import mezz.jei.common.input.handlers.UserInputRouter;
+import mezz.jei.common.input.ICharTypedHandler;
+import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.gui.input.handlers.DragRouter;
+import mezz.jei.gui.input.handlers.UserInputRouter;
 import mezz.jei.core.util.ReflectionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;

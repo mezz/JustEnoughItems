@@ -3,15 +3,9 @@ package mezz.jei.fabric.plugins.fabric;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.common.Internal;
-import mezz.jei.common.config.InternalKeyMappings;
-import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.fabric.startup.EventRegistration;
+import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -35,13 +29,8 @@ public class FabricGuiPlugin implements IModPlugin {
     @Override
     public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
         runtime = jeiRuntime;
-        IConnectionToServer serverConnection = Internal.getServerConnection();
-        Textures textures = Internal.getTextures();
-        InternalKeyMappings keyMappings = Internal.getKeyMappings();
-        IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
-        IColorHelper colorHelper = jeiHelpers.getColorHelper();
 
-        JeiEventHandlers eventHandlers = JeiGuiStarter.start(jeiRuntime, serverConnection, textures, keyMappings, colorHelper);
+        JeiEventHandlers eventHandlers = JeiGuiStarter.start(jeiRuntime);
 
         eventRegistration.setEventHandlers(eventHandlers);
     }

@@ -2,7 +2,7 @@ package mezz.jei.fabric.startup;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
-import mezz.jei.common.config.InternalKeyMappings;
+import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
 import mezz.jei.common.network.IConnectionToServer;

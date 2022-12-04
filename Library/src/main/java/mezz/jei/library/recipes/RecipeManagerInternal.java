@@ -9,7 +9,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
+import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.common.ingredients.IIngredientSupplier;
 import mezz.jei.common.recipes.InternalRecipeManagerPlugin;
 import mezz.jei.common.recipes.PluginManager;

@@ -1,10 +1,11 @@
-package mezz.jei.common.input;
+package mezz.jei.gui.input;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.handlers.TextFieldInputHandler;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.gui.input.handlers.TextFieldInputHandler;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;

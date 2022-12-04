@@ -1,4 +1,4 @@
-package mezz.jei.common.config;
+package mezz.jei.gui.config;
 
 import java.util.function.Consumer;
 

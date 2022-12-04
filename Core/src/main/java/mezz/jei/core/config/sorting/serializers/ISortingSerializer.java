@@ -1,4 +1,4 @@
-package mezz.jei.common.config.sorting.serializers;
+package mezz.jei.core.config.sorting.serializers;
 
 import java.io.IOException;
 import java.nio.file.Path;

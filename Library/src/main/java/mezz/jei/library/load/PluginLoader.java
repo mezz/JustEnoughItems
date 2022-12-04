@@ -17,7 +17,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.config.sorting.RecipeCategorySortingConfig;
+import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.common.focus.FocusFactory;
 import mezz.jei.common.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.gui.GuiHelper;

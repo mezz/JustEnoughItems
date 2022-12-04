@@ -2,7 +2,7 @@ package mezz.jei.fabric.startup;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.gui.events.GuiEventHandler;
-import mezz.jei.common.input.ClientInputHandler;
+import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.common.input.InputType;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;

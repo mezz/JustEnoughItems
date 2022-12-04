@@ -1,4 +1,4 @@
-package mezz.jei.common.input.handlers;
+package mezz.jei.gui.input.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IInternalKeyMappings;

@@ -1,4 +1,4 @@
-package mezz.jei.common.input.handlers;
+package mezz.jei.gui.input.handlers;
 
 import mezz.jei.common.input.IDragHandler;
 import mezz.jei.common.input.UserInput;

@@ -1,9 +1,10 @@
-package mezz.jei.common.config.sorting;
+package mezz.jei.library.config;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.common.config.sorting.serializers.SortingSerializers;
+import mezz.jei.core.config.sorting.MappedSortingConfig;
+import mezz.jei.core.config.sorting.serializers.SortingSerializers;
 
 import java.nio.file.Path;
 import java.util.Comparator;

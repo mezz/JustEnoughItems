@@ -1,4 +1,4 @@
-package mezz.jei.library.config.file.serializers;
+package mezz.jei.library.config.serializers;
 
 import mezz.jei.library.color.ColorName;
 import mezz.jei.core.config.file.serializers.DeserializeResult;

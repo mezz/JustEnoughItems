@@ -5,7 +5,7 @@ import mezz.jei.gui.elements.GuiIconButton;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IPaged;
 import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
+import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;

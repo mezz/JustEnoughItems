@@ -1,4 +1,4 @@
-package mezz.jei.common.input.handlers;
+package mezz.jei.gui.input.handlers;
 
 import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;

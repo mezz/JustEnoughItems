@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.library.config.file;
+package mezz.jei.library.config.serializers;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

@@ -18,13 +18,13 @@ import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.IngredientListElementFactory;
-import mezz.jei.common.input.ClientInputHandler;
+import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.common.input.ICharTypedHandler;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.input.handlers.DragRouter;
-import mezz.jei.common.input.handlers.GlobalInputHandler;
-import mezz.jei.common.input.handlers.GuiAreaInputHandler;
-import mezz.jei.common.input.handlers.UserInputRouter;
+import mezz.jei.gui.input.handlers.DragRouter;
+import mezz.jei.gui.input.handlers.GlobalInputHandler;
+import mezz.jei.gui.input.handlers.GuiAreaInputHandler;
+import mezz.jei.gui.input.handlers.UserInputRouter;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.CheatUtil;
 import mezz.jei.common.util.LoggedTimer;
@@ -59,25 +59,25 @@ import java.util.List;
 public class JeiGuiStarter {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static JeiEventHandlers start(
-        IJeiRuntime jeiRuntime,
-        IConnectionToServer serverConnection,
-        Textures textures,
-        IInternalKeyMappings keyMappings,
-        IColorHelper colorHelper
-    ) {
+    public static JeiEventHandlers start(IJeiRuntime jeiRuntime) {
+        LOGGER.info("Starting JEI GUI");
         LoggedTimer timer = new LoggedTimer();
 
-        LOGGER.info("Starting JEI GUI");
-        IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
-        IRegisteredIngredients registeredIngredients = jeiHelpers.getRegisteredIngredients();
+        IConnectionToServer serverConnection = Internal.getServerConnection();
+        Textures textures = Internal.getTextures();
+        IInternalKeyMappings keyMappings = Internal.getKeyMappings();
+
         IScreenHelper screenHelper = jeiRuntime.getScreenHelper();
         IRecipeTransferManager recipeTransferManager = jeiRuntime.getRecipeTransferManager();
-        IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
         IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
         IIngredientVisibility ingredientVisibility = jeiRuntime.getIngredientVisibility();
         IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
         IEditModeConfig editModeConfig = jeiRuntime.getEditModeConfig();
+
+        IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
+        IColorHelper colorHelper = jeiHelpers.getColorHelper();
+        IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
+        IRegisteredIngredients registeredIngredients = jeiHelpers.getRegisteredIngredients();
 
         IFilterTextSource filterTextSource = new FilterTextSource();
 
