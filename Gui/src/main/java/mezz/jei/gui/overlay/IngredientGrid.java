@@ -11,10 +11,10 @@ import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.api.runtime.IEditModeConfig;
+import mezz.jei.gui.util.AlignmentUtil;
 import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
-import mezz.jei.common.gui.overlay.IIngredientGrid;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
@@ -110,7 +110,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 
 	public static ImmutableRect2i calculateBounds(IIngredientGridConfig config, ImmutableRect2i availableArea) {
 		ImmutableSize2i size = calculateSize(config, availableArea);
-		return MathUtil.align(size, availableArea, config.getHorizontalAlignment(), config.getVerticalAlignment());
+		return AlignmentUtil.align(size, availableArea, config.getHorizontalAlignment(), config.getVerticalAlignment());
 	}
 
 	public record SlotInfo(int total, int blocked) {

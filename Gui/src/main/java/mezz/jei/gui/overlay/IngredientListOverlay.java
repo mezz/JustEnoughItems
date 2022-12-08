@@ -13,7 +13,6 @@ import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
-import mezz.jei.common.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.common.input.ICharTypedHandler;

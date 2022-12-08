@@ -9,7 +9,7 @@ import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.common.gui.overlay.IIngredientGridSource;
+import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;

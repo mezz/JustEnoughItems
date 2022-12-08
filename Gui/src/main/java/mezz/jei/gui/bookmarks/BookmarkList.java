@@ -10,7 +10,7 @@ import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.gui.config.IBookmarkConfig;
-import mezz.jei.common.gui.overlay.IIngredientGridSource;
+import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.ingredients.TypedIngredient;
 import net.minecraft.world.item.ItemStack;
 

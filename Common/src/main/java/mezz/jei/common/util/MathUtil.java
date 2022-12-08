@@ -1,8 +1,6 @@
 package mezz.jei.common.util;
 
 import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.common.gui.overlay.HorizontalAlignment;
-import mezz.jei.common.gui.overlay.VerticalAlignment;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;
@@ -224,21 +222,4 @@ public final class MathUtil {
 		return Math.sqrt(a * a + b * b);
 	}
 
-	public static ImmutableRect2i align(ImmutableSize2i size, IImmutableRect2i availableArea, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
-		final int width = size.getWidth();
-		final int x = switch (horizontalAlignment) {
-			case LEFT -> availableArea.getX();
-			case CENTER -> availableArea.getX() + ((availableArea.getWidth() - width) / 2);
-			case RIGHT -> availableArea.getX() + (availableArea.getWidth() - width);
-		};
-
-		final int height = size.getHeight();
-		final int y = switch (verticalAlignment) {
-			case TOP -> availableArea.getY();
-			case CENTER -> availableArea.getY() + ((availableArea.getHeight() - height) / 2);
-			case BOTTOM -> availableArea.getY() + (availableArea.getHeight() - height);
-		};
-
-		return new ImmutableRect2i(x, y, width, height);
-	}
 }

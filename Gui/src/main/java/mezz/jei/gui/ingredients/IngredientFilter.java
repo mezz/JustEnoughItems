@@ -13,7 +13,7 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
-import mezz.jei.common.gui.overlay.IIngredientGridSource;
+import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchLowMem;

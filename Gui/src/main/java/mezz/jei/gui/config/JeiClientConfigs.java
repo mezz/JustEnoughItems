@@ -1,6 +1,6 @@
 package mezz.jei.gui.config;
 
-import mezz.jei.common.gui.overlay.HorizontalAlignment;
+import mezz.jei.gui.util.HorizontalAlignment;
 import mezz.jei.core.config.file.ConfigSchemaBuilder;
 import mezz.jei.core.config.file.IConfigSchema;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;

@@ -2,7 +2,7 @@ package mezz.jei.gui.input.handlers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.common.gui.TooltipRenderer;
-import mezz.jei.common.gui.overlay.IIngredientGrid;
+import mezz.jei.gui.overlay.IIngredientGrid;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;

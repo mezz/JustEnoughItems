@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.overlay;
+package mezz.jei.gui.overlay;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import org.jetbrains.annotations.Unmodifiable;
