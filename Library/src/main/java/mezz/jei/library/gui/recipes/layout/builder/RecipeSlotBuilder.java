@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.recipes.layout.builder;
+package mezz.jei.library.gui.recipes.layout.builder;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.IntSet;

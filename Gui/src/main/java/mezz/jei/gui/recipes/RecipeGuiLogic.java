@@ -1,20 +1,15 @@
 package mezz.jei.gui.recipes;
 
-import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.gui.recipes.IRecipeLogicStateListener;
-import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.gui.ingredients.IngredientLookupState;
 import mezz.jei.common.focus.FocusGroup;
-import mezz.jei.common.gui.recipes.layout.RecipeLayout;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.gui.ingredients.IngredientLookupState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -31,32 +26,20 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeManager recipeManager;
 	private final IRecipeTransferManager recipeTransferManager;
 	private final IRecipeLogicStateListener stateListener;
-	private final IRegisteredIngredients registeredIngredients;
-	private final IModIdHelper modIdHelper;
 
 	private boolean initialState = true;
 	private IngredientLookupState state;
-	private final Textures textures;
 	private final Stack<IngredientLookupState> history = new Stack<>();
-	private final IIngredientVisibility ingredientVisibility;
 
 	public RecipeGuiLogic(
 		IRecipeManager recipeManager,
 		IRecipeTransferManager recipeTransferManager,
-		IRecipeLogicStateListener stateListener,
-		IRegisteredIngredients registeredIngredients,
-		IModIdHelper modIdHelper,
-		Textures textures,
-		IIngredientVisibility ingredientVisibility
+		IRecipeLogicStateListener stateListener
 	) {
 		this.recipeManager = recipeManager;
 		this.recipeTransferManager = recipeTransferManager;
 		this.stateListener = stateListener;
-		this.registeredIngredients = registeredIngredients;
-		this.modIdHelper = modIdHelper;
 		this.state = IngredientLookupState.createWithFocus(recipeManager, FocusGroup.EMPTY);
-		this.textures = textures;
-		this.ingredientVisibility = ingredientVisibility;
 	}
 
 	@Override
@@ -181,35 +164,29 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public List<RecipeLayout<?>> getRecipeLayouts(final int posX, final int posY, final int spacingY) {
+	public List<IRecipeLayoutDrawable<?>> getRecipeLayouts(final int posX, final int posY, final int spacingY) {
 		return getRecipeLayouts(this.state.getFocusedRecipes(), posX, posY, spacingY);
 	}
 
-	private <T> List<RecipeLayout<?>> getRecipeLayouts(FocusedRecipes<T> selectedRecipes, final int posX, final int posY, final int spacingY) {
-		List<RecipeLayout<?>> recipeLayouts = new ArrayList<>();
+	private <T> List<IRecipeLayoutDrawable<?>> getRecipeLayouts(FocusedRecipes<T> selectedRecipes, final int posX, final int posY, final int spacingY) {
+		List<IRecipeLayoutDrawable<?>> recipeLayouts = new ArrayList<>();
 
 		IRecipeCategory<T> recipeCategory = selectedRecipes.getRecipeCategory();
 		List<T> recipes = selectedRecipes.getRecipes();
 		List<T> brokenRecipes = new ArrayList<>();
 
-		int recipeWidgetIndex = 0;
 		int recipePosY = posY;
 		final int firstRecipeIndex = state.getRecipeIndex() - (state.getRecipeIndex() % state.getRecipesPerPage());
 		for (int recipeIndex = firstRecipeIndex; recipeIndex < recipes.size() && recipeLayouts.size() < state.getRecipesPerPage(); recipeIndex++) {
 			T recipe = recipes.get(recipeIndex);
-			int index = recipeWidgetIndex++;
-			Optional<RecipeLayout<T>> optionalRecipeLayout = RecipeLayout.create(
-				index,
-				recipeCategory,
-				recipe,
-				state.getFocuses(),
-				registeredIngredients,
-				ingredientVisibility,
-				modIdHelper,
-				posX,
-				recipePosY,
-				textures
-			);
+			final int constRecipePosY = recipePosY;
+			Optional<IRecipeLayoutDrawable<T>> optionalRecipeLayout = recipeManager
+				.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
+				.map(recipeLayout -> {
+					recipeLayout.setPosition(posX, constRecipePosY);
+					return recipeLayout;
+				});
+
 			optionalRecipeLayout.ifPresentOrElse(recipeLayouts::add, () -> brokenRecipes.add(recipe));
 			if (optionalRecipeLayout.isPresent()) {
 				recipePosY += spacingY;

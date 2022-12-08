@@ -13,7 +13,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.focus.FocusGroup;
-import mezz.jei.common.gui.recipes.layout.RecipeLayout;
+import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.resources.ResourceLocation;
@@ -64,22 +64,35 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus) {
+	public <T> IRecipeLayoutDrawable<?> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		IFocusGroup focusGroup = FocusGroup.createFromNullable(focus, registeredIngredients);
 		return RecipeLayout.create(
-			-1,
 			recipeCategory,
 			recipe,
 			focusGroup,
 			registeredIngredients,
 			ingredientVisibility,
 			modIdHelper,
-			0,
-			0,
 			textures
 		).orElseThrow(() -> new NullPointerException("Recipe layout crashed during creation, see log."));
+	}
+
+	@Override
+	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup) {
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
+		return RecipeLayout.create(
+			recipeCategory,
+			recipe,
+			focusGroup,
+			registeredIngredients,
+			ingredientVisibility,
+			modIdHelper,
+			textures
+		);
 	}
 
 	@Override

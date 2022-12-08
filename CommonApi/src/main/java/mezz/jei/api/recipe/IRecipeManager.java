@@ -107,13 +107,14 @@ public interface IRecipeManager {
 
 	/**
 	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
-	 * Layouts created this way do not have recipe transfer buttons, they are not useful for this purpose.
 	 *
 	 * @param recipeCategory the recipe category that the recipe belongs to
 	 * @param recipe         the specific recipe to draw.
-	 * @param focus          the focus of the recipe layout.
+	 * @param focusGroup     the focuses of the recipe layout.
+	 *
+	 * @since 11.5.0
 	 */
-	<T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus);
+	<T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup);
 
 	/**
 	 * Get the registered recipe type for the given unique id.
@@ -125,4 +126,16 @@ public interface IRecipeManager {
 	 * @since 11.2.3
 	 */
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
+
+	/**
+	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
+	 * Layouts created this way do not have recipe transfer buttons, they are not useful for this purpose.
+	 *
+	 * @param recipeCategory the recipe category that the recipe belongs to
+	 * @param recipe         the specific recipe to draw.
+	 * @param focus          the focus of the recipe layout.
+	 */
+	@Deprecated
+	@SuppressWarnings("rawtypes")
+	<T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus);
 }

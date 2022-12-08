@@ -1,6 +1,7 @@
 package mezz.jei.common.gui.ingredients;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class RecipeSlots {
-	private final List<RecipeSlot> slots;
+	private final List<IRecipeSlotDrawable> slots;
 	private final IRecipeSlotsView view;
 
 	public RecipeSlots() {
@@ -21,7 +22,7 @@ public class RecipeSlots {
 		return this.view;
 	}
 
-	public List<RecipeSlot> getSlots() {
+	public List<IRecipeSlotDrawable> getSlots() {
 		return Collections.unmodifiableList(this.slots);
 	}
 
@@ -30,12 +31,12 @@ public class RecipeSlots {
 	}
 
 	public void draw(PoseStack poseStack) {
-		for (RecipeSlot slot : slots) {
+		for (IRecipeSlotDrawable slot : slots) {
 			slot.draw(poseStack);
 		}
 	}
 
-	public Optional<RecipeSlot> getHoveredSlot(double recipeMouseX, double recipeMouseY) {
+	public Optional<IRecipeSlotDrawable> getHoveredSlot(double recipeMouseX, double recipeMouseY) {
 		return slots.stream()
 			.filter(ingredient -> ingredient.isMouseOver(recipeMouseX, recipeMouseY))
 			.findFirst();

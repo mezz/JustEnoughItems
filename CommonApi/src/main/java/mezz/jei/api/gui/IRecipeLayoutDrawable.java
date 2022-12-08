@@ -1,12 +1,15 @@
 package mezz.jei.api.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
@@ -14,9 +17,9 @@ import java.util.Optional;
 /**
  * For addons that want to draw recipe layouts somewhere themselves.
  *
- * Create an instance with {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocus)}.
+ * Create an instance with {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocusGroup)}.
  */
-public interface IRecipeLayoutDrawable {
+public interface IRecipeLayoutDrawable<R> {
 	/**
 	 * Set the position of the recipe layout in screen coordinates.
 	 * To help decide on the position, you can get the width and height of this recipe from {@link IRecipeCategory#getBackground()}.
@@ -54,4 +57,20 @@ public interface IRecipeLayoutDrawable {
 	 * Can be an ItemStack, FluidStack, or any other ingredient type registered with JEI.
 	 */
 	<T> Optional<T> getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<T> ingredientType);
+
+	boolean handleInput(double mouseX, double mouseY, InputConstants.Key key);
+
+    Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY);
+
+	int getPosX();
+
+	int getPosY();
+
+	IImmutableRect2i getRecipeTransferButtonArea();
+
+	IRecipeSlotsView getRecipeSlotsView();
+
+	IRecipeCategory<R> getRecipeCategory();
+
+	R getRecipe();
 }

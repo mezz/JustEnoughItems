@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.recipes.layout;
+package mezz.jei.library.gui.recipes;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -11,9 +11,9 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.ingredients.IIngredientSupplier;
-import mezz.jei.common.gui.recipes.layout.builder.IRecipeLayoutSlotSource;
-import mezz.jei.common.gui.recipes.layout.builder.InvisibleRecipeLayoutSlotSource;
-import mezz.jei.common.gui.recipes.layout.builder.RecipeSlotBuilder;
+import mezz.jei.library.gui.recipes.layout.builder.IRecipeLayoutSlotSource;
+import mezz.jei.library.gui.recipes.layout.builder.InvisibleRecipeLayoutSlotSource;
+import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;

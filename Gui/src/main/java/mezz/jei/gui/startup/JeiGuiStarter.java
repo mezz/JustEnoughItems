@@ -15,7 +15,7 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
-import mezz.jei.common.gui.ingredients.IListElement;
+import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.ingredients.IngredientListElementFactory;
 import mezz.jei.gui.input.ClientInputHandler;

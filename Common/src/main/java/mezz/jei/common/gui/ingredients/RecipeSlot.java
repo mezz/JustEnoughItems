@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -14,9 +15,11 @@ import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.IngredientTooltipHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
@@ -31,7 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
+public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipeSlotDrawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int MAX_DISPLAYED_INGREDIENTS = 100;
 
@@ -199,10 +202,12 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		}
 	}
 
+	@Override
 	public boolean isMouseOver(double recipeMouseX, double recipeMouseY) {
 		return this.rect.contains(recipeMouseX, recipeMouseY);
 	}
 
+	@Override
 	public void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
 		this.tooltipCallbacks.add(tooltipCallback);
 	}
@@ -223,6 +228,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 			.orElseGet(() -> registeredIngredients.getIngredientRenderer(ingredientType));
 	}
 
+	@Override
 	public void draw(PoseStack poseStack) {
 		cycleTimer.onDraw();
 
@@ -269,12 +275,14 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView {
 		}
 	}
 
+	@Override
 	public void drawOverlays(PoseStack poseStack, int xOffset, int yOffset, int mouseX, int mouseY, IModIdHelper modIdHelper) {
 		getDisplayedIngredient()
 			.ifPresent(typedIngredient -> drawTooltip(poseStack, xOffset, yOffset, mouseX, mouseY, typedIngredient, modIdHelper));
 	}
 
-	public ImmutableRect2i getRect() {
+	@Override
+	public IImmutableRect2i getRect() {
 		return this.rect;
 	}
 

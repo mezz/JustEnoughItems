@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.recipes;
+package mezz.jei.library.gui.recipes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;

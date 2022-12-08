@@ -19,7 +19,7 @@ import mezz.jei.core.config.file.ConfigSchemaBuilder;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.common.ingredients.IngredientBlacklistInternal;
-import mezz.jei.common.ingredients.IngredientVisibility;
+import mezz.jei.library.ingredients.IngredientVisibility;
 import mezz.jei.library.load.PluginCaller;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.plugins.jei.JeiInternalPlugin;

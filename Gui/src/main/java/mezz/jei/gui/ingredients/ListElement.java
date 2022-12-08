@@ -1,7 +1,6 @@
-package mezz.jei.common.ingredients;
+package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.gui.ingredients.IListElement;
 
 public class ListElement<V> implements IListElement<V> {
 	private final ITypedIngredient<V> ingredient;

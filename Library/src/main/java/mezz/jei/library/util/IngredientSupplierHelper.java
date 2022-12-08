@@ -3,7 +3,7 @@ package mezz.jei.library.util;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.focus.FocusGroup;
-import mezz.jei.common.gui.recipes.layout.RecipeLayoutBuilder;
+import mezz.jei.library.gui.recipes.RecipeLayoutBuilder;
 import mezz.jei.common.ingredients.IIngredientSupplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

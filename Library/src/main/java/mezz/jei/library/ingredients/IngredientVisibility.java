@@ -1,4 +1,4 @@
-package mezz.jei.common.ingredients;
+package mezz.jei.library.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -6,6 +6,8 @@ import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IEditModeConfig;
+import mezz.jei.common.ingredients.IngredientBlacklistInternal;
+import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.core.config.IWorldConfig;
 
 public class IngredientVisibility implements IIngredientVisibility {

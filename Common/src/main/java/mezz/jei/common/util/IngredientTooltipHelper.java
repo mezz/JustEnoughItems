@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.ingredients;
+package mezz.jei.common.util;
 
 import java.util.ArrayList;
 import java.util.List;

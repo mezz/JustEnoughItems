@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.recipes;
+package mezz.jei.library.gui.recipes;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;

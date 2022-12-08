@@ -12,7 +12,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.gui.ingredients.IngredientTooltipHelper;
+import mezz.jei.common.util.IngredientTooltipHelper;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.core.search.SearchMode;
 import net.minecraft.ChatFormatting;

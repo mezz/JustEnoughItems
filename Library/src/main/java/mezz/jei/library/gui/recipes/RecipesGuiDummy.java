@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.recipes;
+package mezz.jei.library.gui.recipes;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;

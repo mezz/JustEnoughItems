@@ -3,15 +3,15 @@ package mezz.jei.common.transfer;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.common.gui.ingredients.RecipeSlots;
-import mezz.jei.common.gui.recipes.layout.IRecipeLayoutInternal;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -19,13 +19,13 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,53 +36,47 @@ public final class RecipeTransferUtil {
 	private RecipeTransferUtil() {
 	}
 
-	@Nullable
-	public static IRecipeTransferError getTransferRecipeError(IRecipeTransferManager recipeTransferManager, AbstractContainerMenu container, IRecipeLayoutInternal<?> recipeLayout, Player player) {
+	public static Optional<IRecipeTransferError> getTransferRecipeError(IRecipeTransferManager recipeTransferManager, AbstractContainerMenu container, IRecipeLayoutDrawable<?> recipeLayout, Player player) {
 		return transferRecipe(recipeTransferManager, container, recipeLayout, player, false, false);
 	}
 
-	public static boolean transferRecipe(IRecipeTransferManager recipeTransferManager, AbstractContainerMenu container, IRecipeLayoutInternal<?> recipeLayout, Player player, boolean maxTransfer) {
-		IRecipeTransferError error = transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer, true);
-		return allowsTransfer(error);
+	public static boolean transferRecipe(IRecipeTransferManager recipeTransferManager, AbstractContainerMenu container, IRecipeLayoutDrawable<?> recipeLayout, Player player, boolean maxTransfer) {
+		return transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer, true)
+			.map(error -> error.getType().allowsTransfer)
+			.orElse(true);
 	}
 
-	@Nullable
-	private static <C extends AbstractContainerMenu, R> IRecipeTransferError transferRecipe(
+	private static <C extends AbstractContainerMenu, R> Optional<IRecipeTransferError> transferRecipe(
 		IRecipeTransferManager recipeTransferManager,
 		C container,
-		IRecipeLayoutInternal<R> recipeLayout,
+		IRecipeLayoutDrawable<R> recipeLayout,
 		Player player,
 		boolean maxTransfer,
 		boolean doTransfer
 	) {
 		IRecipeCategory<R> recipeCategory = recipeLayout.getRecipeCategory();
 
-		return recipeTransferManager.getRecipeTransferHandler(container, recipeCategory)
-			.map(transferHandler -> {
-				RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
-				IRecipeSlotsView recipeSlotsView = recipeSlots.getView();
+		Optional<IRecipeTransferHandler<C, R>> recipeTransferHandler = recipeTransferManager.getRecipeTransferHandler(container, recipeCategory);
+		if (recipeTransferHandler.isEmpty()) {
+			if (doTransfer) {
+				LOGGER.error("No Recipe Transfer handler for container {}", container.getClass());
+			}
+			return Optional.of(RecipeTransferErrorInternal.INSTANCE);
+		}
 
-				try {
-					return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlotsView, player, maxTransfer, doTransfer);
-				} catch (RuntimeException e) {
-					LOGGER.error(
-						"Recipe transfer handler '{}' for container '{}' and recipe type '{}' threw an error: ",
-						transferHandler.getClass(), transferHandler.getContainerClass(), recipeCategory.getRecipeType().getUid(), e
-					);
-					return RecipeTransferErrorInternal.INSTANCE;
-				}
-			})
-			.orElseGet(() -> {
-				if (doTransfer) {
-					LOGGER.error("No Recipe Transfer handler for container {}", container.getClass());
-				}
-				return RecipeTransferErrorInternal.INSTANCE;
-			});
-	}
+		IRecipeTransferHandler<C, R> transferHandler = recipeTransferHandler.get();
+		IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
 
-	public static boolean allowsTransfer(@Nullable IRecipeTransferError error) {
-		return error == null ||
-			error.getType() == IRecipeTransferError.Type.COSMETIC;
+		try {
+			IRecipeTransferError transferError = transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlotsView, player, maxTransfer, doTransfer);
+			return Optional.ofNullable(transferError);
+		} catch (RuntimeException e) {
+			LOGGER.error(
+				"Recipe transfer handler '{}' for container '{}' and recipe type '{}' threw an error: ",
+				transferHandler.getClass(), transferHandler.getContainerClass(), recipeCategory.getRecipeType().getUid(), e
+			);
+			return Optional.of(RecipeTransferErrorInternal.INSTANCE);
+		}
 	}
 
 	public static boolean validateSlots(
