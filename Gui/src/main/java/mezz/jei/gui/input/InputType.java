@@ -1,4 +1,4 @@
-package mezz.jei.common.input;
+package mezz.jei.gui.input;
 
 public enum InputType {
 	/** called on mouse-down or to see if a click would be handled */

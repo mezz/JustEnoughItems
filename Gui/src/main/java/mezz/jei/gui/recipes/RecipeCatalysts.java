@@ -11,7 +11,7 @@ import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.ClickedIngredient;
-import mezz.jei.common.input.IRecipeFocusSource;
+import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 

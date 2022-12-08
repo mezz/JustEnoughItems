@@ -1,7 +1,7 @@
 package mezz.jei.gui.input.handlers;
 
-import mezz.jei.common.input.IDragHandler;
-import mezz.jei.common.input.UserInput;
+import mezz.jei.gui.input.IDragHandler;
+import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 

@@ -2,8 +2,6 @@ package mezz.jei.gui.input;
 
 import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.input.IRecipeFocusSource;
-import mezz.jei.common.input.UserInput;
 import net.minecraft.client.Minecraft;
 
 import java.util.List;

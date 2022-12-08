@@ -1,4 +1,4 @@
-package mezz.jei.common.input;
+package mezz.jei.gui.input;
 
 import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;

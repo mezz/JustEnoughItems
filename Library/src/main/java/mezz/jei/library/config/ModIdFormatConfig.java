@@ -1,7 +1,6 @@
 package mezz.jei.library.config;
 
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.common.config.IModIdFormatConfig;
 import mezz.jei.core.config.file.IConfigCategoryBuilder;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;
 import mezz.jei.library.config.serializers.ChatFormattingSerializer;

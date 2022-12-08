@@ -1,8 +1,8 @@
 package mezz.jei.gui.input.handlers;
 
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.UserInput;
+import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;

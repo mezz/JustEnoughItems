@@ -4,7 +4,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.config.DebugConfig;
-import mezz.jei.common.config.IModIdFormatConfig;
+import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.ModIdFormatConfig;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.Services;

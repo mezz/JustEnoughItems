@@ -10,7 +10,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.UserInput;
+import mezz.jei.gui.input.UserInput;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

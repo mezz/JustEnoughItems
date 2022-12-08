@@ -1,4 +1,4 @@
-package mezz.jei.common.input;
+package mezz.jei.gui.input;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;

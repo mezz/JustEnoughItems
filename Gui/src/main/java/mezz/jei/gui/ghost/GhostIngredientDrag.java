@@ -8,7 +8,7 @@ import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.common.input.UserInput;
+import mezz.jei.gui.input.UserInput;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;

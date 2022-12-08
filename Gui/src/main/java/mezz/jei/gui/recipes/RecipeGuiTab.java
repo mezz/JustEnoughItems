@@ -8,7 +8,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.network.chat.Component;
 

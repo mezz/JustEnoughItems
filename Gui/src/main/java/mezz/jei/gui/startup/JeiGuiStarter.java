@@ -20,7 +20,7 @@ import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.ingredients.IngredientListElementFactory;
 import mezz.jei.gui.input.ClientInputHandler;
-import mezz.jei.common.input.ICharTypedHandler;
+import mezz.jei.gui.input.ICharTypedHandler;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.handlers.DragRouter;
 import mezz.jei.gui.input.handlers.GlobalInputHandler;

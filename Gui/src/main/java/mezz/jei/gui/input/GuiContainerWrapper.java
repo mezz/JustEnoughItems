@@ -2,7 +2,6 @@ package mezz.jei.gui.input;
 
 import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.input.IRecipeFocusSource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 

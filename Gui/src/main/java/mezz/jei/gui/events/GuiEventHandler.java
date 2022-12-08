@@ -9,7 +9,7 @@ import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
-import mezz.jei.common.input.MouseUtil;
+import mezz.jei.gui.input.MouseUtil;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.RectDebugger;

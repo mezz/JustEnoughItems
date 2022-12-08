@@ -5,8 +5,8 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.common.input.UserInput;
-import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.gui.input.UserInput;
+import mezz.jei.gui.input.IUserInputHandler;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;

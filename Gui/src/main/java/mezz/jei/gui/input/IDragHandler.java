@@ -1,4 +1,4 @@
-package mezz.jei.common.input;
+package mezz.jei.gui.input;
 
 import net.minecraft.client.gui.screens.Screen;
 
