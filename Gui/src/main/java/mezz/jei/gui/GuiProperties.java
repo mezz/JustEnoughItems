@@ -1,4 +1,4 @@
-package mezz.jei.common.gui;
+package mezz.jei.gui;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.handlers.IGuiProperties;

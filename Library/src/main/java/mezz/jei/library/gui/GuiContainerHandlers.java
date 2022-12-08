@@ -1,4 +1,4 @@
-package mezz.jei.common.gui;
+package mezz.jei.library.gui;
 
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;

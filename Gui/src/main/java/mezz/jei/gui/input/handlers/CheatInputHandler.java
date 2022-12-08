@@ -9,7 +9,7 @@ import mezz.jei.common.input.UserInput;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.CheatUtil;
 import mezz.jei.gui.util.CommandUtil;
-import mezz.jei.common.util.GiveAmount;
+import mezz.jei.gui.util.GiveAmount;
 import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.gui.screens.Screen;

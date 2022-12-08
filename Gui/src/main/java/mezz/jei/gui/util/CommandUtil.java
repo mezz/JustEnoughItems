@@ -4,7 +4,6 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketGiveItemStack;
 import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.GiveAmount;
 import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.gui.config.IClientConfig;

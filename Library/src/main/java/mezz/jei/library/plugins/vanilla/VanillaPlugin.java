@@ -28,7 +28,7 @@ import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.ingredients.fluid.FluidIngredientHelper;
+import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
 import mezz.jei.common.ingredients.fluid.FluidStackListFactory;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRecipeHelper;

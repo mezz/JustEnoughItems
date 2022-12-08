@@ -1,4 +1,7 @@
-package mezz.jei.common.util;
+package mezz.jei.gui.util;
+
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 
 import java.util.Arrays;
 import java.util.Collection;

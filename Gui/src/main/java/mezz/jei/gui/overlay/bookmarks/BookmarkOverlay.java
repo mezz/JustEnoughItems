@@ -11,7 +11,7 @@ import mezz.jei.common.util.CheatUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
-import mezz.jei.common.gui.overlay.ScreenPropertiesCache;
+import mezz.jei.gui.overlay.ScreenPropertiesCache;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IRecipeFocusSource;

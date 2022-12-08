@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.overlay.bookmarks;
+package mezz.jei.common.gui.overlay;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;

@@ -18,7 +18,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.focus.FocusGroup;
-import mezz.jei.common.gui.GuiProperties;
+import mezz.jei.gui.GuiProperties;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.elements.GuiIconButtonSmall;

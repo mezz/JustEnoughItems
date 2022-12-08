@@ -1,8 +1,8 @@
 package mezz.jei.common.util;
 
 import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.common.gui.overlay.options.HorizontalAlignment;
-import mezz.jei.common.gui.overlay.options.VerticalAlignment;
+import mezz.jei.common.gui.overlay.HorizontalAlignment;
+import mezz.jei.common.gui.overlay.VerticalAlignment;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;

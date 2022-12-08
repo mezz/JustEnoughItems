@@ -1,8 +1,8 @@
-package mezz.jei.common.gui.overlay;
+package mezz.jei.gui.overlay;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.gui.GuiProperties;
+import mezz.jei.gui.GuiProperties;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 

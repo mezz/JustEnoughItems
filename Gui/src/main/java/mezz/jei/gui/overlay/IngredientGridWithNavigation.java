@@ -24,7 +24,7 @@ import mezz.jei.common.util.CheatUtil;
 import mezz.jei.gui.util.CommandUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
-import mezz.jei.common.util.MaximalRectangle;
+import mezz.jei.gui.util.MaximalRectangle;
 import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.KeyMapping;

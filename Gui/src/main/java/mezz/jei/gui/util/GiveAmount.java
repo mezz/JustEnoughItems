@@ -1,4 +1,4 @@
-package mezz.jei.common.util;
+package mezz.jei.gui.util;
 
 import net.minecraft.world.item.ItemStack;
 

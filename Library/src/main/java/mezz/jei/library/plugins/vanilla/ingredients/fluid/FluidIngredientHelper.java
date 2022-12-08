@@ -1,4 +1,4 @@
-package mezz.jei.common.ingredients.fluid;
+package mezz.jei.library.plugins.vanilla.ingredients.fluid;
 
 import com.google.common.base.MoreObjects;
 import mezz.jei.api.helpers.IColorHelper;
