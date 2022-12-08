@@ -6,7 +6,7 @@ import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.library.ingredients.TypedIngredient;
 import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.collect.ImmutableListMultimap;

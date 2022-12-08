@@ -20,7 +20,7 @@ import mezz.jei.library.gui.IngredientListOverlayDummy;
 import mezz.jei.library.gui.BookmarkOverlayDummy;
 import mezz.jei.library.gui.recipes.RecipesGuiDummy;
 import mezz.jei.library.ingredients.IngredientFilterApiDummy;
-import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.library.ingredients.TypedIngredient;
 import mezz.jei.common.util.ErrorUtil;
 
 import java.util.Optional;
@@ -66,6 +66,7 @@ public class JeiRuntime implements IJeiRuntime {
 		this.screenHelper = screenHelper;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <T> ITypedIngredient<T> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient) {
 		Optional<ITypedIngredient<T>> result = TypedIngredient.createTyped(registeredIngredients, ingredientType, ingredient);

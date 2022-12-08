@@ -1,4 +1,4 @@
-package mezz.jei.common.transfer;
+package mezz.jei.library.transfer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 

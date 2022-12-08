@@ -1,6 +1,5 @@
 package mezz.jei.gui.input.handlers;
 
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;

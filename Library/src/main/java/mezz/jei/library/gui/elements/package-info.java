@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.common.ingredients;
+package mezz.jei.library.gui.elements;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

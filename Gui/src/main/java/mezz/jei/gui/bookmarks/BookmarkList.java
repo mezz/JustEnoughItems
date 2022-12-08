@@ -1,18 +1,17 @@
 package mezz.jei.gui.bookmarks;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.gui.overlay.IIngredientGridSource;
-import mezz.jei.common.ingredients.TypedIngredient;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 public class BookmarkList implements IIngredientGridSource {
 	private final List<ITypedIngredient<?>> list = new LinkedList<>();
@@ -41,7 +40,7 @@ public class BookmarkList implements IIngredientGridSource {
 
 	private <T> int indexOf(ITypedIngredient<T> value) {
 		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
-		Optional<ITypedIngredient<T>> normalized = TypedIngredient.normalize(registeredIngredients, value);
+		Optional<ITypedIngredient<T>> normalized = normalize(registeredIngredients, value);
 		if (normalized.isEmpty()) {
 			return -1;
 		}
@@ -57,6 +56,12 @@ public class BookmarkList implements IIngredientGridSource {
 			}
 		}
 		return -1;
+	}
+
+	public static <T> Optional<ITypedIngredient<T>> normalize(IRegisteredIngredients registeredIngredients, ITypedIngredient<T> value) {
+		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
+		T ingredient = ingredientHelper.normalizeIngredient(value.getIngredient());
+		return registeredIngredients.createTypedIngredient(value.getType(), ingredient);
 	}
 
 	private static <T> boolean equal(IIngredientHelper<T> ingredientHelper, ITypedIngredient<T> a, String uidA, ITypedIngredient<?> b) {
@@ -91,7 +96,7 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	public <T> void addToList(ITypedIngredient<T> value, boolean addToFront) {
-		Optional<ITypedIngredient<T>> result = TypedIngredient.normalize(registeredIngredients, value);
+		Optional<ITypedIngredient<T>> result = normalize(registeredIngredients, value);
 		if (result.isEmpty()) {
 			return;
 		}

@@ -8,9 +8,8 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.ServerConfigPathUtil;
+import mezz.jei.gui.bookmarks.BookmarkList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
@@ -98,7 +97,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 							ItemStack itemStack = ItemStack.of(itemStackAsNbt);
 							if (!itemStack.isEmpty()) {
 								ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);
-								Optional<ITypedIngredient<ItemStack>> typedIngredient = TypedIngredient.createTyped(registeredIngredients, VanillaTypes.ITEM_STACK, normalized);
+								Optional<ITypedIngredient<ItemStack>> typedIngredient = registeredIngredients.createTypedIngredient(VanillaTypes.ITEM_STACK, normalized);
 								if (typedIngredient.isEmpty()) {
 									LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
 								} else {
@@ -145,6 +144,6 @@ public class BookmarkConfig implements IBookmarkConfig {
 				IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 				return ingredientHelper.normalizeIngredient(i);
 			})
-			.flatMap(i -> TypedIngredient.createTyped(registeredIngredients, ingredientType, i));
+			.flatMap(i -> registeredIngredients.createTypedIngredient(ingredientType, i));
 	}
 }

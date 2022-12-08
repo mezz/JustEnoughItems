@@ -1,5 +1,7 @@
-package mezz.jei.common.gui.elements;
+package mezz.jei.library.gui.elements;
 
+import mezz.jei.common.gui.elements.DrawableAnimated;
+import mezz.jei.common.gui.elements.DrawableResource;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.ITickTimer;

@@ -5,10 +5,12 @@ import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -88,4 +90,8 @@ public class RegisteredIngredients implements IRegisteredIngredients {
 		throw new IllegalArgumentException("Unknown ingredient class: " + ingredientClass);
 	}
 
+	@Override
+	public <T> Optional<ITypedIngredient<T>> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient) {
+		return TypedIngredient.createTyped(this, ingredientType, ingredient);
+	}
 }

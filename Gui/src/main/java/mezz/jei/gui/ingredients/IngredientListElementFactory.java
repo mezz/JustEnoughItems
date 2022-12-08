@@ -4,7 +4,6 @@ import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.ingredients.TypedIngredient;
 import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +31,7 @@ public final class IngredientListElementFactory {
 
 	public static <V> List<IListElement<V>> createList(IRegisteredIngredients registeredIngredients, IIngredientType<V> ingredientType, Collection<V> ingredients) {
 		return ingredients.stream()
-			.map(i -> TypedIngredient.createTyped(registeredIngredients, ingredientType, i))
+			.map(i -> registeredIngredients.createTypedIngredient(ingredientType, i))
 			.flatMap(Optional::stream)
 			.map(IngredientListElementFactory::createOrderedElement)
 			.toList();
@@ -48,7 +47,7 @@ public final class IngredientListElementFactory {
 		Collection<V> ingredients = ingredientInfo.getAllIngredients();
 		LOGGER.debug("Registering ingredients: " + ingredientType.getIngredientClass().getSimpleName());
 		ingredients.stream()
-			.map(i -> TypedIngredient.createTyped(registeredIngredients, ingredientType, i))
+			.map(i -> registeredIngredients.createTypedIngredient(ingredientType, i))
 			.flatMap(Optional::stream)
 			.map(IngredientListElementFactory::createOrderedElement)
 			.forEach(baseList::add);

@@ -1,4 +1,4 @@
-package mezz.jei.common.ingredients;
+package mezz.jei.library.ingredients;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -62,12 +62,6 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		assertIsValidIngredient(registeredIngredients, ingredientType, ingredient);
 		TypedIngredient<T> typedIngredient = new TypedIngredient<>(ingredientType, ingredient);
 		return Optional.of(typedIngredient);
-	}
-
-	public static <T> Optional<ITypedIngredient<T>> normalize(IRegisteredIngredients registeredIngredients, ITypedIngredient<T> value) {
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
-		T ingredient = ingredientHelper.normalizeIngredient(value.getIngredient());
-		return TypedIngredient.createTyped(registeredIngredients, value.getType(), ingredient);
 	}
 
 	public static <T> Optional<ITypedIngredient<T>> deepCopy(IRegisteredIngredients registeredIngredients, ITypedIngredient<T> value) {

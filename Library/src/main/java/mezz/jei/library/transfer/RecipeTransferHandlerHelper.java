@@ -16,8 +16,6 @@ import mezz.jei.library.gui.ingredients.RecipeSlotsView;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.transfer.BasicRecipeTransferInfo;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
-import mezz.jei.common.transfer.RecipeTransferErrorMissingSlots;
-import mezz.jei.common.transfer.RecipeTransferErrorTooltip;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;

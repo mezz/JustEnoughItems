@@ -36,6 +36,11 @@ public interface IJeiHelpers {
 	 */
 	IFocusFactory getFocusFactory();
 
+	/**
+	 * Helps with getting colors of ingredients.
+	 *
+	 * @since 11.5.0
+	 */
 	IColorHelper getColorHelper();
 
 	/**

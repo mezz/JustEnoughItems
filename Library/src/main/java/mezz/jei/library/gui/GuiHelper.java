@@ -12,7 +12,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableBlank;
-import mezz.jei.common.gui.elements.DrawableBuilder;
+import mezz.jei.library.gui.elements.DrawableBuilder;
 import mezz.jei.common.gui.elements.DrawableIngredient;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;

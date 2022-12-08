@@ -74,7 +74,9 @@ public interface IJeiRuntime {
 	 * Returns a new typed ingredient.
 	 *
 	 * @since 9.3.0
+	 * @deprecated use {@link IRegisteredIngredients#createTypedIngredient(IIngredientType, Object)} instead.
 	 */
+	@Deprecated(since = "11.5.0", forRemoval = true)
 	<T> ITypedIngredient<T> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient);
 
 	IScreenHelper getScreenHelper();
