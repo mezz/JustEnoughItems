@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.ingredients;
+package mezz.jei.library.gui.ingredients;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;

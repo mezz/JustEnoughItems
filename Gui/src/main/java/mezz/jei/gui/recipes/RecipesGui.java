@@ -18,14 +18,12 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IClickedIngredient;
-import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.focus.FocusGroup;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.elements.GuiIconButtonSmall;
-import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.ClickedIngredient;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -107,7 +105,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IModIdHelper modIdHelper,
 		IClientConfig clientConfig,
 		Textures textures,
-		IIngredientVisibility ingredientVisibility,
 		IInternalKeyMappings keyBindings
 	) {
 		super(Component.literal("Recipes"));
@@ -119,7 +116,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.clientConfig = clientConfig;
 		this.keyBindings = keyBindings;
 		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this);
-		this.recipeCatalysts = new RecipeCatalysts(textures, ingredientVisibility);
+		this.recipeCatalysts = new RecipeCatalysts(textures, recipeManager);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures, registeredIngredients);
 		this.minecraft = Minecraft.getInstance();
 
@@ -254,7 +251,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		previousPage.render(poseStack, mouseX, mouseY, partialTicks);
 
 		Optional<IRecipeLayoutDrawable<?>> hoveredRecipeLayout = drawLayouts(poseStack, mouseX, mouseY);
-		Optional<RecipeSlot> hoveredRecipeCatalyst = recipeCatalysts.draw(poseStack, mouseX, mouseY);
+		Optional<IRecipeSlotDrawable> hoveredRecipeCatalyst = recipeCatalysts.draw(poseStack, mouseX, mouseY);
 
 		recipeGuiTabs.draw(minecraft, poseStack, mouseX, mouseY, modIdHelper);
 

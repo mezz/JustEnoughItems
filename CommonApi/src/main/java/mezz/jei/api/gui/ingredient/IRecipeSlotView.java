@@ -3,7 +3,6 @@ package mezz.jei.api.gui.ingredient;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -120,6 +119,4 @@ public interface IRecipeSlotView {
 	 * @since 9.3.0
 	 */
 	void drawHighlight(PoseStack stack, int color);
-
-	void drawOverlays(PoseStack poseStack, int posX, int posY, int recipeMouseX, int recipeMouseY, IModIdHelper modIdHelper);
 }

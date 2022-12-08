@@ -1,4 +1,4 @@
-package mezz.jei.common.gui.ingredients;
+package mezz.jei.library.gui.ingredients;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.gui.screens.Screen;

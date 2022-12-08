@@ -5,7 +5,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.gui.ingredients.RecipeSlots;
+import mezz.jei.library.gui.ingredients.RecipeSlots;
 
 import java.util.stream.Stream;
 

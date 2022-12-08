@@ -3,13 +3,13 @@ package mezz.jei.gui.recipes;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IClickedIngredient;
-import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.common.gui.ingredients.RecipeSlot;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.ClickedIngredient;
 import mezz.jei.common.input.IRecipeFocusSource;
@@ -33,16 +33,16 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 	private final DrawableNineSliceTexture backgroundTab;
 
-	private final List<RecipeSlot> recipeSlots;
+	private final List<IRecipeSlotDrawable> recipeSlots;
 	private final DrawableNineSliceTexture slotBackground;
-	private final IIngredientVisibility ingredientVisibility;
+	private final IRecipeManager recipeManager;
 	private int left = 0;
 	private int top = 0;
 	private int width = 0;
 	private int height = 0;
 
-	public RecipeCatalysts(Textures textures, IIngredientVisibility ingredientVisibility) {
-		this.ingredientVisibility = ingredientVisibility;
+	public RecipeCatalysts(Textures textures, IRecipeManager recipeManager) {
+		this.recipeManager = recipeManager;
 		recipeSlots = new ArrayList<>();
 		backgroundTab = textures.getCatalystTab();
 		slotBackground = textures.getRecipeCatalystSlotBackground();
@@ -74,29 +74,28 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 			for (int i = 0; i < ingredients.size(); i++) {
 				ITypedIngredient<?> ingredientForSlot = ingredients.get(i);
-				RecipeSlot recipeSlot = createSlot(ingredientForSlot, i, maxIngredientsPerColumn, registeredIngredients);
+				IRecipeSlotDrawable recipeSlot = createSlot(ingredientForSlot, i, maxIngredientsPerColumn, registeredIngredients);
 				this.recipeSlots.add(recipeSlot);
 			}
 		}
 	}
 
-	private <T> RecipeSlot createSlot(ITypedIngredient<T> typedIngredient, int index, int maxIngredientsPerColumn, IRegisteredIngredients registeredIngredients) {
+	private <T> IRecipeSlotDrawable createSlot(ITypedIngredient<T> typedIngredient, int index, int maxIngredientsPerColumn, IRegisteredIngredients registeredIngredients) {
 		int column = index / maxIngredientsPerColumn;
 		int row = index % maxIngredientsPerColumn;
 		int xPos = left + borderSize + (column * ingredientSize) + ingredientBorderSize;
 		int yPos = top + borderSize + (row * ingredientSize) + ingredientBorderSize;
-		RecipeSlot recipeSlot = new RecipeSlot(
-			registeredIngredients,
+		return recipeManager.createRecipeSlotDrawable(
 			RecipeIngredientRole.CATALYST,
+			List.of(Optional.of(typedIngredient)),
+			IntSet.of(0),
 			xPos,
 			yPos,
 			0
 		);
-		recipeSlot.set(List.of(Optional.of(typedIngredient)), IntSet.of(0), ingredientVisibility);
-		return recipeSlot;
 	}
 
-	public Optional<RecipeSlot> draw(PoseStack poseStack, int mouseX, int mouseY) {
+	public Optional<IRecipeSlotDrawable> draw(PoseStack poseStack, int mouseX, int mouseY) {
 		int ingredientCount = recipeSlots.size();
 		if (ingredientCount > 0) {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -110,8 +109,8 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 			}
 			RenderSystem.enableDepthTest();
 
-			RecipeSlot hovered = null;
-			for (RecipeSlot recipeSlot : this.recipeSlots) {
+			IRecipeSlotDrawable hovered = null;
+			for (IRecipeSlotDrawable recipeSlot : this.recipeSlots) {
 				if (recipeSlot.isMouseOver(mouseX, mouseY)) {
 					hovered = recipeSlot;
 				}
@@ -122,7 +121,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		return Optional.empty();
 	}
 
-	private Stream<RecipeSlot> getHovered(double mouseX, double mouseY) {
+	private Stream<IRecipeSlotDrawable> getHovered(double mouseX, double mouseY) {
 		return this.recipeSlots.stream()
 			.filter(recipeSlot -> recipeSlot.isMouseOver(mouseX, mouseY));
 	}

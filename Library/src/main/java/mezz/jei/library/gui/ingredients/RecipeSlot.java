@@ -1,8 +1,7 @@
-package mezz.jei.common.gui.ingredients;
+package mezz.jei.library.gui.ingredients;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
@@ -32,6 +31,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipeSlotDrawable {
@@ -180,13 +180,13 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 		this.overlay = overlay;
 	}
 
-	public void set(List<Optional<ITypedIngredient<?>>> ingredients, IntSet focusMatches, IIngredientVisibility ingredientVisibility) {
+	public void set(List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusMatches, IIngredientVisibility ingredientVisibility) {
 		this.allIngredients = List.copyOf(ingredients);
 
 		if (!focusMatches.isEmpty()) {
-			this.displayIngredients = focusMatches.intStream()
+			this.displayIngredients = focusMatches.stream()
 				.filter(i -> i < this.allIngredients.size())
-				.mapToObj(i -> this.allIngredients.get(i))
+				.map(i -> this.allIngredients.get(i))
 				.toList();
 		} else {
 			this.displayIngredients = this.allIngredients.stream()

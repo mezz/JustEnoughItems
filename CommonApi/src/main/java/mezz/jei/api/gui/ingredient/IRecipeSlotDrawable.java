@@ -2,6 +2,7 @@ package mezz.jei.api.gui.ingredient;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
 
@@ -25,4 +26,6 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	boolean isMouseOver(double recipeMouseX, double recipeMouseY);
 
 	void draw(PoseStack poseStack);
+
+	void drawOverlays(PoseStack poseStack, int posX, int posY, int recipeMouseX, int recipeMouseY, IModIdHelper modIdHelper);
 }

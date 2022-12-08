@@ -175,7 +175,6 @@ public class JeiGuiStarter {
             modIdHelper,
             clientConfig,
             textures,
-            ingredientVisibility,
             keyMappings
         );
         jeiRuntime.setRecipesGui(recipesGui);

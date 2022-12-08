@@ -12,7 +12,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.ingredients.RecipeSlotsView;
+import mezz.jei.library.gui.ingredients.RecipeSlotsView;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.transfer.BasicRecipeTransferInfo;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
