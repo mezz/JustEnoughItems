@@ -6,25 +6,9 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.phys.Vec2;
 
-import javax.annotation.Nonnegative;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Stream;
 
 public final class MathUtil {
-	@FunctionalInterface
-	private interface Rectangle2dCropper {
-		ImmutableRect2i crop(ImmutableRect2i original, ImmutableRect2i intersecting);
-	}
-
-	private static final List<Rectangle2dCropper> rectangle2dCroppers = List.of(
-		MathUtil::cropTop,
-		MathUtil::cropBottom,
-		MathUtil::cropLeft,
-		MathUtil::cropRight
-	);
-
 	private MathUtil() {
 
 	}
@@ -51,94 +35,6 @@ public final class MathUtil {
 			rect2.getY() + rect2.getHeight() > rect1.getY() &&
 			rect2.getX() < rect1.getX() + rect1.getWidth() &&
 			rect2.getY() < rect1.getY() + rect1.getHeight();
-	}
-
-	public static int intersectingArea(Collection<ImmutableRect2i> areas, ImmutableRect2i comparisonArea) {
-		return areas.stream()
-			.mapToInt(area -> intersection(area, comparisonArea).getArea())
-			.sum();
-	}
-
-	public static ImmutableRect2i intersection(ImmutableRect2i rect1, ImmutableRect2i rect2) {
-		final int x = Math.max(rect1.getX(), rect2.getX());
-		final int maxX = Math.min(rect1.getX() + rect1.getWidth(), rect2.getX() + rect2.getWidth());
-		final int y = Math.max(rect1.getY(), rect2.getY());
-		final int maxY = Math.min(rect1.getY() + rect1.getHeight(), rect2.getY() + rect2.getHeight());
-		if (maxX >= x && maxY >= y) {
-			return new ImmutableRect2i(x, y, maxX - x, maxY - y);
-		} else {
-			return ImmutableRect2i.EMPTY;
-		}
-	}
-
-	/**
-	 * Crop the given "rect" to avoid "intersecting" while maximizing the available content space.
-	 */
-	private static ImmutableRect2i bestCrop(
-		ImmutableRect2i rect,
-		ImmutableRect2i intersecting,
-		Collection<ImmutableRect2i> allIntersecting,
-		int maxWidth,
-		int maxHeight
-	) {
-		if (rect.isEmpty() || maxHeight == 0 || maxWidth == 0 || !intersects(rect, intersecting)) {
-			return rect;
-		}
-		return rectangle2dCroppers.stream()
-			.map(cropper -> cropper.crop(rect, intersecting))
-			.filter(cropped -> !intersects(allIntersecting, cropped))
-			.max(Comparator.comparingInt(r -> contentArea(r, maxWidth, maxHeight)))
-			.orElse(rect);
-	}
-
-	private static Stream<ImmutableRect2i> crops(ImmutableRect2i rect, ImmutableRect2i intersecting) {
-		if (!intersects(rect, intersecting)) {
-			return Stream.of(rect);
-		}
-		return rectangle2dCroppers.stream()
-			.map(cropper -> cropper.crop(rect, intersecting));
-	}
-
-	/**
-	 * Calculates the area of flexible content that can fit in a given rect.
-	 */
-	@Nonnegative
-	public static int contentArea(ImmutableRect2i rect, int maxWidth, int maxHeight) {
-		return Math.min(rect.getWidth(), maxWidth) * Math.min(rect.getHeight(), maxHeight);
-	}
-
-	private static ImmutableRect2i cropTop(ImmutableRect2i original, ImmutableRect2i intersecting) {
-		int newY = intersecting.getY() + intersecting.getHeight();
-		int cropTopAmount = newY - original.getY();
-		if (cropTopAmount < 0) {
-			return original;
-		}
-		return original.cropTop(cropTopAmount);
-	}
-
-	private static ImmutableRect2i cropLeft(ImmutableRect2i original, ImmutableRect2i intersecting) {
-		int newX = intersecting.getX() + intersecting.getWidth();
-		int cropLeftAmount = newX - original.getX();
-		if (cropLeftAmount < 0) {
-			return original;
-		}
-		return original.cropLeft(cropLeftAmount);
-	}
-
-	private static ImmutableRect2i cropBottom(ImmutableRect2i original, ImmutableRect2i intersecting) {
-		int newHeight = intersecting.getY() - original.getY();
-		if (newHeight < 0) {
-			return ImmutableRect2i.EMPTY;
-		}
-		return original.keepTop(newHeight);
-	}
-
-	private static ImmutableRect2i cropRight(ImmutableRect2i original, ImmutableRect2i intersecting) {
-		int newWidth = intersecting.getX() - original.getX();
-		if (newWidth < 0) {
-			return ImmutableRect2i.EMPTY;
-		}
-		return original.keepLeft(newWidth);
 	}
 
 	public static boolean contains(Collection<ImmutableRect2i> areas, double x, double y) {

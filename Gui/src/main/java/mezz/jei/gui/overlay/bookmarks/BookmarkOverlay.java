@@ -91,10 +91,10 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	public void updateScreen(@Nullable Screen guiScreen, boolean forceUpdate) {
-		this.screenPropertiesCache.updateScreen(guiScreen, forceUpdate, optionalGuiProperties -> {
+		this.screenPropertiesCache.updateScreen(guiScreen, forceUpdate, optionalGuiProperties ->
 			optionalGuiProperties
-				.ifPresent(this::updateBounds);
-		});
+				.ifPresent(this::updateBounds)
+		);
 	}
 
 	private void updateBounds(IGuiProperties guiProperties) {

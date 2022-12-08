@@ -19,13 +19,6 @@ public class FocusGroup implements IFocusGroup {
 	/**
 	 * Make sure any IFocus coming in through API calls is validated
 	 */
-	public static <V> IFocusGroup create(IFocus<V> focus, IRegisteredIngredients registeredIngredients) {
-		return Focus.checkOne(focus, registeredIngredients);
-	}
-
-	/**
-	 * Make sure any IFocus coming in through API calls is validated
-	 */
 	public static <V> IFocusGroup createFromNullable(@Nullable IFocus<V> focus, IRegisteredIngredients registeredIngredients) {
 		if (focus == null) {
 			return EMPTY;

@@ -74,9 +74,9 @@ public class GhostIngredientDragManager {
 				if (currentScreen != null && hovered != null) {
 					screenHelper.getGhostIngredientHandler(currentScreen)
 						.filter(IGhostIngredientHandler::shouldHighlightTargets)
-						.ifPresent(handler -> {
-							this.hoveredIngredientTargets = handler.getTargets(currentScreen, hovered, false);
-						});
+						.ifPresent(handler ->
+							this.hoveredIngredientTargets = handler.getTargets(currentScreen, hovered, false)
+						);
 				}
 			}
 			if (this.hoveredIngredientTargets != null && !worldConfig.isCheatItemsEnabled()) {

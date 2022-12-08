@@ -139,7 +139,7 @@ public interface IRecipeCategory<T> {
 	 */
 	@Nullable
 	default ResourceLocation getRegistryName(T recipe) {
-		if (recipe instanceof Recipe vanillaRecipe) {
+		if (recipe instanceof Recipe<?> vanillaRecipe) {
 			return vanillaRecipe.getId();
 		}
 		return null;

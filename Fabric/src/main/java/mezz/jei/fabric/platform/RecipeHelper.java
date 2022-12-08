@@ -41,6 +41,7 @@ public class RecipeHelper implements IPlatformRecipeHelper {
         return recipe.addition;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
     public Optional<ResourceLocation> getRegistryNameForRecipe(Object object) {
         if (object instanceof Recipe<?> recipe) {

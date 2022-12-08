@@ -44,11 +44,6 @@ public class RecipeTypeDataMap {
 		return validate(recipes, recipeTypeData);
 	}
 
-	public <T> RecipeTypeData<T> get(T recipe, RecipeType<T> recipeType) {
-		RecipeTypeData<T> recipeTypeData = get(recipeType);
-		return validate(List.of(recipe), recipeTypeData);
-	}
-
 	private static <T> RecipeTypeData<T> validate(Iterable<? extends T> recipes, RecipeTypeData<?> recipeTypeData) {
 		IRecipeCategory<?> recipeCategory = recipeTypeData.getRecipeCategory();
 		RecipeType<?> recipeType = recipeCategory.getRecipeType();

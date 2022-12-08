@@ -116,7 +116,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	public void updateScreen(@Nullable Screen guiScreen, boolean forceUpdate) {
-		screenPropertiesCache.updateScreen(guiScreen, forceUpdate, optionalGuiProperties -> {
+		screenPropertiesCache.updateScreen(guiScreen, forceUpdate, optionalGuiProperties ->
 			optionalGuiProperties
 				.ifPresentOrElse(guiProperties -> {
 					ImmutableRect2i displayArea = createDisplayArea(guiProperties);
@@ -124,8 +124,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 				}, () -> {
 					this.ghostIngredientDragManager.stopDrag();
 					this.searchField.setFocused(false);
-				});
-		});
+				})
+		);
 	}
 
 	private void updateBounds(IGuiProperties guiProperties, ImmutableRect2i displayArea) {

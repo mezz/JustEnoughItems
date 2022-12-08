@@ -98,7 +98,7 @@ public final class ErrorUtil {
 	public static <T> void checkNotEmpty(T[] values, String name) {
 		if (values == null) {
 			throw new NullPointerException(name + " must not be null.");
-		} else if (values.length <= 0) {
+		} else if (values.length == 0) {
 			throw new IllegalArgumentException(name + " must not be empty.");
 		}
 		for (T value : values) {
