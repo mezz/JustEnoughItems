@@ -4,6 +4,7 @@ import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
+import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IEditModeConfig;
@@ -77,6 +78,7 @@ public class JeiGuiStarter {
         IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
         IColorHelper colorHelper = jeiHelpers.getColorHelper();
         IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
+        IFocusFactory focusFactory = jeiHelpers.getFocusFactory();
         IRegisteredIngredients registeredIngredients = jeiHelpers.getRegisteredIngredients();
 
         IFilterTextSource filterTextSource = new FilterTextSource();
@@ -175,7 +177,8 @@ public class JeiGuiStarter {
             modIdHelper,
             clientConfig,
             textures,
-            keyMappings
+            keyMappings,
+            focusFactory
         );
         jeiRuntime.setRecipesGui(recipesGui);
 
@@ -194,10 +197,10 @@ public class JeiGuiStarter {
             new EditInputHandler(recipeFocusSource, worldConfig, editModeConfig),
             ingredientListOverlay.createInputHandler(),
             bookmarkOverlay.createInputHandler(),
-            new FocusInputHandler(recipeFocusSource, recipesGui),
+            new FocusInputHandler(recipeFocusSource, recipesGui, focusFactory),
             new BookmarkInputHandler(recipeFocusSource, bookmarkList),
             new GlobalInputHandler(worldConfig),
-            new GuiAreaInputHandler(registeredIngredients, screenHelper, recipesGui)
+            new GuiAreaInputHandler(screenHelper, recipesGui, focusFactory)
         );
 
         DragRouter dragRouter = new DragRouter(

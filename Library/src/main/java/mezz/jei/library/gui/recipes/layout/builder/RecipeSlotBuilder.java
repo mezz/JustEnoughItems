@@ -16,7 +16,7 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RecipeSlots;
-import mezz.jei.common.ingredients.IngredientAcceptor;
+import mezz.jei.library.ingredients.IngredientAcceptor;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;

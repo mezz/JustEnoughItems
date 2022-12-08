@@ -57,7 +57,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		return Math.max(0, width - overlapSize);
 	}
 
-	public void updateLayout(List<ITypedIngredient<?>> ingredients, ImmutableRect2i recipeArea, IRegisteredIngredients registeredIngredients) {
+	public void updateLayout(List<ITypedIngredient<?>> ingredients, ImmutableRect2i recipeArea) {
 		this.recipeSlots.clear();
 
 		if (!ingredients.isEmpty()) {
@@ -74,13 +74,13 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 			for (int i = 0; i < ingredients.size(); i++) {
 				ITypedIngredient<?> ingredientForSlot = ingredients.get(i);
-				IRecipeSlotDrawable recipeSlot = createSlot(ingredientForSlot, i, maxIngredientsPerColumn, registeredIngredients);
+				IRecipeSlotDrawable recipeSlot = createSlot(ingredientForSlot, i, maxIngredientsPerColumn);
 				this.recipeSlots.add(recipeSlot);
 			}
 		}
 	}
 
-	private <T> IRecipeSlotDrawable createSlot(ITypedIngredient<T> typedIngredient, int index, int maxIngredientsPerColumn, IRegisteredIngredients registeredIngredients) {
+	private <T> IRecipeSlotDrawable createSlot(ITypedIngredient<T> typedIngredient, int index, int maxIngredientsPerColumn) {
 		int column = index / maxIngredientsPerColumn;
 		int row = index % maxIngredientsPerColumn;
 		int xPos = left + borderSize + (column * ingredientSize) + ingredientBorderSize;

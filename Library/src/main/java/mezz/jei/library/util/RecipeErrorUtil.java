@@ -6,7 +6,7 @@ import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
-import mezz.jei.common.ingredients.IIngredientSupplier;
+import mezz.jei.library.ingredients.IIngredientSupplier;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;

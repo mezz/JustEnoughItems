@@ -5,7 +5,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeLookup;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.common.focus.FocusGroup;
+import mezz.jei.library.focus.FocusGroup;
 
 import java.util.Collection;
 import java.util.stream.Stream;

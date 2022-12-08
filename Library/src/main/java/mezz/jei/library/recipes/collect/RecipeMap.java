@@ -6,7 +6,7 @@ import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.common.ingredients.IIngredientSupplier;
+import mezz.jei.library.ingredients.IIngredientSupplier;
 import mezz.jei.core.collect.SetMultiMap;
 import org.jetbrains.annotations.UnmodifiableView;
 

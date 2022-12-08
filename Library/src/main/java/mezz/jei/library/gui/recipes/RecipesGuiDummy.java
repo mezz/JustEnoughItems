@@ -16,11 +16,6 @@ public class RecipesGuiDummy implements IRecipesGui {
 	}
 
 	@Override
-	public <V> void show(IFocus<V> focus) {
-
-	}
-
-	@Override
 	public void show(List<IFocus<?>> focuses) {
 
 	}

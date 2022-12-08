@@ -11,7 +11,7 @@ import mezz.jei.library.config.EditModeConfig;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.ingredients.IListElement;
-import mezz.jei.common.ingredients.IngredientBlacklistInternal;
+import mezz.jei.library.ingredients.IngredientBlacklistInternal;
 import mezz.jei.library.ingredients.IngredientInfo;
 import mezz.jei.gui.ingredients.IngredientListElementFactory;
 import mezz.jei.library.ingredients.IngredientManager;

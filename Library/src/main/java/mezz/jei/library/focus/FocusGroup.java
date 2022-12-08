@@ -1,4 +1,4 @@
-package mezz.jei.common.focus;
+package mezz.jei.library.focus;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;

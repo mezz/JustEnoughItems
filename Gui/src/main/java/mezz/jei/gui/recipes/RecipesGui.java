@@ -12,6 +12,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
@@ -20,10 +21,8 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.common.focus.FocusGroup;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.common.gui.elements.GuiIconButtonSmall;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.ClickedIngredient;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -38,6 +37,7 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.gui.elements.GuiIconButtonSmall;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -62,7 +62,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private static final int buttonHeight = 13;
 
 	private final IRecipeTransferManager recipeTransferManager;
-	private final IRegisteredIngredients registeredIngredients;
 	private final IModIdHelper modIdHelper;
 	private final IClientConfig clientConfig;
 	private final IInternalKeyMappings keyBindings;
@@ -97,6 +96,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private ImmutableRect2i titleStringArea = ImmutableRect2i.EMPTY;
 
 	private boolean init = false;
+	private final IFocusFactory focusFactory;
 
 	public RecipesGui(
 		IRecipeManager recipeManager,
@@ -105,19 +105,20 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IModIdHelper modIdHelper,
 		IClientConfig clientConfig,
 		Textures textures,
-		IInternalKeyMappings keyBindings
+		IInternalKeyMappings keyBindings,
+		IFocusFactory focusFactory
 	) {
 		super(Component.literal("Recipes"));
 		this.textures = textures;
 		this.recipeTransferButtons = new ArrayList<>();
 		this.recipeTransferManager = recipeTransferManager;
-		this.registeredIngredients = registeredIngredients;
 		this.modIdHelper = modIdHelper;
 		this.clientConfig = clientConfig;
 		this.keyBindings = keyBindings;
-		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this);
+		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, focusFactory);
 		this.recipeCatalysts = new RecipeCatalysts(textures, recipeManager);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures, registeredIngredients);
+		this.focusFactory = focusFactory;
 		this.minecraft = Minecraft.getInstance();
 
 		IDrawableStatic arrowNext = textures.getArrowNext();
@@ -462,16 +463,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	public <V> void show(IFocus<V> focus) {
-		IFocusGroup checkedFocuses = FocusGroup.create(focus, registeredIngredients);
-		if (logic.setFocus(checkedFocuses)) {
-			open();
-		}
-	}
-
-	@Override
 	public void show(List<IFocus<?>> focuses) {
-		IFocusGroup checkedFocuses = FocusGroup.create(focuses, registeredIngredients);
+		IFocusGroup checkedFocuses = focusFactory.createFocusGroup(focuses);
 		if (logic.setFocus(checkedFocuses)) {
 			open();
 		}
@@ -546,7 +539,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		pageString = logic.getPageString();
 
 		List<ITypedIngredient<?>> recipeCatalystIngredients = logic.getRecipeCatalysts().toList();
-		recipeCatalysts.updateLayout(recipeCatalystIngredients, this.area, this.registeredIngredients);
+		recipeCatalysts.updateLayout(recipeCatalystIngredients, this.area);
 		recipeGuiTabs.initLayout(this.area);
 	}
 

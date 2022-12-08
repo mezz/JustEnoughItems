@@ -19,7 +19,7 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.library.gui.IngredientListOverlayDummy;
 import mezz.jei.library.gui.BookmarkOverlayDummy;
 import mezz.jei.library.gui.recipes.RecipesGuiDummy;
-import mezz.jei.common.ingredients.IngredientFilterApiDummy;
+import mezz.jei.library.ingredients.IngredientFilterApiDummy;
 import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.ErrorUtil;
 

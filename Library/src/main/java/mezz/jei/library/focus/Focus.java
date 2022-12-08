@@ -1,4 +1,4 @@
-package mezz.jei.common.focus;
+package mezz.jei.library.focus;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
@@ -76,6 +76,14 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 			throw new IllegalArgumentException("Focus value is invalid: " + ErrorUtil.getIngredientInfo(value, ingredientType, registeredIngredients));
 		}
 		return new Focus<>(role, typedIngredient.get());
+	}
+
+	public static <V> Focus<V> createFromApi(IRegisteredIngredients registeredIngredients, RecipeIngredientRole role, ITypedIngredient<V> typedIngredient) {
+		Optional<ITypedIngredient<V>> typedIngredientCopy = TypedIngredient.deepCopy(registeredIngredients, typedIngredient);
+		if (typedIngredientCopy.isEmpty()) {
+			throw new IllegalArgumentException("Focus value is invalid: " + ErrorUtil.getIngredientInfo(typedIngredient.getIngredient(), typedIngredient.getType(), registeredIngredients));
+		}
+		return new Focus<>(role, typedIngredientCopy.get());
 	}
 
 	@Override

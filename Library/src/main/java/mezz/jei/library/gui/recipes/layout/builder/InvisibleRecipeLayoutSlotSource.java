@@ -8,7 +8,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.library.gui.ingredients.RecipeSlots;
-import mezz.jei.common.ingredients.IngredientAcceptor;
+import mezz.jei.library.ingredients.IngredientAcceptor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;

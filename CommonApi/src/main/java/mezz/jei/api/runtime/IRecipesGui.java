@@ -22,7 +22,9 @@ public interface IRecipesGui {
 	 *
 	 * @see IFocusFactory#createFocus(RecipeIngredientRole, IIngredientType, Object)
 	 */
-	<V> void show(IFocus<V> focus);
+	default <V> void show(IFocus<V> focus) {
+		show(List.of(focus));
+	}
 
 	/**
 	 * Show recipes for multiple {@link IFocus}.

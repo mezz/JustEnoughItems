@@ -10,7 +10,7 @@ import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.ingredients.IIngredientSupplier;
+import mezz.jei.library.ingredients.IIngredientSupplier;
 import mezz.jei.library.gui.recipes.layout.builder.IRecipeLayoutSlotSource;
 import mezz.jei.library.gui.recipes.layout.builder.InvisibleRecipeLayoutSlotSource;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;

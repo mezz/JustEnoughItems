@@ -18,7 +18,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.focus.Focus;
+import mezz.jei.library.focus.Focus;
 
 public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 	private final IRegisteredIngredients registeredIngredients;

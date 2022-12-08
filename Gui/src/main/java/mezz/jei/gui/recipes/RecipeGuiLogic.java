@@ -2,12 +2,12 @@ package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.common.focus.FocusGroup;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.ingredients.IngredientLookupState;
 import net.minecraft.client.Minecraft;
@@ -30,16 +30,19 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private boolean initialState = true;
 	private IngredientLookupState state;
 	private final Stack<IngredientLookupState> history = new Stack<>();
+	private final IFocusFactory focusFactory;
 
 	public RecipeGuiLogic(
 		IRecipeManager recipeManager,
 		IRecipeTransferManager recipeTransferManager,
-		IRecipeLogicStateListener stateListener
+		IRecipeLogicStateListener stateListener,
+		IFocusFactory focusFactory
 	) {
 		this.recipeManager = recipeManager;
 		this.recipeTransferManager = recipeTransferManager;
 		this.stateListener = stateListener;
-		this.state = IngredientLookupState.createWithFocus(recipeManager, FocusGroup.EMPTY);
+		this.state = IngredientLookupState.createWithFocus(recipeManager, focusFactory.getEmptyFocusGroup());
+		this.focusFactory = focusFactory;
 	}
 
 	@Override
@@ -108,7 +111,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	public boolean setCategoryFocus() {
 		IRecipeCategory<?> recipeCategory = getSelectedRecipeCategory();
 
-		final IngredientLookupState state = IngredientLookupState.createWithFocus(recipeManager, FocusGroup.EMPTY);
+		final IngredientLookupState state = IngredientLookupState.createWithFocus(recipeManager, focusFactory.getEmptyFocusGroup());
 		state.setRecipeCategory(recipeCategory);
 		setState(state, true);
 
@@ -122,7 +125,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			.get()
 			.toList();
 
-		final IngredientLookupState state = IngredientLookupState.createWithCategories(recipeManager, recipeCategories);
+		final IngredientLookupState state = IngredientLookupState.createWithCategories(recipeManager, focusFactory, recipeCategories);
 		if (state.getRecipeCategories().isEmpty()) {
 			return false;
 		}

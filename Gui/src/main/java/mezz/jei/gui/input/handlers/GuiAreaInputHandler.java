@@ -1,12 +1,12 @@
 package mezz.jei.gui.input.handlers;
 
 import mezz.jei.api.ingredients.IRegisteredIngredients;
+import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.focus.FocusFactory;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -16,12 +16,12 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import java.util.Optional;
 
 public class GuiAreaInputHandler implements IUserInputHandler {
-	private final FocusFactory focusFactory;
+	private final IFocusFactory focusFactory;
 	private final IScreenHelper screenHelper;
 	private final IRecipesGui recipesGui;
 
-	public GuiAreaInputHandler(IRegisteredIngredients registeredIngredients, IScreenHelper screenHelper, IRecipesGui recipesGui) {
-		this.focusFactory = new FocusFactory(registeredIngredients);
+	public GuiAreaInputHandler(IScreenHelper screenHelper, IRecipesGui recipesGui, IFocusFactory focusFactory) {
+		this.focusFactory = focusFactory;
 		this.screenHelper = screenHelper;
 		this.recipesGui = recipesGui;
 	}

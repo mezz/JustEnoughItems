@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.common.focus;
+package mezz.jei.library.focus;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

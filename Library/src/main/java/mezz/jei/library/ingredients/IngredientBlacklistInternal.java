@@ -1,4 +1,4 @@
-package mezz.jei.common.ingredients;
+package mezz.jei.library.ingredients;
 
 import java.util.Collection;
 import java.util.HashSet;

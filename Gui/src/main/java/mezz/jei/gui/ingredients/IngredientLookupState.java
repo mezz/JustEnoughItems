@@ -1,11 +1,11 @@
 package mezz.jei.gui.ingredients;
 
 import com.google.common.base.Preconditions;
+import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.recipes.FocusedRecipes;
-import mezz.jei.common.focus.FocusGroup;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -32,8 +32,8 @@ public class IngredientLookupState {
 		return new IngredientLookupState(recipeManager, focuses, recipeCategories);
 	}
 
-	public static IngredientLookupState createWithCategories(IRecipeManager recipeManager, List<IRecipeCategory<?>> recipeCategories) {
-		return new IngredientLookupState(recipeManager, FocusGroup.EMPTY, recipeCategories);
+	public static IngredientLookupState createWithCategories(IRecipeManager recipeManager, IFocusFactory focusFactory, List<IRecipeCategory<?>> recipeCategories) {
+		return new IngredientLookupState(recipeManager, focusFactory.getEmptyFocusGroup(), recipeCategories);
 	}
 
 	private IngredientLookupState(IRecipeManager recipeManager, IFocusGroup focuses, List<IRecipeCategory<?>> recipeCategories) {

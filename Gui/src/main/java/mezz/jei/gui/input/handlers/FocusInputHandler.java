@@ -1,10 +1,10 @@
 package mezz.jei.gui.input.handlers;
 
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.common.focus.Focus;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
@@ -17,10 +17,12 @@ import java.util.Optional;
 public class FocusInputHandler implements IUserInputHandler {
 	private final CombinedRecipeFocusSource focusSource;
 	private final IRecipesGui recipesGui;
+	private final IFocusFactory focusFactory;
 
-	public FocusInputHandler(CombinedRecipeFocusSource focusSource, IRecipesGui recipesGui) {
+	public FocusInputHandler(CombinedRecipeFocusSource focusSource, IRecipesGui recipesGui, IFocusFactory focusFactory) {
 		this.focusSource = focusSource;
 		this.recipesGui = recipesGui;
+		this.focusFactory = focusFactory;
 	}
 
 	@Override
@@ -42,7 +44,7 @@ public class FocusInputHandler implements IUserInputHandler {
 			.map(clicked -> {
 				if (!input.isSimulate()) {
 					List<IFocus<?>> focuses = roles.stream()
-						.<IFocus<?>>map(role -> new Focus<>(role, clicked.getTypedIngredient()))
+						.<IFocus<?>>map(role -> focusFactory.createFocus(role, clicked.getTypedIngredient()))
 						.toList();
 					recipesGui.show(focuses);
 				}
