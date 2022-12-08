@@ -20,7 +20,7 @@ import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.LimitedAreaInputHandler;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.util.CheatUtil;
+import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.gui.util.CommandUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;

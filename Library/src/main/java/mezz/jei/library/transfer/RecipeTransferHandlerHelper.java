@@ -1,4 +1,4 @@
-package mezz.jei.common.transfer;
+package mezz.jei.library.transfer;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,6 +14,10 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.ingredients.RecipeSlotsView;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.transfer.BasicRecipeTransferInfo;
+import mezz.jei.common.transfer.RecipeTransferErrorInternal;
+import mezz.jei.common.transfer.RecipeTransferErrorMissingSlots;
+import mezz.jei.common.transfer.RecipeTransferErrorTooltip;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;

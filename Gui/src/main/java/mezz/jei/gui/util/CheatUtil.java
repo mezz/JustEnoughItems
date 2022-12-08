@@ -1,4 +1,4 @@
-package mezz.jei.common.util;
+package mezz.jei.gui.util;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;

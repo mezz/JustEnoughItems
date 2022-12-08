@@ -1,4 +1,4 @@
-package mezz.jei.common.util;
+package mezz.jei.library.util;
 
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;

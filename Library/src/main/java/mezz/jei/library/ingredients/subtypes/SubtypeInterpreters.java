@@ -1,4 +1,4 @@
-package mezz.jei.common.ingredients.subtypes;
+package mezz.jei.library.ingredients.subtypes;
 
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;

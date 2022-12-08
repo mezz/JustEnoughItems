@@ -1,4 +1,4 @@
-package mezz.jei.common.ingredients.fluid;
+package mezz.jei.library.plugins.vanilla.ingredients.fluid;
 
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.common.platform.IPlatformRegistry;

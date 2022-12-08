@@ -5,7 +5,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.IEditModeConfig;
-import mezz.jei.common.util.CheatUtil;
+import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;

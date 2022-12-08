@@ -1,4 +1,4 @@
-package mezz.jei.common.ingredients;
+package mezz.jei.library.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientInfo;

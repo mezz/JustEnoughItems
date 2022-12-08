@@ -10,7 +10,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.common.Constants;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.transfer.BasicRecipeTransferHandler;
+import mezz.jei.library.transfer.BasicRecipeTransferHandler;
 import mezz.jei.common.transfer.BasicRecipeTransferInfo;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.collect.Table;

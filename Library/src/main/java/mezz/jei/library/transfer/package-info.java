@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.common.ingredients.subtypes;
+package mezz.jei.library.transfer;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

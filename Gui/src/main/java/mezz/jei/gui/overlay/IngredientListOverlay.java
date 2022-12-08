@@ -10,7 +10,7 @@ import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.GuiProperties;
-import mezz.jei.common.util.CheatUtil;
+import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;

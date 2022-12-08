@@ -15,7 +15,6 @@ import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.common.gui.ingredients.IListElement;
 import mezz.jei.common.gui.overlay.IIngredientGridSource;
-import mezz.jei.common.ingredients.IngredientListElementFactory;
 import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchLowMem;

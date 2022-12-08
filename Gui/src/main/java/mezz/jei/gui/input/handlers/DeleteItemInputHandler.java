@@ -9,7 +9,7 @@ import mezz.jei.common.input.UserInput;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketJei;
-import mezz.jei.common.util.CheatUtil;
+import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.gui.config.IClientConfig;

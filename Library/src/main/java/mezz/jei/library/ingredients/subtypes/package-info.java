@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.common.ingredients.fluid;
+package mezz.jei.library.ingredients.subtypes;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 
