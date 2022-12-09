@@ -32,6 +32,6 @@ include(
 	"Common", "CommonApi",
 	"Forge", "ForgeApi",
 	"Fabric", "FabricApi",
-	"Library", "LibraryApi",
-	"Gui", "GuiApi"
+	"Library",
+	"Gui"
 )

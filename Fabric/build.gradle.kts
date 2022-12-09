@@ -34,9 +34,7 @@ val dependencyProjects: List<ProjectDependency> = listOf(
     project.dependencies.project(":Common"),
     project.dependencies.project(":CommonApi"),
     project.dependencies.project(":Library"),
-    project.dependencies.project(":LibraryApi"),
     project.dependencies.project(":Gui"),
-    project.dependencies.project(":GuiApi"),
     project.dependencies.project(":FabricApi", configuration = "namedElements")
 )
 

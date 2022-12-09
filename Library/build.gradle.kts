@@ -23,7 +23,6 @@ val dependencyProjects: List<Project> = listOf(
     project(":Core"),
     project(":Common"),
     project(":CommonApi"),
-    project(":LibraryApi"),
 )
 
 dependencyProjects.forEach {

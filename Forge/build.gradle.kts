@@ -41,9 +41,7 @@ val dependencyProjects: List<Project> = listOf(
 	project(":Common"),
 	project(":CommonApi"),
 	project(":Library"),
-	project(":LibraryApi"),
 	project(":Gui"),
-	project(":GuiApi"),
 	project(":ForgeApi"),
 )
 
