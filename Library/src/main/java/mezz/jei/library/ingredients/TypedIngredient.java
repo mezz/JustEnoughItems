@@ -5,13 +5,12 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public final class TypedIngredient<T> implements ITypedIngredient<T> {
-	private static <T> void assertIsValidIngredient(IRegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, T ingredient) {
+	private static <T> boolean checkIsValidIngredient(IRegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, T ingredient) {
 		Preconditions.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredient, "ingredient");
 
@@ -22,45 +21,48 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		}
 
 		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
-		boolean valid;
 		try {
-			valid = ingredientHelper.isValidIngredient(ingredient);
+			return ingredientHelper.isValidIngredient(ingredient);
 		} catch (RuntimeException e) {
 			String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
 			throw new IllegalArgumentException("Invalid ingredient found. Ingredient Info: " + ingredientInfo, e);
 		}
-
-		if (!valid) {
-			String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
-			throw new IllegalArgumentException("Invalid ingredient found. Ingredient Info: " + ingredientInfo);
-		}
 	}
 
 	public static <T> Optional<ITypedIngredient<?>> create(IRegisteredIngredients registeredIngredients, @Nullable T ingredient) {
-		if (isBlankIngredient(ingredient)) {
+		if (ingredient == null) {
 			return Optional.empty();
 		}
 		IIngredientType<T> ingredientType = registeredIngredients.getIngredientType(ingredient)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid ingredient type: " + ingredient.getClass()));
-		assertIsValidIngredient(registeredIngredients, ingredientType, ingredient);
+
+		if (!checkIsValidIngredient(registeredIngredients, ingredientType, ingredient)) {
+			return Optional.empty();
+		}
+
 		TypedIngredient<T> typedIngredient = new TypedIngredient<>(ingredientType, ingredient);
 		return Optional.of(typedIngredient);
 	}
 
 	public static <T> Optional<ITypedIngredient<?>> create(IRegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, @Nullable T ingredient) {
-		if (isBlankIngredient(ingredient)) {
+		if (ingredient == null) {
 			return Optional.empty();
 		}
-		assertIsValidIngredient(registeredIngredients, ingredientType, ingredient);
+		if (!checkIsValidIngredient(registeredIngredients, ingredientType, ingredient)) {
+			return Optional.empty();
+		}
+
 		TypedIngredient<T> typedIngredient = new TypedIngredient<>(ingredientType, ingredient);
 		return Optional.of(typedIngredient);
 	}
 
 	public static <T> Optional<ITypedIngredient<T>> createTyped(IRegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, @Nullable T ingredient) {
-		if (isBlankIngredient(ingredient)) {
+		if (ingredient == null) {
 			return Optional.empty();
 		}
-		assertIsValidIngredient(registeredIngredients, ingredientType, ingredient);
+		if (!checkIsValidIngredient(registeredIngredients, ingredientType, ingredient)) {
+			return Optional.empty();
+		}
 		TypedIngredient<T> typedIngredient = new TypedIngredient<>(ingredientType, ingredient);
 		return Optional.of(typedIngredient);
 	}
@@ -99,8 +101,4 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return this.ingredientType;
 	}
 
-	private static boolean isBlankIngredient(@Nullable Object ingredient) {
-		return ingredient == null ||
-			ingredient instanceof ItemStack itemStack && itemStack.isEmpty();
-	}
 }

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Available immediately after ingredients are registered, this is a view of all registered ingredients.
+ * This is a view of all registered ingredients, available immediately after ingredients are registered.
  * This is simpler than {@link IIngredientManager} but it is available much earlier.
  * Get an instance from {@link IJeiHelpers#getRegisteredIngredients()}.
  *
@@ -23,6 +23,16 @@ public interface IRegisteredIngredients {
     <T> Optional<IIngredientType<T>> getIngredientType(T ingredient);
 
     /**
+     * Create a typed ingredient, if the given ingredient is valid.
+     *
+     * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient}
+     * cannot be created into {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
+     *
+     * @since 11.5.0
+     */
+    <T> Optional<ITypedIngredient<T>> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient);
+
+    /**
      * Get a list of all known ingredient types.
      *
      * @since 11.5.0
@@ -30,6 +40,11 @@ public interface IRegisteredIngredients {
     @Unmodifiable
     List<IIngredientType<?>> getIngredientTypes();
 
+    /**
+     * Get everything known about a specific ingredient types.
+     *
+     * @since 11.5.0
+     */
     <T> IIngredientInfo<T> getIngredientInfo(IIngredientType<T> ingredientType);
 
     /**
@@ -53,6 +68,4 @@ public interface IRegisteredIngredients {
         return getIngredientInfo(type)
             .getIngredientRenderer();
     }
-
-    <T> Optional<ITypedIngredient<T>> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient);
 }
