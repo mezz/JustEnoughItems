@@ -72,7 +72,8 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 				TooltipRenderer.drawHoveringText(poseStack, List.of(tooltipTransfer), mouseX, mouseY);
 			} else {
 				IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
-				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeSlotsView, recipeLayout.getPosX(), recipeLayout.getPosY());
+				IImmutableRect2i recipeRect = recipeLayout.getRect();
+				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY());
 			}
 		}
 	}

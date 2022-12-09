@@ -21,7 +21,7 @@ import java.util.Optional;
 public interface IRecipeLayoutDrawable<R> {
 	/**
 	 * Set the position of the recipe layout in screen coordinates.
-	 * To help decide on the position, you can get the width and height of this recipe from {@link IRecipeCategory#getBackground()}.
+	 * To help decide on the position, you can get the width and height of this recipe from {@link #getRect()}.
 	 */
 	void setPosition(int posX, int posY);
 
@@ -64,16 +64,10 @@ public interface IRecipeLayoutDrawable<R> {
     Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY);
 
 	/**
-	 * Get the X offset for the recipe in absolute screen coordinates.
+	 * Get position and size for the recipe in absolute screen coordinates.
 	 * @since 11.5.0
 	 */
-	int getPosX();
-
-	/**
-	 * Get the Y offset for the recipe in absolute screen coordinates.
-	 * @since 11.5.0
-	 */
-	int getPosY();
+	IImmutableRect2i getRect();
 
 	/**
 	 * Get the position of the recipe transfer button area, relative to the recipe layout drawable.

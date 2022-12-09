@@ -121,7 +121,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 
 	private void drawRepairCost(Minecraft minecraft, PoseStack poseStack, String text, int mainColor) {
 		int width = minecraft.font.width(text);
-		int x = background.getWidth() - 2 - width;
+		int x = getWidth() - 2 - width;
 		int y = 27;
 		minecraft.font.drawShadow(poseStack, text, x, y, mainColor);
 	}

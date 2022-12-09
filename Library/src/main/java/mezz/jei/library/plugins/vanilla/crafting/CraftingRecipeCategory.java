@@ -74,8 +74,8 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	@Override
 	public void draw(CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
-		int recipeWidth = this.background.getWidth();
-		int recipeHeight = this.background.getHeight();
+		int recipeWidth = this.getWidth();
+		int recipeHeight = this.getHeight();
 		extension.drawInfo(recipeWidth, recipeHeight, poseStack, mouseX, mouseY);
 	}
 

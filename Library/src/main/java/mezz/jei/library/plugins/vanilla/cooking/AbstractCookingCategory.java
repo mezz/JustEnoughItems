@@ -81,7 +81,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 			Minecraft minecraft = Minecraft.getInstance();
 			Font fontRenderer = minecraft.font;
 			int stringWidth = fontRenderer.width(experienceString);
-			fontRenderer.draw(poseStack, experienceString, background.getWidth() - stringWidth, y, 0xFF808080);
+			fontRenderer.draw(poseStack, experienceString, getWidth() - stringWidth, y, 0xFF808080);
 		}
 	}
 
@@ -93,7 +93,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 			Minecraft minecraft = Minecraft.getInstance();
 			Font fontRenderer = minecraft.font;
 			int stringWidth = fontRenderer.width(timeString);
-			fontRenderer.draw(poseStack, timeString, background.getWidth() - stringWidth, y, 0xFF808080);
+			fontRenderer.draw(poseStack, timeString, getWidth() - stringWidth, y, 0xFF808080);
 		}
 	}
 

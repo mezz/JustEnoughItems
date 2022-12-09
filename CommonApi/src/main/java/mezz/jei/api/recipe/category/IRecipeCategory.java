@@ -40,11 +40,26 @@ public interface IRecipeCategory<T> {
 
 	/**
 	 * Returns the drawable background for a single recipe in this category.
-	 *
-	 * The size of the background determines how recipes are laid out by JEI,
-	 * make sure it is the right size to contains everything being displayed.
 	 */
 	IDrawable getBackground();
+
+	/**
+	 * Returns the width of recipe layouts that are drawn for this recipe category.
+	 *
+	 * @since 11.5.0
+	 */
+	default int getWidth() {
+		return getBackground().getWidth();
+	}
+
+	/**
+	 * Returns the height of recipe layouts that are drawn for this recipe category.
+	 *
+	 * @since 11.5.0
+	 */
+	default int getHeight() {
+		return getBackground().getHeight();
+	}
 
 	/**
 	 * Icon for the category tab.

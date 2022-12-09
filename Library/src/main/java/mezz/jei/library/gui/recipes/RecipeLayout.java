@@ -107,9 +107,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		this.textures = textures;
 		this.recipeSlots = new RecipeSlots();
 
-		IDrawable background = recipeCategory.getBackground();
-		int width = background.getWidth();
-		int height = background.getHeight();
+		int width = recipeCategory.getWidth();
+		int height = recipeCategory.getHeight();
 		int buttonX = width + RECIPE_BORDER_PADDING + 2;
 		int buttonY = height - RECIPE_TRANSFER_BUTTON_SIZE;
 		this.recipeTransferButtonArea = new ImmutableRect2i(
@@ -151,9 +150,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		{
 			poseStack.translate(posX, posY, 0);
 
-			IDrawable categoryBackground = recipeCategory.getBackground();
-			int width = categoryBackground.getWidth() + (2 * RECIPE_BORDER_PADDING);
-			int height = categoryBackground.getHeight() + (2 * RECIPE_BORDER_PADDING);
+			int width = recipeCategory.getWidth() + (2 * RECIPE_BORDER_PADDING);
+			int height = recipeCategory.getHeight() + (2 * RECIPE_BORDER_PADDING);
 			recipeBorder.draw(poseStack, -RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING, width, height);
 			background.draw(poseStack);
 
@@ -217,9 +215,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		final IDrawable background = recipeCategory.getBackground();
-		final ImmutableRect2i backgroundRect = new ImmutableRect2i(posX, posY, background.getWidth(), background.getHeight());
-		return backgroundRect.contains(mouseX, mouseY);
+		return getRect().contains(mouseX, mouseY);
+	}
+
+	@Override
+	public IImmutableRect2i getRect() {
+		return new ImmutableRect2i(posX, posY, recipeCategory.getWidth(), recipeCategory.getHeight());
 	}
 
 	@Override
@@ -247,7 +248,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	public void setShapeless() {
 		this.shapelessIcon = new ShapelessIcon(textures);
-		int categoryWidth = this.recipeCategory.getBackground().getWidth();
+		int categoryWidth = this.recipeCategory.getWidth();
 
 		// align to top-right
 		int x = categoryWidth - shapelessIcon.getIcon().getWidth();
@@ -263,16 +264,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	@Override
 	public IRecipeCategory<R> getRecipeCategory() {
 		return recipeCategory;
-	}
-
-	@Override
-	public int getPosX() {
-		return posX;
-	}
-
-	@Override
-	public int getPosY() {
-		return posY;
 	}
 
 	@Override

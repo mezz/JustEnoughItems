@@ -369,8 +369,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	 * Converts from relative recipeLayout coordinates to absolute screen coordinates
 	 */
 	private static ImmutableRect2i absoluteClickedArea(IRecipeLayoutDrawable<?> recipeLayout, IImmutableRect2i area) {
+		IImmutableRect2i layoutArea = recipeLayout.getRect();
 		return ImmutableRect2i.convert(area)
-			.addOffset(recipeLayout.getPosX(), recipeLayout.getPosY());
+			.addOffset(layoutArea.getX(), layoutArea.getY());
 	}
 
 	@Override
@@ -457,8 +458,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			return false;
 		}
 
-		double recipeMouseX = input.getMouseX() - recipeLayout.getPosX();
-		double recipeMouseY = input.getMouseY() - recipeLayout.getPosY();
+		IImmutableRect2i recipeArea = recipeLayout.getRect();
+		double recipeMouseX = input.getMouseX() - recipeArea.getX();
+		double recipeMouseY = input.getMouseY() - recipeArea.getY();
 		R recipe = recipeLayout.getRecipe();
 		IRecipeCategory<R> recipeCategory = recipeLayout.getRecipeCategory();
 		if (recipeCategory.handleInput(recipe, recipeMouseX, recipeMouseY, input.getKey())) {
@@ -554,7 +556,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			return;
 		}
 		IRecipeCategory<?> recipeCategory = logic.getSelectedRecipeCategory();
-		IDrawable recipeBackground = recipeCategory.getBackground();
 
 		final int x = area.getX();
 		final int y = area.getY();
@@ -562,7 +563,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		final int height = area.getHeight();
 
 		int availableHeight = height - headerHeight;
-		final int heightPerRecipe = recipeBackground.getHeight() + innerPadding;
+		final int heightPerRecipe = recipeCategory.getHeight() + innerPadding;
 		int recipesPerPage = availableHeight / heightPerRecipe;
 
 		if (recipesPerPage == 0) {
@@ -581,9 +582,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		recipeLayouts.clear();
 
-		final int recipeXOffset = x + (width - recipeBackground.getWidth()) / 2;
-		final int recipeSpacing = (availableHeight - (recipesPerPage * recipeBackground.getHeight())) / (recipesPerPage + 1);
-		int spacingY = recipeBackground.getHeight() + recipeSpacing;
+		final int recipeXOffset = x + (width - recipeCategory.getWidth()) / 2;
+		final int recipeSpacing = (availableHeight - (recipesPerPage * recipeCategory.getHeight())) / (recipesPerPage + 1);
+		int spacingY = recipeCategory.getHeight() + recipeSpacing;
 		int recipeYOffset = y + headerHeight + recipeSpacing;
 		for (IRecipeLayoutDrawable<?> recipeLayout : logic.getRecipeLayouts()) {
 			recipeLayout.setPosition(recipeXOffset, recipeYOffset);
