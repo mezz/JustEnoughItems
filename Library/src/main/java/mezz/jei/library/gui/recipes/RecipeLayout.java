@@ -1,6 +1,5 @@
 package mezz.jei.library.gui.recipes;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
@@ -15,17 +14,13 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.common.Internal;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RecipeSlots;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -87,13 +82,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	private static void addOutputSlotTooltip(RecipeLayout<?> recipeLayout, ResourceLocation recipeName, IModIdHelper modIdHelper) {
 		RecipeSlots recipeSlots = recipeLayout.recipeSlots;
-		List<IRecipeSlotDrawable> outputSlots = recipeSlots.getSlots().stream()
+		List<RecipeSlot> outputSlots = recipeSlots.getSlots().stream()
 			.filter(r -> r.getRole() == RecipeIngredientRole.OUTPUT)
 			.toList();
 
 		if (!outputSlots.isEmpty()) {
 			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName, modIdHelper, recipeLayout.registeredIngredients);
-			for (IRecipeSlotDrawable outputSlot : outputSlots) {
+			for (RecipeSlot outputSlot : outputSlots) {
 				outputSlot.addTooltipCallback(callback);
 			}
 		}
@@ -196,7 +191,19 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		RenderSystem.disableBlend();
 
 		if (hoveredSlot != null) {
-			hoveredSlot.drawOverlays(poseStack, posX, posY, recipeMouseX, recipeMouseY, modIdHelper);
+			poseStack.pushPose();
+			{
+				poseStack.translate(posX, posY, 0);
+				hoveredSlot.drawHoverOverlays(poseStack);
+			}
+			poseStack.popPose();
+
+			hoveredSlot.getDisplayedIngredient()
+				.ifPresent(i -> {
+					List<Component> tooltip = hoveredSlot.getTooltip();
+					tooltip = modIdHelper.addModNameToIngredientTooltip(tooltip, i);
+					TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, i, registeredIngredients);
+				});
 		} else if (isMouseOver(mouseX, mouseY)) {
 			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeSlots.getView(), recipeMouseX, recipeMouseY);
 			if (tooltipStrings.isEmpty() && shapelessIcon != null) {
@@ -225,46 +232,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	public Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY) {
 		final double recipeMouseX = mouseX - posX;
 		final double recipeMouseY = mouseY - posY;
-		return this.recipeSlots.getHoveredSlot(recipeMouseX, recipeMouseY);
-	}
-
-	@Override
-	public boolean handleInput(double mouseX, double mouseY, InputConstants.Key key) {
-		if (!isMouseOver(mouseX, mouseY)) {
-			return false;
-		}
-
-		double recipeMouseX = mouseX - posX;
-		double recipeMouseY = mouseY - posY;
-		if (recipeCategory.handleInput(recipe, recipeMouseX, recipeMouseY, key)) {
-			return true;
-		}
-
-		IInternalKeyMappings keyMappings = Internal.getKeyMappings();
-		if (keyMappings.getCopyRecipeId().isActiveAndMatches(key)) {
-			return handleCopyRecipeId();
-		}
-		return false;
-	}
-
-	private boolean handleCopyRecipeId() {
-		Minecraft minecraft = Minecraft.getInstance();
-		LocalPlayer player = minecraft.player;
-		ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
-		if (registryName == null) {
-			MutableComponent message = Component.translatable("jei.message.copy.recipe.id.failure");
-			if (player != null) {
-				player.displayClientMessage(message, false);
-			}
-			return false;
-		}
-		String recipeId = registryName.toString();
-		minecraft.keyboardHandler.setClipboard(recipeId);
-		MutableComponent message = Component.translatable("jei.message.copy.recipe.id.success", recipeId);
-		if (player != null) {
-			player.displayClientMessage(message, false);
-		}
-		return true;
+		return this.recipeSlots.getHoveredSlot(recipeMouseX, recipeMouseY)
+			.map(r -> r);
 	}
 
 	public void moveRecipeTransferButton(int posX, int posY) {

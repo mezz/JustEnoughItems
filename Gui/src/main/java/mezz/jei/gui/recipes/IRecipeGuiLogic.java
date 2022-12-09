@@ -50,5 +50,5 @@ public interface IRecipeGuiLogic {
 	Stream<ITypedIngredient<?>> getRecipeCatalysts();
 	Stream<ITypedIngredient<?>> getRecipeCatalysts(IRecipeCategory<?> recipeCategory);
 
-	List<IRecipeLayoutDrawable<?>> getRecipeLayouts(int posX, int posY, int spacingY);
+	List<IRecipeLayoutDrawable<?>> getRecipeLayouts();
 }

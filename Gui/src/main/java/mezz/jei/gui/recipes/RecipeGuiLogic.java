@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Unmodifiable;
 import javax.annotation.Nonnegative;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Stack;
 import java.util.stream.Stream;
 
@@ -167,33 +166,22 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public List<IRecipeLayoutDrawable<?>> getRecipeLayouts(final int posX, final int posY, final int spacingY) {
-		return getRecipeLayouts(this.state.getFocusedRecipes(), posX, posY, spacingY);
+	public List<IRecipeLayoutDrawable<?>> getRecipeLayouts() {
+		return getRecipeLayouts(this.state.getFocusedRecipes());
 	}
 
-	private <T> List<IRecipeLayoutDrawable<?>> getRecipeLayouts(FocusedRecipes<T> selectedRecipes, final int posX, final int posY, final int spacingY) {
+	private <T> List<IRecipeLayoutDrawable<?>> getRecipeLayouts(FocusedRecipes<T> selectedRecipes) {
 		List<IRecipeLayoutDrawable<?>> recipeLayouts = new ArrayList<>();
 
 		IRecipeCategory<T> recipeCategory = selectedRecipes.getRecipeCategory();
 		List<T> recipes = selectedRecipes.getRecipes();
 		List<T> brokenRecipes = new ArrayList<>();
 
-		int recipePosY = posY;
 		final int firstRecipeIndex = state.getRecipeIndex() - (state.getRecipeIndex() % state.getRecipesPerPage());
 		for (int recipeIndex = firstRecipeIndex; recipeIndex < recipes.size() && recipeLayouts.size() < state.getRecipesPerPage(); recipeIndex++) {
 			T recipe = recipes.get(recipeIndex);
-			final int constRecipePosY = recipePosY;
-			Optional<IRecipeLayoutDrawable<T>> optionalRecipeLayout = recipeManager
-				.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
-				.map(recipeLayout -> {
-					recipeLayout.setPosition(posX, constRecipePosY);
-					return recipeLayout;
-				});
-
-			optionalRecipeLayout.ifPresentOrElse(recipeLayouts::add, () -> brokenRecipes.add(recipe));
-			if (optionalRecipeLayout.isPresent()) {
-				recipePosY += spacingY;
-			}
+			recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
+				.ifPresentOrElse(recipeLayouts::add, () -> brokenRecipes.add(recipe));
 		}
 
 		if (!brokenRecipes.isEmpty()) {

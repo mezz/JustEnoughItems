@@ -9,17 +9,16 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.IngredientTooltipHelper;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.core.search.SearchMode;
+import mezz.jei.gui.config.IIngredientFilterConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -61,11 +60,11 @@ public final class IngredientGridTooltipHelper {
 	public <T> List<Component> getTooltip(T ingredient, IIngredientInfo<T> ingredientInfo) {
 		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
 		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
-		List<Component> ingredientTooltipSafe = IngredientTooltipHelper.getIngredientTooltipSafe(ingredient, ingredientRenderer, ingredientHelper, modIdHelper);
-		List<Component> tooltip = new ArrayList<>(ingredientTooltipSafe);
+		List<Component> ingredientTooltipSafe = IngredientTooltipHelper.getMutableIngredientTooltipSafe(ingredient, ingredientRenderer);
+		List<Component> tooltip = modIdHelper.addModNameToIngredientTooltip(ingredientTooltipSafe, ingredient, ingredientHelper);
 
 		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
-			addColorSearchInfoToTooltip(tooltip, ingredient, ingredientInfo);
+			addColorSearchInfoToTooltip(tooltip, ingredient, ingredientHelper);
 		}
 
 		if (worldConfig.isEditModeEnabled()) {
@@ -75,8 +74,7 @@ public final class IngredientGridTooltipHelper {
 		return tooltip;
 	}
 
-	private <T> void addColorSearchInfoToTooltip(List<Component> tooltip, T ingredient, IIngredientInfo<T> ingredientInfo) {
-		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
+	private <T> void addColorSearchInfoToTooltip(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
 		Iterable<Integer> colors = ingredientHelper.getColors(ingredient);
 		String colorNamesString = StreamSupport.stream(colors.spliterator(), false)
 			.map(colorHelper::getClosestColorName)

@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.ClickedIngredient;
@@ -110,7 +111,8 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 			IRecipeSlotDrawable hovered = null;
 			for (IRecipeSlotDrawable recipeSlot : this.recipeSlots) {
-				if (recipeSlot.isMouseOver(mouseX, mouseY)) {
+				IImmutableRect2i rect = recipeSlot.getRect();
+				if (rect.contains(mouseX, mouseY)) {
 					hovered = recipeSlot;
 				}
 				recipeSlot.draw(poseStack);
@@ -122,7 +124,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 	private Stream<IRecipeSlotDrawable> getHovered(double mouseX, double mouseY) {
 		return this.recipeSlots.stream()
-			.filter(recipeSlot -> recipeSlot.isMouseOver(mouseX, mouseY));
+			.filter(recipeSlot -> recipeSlot.getRect().contains(mouseX, mouseY));
 	}
 
 	@Override

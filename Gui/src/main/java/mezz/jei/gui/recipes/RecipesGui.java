@@ -26,11 +26,6 @@ import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.ClickedIngredient;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.gui.input.IRecipeFocusSource;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.InputType;
-import mezz.jei.gui.input.MouseUtil;
-import mezz.jei.gui.input.UserInput;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
@@ -38,14 +33,21 @@ import mezz.jei.common.util.StringUtil;
 import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
+import mezz.jei.gui.input.IRecipeFocusSource;
+import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.gui.input.InputType;
+import mezz.jei.gui.input.MouseUtil;
+import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
@@ -66,6 +68,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final IClientConfig clientConfig;
 	private final IInternalKeyMappings keyBindings;
 	private final Textures textures;
+	private final IFocusFactory focusFactory;
+	private final IRegisteredIngredients registeredIngredients;
 
 	private int headerHeight;
 
@@ -96,7 +100,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private ImmutableRect2i titleStringArea = ImmutableRect2i.EMPTY;
 
 	private boolean init = false;
-	private final IFocusFactory focusFactory;
 
 	public RecipesGui(
 		IRecipeManager recipeManager,
@@ -112,6 +115,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.textures = textures;
 		this.recipeTransferButtons = new ArrayList<>();
 		this.recipeTransferManager = recipeTransferManager;
+		this.registeredIngredients = registeredIngredients;
 		this.modIdHelper = modIdHelper;
 		this.clientConfig = clientConfig;
 		this.keyBindings = keyBindings;
@@ -262,7 +266,17 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		RenderSystem.disableBlend();
 
 		hoveredRecipeLayout.ifPresent(l -> l.drawOverlays(poseStack, mouseX, mouseY));
-		hoveredRecipeCatalyst.ifPresent(h -> h.drawOverlays(poseStack, 0, 0, mouseX, mouseY, modIdHelper));
+		hoveredRecipeCatalyst.ifPresent(h -> h.drawHoverOverlays(poseStack));
+
+		hoveredRecipeCatalyst.ifPresent(h ->
+			h.getDisplayedIngredient()
+				.ifPresent(i -> {
+					List<Component> tooltip = h.getTooltip();
+					tooltip = modIdHelper.addModNameToIngredientTooltip(tooltip, i);
+					TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, i, registeredIngredients);
+				})
+		);
+		RenderSystem.enableDepthTest();
 
 		if (titleStringArea.contains(mouseX, mouseY) && !logic.hasAllCategories()) {
 			MutableComponent showAllRecipesString = Component.translatable("jei.tooltip.show.all.recipes");
@@ -403,7 +417,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				}
 			} else {
 				for (IRecipeLayoutDrawable<?> recipeLayout : recipeLayouts) {
-					if (recipeLayout.handleInput(input.getMouseX(), input.getMouseY(), input.getKey())) {
+					if (handleRecipeLayoutInput(recipeLayout, input)) {
 						return true;
 					}
 				}
@@ -436,6 +450,47 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			return true;
 		}
 		return false;
+	}
+
+	private <R> boolean handleRecipeLayoutInput(IRecipeLayoutDrawable<R> recipeLayout, UserInput input) {
+		if (!isMouseOver(input.getMouseX(), input.getMouseY())) {
+			return false;
+		}
+
+		double recipeMouseX = input.getMouseX() - recipeLayout.getPosX();
+		double recipeMouseY = input.getMouseY() - recipeLayout.getPosY();
+		R recipe = recipeLayout.getRecipe();
+		IRecipeCategory<R> recipeCategory = recipeLayout.getRecipeCategory();
+		if (recipeCategory.handleInput(recipe, recipeMouseX, recipeMouseY, input.getKey())) {
+			return true;
+		}
+
+		if (input.is(keyBindings.getCopyRecipeId())) {
+			return handleCopyRecipeId(recipeLayout);
+		}
+		return false;
+	}
+
+	private <R> boolean handleCopyRecipeId(IRecipeLayoutDrawable<R> recipeLayout) {
+		Minecraft minecraft = Minecraft.getInstance();
+		LocalPlayer player = minecraft.player;
+		IRecipeCategory<R> recipeCategory = recipeLayout.getRecipeCategory();
+		R recipe = recipeLayout.getRecipe();
+		ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
+		if (registryName == null) {
+			MutableComponent message = Component.translatable("jei.message.copy.recipe.id.failure");
+			if (player != null) {
+				player.displayClientMessage(message, false);
+			}
+			return false;
+		}
+		String recipeId = registryName.toString();
+		minecraft.keyboardHandler.setClipboard(recipeId);
+		MutableComponent message = Component.translatable("jei.message.copy.recipe.id.success", recipeId);
+		if (player != null) {
+			player.displayClientMessage(message, false);
+		}
+		return true;
 	}
 
 	public boolean isOpen() {
@@ -515,9 +570,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			recipesPerPage = 1;
 		}
 
-		final int recipeXOffset = x + (width - recipeBackground.getWidth()) / 2;
-		final int recipeSpacing = (availableHeight - (recipesPerPage * recipeBackground.getHeight())) / (recipesPerPage + 1);
-
 		logic.setRecipesPerPage(recipesPerPage);
 
 		title = StringUtil.stripStyling(recipeCategory.getTitle());
@@ -527,10 +579,18 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 		this.titleStringArea = MathUtil.centerTextArea(this.titleArea, font, title);
 
-		int spacingY = recipeBackground.getHeight() + recipeSpacing;
-
 		recipeLayouts.clear();
-		recipeLayouts.addAll(logic.getRecipeLayouts(recipeXOffset, y + headerHeight + recipeSpacing, spacingY));
+
+		final int recipeXOffset = x + (width - recipeBackground.getWidth()) / 2;
+		final int recipeSpacing = (availableHeight - (recipesPerPage * recipeBackground.getHeight())) / (recipesPerPage + 1);
+		int spacingY = recipeBackground.getHeight() + recipeSpacing;
+		int recipeYOffset = y + headerHeight + recipeSpacing;
+		for (IRecipeLayoutDrawable<?> recipeLayout : logic.getRecipeLayouts()) {
+			recipeLayout.setPosition(recipeXOffset, recipeYOffset);
+			recipeYOffset += spacingY;
+			recipeLayouts.add(recipeLayout);
+		}
+
 		addRecipeTransferButtons(recipeLayouts);
 
 		nextPage.active = previousPage.active = logic.hasMultiplePages();

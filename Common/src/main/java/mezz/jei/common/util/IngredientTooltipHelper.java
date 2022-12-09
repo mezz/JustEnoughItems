@@ -9,8 +9,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 
-import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,13 +16,12 @@ import org.apache.logging.log4j.Logger;
 public class IngredientTooltipHelper {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static <V> List<Component> getIngredientTooltipSafe(V ingredient, IIngredientRenderer<V> ingredientRenderer, IIngredientHelper<V> ingredientHelper, IModIdHelper modIdHelper) {
+	public static <V> List<Component> getMutableIngredientTooltipSafe(V ingredient, IIngredientRenderer<V> ingredientRenderer) {
 		try {
 			Minecraft minecraft = Minecraft.getInstance();
 			TooltipFlag.Default tooltipFlag = minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
 			List<Component> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
-			tooltip = modIdHelper.addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);
-			return tooltip;
+			return new ArrayList<>(tooltip);
 		} catch (RuntimeException | LinkageError e) {
 			LOGGER.error("Tooltip crashed.", e);
 		}

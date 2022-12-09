@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class RecipeSlots {
-	private final List<IRecipeSlotDrawable> slots;
+	private final List<RecipeSlot> slots;
 	private final IRecipeSlotsView view;
 
 	public RecipeSlots() {
@@ -22,7 +22,7 @@ public class RecipeSlots {
 		return this.view;
 	}
 
-	public List<IRecipeSlotDrawable> getSlots() {
+	public List<RecipeSlot> getSlots() {
 		return Collections.unmodifiableList(this.slots);
 	}
 
@@ -36,9 +36,9 @@ public class RecipeSlots {
 		}
 	}
 
-	public Optional<IRecipeSlotDrawable> getHoveredSlot(double recipeMouseX, double recipeMouseY) {
+	public Optional<RecipeSlot> getHoveredSlot(double recipeMouseX, double recipeMouseY) {
 		return slots.stream()
-			.filter(ingredient -> ingredient.isMouseOver(recipeMouseX, recipeMouseY))
+			.filter(ingredient -> ingredient.getRect().contains(recipeMouseX, recipeMouseY))
 			.findFirst();
 	}
 }

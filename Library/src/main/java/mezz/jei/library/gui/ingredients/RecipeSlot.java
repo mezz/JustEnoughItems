@@ -6,7 +6,6 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -15,7 +14,6 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.IngredientTooltipHelper;
@@ -133,31 +131,22 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 
-	private <T> void drawTooltip(PoseStack poseStack, int xOffset, int yOffset, int mouseX, int mouseY, ITypedIngredient<T> typedIngredient, IModIdHelper modIdHelper) {
+	private <T> List<Component> getTooltip(ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		T value = typedIngredient.getIngredient();
 
-		poseStack.pushPose();
-		{
-			poseStack.translate(xOffset, yOffset, 0);
-			drawHighlight(poseStack, 0x80FFFFFF);
-		}
-		poseStack.popPose();
-
 		try {
 			IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
-			List<Component> tooltip = getTooltip(value, ingredientType, ingredientRenderer, modIdHelper);
-			TooltipRenderer.drawHoveringText(poseStack, tooltip, xOffset + mouseX, yOffset + mouseY, value, ingredientRenderer);
-
-			RenderSystem.enableDepthTest();
+			return getTooltip(value, ingredientType, ingredientRenderer);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception when rendering tooltip on {}.", value, e);
+			return List.of();
 		}
 	}
 
-	private <T> List<Component> getTooltip(T value, IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer, IModIdHelper modIdHelper) {
+	private <T> List<Component> getTooltip(T value, IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer) {
 		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
-		List<Component> tooltip = IngredientTooltipHelper.getIngredientTooltipSafe(value, ingredientRenderer, ingredientHelper, modIdHelper);
+		List<Component> tooltip = IngredientTooltipHelper.getMutableIngredientTooltipSafe(value, ingredientRenderer);
 		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onTooltip(this, tooltip);
 		}
@@ -200,11 +189,6 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 					.toList();
 			}
 		}
-	}
-
-	@Override
-	public boolean isMouseOver(double recipeMouseX, double recipeMouseY) {
-		return this.rect.contains(recipeMouseX, recipeMouseY);
 	}
 
 	@Override
@@ -276,9 +260,15 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 	}
 
 	@Override
-	public void drawOverlays(PoseStack poseStack, int xOffset, int yOffset, int mouseX, int mouseY, IModIdHelper modIdHelper) {
-		getDisplayedIngredient()
-			.ifPresent(typedIngredient -> drawTooltip(poseStack, xOffset, yOffset, mouseX, mouseY, typedIngredient, modIdHelper));
+	public void drawHoverOverlays(PoseStack poseStack) {
+		drawHighlight(poseStack, 0x80FFFFFF);
+	}
+
+	@Override
+	public List<Component> getTooltip() {
+		return getDisplayedIngredient()
+			.map(this::getTooltip)
+			.orElseGet(List::of);
 	}
 
 	@Override

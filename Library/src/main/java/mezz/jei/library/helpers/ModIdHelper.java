@@ -2,6 +2,9 @@ package mezz.jei.library.helpers;
 
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IRegisteredIngredients;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.library.config.IModIdFormatConfig;
@@ -20,9 +23,11 @@ import java.util.List;
 
 public final class ModIdHelper implements IModIdHelper {
 	private final IModIdFormatConfig modIdFormattingConfig;
+	private final IRegisteredIngredients registeredIngredients;
 
-	public ModIdHelper(IModIdFormatConfig modIdFormattingConfig) {
+	public ModIdHelper(IModIdFormatConfig modIdFormattingConfig, IRegisteredIngredients registeredIngredients) {
 		this.modIdFormattingConfig = modIdFormattingConfig;
+		this.registeredIngredients = registeredIngredients;
 	}
 
 	@Override
@@ -48,6 +53,14 @@ public final class ModIdHelper implements IModIdHelper {
 		List<Component> tooltipCopy = new ArrayList<>(tooltip);
 		tooltipCopy.add(Component.literal(modName));
 		return tooltipCopy;
+	}
+
+	@Override
+	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient) {
+		IIngredientType<T> type = typedIngredient.getType();
+		T ingredient = typedIngredient.getIngredient();
+		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(type);
+		return addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);
 	}
 
 	private static String removeChatFormatting(String string) {

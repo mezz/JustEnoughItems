@@ -17,8 +17,10 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.focus.FocusFactory;
+import mezz.jei.library.helpers.ModIdHelper;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.gui.GuiHelper;
 import mezz.jei.common.gui.textures.Textures;
@@ -59,7 +61,7 @@ public class PluginLoader {
 	private final IIngredientManager ingredientManager;
 	private final JeiHelpers jeiHelpers;
 
-	public PluginLoader(StartData data, IModIdHelper modIdHelper, IColorHelper colorHelper) {
+	public PluginLoader(StartData data, IModIdFormatConfig modIdFormatConfig, IColorHelper colorHelper) {
 		this.data = data;
 		this.timer = new LoggedTimer();
 
@@ -82,6 +84,7 @@ public class PluginLoader {
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(registeredIngredients, data.textures());
 		FocusFactory focusFactory = new FocusFactory(registeredIngredients);
+		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, registeredIngredients);
 		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, registeredIngredients);
 	}
 
