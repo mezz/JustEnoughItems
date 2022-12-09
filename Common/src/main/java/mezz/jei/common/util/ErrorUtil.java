@@ -156,25 +156,32 @@ public final class ErrorUtil {
 	}
 
 	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient, IRegisteredIngredients registeredIngredients) {
-		IIngredientType<T> ingredientType = registeredIngredients.getIngredientType(ingredient);
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
-
 		CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering ingredient");
 		CrashReportCategory ingredientCategory = crashreport.addCategory("Ingredient being rendered");
+		ingredientCategory.setDetail("String Name", ingredient::toString);
+		ingredientCategory.setDetail("Class Name", () -> ingredient.getClass().toString());
 
 		IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
-		ingredientCategory.setDetail("Mod Name", () -> {
-			String modId = ingredientHelper.getDisplayModId(ingredient);
-			return modHelper.getModNameForModId(modId);
-		});
-		ingredientCategory.setDetail("Registry Name", () -> ingredientHelper.getResourceLocation(ingredient).toString());
-		ingredientCategory.setDetail("Display Name", () -> ingredientHelper.getDisplayName(ingredient));
-		ingredientCategory.setDetail("String Name", ingredient::toString);
 
-		CrashReportCategory jeiCategory = crashreport.addCategory("JEI render details");
-		jeiCategory.setDetail("Unique Id (for Blacklist)", () -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
-		jeiCategory.setDetail("Ingredient Type", () -> ingredientType.getIngredientClass().toString());
-		jeiCategory.setDetail("Error Info", () -> ingredientHelper.getErrorInfo(ingredient));
+		registeredIngredients.getIngredientType(ingredient)
+			.ifPresentOrElse(ingredientType -> {
+				IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
+
+				ingredientCategory.setDetail("Mod Name", () -> {
+					String modId = ingredientHelper.getDisplayModId(ingredient);
+					return modHelper.getModNameForModId(modId);
+				});
+				ingredientCategory.setDetail("Registry Name", () -> ingredientHelper.getResourceLocation(ingredient).toString());
+				ingredientCategory.setDetail("Display Name", () -> ingredientHelper.getDisplayName(ingredient));
+
+				CrashReportCategory jeiCategory = crashreport.addCategory("JEI render details");
+				jeiCategory.setDetail("Unique Id (for Blacklist)", () -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
+				jeiCategory.setDetail("Ingredient Type", () -> ingredientType.getIngredientClass().toString());
+				jeiCategory.setDetail("Error Info", () -> ingredientHelper.getErrorInfo(ingredient));
+			}, () -> {
+				CrashReportCategory jeiCategory = crashreport.addCategory("JEI render details");
+				jeiCategory.setDetail("Ingredient Type", "Error, Unknown Ingredient Type");
+			});
 
 		throw new ReportedException(crashreport);
 	}

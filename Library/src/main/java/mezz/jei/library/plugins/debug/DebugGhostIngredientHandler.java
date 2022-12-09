@@ -30,7 +30,8 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 		List<Target<I>> targets = new ArrayList<>();
 		targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(0, 0, 20, 20), registeredIngredients));
 		if (doStart) {
-			IIngredientType<I> ingredientType = registeredIngredients.getIngredientType(ingredient);
+			IIngredientType<I> ingredientType = registeredIngredients.getIngredientType(ingredient)
+				.orElseThrow();
 			IIngredientHelper<I> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 			LOGGER.info("Ghost Ingredient Handling Starting with {}", ingredientHelper.getErrorInfo(ingredient));
 			targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(20, 20, 20, 20), registeredIngredients));
@@ -74,7 +75,8 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 
 		@Override
 		public void accept(I ingredient) {
-			IIngredientType<I> ingredientType = registeredIngredients.getIngredientType(ingredient);
+			IIngredientType<I> ingredientType = registeredIngredients.getIngredientType(ingredient)
+				.orElseThrow();
 			IIngredientHelper<I> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
 			LOGGER.info("{}: {}", message, ingredientHelper.getErrorInfo(ingredient));
 		}

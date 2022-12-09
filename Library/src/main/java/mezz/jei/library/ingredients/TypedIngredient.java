@@ -40,7 +40,8 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		if (isBlankIngredient(ingredient)) {
 			return Optional.empty();
 		}
-		IIngredientType<T> ingredientType = registeredIngredients.getIngredientType(ingredient);
+		IIngredientType<T> ingredientType = registeredIngredients.getIngredientType(ingredient)
+			.orElseThrow(() -> new IllegalArgumentException("Invalid ingredient type: " + ingredient.getClass()));
 		assertIsValidIngredient(registeredIngredients, ingredientType, ingredient);
 		TypedIngredient<T> typedIngredient = new TypedIngredient<>(ingredientType, ingredient);
 		return Optional.of(typedIngredient);

@@ -61,5 +61,11 @@ public interface IJeiHelpers {
 	 */
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
 
+	/**
+	 *
+	 * @return
+	 *
+	 * @since 11.5.0
+	 */
 	IRegisteredIngredients getRegisteredIngredients();
 }

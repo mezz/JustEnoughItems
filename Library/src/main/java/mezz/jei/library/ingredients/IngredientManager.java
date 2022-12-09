@@ -103,14 +103,16 @@ public class IngredientManager implements IIngredientManager {
 	public <V> IIngredientType<V> getIngredientType(V ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
-		return this.registeredIngredients.getIngredientType(ingredient);
+		return this.registeredIngredients.getIngredientType(ingredient)
+			.orElseThrow(() -> new IllegalArgumentException("Unknown ingredient class: " + ingredient.getClass()));
 	}
 
 	@Override
 	public <V> IIngredientType<V> getIngredientType(Class<? extends V> ingredientClass) {
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 
-		return this.registeredIngredients.getIngredientType(ingredientClass);
+		Optional<IIngredientType<V>> ingredientType = this.registeredIngredients.getIngredientType(ingredientClass);
+		return ingredientType.orElseThrow(() -> new IllegalArgumentException("Unknown ingredient class: " + ingredientClass));
 	}
 
 	@Override

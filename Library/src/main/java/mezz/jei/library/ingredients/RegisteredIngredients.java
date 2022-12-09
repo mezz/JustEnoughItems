@@ -49,45 +49,33 @@ public class RegisteredIngredients implements IRegisteredIngredients {
 	}
 
 	@Override
-	public <V> IIngredientHelper<V> getIngredientHelper(IIngredientType<V> ingredientType) {
-		IIngredientInfo<V> ingredientInfo = getIngredientInfo(ingredientType);
-		return ingredientInfo.getIngredientHelper();
-	}
-
-	@Override
-	public <V> IIngredientRenderer<V> getIngredientRenderer(IIngredientType<V> ingredientType) {
-		IIngredientInfo<V> ingredientInfo = getIngredientInfo(ingredientType);
-		return ingredientInfo.getIngredientRenderer();
-	}
-
-	@Override
 	@Unmodifiable
 	public List<IIngredientType<?>> getIngredientTypes() {
 		return this.orderedTypes;
 	}
 
 	@Override
-	public <V> IIngredientType<V> getIngredientType(V ingredient) {
+	public <V> Optional<IIngredientType<V>> getIngredientType(V ingredient) {
 		@SuppressWarnings("unchecked")
 		Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
 		return getIngredientType(ingredientClass);
 	}
 
-	public <V> IIngredientType<V> getIngredientType(Class<? extends V> ingredientClass) {
+	public <V> Optional<IIngredientType<V>> getIngredientType(Class<? extends V> ingredientClass) {
 		@SuppressWarnings("unchecked")
 		IIngredientType<V> ingredientType = (IIngredientType<V>) this.classToType.get(ingredientClass);
 		if (ingredientType != null) {
-			return ingredientType;
+			return Optional.of(ingredientType);
 		}
 		for (IIngredientType<?> type : this.orderedTypes) {
 			if (type.getIngredientClass().isAssignableFrom(ingredientClass)) {
 				@SuppressWarnings("unchecked")
 				IIngredientType<V> castType = (IIngredientType<V>) type;
 				this.classToType.put(ingredientClass, castType);
-				return castType;
+				return Optional.of(castType);
 			}
 		}
-		throw new IllegalArgumentException("Unknown ingredient class: " + ingredientClass);
+		return Optional.empty();
 	}
 
 	@Override
