@@ -1,24 +1,23 @@
 package mezz.jei.library.plugins.vanilla;
 
-import java.util.List;
-
-import mezz.jei.api.ingredients.IRegisteredIngredients;
-import net.minecraft.world.item.ItemStack;
-
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipe;
 import mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeUtil;
 import mezz.jei.library.plugins.vanilla.brewing.JeiBrewingRecipe;
-import mezz.jei.common.util.ErrorUtil;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	private final BrewingRecipeUtil brewingRecipeUtil;
 
-	public VanillaRecipeFactory(IRegisteredIngredients registeredIngredients) {
-		IIngredientHelper<ItemStack> ingredientHelper = registeredIngredients.getIngredientHelper(VanillaTypes.ITEM_STACK);
+	public VanillaRecipeFactory(IIngredientManager ingredientManager) {
+		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 		this.brewingRecipeUtil = new BrewingRecipeUtil(ingredientHelper);
 	}
 

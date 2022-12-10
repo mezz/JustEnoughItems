@@ -6,12 +6,12 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.helpers.IStackHelper;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.library.gui.GuiHelper;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.Services;
+import mezz.jei.library.gui.GuiHelper;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -25,7 +25,7 @@ public class JeiHelpers implements IJeiHelpers {
 	private final IModIdHelper modIdHelper;
 	private final IFocusFactory focusFactory;
 	private final IColorHelper colorHelper;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final IPlatformFluidHelper<?> platformFluidHelper;
 	private @Nullable Collection<IRecipeCategory<?>> recipeCategories;
 
@@ -35,14 +35,14 @@ public class JeiHelpers implements IJeiHelpers {
 		IModIdHelper modIdHelper,
 		IFocusFactory focusFactory,
 		IColorHelper colorHelper,
-		IRegisteredIngredients registeredIngredients
+		IIngredientManager ingredientManager
 	) {
 		this.guiHelper = guiHelper;
 		this.stackHelper = stackHelper;
 		this.modIdHelper = modIdHelper;
 		this.focusFactory = focusFactory;
 		this.colorHelper = colorHelper;
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 		this.platformFluidHelper = Services.PLATFORM.getFluidHelper();
 	}
 
@@ -91,7 +91,7 @@ public class JeiHelpers implements IJeiHelpers {
 	}
 
 	@Override
-	public IRegisteredIngredients getRegisteredIngredients() {
-		return registeredIngredients;
+	public IIngredientManager getIngredientManager() {
+		return ingredientManager;
 	}
 }

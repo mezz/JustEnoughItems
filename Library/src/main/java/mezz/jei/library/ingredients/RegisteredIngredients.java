@@ -1,11 +1,7 @@
 package mezz.jei.library.ingredients;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientInfo;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
-import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.util.ErrorUtil;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
@@ -14,7 +10,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class RegisteredIngredients implements IRegisteredIngredients {
+public class RegisteredIngredients {
 	/** preserves a stable ordering of the types */
 	@Unmodifiable
 	private final List<IIngredientType<?>> orderedTypes;
@@ -38,8 +34,8 @@ public class RegisteredIngredients implements IRegisteredIngredients {
 			.collect(Collectors.toMap(IIngredientType::getIngredientClass, Function.identity()));
 	}
 
-	@Override
 	public <V> IngredientInfo<V> getIngredientInfo(IIngredientType<V> ingredientType) {
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		@SuppressWarnings("unchecked")
 		IngredientInfo<V> ingredientInfo = (IngredientInfo<V>) typeToInfo.get(ingredientType);
 		if (ingredientInfo == null) {
@@ -48,20 +44,20 @@ public class RegisteredIngredients implements IRegisteredIngredients {
 		return ingredientInfo;
 	}
 
-	@Override
 	@Unmodifiable
 	public List<IIngredientType<?>> getIngredientTypes() {
 		return this.orderedTypes;
 	}
 
-	@Override
 	public <V> Optional<IIngredientType<V>> getIngredientType(V ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		@SuppressWarnings("unchecked")
 		Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
 		return getIngredientType(ingredientClass);
 	}
 
 	public <V> Optional<IIngredientType<V>> getIngredientType(Class<? extends V> ingredientClass) {
+		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 		@SuppressWarnings("unchecked")
 		IIngredientType<V> ingredientType = (IIngredientType<V>) this.classToType.get(ingredientClass);
 		if (ingredientType != null) {
@@ -76,10 +72,5 @@ public class RegisteredIngredients implements IRegisteredIngredients {
 			}
 		}
 		return Optional.empty();
-	}
-
-	@Override
-	public <T> Optional<ITypedIngredient<T>> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient) {
-		return TypedIngredient.createTyped(this, ingredientType, ingredient);
 	}
 }

@@ -23,9 +23,7 @@ public interface IGuiHandlerRegistration {
 	 *
 	 * @see #addGenericGuiContainerHandler(Class, IGuiContainerHandler) for handlers that use Java Generics
 	 */
-	<T extends AbstractContainerScreen<?>>
-
-	void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler);
+	<T extends AbstractContainerScreen<?>> void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler);
 
 	/**
 	 * Same as {@link #addGuiContainerHandler(Class, IGuiContainerHandler)} but for handlers that use Java Generics to

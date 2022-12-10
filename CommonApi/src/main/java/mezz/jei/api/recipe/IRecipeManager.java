@@ -154,8 +154,10 @@ public interface IRecipeManager {
 	 * @param recipeCategory the recipe category that the recipe belongs to
 	 * @param recipe         the specific recipe to draw.
 	 * @param focus          the focus of the recipe layout.
+	 *
+	 * @deprecated use {@link #createRecipeLayoutDrawable(IRecipeCategory, Object, IFocusGroup)} instead.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "11.5.0")
 	@SuppressWarnings("rawtypes")
 	<T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus);
 }

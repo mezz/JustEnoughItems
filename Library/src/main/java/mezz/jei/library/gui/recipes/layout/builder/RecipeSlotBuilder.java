@@ -8,10 +8,10 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
@@ -32,9 +32,9 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	private final IngredientAcceptor ingredients;
 	private final RecipeSlot recipeSlot;
 
-	public RecipeSlotBuilder(IRegisteredIngredients registeredIngredients, RecipeIngredientRole role, int x, int y, int ingredientCycleOffset) {
-		this.ingredients = new IngredientAcceptor(registeredIngredients);
-		this.recipeSlot = new RecipeSlot(registeredIngredients, role, x, y, ingredientCycleOffset);
+	public RecipeSlotBuilder(IIngredientManager ingredientManager, RecipeIngredientRole role, int x, int y, int ingredientCycleOffset) {
+		this.ingredients = new IngredientAcceptor(ingredientManager);
+		this.recipeSlot = new RecipeSlot(ingredientManager, role, x, y, ingredientCycleOffset);
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
@@ -19,6 +18,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.TooltipRenderer;
@@ -69,7 +69,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final IInternalKeyMappings keyBindings;
 	private final Textures textures;
 	private final IFocusFactory focusFactory;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 
 	private int headerHeight;
 
@@ -104,7 +104,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public RecipesGui(
 		IRecipeManager recipeManager,
 		IRecipeTransferManager recipeTransferManager,
-		IRegisteredIngredients registeredIngredients,
+		IIngredientManager ingredientManager,
 		IModIdHelper modIdHelper,
 		IClientConfig clientConfig,
 		Textures textures,
@@ -115,13 +115,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.textures = textures;
 		this.recipeTransferButtons = new ArrayList<>();
 		this.recipeTransferManager = recipeTransferManager;
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 		this.modIdHelper = modIdHelper;
 		this.clientConfig = clientConfig;
 		this.keyBindings = keyBindings;
 		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, focusFactory);
 		this.recipeCatalysts = new RecipeCatalysts(textures, recipeManager);
-		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures, registeredIngredients);
+		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures, ingredientManager);
 		this.focusFactory = focusFactory;
 		this.minecraft = Minecraft.getInstance();
 
@@ -273,7 +273,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				.ifPresent(i -> {
 					List<Component> tooltip = h.getTooltip();
 					tooltip = modIdHelper.addModNameToIngredientTooltip(tooltip, i);
-					TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, i, registeredIngredients);
+					TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, i, ingredientManager);
 				})
 		);
 		RenderSystem.enableDepthTest();

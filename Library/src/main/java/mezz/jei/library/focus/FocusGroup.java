@@ -1,10 +1,10 @@
 package mezz.jei.library.focus;
 
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -19,20 +19,20 @@ public class FocusGroup implements IFocusGroup {
 	/**
 	 * Make sure any IFocus coming in through API calls is validated
 	 */
-	public static <V> IFocusGroup createFromNullable(@Nullable IFocus<V> focus, IRegisteredIngredients registeredIngredients) {
+	public static <V> IFocusGroup createFromNullable(@Nullable IFocus<V> focus, IIngredientManager ingredientManager) {
 		if (focus == null) {
 			return EMPTY;
 		}
-		return Focus.checkOne(focus, registeredIngredients);
+		return Focus.checkOne(focus, ingredientManager);
 	}
 
 	/**
 	 * Make sure any IFocus coming in through API calls is validated
 	 */
-	public static IFocusGroup create(Collection<? extends IFocus<?>> focuses, IRegisteredIngredients registeredIngredients) {
+	public static IFocusGroup create(Collection<? extends IFocus<?>> focuses, IIngredientManager ingredientManager) {
 		List<Focus<?>> checkedFocuses = focuses.stream()
 			.filter(Objects::nonNull)
-			.<Focus<?>>map(f -> Focus.checkOne(f, registeredIngredients))
+			.<Focus<?>>map(f -> Focus.checkOne(f, ingredientManager))
 			.toList();
 		if (checkedFocuses.isEmpty()) {
 			return EMPTY;

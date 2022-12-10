@@ -3,7 +3,6 @@ package mezz.jei.library.recipes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -14,6 +13,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.library.focus.FocusGroup;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
@@ -31,14 +31,14 @@ import java.util.Set;
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
 	private final IModIdHelper modIdHelper;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final Textures textures;
 	private final IIngredientVisibility ingredientVisibility;
 
-	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, IRegisteredIngredients registeredIngredients, Textures textures, IIngredientVisibility ingredientVisibility) {
+	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, IIngredientManager ingredientManager, Textures textures, IIngredientVisibility ingredientVisibility) {
 		this.internal = internal;
 		this.modIdHelper = modIdHelper;
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 		this.textures = textures;
 		this.ingredientVisibility = ingredientVisibility;
 	}
@@ -46,12 +46,12 @@ public class RecipeManager implements IRecipeManager {
 	@Override
 	public <R> IRecipeLookup<R> createRecipeLookup(RecipeType<R> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		return new RecipeLookup<>(recipeType, internal, registeredIngredients);
+		return new RecipeLookup<>(recipeType, internal, ingredientManager);
 	}
 
 	@Override
 	public IRecipeCategoriesLookup createRecipeCategoryLookup() {
-		return new RecipeCategoriesLookup(internal, registeredIngredients);
+		return new RecipeCategoriesLookup(internal, ingredientManager);
 	}
 
 	@Override
@@ -69,15 +69,16 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
+	@Deprecated
 	public <T> IRecipeLayoutDrawable<?> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
-		IFocusGroup focusGroup = FocusGroup.createFromNullable(focus, registeredIngredients);
+		IFocusGroup focusGroup = FocusGroup.createFromNullable(focus, ingredientManager);
 		return RecipeLayout.create(
 			recipeCategory,
 			recipe,
 			focusGroup,
-			registeredIngredients,
+			ingredientManager,
 			ingredientVisibility,
 			modIdHelper,
 			textures
@@ -93,7 +94,7 @@ public class RecipeManager implements IRecipeManager {
 			recipeCategory,
 			recipe,
 			focusGroup,
-			registeredIngredients,
+			ingredientManager,
 			ingredientVisibility,
 			modIdHelper,
 			textures
@@ -102,7 +103,7 @@ public class RecipeManager implements IRecipeManager {
 
 	@Override
 	public IRecipeSlotDrawable createRecipeSlotDrawable(RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusedIngredients, int xPos, int yPos, int ingredientCycleOffset) {
-		RecipeSlot recipeSlot = new RecipeSlot(registeredIngredients, role, xPos, yPos, ingredientCycleOffset);
+		RecipeSlot recipeSlot = new RecipeSlot(ingredientManager, role, xPos, yPos, ingredientCycleOffset);
 		recipeSlot.set(ingredients, focusedIngredients, ingredientVisibility);
 		return recipeSlot;
 	}

@@ -3,14 +3,14 @@ package mezz.jei.library.ingredients;
 import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public final class TypedIngredient<T> implements ITypedIngredient<T> {
-	private static <T> boolean checkIsValidIngredient(IRegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, T ingredient) {
+	private static <T> boolean checkIsValidIngredient(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, T ingredient) {
 		Preconditions.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredient, "ingredient");
 
@@ -20,23 +20,29 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 				" Should be an instance of: " + ingredientClass + " Instead got: " + ingredient.getClass());
 		}
 
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		try {
 			return ingredientHelper.isValidIngredient(ingredient);
 		} catch (RuntimeException e) {
 			String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
-			throw new IllegalArgumentException("Invalid ingredient found. Ingredient Info: " + ingredientInfo, e);
+			throw new IllegalArgumentException("Crashing ingredient found. Ingredient Info: " + ingredientInfo, e);
 		}
 	}
 
-	public static <T> Optional<ITypedIngredient<?>> create(IRegisteredIngredients registeredIngredients, @Nullable T ingredient) {
+	public static <T> Optional<ITypedIngredient<?>> create(IIngredientManager ingredientManager, @Nullable T ingredient) {
 		if (ingredient == null) {
 			return Optional.empty();
 		}
-		IIngredientType<T> ingredientType = registeredIngredients.getIngredientType(ingredient)
-			.orElseThrow(() -> new IllegalArgumentException("Invalid ingredient type: " + ingredient.getClass()));
+		return ingredientManager.getIngredientTypeChecked(ingredient)
+			.filter(ingredientType -> checkIsValidIngredient(ingredientManager, ingredientType, ingredient))
+			.map(ingredientType -> new TypedIngredient<>(ingredientType, ingredient));
+	}
 
-		if (!checkIsValidIngredient(registeredIngredients, ingredientType, ingredient)) {
+	public static <T> Optional<ITypedIngredient<?>> create(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, @Nullable T ingredient) {
+		if (ingredient == null) {
+			return Optional.empty();
+		}
+		if (!checkIsValidIngredient(ingredientManager, ingredientType, ingredient)) {
 			return Optional.empty();
 		}
 
@@ -44,33 +50,21 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return Optional.of(typedIngredient);
 	}
 
-	public static <T> Optional<ITypedIngredient<?>> create(IRegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, @Nullable T ingredient) {
+	public static <T> Optional<ITypedIngredient<T>> createTyped(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, @Nullable T ingredient) {
 		if (ingredient == null) {
 			return Optional.empty();
 		}
-		if (!checkIsValidIngredient(registeredIngredients, ingredientType, ingredient)) {
-			return Optional.empty();
-		}
-
-		TypedIngredient<T> typedIngredient = new TypedIngredient<>(ingredientType, ingredient);
-		return Optional.of(typedIngredient);
-	}
-
-	public static <T> Optional<ITypedIngredient<T>> createTyped(IRegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, @Nullable T ingredient) {
-		if (ingredient == null) {
-			return Optional.empty();
-		}
-		if (!checkIsValidIngredient(registeredIngredients, ingredientType, ingredient)) {
+		if (!checkIsValidIngredient(ingredientManager, ingredientType, ingredient)) {
 			return Optional.empty();
 		}
 		TypedIngredient<T> typedIngredient = new TypedIngredient<>(ingredientType, ingredient);
 		return Optional.of(typedIngredient);
 	}
 
-	public static <T> Optional<ITypedIngredient<T>> deepCopy(IRegisteredIngredients registeredIngredients, ITypedIngredient<T> value) {
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
+	public static <T> Optional<ITypedIngredient<T>> deepCopy(IIngredientManager ingredientManager, ITypedIngredient<T> value) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		T ingredient = ingredientHelper.copyIngredient(value.getIngredient());
-		return TypedIngredient.createTyped(registeredIngredients, value.getType(), ingredient);
+		return TypedIngredient.createTyped(ingredientManager, value.getType(), ingredient);
 	}
 
 	private final IIngredientType<T> ingredientType;

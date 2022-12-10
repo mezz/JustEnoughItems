@@ -9,22 +9,22 @@ import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableBlank;
-import mezz.jei.library.gui.elements.DrawableBuilder;
 import mezz.jei.common.gui.elements.DrawableIngredient;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.TickTimer;
+import mezz.jei.library.gui.elements.DrawableBuilder;
 import net.minecraft.resources.ResourceLocation;
 
 public class GuiHelper implements IGuiHelper {
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final IDrawableStatic slotDrawable;
 
-	public GuiHelper(IRegisteredIngredients registeredIngredients, Textures textures) {
-		this.registeredIngredients = registeredIngredients;
+	public GuiHelper(IIngredientManager ingredientManager, Textures textures) {
+		this.ingredientManager = ingredientManager;
 		this.slotDrawable = textures.getSlotDrawable();
 	}
 
@@ -54,7 +54,7 @@ public class GuiHelper implements IGuiHelper {
 	public <V> IDrawable createDrawableIngredient(IIngredientType<V> type, V ingredient) {
 		ErrorUtil.checkNotNull(type, "type");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		IIngredientRenderer<V> ingredientRenderer = registeredIngredients.getIngredientRenderer(type);
+		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
 		return new DrawableIngredient<>(ingredient, ingredientRenderer);
 	}
 

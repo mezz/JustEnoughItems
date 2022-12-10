@@ -1,7 +1,6 @@
 package mezz.jei.common;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.common.config.WorldConfig;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -9,14 +8,10 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IWorldConfig;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 /**
  * For JEI internal use only, these are normally accessed from the API.
  */
 public final class Internal {
-	@Nullable
-	private static IRegisteredIngredients registeredIngredients;
 	@Nullable
 	private static Textures textures;
 	@Nullable
@@ -37,14 +32,6 @@ public final class Internal {
 
 	public static void setTextures(Textures textures) {
 		Internal.textures = textures;
-	}
-
-	public static Optional<IRegisteredIngredients> getRegisteredIngredients() {
-		return Optional.ofNullable(registeredIngredients);
-	}
-
-	public static void setRegisteredIngredients(IRegisteredIngredients registeredIngredients) {
-		Internal.registeredIngredients = registeredIngredients;
 	}
 
 	public static IConnectionToServer getServerConnection() {

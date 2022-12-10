@@ -2,32 +2,32 @@ package mezz.jei.gui.startup;
 
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
-import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.IEditModeConfig;
-import mezz.jei.gui.util.CheatUtil;
-import mezz.jei.gui.config.IIngredientFilterConfig;
-import mezz.jei.gui.filter.IFilterTextSource;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.gui.config.IIngredientGridConfig;
+import mezz.jei.gui.filter.IFilterTextSource;
+import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.util.CheatUtil;
 
 public final class OverlayHelper {
     private OverlayHelper() {}
 
     public static IngredientGridWithNavigation createIngredientGridWithNavigation(
         IIngredientGridSource ingredientFilter,
-        IRegisteredIngredients registeredIngredients,
+        IIngredientManager ingredientManager,
         IIngredientGridConfig ingredientGridConfig,
         IScreenHelper screenHelper,
         IModIdHelper modIdHelper,
@@ -44,7 +44,7 @@ public final class OverlayHelper {
         CheatUtil cheatUtil
     ) {
         IngredientGrid ingredientListGrid = new IngredientGrid(
-            registeredIngredients,
+            ingredientManager,
             ingredientGridConfig,
             editModeConfig,
             ingredientFilterConfig,
@@ -74,7 +74,7 @@ public final class OverlayHelper {
     }
 
     public static IngredientListOverlay createIngredientListOverlay(
-        IRegisteredIngredients registeredIngredients,
+        IIngredientManager ingredientManager,
         IScreenHelper screenHelper,
         IIngredientGridSource ingredientFilter,
         IFilterTextSource filterTextSource,
@@ -92,7 +92,7 @@ public final class OverlayHelper {
     ) {
         IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
             ingredientFilter,
-            registeredIngredients,
+            ingredientManager,
             ingredientGridConfig,
             screenHelper,
             modIdHelper,
@@ -112,7 +112,7 @@ public final class OverlayHelper {
         return new IngredientListOverlay(
             ingredientFilter,
             filterTextSource,
-            registeredIngredients,
+            ingredientManager,
             screenHelper,
             ingredientListGridNavigation,
             clientConfig,
@@ -125,7 +125,7 @@ public final class OverlayHelper {
     }
 
     public static BookmarkOverlay createBookmarkOverlay(
-        IRegisteredIngredients registeredIngredients,
+        IIngredientManager ingredientManager,
         IScreenHelper screenHelper,
         BookmarkList bookmarkList,
         IModIdHelper modIdHelper,
@@ -142,7 +142,7 @@ public final class OverlayHelper {
     ) {
         IngredientGridWithNavigation bookmarkListGridNavigation = createIngredientGridWithNavigation(
             bookmarkList,
-            registeredIngredients,
+            ingredientManager,
             bookmarkListConfig,
             screenHelper,
             modIdHelper,

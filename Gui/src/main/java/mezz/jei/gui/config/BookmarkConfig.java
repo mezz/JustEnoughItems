@@ -3,11 +3,10 @@ package mezz.jei.gui.config;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import net.minecraft.nbt.CompoundTag;
@@ -49,7 +48,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 	}
 
 	@Override
-	public void saveBookmarks(IRegisteredIngredients registeredIngredients, List<ITypedIngredient<?>> ingredientList) {
+	public void saveBookmarks(IIngredientManager ingredientManager, List<ITypedIngredient<?>> ingredientList) {
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				List<String> strings = new ArrayList<>();
@@ -57,7 +56,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 					if (typedIngredient.getIngredient() instanceof ItemStack stack) {
 						strings.add(MARKER_STACK + stack.save(new CompoundTag()));
 					} else {
-						strings.add(MARKER_OTHER + getUid(registeredIngredients, typedIngredient));
+						strings.add(MARKER_OTHER + getUid(ingredientManager, typedIngredient));
 					}
 				}
 
@@ -70,7 +69,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 	}
 
 	@Override
-	public void loadBookmarks(IRegisteredIngredients registeredIngredients, BookmarkList bookmarkList) {
+	public void loadBookmarks(IIngredientManager ingredientManager, BookmarkList bookmarkList) {
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				if (!Files.exists(path)) {
@@ -84,10 +83,12 @@ public class BookmarkConfig implements IBookmarkConfig {
 					return;
 				}
 
-				Collection<IIngredientType<?>> otherIngredientTypes = new ArrayList<>(registeredIngredients.getIngredientTypes());
-				otherIngredientTypes.remove(VanillaTypes.ITEM_STACK);
+				Collection<IIngredientType<?>> otherIngredientTypes = ingredientManager.getRegisteredIngredientTypes()
+						.stream()
+						.filter(i -> !i.equals(VanillaTypes.ITEM_STACK))
+						.toList();
 
-				IIngredientHelper<ItemStack> itemStackHelper = registeredIngredients.getIngredientHelper(VanillaTypes.ITEM_STACK);
+				IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 
 				for (String ingredientJsonString : ingredientJsonStrings) {
 					if (ingredientJsonString.startsWith(MARKER_STACK)) {
@@ -97,7 +98,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 							ItemStack itemStack = ItemStack.of(itemStackAsNbt);
 							if (!itemStack.isEmpty()) {
 								ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);
-								Optional<ITypedIngredient<ItemStack>> typedIngredient = registeredIngredients.createTypedIngredient(VanillaTypes.ITEM_STACK, normalized);
+								Optional<ITypedIngredient<ItemStack>> typedIngredient = ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, normalized);
 								if (typedIngredient.isEmpty()) {
 									LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
 								} else {
@@ -111,7 +112,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 						}
 					} else if (ingredientJsonString.startsWith(MARKER_OTHER)) {
 						String uid = ingredientJsonString.substring(MARKER_OTHER.length());
-						Optional<ITypedIngredient<?>> typedIngredient = getNormalizedIngredientByUid(registeredIngredients, otherIngredientTypes, uid);
+						Optional<ITypedIngredient<?>> typedIngredient = getNormalizedIngredientByUid(ingredientManager, otherIngredientTypes, uid);
 						if (typedIngredient.isEmpty()) {
 							LOGGER.error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);
 						} else {
@@ -125,25 +126,24 @@ public class BookmarkConfig implements IBookmarkConfig {
 			});
 	}
 
-	private static <T> String getUid(IRegisteredIngredients registeredIngredients, ITypedIngredient<T> typedIngredient) {
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(typedIngredient.getType());
+	private static <T> String getUid(IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
 		return ingredientHelper.getUniqueId(typedIngredient.getIngredient(), UidContext.Ingredient);
 	}
 
-	private static Optional<ITypedIngredient<?>> getNormalizedIngredientByUid(IRegisteredIngredients registeredIngredients, Collection<IIngredientType<?>> ingredientTypes, String uid) {
+	private static Optional<ITypedIngredient<?>> getNormalizedIngredientByUid(IIngredientManager ingredientManager, Collection<IIngredientType<?>> ingredientTypes, String uid) {
 		return ingredientTypes.stream()
-			.map(t -> getNormalizedIngredientByUid(registeredIngredients, t, uid))
+			.map(t -> getNormalizedIngredientByUid(ingredientManager, t, uid))
 			.flatMap(Optional::stream)
 			.findFirst();
 	}
 
-	private static <T> Optional<ITypedIngredient<?>> getNormalizedIngredientByUid(IRegisteredIngredients registeredIngredients, IIngredientType<T> ingredientType, String uid) {
-		IIngredientInfo<T> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
-		return ingredientInfo.getIngredientByUid(uid)
+	private static <T> Optional<ITypedIngredient<?>> getNormalizedIngredientByUid(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, String uid) {
+		return ingredientManager.getIngredientByUid(ingredientType, uid)
 			.map(i -> {
-				IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
+				IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 				return ingredientHelper.normalizeIngredient(i);
 			})
-			.flatMap(i -> registeredIngredients.createTypedIngredient(ingredientType, i));
+			.flatMap(i -> ingredientManager.createTypedIngredient(ingredientType, i));
 	}
 }

@@ -1,7 +1,6 @@
 package mezz.jei.library.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -33,39 +32,43 @@ public class IngredientManager implements IIngredientManager {
 	public <V> Collection<V> getAllIngredients(IIngredientType<V> ingredientType) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 
-		IIngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
-		return ingredientInfo.getAllIngredients();
+		return this.registeredIngredients
+			.getIngredientInfo(ingredientType)
+			.getAllIngredients();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <V> IIngredientHelper<V> getIngredientHelper(V ingredient) {
-		ErrorUtil.checkNotNull(ingredient, "ingredient");
-
-		IIngredientType<V> ingredientType = getIngredientType(ingredient);
-		return getIngredientHelper(ingredientType);
+		return getIngredientTypeChecked(ingredient)
+			.map(this::getIngredientHelper)
+			.orElseThrow(() -> new IllegalArgumentException("Unknown ingredient class: " + ingredient.getClass()));
 	}
 
 	@Override
 	public <V> IIngredientHelper<V> getIngredientHelper(IIngredientType<V> ingredientType) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 
-		IIngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
-		return ingredientInfo.getIngredientHelper();
+		return this.registeredIngredients
+			.getIngredientInfo(ingredientType)
+			.getIngredientHelper();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <V> IIngredientRenderer<V> getIngredientRenderer(V ingredient) {
-		ErrorUtil.checkNotNull(ingredient, "ingredient");
-
-		IIngredientType<V> ingredientType = getIngredientType(ingredient);
-		return getIngredientRenderer(ingredientType);
+		return getIngredientTypeChecked(ingredient)
+			.map(this::getIngredientRenderer)
+			.orElseThrow(() -> new IllegalArgumentException("Unknown ingredient class: " + ingredient.getClass()));
 	}
 
 	@Override
 	public <V> IIngredientRenderer<V> getIngredientRenderer(IIngredientType<V> ingredientType) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 
-		return this.registeredIngredients.getIngredientRenderer(ingredientType);
+		return this.registeredIngredients
+			.getIngredientInfo(ingredientType)
+			.getIngredientRenderer();
 	}
 
 	@Override
@@ -87,7 +90,7 @@ public class IngredientManager implements IIngredientManager {
 
 		if (!this.listeners.isEmpty()) {
 			List<ITypedIngredient<V>> typedIngredients = ingredients.stream()
-				.map(i -> TypedIngredient.createTyped(this.registeredIngredients, ingredientType, i))
+				.map(i -> TypedIngredient.createTyped(this, ingredientType, i))
 				.map(Optional::orElseThrow)
 				.toList();
 
@@ -99,20 +102,32 @@ public class IngredientManager implements IIngredientManager {
 		}
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <V> IIngredientType<V> getIngredientType(V ingredient) {
-		ErrorUtil.checkNotNull(ingredient, "ingredient");
-
-		return this.registeredIngredients.getIngredientType(ingredient)
+		return getIngredientTypeChecked(ingredient)
 			.orElseThrow(() -> new IllegalArgumentException("Unknown ingredient class: " + ingredient.getClass()));
 	}
 
 	@Override
+	public <V> Optional<IIngredientType<V>> getIngredientTypeChecked(V ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		return this.registeredIngredients.getIngredientType(ingredient);
+	}
+
+	@SuppressWarnings("removal")
+	@Override
 	public <V> IIngredientType<V> getIngredientType(Class<? extends V> ingredientClass) {
+		Optional<IIngredientType<V>> ingredientType = getIngredientTypeChecked(ingredientClass);
+		return ingredientType
+			.orElseThrow(() -> new IllegalArgumentException("Unknown ingredient class: " + ingredientClass));
+	}
+
+	@Override
+	public <V> Optional<IIngredientType<V>> getIngredientTypeChecked(Class<? extends V> ingredientClass) {
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 
-		Optional<IIngredientType<V>> ingredientType = this.registeredIngredients.getIngredientType(ingredientClass);
-		return ingredientType.orElseThrow(() -> new IllegalArgumentException("Unknown ingredient class: " + ingredientClass));
+		return this.registeredIngredients.getIngredientType(ingredientClass);
 	}
 
 	@Override
@@ -129,7 +144,7 @@ public class IngredientManager implements IIngredientManager {
 
 		if (!this.listeners.isEmpty()) {
 			List<ITypedIngredient<V>> typedIngredients = ingredients.stream()
-				.map(i -> TypedIngredient.createTyped(this.registeredIngredients, ingredientType, i))
+				.map(i -> TypedIngredient.createTyped(this, ingredientType, i))
 				.map(Optional::orElseThrow)
 				.toList();
 
@@ -151,5 +166,17 @@ public class IngredientManager implements IIngredientManager {
 	public void removeIngredientListener(IIngredientListener listener) {
 		ErrorUtil.checkNotNull(listener, "listener");
 		this.listeners.remove(listener.getUid(), listener);
+	}
+
+	@Override
+	public <V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient) {
+		return TypedIngredient.createTyped(this, ingredientType, ingredient);
+	}
+
+	@Override
+	public <V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
+		return registeredIngredients
+			.getIngredientInfo(ingredientType)
+			.getIngredientByUid(ingredientUuid);
 	}
 }

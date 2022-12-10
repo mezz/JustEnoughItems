@@ -2,14 +2,13 @@ package mezz.jei.library.util;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.Internal;
-import mezz.jei.library.ingredients.IIngredientSupplier;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.library.ingredients.IIngredientSupplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,19 +21,12 @@ public final class RecipeErrorUtil {
 	private RecipeErrorUtil() {
 	}
 
-	public static <T> String getInfoFromRecipe(T recipe, IRecipeCategory<T> recipeCategory) {
+	public static <T> String getInfoFromRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
 		String recipeName = getNameForRecipe(recipe);
 		recipeInfoBuilder.append(recipeName);
 
-		var registeredIngredientsOptional = Internal.getRegisteredIngredients();
-		if (registeredIngredientsOptional.isEmpty()) {
-			recipeInfoBuilder.append("\nRegistered ingredients have not been set");
-			return recipeInfoBuilder.toString();
-		}
-		IRegisteredIngredients registeredIngredients = registeredIngredientsOptional.get();
-
-		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, registeredIngredients);
+		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
 		if (ingredientSupplier == null) {
 			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
 			return recipeInfoBuilder.toString();
@@ -42,23 +34,23 @@ public final class RecipeErrorUtil {
 
 		recipeInfoBuilder.append(" {");
 		recipeInfoBuilder.append("\n  Outputs:");
-		appendRoleData(ingredientSupplier, RecipeIngredientRole.OUTPUT, recipeInfoBuilder, registeredIngredients);
+		appendRoleData(ingredientSupplier, RecipeIngredientRole.OUTPUT, recipeInfoBuilder, ingredientManager);
 
 		recipeInfoBuilder.append("\n  Inputs:");
-		appendRoleData(ingredientSupplier, RecipeIngredientRole.INPUT, recipeInfoBuilder, registeredIngredients);
+		appendRoleData(ingredientSupplier, RecipeIngredientRole.INPUT, recipeInfoBuilder, ingredientManager);
 
 		recipeInfoBuilder.append("\n  Catalysts:");
-		appendRoleData(ingredientSupplier, RecipeIngredientRole.CATALYST, recipeInfoBuilder, registeredIngredients);
+		appendRoleData(ingredientSupplier, RecipeIngredientRole.CATALYST, recipeInfoBuilder, ingredientManager);
 
 		recipeInfoBuilder.append("\n}");
 
 		return recipeInfoBuilder.toString();
 	}
 
-	private static void appendRoleData(IIngredientSupplier ingredientSupplier, RecipeIngredientRole role, StringBuilder recipeInfoBuilder, IRegisteredIngredients registeredIngredients) {
+	private static void appendRoleData(IIngredientSupplier ingredientSupplier, RecipeIngredientRole role, StringBuilder recipeInfoBuilder, IIngredientManager ingredientManager) {
 		ingredientSupplier.getIngredientTypes(role)
 			.forEach(ingredientType -> {
-				String ingredientOutputInfo = getIngredientInfo(ingredientType, role, ingredientSupplier, registeredIngredients);
+				String ingredientOutputInfo = getIngredientInfo(ingredientType, role, ingredientSupplier, ingredientManager);
 				recipeInfoBuilder
 					.append("\n    ")
 					.append(ingredientType.getIngredientClass().getName())
@@ -67,9 +59,9 @@ public final class RecipeErrorUtil {
 			});
 	}
 
-	private static <T> String getIngredientInfo(IIngredientType<T> ingredientType, RecipeIngredientRole role, IIngredientSupplier ingredients, IRegisteredIngredients registeredIngredients) {
+	private static <T> String getIngredientInfo(IIngredientType<T> ingredientType, RecipeIngredientRole role, IIngredientSupplier ingredients, IIngredientManager ingredientManager) {
 		List<T> ingredientList = ingredients.getIngredientStream(ingredientType, role).toList();
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
 		Stream<String> stringStream = ingredientList.stream()
 			.map(ingredientHelper::getErrorInfo);

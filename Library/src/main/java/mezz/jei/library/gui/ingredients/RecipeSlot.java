@@ -9,9 +9,9 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.util.ErrorUtil;
@@ -36,7 +36,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int MAX_DISPLAYED_INGREDIENTS = 100;
 
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final RecipeIngredientRole role;
 	private final CycleTimer cycleTimer;
 	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
@@ -65,13 +65,13 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 	private String slotName;
 
 	public RecipeSlot(
-		IRegisteredIngredients registeredIngredients,
+		IIngredientManager ingredientManager,
 		RecipeIngredientRole role,
 		int xPos,
 		int yPos,
 		int ingredientCycleOffset
 	) {
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 		this.rendererOverrides = new RendererOverrides();
 		this.role = role;
 		this.rect = new ImmutableRect2i(xPos, yPos, 16, 16);
@@ -145,7 +145,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 	}
 
 	private <T> List<Component> getTooltip(T value, IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer) {
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		List<Component> tooltip = IngredientTooltipHelper.getMutableIngredientTooltipSafe(value, ingredientRenderer);
 		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onTooltip(this, tooltip);
@@ -209,7 +209,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 	private <T> IIngredientRenderer<T> getIngredientRenderer(IIngredientType<T> ingredientType) {
 		return Optional.of(rendererOverrides)
 			.flatMap(r -> r.getIngredientRenderer(ingredientType))
-			.orElseGet(() -> registeredIngredients.getIngredientRenderer(ingredientType));
+			.orElseGet(() -> ingredientManager.getIngredientRenderer(ingredientType));
 	}
 
 	@Override
@@ -255,7 +255,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 		try {
 			ingredientRenderer.render(poseStack, ingredient);
 		} catch (RuntimeException | LinkageError e) {
-			throw ErrorUtil.createRenderIngredientException(e, ingredient, registeredIngredients);
+			throw ErrorUtil.createRenderIngredientException(e, ingredient, ingredientManager);
 		}
 	}
 

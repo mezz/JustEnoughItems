@@ -3,8 +3,8 @@ package mezz.jei.common.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.client.Minecraft;
@@ -27,10 +27,10 @@ public final class TooltipRenderer {
 		drawHoveringText(poseStack, textLines, x, y, ItemStack.EMPTY, font);
 	}
 
-	public static <T> void drawHoveringText(PoseStack poseStack, List<Component> textLines, int x, int y, ITypedIngredient<T> typedIngredient, IRegisteredIngredients registeredIngredients) {
+	public static <T> void drawHoveringText(PoseStack poseStack, List<Component> textLines, int x, int y, ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		T ingredient = typedIngredient.getIngredient();
-		IIngredientRenderer<T> ingredientRenderer = registeredIngredients.getIngredientRenderer(ingredientType);
+		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		drawHoveringText(poseStack, textLines, x, y, ingredient, ingredientRenderer);
 	}
 

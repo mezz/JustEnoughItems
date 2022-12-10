@@ -6,8 +6,8 @@ import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.library.gui.GuiContainerHandlers;
 import mezz.jei.library.gui.ScreenHelper;
@@ -78,8 +78,8 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 		this.ghostIngredientHandlers.put(guiClass, handler);
 	}
 
-	public IScreenHelper createGuiScreenHelper(IRegisteredIngredients registeredIngredients) {
-		return new ScreenHelper(registeredIngredients, globalGuiHandlers, guiContainerHandlers, ghostIngredientHandlers, guiScreenHandlers);
+	public IScreenHelper createGuiScreenHelper(IIngredientManager ingredientManager) {
+		return new ScreenHelper(ingredientManager, globalGuiHandlers, guiContainerHandlers, ghostIngredientHandlers, guiScreenHandlers);
 	}
 
 	@Override

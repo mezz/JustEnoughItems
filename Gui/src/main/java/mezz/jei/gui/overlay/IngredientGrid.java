@@ -5,9 +5,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.api.runtime.IEditModeConfig;
@@ -52,7 +52,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
 	public IngredientGrid(
-		IRegisteredIngredients registeredIngredients,
+		IIngredientManager ingredientManager,
 		IIngredientGridConfig gridConfig,
 		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
@@ -67,8 +67,8 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	) {
 		this.gridConfig = gridConfig;
 		this.screenHelper = screenHelper;
-		this.ingredientListRenderer = new IngredientListRenderer(editModeConfig, worldConfig, registeredIngredients);
-		this.tooltipHelper = new IngredientGridTooltipHelper(registeredIngredients, ingredientFilterConfig, worldConfig, modIdHelper, keyBindings, colorHelper);
+		this.ingredientListRenderer = new IngredientListRenderer(editModeConfig, worldConfig, ingredientManager);
+		this.tooltipHelper = new IngredientGridTooltipHelper(ingredientManager, ingredientFilterConfig, worldConfig, modIdHelper, keyBindings, colorHelper);
 		this.deleteItemHandler = new DeleteItemInputHandler(this, worldConfig, clientConfig, serverConnection, cheatUtil);
 	}
 

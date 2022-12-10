@@ -11,7 +11,6 @@ import com.mojang.math.Matrix4f;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
-import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -181,8 +180,8 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 			}
 			return tooltip;
 		} catch (RuntimeException e) {
-			String info = ErrorUtil.getIngredientInfo(fluidStack, type);
-			LOGGER.error("Failed to get tooltip for fluid: " + info, e);
+			Component displayName = fluidHelper.getDisplayName(fluidStack);
+			LOGGER.error("Failed to get tooltip for fluid: " + displayName, e);
 		}
 
 		return new ArrayList<>();

@@ -3,14 +3,14 @@ package mezz.jei.library.helpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.DebugConfig;
-import mezz.jei.library.config.IModIdFormatConfig;
-import mezz.jei.library.config.ModIdFormatConfig;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.library.config.IModIdFormatConfig;
+import mezz.jei.library.config.ModIdFormatConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -23,11 +23,11 @@ import java.util.List;
 
 public final class ModIdHelper implements IModIdHelper {
 	private final IModIdFormatConfig modIdFormattingConfig;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 
-	public ModIdHelper(IModIdFormatConfig modIdFormattingConfig, IRegisteredIngredients registeredIngredients) {
+	public ModIdHelper(IModIdFormatConfig modIdFormattingConfig, IIngredientManager ingredientManager) {
 		this.modIdFormattingConfig = modIdFormattingConfig;
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public final class ModIdHelper implements IModIdHelper {
 	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> type = typedIngredient.getType();
 		T ingredient = typedIngredient.getIngredient();
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(type);
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
 		return addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);
 	}
 

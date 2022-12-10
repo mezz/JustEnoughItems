@@ -3,14 +3,14 @@ package mezz.jei.gui.search;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
-import mezz.jei.gui.config.IIngredientFilterConfig;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.Translator;
 import mezz.jei.core.search.LimitedStringStorage;
 import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.core.search.SearchMode;
-import mezz.jei.gui.ingredients.IListElementInfo;
 import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
+import mezz.jei.gui.config.IIngredientFilterConfig;
+import mezz.jei.gui.ingredients.IListElementInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +28,7 @@ public class ElementPrefixParser {
 
 	private final Char2ObjectMap<PrefixInfo<IListElementInfo<?>>> map = new Char2ObjectOpenHashMap<>();
 
-	public ElementPrefixParser(IRegisteredIngredients registeredIngredients, IIngredientFilterConfig config, IColorHelper colorHelper) {
+	public ElementPrefixParser(IIngredientManager ingredientManager, IIngredientFilterConfig config, IColorHelper colorHelper) {
 		addPrefix(new PrefixInfo<>(
 			'@',
 			config::getModNameSearchMode,
@@ -38,26 +38,26 @@ public class ElementPrefixParser {
 		addPrefix(new PrefixInfo<>(
 			'#',
 			config::getTooltipSearchMode,
-			e -> e.getTooltipStrings(config, registeredIngredients),
+			e -> e.getTooltipStrings(config, ingredientManager),
 			GeneralizedSuffixTree::new
 		));
 		addPrefix(new PrefixInfo<>(
 			'$',
 			config::getTagSearchMode,
-			e -> e.getTagStrings(registeredIngredients),
+			e -> e.getTagStrings(ingredientManager),
 			LimitedStringStorage::new
 		));
 		addPrefix(new PrefixInfo<>(
 			'%',
 			config::getCreativeTabSearchMode,
-			e -> e.getCreativeTabsStrings(registeredIngredients),
+			e -> e.getCreativeTabsStrings(ingredientManager),
 			LimitedStringStorage::new
 		));
 		addPrefix(new PrefixInfo<>(
 			'^',
 			config::getColorSearchMode,
 			e -> {
-				Iterable<Integer> colors = e.getColors(registeredIngredients);
+				Iterable<Integer> colors = e.getColors(ingredientManager);
 				return StreamSupport.stream(colors.spliterator(), false)
 					.map(colorHelper::getClosestColorName)
 					.map(Translator::toLowercaseWithLocale)

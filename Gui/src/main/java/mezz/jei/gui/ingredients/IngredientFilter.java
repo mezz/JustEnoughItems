@@ -5,12 +5,13 @@ import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.util.Translator;
+import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.IIngredientGridSource;
@@ -18,8 +19,6 @@ import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchLowMem;
 import mezz.jei.gui.search.IElementSearch;
-import mezz.jei.common.util.Translator;
-import mezz.jei.gui.config.IClientConfig;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -48,7 +47,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
 	private final IFilterTextSource filterTextSource;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final IIngredientSorter sorter;
 	private final IModIdHelper modIdHelper;
 	private final IIngredientVisibility ingredientVisibility;
@@ -65,7 +64,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		IFilterTextSource filterTextSource,
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
-		IRegisteredIngredients registeredIngredients,
+		IIngredientManager ingredientManager,
 		IIngredientSorter sorter,
 		NonNullList<IListElement<?>> ingredients,
 		IModIdHelper modIdHelper,
@@ -73,11 +72,11 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		IColorHelper colorHelper
 	) {
 		this.filterTextSource = filterTextSource;
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 		this.sorter = sorter;
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
-		this.elementPrefixParser = new ElementPrefixParser(registeredIngredients, config, colorHelper);
+		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper);
 
 		if (clientConfig.isLowMemorySlowSearchEnabled()) {
 			this.elementSearch = new ElementSearchLowMem();
@@ -87,7 +86,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
 		ingredients.stream()
-			.map(i -> ListElementInfo.create(i, registeredIngredients, modIdHelper))
+			.map(i -> ListElementInfo.create(i, ingredientManager, modIdHelper))
 			.flatMap(Optional::stream)
 			.forEach(this::addIngredient);
 		LOGGER.info("Added {} ingredients", ingredients.size());
@@ -206,7 +205,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 
 		return elementInfoStream
 			.filter(info -> info.getElement().isVisible())
-			.sorted(sorter.getComparator(this, this.registeredIngredients))
+			.sorted(sorter.getComparator(this, this.ingredientManager))
 			.<ITypedIngredient<?>>map(IListElementInfo::getTypedIngredient)
 			.toList();
 	}
@@ -247,7 +246,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 				}
 			} else {
 				IListElement<V> element = IngredientListElementFactory.createOrderedElement(value);
-				ListElementInfo.create(element, this.registeredIngredients, modIdHelper)
+				ListElementInfo.create(element, this.ingredientManager, modIdHelper)
 					.ifPresent(info -> {
 						addIngredient(info);
 						if (DebugConfig.isDebugModeEnabled()) {

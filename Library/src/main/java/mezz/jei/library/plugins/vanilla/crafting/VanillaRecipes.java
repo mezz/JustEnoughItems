@@ -1,6 +1,7 @@
 package mezz.jei.library.plugins.vanilla.crafting;
 
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -22,17 +23,19 @@ import java.util.stream.Collectors;
 
 public final class VanillaRecipes {
 	private final RecipeManager recipeManager;
+	private final IIngredientManager ingredientManager;
 
-	public VanillaRecipes() {
+	public VanillaRecipes(IIngredientManager ingredientManager) {
 		Minecraft minecraft = Minecraft.getInstance();
 		ErrorUtil.checkNotNull(minecraft, "minecraft");
 		ClientLevel world = minecraft.level;
 		ErrorUtil.checkNotNull(world, "minecraft world");
 		this.recipeManager = world.getRecipeManager();
+		this.ingredientManager = ingredientManager;
 	}
 
 	public Map<Boolean, List<CraftingRecipe>> getCraftingRecipes(IRecipeCategory<CraftingRecipe> craftingCategory) {
-		CategoryRecipeValidator<CraftingRecipe> validator = new CategoryRecipeValidator<>(craftingCategory, 9);
+		CategoryRecipeValidator<CraftingRecipe> validator = new CategoryRecipeValidator<>(craftingCategory, ingredientManager, 9);
 		return recipeManager.getAllRecipesFor(RecipeType.CRAFTING)
 			.stream()
 			.filter(validator::isRecipeValid)
@@ -40,32 +43,32 @@ public final class VanillaRecipes {
 	}
 
 	public List<StonecutterRecipe> getStonecuttingRecipes(IRecipeCategory<StonecutterRecipe> stonecuttingCategory) {
-		CategoryRecipeValidator<StonecutterRecipe> validator = new CategoryRecipeValidator<>(stonecuttingCategory, 1);
+		CategoryRecipeValidator<StonecutterRecipe> validator = new CategoryRecipeValidator<>(stonecuttingCategory, ingredientManager, 1);
 		return getValidHandledRecipes(recipeManager, RecipeType.STONECUTTING, validator);
 	}
 
 	public List<SmeltingRecipe> getFurnaceRecipes(IRecipeCategory<SmeltingRecipe> furnaceCategory) {
-		CategoryRecipeValidator<SmeltingRecipe> validator = new CategoryRecipeValidator<>(furnaceCategory, 1);
+		CategoryRecipeValidator<SmeltingRecipe> validator = new CategoryRecipeValidator<>(furnaceCategory, ingredientManager, 1);
 		return getValidHandledRecipes(recipeManager, RecipeType.SMELTING, validator);
 	}
 
 	public List<SmokingRecipe> getSmokingRecipes(IRecipeCategory<SmokingRecipe> smokingCategory) {
-		CategoryRecipeValidator<SmokingRecipe> validator = new CategoryRecipeValidator<>(smokingCategory, 1);
+		CategoryRecipeValidator<SmokingRecipe> validator = new CategoryRecipeValidator<>(smokingCategory, ingredientManager, 1);
 		return getValidHandledRecipes(recipeManager, RecipeType.SMOKING, validator);
 	}
 
 	public List<BlastingRecipe> getBlastingRecipes(IRecipeCategory<BlastingRecipe> blastingCategory) {
-		CategoryRecipeValidator<BlastingRecipe> validator = new CategoryRecipeValidator<>(blastingCategory, 1);
+		CategoryRecipeValidator<BlastingRecipe> validator = new CategoryRecipeValidator<>(blastingCategory, ingredientManager, 1);
 		return getValidHandledRecipes(recipeManager, RecipeType.BLASTING, validator);
 	}
 
 	public List<CampfireCookingRecipe> getCampfireCookingRecipes(IRecipeCategory<CampfireCookingRecipe> campfireCategory) {
-		CategoryRecipeValidator<CampfireCookingRecipe> validator = new CategoryRecipeValidator<>(campfireCategory, 1);
+		CategoryRecipeValidator<CampfireCookingRecipe> validator = new CategoryRecipeValidator<>(campfireCategory, ingredientManager, 1);
 		return getValidHandledRecipes(recipeManager, RecipeType.CAMPFIRE_COOKING, validator);
 	}
 
 	public List<UpgradeRecipe> getSmithingRecipes(IRecipeCategory<UpgradeRecipe> smithingCategory) {
-		CategoryRecipeValidator<UpgradeRecipe> validator = new CategoryRecipeValidator<>(smithingCategory, 0);
+		CategoryRecipeValidator<UpgradeRecipe> validator = new CategoryRecipeValidator<>(smithingCategory, ingredientManager, 0);
 		return getValidHandledRecipes(recipeManager, RecipeType.SMITHING, validator);
 	}
 

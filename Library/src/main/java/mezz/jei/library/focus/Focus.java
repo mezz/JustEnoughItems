@@ -1,13 +1,13 @@
 package mezz.jei.library.focus;
 
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.library.ingredients.TypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.library.ingredients.TypedIngredient;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +47,7 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 	/**
 	 * Make sure any IFocus coming in through API calls is validated and turned into JEI's Focus.
 	 */
-	public static <V> Focus<V> checkOne(IFocus<V> focus, IRegisteredIngredients registeredIngredients) {
+	public static <V> Focus<V> checkOne(IFocus<V> focus, IIngredientManager ingredientManager) {
 		if (focus instanceof Focus) {
 			return (Focus<V>) focus;
 		}
@@ -65,23 +65,23 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 		RecipeIngredientRole role = focus.getRole();
 		ErrorUtil.checkNotNull(role, "focus typed value role");
 
-		return createFromApi(registeredIngredients, role, type, ingredient);
+		return createFromApi(ingredientManager, role, type, ingredient);
 	}
 
-	public static <V> Focus<V> createFromApi(IRegisteredIngredients registeredIngredients, RecipeIngredientRole role, IIngredientType<V> ingredientType, V value) {
-		Optional<ITypedIngredient<V>> typedIngredient = TypedIngredient.createTyped(registeredIngredients, ingredientType, value)
-			.flatMap(i -> TypedIngredient.deepCopy(registeredIngredients, i));
+	public static <V> Focus<V> createFromApi(IIngredientManager ingredientManager, RecipeIngredientRole role, IIngredientType<V> ingredientType, V value) {
+		Optional<ITypedIngredient<V>> typedIngredient = TypedIngredient.createTyped(ingredientManager, ingredientType, value)
+			.flatMap(i -> TypedIngredient.deepCopy(ingredientManager, i));
 
 		if (typedIngredient.isEmpty()) {
-			throw new IllegalArgumentException("Focus value is invalid: " + ErrorUtil.getIngredientInfo(value, ingredientType, registeredIngredients));
+			throw new IllegalArgumentException("Focus value is invalid: " + ErrorUtil.getIngredientInfo(value, ingredientType, ingredientManager));
 		}
 		return new Focus<>(role, typedIngredient.get());
 	}
 
-	public static <V> Focus<V> createFromApi(IRegisteredIngredients registeredIngredients, RecipeIngredientRole role, ITypedIngredient<V> typedIngredient) {
-		Optional<ITypedIngredient<V>> typedIngredientCopy = TypedIngredient.deepCopy(registeredIngredients, typedIngredient);
+	public static <V> Focus<V> createFromApi(IIngredientManager ingredientManager, RecipeIngredientRole role, ITypedIngredient<V> typedIngredient) {
+		Optional<ITypedIngredient<V>> typedIngredientCopy = TypedIngredient.deepCopy(ingredientManager, typedIngredient);
 		if (typedIngredientCopy.isEmpty()) {
-			throw new IllegalArgumentException("Focus value is invalid: " + ErrorUtil.getIngredientInfo(typedIngredient.getIngredient(), typedIngredient.getType(), registeredIngredients));
+			throw new IllegalArgumentException("Focus value is invalid: " + ErrorUtil.getIngredientInfo(typedIngredient.getIngredient(), typedIngredient.getType(), ingredientManager));
 		}
 		return new Focus<>(role, typedIngredientCopy.get());
 	}

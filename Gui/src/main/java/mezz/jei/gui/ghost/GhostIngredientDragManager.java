@@ -4,15 +4,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -27,7 +27,7 @@ import java.util.Optional;
 public class GhostIngredientDragManager {
 	private final IRecipeFocusSource source;
 	private final IScreenHelper screenHelper;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final IWorldConfig worldConfig;
 	private final List<GhostIngredientReturning<?>> ghostIngredientsReturning = new ArrayList<>();
 	@Nullable
@@ -37,10 +37,10 @@ public class GhostIngredientDragManager {
 	@Nullable
 	private List<IGhostIngredientHandler.Target<Object>> hoveredIngredientTargets;
 
-	public GhostIngredientDragManager(IRecipeFocusSource source, IScreenHelper screenHelper, IRegisteredIngredients registeredIngredients, IWorldConfig worldConfig) {
+	public GhostIngredientDragManager(IRecipeFocusSource source, IScreenHelper screenHelper, IIngredientManager ingredientManager, IWorldConfig worldConfig) {
 		this.source = source;
 		this.screenHelper = screenHelper;
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 		this.worldConfig = worldConfig;
 	}
 
@@ -115,7 +115,7 @@ public class GhostIngredientDragManager {
 				if (targets.isEmpty()) {
 					return false;
 				}
-				IIngredientRenderer<V> ingredientRenderer = registeredIngredients.getIngredientRenderer(type);
+				IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
 				IImmutableRect2i clickedArea = clicked.getArea().orElse(null);
 				this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, input.getMouseX(), input.getMouseY(), clickedArea);
 				return true;

@@ -3,7 +3,6 @@ package mezz.jei.library.load.registration;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
@@ -20,14 +19,12 @@ import java.util.List;
 public class RecipeRegistration implements IRecipeRegistration {
 	private final IJeiHelpers jeiHelpers;
 	private final IIngredientManager ingredientManager;
-	private final IRegisteredIngredients registeredIngredients;
 	private final IIngredientVisibility ingredientVisibility;
 	private final IVanillaRecipeFactory vanillaRecipeFactory;
 	private final RecipeManagerInternal recipeManager;
 
 	public RecipeRegistration(
 		IJeiHelpers jeiHelpers,
-		IRegisteredIngredients registeredIngredients,
 		IIngredientManager ingredientManager,
 		IIngredientVisibility ingredientVisibility,
 		IVanillaRecipeFactory vanillaRecipeFactory,
@@ -35,7 +32,6 @@ public class RecipeRegistration implements IRecipeRegistration {
 	) {
 		this.jeiHelpers = jeiHelpers;
 		this.ingredientManager = ingredientManager;
-		this.registeredIngredients = registeredIngredients;
 		this.ingredientVisibility = ingredientVisibility;
 		this.vanillaRecipeFactory = vanillaRecipeFactory;
 		this.recipeManager = recipeManager;
@@ -83,7 +79,7 @@ public class RecipeRegistration implements IRecipeRegistration {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(descriptionComponents, "descriptionComponents");
 
-		List<IJeiIngredientInfoRecipe> recipes = IngredientInfoRecipe.create(registeredIngredients, ingredients, ingredientType, descriptionComponents);
+		List<IJeiIngredientInfoRecipe> recipes = IngredientInfoRecipe.create(ingredientManager, ingredients, ingredientType, descriptionComponents);
 		addRecipes(RecipeTypes.INFORMATION, recipes);
 	}
 }

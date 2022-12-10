@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.common.util.Translator;
 import net.minecraft.resources.ResourceLocation;
@@ -32,9 +32,9 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	private final ResourceLocation resourceLocation;
 	private int sortedIndex = Integer.MAX_VALUE;
 
-	public static <V> Optional<IListElementInfo<V>> create(IListElement<V> element, IRegisteredIngredients registeredIngredients, IModIdHelper modIdHelper) {
+	public static <V> Optional<IListElementInfo<V>> create(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
-		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		try {
 			ListElementInfo<V> info = new ListElementInfo<>(element, ingredientHelper, modIdHelper);
 			return Optional.of(info);
@@ -99,20 +99,20 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public final List<String> getTooltipStrings(IIngredientFilterConfig config, IRegisteredIngredients registeredIngredients) {
+	public final List<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager) {
 		String modName = this.modNames.get(0);
 		String modId = this.modIds.get(0);
 		String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
 		ITypedIngredient<V> value = element.getTypedIngredient();
-		IIngredientRenderer<V> ingredientRenderer = registeredIngredients.getIngredientRenderer(value.getType());
+		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(value.getType());
 		ImmutableSet<String> toRemove = ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceLocation.getPath());
 		return IngredientInformationUtil.getTooltipStrings(value.getIngredient(), ingredientRenderer, toRemove, config);
 	}
 
 	@Override
-	public Collection<String> getTagStrings(IRegisteredIngredients registeredIngredients) {
+	public Collection<String> getTagStrings(IIngredientManager ingredientManager) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
-		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		Collection<ResourceLocation> tags = ingredientHelper.getTags(value.getIngredient());
 		return tags.stream()
 			.map(ResourceLocation::getPath)
@@ -120,16 +120,16 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public Collection<ResourceLocation> getTagIds(IRegisteredIngredients registeredIngredients) {
+	public Collection<ResourceLocation> getTagIds(IIngredientManager ingredientManager) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
-		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		return ingredientHelper.getTags(value.getIngredient());
 	}
 
 	@Override
-	public Collection<String> getCreativeTabsStrings(IRegisteredIngredients registeredIngredients) {
+	public Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
-		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		Collection<String> creativeTabsStrings = ingredientHelper.getCreativeTabNames(value.getIngredient());
 		return creativeTabsStrings.stream()
 			.map(Translator::toLowercaseWithLocale)
@@ -137,9 +137,9 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public Iterable<Integer> getColors(IRegisteredIngredients registeredIngredients) {
+	public Iterable<Integer> getColors(IIngredientManager ingredientManager) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
-		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		V ingredient = value.getIngredient();
 		return ingredientHelper.getColors(ingredient);
 	}

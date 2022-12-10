@@ -3,7 +3,6 @@ package mezz.jei.api.runtime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
@@ -74,7 +73,7 @@ public interface IJeiRuntime {
 	 * Returns a new typed ingredient.
 	 *
 	 * @since 9.3.0
-	 * @deprecated use {@link IRegisteredIngredients#createTypedIngredient(IIngredientType, Object)} instead.
+	 * @deprecated use {@link IIngredientManager#createTypedIngredient(IIngredientType, Object)} instead.
 	 */
 	@Deprecated(since = "11.5.0", forRemoval = true)
 	<T> ITypedIngredient<T> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient);
@@ -82,8 +81,6 @@ public interface IJeiRuntime {
 	IScreenHelper getScreenHelper();
 
 	IRecipeTransferManager getRecipeTransferManager();
-
-	IRegisteredIngredients getRegisteredIngredients();
 
 	IEditModeConfig getEditModeConfig();
 

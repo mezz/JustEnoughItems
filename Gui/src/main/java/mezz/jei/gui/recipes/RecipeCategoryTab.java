@@ -2,16 +2,16 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
@@ -28,13 +28,13 @@ import java.util.Optional;
 public class RecipeCategoryTab extends RecipeGuiTab {
 	private final IRecipeGuiLogic logic;
 	private final IRecipeCategory<?> category;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 
-	public RecipeCategoryTab(IRecipeGuiLogic logic, IRecipeCategory<?> category, Textures textures, int x, int y, IRegisteredIngredients registeredIngredients) {
+	public RecipeCategoryTab(IRecipeGuiLogic logic, IRecipeCategory<?> category, Textures textures, int x, int y, IIngredientManager ingredientManager) {
 		super(textures, x, y);
 		this.logic = logic;
 		this.category = category;
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 				.findFirst();
 			if (firstCatalyst.isPresent()) {
 				ITypedIngredient<?> ingredient = firstCatalyst.get();
-				renderIngredient(poseStack, iconX, iconY, ingredient, registeredIngredients);
+				renderIngredient(poseStack, iconX, iconY, ingredient, ingredientManager);
 			} else {
 				String text = category.getTitle().getString().substring(0, 2);
 				Minecraft minecraft = Minecraft.getInstance();
@@ -86,8 +86,8 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		}
 	}
 
-	private static <T> void renderIngredient(PoseStack poseStack, int iconX, int iconY, ITypedIngredient<T> ingredient, IRegisteredIngredients registeredIngredients) {
-		IIngredientRenderer<T> ingredientRenderer = registeredIngredients.getIngredientRenderer(ingredient.getType());
+	private static <T> void renderIngredient(PoseStack poseStack, int iconX, int iconY, ITypedIngredient<T> ingredient, IIngredientManager ingredientManager) {
+		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient.getType());
 		poseStack.pushPose();
 		{
 			poseStack.translate(iconX, iconY, 0);

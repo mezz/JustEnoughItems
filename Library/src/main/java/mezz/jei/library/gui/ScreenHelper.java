@@ -6,17 +6,17 @@ import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.library.ingredients.TypedIngredient;
 import mezz.jei.common.input.ClickedIngredient;
-import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.library.ingredients.TypedIngredient;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.Slot;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ScreenHelper implements IScreenHelper {
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final List<IGlobalGuiHandler> globalGuiHandlers;
 	private final GuiContainerHandlers guiContainerHandlers;
 	private final Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers;
@@ -41,13 +41,13 @@ public class ScreenHelper implements IScreenHelper {
 	private Set<ImmutableRect2i> guiExclusionAreas = Collections.emptySet();
 
 	public ScreenHelper(
-		IRegisteredIngredients registeredIngredients,
+		IIngredientManager ingredientManager,
 		List<IGlobalGuiHandler> globalGuiHandlers,
 		GuiContainerHandlers guiContainerHandlers,
 		Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers,
 		Map<Class<?>, IScreenHandler<?>> guiScreenHandlers
 	) {
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 		this.globalGuiHandlers = globalGuiHandlers;
 		this.guiContainerHandlers = guiContainerHandlers;
 		this.ghostIngredientHandlers = ghostIngredientHandlers;
@@ -150,7 +150,7 @@ public class ScreenHelper implements IScreenHelper {
 
 	private Optional<IClickedIngredient<?>> getClickedIngredient(Slot slot, AbstractContainerScreen<?> guiContainer) {
 		ItemStack stack = slot.getItem();
-		return TypedIngredient.createTyped(this.registeredIngredients, VanillaTypes.ITEM_STACK, stack)
+		return TypedIngredient.createTyped(this.ingredientManager, VanillaTypes.ITEM_STACK, stack)
 			.map(typedIngredient -> {
 				IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 				ImmutableRect2i slotArea = new ImmutableRect2i(
@@ -196,7 +196,7 @@ public class ScreenHelper implements IScreenHelper {
 		if (ingredient == null) {
 			return Optional.empty();
 		}
-		return TypedIngredient.create(registeredIngredients, ingredient)
+		return TypedIngredient.create(ingredientManager, ingredient)
 			.map(typedIngredient -> {
 				ImmutableRect2i area = getSlotArea(typedIngredient, guiScreen).orElse(null);
 				return new ClickedIngredient<>(typedIngredient, area, false, false);

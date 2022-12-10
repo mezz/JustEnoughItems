@@ -1,15 +1,15 @@
 package mezz.jei.gui.ingredients;
 
-import mezz.jei.api.ingredients.IRegisteredIngredients;
+import mezz.jei.api.runtime.IIngredientManager;
 
 import java.util.Comparator;
 
 public interface IIngredientSorter {
 
-	default void doPreSort(IngredientFilter ingredientFilter, IRegisteredIngredients registeredIngredients) {
+	default void doPreSort(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
 	}
 
-	Comparator<IListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IRegisteredIngredients registeredIngredients);
+	Comparator<IListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IIngredientManager ingredientManager);
 
 	default void invalidateCache() {
 	}

@@ -7,10 +7,11 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.registration.IModIngredientRegistration;
-import mezz.jei.common.Internal;
-import mezz.jei.library.ingredients.IngredientInfo;
-import mezz.jei.library.ingredients.RegisteredIngredients;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.library.ingredients.IngredientInfo;
+import mezz.jei.library.ingredients.IngredientManager;
+import mezz.jei.library.ingredients.RegisteredIngredients;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,13 +20,13 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
-public class RegisteredIngredientsBuilder implements IModIngredientRegistration {
+public class IngredientManagerBuilder implements IModIngredientRegistration {
 	private final List<IngredientInfo<?>> ingredientInfos = new ArrayList<>();
 	private final Set<IIngredientType<?>> registeredIngredientSet = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
 
-	public RegisteredIngredientsBuilder(ISubtypeManager subtypeManager, IColorHelper colorHelper) {
+	public IngredientManagerBuilder(ISubtypeManager subtypeManager, IColorHelper colorHelper) {
 		this.subtypeManager = subtypeManager;
 		this.colorHelper = colorHelper;
 	}
@@ -62,9 +63,8 @@ public class RegisteredIngredientsBuilder implements IModIngredientRegistration 
 		return colorHelper;
 	}
 
-	public RegisteredIngredients build() {
+	public IIngredientManager build() {
 		RegisteredIngredients registeredIngredients = new RegisteredIngredients(ingredientInfos);
-		Internal.setRegisteredIngredients(registeredIngredients);
-		return registeredIngredients;
+		return new IngredientManager(registeredIngredients);
 	}
 }

@@ -1,20 +1,20 @@
 package mezz.jei.library.recipes;
 
 import com.google.common.collect.ImmutableListMultimap;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.ingredients.IIngredientSupplier;
 import mezz.jei.library.recipes.collect.RecipeMap;
 import mezz.jei.library.recipes.collect.RecipeTypeData;
 import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
-import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.util.IngredientSupplierHelper;
 import mezz.jei.library.util.RecipeErrorUtil;
 import net.minecraft.resources.ResourceLocation;
@@ -37,7 +37,7 @@ public class RecipeManagerInternal {
 
 	@Unmodifiable
 	private final List<IRecipeCategory<?>> recipeCategories;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final RecipeTypeDataMap recipeTypeDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
 	private final EnumMap<RecipeIngredientRole, RecipeMap> recipeMaps;
@@ -52,14 +52,14 @@ public class RecipeManagerInternal {
 	public RecipeManagerInternal(
 		List<IRecipeCategory<?>> recipeCategories,
 		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
-		IRegisteredIngredients registeredIngredients,
+		IIngredientManager ingredientManager,
 		List<IRecipeManagerPlugin> plugins,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		IIngredientVisibility ingredientVisibility
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
 
 		Collection<RecipeType<?>> recipeTypes = recipeCategories.stream()
@@ -69,7 +69,7 @@ public class RecipeManagerInternal {
 
 		this.recipeMaps = new EnumMap<>(RecipeIngredientRole.class);
 		for (RecipeIngredientRole role : RecipeIngredientRole.values()) {
-			RecipeMap recipeMap = new RecipeMap(recipeTypeComparator, registeredIngredients, role);
+			RecipeMap recipeMap = new RecipeMap(recipeTypeComparator, ingredientManager, role);
 			this.recipeMaps.put(role, recipeMap);
 		}
 
@@ -78,7 +78,7 @@ public class RecipeManagerInternal {
 			.sorted(this.recipeCategoryComparator)
 			.toList();
 
-		RecipeCatalystBuilder recipeCatalystBuilder = new RecipeCatalystBuilder(registeredIngredients, this.recipeMaps.get(RecipeIngredientRole.CATALYST));
+		RecipeCatalystBuilder recipeCatalystBuilder = new RecipeCatalystBuilder(ingredientManager, this.recipeMaps.get(RecipeIngredientRole.CATALYST));
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
 			ResourceLocation recipeCategoryUid = recipeCategory.getRecipeType().getUid();
 			if (recipeCatalysts.containsKey(recipeCategoryUid)) {
@@ -90,7 +90,7 @@ public class RecipeManagerInternal {
 		this.recipeTypeDataMap = new RecipeTypeDataMap(recipeCategories, recipeCategoryCatalystsMap);
 
 		IRecipeManagerPlugin internalRecipeManagerPlugin = new InternalRecipeManagerPlugin(
-			registeredIngredients,
+			ingredientManager,
 			recipeTypeDataMap,
 			recipeMaps
 		);
@@ -112,7 +112,7 @@ public class RecipeManagerInternal {
 				if (hiddenRecipes.contains(recipe) || !recipeCategory.isHandled(recipe)) {
 					return false;
 				}
-				IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, registeredIngredients);
+				IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
 				if (ingredientSupplier == null) {
 					return false;
 				}
@@ -134,7 +134,7 @@ public class RecipeManagerInternal {
 			}
 			return true;
 		} catch (RuntimeException | LinkageError e) {
-			String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory);
+			String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);
 			LOGGER.error("Found a broken recipe, failed to addRecipe: {}\n", recipeInfo, e);
 			return false;
 		}

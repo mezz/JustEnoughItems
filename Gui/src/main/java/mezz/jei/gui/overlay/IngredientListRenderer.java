@@ -2,12 +2,11 @@ package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.config.IWorldConfig;
@@ -25,14 +24,14 @@ public class IngredientListRenderer {
 	private final ElementRenderersByType renderers = new ElementRenderersByType();
 	private final IEditModeConfig editModeConfig;
 	private final IWorldConfig worldConfig;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 
 	private int blocked = 0;
 
-	public IngredientListRenderer(IEditModeConfig editModeConfig, IWorldConfig worldConfig, IRegisteredIngredients registeredIngredients) {
+	public IngredientListRenderer(IEditModeConfig editModeConfig, IWorldConfig worldConfig, IIngredientManager ingredientManager) {
 		this.editModeConfig = editModeConfig;
 		this.worldConfig = worldConfig;
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 	}
 
 	public void clear() {
@@ -90,8 +89,7 @@ public class IngredientListRenderer {
 
 	private <T> void renderIngredientType(PoseStack poseStack, IIngredientType<T> ingredientType) {
 		Collection<ElementRenderer<T>> slots = renderers.get(ingredientType);
-		IIngredientInfo<T> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
-		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
+		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		for (ElementRenderer<T> slot : slots) {
 			renderIngredient(poseStack, slot, ingredientRenderer);
 		}
@@ -117,7 +115,7 @@ public class IngredientListRenderer {
 			}
 			poseStack.popPose();
 		} catch (RuntimeException | LinkageError e) {
-			throw ErrorUtil.createRenderIngredientException(e, ingredient, registeredIngredients);
+			throw ErrorUtil.createRenderIngredientException(e, ingredient, ingredientManager);
 		}
 	}
 

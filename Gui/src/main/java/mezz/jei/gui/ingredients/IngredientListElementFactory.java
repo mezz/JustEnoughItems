@@ -1,9 +1,8 @@
 package mezz.jei.gui.ingredients;
 
-import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,19 +18,19 @@ public final class IngredientListElementFactory {
 	private IngredientListElementFactory() {
 	}
 
-	public static NonNullList<IListElement<?>> createBaseList(IRegisteredIngredients registeredIngredients) {
+	public static NonNullList<IListElement<?>> createBaseList(IIngredientManager ingredientManager) {
 		NonNullList<IListElement<?>> ingredientListElements = NonNullList.create();
 
-		for (IIngredientType<?> ingredientType : registeredIngredients.getIngredientTypes()) {
-			addToBaseList(ingredientListElements, registeredIngredients, ingredientType);
+		for (IIngredientType<?> ingredientType : ingredientManager.getRegisteredIngredientTypes()) {
+			addToBaseList(ingredientListElements, ingredientManager, ingredientType);
 		}
 
 		return ingredientListElements;
 	}
 
-	public static <V> List<IListElement<V>> createList(IRegisteredIngredients registeredIngredients, IIngredientType<V> ingredientType, Collection<V> ingredients) {
+	public static <V> List<IListElement<V>> createList(IIngredientManager ingredientManager, IIngredientType<V> ingredientType, Collection<V> ingredients) {
 		return ingredients.stream()
-			.map(i -> registeredIngredients.createTypedIngredient(ingredientType, i))
+			.map(i -> ingredientManager.createTypedIngredient(ingredientType, i))
 			.flatMap(Optional::stream)
 			.map(IngredientListElementFactory::createOrderedElement)
 			.toList();
@@ -42,12 +41,11 @@ public final class IngredientListElementFactory {
 		return new ListElement<>(typedIngredient, orderIndex);
 	}
 
-	private static <V> void addToBaseList(NonNullList<IListElement<?>> baseList, IRegisteredIngredients registeredIngredients, IIngredientType<V> ingredientType) {
-		IIngredientInfo<V> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
-		Collection<V> ingredients = ingredientInfo.getAllIngredients();
+	private static <V> void addToBaseList(NonNullList<IListElement<?>> baseList, IIngredientManager ingredientManager, IIngredientType<V> ingredientType) {
+		Collection<V> ingredients = ingredientManager.getAllIngredients(ingredientType);
 		LOGGER.debug("Registering ingredients: " + ingredientType.getIngredientClass().getSimpleName());
 		ingredients.stream()
-			.map(i -> registeredIngredients.createTypedIngredient(ingredientType, i))
+			.map(i -> ingredientManager.createTypedIngredient(ingredientType, i))
 			.flatMap(Optional::stream)
 			.map(IngredientListElementFactory::createOrderedElement)
 			.forEach(baseList::add);

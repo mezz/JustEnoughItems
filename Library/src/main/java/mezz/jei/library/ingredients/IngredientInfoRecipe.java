@@ -1,9 +1,9 @@
 package mezz.jei.library.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.client.Minecraft;
@@ -23,13 +23,13 @@ public class IngredientInfoRecipe implements IJeiIngredientInfoRecipe {
 	private final List<ITypedIngredient<?>> ingredients;
 
 	public static <T> List<IJeiIngredientInfoRecipe> create(
-		IRegisteredIngredients registeredIngredients,
+		IIngredientManager ingredientManager,
 		List<T> ingredients,
 		IIngredientType<T> ingredientType,
 		Component... descriptionComponents
 	) {
 		List<ITypedIngredient<?>> typedIngredients = ingredients.stream()
-			.map(i -> TypedIngredient.create(registeredIngredients, ingredientType, i))
+			.map(i -> TypedIngredient.create(ingredientManager, ingredientType, i))
 			.flatMap(Optional::stream)
 			.toList();
 

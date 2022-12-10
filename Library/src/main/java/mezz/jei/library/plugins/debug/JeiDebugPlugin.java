@@ -8,7 +8,6 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -66,8 +65,8 @@ public class JeiDebugPlugin implements IModPlugin {
 			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 			IPlatformFluidHelper<?> platformFluidHelper = jeiHelpers.getPlatformFluidHelper();
-			IRegisteredIngredients registeredIngredients = jeiHelpers.getRegisteredIngredients();
-			this.debugRecipeCategory = new DebugRecipeCategory<>(guiHelper, platformFluidHelper, registeredIngredients);
+			IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
+			this.debugRecipeCategory = new DebugRecipeCategory<>(guiHelper, platformFluidHelper, ingredientManager);
 			registration.addRecipeCategories(
 				debugRecipeCategory,
 				new DebugFocusRecipeCategory<>(guiHelper, platformFluidHelper)
@@ -170,8 +169,8 @@ public class JeiDebugPlugin implements IModPlugin {
 			});
 
 			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-			IRegisteredIngredients registeredIngredients = jeiHelpers.getRegisteredIngredients();
-			registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(registeredIngredients));
+			IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
+			registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager));
 		}
 	}
 

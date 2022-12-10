@@ -8,10 +8,10 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.TooltipRenderer;
@@ -36,7 +36,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);
 	private final IRecipeCategory<R> recipeCategory;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final IModIdHelper modIdHelper;
 	private final Textures textures;
 	private final RecipeSlots recipeSlots;
@@ -49,8 +49,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private int posX;
 	private int posY;
 
-	public static <T> Optional<IRecipeLayoutDrawable<T>> create(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, IRegisteredIngredients registeredIngredients, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, Textures textures) {
-		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, recipe, registeredIngredients, modIdHelper, textures);
+	public static <T> Optional<IRecipeLayoutDrawable<T>> create(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, IIngredientManager ingredientManager, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, Textures textures) {
+		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, recipe, ingredientManager, modIdHelper, textures);
 		if (recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses, ingredientVisibility)) {
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 			if (recipeName != null) {
@@ -67,7 +67,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		IFocusGroup focuses,
 		IIngredientVisibility ingredientVisibility
 	) {
-		RecipeLayoutBuilder builder = new RecipeLayoutBuilder(registeredIngredients, this.ingredientCycleOffset);
+		RecipeLayoutBuilder builder = new RecipeLayoutBuilder(ingredientManager, this.ingredientCycleOffset);
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
 			if (builder.isUsed()) {
@@ -87,7 +87,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			.toList();
 
 		if (!outputSlots.isEmpty()) {
-			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName, modIdHelper, recipeLayout.registeredIngredients);
+			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName, modIdHelper, recipeLayout.ingredientManager);
 			for (RecipeSlot outputSlot : outputSlots) {
 				outputSlot.addTooltipCallback(callback);
 			}
@@ -97,12 +97,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	public RecipeLayout(
 		IRecipeCategory<R> recipeCategory,
 		R recipe,
-		IRegisteredIngredients registeredIngredients,
+		IIngredientManager ingredientManager,
 		IModIdHelper modIdHelper,
 		Textures textures
 	) {
 		this.recipeCategory = recipeCategory;
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 		this.modIdHelper = modIdHelper;
 		this.textures = textures;
 		this.recipeSlots = new RecipeSlots();
@@ -200,7 +200,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 				.ifPresent(i -> {
 					List<Component> tooltip = hoveredSlot.getTooltip();
 					tooltip = modIdHelper.addModNameToIngredientTooltip(tooltip, i);
-					TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, i, registeredIngredients);
+					TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, i, ingredientManager);
 				});
 		} else if (isMouseOver(mouseX, mouseY)) {
 			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeSlots.getView(), recipeMouseX, recipeMouseY);

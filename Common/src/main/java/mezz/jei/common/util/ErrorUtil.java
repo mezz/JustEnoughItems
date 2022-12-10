@@ -2,9 +2,8 @@ package mezz.jei.common.util;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.Internal;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
@@ -28,15 +27,9 @@ public final class ErrorUtil {
 	private ErrorUtil() {
 	}
 
-	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType, IRegisteredIngredients registeredIngredients) {
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
+	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType, IIngredientManager ingredientManager) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		return ingredientHelper.getErrorInfo(ingredient);
-	}
-
-	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType) {
-		return Internal.getRegisteredIngredients()
-			.map(registeredIngredients -> getIngredientInfo(ingredient, ingredientType, registeredIngredients))
-			.orElse("Unable to get ingredient Info because IRegisteredIngredients are missing");
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -155,7 +148,7 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient, IRegisteredIngredients registeredIngredients) {
+	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient, IIngredientManager ingredientManager) {
 		CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering ingredient");
 		CrashReportCategory ingredientCategory = crashreport.addCategory("Ingredient being rendered");
 		ingredientCategory.setDetail("String Name", ingredient::toString);
@@ -163,9 +156,9 @@ public final class ErrorUtil {
 
 		IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
 
-		registeredIngredients.getIngredientType(ingredient)
+		ingredientManager.getIngredientTypeChecked(ingredient)
 			.ifPresentOrElse(ingredientType -> {
-				IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
+				IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
 				ingredientCategory.setDetail("Mod Name", () -> {
 					String modId = ingredientHelper.getDisplayModId(ingredient);

@@ -4,9 +4,9 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -20,16 +20,16 @@ import java.util.Optional;
 public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 	private final ResourceLocation recipeName;
 	private final IModIdHelper modIdHelper;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 
 	public OutputSlotTooltipCallback(
 		ResourceLocation recipeName,
 		IModIdHelper modIdHelper,
-		IRegisteredIngredients registeredIngredients
+		IIngredientManager ingredientManager
 	) {
 		this.recipeName = recipeName;
 		this.modIdHelper = modIdHelper;
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 	}
 
 	private <T> ResourceLocation getResourceLocation(ITypedIngredient<T> ingredient) {
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredient.getType());
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient.getType());
 		return ingredientHelper.getResourceLocation(ingredient.getIngredient());
 	}
 }

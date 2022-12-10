@@ -1,7 +1,7 @@
 package mezz.jei.library.util;
 
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.focus.FocusGroup;
 import mezz.jei.library.gui.recipes.RecipeLayoutBuilder;
 import mezz.jei.library.ingredients.IIngredientSupplier;
@@ -16,9 +16,9 @@ public final class IngredientSupplierHelper {
 	}
 
 	@Nullable
-	public static <T> IIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory, IRegisteredIngredients registeredIngredients) {
+	public static <T> IIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager) {
 		try {
-			RecipeLayoutBuilder builder = new RecipeLayoutBuilder(registeredIngredients, 0);
+			RecipeLayoutBuilder builder = new RecipeLayoutBuilder(ingredientManager, 0);
 			recipeCategory.setRecipe(builder, recipe, FocusGroup.EMPTY);
 			if (builder.isUsed()) {
 				return builder;

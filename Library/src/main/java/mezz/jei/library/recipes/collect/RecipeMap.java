@@ -2,12 +2,12 @@ package mezz.jei.library.recipes.collect;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.library.ingredients.IIngredientSupplier;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.core.collect.SetMultiMap;
+import mezz.jei.library.ingredients.IIngredientSupplier;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
@@ -23,12 +23,12 @@ public class RecipeMap {
 	private final SetMultiMap<String, RecipeType<?>> ingredientUidToCategoryMap = new SetMultiMap<>();
 	private final SetMultiMap<String, RecipeType<?>> categoryCatalystUidToRecipeCategoryMap = new SetMultiMap<>();
 	private final Comparator<RecipeType<?>> recipeTypeComparator;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final RecipeIngredientRole role;
 
-	public RecipeMap(Comparator<RecipeType<?>> recipeTypeComparator, IRegisteredIngredients registeredIngredients, RecipeIngredientRole role) {
+	public RecipeMap(Comparator<RecipeType<?>> recipeTypeComparator, IIngredientManager ingredientManager, RecipeIngredientRole role) {
 		this.recipeTypeComparator = recipeTypeComparator;
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 		this.role = role;
 	}
 
@@ -61,7 +61,7 @@ public class RecipeMap {
 	}
 
 	private <T, V> void addRecipe(T recipe, RecipeType<T> recipeType, IIngredientSupplier ingredientSupplier, IIngredientType<V> ingredientType) {
-		IIngredientHelper<V> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
 		List<String> ingredientUids = ingredientSupplier.getIngredientStream(ingredientType, this.role)
 			.filter(ingredientHelper::isValidIngredient)

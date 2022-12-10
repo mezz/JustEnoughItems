@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
@@ -94,7 +93,6 @@ public final class JeiStarter {
 		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 
-		IRegisteredIngredients registeredIngredients = pluginLoader.getRegisteredIngredients();
 		IIngredientManager ingredientManager = pluginLoader.getIngredientManager();
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
@@ -106,7 +104,7 @@ public final class JeiStarter {
 			blacklist,
 			worldConfig,
 			editModeConfig,
-			registeredIngredients
+			ingredientManager
 		);
 
 		RecipeManager recipeManager = pluginLoader.createRecipeManager(
@@ -126,7 +124,6 @@ public final class JeiStarter {
 
 		JeiRuntime jeiRuntime = new JeiRuntime(
 			recipeManager,
-			registeredIngredients,
 			ingredientManager,
 			ingredientVisibility,
 			data.keyBindings(),

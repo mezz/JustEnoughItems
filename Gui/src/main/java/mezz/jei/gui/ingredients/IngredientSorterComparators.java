@@ -1,11 +1,11 @@
 package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.core.config.IngredientSortStage;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
-import mezz.jei.core.config.IngredientSortStage;
 import net.minecraft.core.HolderSet.ListBacked;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -22,18 +22,18 @@ import java.util.stream.Collectors;
 
 public class IngredientSorterComparators {
 	private final IngredientFilter ingredientFilter;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final ModNameSortingConfig modNameSortingConfig;
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
 
 	public IngredientSorterComparators(
 		IngredientFilter ingredientFilter,
-		IRegisteredIngredients registeredIngredients,
+		IIngredientManager ingredientManager,
 		ModNameSortingConfig modNameSortingConfig,
 		IngredientTypeSortingConfig ingredientTypeSortingConfig
 	) {
 		this.ingredientFilter = ingredientFilter;
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 		this.modNameSortingConfig = modNameSortingConfig;
 		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
 	}
@@ -80,7 +80,7 @@ public class IngredientSorterComparators {
 	}
 
 	private Comparator<IListElementInfo<?>> getIngredientTypeComparator() {
-		Collection<IIngredientType<?>> ingredientTypes = this.registeredIngredients.getIngredientTypes();
+		Collection<IIngredientType<?>> ingredientTypes = this.ingredientManager.getRegisteredIngredientTypes();
 		Set<String> ingredientTypeStrings = ingredientTypes.stream()
 			.map(IngredientTypeSortingConfig::getIngredientTypeString)
 			.collect(Collectors.toSet());
@@ -156,7 +156,7 @@ public class IngredientSorterComparators {
 	}
 
 	private String getTagForSorting(IListElementInfo<?> elementInfo) {
-		Collection<ResourceLocation> tagIds = elementInfo.getTagIds(registeredIngredients);
+		Collection<ResourceLocation> tagIds = elementInfo.getTagIds(ingredientManager);
 		// Choose the most popular tag it has.
 		return tagIds.stream()
 			.max(Comparator.comparing(IngredientSorterComparators::tagCount))

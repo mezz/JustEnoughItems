@@ -230,7 +230,7 @@ public class VanillaPlugin implements IModPlugin {
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
-		VanillaRecipes vanillaRecipes = new VanillaRecipes();
+		VanillaRecipes vanillaRecipes = new VanillaRecipes(ingredientManager);
 
 		Map<Boolean, List<CraftingRecipe>> craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
 		List<CraftingRecipe> handledCraftingRecipes = craftingRecipes.get(true);

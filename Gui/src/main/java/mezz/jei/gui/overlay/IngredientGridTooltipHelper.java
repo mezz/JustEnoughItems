@@ -4,11 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientInfo;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.IngredientTooltipHelper;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public final class IngredientGridTooltipHelper {
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IWorldConfig worldConfig;
 	private final IModIdHelper modIdHelper;
@@ -32,14 +31,14 @@ public final class IngredientGridTooltipHelper {
 	private final IColorHelper colorHelper;
 
 	public IngredientGridTooltipHelper(
-		IRegisteredIngredients registeredIngredients,
+		IIngredientManager ingredientManager,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IWorldConfig worldConfig,
 		IModIdHelper modIdHelper,
 		IInternalKeyMappings keyBindings,
 		IColorHelper colorHelper
 	) {
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.worldConfig = worldConfig;
 		this.modIdHelper = modIdHelper;
@@ -50,16 +49,14 @@ public final class IngredientGridTooltipHelper {
 	public <T> void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, ITypedIngredient<T> value) {
 		IIngredientType<T> ingredientType = value.getType();
 		T ingredient = value.getIngredient();
-		IIngredientInfo<T> ingredientInfo = registeredIngredients.getIngredientInfo(ingredientType);
-		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
+		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
-		List<Component> tooltip = getTooltip(ingredient, ingredientInfo);
+		List<Component> tooltip = getTooltip(ingredient, ingredientRenderer, ingredientHelper);
 		TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, ingredient, ingredientRenderer);
 	}
 
-	public <T> List<Component> getTooltip(T ingredient, IIngredientInfo<T> ingredientInfo) {
-		IIngredientRenderer<T> ingredientRenderer = ingredientInfo.getIngredientRenderer();
-		IIngredientHelper<T> ingredientHelper = ingredientInfo.getIngredientHelper();
+	public <T> List<Component> getTooltip(T ingredient, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
 		List<Component> ingredientTooltipSafe = IngredientTooltipHelper.getMutableIngredientTooltipSafe(ingredient, ingredientRenderer);
 		List<Component> tooltip = modIdHelper.addModNameToIngredientTooltip(ingredientTooltipSafe, ingredient, ingredientHelper);
 

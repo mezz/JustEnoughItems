@@ -11,7 +11,6 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -22,6 +21,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Constants;
 import mezz.jei.common.Internal;
@@ -52,7 +52,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	public static final int RECIPE_HEIGHT = 60;
 	private final IDrawable background;
 	private final IPlatformFluidHelper<F> platformFluidHelper;
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final Component localizedName;
 	private final IDrawable tankBackground;
 	private final IDrawable tankOverlay;
@@ -60,10 +60,10 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	private @Nullable IJeiRuntime runtime;
 	private boolean hiddenRecipes;
 
-	public DebugRecipeCategory(IGuiHelper guiHelper, IPlatformFluidHelper<F> platformFluidHelper, IRegisteredIngredients registeredIngredients) {
+	public DebugRecipeCategory(IGuiHelper guiHelper, IPlatformFluidHelper<F> platformFluidHelper, IIngredientManager ingredientManager) {
 		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
 		this.platformFluidHelper = platformFluidHelper;
-		this.registeredIngredients = registeredIngredients;
+		this.ingredientManager = ingredientManager;
 		this.localizedName = Component.literal("debug");
 
 		ResourceLocation backgroundTexture = new ResourceLocation(ModIds.JEI_ID, Constants.TEXTURE_GUI_PATH + "debug.png");
@@ -121,7 +121,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	}
 
 	private <T> void drawIngredientName(Minecraft minecraft, PoseStack poseStack, ITypedIngredient<T> ingredient) {
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredient.getType());
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient.getType());
 		String jeiUid = ingredientHelper.getUniqueId(ingredient.getIngredient(), UidContext.Ingredient);
 		minecraft.font.draw(poseStack, jeiUid, 50, 52, 0);
 	}

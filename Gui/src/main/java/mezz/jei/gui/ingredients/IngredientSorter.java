@@ -1,10 +1,10 @@
 package mezz.jei.gui.ingredients;
 
-import mezz.jei.api.ingredients.IRegisteredIngredients;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.core.config.IngredientSortStage;
+import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
-import mezz.jei.gui.config.IClientConfig;
-import mezz.jei.core.config.IngredientSortStage;
 
 import java.util.Comparator;
 import java.util.List;
@@ -27,8 +27,8 @@ public final class IngredientSorter implements IIngredientSorter {
 	}
 
 	@Override
-	public void doPreSort(IngredientFilter ingredientFilter, IRegisteredIngredients registeredIngredients) {
-		IngredientSorterComparators comparators = new IngredientSorterComparators(ingredientFilter, registeredIngredients, this.modNameSortingConfig, this.ingredientTypeSortingConfig);
+	public void doPreSort(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
+		IngredientSorterComparators comparators = new IngredientSorterComparators(ingredientFilter, ingredientManager, this.modNameSortingConfig, this.ingredientTypeSortingConfig);
 
 		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
 
@@ -46,9 +46,9 @@ public final class IngredientSorter implements IIngredientSorter {
 	}
 
 	@Override
-	public Comparator<IListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IRegisteredIngredients registeredIngredients) {
+	public Comparator<IListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
 		if (!this.isCacheValid) {
-			doPreSort(ingredientFilter, registeredIngredients);
+			doPreSort(ingredientFilter, ingredientManager);
 		}
 		//Now the comparator just uses that index value to order everything.
 		return PRE_SORTED;

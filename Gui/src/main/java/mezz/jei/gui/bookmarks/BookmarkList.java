@@ -1,9 +1,9 @@
 package mezz.jei.gui.bookmarks;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import net.minecraft.world.item.ItemStack;
@@ -15,12 +15,12 @@ import java.util.Optional;
 
 public class BookmarkList implements IIngredientGridSource {
 	private final List<ITypedIngredient<?>> list = new LinkedList<>();
-	private final IRegisteredIngredients registeredIngredients;
+	private final IIngredientManager ingredientManager;
 	private final IBookmarkConfig bookmarkConfig;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 
-	public BookmarkList(IRegisteredIngredients registeredIngredients, IBookmarkConfig bookmarkConfig) {
-		this.registeredIngredients = registeredIngredients;
+	public BookmarkList(IIngredientManager ingredientManager, IBookmarkConfig bookmarkConfig) {
+		this.ingredientManager = ingredientManager;
 		this.bookmarkConfig = bookmarkConfig;
 	}
 
@@ -30,7 +30,7 @@ public class BookmarkList implements IIngredientGridSource {
 		}
 		addToList(value, true);
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(registeredIngredients, list);
+		bookmarkConfig.saveBookmarks(ingredientManager, list);
 		return true;
 	}
 
@@ -40,13 +40,13 @@ public class BookmarkList implements IIngredientGridSource {
 
 	private <T> int indexOf(ITypedIngredient<T> value) {
 		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
-		Optional<ITypedIngredient<T>> normalized = normalize(registeredIngredients, value);
+		Optional<ITypedIngredient<T>> normalized = normalize(ingredientManager, value);
 		if (normalized.isEmpty()) {
 			return -1;
 		}
 		value = normalized.get();
 
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		String uniqueId = ingredientHelper.getUniqueId(value.getIngredient(), UidContext.Ingredient);
 
 		for (int i = 0; i < list.size(); i++) {
@@ -58,10 +58,10 @@ public class BookmarkList implements IIngredientGridSource {
 		return -1;
 	}
 
-	public static <T> Optional<ITypedIngredient<T>> normalize(IRegisteredIngredients registeredIngredients, ITypedIngredient<T> value) {
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(value.getType());
+	public static <T> Optional<ITypedIngredient<T>> normalize(IIngredientManager ingredientManager, ITypedIngredient<T> value) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		T ingredient = ingredientHelper.normalizeIngredient(value.getIngredient());
-		return registeredIngredients.createTypedIngredient(value.getType(), ingredient);
+		return ingredientManager.createTypedIngredient(value.getType(), ingredient);
 	}
 
 	private static <T> boolean equal(IIngredientHelper<T> ingredientHelper, ITypedIngredient<T> a, String uidA, ITypedIngredient<?> b) {
@@ -91,12 +91,12 @@ public class BookmarkList implements IIngredientGridSource {
 
 		list.remove(index);
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(registeredIngredients, list);
+		bookmarkConfig.saveBookmarks(ingredientManager, list);
 		return true;
 	}
 
 	public <T> void addToList(ITypedIngredient<T> value, boolean addToFront) {
-		Optional<ITypedIngredient<T>> result = normalize(registeredIngredients, value);
+		Optional<ITypedIngredient<T>> result = normalize(ingredientManager, value);
 		if (result.isEmpty()) {
 			return;
 		}

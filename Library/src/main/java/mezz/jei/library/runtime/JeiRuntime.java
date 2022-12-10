@@ -2,7 +2,6 @@ package mezz.jei.library.runtime;
 
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IRegisteredIngredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
@@ -16,12 +15,12 @@ import mezz.jei.api.runtime.IJeiKeyMappings;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.library.gui.IngredientListOverlayDummy;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.gui.BookmarkOverlayDummy;
+import mezz.jei.library.gui.IngredientListOverlayDummy;
 import mezz.jei.library.gui.recipes.RecipesGuiDummy;
 import mezz.jei.library.ingredients.IngredientFilterApiDummy;
 import mezz.jei.library.ingredients.TypedIngredient;
-import mezz.jei.common.util.ErrorUtil;
 
 import java.util.Optional;
 
@@ -29,7 +28,6 @@ public class JeiRuntime implements IJeiRuntime {
 	private final IRecipeManager recipeManager;
 	private final IRecipeTransferManager recipeTransferManager;
 	private final IEditModeConfig editModeConfig;
-	private final IRegisteredIngredients registeredIngredients;
 	private final IIngredientManager ingredientManager;
 	private final IIngredientVisibility ingredientVisibility;
 	private final IJeiKeyMappings keyMappings;
@@ -42,7 +40,6 @@ public class JeiRuntime implements IJeiRuntime {
 
 	public JeiRuntime(
 		IRecipeManager recipeManager,
-		IRegisteredIngredients registeredIngredients,
 		IIngredientManager ingredientManager,
 		IIngredientVisibility ingredientVisibility,
 		IJeiKeyMappings keyMappings,
@@ -59,7 +56,6 @@ public class JeiRuntime implements IJeiRuntime {
 		this.bookmarkOverlay = BookmarkOverlayDummy.INSTANCE;
 		this.recipesGui = RecipesGuiDummy.INSTANCE;
 		this.ingredientFilter = IngredientFilterApiDummy.INSTANCE;
-		this.registeredIngredients = registeredIngredients;
 		this.ingredientManager = ingredientManager;
 		this.keyMappings = keyMappings;
 		this.jeiHelpers = jeiHelpers;
@@ -69,9 +65,9 @@ public class JeiRuntime implements IJeiRuntime {
 	@SuppressWarnings("removal")
 	@Override
 	public <T> ITypedIngredient<T> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient) {
-		Optional<ITypedIngredient<T>> result = TypedIngredient.createTyped(registeredIngredients, ingredientType, ingredient);
+		Optional<ITypedIngredient<T>> result = TypedIngredient.createTyped(ingredientManager, ingredientType, ingredient);
 		if (result.isEmpty()) {
-			String ingredientInfo = ErrorUtil.getIngredientInfo(ingredient, ingredientType, registeredIngredients);
+			String ingredientInfo = ErrorUtil.getIngredientInfo(ingredient, ingredientType, ingredientManager);
 			throw new IllegalArgumentException("Invalid ingredient: " + ingredientInfo);
 		}
 		return result.get();
@@ -130,11 +126,6 @@ public class JeiRuntime implements IJeiRuntime {
 	@Override
 	public IRecipeTransferManager getRecipeTransferManager() {
 		return recipeTransferManager;
-	}
-
-	@Override
-	public IRegisteredIngredients getRegisteredIngredients() {
-		return registeredIngredients;
 	}
 
 	@Override
