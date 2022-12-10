@@ -18,32 +18,9 @@ public final class MathUtil {
 		return (int) Math.ceil((float) numerator / denominator);
 	}
 
-	public static boolean intersects(Collection<ImmutableRect2i> areas, ImmutableRect2i comparisonArea) {
-		for (ImmutableRect2i area : areas) {
-			if (intersects(area, comparisonArea)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static boolean intersects(ImmutableRect2i rect1, ImmutableRect2i rect2) {
-		if (rect1.isEmpty() || rect2.isEmpty()) {
-			return false;
-		}
-		return rect2.getX() + rect2.getWidth() > rect1.getX() &&
-			rect2.getY() + rect2.getHeight() > rect1.getY() &&
-			rect2.getX() < rect1.getX() + rect1.getWidth() &&
-			rect2.getY() < rect1.getY() + rect1.getHeight();
-	}
-
-	public static boolean contains(Collection<ImmutableRect2i> areas, double x, double y) {
-		for (ImmutableRect2i guiArea : areas) {
-			if (guiArea.contains(x, y)) {
-				return true;
-			}
-		}
-		return false;
+	public static boolean intersects(Collection<IImmutableRect2i> areas, ImmutableRect2i comparisonArea) {
+		return areas.stream()
+			.anyMatch(comparisonArea::intersects);
 	}
 
 	public static boolean contains(Rect2i rect, double x, double y) {

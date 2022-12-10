@@ -47,20 +47,21 @@ public class GuiEventHandler {
 	}
 
 	public void onGuiInit(Screen screen) {
-		ingredientListOverlay.updateScreen(screen, false);
-		bookmarkOverlay.updateScreen(screen, false);
+		Set<IImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen);
+		ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
+		bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
 	}
 
 	public void onGuiOpen(Screen screen) {
-		ingredientListOverlay.updateScreen(screen, false);
-		bookmarkOverlay.updateScreen(screen, false);
+		ingredientListOverlay.updateScreen(screen, null);
+		bookmarkOverlay.updateScreen(screen, null);
 	}
 
 	public void onDrawBackgroundPost(Screen screen, PoseStack poseStack) {
 		Minecraft minecraft = Minecraft.getInstance();
-		boolean exclusionAreasChanged = screenHelper.updateGuiExclusionAreas(screen);
-		ingredientListOverlay.updateScreen(screen, exclusionAreasChanged);
-		bookmarkOverlay.updateScreen(screen, exclusionAreasChanged);
+		Set<IImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen);
+		ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
+		bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
 
 		drawnOnBackground = true;
 		double mouseX = MouseUtil.getX();
@@ -80,8 +81,8 @@ public class GuiEventHandler {
 	public void onDrawScreenPost(Screen screen, PoseStack poseStack, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
 
-		ingredientListOverlay.updateScreen(screen, false);
-		bookmarkOverlay.updateScreen(screen, false);
+		ingredientListOverlay.updateScreen(screen, null);
+		bookmarkOverlay.updateScreen(screen, null);
 
 		if (!drawnOnBackground) {
 			if (screen instanceof AbstractContainerScreen) {
@@ -100,6 +101,7 @@ public class GuiEventHandler {
 			this.screenHelper.getGuiClickableArea(guiContainer, mouseX - guiLeft, mouseY - guiTop)
 				.filter(IGuiClickableArea::isTooltipEnabled)
 				.map(IGuiClickableArea::getTooltipStrings)
+				.findFirst()
 				.ifPresent(tooltipStrings -> {
 					if (tooltipStrings.isEmpty()) {
 						tooltipStrings = List.of(Component.translatable("jei.tooltip.show.recipes"));
@@ -129,7 +131,7 @@ public class GuiEventHandler {
 
 		screenHelper.getGuiProperties(screen)
 			.ifPresent(guiProperties -> {
-				Set<? extends IImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas();
+				Set<? extends IImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen);
 
 				RenderSystem.disableDepthTest();
 

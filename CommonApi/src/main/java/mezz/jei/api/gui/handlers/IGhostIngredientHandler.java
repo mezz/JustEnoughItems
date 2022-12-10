@@ -3,6 +3,7 @@ package mezz.jei.api.gui.handlers;
 import java.util.List;
 import java.util.function.Consumer;
 
+import mezz.jei.api.registration.IGuiHandlerRegistration;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 
@@ -10,6 +11,8 @@ import net.minecraft.client.renderer.Rect2i;
  * Lets mods accept ghost ingredients from JEI.
  * These ingredients are dragged from the ingredient list on to your gui, and are useful
  * for setting recipes or anything else that does not need the real ingredient to exist.
+ *
+ * Register your handler with {@link IGuiHandlerRegistration#addGhostIngredientHandler}
  */
 public interface IGhostIngredientHandler<T extends Screen> {
 	/**

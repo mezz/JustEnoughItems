@@ -7,30 +7,30 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.gui.util.CheatUtil;
-import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.gui.overlay.IngredientGridWithNavigation;
-import mezz.jei.gui.overlay.ScreenPropertiesCache;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.MouseUtil;
 import mezz.jei.gui.input.handlers.CheatInputHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.config.IClientConfig;
-import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.gui.overlay.IngredientGridWithNavigation;
+import mezz.jei.gui.overlay.ScreenPropertiesCache;
+import mezz.jei.gui.util.CheatUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
@@ -43,7 +43,6 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	// areas
 	private final ScreenPropertiesCache screenPropertiesCache;
-	private final IScreenHelper screenHelper;
 
 	// display elements
 	private final IngredientGridWithNavigation contents;
@@ -69,13 +68,12 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, textures, worldConfig, keyBindings);
 		this.cheatInputHandler = new CheatInputHandler(this, worldConfig, clientConfig, serverConnection, cheatUtil);
 		this.contents = contents;
-		this.screenHelper = screenHelper;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		bookmarkList.addSourceListChangedListener(() -> {
 			worldConfig.setBookmarkEnabled(!bookmarkList.isEmpty());
 			Minecraft minecraft = Minecraft.getInstance();
 			Screen screen = minecraft.screen;
-			this.updateScreen(screen, true);
+			this.updateScreen(screen, null);
 		});
 	}
 
@@ -90,19 +88,20 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		return contents.hasRoom();
 	}
 
-	public void updateScreen(@Nullable Screen guiScreen, boolean forceUpdate) {
-		this.screenPropertiesCache.updateScreen(guiScreen, forceUpdate, optionalGuiProperties ->
-			optionalGuiProperties
-				.ifPresent(this::updateBounds)
-		);
+	public void updateScreen(@Nullable Screen guiScreen, @Nullable Set<IImmutableRect2i> updatedGuiExclusionAreas) {
+		this.screenPropertiesCache.updateScreen(guiScreen, updatedGuiExclusionAreas, this::onScreenPropertiesChanged);
 	}
 
-	private void updateBounds(IGuiProperties guiProperties) {
-		ImmutableRect2i displayArea =  new ImmutableRect2i(0, 0, guiProperties.getGuiLeft(), guiProperties.getScreenHeight());
+	private void onScreenPropertiesChanged() {
+		this.screenPropertiesCache.getGuiProperties()
+			.ifPresent(guiProperties -> {
+				Set<IImmutableRect2i> guiExclusionAreas = this.screenPropertiesCache.getGuiExclusionAreas();
+				updateBounds(guiProperties, guiExclusionAreas);
+			});
+	}
 
-		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas().stream()
-			.map(ImmutableRect2i::convert)
-			.collect(Collectors.toUnmodifiableSet());
+	private void updateBounds(IGuiProperties guiProperties, Set<IImmutableRect2i> guiExclusionAreas) {
+		ImmutableRect2i displayArea =  new ImmutableRect2i(0, 0, guiProperties.getGuiLeft(), guiProperties.getScreenHeight());
 
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas);

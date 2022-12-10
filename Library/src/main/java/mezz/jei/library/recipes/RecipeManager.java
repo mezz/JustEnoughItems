@@ -68,6 +68,7 @@ public class RecipeManager implements IRecipeManager {
 		internal.addRecipes(recipeType, recipes);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	@Deprecated
 	public <T> IRecipeLayoutDrawable<?> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus) {

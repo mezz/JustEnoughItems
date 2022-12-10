@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 public class GuiContainerHandlers {
@@ -49,12 +48,11 @@ public class GuiContainerHandlers {
 			.flatMap(Collection::stream);
 	}
 
-	public <T extends AbstractContainerScreen<?>> Optional<IGuiClickableArea> getGuiClickableArea(T guiContainer, double guiMouseX, double guiMouseY) {
+	public <T extends AbstractContainerScreen<?>> Stream<IGuiClickableArea> getGuiClickableArea(T guiContainer, double guiMouseX, double guiMouseY) {
 		return getActiveGuiHandlerStream(guiContainer)
 			.map(handler -> handler.getGuiClickableAreas(guiContainer, guiMouseX, guiMouseY))
 			.flatMap(Collection::stream)
-			.filter(guiClickableArea -> MathUtil.contains(guiClickableArea.getArea(), guiMouseX, guiMouseY))
-			.findFirst();
+			.filter(guiClickableArea -> MathUtil.contains(guiClickableArea.getArea(), guiMouseX, guiMouseY));
 	}
 
 	public <C extends AbstractContainerMenu, T extends AbstractContainerScreen<C>> Stream<ImmutableRect2i> getGuiExtraAreas(T guiContainer) {

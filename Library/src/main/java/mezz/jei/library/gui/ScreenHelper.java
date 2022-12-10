@@ -15,7 +15,6 @@ import mezz.jei.common.input.ClickedIngredient;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.MathUtil;
 import mezz.jei.library.ingredients.TypedIngredient;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -24,7 +23,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,7 +36,6 @@ public class ScreenHelper implements IScreenHelper {
 	private final GuiContainerHandlers guiContainerHandlers;
 	private final Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers;
 	private final Map<Class<?>, IScreenHandler<?>> guiScreenHandlers;
-	private Set<ImmutableRect2i> guiExclusionAreas = Collections.emptySet();
 
 	public ScreenHelper(
 		IIngredientManager ingredientManager,
@@ -79,26 +76,9 @@ public class ScreenHelper implements IScreenHelper {
 	}
 
 	@Override
-	public boolean updateGuiExclusionAreas(Screen screen) {
-		Set<ImmutableRect2i> guiAreas = getPluginsExclusionAreas(screen)
+	public Set<IImmutableRect2i> getGuiExclusionAreas(Screen screen) {
+		return getPluginsExclusionAreas(screen)
 			.collect(Collectors.toUnmodifiableSet());
-
-		if (!guiAreas.equals(this.guiExclusionAreas)) {
-			this.guiExclusionAreas = guiAreas;
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public Set<? extends IImmutableRect2i> getGuiExclusionAreas() {
-		return guiExclusionAreas;
-	}
-
-	@Override
-	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
-	public boolean isInGuiExclusionArea(double mouseX, double mouseY) {
-		return MathUtil.contains(guiExclusionAreas, mouseX, mouseY);
 	}
 
 	private Stream<ImmutableRect2i> getPluginsExclusionAreas(Screen screen) {
@@ -204,7 +184,7 @@ public class ScreenHelper implements IScreenHelper {
 	}
 
 	@Override
-	public Optional<IGuiClickableArea> getGuiClickableArea(AbstractContainerScreen<?> guiContainer, double guiMouseX, double guiMouseY) {
+	public Stream<IGuiClickableArea> getGuiClickableArea(AbstractContainerScreen<?> guiContainer, double guiMouseX, double guiMouseY) {
 		return this.guiContainerHandlers.getGuiClickableArea(guiContainer, guiMouseX, guiMouseY);
 	}
 

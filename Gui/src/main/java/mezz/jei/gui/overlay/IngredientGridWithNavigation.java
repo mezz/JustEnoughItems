@@ -4,28 +4,27 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickedIngredient;
-import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.gui.config.IIngredientGridConfig;
-import mezz.jei.gui.PageNavigation;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
+import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.gui.PageNavigation;
+import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.gui.config.IIngredientGridConfig;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.LimitedAreaInputHandler;
-import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.gui.util.CommandUtil;
-import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.util.MaximalRectangle;
-import mezz.jei.gui.config.IClientConfig;
-import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -50,7 +49,6 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private int firstItemIndex = 0;
 	private final IngredientGridPaged pageDelegate;
 	private final PageNavigation navigation;
-	private final IScreenHelper screenHelper;
 	private final IIngredientGridConfig gridConfig;
 	private final CheatUtil cheatUtil;
 	private final IWorldConfig worldConfig;
@@ -63,10 +61,10 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	private ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i slotBackgroundArea = ImmutableRect2i.EMPTY;
+	private Set<IImmutableRect2i> guiExclusionAreas = Set.of();
 
 	public IngredientGridWithNavigation(
 		IIngredientGridSource ingredientSource,
-		IScreenHelper screenHelper,
 		IngredientGrid ingredientGrid,
 		IWorldConfig worldConfig,
 		IClientConfig clientConfig,
@@ -81,7 +79,6 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.clientConfig = clientConfig;
 		this.ingredientGrid = ingredientGrid;
 		this.ingredientSource = ingredientSource;
-		this.screenHelper = screenHelper;
 		this.gridConfig = gridConfig;
 		this.cheatUtil = cheatUtil;
 		this.pageDelegate = new IngredientGridPaged();
@@ -112,7 +109,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private static ImmutableRect2i avoidExclusionAreas(
 		ImmutableRect2i availableArea,
 		ImmutableRect2i estimatedNavigationArea,
-		Set<ImmutableRect2i> guiExclusionAreas,
+		Set<IImmutableRect2i> guiExclusionAreas,
 		IIngredientGridConfig gridConfig
 	) {
 		final int maxDimension = Math.max(availableArea.getWidth(), availableArea.getHeight());
@@ -124,11 +121,11 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			samplingScale
 		)
 			.max(Comparator.comparingInt((ImmutableRect2i rect) -> IngredientGrid.calculateSize(gridConfig, rect).getArea())
-				.thenComparing(ImmutableRect2i::getArea))
+				.thenComparing(r -> r.getWidth() * r.getHeight()))
 			.orElse(ImmutableRect2i.EMPTY);
 
 		final boolean intersectsNavigationArea = guiExclusionAreas.stream()
-			.anyMatch(rectangle2d -> MathUtil.intersects(rectangle2d, estimatedNavigationArea));
+			.anyMatch(estimatedNavigationArea::intersects);
 		if (intersectsNavigationArea) {
 			return largestSafeArea;
 		}
@@ -142,7 +139,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		}
 	}
 
-	private void updateGridBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, boolean navigationEnabled) {
+	private void updateGridBounds(final ImmutableRect2i availableArea, boolean navigationEnabled) {
 		ImmutableRect2i availableGridArea = availableArea.insetBy(BORDER_MARGIN);
 		if (gridConfig.drawBackground()) {
 			availableGridArea = availableGridArea
@@ -175,18 +172,20 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.ingredientGrid.updateBounds(availableGridArea, guiExclusionAreas);
 	}
 
-	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas) {
+	public void updateBounds(final ImmutableRect2i availableArea, Set<IImmutableRect2i> guiExclusionAreas) {
+		this.guiExclusionAreas = guiExclusionAreas;
+
 		final boolean navigationEnabled =
 			switch (this.gridConfig.getButtonNavigationVisibility()) {
 				case ENABLED -> true;
 				case DISABLED -> false;
 				case AUTO_HIDE -> {
-					updateGridBounds(availableArea, guiExclusionAreas, false);
+					updateGridBounds(availableArea, false);
 					yield hasRoom() && this.pageDelegate.getPageCount() > 1;
 				}
 			};
 		if (navigationEnabled) {
-			updateGridBounds(availableArea, guiExclusionAreas, true);
+			updateGridBounds(availableArea, true);
 		}
 		if (!hasRoom()) {
 			return;
@@ -241,7 +240,8 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.backgroundArea.contains(mouseX, mouseY) &&
-			!screenHelper.isInGuiExclusionArea(mouseX, mouseY);
+			this.guiExclusionAreas.stream()
+				.noneMatch(area -> area.contains(mouseX, mouseY));
 	}
 
 	public IUserInputHandler createInputHandler() {

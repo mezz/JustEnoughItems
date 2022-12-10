@@ -8,6 +8,7 @@ import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
@@ -42,7 +43,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFocusSource, ICharTypedHandler {
@@ -56,7 +56,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
 	private final IConnectionToServer serverConnection;
-	private final IScreenHelper screenHelper;
 	private final GuiTextFieldFilter searchField;
 	private final IInternalKeyMappings keyBindings;
 	private final CheatUtil cheatUtil;
@@ -76,7 +75,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IInternalKeyMappings keyBindings,
 		CheatUtil cheatUtil
 	) {
-		this.screenHelper = screenHelper;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		this.contents = contents;
 		this.clientConfig = clientConfig;
@@ -94,7 +92,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		ingredientGridSource.addSourceListChangedListener(() -> {
 			Minecraft minecraft = Minecraft.getInstance();
 			Screen screen = minecraft.screen;
-			updateScreen(screen, true);
+			updateScreen(screen, null);
 		});
 
 		this.configButton = ConfigButton.create(this::isListDisplayed, worldConfig, textures, keyBindings);
@@ -115,26 +113,26 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return screenRectangle.cropLeft(guiRight);
 	}
 
-	public void updateScreen(@Nullable Screen guiScreen, boolean forceUpdate) {
-		screenPropertiesCache.updateScreen(guiScreen, forceUpdate, optionalGuiProperties ->
-			optionalGuiProperties
-				.ifPresentOrElse(guiProperties -> {
-					ImmutableRect2i displayArea = createDisplayArea(guiProperties);
-					updateBounds(guiProperties, displayArea);
-				}, () -> {
-					this.ghostIngredientDragManager.stopDrag();
-					this.searchField.setFocused(false);
-				})
-		);
+	public void updateScreen(@Nullable Screen guiScreen, @Nullable Set<IImmutableRect2i> updatedGuiExclusionAreas) {
+		screenPropertiesCache.updateScreen(guiScreen, updatedGuiExclusionAreas, this::onScreenPropertiesChanged);
 	}
 
-	private void updateBounds(IGuiProperties guiProperties, ImmutableRect2i displayArea) {
+	private void onScreenPropertiesChanged() {
+		screenPropertiesCache.getGuiProperties()
+			.ifPresentOrElse(guiProperties -> {
+				ImmutableRect2i displayArea = createDisplayArea(guiProperties);
+				Set<IImmutableRect2i> guiExclusionAreas = screenPropertiesCache.getGuiExclusionAreas();
+				updateBounds(guiProperties, displayArea, guiExclusionAreas);
+			}, () -> {
+				this.ghostIngredientDragManager.stopDrag();
+				this.searchField.setFocused(false);
+			});
+	}
+
+	private void updateBounds(IGuiProperties guiProperties, ImmutableRect2i displayArea, Set<IImmutableRect2i> guiExclusionAreas) {
 		final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, guiProperties);
 
 		final ImmutableRect2i availableContentsArea = getAvailableContentsArea(displayArea, searchBarCentered);
-		final Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas().stream()
-			.map(ImmutableRect2i::convert)
-			.collect(Collectors.toUnmodifiableSet());
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas);
 		this.contents.updateLayout(false);
 

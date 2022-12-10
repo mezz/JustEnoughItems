@@ -1,5 +1,6 @@
 package mezz.jei.gui.util;
 
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 
@@ -12,11 +13,11 @@ import java.util.stream.Stream;
 public class MaximalRectangle {
     public static Stream<ImmutableRect2i> getLargestRectangles(
         ImmutableRect2i area,
-        Collection<ImmutableRect2i> exclusionAreas,
+        Collection<IImmutableRect2i> exclusionAreas,
         int samplingScale
     ) {
         exclusionAreas = exclusionAreas.stream()
-            .filter(a -> MathUtil.intersects(a, area))
+            .filter(area::intersects)
             .collect(Collectors.toUnmodifiableSet());
 
         if (exclusionAreas.isEmpty()) {
@@ -27,13 +28,13 @@ public class MaximalRectangle {
         return maximalRectangle.getLargestRectangles();
     }
 
-    private final ImmutableRect2i area;
+    private final IImmutableRect2i area;
     private final int rows;
     private final int columns;
     private final int samplingScale;
     private final boolean[][] blockedAreas;
 
-    private MaximalRectangle(ImmutableRect2i area, int samplingScale, Collection<ImmutableRect2i> exclusionAreas) {
+    private MaximalRectangle(IImmutableRect2i area, int samplingScale, Collection<IImmutableRect2i> exclusionAreas) {
         this.area = area;
         this.samplingScale = samplingScale;
 

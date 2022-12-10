@@ -2,33 +2,53 @@ package mezz.jei.gui.overlay;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.gui.GuiProperties;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.Set;
 
 public class ScreenPropertiesCache {
     private final IScreenHelper screenHelper;
     private @Nullable IGuiProperties previousGuiProperties;
+    private Set<IImmutableRect2i> previousGuiExclusionAreas = Set.of();
 
     public ScreenPropertiesCache(IScreenHelper screenHelper) {
         this.screenHelper = screenHelper;
     }
 
-    public void updateScreen(@Nullable Screen guiScreen, boolean forceUpdate, Consumer<Optional<IGuiProperties>> callback) {
+    public void updateScreen(@Nullable Screen guiScreen, @Nullable Set<IImmutableRect2i> updatedGuiExclusionAreas, Runnable callback) {
         IGuiProperties currentGuiProperties = Optional.ofNullable(guiScreen)
             .flatMap(screenHelper::getGuiProperties)
             .orElse(null);
 
-        if (forceUpdate || !GuiProperties.areEqual(previousGuiProperties, currentGuiProperties)) {
-            previousGuiProperties = currentGuiProperties;
-            callback.accept(Optional.ofNullable(currentGuiProperties));
+        boolean changed = false;
+        if (updatedGuiExclusionAreas != null && !this.previousGuiExclusionAreas.equals(updatedGuiExclusionAreas)) {
+            this.previousGuiExclusionAreas = updatedGuiExclusionAreas;
+            changed = true;
+        }
+
+        if (!GuiProperties.areEqual(previousGuiProperties, currentGuiProperties)) {
+            this.previousGuiProperties = currentGuiProperties;
+            changed = true;
+        }
+
+        if (changed) {
+            callback.run();
         }
     }
 
     public boolean hasValidScreen() {
         return previousGuiProperties != null;
+    }
+
+    public Optional<IGuiProperties> getGuiProperties() {
+        return Optional.ofNullable(previousGuiProperties);
+    }
+
+    public Set<IImmutableRect2i> getGuiExclusionAreas() {
+        return previousGuiExclusionAreas;
     }
 }

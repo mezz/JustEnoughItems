@@ -35,6 +35,7 @@ public class GuiAreaInputHandler implements IUserInputHandler {
 				final double guiMouseX = input.getMouseX() - guiLeft;
 				final double guiMouseY = input.getMouseY() - guiTop;
 				return this.screenHelper.getGuiClickableArea(guiContainer, guiMouseX, guiMouseY)
+					.findFirst()
 					.map(clickableArea -> {
 						if (!input.isSimulate()) {
 							clickableArea.onClick(focusFactory, recipesGui);

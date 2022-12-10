@@ -21,4 +21,6 @@ public interface IImmutableRect2i {
     boolean isEmpty();
 
     boolean contains(double x, double y);
+
+    boolean intersects(IImmutableRect2i rect);
 }

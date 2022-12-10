@@ -5,7 +5,6 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * {@link IFocusFactory} helps with creating {@link IFocus} for JEI.
@@ -38,7 +37,5 @@ public interface IFocusFactory {
 	 *
 	 * @since 11.5.0
 	 */
-	default IFocusGroup getEmptyFocusGroup() {
-		return createFocusGroup(List.of());
-	}
+	IFocusGroup getEmptyFocusGroup();
 }

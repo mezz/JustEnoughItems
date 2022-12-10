@@ -78,6 +78,17 @@ public class ImmutableRect2i implements IImmutableRect2i {
 			y < this.y + this.height;
 	}
 
+	@Override
+	public boolean intersects(IImmutableRect2i rect) {
+		if (this.isEmpty() || rect.isEmpty()) {
+			return false;
+		}
+		return rect.getX() + rect.getWidth() > x &&
+			rect.getY() + rect.getHeight() > y &&
+			rect.getX() < x + width &&
+			rect.getY() < y + height;
+	}
+
 	public ImmutableRect2i moveRight(@Nonnegative int x) {
 		if (x == 0) {
 			return this;

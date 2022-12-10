@@ -37,4 +37,9 @@ public class FocusFactory implements IFocusFactory {
 	public IFocusGroup createFocusGroup(Collection<? extends IFocus<?>> focuses) {
 		return FocusGroup.create(focuses, ingredientManager);
 	}
+
+	@Override
+	public IFocusGroup getEmptyFocusGroup() {
+		return FocusGroup.EMPTY;
+	}
 }
