@@ -147,6 +147,8 @@ public interface IIngredientManager {
 	void removeIngredientListener(IIngredientListener listener);
 
 	/**
+	 * A listener that receives updates when ingredients are added or removed from the ingredient manager.
+	 *
 	 * @since 11.5.0
 	 */
 	interface IIngredientListener {

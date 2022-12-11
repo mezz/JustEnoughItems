@@ -78,17 +78,67 @@ public interface IJeiRuntime {
 	@Deprecated(since = "11.5.0", forRemoval = true)
 	<T> ITypedIngredient<T> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient);
 
+	/**
+	 * Get a helper for all runtime Screen functions.
+	 * This is used by JEI's GUI and can be used by other mods that want to use the same information from JEI.
+	 *
+	 * @since 11.5.0
+	 */
 	IScreenHelper getScreenHelper();
 
+	/**
+	 * Get a manager that holds all the registered recipe transfer handlers.
+	 * This is used by JEI's GUI and can be used by other mods that want to use the same information from JEI.
+	 *
+	 * @since 11.5.0
+	 */
 	IRecipeTransferManager getRecipeTransferManager();
 
+	/**
+	 * Get access to the edit-mode config, which lets users hide ingredients from JEI.
+	 * This is used by JEI's GUI and can be used by other mods that want to use the same information from JEI.
+	 *
+	 * @since 11.5.0
+	 */
 	IEditModeConfig getEditModeConfig();
 
+	/**
+	 * Set the ingredient list overlay.
+	 *
+	 * This is used by JEI's GUI and can be used by other mods
+	 * that want to override JEI's GUI and have it still work with mods that use JEI's API.
+	 *
+	 * @since 11.5.0
+	 */
 	void setIngredientListOverlay(IIngredientListOverlay ingredientListOverlay);
 
+	/**
+	 * Set the bookmark list overlay.
+	 *
+	 * This is used by JEI's GUI and can be used by other mods
+	 * that want to override JEI's GUI and have it still work with mods that use JEI's API.
+	 *
+	 * @since 11.5.0
+	 */
 	void setBookmarkOverlay(IBookmarkOverlay bookmarkOverlay);
 
+	/**
+	 * Set the Recipe GUI.
+	 *
+	 * This is used by JEI's GUI and can be used by other mods
+	 * that want to override JEI's GUI and have it still work with mods that use JEI's API.
+	 *
+	 * @since 11.5.0
+	 */
 	void setRecipesGui(IRecipesGui recipesGui);
 
+	/**
+	 * Set the Ingredient Filter.
+	 *
+	 * This is used by JEI's GUI and can be used by other mods
+	 * that want to override JEI's GUI and have it still work with mods that use JEI's API.
+	 *
+	 * @since 11.5.0
+	 */
 	void setIngredientFilter(IIngredientFilter ingredientFilter);
 }

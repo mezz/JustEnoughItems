@@ -16,7 +16,7 @@ import java.util.Set;
  * that players can use to edit this config file more conveniently.
  *
  * If you want to hide items in a way that is not related to this config file,
- * see {@link IIngredientManager#removeIngredientsAtRuntime(IIngredientType, Collection)}
+ * see {@link IIngredientManager#removeIngredientsAtRuntime(IIngredientType, Collection)}.
  *
  * @since 11.5.0
  */
