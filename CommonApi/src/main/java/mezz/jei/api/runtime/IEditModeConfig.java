@@ -64,7 +64,7 @@ public interface IEditModeConfig {
         /**
          * Hides or shows a single item based on its UID.
          * See {@link IIngredientHelper#getUniqueId(Object, UidContext)} using {@link UidContext#Ingredient}.
-         * 
+         *
          * @since 11.5.0
          */
         SINGLE,

@@ -120,6 +120,7 @@ public interface IIngredientManager {
 	 *
 	 * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient}
 	 * cannot be created into {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
+	 * This helps turn all special cases like {@link ItemStack#EMPTY} into {@link Optional#empty()} instead.
 	 *
 	 * @since 11.5.0
 	 */
