@@ -104,7 +104,7 @@ public class ScreenHelper implements IScreenHelper {
 			.flatMap(slot -> getClickedIngredient(slot, guiContainer));
 	}
 
-	@SuppressWarnings("removal")
+	@SuppressWarnings("deprecation")
 	private Stream<IClickableIngredient<?>> getPluginsIngredientUnderMouse(Screen guiScreen, double mouseX, double mouseY) {
 		Stream<IClickableIngredient<?>> globalIngredients = this.globalGuiHandlers.stream()
 			.map(a -> a.getClickableIngredientUnderMouse(mouseX, mouseY)
@@ -140,7 +140,7 @@ public class ScreenHelper implements IScreenHelper {
 			});
 	}
 
-	@SuppressWarnings("removal")
+	@SuppressWarnings("deprecation")
 	private <T extends AbstractContainerScreen<?>> Stream<IClickableIngredient<?>> getGuiContainerHandlerIngredients(T guiContainer, double mouseX, double mouseY) {
 		return this.guiContainerHandlers.getActiveGuiHandlerStream(guiContainer)
 			.map(a ->
