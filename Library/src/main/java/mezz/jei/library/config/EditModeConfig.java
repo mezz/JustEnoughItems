@@ -12,10 +12,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EditModeConfig implements IEditModeConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -32,7 +34,7 @@ public class EditModeConfig implements IEditModeConfig {
 		this.serializer.load(this);
 	}
 
-	public <V> void addIngredientToConfigBlacklist(ITypedIngredient<V> typedIngredient, IEditModeConfig.Mode blacklistType, IIngredientHelper<V> ingredientHelper) {
+	public <V> void addIngredientToConfigBlacklist(ITypedIngredient<V> typedIngredient, HideMode blacklistType, IIngredientHelper<V> ingredientHelper) {
 		if (addIngredientToConfigBlacklistInternal(typedIngredient, blacklistType, ingredientHelper)) {
 			serializer.save(this);
 		}
@@ -40,12 +42,12 @@ public class EditModeConfig implements IEditModeConfig {
 
 	private <V> boolean addIngredientToConfigBlacklistInternal(
 		ITypedIngredient<V> typedIngredient,
-		IEditModeConfig.Mode blacklistType,
+		HideMode blacklistType,
 		IIngredientHelper<V> ingredientHelper
 	) {
-		String wildcardUid = getIngredientUid(typedIngredient, IEditModeConfig.Mode.WILDCARD, ingredientHelper);
+		String wildcardUid = getIngredientUid(typedIngredient, HideMode.WILDCARD, ingredientHelper);
 
-		if (blacklistType == IEditModeConfig.Mode.ITEM) {
+		if (blacklistType == HideMode.SINGLE) {
 			String uid = getIngredientUid(typedIngredient, blacklistType, ingredientHelper);
 
 			if (wildcardUid.equals(uid)) {
@@ -54,7 +56,7 @@ public class EditModeConfig implements IEditModeConfig {
 			}
 
 			return blacklist.add(uid);
-		} else if (blacklistType == IEditModeConfig.Mode.WILDCARD) {
+		} else if (blacklistType == HideMode.WILDCARD) {
 			return blacklist.add(wildcardUid);
 		}
 
@@ -63,7 +65,7 @@ public class EditModeConfig implements IEditModeConfig {
 
 	public <V> void removeIngredientFromConfigBlacklist(
 		ITypedIngredient<V> typedIngredient,
-		IEditModeConfig.Mode blacklistType,
+		HideMode blacklistType,
 		IIngredientHelper<V> ingredientHelper
 	) {
 		final String uid = getIngredientUid(typedIngredient, blacklistType, ingredientHelper);
@@ -73,23 +75,29 @@ public class EditModeConfig implements IEditModeConfig {
 	}
 
 	public <V> boolean isIngredientOnConfigBlacklist(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
-		for (IEditModeConfig.Mode ingredientBlacklistType : IEditModeConfig.Mode.values()) {
-			if (isIngredientOnConfigBlacklist(typedIngredient, ingredientBlacklistType, ingredientHelper)) {
+		for (HideMode hideMode : HideMode.values()) {
+			if (isIngredientOnConfigBlacklist(typedIngredient, hideMode, ingredientHelper)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public <V> boolean isIngredientOnConfigBlacklist(ITypedIngredient<V> typedIngredient, IEditModeConfig.Mode blacklistType, IIngredientHelper<V> ingredientHelper) {
+	private <V> Set<HideMode> getIngredientOnConfigBlacklist(ITypedIngredient<V> ingredient, IIngredientHelper<V> ingredientHelper) {
+		return Arrays.stream(HideMode.values())
+			.filter(hideMode -> isIngredientOnConfigBlacklist(ingredient, hideMode, ingredientHelper))
+			.collect(Collectors.toUnmodifiableSet());
+	}
+
+	public <V> boolean isIngredientOnConfigBlacklist(ITypedIngredient<V> typedIngredient, HideMode blacklistType, IIngredientHelper<V> ingredientHelper) {
 		final String uid = getIngredientUid(typedIngredient, blacklistType, ingredientHelper);
 		return blacklist.contains(uid);
 	}
 
-	private static <V> String getIngredientUid(ITypedIngredient<V> typedIngredient, IEditModeConfig.Mode blacklistType, IIngredientHelper<V> ingredientHelper) {
+	private static <V> String getIngredientUid(ITypedIngredient<V> typedIngredient, HideMode blacklistType, IIngredientHelper<V> ingredientHelper) {
 		final V ingredient = typedIngredient.getIngredient();
 		return switch (blacklistType) {
-			case ITEM -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+			case SINGLE -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
 			case WILDCARD -> ingredientHelper.getWildcardId(ingredient);
 		};
 	}
@@ -102,17 +110,24 @@ public class EditModeConfig implements IEditModeConfig {
 	}
 
 	@Override
-	public <V> void hideIngredientUsingConfigFile(ITypedIngredient<V> ingredient, Mode mode) {
+	public <V> Set<HideMode> getIngredientHiddenUsingConfigFile(ITypedIngredient<V> ingredient) {
 		IIngredientType<V> type = ingredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		addIngredientToConfigBlacklist(ingredient, mode, ingredientHelper);
+		return getIngredientOnConfigBlacklist(ingredient, ingredientHelper);
 	}
 
 	@Override
-	public <V> void showIngredientUsingConfigFile(ITypedIngredient<V> ingredient, Mode mode) {
+	public <V> void hideIngredientUsingConfigFile(ITypedIngredient<V> ingredient, HideMode hideMode) {
 		IIngredientType<V> type = ingredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		removeIngredientFromConfigBlacklist(ingredient, mode, ingredientHelper);
+		addIngredientToConfigBlacklist(ingredient, hideMode, ingredientHelper);
+	}
+
+	@Override
+	public <V> void showIngredientUsingConfigFile(ITypedIngredient<V> ingredient, HideMode hideMode) {
+		IIngredientType<V> type = ingredient.getType();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(type);
+		removeIngredientFromConfigBlacklist(ingredient, hideMode, ingredientHelper);
 	}
 
 	public interface ISerializer {

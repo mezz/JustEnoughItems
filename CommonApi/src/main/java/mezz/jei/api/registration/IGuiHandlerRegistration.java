@@ -15,6 +15,10 @@ import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 
 public interface IGuiHandlerRegistration {
+	/**
+	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
+	 * @since 11.5.0
+	 */
 	IJeiHelpers getJeiHelpers();
 
 	/**

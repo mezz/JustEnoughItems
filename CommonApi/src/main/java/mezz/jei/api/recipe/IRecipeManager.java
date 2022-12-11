@@ -117,7 +117,11 @@ public interface IRecipeManager {
 	 *
 	 * @since 11.5.0
 	 */
-	<T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup);
+	<T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
+		IRecipeCategory<T> recipeCategory,
+		T recipe,
+		IFocusGroup focusGroup
+	);
 
 	/**
 	 * Returns a drawable recipe slot, for addons that want to draw the slots somewhere.
@@ -131,7 +135,10 @@ public interface IRecipeManager {
 	 * @since 11.5.0
 	 */
 	IRecipeSlotDrawable createRecipeSlotDrawable(
-		RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusedIngredients, int xPos,
+		RecipeIngredientRole role,
+		List<Optional<ITypedIngredient<?>>> ingredients,
+		Set<Integer> focusedIngredients,
+		int xPos,
 		int yPos,
 		int ingredientCycleOffset
 	);

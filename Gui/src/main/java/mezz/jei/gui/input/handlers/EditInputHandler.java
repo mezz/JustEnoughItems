@@ -31,34 +31,34 @@ public class EditInputHandler implements IUserInputHandler {
 		}
 
 		if (input.is(keyBindings.getToggleHideIngredient())) {
-			return handle(input, keyBindings, IEditModeConfig.Mode.ITEM);
+			return handle(input, keyBindings, IEditModeConfig.HideMode.SINGLE);
 		}
 
 		if (input.is(keyBindings.getToggleWildcardHideIngredient())) {
-			return handle(input, keyBindings, IEditModeConfig.Mode.WILDCARD);
+			return handle(input, keyBindings, IEditModeConfig.HideMode.WILDCARD);
 		}
 
 		return Optional.empty();
 	}
 
-	private Optional<IUserInputHandler> handle(UserInput input, IInternalKeyMappings keyBindings, IEditModeConfig.Mode mode) {
+	private Optional<IUserInputHandler> handle(UserInput input, IInternalKeyMappings keyBindings, IEditModeConfig.HideMode hideMode) {
 		return focusSource.getIngredientUnderMouse(input, keyBindings)
 			.findFirst()
 			.map(clicked -> {
 				if (!input.isSimulate()) {
-					execute(clicked, mode);
+					execute(clicked, hideMode);
 				}
 				ImmutableRect2i area = clicked.getArea();
 				return LimitedAreaInputHandler.create(this, area);
 			});
 	}
 
-	private <V> void execute(IClickableIngredientInternal<V> clicked, IEditModeConfig.Mode mode) {
+	private <V> void execute(IClickableIngredientInternal<V> clicked, IEditModeConfig.HideMode hideMode) {
 		ITypedIngredient<V> typedIngredient = clicked.getTypedIngredient();
 		if (editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient)) {
-			editModeConfig.showIngredientUsingConfigFile(typedIngredient, mode);
+			editModeConfig.showIngredientUsingConfigFile(typedIngredient, hideMode);
 		} else {
-			editModeConfig.hideIngredientUsingConfigFile(typedIngredient, mode);
+			editModeConfig.hideIngredientUsingConfigFile(typedIngredient, hideMode);
 		}
 	}
 }

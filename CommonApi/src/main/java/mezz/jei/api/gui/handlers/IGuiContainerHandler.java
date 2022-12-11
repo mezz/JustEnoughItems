@@ -41,7 +41,7 @@ public interface IGuiContainerHandler<T extends AbstractContainerScreen<?>> {
 	 *
 	 * @deprecated use {@link #getClickableIngredientUnderMouse(AbstractContainerScreen, double, double)} instead.
 	 */
-	@Deprecated(forRemoval = true, since = "11.5.0")
+	@Deprecated(since = "11.5.0")
 	@Nullable
 	default Object getIngredientUnderMouse(T containerScreen, double mouseX, double mouseY) {
 		return null;

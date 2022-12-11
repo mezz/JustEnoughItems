@@ -45,7 +45,7 @@ public interface IGlobalGuiHandler {
 	 *
 	 * @deprecated use {@link #getClickableIngredientUnderMouse(double, double)} instead.
 	 */
-	@Deprecated(forRemoval = true, since = "11.5.0")
+	@Deprecated(since = "11.5.0")
 	@Nullable
 	default Object getIngredientUnderMouse(double mouseX, double mouseY) {
 		return null;
