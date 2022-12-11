@@ -4,20 +4,21 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.gui.TooltipRenderer;
-import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
-import mezz.jei.gui.input.MouseUtil;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.RectDebugger;
 import mezz.jei.core.util.LimitedLogger;
+import mezz.jei.gui.input.MouseUtil;
+import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -26,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GuiEventHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -47,7 +49,9 @@ public class GuiEventHandler {
 	}
 
 	public void onGuiInit(Screen screen) {
-		Set<IImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen);
+		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
+			.map(ImmutableRect2i::new)
+			.collect(Collectors.toUnmodifiableSet());
 		ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
 		bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
 	}
@@ -59,7 +63,9 @@ public class GuiEventHandler {
 
 	public void onDrawBackgroundPost(Screen screen, PoseStack poseStack) {
 		Minecraft minecraft = Minecraft.getInstance();
-		Set<IImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen);
+		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
+			.map(ImmutableRect2i::new)
+			.collect(Collectors.toUnmodifiableSet());
 		ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
 		bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
 
@@ -131,12 +137,13 @@ public class GuiEventHandler {
 
 		screenHelper.getGuiProperties(screen)
 			.ifPresent(guiProperties -> {
-				Set<? extends IImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen);
+				Set<Rect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
+					.collect(Collectors.toUnmodifiableSet());
 
 				RenderSystem.disableDepthTest();
 
 				// draw the gui exclusion areas
-				for (IImmutableRect2i area : guiExclusionAreas) {
+				for (Rect2i area : guiExclusionAreas) {
 					GuiComponent.fill(
 						poseStack,
 						area.getX(),

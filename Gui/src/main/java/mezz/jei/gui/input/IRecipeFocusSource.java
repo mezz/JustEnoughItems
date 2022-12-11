@@ -1,9 +1,9 @@
 package mezz.jei.gui.input;
 
-import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.common.input.IClickableIngredientInternal;
 
 import java.util.stream.Stream;
 
 public interface IRecipeFocusSource {
-	Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY);
+	Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY);
 }

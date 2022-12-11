@@ -7,13 +7,11 @@ import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import org.jetbrains.annotations.Unmodifiable;
+import net.minecraft.client.renderer.Rect2i;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -25,12 +23,12 @@ public interface IScreenHelper {
     /**
      * Get the ingredient under the mouse for the given screen.
      *
-     * This uses information from plugins via {@link IGuiContainerHandler#getIngredientUnderMouse}
-     * and from {@link IGlobalGuiHandler#getIngredientUnderMouse}
+     * This uses information from plugins via {@link IGuiContainerHandler#getClickableIngredientUnderMouse}
+     * and from {@link IGlobalGuiHandler#getClickableIngredientUnderMouse}
      *
      * @since 11.5.0
      */
-    Stream<IClickedIngredient<?>> getIngredientUnderMouse(Screen screen, double mouseX, double mouseY);
+    Stream<IClickableIngredient<?>> getClickableIngredientUnderMouse(Screen screen, double mouseX, double mouseY);
 
     /**
      * Get gui properties for the given screen, if they are known.
@@ -61,7 +59,7 @@ public interface IScreenHelper {
      *
      * @since 11.5.0
      */
-    @Unmodifiable Set<IImmutableRect2i> getGuiExclusionAreas(Screen screen);
+    Stream<Rect2i> getGuiExclusionAreas(Screen screen);
 
     /**
      * Get the ghost ingredient handler for the given screen, if there is one.

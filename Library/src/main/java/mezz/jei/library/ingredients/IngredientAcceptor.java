@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -48,7 +49,7 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		for (Object ingredient : ingredients) {
-			Optional<ITypedIngredient<?>> typedIngredient = TypedIngredient.create(ingredientManager, ingredient);
+			Optional<ITypedIngredient<?>> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient);
 			typedIngredient.ifPresent(i -> this.types.add(i.getType()));
 
 			this.ingredients.add(typedIngredient);
@@ -98,9 +99,9 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	}
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
-		Optional<ITypedIngredient<?>> typedIngredient = TypedIngredient.create(this.ingredientManager, ingredientType, ingredient);
+		Optional<ITypedIngredient<T>> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient);
 		typedIngredient.ifPresent(i -> this.types.add(i.getType()));
-		this.ingredients.add(typedIngredient);
+		this.ingredients.add(typedIngredient.map(Function.identity()));
 	}
 
 	public <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {

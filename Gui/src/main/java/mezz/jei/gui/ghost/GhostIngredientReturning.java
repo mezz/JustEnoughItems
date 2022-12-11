@@ -2,6 +2,7 @@ package mezz.jei.gui.ghost;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -23,14 +24,17 @@ public class GhostIngredientReturning<T> {
 	private final long duration;
 
 	public static <T> Optional<GhostIngredientReturning<T>> create(GhostIngredientDrag<T> ghostIngredientDrag, double mouseX, double mouseY) {
-		return ghostIngredientDrag.getOrigin()
-			.map(origin -> {
-				IIngredientRenderer<T> ingredientRenderer = ghostIngredientDrag.getIngredientRenderer();
-				T ingredient = ghostIngredientDrag.getIngredient();
-				Vec2 end = new Vec2(origin.getX(), origin.getY());
-				Vec2 start = new Vec2((float) mouseX - 8, (float) mouseY - 8);
-				return new GhostIngredientReturning<>(ingredientRenderer, ingredient, start, end);
-			});
+		ImmutableRect2i origin = ghostIngredientDrag.getOrigin();
+		if (origin.isEmpty()) {
+			return Optional.empty();
+		}
+
+		IIngredientRenderer<T> ingredientRenderer = ghostIngredientDrag.getIngredientRenderer();
+		T ingredient = ghostIngredientDrag.getIngredient();
+		Vec2 end = new Vec2(origin.getX(), origin.getY());
+		Vec2 start = new Vec2((float) mouseX - 8, (float) mouseY - 8);
+		GhostIngredientReturning<T> returning = new GhostIngredientReturning<>(ingredientRenderer, ingredient, start, end);
+		return Optional.of(returning);
 	}
 
 	private GhostIngredientReturning(IIngredientRenderer<T> ingredientRenderer, T ingredient, Vec2 start, Vec2 end) {

@@ -13,12 +13,12 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.IngredientTooltipHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.apache.logging.log4j.LogManager;
@@ -272,8 +272,8 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 	}
 
 	@Override
-	public IImmutableRect2i getRect() {
-		return this.rect;
+	public Rect2i getRect() {
+		return this.rect.toMutable();
 	}
 
 	public void setSlotName(String slotName) {

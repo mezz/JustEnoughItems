@@ -1,11 +1,10 @@
 package mezz.jei.gui.util;
 
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 
 public class AlignmentUtil {
-    public static ImmutableRect2i align(ImmutableSize2i size, IImmutableRect2i availableArea, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
+    public static ImmutableRect2i align(ImmutableSize2i size, ImmutableRect2i availableArea, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
         final int width = size.getWidth();
         final int x = switch (horizontalAlignment) {
             case LEFT -> availableArea.getX();

@@ -69,7 +69,7 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 	}
 
 	public static <V> Focus<V> createFromApi(IIngredientManager ingredientManager, RecipeIngredientRole role, IIngredientType<V> ingredientType, V value) {
-		Optional<ITypedIngredient<V>> typedIngredient = TypedIngredient.createTyped(ingredientManager, ingredientType, value)
+		Optional<ITypedIngredient<V>> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, value)
 			.flatMap(i -> TypedIngredient.deepCopy(ingredientManager, i));
 
 		if (typedIngredient.isEmpty()) {

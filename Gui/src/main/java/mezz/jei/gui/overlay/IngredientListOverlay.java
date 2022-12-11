@@ -4,12 +4,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformScreenHelper;
@@ -113,7 +112,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return screenRectangle.cropLeft(guiRight);
 	}
 
-	public void updateScreen(@Nullable Screen guiScreen, @Nullable Set<IImmutableRect2i> updatedGuiExclusionAreas) {
+	public void updateScreen(@Nullable Screen guiScreen, @Nullable Set<ImmutableRect2i> updatedGuiExclusionAreas) {
 		screenPropertiesCache.updateScreen(guiScreen, updatedGuiExclusionAreas, this::onScreenPropertiesChanged);
 	}
 
@@ -121,7 +120,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		screenPropertiesCache.getGuiProperties()
 			.ifPresentOrElse(guiProperties -> {
 				ImmutableRect2i displayArea = createDisplayArea(guiProperties);
-				Set<IImmutableRect2i> guiExclusionAreas = screenPropertiesCache.getGuiExclusionAreas();
+				Set<ImmutableRect2i> guiExclusionAreas = screenPropertiesCache.getGuiExclusionAreas();
 				updateBounds(guiProperties, displayArea, guiExclusionAreas);
 			}, () -> {
 				this.ghostIngredientDragManager.stopDrag();
@@ -129,7 +128,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			});
 	}
 
-	private void updateBounds(IGuiProperties guiProperties, ImmutableRect2i displayArea, Set<IImmutableRect2i> guiExclusionAreas) {
+	private void updateBounds(IGuiProperties guiProperties, ImmutableRect2i displayArea, Set<ImmutableRect2i> guiExclusionAreas) {
 		final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, guiProperties);
 
 		final ImmutableRect2i availableContentsArea = getAvailableContentsArea(displayArea, searchBarCentered);
@@ -215,7 +214,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	@Override
-	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
@@ -270,7 +269,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			double mouseX = MouseUtil.getX();
 			double mouseY = MouseUtil.getY();
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY)
-				.<ITypedIngredient<?>>map(IClickedIngredient::getTypedIngredient)
+				.<ITypedIngredient<?>>map(IClickableIngredientInternal::getTypedIngredient)
 				.findFirst();
 		}
 		return Optional.empty();
@@ -283,7 +282,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			double mouseX = MouseUtil.getX();
 			double mouseY = MouseUtil.getY();
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY)
-				.map(IClickedIngredient::getTypedIngredient)
+				.map(IClickableIngredientInternal::getTypedIngredient)
 				.map(i -> i.getIngredient(ingredientType))
 				.flatMap(Optional::stream)
 				.findFirst()

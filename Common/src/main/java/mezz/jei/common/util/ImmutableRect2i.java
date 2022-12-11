@@ -1,12 +1,11 @@
 package mezz.jei.common.util;
 
 import com.google.common.base.MoreObjects;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import net.minecraft.client.renderer.Rect2i;
 
 import javax.annotation.Nonnegative;
 
-public class ImmutableRect2i implements IImmutableRect2i {
+public class ImmutableRect2i {
 	public static final ImmutableRect2i EMPTY = new ImmutableRect2i(0, 0, 0, 0);
 
 	@Nonnegative
@@ -37,40 +36,30 @@ public class ImmutableRect2i implements IImmutableRect2i {
 		this.height = Math.max(0, height);
 	}
 
-	@Override
 	@Nonnegative
 	public int getX() {
 		return x;
 	}
 
-	@Override
 	@Nonnegative
 	public int getY() {
 		return y;
 	}
 
-	@Override
 	@Nonnegative
 	public int getWidth() {
 		return width;
 	}
 
-	@Override
 	@Nonnegative
 	public int getHeight() {
 		return height;
 	}
 
-	public int getArea() {
-		return width * height;
-	}
-
-	@Override
 	public boolean isEmpty() {
 		return width == 0 || height == 0;
 	}
 
-	@Override
 	public boolean contains(double x, double y) {
 		return x >= this.x &&
 			y >= this.y &&
@@ -78,8 +67,7 @@ public class ImmutableRect2i implements IImmutableRect2i {
 			y < this.y + this.height;
 	}
 
-	@Override
-	public boolean intersects(IImmutableRect2i rect) {
+	public boolean intersects(ImmutableRect2i rect) {
 		if (this.isEmpty() || rect.isEmpty()) {
 			return false;
 		}
@@ -253,10 +241,7 @@ public class ImmutableRect2i implements IImmutableRect2i {
 			.toString();
 	}
 
-	public static ImmutableRect2i convert(IImmutableRect2i rect) {
-		if (rect instanceof ImmutableRect2i) {
-			return (ImmutableRect2i) rect;
-		}
-		return new ImmutableRect2i(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+	public Rect2i toMutable() {
+		return new Rect2i(x, y, width, height);
 	}
 }

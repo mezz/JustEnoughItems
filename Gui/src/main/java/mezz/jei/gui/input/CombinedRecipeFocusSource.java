@@ -1,6 +1,6 @@
 package mezz.jei.gui.input;
 
-import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import net.minecraft.client.Minecraft;
 
@@ -14,15 +14,15 @@ public class CombinedRecipeFocusSource {
 		this.handlers = List.of(handlers);
 	}
 
-	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(UserInput input, IInternalKeyMappings keyBindings) {
+	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(UserInput input, IInternalKeyMappings keyBindings) {
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
 
-		Stream<IClickedIngredient<?>> stream = handlers.stream()
+		Stream<IClickableIngredientInternal<?>> stream = handlers.stream()
 			.flatMap(handler -> handler.getIngredientUnderMouse(mouseX, mouseY));
 
 		if (isConflictingVanillaMouseButton(input, keyBindings)) {
-			stream = stream.filter(IClickedIngredient::canOverrideVanillaClickHandler);
+			stream = stream.filter(IClickableIngredientInternal::canClickToFocus);
 		}
 
 		return stream;
@@ -31,7 +31,7 @@ public class CombinedRecipeFocusSource {
 	/**
 	 * Some GUIs (like vanilla) shouldn't allow JEI to click to set the focus,
 	 * it would conflict with their normal behavior.
-	 * @see IClickedIngredient#canOverrideVanillaClickHandler()
+	 * @see IClickableIngredientInternal#canClickToFocus()
 	 */
 	private static boolean isConflictingVanillaMouseButton(UserInput input, IInternalKeyMappings keyBindings) {
 		if (input.isMouse()) {

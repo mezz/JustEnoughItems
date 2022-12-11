@@ -36,7 +36,7 @@ public class IngredientVisibility implements IIngredientVisibility {
 	@Override
 	public <V> boolean isIngredientVisible(IIngredientType<V> ingredientType, V ingredient) {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		return TypedIngredient.createTyped(ingredientManager, ingredientType, ingredient)
+		return TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient)
 			.map(i -> isIngredientVisible(i, ingredientHelper))
 			.orElse(false);
 	}

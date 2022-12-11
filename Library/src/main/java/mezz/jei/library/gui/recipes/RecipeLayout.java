@@ -13,13 +13,14 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RecipeSlots;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -215,12 +216,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return getRect().contains(mouseX, mouseY);
+		return MathUtil.contains(getRect(), mouseX, mouseY);
 	}
 
 	@Override
-	public IImmutableRect2i getRect() {
-		return new ImmutableRect2i(posX, posY, recipeCategory.getWidth(), recipeCategory.getHeight());
+	public Rect2i getRect() {
+		return new Rect2i(posX, posY, recipeCategory.getWidth(), recipeCategory.getHeight());
 	}
 
 	@Override
@@ -267,8 +268,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	}
 
 	@Override
-	public IImmutableRect2i getRecipeTransferButtonArea() {
-		return recipeTransferButtonArea;
+	public Rect2i getRecipeTransferButtonArea() {
+		return recipeTransferButtonArea.toMutable();
 	}
 
 	@Override

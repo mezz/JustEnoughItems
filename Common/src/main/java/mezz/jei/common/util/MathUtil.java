@@ -1,6 +1,5 @@
 package mezz.jei.common.util;
 
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;
@@ -18,7 +17,7 @@ public final class MathUtil {
 		return (int) Math.ceil((float) numerator / denominator);
 	}
 
-	public static boolean intersects(Collection<IImmutableRect2i> areas, ImmutableRect2i comparisonArea) {
+	public static boolean intersects(Collection<ImmutableRect2i> areas, ImmutableRect2i comparisonArea) {
 		return areas.stream()
 			.anyMatch(comparisonArea::intersects);
 	}
@@ -68,19 +67,19 @@ public final class MathUtil {
 		return new ImmutableRect2i(tx1, ty1, (int) tx2, (int) ty2);
 	}
 
-	public static ImmutableRect2i centerTextArea(IImmutableRect2i outer, Font fontRenderer, String text) {
+	public static ImmutableRect2i centerTextArea(ImmutableRect2i outer, Font fontRenderer, String text) {
 		int width = fontRenderer.width(text);
 		int height = fontRenderer.lineHeight;
 		return centerArea(outer, width, height);
 	}
 
-	public static ImmutableRect2i centerTextArea(IImmutableRect2i outer, Font fontRenderer, FormattedText text) {
+	public static ImmutableRect2i centerTextArea(ImmutableRect2i outer, Font fontRenderer, FormattedText text) {
 		int width = fontRenderer.width(text);
 		int height = fontRenderer.lineHeight;
 		return centerArea(outer, width, height);
 	}
 
-	public static ImmutableRect2i centerArea(IImmutableRect2i outer, int width, int height) {
+	public static ImmutableRect2i centerArea(ImmutableRect2i outer, int width, int height) {
 		return new ImmutableRect2i(
 			outer.getX() + Math.round((outer.getWidth() - width) / 2.0f),
 			outer.getY() + Math.round((outer.getHeight() - height) / 2.0f),

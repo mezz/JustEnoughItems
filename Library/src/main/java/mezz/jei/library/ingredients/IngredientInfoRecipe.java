@@ -29,8 +29,8 @@ public class IngredientInfoRecipe implements IJeiIngredientInfoRecipe {
 		Component... descriptionComponents
 	) {
 		List<ITypedIngredient<?>> typedIngredients = ingredients.stream()
-			.map(i -> TypedIngredient.create(ingredientManager, ingredientType, i))
-			.flatMap(Optional::stream)
+			.map(i -> TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, i))
+			.<ITypedIngredient<?>>flatMap(Optional::stream)
 			.toList();
 
 		List<IJeiIngredientInfoRecipe> recipes = new ArrayList<>();

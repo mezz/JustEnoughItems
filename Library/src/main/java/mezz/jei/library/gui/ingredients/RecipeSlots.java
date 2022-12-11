@@ -3,6 +3,7 @@ package mezz.jei.library.gui.ingredients;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.common.util.MathUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +39,7 @@ public class RecipeSlots {
 
 	public Optional<RecipeSlot> getHoveredSlot(double recipeMouseX, double recipeMouseY) {
 		return slots.stream()
-			.filter(ingredient -> ingredient.getRect().contains(recipeMouseX, recipeMouseY))
+			.filter(ingredient -> MathUtil.contains(ingredient.getRect(), recipeMouseX, recipeMouseY))
 			.findFirst();
 	}
 }

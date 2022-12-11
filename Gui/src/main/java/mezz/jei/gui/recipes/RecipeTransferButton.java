@@ -6,13 +6,13 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -34,7 +34,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 		this.onClose = onClose;
 	}
 
-	public void update(IImmutableRect2i area, IRecipeTransferManager recipeTransferManager, @Nullable AbstractContainerMenu container, Player player) {
+	public void update(Rect2i area, IRecipeTransferManager recipeTransferManager, @Nullable AbstractContainerMenu container, Player player) {
 		this.x = area.getX();
 		this.y = area.getY();
 		this.width = area.getWidth();
@@ -72,7 +72,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 				TooltipRenderer.drawHoveringText(poseStack, List.of(tooltipTransfer), mouseX, mouseY);
 			} else {
 				IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
-				IImmutableRect2i recipeRect = recipeLayout.getRect();
+				Rect2i recipeRect = recipeLayout.getRect();
 				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY());
 			}
 		}

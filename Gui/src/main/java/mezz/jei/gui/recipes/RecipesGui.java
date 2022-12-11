@@ -17,14 +17,13 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.ClickedIngredient;
+import mezz.jei.common.input.ClickableIngredientInternal;
+import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -44,6 +43,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -314,7 +314,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				for (int i = 0; i < transferButtons.size(); i++) {
 					IRecipeLayoutDrawable<?> recipeLayout = recipeLayouts.get(i);
 					RecipeTransferButton button = transferButtons.get(i);
-					IImmutableRect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
+					Rect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
 					button.update(buttonArea, recipeTransferManager, container, localPlayer);
 				}
 			});
@@ -336,7 +336,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isOpen()) {
 			return Stream.concat(
 				recipeCatalysts.getIngredientUnderMouse(mouseX, mouseY),
@@ -346,32 +346,37 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		return Stream.empty();
 	}
 
-	private Stream<IClickedIngredient<?>> getRecipeLayoutsIngredientUnderMouse(double mouseX, double mouseY) {
+	private Stream<IClickableIngredientInternal<?>> getRecipeLayoutsIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.recipeLayouts.stream()
 			.map(recipeLayout -> getRecipeLayoutIngredientUnderMouse(recipeLayout, mouseX, mouseY))
 			.flatMap(Optional::stream);
 	}
 
-	private static Optional<IClickedIngredient<?>> getRecipeLayoutIngredientUnderMouse(IRecipeLayoutDrawable<?> recipeLayout, double mouseX, double mouseY) {
+	private static Optional<IClickableIngredientInternal<?>> getRecipeLayoutIngredientUnderMouse(IRecipeLayoutDrawable<?> recipeLayout, double mouseX, double mouseY) {
 		return recipeLayout.getRecipeSlotUnderMouse(mouseX, mouseY)
 			.flatMap(recipeSlot -> getClickedIngredient(recipeLayout, recipeSlot));
 	}
 
-	private static Optional<IClickedIngredient<?>> getClickedIngredient(IRecipeLayoutDrawable<?> recipeLayout, IRecipeSlotDrawable recipeSlot) {
+	private static Optional<IClickableIngredientInternal<?>> getClickedIngredient(IRecipeLayoutDrawable<?> recipeLayout, IRecipeSlotDrawable recipeSlot) {
 		return recipeSlot.getDisplayedIngredient()
 			.map(displayedIngredient -> {
 				ImmutableRect2i area = absoluteClickedArea(recipeLayout, recipeSlot.getRect());
-				return new ClickedIngredient<>(displayedIngredient, area, false, true);
+				return new ClickableIngredientInternal<>(displayedIngredient, area, false, true);
 			});
 	}
 
 	/**
 	 * Converts from relative recipeLayout coordinates to absolute screen coordinates
 	 */
-	private static ImmutableRect2i absoluteClickedArea(IRecipeLayoutDrawable<?> recipeLayout, IImmutableRect2i area) {
-		IImmutableRect2i layoutArea = recipeLayout.getRect();
-		return ImmutableRect2i.convert(area)
-			.addOffset(layoutArea.getX(), layoutArea.getY());
+	private static ImmutableRect2i absoluteClickedArea(IRecipeLayoutDrawable<?> recipeLayout, Rect2i area) {
+		Rect2i layoutArea = recipeLayout.getRect();
+
+		return new ImmutableRect2i(
+			area.getX() + layoutArea.getX(),
+			area.getY() + layoutArea.getY(),
+			area.getWidth(),
+			area.hashCode()
+		);
 	}
 
 	@Override
@@ -458,7 +463,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			return false;
 		}
 
-		IImmutableRect2i recipeArea = recipeLayout.getRect();
+		Rect2i recipeArea = recipeLayout.getRect();
 		double recipeMouseX = input.getMouseX() - recipeArea.getX();
 		double recipeMouseY = input.getMouseY() - recipeArea.getY();
 		R recipe = recipeLayout.getRecipe();
@@ -542,7 +547,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		double y = MouseUtil.getY();
 
 		return getIngredientUnderMouse(x, y)
-			.map(IClickedIngredient::getTypedIngredient)
+			.map(IClickableIngredientInternal::getTypedIngredient)
 			.flatMap(i -> i.getIngredient(ingredientType).stream())
 			.findFirst();
 	}
@@ -622,7 +627,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		recipeLayouts.forEach(recipeLayout ->
 			{
-				IImmutableRect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
+				Rect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
 				IDrawable icon = textures.getRecipeTransfer();
 				RecipeTransferButton button = new RecipeTransferButton(icon, recipeLayout, textures, this::onClose);
 				button.update(buttonArea, recipeTransferManager, container, player);

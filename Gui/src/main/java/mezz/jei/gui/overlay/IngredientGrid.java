@@ -6,10 +6,9 @@ import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
+import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -47,7 +46,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	private final IngredientListRenderer ingredientListRenderer;
 	private final DeleteItemInputHandler deleteItemHandler;
 	private final IngredientGridTooltipHelper tooltipHelper;
-	private Set<IImmutableRect2i> guiExclusionAreas = Set.of();
+	private Set<ImmutableRect2i> guiExclusionAreas = Set.of();
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
 	public IngredientGrid(
@@ -77,7 +76,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return this.ingredientListRenderer.size();
 	}
 
-	public void updateBounds(ImmutableRect2i availableArea, Set<IImmutableRect2i> guiExclusionAreas) {
+	public void updateBounds(ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas) {
 		this.ingredientListRenderer.clear();
 
 		this.area = calculateBounds(this.gridConfig, availableArea);
@@ -94,7 +93,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		}
 	}
 
-	public static ImmutableSize2i calculateSize(IIngredientGridConfig config, IImmutableRect2i availableArea) {
+	public static ImmutableSize2i calculateSize(IIngredientGridConfig config, ImmutableRect2i availableArea) {
 		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, config.getMaxColumns());
 		final int rows = Math.min(availableArea.getHeight() / INGREDIENT_HEIGHT, config.getMaxRows());
 		if (rows < config.getMinRows() || columns < config.getMinColumns()) {
@@ -106,7 +105,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		);
 	}
 
-	public static ImmutableRect2i calculateBounds(IIngredientGridConfig config, IImmutableRect2i availableArea) {
+	public static ImmutableRect2i calculateBounds(IIngredientGridConfig config, ImmutableRect2i availableArea) {
 		ImmutableSize2i size = calculateSize(config, availableArea);
 		return AlignmentUtil.align(size, availableArea, config.getHorizontalAlignment(), config.getVerticalAlignment());
 	}
@@ -117,7 +116,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		}
 	}
 
-	public static SlotInfo calculateBlockedSlotPercentage(IIngredientGridConfig config, IImmutableRect2i availableArea, Set<IImmutableRect2i> exclusionAreas) {
+	public static SlotInfo calculateBlockedSlotPercentage(IIngredientGridConfig config, ImmutableRect2i availableArea, Set<ImmutableRect2i> exclusionAreas) {
 		ImmutableRect2i area = calculateBounds(config, availableArea);
 
 		int total = 0;
@@ -147,13 +146,10 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (!this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				ingredientListRenderer.getSlots()
-					.filter(s -> s.isMouseOver(mouseX, mouseY))
-					.map(IngredientListSlot::getIngredientRenderer)
-					.flatMap(Optional::stream)
-					.map(ElementRenderer::getArea)
-					.flatMap(Optional::stream)
+					.filter(s -> s.getArea().contains(mouseX, mouseY))
+					.filter(s -> s.getIngredientRenderer().isPresent())
 					.findFirst()
-					.ifPresent(area -> drawHighlight(poseStack, area));
+					.ifPresent(s -> drawHighlight(poseStack, s.getArea()));
 			}
 		}
 	}
@@ -162,7 +158,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlight(PoseStack, int, int, int)}
 	 * but with a custom area width and height
 	 */
-	public static void drawHighlight(PoseStack poseStack, IImmutableRect2i area) {
+	public static void drawHighlight(PoseStack poseStack, ImmutableRect2i area) {
 		RenderSystem.disableDepthTest();
 		RenderSystem.colorMask(true, true, true, false);
 		GuiComponent.fill(poseStack, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF);
@@ -193,7 +189,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	}
 
 	@Override
-	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return ingredientListRenderer.getSlots()
 			.filter(s -> s.isMouseOver(mouseX, mouseY))
 			.map(IngredientListSlot::getIngredientRenderer)

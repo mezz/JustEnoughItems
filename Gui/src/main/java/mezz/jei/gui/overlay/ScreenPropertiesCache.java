@@ -2,7 +2,7 @@ package mezz.jei.gui.overlay;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.GuiProperties;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
@@ -13,13 +13,13 @@ import java.util.Set;
 public class ScreenPropertiesCache {
     private final IScreenHelper screenHelper;
     private @Nullable IGuiProperties previousGuiProperties;
-    private Set<IImmutableRect2i> previousGuiExclusionAreas = Set.of();
+    private Set<ImmutableRect2i> previousGuiExclusionAreas = Set.of();
 
     public ScreenPropertiesCache(IScreenHelper screenHelper) {
         this.screenHelper = screenHelper;
     }
 
-    public void updateScreen(@Nullable Screen guiScreen, @Nullable Set<IImmutableRect2i> updatedGuiExclusionAreas, Runnable callback) {
+    public void updateScreen(@Nullable Screen guiScreen, @Nullable Set<ImmutableRect2i> updatedGuiExclusionAreas, Runnable callback) {
         IGuiProperties currentGuiProperties = Optional.ofNullable(guiScreen)
             .flatMap(screenHelper::getGuiProperties)
             .orElse(null);
@@ -48,7 +48,7 @@ public class ScreenPropertiesCache {
         return Optional.ofNullable(previousGuiProperties);
     }
 
-    public Set<IImmutableRect2i> getGuiExclusionAreas() {
+    public Set<ImmutableRect2i> getGuiExclusionAreas() {
         return previousGuiExclusionAreas;
     }
 }

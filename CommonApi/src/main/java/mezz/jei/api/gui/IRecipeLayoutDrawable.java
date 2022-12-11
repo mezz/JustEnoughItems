@@ -8,7 +8,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
@@ -67,13 +67,13 @@ public interface IRecipeLayoutDrawable<R> {
 	 * Get position and size for the recipe in absolute screen coordinates.
 	 * @since 11.5.0
 	 */
-	IImmutableRect2i getRect();
+	Rect2i getRect();
 
 	/**
 	 * Get the position of the recipe transfer button area, relative to the recipe layout drawable.
 	 * @since 11.5.0
 	 */
-	IImmutableRect2i getRecipeTransferButtonArea();
+	Rect2i getRecipeTransferButtonArea();
 
 	/**
 	 * Get a view of the recipe slots for this recipe layout.

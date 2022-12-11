@@ -1,9 +1,9 @@
 package mezz.jei.gui.input.handlers;
 
-import mezz.jei.api.runtime.util.IImmutableRect2i;
+import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
-import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
@@ -35,7 +35,7 @@ public class BookmarkInputHandler implements IUserInputHandler {
 					bookmarkList.remove(clicked.getTypedIngredient()) ||
 					bookmarkList.add(clicked.getTypedIngredient())
 				) {
-					IImmutableRect2i area = clicked.getArea().orElse(null);
+					ImmutableRect2i area = clicked.getArea();
 					IUserInputHandler handler = LimitedAreaInputHandler.create(this, area);
 					return Optional.of(handler);
 				}

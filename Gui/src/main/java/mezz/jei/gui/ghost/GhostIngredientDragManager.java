@@ -5,10 +5,10 @@ import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
+import mezz.jei.common.input.IClickableIngredientInternal;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IRecipeFocusSource;
@@ -64,7 +64,7 @@ public class GhostIngredientDragManager {
 			this.ghostIngredientDrag.drawTargets(poseStack, mouseX, mouseY);
 		} else {
 			ITypedIngredient<?> hovered = this.source.getIngredientUnderMouse(mouseX, mouseY)
-				.map(IClickedIngredient::getTypedIngredient)
+				.map(IClickableIngredientInternal::getTypedIngredient)
 				.findFirst()
 				.orElse(null);
 			if (!equals(hovered, this.hoveredIngredient)) {
@@ -104,7 +104,7 @@ public class GhostIngredientDragManager {
 		this.hoveredIngredientTargets = null;
 	}
 
-	private <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked, UserInput input) {
+	private <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IClickableIngredientInternal<V> clicked, UserInput input) {
 		return screenHelper.getGhostIngredientHandler(currentScreen)
 			.map(handler -> {
 				ITypedIngredient<V> value = clicked.getTypedIngredient();
@@ -116,7 +116,7 @@ public class GhostIngredientDragManager {
 					return false;
 				}
 				IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
-				IImmutableRect2i clickedArea = clicked.getArea().orElse(null);
+				ImmutableRect2i clickedArea = clicked.getArea();
 				this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, input.getMouseX(), input.getMouseY(), clickedArea);
 				return true;
 			})

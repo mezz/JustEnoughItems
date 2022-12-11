@@ -65,7 +65,7 @@ public class JeiRuntime implements IJeiRuntime {
 	@SuppressWarnings("removal")
 	@Override
 	public <T> ITypedIngredient<T> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient) {
-		Optional<ITypedIngredient<T>> result = TypedIngredient.createTyped(ingredientManager, ingredientType, ingredient);
+		Optional<ITypedIngredient<T>> result = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient);
 		if (result.isEmpty()) {
 			String ingredientInfo = ErrorUtil.getIngredientInfo(ingredient, ingredientType, ingredientManager);
 			throw new IllegalArgumentException("Invalid ingredient: " + ingredientInfo);

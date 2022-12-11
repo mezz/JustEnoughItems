@@ -3,10 +3,9 @@ package mezz.jei.gui.overlay;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IClickedIngredient;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -61,7 +60,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	private ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i slotBackgroundArea = ImmutableRect2i.EMPTY;
-	private Set<IImmutableRect2i> guiExclusionAreas = Set.of();
+	private Set<ImmutableRect2i> guiExclusionAreas = Set.of();
 
 	public IngredientGridWithNavigation(
 		IIngredientGridSource ingredientSource,
@@ -109,7 +108,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private static ImmutableRect2i avoidExclusionAreas(
 		ImmutableRect2i availableArea,
 		ImmutableRect2i estimatedNavigationArea,
-		Set<IImmutableRect2i> guiExclusionAreas,
+		Set<ImmutableRect2i> guiExclusionAreas,
 		IIngredientGridConfig gridConfig
 	) {
 		final int maxDimension = Math.max(availableArea.getWidth(), availableArea.getHeight());
@@ -172,7 +171,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.ingredientGrid.updateBounds(availableGridArea, guiExclusionAreas);
 	}
 
-	public void updateBounds(final ImmutableRect2i availableArea, Set<IImmutableRect2i> guiExclusionAreas) {
+	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas) {
 		this.guiExclusionAreas = guiExclusionAreas;
 
 		final boolean navigationEnabled =
@@ -253,7 +252,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	@Override
-	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY);
 	}
 
@@ -431,7 +430,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 					ItemStack cheatItemStack = cheatUtil.getCheatItemStack(clickedIngredient);
 					if (!cheatItemStack.isEmpty()) {
 						commandUtil.setHotbarStack(cheatItemStack, hotbarSlot);
-						IImmutableRect2i area = clickedIngredient.getArea().orElse(null);
+						ImmutableRect2i area = clickedIngredient.getArea();
 						return Stream.of(LimitedAreaInputHandler.create(this, area));
 					}
 					return Stream.empty();

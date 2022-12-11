@@ -7,14 +7,14 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IClickedIngredient;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.ClickedIngredient;
-import mezz.jei.gui.input.IRecipeFocusSource;
+import mezz.jei.common.input.ClickableIngredientInternal;
+import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.gui.input.IRecipeFocusSource;
+import net.minecraft.client.renderer.Rect2i;
 
 import javax.annotation.Nonnegative;
 import java.util.ArrayList;
@@ -111,8 +111,8 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 			IRecipeSlotDrawable hovered = null;
 			for (IRecipeSlotDrawable recipeSlot : this.recipeSlots) {
-				IImmutableRect2i rect = recipeSlot.getRect();
-				if (rect.contains(mouseX, mouseY)) {
+				Rect2i rect = recipeSlot.getRect();
+				if (MathUtil.contains(rect, mouseX, mouseY)) {
 					hovered = recipeSlot;
 				}
 				recipeSlot.draw(poseStack);
@@ -124,15 +124,21 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 	private Stream<IRecipeSlotDrawable> getHovered(double mouseX, double mouseY) {
 		return this.recipeSlots.stream()
-			.filter(recipeSlot -> recipeSlot.getRect().contains(mouseX, mouseY));
+			.filter(recipeSlot -> {
+				Rect2i rect = recipeSlot.getRect();
+				return MathUtil.contains(rect, mouseX, mouseY);
+			});
 	}
 
 	@Override
-	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return getHovered(mouseX, mouseY)
 			.map(recipeSlot ->
 				recipeSlot.getDisplayedIngredient()
-					.map(i -> new ClickedIngredient<>(i, recipeSlot.getRect(), false, true)))
+					.map(i -> {
+						Rect2i rect = recipeSlot.getRect();
+						return new ClickableIngredientInternal<>(i, new ImmutableRect2i(rect), false, true);
+					}))
 			.flatMap(Optional::stream);
 	}
 }

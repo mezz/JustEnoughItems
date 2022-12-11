@@ -1,21 +1,16 @@
 package mezz.jei.common.input;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IClickedIngredient;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.util.ErrorUtil;
-import org.jetbrains.annotations.Nullable;
+import mezz.jei.common.util.ImmutableRect2i;
 
-import java.util.Optional;
-
-public class ClickedIngredient<V> implements IClickedIngredient<V> {
+public class ClickableIngredientInternal<V> implements IClickableIngredientInternal<V> {
 	private final ITypedIngredient<V> value;
-	@Nullable
-	private final IImmutableRect2i area;
+	private final ImmutableRect2i area;
 	private final boolean canOverrideVanillaClickHandler;
 	private final boolean allowsCheating;
 
-	public ClickedIngredient(ITypedIngredient<V> value, @Nullable IImmutableRect2i area, boolean allowsCheating, boolean canOverrideVanillaClickHandler) {
+	public ClickableIngredientInternal(ITypedIngredient<V> value, ImmutableRect2i area, boolean allowsCheating, boolean canOverrideVanillaClickHandler) {
 		ErrorUtil.checkNotNull(value, "value");
 		this.value = value;
 		this.area = area;
@@ -29,12 +24,12 @@ public class ClickedIngredient<V> implements IClickedIngredient<V> {
 	}
 
 	@Override
-	public Optional<IImmutableRect2i> getArea() {
-		return Optional.ofNullable(area);
+	public ImmutableRect2i getArea() {
+		return area;
 	}
 
 	@Override
-	public boolean canOverrideVanillaClickHandler() {
+	public boolean canClickToFocus() {
 		return this.canOverrideVanillaClickHandler;
 	}
 

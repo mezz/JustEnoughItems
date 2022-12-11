@@ -86,15 +86,24 @@ public class IngredientManager implements IIngredientManager {
 
 		LOGGER.info("Ingredients are being added at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
 
-		ingredientInfo.addIngredients(ingredients);
+		IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
+		Collection<V> validIngredients = ingredients.stream()
+			.filter(i -> {
+				if (!ingredientHelper.isValidIngredient(i)) {
+					String errorInfo = ingredientHelper.getErrorInfo(i);
+					LOGGER.error("Attempted to add an invalid Ingredient: {}", errorInfo);
+					return false;
+				}
+				return true;
+			})
+			.toList();
+
+		ingredientInfo.addIngredients(validIngredients);
 
 		if (!this.listeners.isEmpty()) {
-			List<ITypedIngredient<V>> typedIngredients = ingredients.stream()
-				.map(i -> TypedIngredient.createTyped(this, ingredientType, i))
-				.map(Optional::orElseThrow)
+			List<ITypedIngredient<V>> typedIngredients = validIngredients.stream()
+				.map(i -> TypedIngredient.createUnvalidated(ingredientType, i))
 				.toList();
-
-			IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 
 			for (IIngredientListener listener : this.listeners.values()) {
 				listener.onIngredientsAdded(ingredientHelper, typedIngredients);
@@ -144,8 +153,7 @@ public class IngredientManager implements IIngredientManager {
 
 		if (!this.listeners.isEmpty()) {
 			List<ITypedIngredient<V>> typedIngredients = ingredients.stream()
-				.map(i -> TypedIngredient.createTyped(this, ingredientType, i))
-				.map(Optional::orElseThrow)
+				.map(i -> TypedIngredient.createUnvalidated(ingredientType, i))
 				.toList();
 
 			IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
@@ -170,7 +178,7 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public <V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient) {
-		return TypedIngredient.createTyped(this, ingredientType, ingredient);
+		return TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient);
 	}
 
 	@Override

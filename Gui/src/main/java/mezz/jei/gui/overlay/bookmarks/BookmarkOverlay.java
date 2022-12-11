@@ -5,10 +5,9 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
-import mezz.jei.api.runtime.IClickedIngredient;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -88,19 +87,19 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		return contents.hasRoom();
 	}
 
-	public void updateScreen(@Nullable Screen guiScreen, @Nullable Set<IImmutableRect2i> updatedGuiExclusionAreas) {
+	public void updateScreen(@Nullable Screen guiScreen, @Nullable Set<ImmutableRect2i> updatedGuiExclusionAreas) {
 		this.screenPropertiesCache.updateScreen(guiScreen, updatedGuiExclusionAreas, this::onScreenPropertiesChanged);
 	}
 
 	private void onScreenPropertiesChanged() {
 		this.screenPropertiesCache.getGuiProperties()
 			.ifPresent(guiProperties -> {
-				Set<IImmutableRect2i> guiExclusionAreas = this.screenPropertiesCache.getGuiExclusionAreas();
+				Set<ImmutableRect2i> guiExclusionAreas = this.screenPropertiesCache.getGuiExclusionAreas();
 				updateBounds(guiProperties, guiExclusionAreas);
 			});
 	}
 
-	private void updateBounds(IGuiProperties guiProperties, Set<IImmutableRect2i> guiExclusionAreas) {
+	private void updateBounds(IGuiProperties guiProperties, Set<ImmutableRect2i> guiExclusionAreas) {
 		ImmutableRect2i displayArea =  new ImmutableRect2i(0, 0, guiProperties.getGuiLeft(), guiProperties.getScreenHeight());
 
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
@@ -143,7 +142,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	@Override
-	public Stream<IClickedIngredient<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
@@ -155,7 +154,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
 		return getIngredientUnderMouse(mouseX, mouseY)
-			.<ITypedIngredient<?>>map(IClickedIngredient::getTypedIngredient)
+			.<ITypedIngredient<?>>map(IClickableIngredientInternal::getTypedIngredient)
 			.findFirst();
 	}
 
@@ -165,7 +164,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
 		return getIngredientUnderMouse(mouseX, mouseY)
-			.map(IClickedIngredient::getTypedIngredient)
+			.map(IClickableIngredientInternal::getTypedIngredient)
 			.map(i -> i.getIngredient(ingredientType))
 			.flatMap(Optional::stream)
 			.findFirst()

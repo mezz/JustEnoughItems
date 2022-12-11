@@ -1,17 +1,17 @@
 package mezz.jei.gui.input.handlers;
 
 import mezz.jei.api.runtime.IRecipesGui;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.gui.util.CommandUtil;
 import mezz.jei.gui.util.GiveAmount;
-import mezz.jei.gui.config.IClientConfig;
-import mezz.jei.core.config.IWorldConfig;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
 
@@ -28,7 +28,8 @@ public class CheatInputHandler implements IUserInputHandler {
         IWorldConfig worldConfig,
         IClientConfig clientConfig,
         IConnectionToServer serverConnection,
-        CheatUtil cheatUtil) {
+        CheatUtil cheatUtil
+    ) {
         this.showsRecipeFocuses = showsRecipeFocuses;
         this.worldConfig = worldConfig;
         this.cheatUtil = cheatUtil;
@@ -64,7 +65,7 @@ public class CheatInputHandler implements IUserInputHandler {
                         commandUtil.giveStack(itemStack, giveAmount);
                     }
                 }
-                IImmutableRect2i area = clicked.getArea().orElse(null);
+                ImmutableRect2i area = clicked.getArea();
                 return LimitedAreaInputHandler.create(this, area);
             });
     }

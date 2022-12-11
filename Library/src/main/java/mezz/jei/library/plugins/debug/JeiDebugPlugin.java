@@ -3,23 +3,27 @@ package mezz.jei.library.plugins.debug;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
+import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.MathUtil;
 import mezz.jei.library.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.library.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.library.plugins.jei.ingredients.DebugIngredientListFactory;
@@ -40,6 +44,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @JeiPlugin
 public class JeiDebugPlugin implements IModPlugin {
@@ -142,6 +147,9 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
 		if (DebugConfig.isDebugModeEnabled()) {
+			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+			IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
+
 			registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<>() {
 				@Override
 				public List<Rect2i> getGuiExtraAreas(BrewingStandScreen containerScreen) {
@@ -156,21 +164,38 @@ public class JeiDebugPlugin implements IModPlugin {
 					);
 				}
 
-				@Nullable
 				@Override
-				public Object getIngredientUnderMouse(BrewingStandScreen containerScreen, double mouseX, double mouseY) {
-					if (mouseX < 10 && mouseY < 10) {
-						IPlatformFluidHelper<?> fluidHelper = Services.PLATFORM.getFluidHelper();
-						long bucketVolume = fluidHelper.bucketVolume();
-						return fluidHelper.create(Fluids.WATER, bucketVolume, null);
+				public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(BrewingStandScreen containerScreen, double mouseX, double mouseY) {
+					Rect2i area = new Rect2i(0, 0, 10, 10);
+					if (MathUtil.contains(area, mouseX, mouseY)) {
+						return ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.BOW))
+							.map(item -> new DebugClickableIngredient<>(item, area));
 					}
-					return null;
+					return Optional.empty();
 				}
 			});
 
-			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-			IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
 			registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager));
+		}
+	}
+
+	private static class DebugClickableIngredient<T> implements IClickableIngredient<T> {
+		private final ITypedIngredient<T> typedIngredient;
+		private final Rect2i area;
+
+		public DebugClickableIngredient(ITypedIngredient<T> typedIngredient, Rect2i area) {
+			this.typedIngredient = typedIngredient;
+			this.area = area;
+		}
+
+		@Override
+		public ITypedIngredient<T> getTypedIngredient() {
+			return typedIngredient;
+		}
+
+		@Override
+		public Rect2i getArea() {
+			return area;
 		}
 	}
 

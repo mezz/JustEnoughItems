@@ -7,7 +7,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
@@ -16,11 +16,9 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.phys.Vec2;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
-import java.util.Optional;
 
 public class GhostIngredientDrag<T> {
 	private static final int targetColor = 0x4013C90A;
@@ -32,8 +30,7 @@ public class GhostIngredientDrag<T> {
 	private final T ingredient;
 	private final double mouseStartX;
 	private final double mouseStartY;
-	@Nullable
-	private final IImmutableRect2i origin;
+	private final ImmutableRect2i origin;
 
 	public GhostIngredientDrag(
 		IGhostIngredientHandler<?> handler,
@@ -42,7 +39,7 @@ public class GhostIngredientDrag<T> {
 		T ingredient,
 		double mouseX,
 		double mouseY,
-		@Nullable IImmutableRect2i origin
+		ImmutableRect2i origin
 	) {
 		this.handler = handler;
 		this.targets = targets;
@@ -60,12 +57,16 @@ public class GhostIngredientDrag<T> {
 	}
 
 	public static boolean farEnoughToDraw(GhostIngredientDrag<?> drag, double mouseX, double mouseY) {
-		Vec2 center = drag.getOrigin()
-			.map(origin -> new Vec2(
+		ImmutableRect2i origin = drag.getOrigin();
+		final Vec2 center;
+		if (origin.isEmpty()) {
+			center = new Vec2((float) drag.mouseStartX, (float) drag.mouseStartY);
+		} else {
+			center = new Vec2(
 				origin.getX() + (origin.getWidth() / 2.0f),
 				origin.getY() + (origin.getHeight() / 2.0f)
-			))
-			.orElseGet(() -> new Vec2((float) drag.mouseStartX, (float) drag.mouseStartY));
+			);
+		}
 
 		double mouseXDist = center.x - mouseX;
 		double mouseYDist = center.y - mouseY;
@@ -78,7 +79,7 @@ public class GhostIngredientDrag<T> {
 			return;
 		}
 
-		if (origin != null) {
+		if (!origin.isEmpty()) {
 			int originX = origin.getX() + (origin.getWidth() / 2);
 			int originY = origin.getY() + (origin.getHeight() / 2);
 
@@ -165,7 +166,7 @@ public class GhostIngredientDrag<T> {
 		return ingredient;
 	}
 
-	public Optional<IImmutableRect2i> getOrigin() {
-		return Optional.ofNullable(origin);
+	public ImmutableRect2i getOrigin() {
+		return origin;
 	}
 }

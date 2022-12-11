@@ -1,13 +1,10 @@
 package mezz.jei.gui.overlay;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.util.IImmutableRect2i;
-import mezz.jei.api.runtime.IClickedIngredient;
+import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.util.ImmutableRect2i;
 
-import java.util.Optional;
-
-public class ElementRenderer<T> implements IClickedIngredient<T> {
+public class ElementRenderer<T> implements IClickableIngredientInternal<T> {
 	private static final ImmutableRect2i DEFAULT_AREA = new ImmutableRect2i(0, 0, 16, 16);
 
 	private final ITypedIngredient<T> ingredient;
@@ -32,11 +29,7 @@ public class ElementRenderer<T> implements IClickedIngredient<T> {
 	}
 
 	@Override
-	public Optional<IImmutableRect2i> getArea() {
-		return Optional.of(area);
-	}
-
-	public IImmutableRect2i getElementArea() {
+	public ImmutableRect2i getArea() {
 		return area;
 	}
 
@@ -46,7 +39,7 @@ public class ElementRenderer<T> implements IClickedIngredient<T> {
 	}
 
 	@Override
-	public boolean canOverrideVanillaClickHandler() {
+	public boolean canClickToFocus() {
 		return true;
 	}
 
