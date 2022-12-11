@@ -91,19 +91,3 @@ artifacts {
     archives(tasks.jar.get())
     archives(sourcesJarTask.get())
 }
-
-publishing {
-    publications {
-        register<MavenPublication>("coreJar") {
-            artifactId = baseArchivesName
-            artifact(tasks.jar.get())
-            artifact(sourcesJarTask.get())
-        }
-    }
-    repositories {
-        val deployDir = project.findProperty("DEPLOY_DIR")
-        if (deployDir != null) {
-            maven(deployDir)
-        }
-    }
-}

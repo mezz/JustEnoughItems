@@ -84,29 +84,3 @@ tasks.withType<JavaCompile> {
         }
     }
 }
-
-publishing {
-    publications {
-        register<MavenPublication>("guiJar") {
-            artifactId = base.archivesName.get()
-            artifact(tasks.jar)
-            artifact(tasks.named("sourcesJar"))
-
-            pom.withXml {
-                val dependenciesNode = asNode().appendNode("dependencies")
-                dependencyProjects.forEach {
-                    val dependencyNode = dependenciesNode.appendNode("dependency")
-                    dependencyNode.appendNode("groupId", it.group)
-                    dependencyNode.appendNode("artifactId", it.base.archivesName.get())
-                    dependencyNode.appendNode("version", it.version)
-                }
-            }
-        }
-    }
-    repositories {
-        val deployDir = project.findProperty("DEPLOY_DIR")
-        if (deployDir != null) {
-            maven(deployDir)
-        }
-    }
-}
