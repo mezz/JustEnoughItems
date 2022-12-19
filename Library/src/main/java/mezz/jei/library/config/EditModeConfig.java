@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.core.util.WeakList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,6 +27,7 @@ public class EditModeConfig implements IEditModeConfig {
 	private final Set<String> blacklist = new LinkedHashSet<>();
 	private final ISerializer serializer;
 	private final IIngredientManager ingredientManager;
+	private final WeakList<IListener> listeners = new WeakList<>();
 
 	public EditModeConfig(ISerializer serializer, IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
@@ -37,6 +39,7 @@ public class EditModeConfig implements IEditModeConfig {
 	public <V> void addIngredientToConfigBlacklist(ITypedIngredient<V> typedIngredient, HideMode blacklistType, IIngredientHelper<V> ingredientHelper) {
 		if (addIngredientToConfigBlacklistInternal(typedIngredient, blacklistType, ingredientHelper)) {
 			serializer.save(this);
+			notifyListenersOfVisibilityChange(typedIngredient, false);
 		}
 	}
 
@@ -71,6 +74,7 @@ public class EditModeConfig implements IEditModeConfig {
 		final String uid = getIngredientUid(typedIngredient, blacklistType, ingredientHelper);
 		if (blacklist.remove(uid)) {
 			serializer.save(this);
+			notifyListenersOfVisibilityChange(typedIngredient, true);
 		}
 	}
 
@@ -130,6 +134,10 @@ public class EditModeConfig implements IEditModeConfig {
 		removeIngredientFromConfigBlacklist(ingredient, hideMode, ingredientHelper);
 	}
 
+	public void registerListener(IListener listener) {
+		this.listeners.add(listener);
+	}
+
 	public interface ISerializer {
 		void save(EditModeConfig config);
 		void load(EditModeConfig config);
@@ -162,5 +170,13 @@ public class EditModeConfig implements IEditModeConfig {
 				LOGGER.error("Failed to load blacklist from file {}", path, e);
 			}
 		}
+	}
+
+	public interface IListener {
+		<V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible);
+	}
+
+	private <T> void notifyListenersOfVisibilityChange(ITypedIngredient<T> ingredient, boolean visible) {
+		listeners.forEach(listener -> listener.onIngredientVisibilityChanged(ingredient, visible));
 	}
 }

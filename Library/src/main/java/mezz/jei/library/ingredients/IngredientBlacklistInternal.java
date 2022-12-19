@@ -1,29 +1,37 @@
 package mezz.jei.library.ingredients;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
-import net.minecraft.resources.ResourceLocation;
+import mezz.jei.core.util.WeakList;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class IngredientBlacklistInternal implements IIngredientManager.IIngredientListener {
+	public interface IListener {
+		<V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible);
+	}
+
 	private final Set<String> ingredientBlacklist = new HashSet<>();
+	private final WeakList<IListener> listeners = new WeakList<>();
 
 	public <V> void addIngredientToBlacklist(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
 		V ingredient = typedIngredient.getIngredient();
 		String uniqueName = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-		ingredientBlacklist.add(uniqueName);
+		if (ingredientBlacklist.add(uniqueName)) {
+			notifyListenersOfVisibilityChange(typedIngredient, false);
+		}
 	}
 
 	public <V> void removeIngredientFromBlacklist(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
 		V ingredient = typedIngredient.getIngredient();
 		String uniqueName = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-		ingredientBlacklist.remove(uniqueName);
+		if (ingredientBlacklist.remove(uniqueName)) {
+			notifyListenersOfVisibilityChange(typedIngredient, true);
+		}
 	}
 
 	public <V> boolean isIngredientBlacklistedByApi(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
@@ -37,9 +45,8 @@ public class IngredientBlacklistInternal implements IIngredientManager.IIngredie
 		return ingredientBlacklist.contains(uid) || ingredientBlacklist.contains(uidWild);
 	}
 
-	@Override
-	public ResourceLocation getUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "ingredient_blacklist_internal");
+	public void registerListener(IListener listener) {
+		this.listeners.add(listener);
 	}
 
 	@Override
@@ -54,5 +61,9 @@ public class IngredientBlacklistInternal implements IIngredientManager.IIngredie
 		for (ITypedIngredient<V> ingredient : ingredients) {
 			addIngredientToBlacklist(ingredient, ingredientHelper);
 		}
+	}
+
+	private <T> void notifyListenersOfVisibilityChange(ITypedIngredient<T> ingredient, boolean visible) {
+		listeners.forEach(listener -> listener.onIngredientVisibilityChanged(ingredient, visible));
 	}
 }

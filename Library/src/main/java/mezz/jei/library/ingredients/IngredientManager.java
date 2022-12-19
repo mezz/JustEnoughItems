@@ -6,22 +6,20 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
-import net.minecraft.resources.ResourceLocation;
+import mezz.jei.core.util.WeakList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class IngredientManager implements IIngredientManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final RegisteredIngredients registeredIngredients;
-	private final Map<ResourceLocation, IIngredientListener> listeners = new HashMap<>();
+	private final WeakList<IIngredientListener> listeners = new WeakList<>();
 
 	public IngredientManager(RegisteredIngredients registeredIngredients) {
 		this.registeredIngredients = registeredIngredients;
@@ -105,9 +103,7 @@ public class IngredientManager implements IIngredientManager {
 				.map(i -> TypedIngredient.createUnvalidated(ingredientType, i))
 				.toList();
 
-			for (IIngredientListener listener : this.listeners.values()) {
-				listener.onIngredientsAdded(ingredientHelper, typedIngredients);
-			}
+			this.listeners.forEach(listener -> listener.onIngredientsAdded(ingredientHelper, typedIngredients));
 		}
 	}
 
@@ -158,22 +154,14 @@ public class IngredientManager implements IIngredientManager {
 
 			IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 
-			for (IIngredientListener listener : this.listeners.values()) {
-				listener.onIngredientsRemoved(ingredientHelper, typedIngredients);
-			}
+			this.listeners.forEach(listener -> listener.onIngredientsRemoved(ingredientHelper, typedIngredients));
 		}
 	}
 
 	@Override
-	public void addIngredientListener(IIngredientListener listener) {
+	public void registerIngredientListener(IIngredientListener listener) {
 		ErrorUtil.checkNotNull(listener, "listener");
-		this.listeners.put(listener.getUid(), listener);
-	}
-
-	@Override
-	public void removeIngredientListener(IIngredientListener listener) {
-		ErrorUtil.checkNotNull(listener, "listener");
-		this.listeners.remove(listener.getUid(), listener);
+		this.listeners.add(listener);
 	}
 
 	@Override

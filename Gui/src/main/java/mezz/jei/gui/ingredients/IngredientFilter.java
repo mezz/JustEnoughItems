@@ -1,6 +1,5 @@
 package mezz.jei.gui.ingredients;
 
-import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -20,7 +19,6 @@ import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchLowMem;
 import mezz.jei.gui.search.IElementSearch;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -155,6 +153,19 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		return false;
 	}
 
+	public <V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible) {
+		IIngredientType<V> ingredientType = ingredient.getType();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		searchForMatchingElement(ingredientHelper, ingredient)
+			.ifPresent(matchingElementInfo -> {
+				IListElement<V> element = matchingElementInfo.getElement();
+				if (element.isVisible() != visible) {
+					element.setVisible(visible);
+					notifyListenersOfChange();
+				}
+			});
+	}
+
 	@Override
 	public List<ITypedIngredient<?>> getIngredientList() {
 		String filterText = this.filterTextSource.getFilterText();
@@ -227,11 +238,6 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			return Optional.of(cast);
 		}
 		return Optional.empty();
-	}
-
-	@Override
-	public ResourceLocation getUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "ingredient_filter");
 	}
 
 	@Override

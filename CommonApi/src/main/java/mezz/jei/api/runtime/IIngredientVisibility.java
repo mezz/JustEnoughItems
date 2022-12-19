@@ -36,4 +36,24 @@ public interface IIngredientVisibility {
 	 * @since 10.0.0
 	 */
 	<V> boolean isIngredientVisible(ITypedIngredient<V> typedIngredient);
+
+	/**
+	 * Register a listener that receives updates when ingredient visibility changes.
+	 *
+	 * @since 11.5.0
+	 */
+	void registerListener(IListener listener);
+
+	/**
+	 * A listener that receives updates when ingredients are made visible or invisible.
+	 *
+	 * @since 11.5.0
+	 */
+	interface IListener {
+		/**
+		 * Called when ingredients are made visible or invisible.
+		 * @since 11.5.0
+		 */
+		<V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible);
+	}
 }

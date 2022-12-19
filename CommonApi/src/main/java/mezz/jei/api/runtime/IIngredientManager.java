@@ -8,7 +8,6 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -41,10 +40,7 @@ public interface IIngredientManager {
 
 	/**
 	 * Returns the appropriate ingredient helper for this ingredient.
-	 *
-	 * @deprecated use {@link #getIngredientHelper(IIngredientType)} instead.
 	 */
-	@Deprecated(since = "11.5.0", forRemoval = true)
 	<V> IIngredientHelper<V> getIngredientHelper(V ingredient);
 
 	/**
@@ -54,10 +50,7 @@ public interface IIngredientManager {
 
 	/**
 	 * Returns the ingredient renderer for this ingredient.
-	 *
-	 * @deprecated use {@link #getIngredientRenderer(IIngredientType)}
 	 */
-	@Deprecated(since = "11.5.0", forRemoval = true)
 	<V> IIngredientRenderer<V> getIngredientRenderer(V ingredient);
 
 	/**
@@ -139,12 +132,7 @@ public interface IIngredientManager {
 	 *
 	 * @since 11.5.0
 	 */
-	void addIngredientListener(IIngredientListener listener);
-
-	/**
-	 * Remove a listener from receiving updates when ingredients are added or removed from the ingredient manager.
-	 */
-	void removeIngredientListener(IIngredientListener listener);
+	void registerIngredientListener(IIngredientListener listener);
 
 	/**
 	 * A listener that receives updates when ingredients are added or removed from the ingredient manager.
@@ -152,15 +140,6 @@ public interface IIngredientManager {
 	 * @since 11.5.0
 	 */
 	interface IIngredientListener {
-		/**
-		 * A unique ID for this listener.
-		 * There can only be one listener per unique id,
-		 * registering another listener with the same ID will replace the first one.
-		 *
-		 * @since 11.5.0
-		 */
-		ResourceLocation getUid();
-
 		/**
 		 * Called when ingredients are added to the ingredient manager.
 		 * @since 11.5.0

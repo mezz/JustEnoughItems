@@ -96,9 +96,9 @@ public final class JeiStarter {
 		IIngredientManager ingredientManager = pluginLoader.getIngredientManager();
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
-		ingredientManager.addIngredientListener(blacklist);
+		ingredientManager.registerIngredientListener(blacklist);
 
-		IEditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.cfg")), ingredientManager);
+		EditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.cfg")), ingredientManager);
 
 		IIngredientVisibility ingredientVisibility = new IngredientVisibility(
 			blacklist,
