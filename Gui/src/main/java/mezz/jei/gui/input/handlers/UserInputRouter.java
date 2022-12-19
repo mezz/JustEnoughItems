@@ -97,7 +97,9 @@ public class UserInputRouter {
     }
 
     public void handleGuiChange() {
-        LOGGER.debug("The GUI has changed, clearing all pending clicks");
+        if (DebugConfig.isDebugModeEnabled()) {
+            LOGGER.debug("The GUI has changed, clearing all pending clicks");
+        }
         for (InputConstants.Key key : this.pending.keySet()) {
             this.combinedInputHandler.handleMouseClickedOut(key);
         }
