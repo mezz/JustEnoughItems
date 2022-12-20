@@ -7,25 +7,24 @@ import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.world.inventory.Slot;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IPlatformScreenHelper {
-	@Nullable
-	Slot getSlotUnderMouse(AbstractContainerScreen<?> containerScreen);
+    Optional<Slot> getSlotUnderMouse(AbstractContainerScreen<?> containerScreen);
 
-	int getGuiLeft(AbstractContainerScreen<?> containerScreen);
+    int getGuiLeft(AbstractContainerScreen<?> containerScreen);
 
-	int getGuiTop(AbstractContainerScreen<?> containerScreen);
+    int getGuiTop(AbstractContainerScreen<?> containerScreen);
 
-	int getXSize(AbstractContainerScreen<?> containerScreen);
+    int getXSize(AbstractContainerScreen<?> containerScreen);
 
-	int getYSize(AbstractContainerScreen<?> containerScreen);
+    int getYSize(AbstractContainerScreen<?> containerScreen);
 
-	ImmutableRect2i getBookArea(RecipeUpdateListener containerScreen);
+    ImmutableRect2i getBookArea(RecipeUpdateListener containerScreen);
 
-	List<RecipeBookTabButton> getTabButtons(RecipeBookComponent recipeBookComponent);
+    List<RecipeBookTabButton> getTabButtons(RecipeBookComponent recipeBookComponent);
 
-	void setFocused(AbstractWidget widget, boolean value);
+    void setFocused(AbstractWidget widget, boolean value);
 }

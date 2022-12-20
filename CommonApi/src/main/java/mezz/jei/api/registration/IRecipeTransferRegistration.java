@@ -1,14 +1,16 @@
 package mezz.jei.api.registration;
 
 import mezz.jei.api.recipe.RecipeType;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import net.minecraft.world.inventory.MenuType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Register recipe transfer handlers here to give JEI the information it needs to transfer recipes into the crafting area.
@@ -26,11 +28,19 @@ public interface IRecipeTransferRegistration {
 	 * Basic method for adding a recipe transfer handler.
 	 *
 	 * @param containerClass     the class of the container that this recipe transfer handler is for
+	 * @param menuType           the optional menu type of the container that this recipe transfer handler is for
 	 * @param recipeType         the recipe type that this container can use
 	 * @param recipeSlotStart    the first slot for recipe inputs
 	 * @param recipeSlotCount    the number of slots for recipe inputs
 	 * @param inventorySlotStart the first slot of the available inventory (usually player inventory)
 	 * @param inventorySlotCount the number of slots of the available inventory
+	 *
+	 * @since 10.3.0
+	 */
+	<C extends AbstractContainerMenu, R> void addRecipeTransferHandler(Class<? extends C> containerClass, @Nullable MenuType<C> menuType, RecipeType<R> recipeType, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount);
+
+	/**
+	 * Basic method for adding a recipe transfer handler.
 	 *
 	 * @since 9.5.0
 	 */

@@ -8,13 +8,10 @@ import net.minecraft.resources.ResourceLocation;
  * Identifies a type of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
  * Each {@link IRecipeCategory} can be uniquely identified by its {@link RecipeType}.
  *
- * This class replaces the {@link ResourceLocation} used in {@link IRecipeCategory#getUid()}
- *
  * @see RecipeTypes for all the built-in recipe types that are added by JEI.
  *
  * @since 9.5.0
  */
-@SuppressWarnings("removal")
 public final class RecipeType<T> {
 	public static <T> RecipeType<T> create(String nameSpace, String path, Class<? extends T> recipeClass) {
 		ResourceLocation uid = new ResourceLocation(nameSpace, path);

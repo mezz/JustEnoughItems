@@ -2,14 +2,15 @@ package mezz.jei.api.runtime;
 
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
-import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.recipe.IFocus;
+
+import java.util.List;
 
 /**
  * JEI's gui for displaying recipes. Use this interface to open recipes.

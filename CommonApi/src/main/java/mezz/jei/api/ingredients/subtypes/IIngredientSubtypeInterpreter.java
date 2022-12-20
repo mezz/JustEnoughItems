@@ -1,5 +1,7 @@
 package mezz.jei.api.ingredients.subtypes;
 
+import mezz.jei.api.registration.ISubtypeRegistration;
+
 /**
  * A subtype interpreter tells JEI how to create unique ids for ingredients.
  *
@@ -7,7 +9,7 @@ package mezz.jei.api.ingredients.subtypes;
  * and other NBT that is used for electric charge that can be ignored.
  * You can tell JEI how to interpret these differences by implementing an
  * {@link IIngredientSubtypeInterpreter} and registering it with JEI in
- * {@link mezz.jei.api.registration.ISubtypeRegistration}
+ * {@link ISubtypeRegistration}
  *
  * @since 7.6.2
  */

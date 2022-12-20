@@ -1,10 +1,10 @@
 package mezz.jei.common.input.keys;
 
+import net.minecraft.network.chat.TranslatableComponent;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
 public enum JeiKeyModifier {
 	CONTROL_OR_COMMAND {

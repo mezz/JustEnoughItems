@@ -8,16 +8,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface IPlatformItemStackHelper {
-	int getBurnTime(ItemStack itemStack);
+    int getBurnTime(ItemStack itemStack);
 
-	boolean isBookEnchantable(ItemStack stack, ItemStack book);
+    boolean isBookEnchantable(ItemStack stack, ItemStack book);
 
-	@Nullable
-	String getCreatorModId(ItemStack stack);
+    Optional<String> getCreatorModId(ItemStack stack);
 
-	Collection<CreativeModeTab> getCreativeTabs(ItemStack itemStack);
+    Collection<CreativeModeTab> getCreativeTabs(ItemStack itemStack);
 
-	List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack);
+    List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack);
 }

@@ -1,9 +1,9 @@
 package mezz.jei.forge.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import mezz.jei.common.input.InputType;
-import mezz.jei.common.input.MouseUtil;
-import mezz.jei.common.input.UserInput;
+import mezz.jei.gui.input.InputType;
+import mezz.jei.gui.input.MouseUtil;
+import mezz.jei.gui.input.UserInput;
 import net.minecraftforge.client.event.ScreenEvent;
 
 import java.util.Optional;
@@ -11,7 +11,7 @@ import java.util.Optional;
 public final class ForgeUserInput {
 	private ForgeUserInput() {}
 
-	public static UserInput fromEvent(ScreenEvent.KeyboardKeyEvent keyEvent) {
+	public static UserInput fromEvent(ScreenEvent.KeyboardKeyPressedEvent keyEvent) {
 		InputConstants.Key input = InputConstants.getKey(keyEvent.getKeyCode(), keyEvent.getScanCode());
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();

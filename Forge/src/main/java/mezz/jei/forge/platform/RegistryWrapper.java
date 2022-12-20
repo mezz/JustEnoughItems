@@ -7,7 +7,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryManager;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -33,10 +32,10 @@ public class RegistryWrapper<T extends IForgeRegistryEntry<T>> implements IPlatf
 		return StreamSupport.stream(this.forgeRegistry.spliterator(), false);
 	}
 
-	@Nullable
 	@Override
-	public T getValue(ResourceLocation resourceLocation) {
-		return this.forgeRegistry.getValue(resourceLocation);
+	public Optional<T> getValue(ResourceLocation resourceLocation) {
+		T value = this.forgeRegistry.getValue(resourceLocation);
+		return Optional.ofNullable(value);
 	}
 
 	@Override
@@ -56,8 +55,7 @@ public class RegistryWrapper<T extends IForgeRegistryEntry<T>> implements IPlatf
 	}
 
 	@Override
-	@Nullable
-	public ResourceLocation getRegistryName(T entry) {
-		return entry.getRegistryName();
+	public Optional<ResourceLocation> getRegistryName(T entry) {
+		return Optional.ofNullable(entry.getRegistryName());
 	}
 }

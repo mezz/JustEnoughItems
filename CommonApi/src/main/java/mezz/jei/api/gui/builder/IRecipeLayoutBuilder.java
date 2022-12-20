@@ -1,5 +1,6 @@
 package mezz.jei.api.gui.builder;
 
+import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -23,7 +24,7 @@ public interface IRecipeLayoutBuilder {
 	 *
 	 * @since 9.3.0
 	 *
-	 * @apiNote When porting from {@link mezz.jei.api.gui.ingredient.IGuiItemStackGroup} to this new method,
+	 * @apiNote When porting from {@link IGuiItemStackGroup} to this new method,
 	 * in most cases you will need to add 1 pixel x and y to your coordinates here.
 	 * For ItemStack ingredients, JEI used to automatically add a 1 pixel offset on all sides,
 	 * so that a 16x16 item would be centered on an 18x18 slot texture background.

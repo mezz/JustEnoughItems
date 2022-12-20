@@ -1,14 +1,15 @@
 package mezz.jei.api.recipe.transfer;
 
-import org.jetbrains.annotations.Nullable;
-
+import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import net.minecraft.resources.ResourceLocation;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import org.jetbrains.annotations.Nullable;
 
-import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.registration.IRecipeTransferRegistration;
+import java.util.Optional;
 
 /**
  * A recipe transfer handler moves items into a crafting area, based on the items in a recipe.
@@ -18,13 +19,22 @@ import mezz.jei.api.registration.IRecipeTransferRegistration;
  *
  * Useful functions for implementing a recipe transfer handler can be found in {@link IRecipeTransferHandlerHelper}.
  *
- * To register your recipe transfer handler, use {@link IRecipeTransferRegistration#addRecipeTransferHandler(IRecipeTransferHandler, ResourceLocation)}
+ * To register your recipe transfer handler, use {@link IRecipeTransferRegistration#addRecipeTransferHandler(IRecipeTransferHandler, RecipeType)}
  */
 public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
+
 	/**
 	 * The container that this recipe transfer handler can use.
 	 */
 	Class<C> getContainerClass();
+
+	/**
+	 * Return the optional menu type that this recipe transfer helper supports.
+	 * This is used to optionally narrow down the type of container handled by this recipe transfer handler.
+	 */
+	default Optional<MenuType<C>> getMenuType() {
+		return Optional.empty();
+	}
 
 	/**
 	 * The recipe that this recipe transfer handler can use.

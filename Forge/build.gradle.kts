@@ -6,7 +6,7 @@ plugins {
 	idea
 	eclipse
 	`maven-publish`
-	id("net.minecraftforge.gradle") version("6.0.25")
+	id("net.minecraftforge.gradle") version("6.0.26")
 	id("org.parchmentmc.librarian.forgegradle") version("1.+")
 	id("net.darkhax.curseforgegradle") version("1.0.8")
 }
@@ -43,6 +43,8 @@ val dependencyProjects: List<Project> = listOf(
 	project(":Core"),
 	project(":Common"),
 	project(":CommonApi"),
+	project(":Library"),
+	project(":Gui"),
 	project(":ForgeApi"),
 )
 

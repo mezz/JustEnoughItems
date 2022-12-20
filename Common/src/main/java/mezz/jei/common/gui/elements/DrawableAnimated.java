@@ -11,18 +11,21 @@ public class DrawableAnimated implements IDrawableAnimated {
 	private final ITickTimer tickTimer;
 	private final StartDirection startDirection;
 
+	private static IDrawableAnimated.StartDirection invert(IDrawableAnimated.StartDirection startDirection) {
+		return switch (startDirection) {
+			case TOP -> StartDirection.BOTTOM;
+			case BOTTOM -> StartDirection.TOP;
+			case LEFT -> StartDirection.RIGHT;
+			case RIGHT -> StartDirection.LEFT;
+		};
+	}
+
 	public DrawableAnimated(IDrawableStatic drawable, int ticksPerCycle, IDrawableAnimated.StartDirection startDirection, boolean inverted) {
-		IDrawableAnimated.StartDirection animationStartDirection = startDirection;
+		final IDrawableAnimated.StartDirection animationStartDirection;
 		if (inverted) {
-			if (startDirection == IDrawableAnimated.StartDirection.TOP) {
-				animationStartDirection = IDrawableAnimated.StartDirection.BOTTOM;
-			} else if (startDirection == IDrawableAnimated.StartDirection.BOTTOM) {
-				animationStartDirection = IDrawableAnimated.StartDirection.TOP;
-			} else if (startDirection == IDrawableAnimated.StartDirection.LEFT) {
-				animationStartDirection = IDrawableAnimated.StartDirection.RIGHT;
-			} else {
-				animationStartDirection = IDrawableAnimated.StartDirection.LEFT;
-			}
+			animationStartDirection = invert(startDirection);
+		} else {
+			animationStartDirection = startDirection;
 		}
 
 		int tickTimerMaxValue;

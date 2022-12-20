@@ -1,6 +1,5 @@
 package mezz.jei.api.recipe.vanilla;
 
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -11,8 +10,6 @@ import java.util.List;
  * Fueling recipes represent items that can be used as fuel in the Furnace, Smoker, Blast Furnace, etc.
  *
  * JEI automatically creates a fueling recipe for anything that has a burn time.
- *
- * @see Item#getBurnTime
  *
  * @since 9.5.0
  */

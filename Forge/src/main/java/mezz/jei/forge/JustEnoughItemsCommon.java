@@ -22,7 +22,7 @@ public class JustEnoughItemsCommon {
 	}
 
 	private void commonSetup() {
-		IConnectionToClient connection = new ConnectionToClient();
+		IConnectionToClient connection = new ConnectionToClient(this.networkHandler);
 		ServerPacketRouter packetRouter = new ServerPacketRouter(connection, serverConfig);
 		this.networkHandler.registerServerPacketHandler(packetRouter);
 	}

@@ -29,13 +29,13 @@ public interface IRecipeManagerPlugin {
 
 	/**
 	 * Returns a list of Recipes in the recipeCategory that have the focus.
-	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipes(IRecipeCategory, List, boolean)}.
+	 * This is used internally by JEI to implement {@link IRecipeManager#createRecipeLookup(RecipeType)}.
 	 */
 	<T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus);
 
 	/**
 	 * Returns a list of all Recipes in the recipeCategory.
-	 * This is used internally by JEI to implement {@link IRecipeManager#getRecipes(IRecipeCategory, List, boolean)}.
+	 * This is used internally by JEI to implement {@link IRecipeManager#createRecipeLookup(RecipeType)}.
 	 */
 	<T> List<T> getRecipes(IRecipeCategory<T> recipeCategory);
 
@@ -46,5 +46,9 @@ public interface IRecipeManagerPlugin {
 	 * @deprecated use {@link #getRecipeTypes(IFocus)} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.5.0")
-	<V> List<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus);
+	default <V> List<ResourceLocation> getRecipeCategoryUids(IFocus<V> focus) {
+		return getRecipeTypes(focus).stream()
+			.map(RecipeType::getUid)
+			.toList();
+	}
 }

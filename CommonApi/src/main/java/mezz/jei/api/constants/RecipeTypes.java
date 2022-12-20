@@ -8,7 +8,6 @@ import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
 import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -88,7 +87,6 @@ public final class RecipeTypes {
 	 * The fueling recipe type.
 	 *
 	 * JEI automatically creates a fuel recipe for anything that has a burn time.
-	 * @see Item#getBurnTime
 	 *
 	 * @since 9.5.0
 	 */

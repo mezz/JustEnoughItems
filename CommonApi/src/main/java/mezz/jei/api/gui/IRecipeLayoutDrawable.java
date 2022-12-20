@@ -1,20 +1,26 @@
 package mezz.jei.api.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import org.jetbrains.annotations.Nullable;
-
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 /**
  * An extension of {@link IRecipeLayout} for addons that want to draw the layouts themselves somewhere.
  *
  * Create an instance with {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocus)}.
  */
+@ApiStatus.NonExtendable
 @SuppressWarnings("removal")
 public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	/**
@@ -56,4 +62,40 @@ public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	 */
 	@Nullable
 	<T> T getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<T> ingredientType);
+
+	/**
+	 * Get the recipe slot currently under the mouse, if there is one.
+	 * @since 10.3.0
+	 */
+	Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY);
+
+	/**
+	 * Get position and size for the recipe in absolute screen coordinates.
+	 * @since 10.3.0
+	 */
+	Rect2i getRect();
+
+	/**
+	 * Get the position of the recipe transfer button area, relative to the recipe layout drawable.
+	 * @since 10.3.0
+	 */
+	Rect2i getRecipeTransferButtonArea();
+
+	/**
+	 * Get a view of the recipe slots for this recipe layout.
+	 * @since 10.3.0
+	 */
+	IRecipeSlotsView getRecipeSlotsView();
+
+	/**
+	 * Get the recipe category that this recipe layout is a part of.
+	 * @since 10.3.0
+	 */
+	IRecipeCategory<?> getRecipeCategory();
+
+	/**
+	 * Get the recipe that this recipe layout displays.
+	 * @since 10.3.0
+	 */
+	Object getRecipe();
 }

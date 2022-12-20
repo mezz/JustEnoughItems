@@ -1,8 +1,11 @@
 package mezz.jei.api.gui.handlers;
 
+import mezz.jei.api.gui.builder.IClickableIngredientFactory;
+import mezz.jei.api.runtime.IClickableIngredient;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -40,9 +43,33 @@ public interface IGlobalGuiHandler {
 	 *
 	 * @param mouseX the current X position of the mouse in screen coordinates.
 	 * @param mouseY the current Y position of the mouse in screen coordinates.
+	 *
+	 * @deprecated use {@link #getClickableIngredientUnderMouse(IClickableIngredientFactory, double, double)} instead.
 	 */
+	@Deprecated(since = "10.3.0")
 	@Nullable
 	default Object getIngredientUnderMouse(double mouseX, double mouseY) {
 		return null;
+	}
+
+	/**
+	 * Return a clickable ingredient under the mouse that JEI could not normally detect, used for JEI recipe lookups.
+	 * <p>
+	 * This is useful for guis that don't have normal slots (which is how JEI normally detects items under the mouse).
+	 * <p>
+	 * This can also be used to let JEI look up liquids in tanks directly, by returning a FluidStack.
+	 * Works with any ingredient type that has been registered with {@link IModIngredientRegistration}.
+	 *
+	 * @param factory a factory to help with the creation of clickable ingredients.
+	 * @param mouseX  the current X position of the mouse in screen coordinates.
+	 * @param mouseY  the current Y position of the mouse in screen coordinates.
+	 *
+	 * @since 10.3.0
+	 */
+	@SuppressWarnings("deprecation")
+	default Optional<? extends IClickableIngredient<?>> getClickableIngredientUnderMouse(IClickableIngredientFactory factory, double mouseX, double mouseY) {
+		Object ingredient = getIngredientUnderMouse(mouseX, mouseY);
+		return factory.createBuilder(ingredient)
+			.buildWithArea(0, 0, 0, 0);
 	}
 }

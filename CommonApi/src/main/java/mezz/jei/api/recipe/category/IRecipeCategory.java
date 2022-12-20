@@ -46,11 +46,26 @@ public interface IRecipeCategory<T> {
 
 	/**
 	 * Returns the drawable background for a single recipe in this category.
-	 *
-	 * The size of the background determines how recipes are laid out by JEI,
-	 * make sure it is the right size to contains everything being displayed.
 	 */
 	IDrawable getBackground();
+
+	/**
+	 * Returns the width of recipe layouts that are drawn for this recipe category.
+	 *
+	 * @since 10.3.0
+	 */
+	default int getWidth() {
+		return getBackground().getWidth();
+	}
+
+	/**
+	 * Returns the height of recipe layouts that are drawn for this recipe category.
+	 *
+	 * @since 10.3.0
+	 */
+	default int getHeight() {
+		return getBackground().getHeight();
+	}
 
 	/**
 	 * Icon for the category tab.
@@ -68,7 +83,6 @@ public interface IRecipeCategory<T> {
 	 * @since 9.4.0
 	 */
 	default void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {
-		// if this new method is not implemented, call the legacy method
 		setRecipe(builder, recipe, focuses.getAllFocuses());
 	}
 
@@ -90,7 +104,6 @@ public interface IRecipeCategory<T> {
 	 * @since 9.3.0
 	 */
 	default void draw(T recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
-		// if not implemented, this calls the old function for backward compatibility
 		draw(recipe, stack, mouseX, mouseY);
 	}
 
@@ -109,7 +122,6 @@ public interface IRecipeCategory<T> {
 	 * @since 9.3.0
 	 */
 	default List<Component> getTooltipStrings(T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		// if not implemented, this calls the old function for backward compatibility
 		return getTooltipStrings(recipe, mouseX, mouseY);
 	}
 
@@ -153,7 +165,7 @@ public interface IRecipeCategory<T> {
 	 */
 	@Nullable
 	default ResourceLocation getRegistryName(T recipe) {
-		if (recipe instanceof Recipe vanillaRecipe) {
+		if (recipe instanceof Recipe<?> vanillaRecipe) {
 			return vanillaRecipe.getId();
 		}
 		return null;
@@ -166,7 +178,9 @@ public interface IRecipeCategory<T> {
 	 * @deprecated use {@link #getRecipeType()} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.5.0")
-	ResourceLocation getUid();
+	default ResourceLocation getUid() {
+		return getRecipeType().getUid();
+	}
 
 	/**
 	 * Returns the class of recipes that this recipe category handles.
@@ -174,7 +188,9 @@ public interface IRecipeCategory<T> {
 	 * @deprecated use {@link #getRecipeType()} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.5.0")
-	Class<? extends T> getRecipeClass();
+	default Class<? extends T> getRecipeClass() {
+		return getRecipeType().getRecipeClass();
+	}
 
 	/**
 	 * Called when a player clicks the recipe.

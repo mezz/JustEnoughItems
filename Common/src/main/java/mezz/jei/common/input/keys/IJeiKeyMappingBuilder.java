@@ -1,12 +1,12 @@
 package mezz.jei.common.input.keys;
 
 public interface IJeiKeyMappingBuilder {
-	IJeiKeyMappingBuilder setContext(JeiKeyConflictContext context);
-	IJeiKeyMappingBuilder setModifier(JeiKeyModifier modifier);
+    IJeiKeyMappingBuilder setContext(JeiKeyConflictContext context);
+    IJeiKeyMappingBuilder setModifier(JeiKeyModifier modifier);
 
-	IJeiKeyMapping buildMouseLeft();
-	IJeiKeyMapping buildMouseRight();
-	IJeiKeyMapping buildMouseMiddle();
-	IJeiKeyMapping buildKeyboardKey(int key);
-	IJeiKeyMapping buildUnbound();
+    IJeiKeyMappingInternal buildMouseLeft();
+    IJeiKeyMappingInternal buildMouseRight();
+    IJeiKeyMappingInternal buildMouseMiddle();
+    IJeiKeyMappingInternal buildKeyboardKey(int key);
+    IJeiKeyMappingInternal buildUnbound();
 }

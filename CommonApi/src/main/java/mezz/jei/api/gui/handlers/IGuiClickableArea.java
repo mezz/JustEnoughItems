@@ -1,17 +1,16 @@
 package mezz.jei.api.gui.handlers;
 
 import java.util.ArrayList;
+import mezz.jei.api.recipe.IFocusFactory;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.runtime.IRecipesGui;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import mezz.jei.api.recipe.RecipeType;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.resources.ResourceLocation;
-
-import mezz.jei.api.recipe.IFocusFactory;
-import mezz.jei.api.runtime.IRecipesGui;
-import net.minecraft.network.chat.Component;
 
 public interface IGuiClickableArea {
 	/**

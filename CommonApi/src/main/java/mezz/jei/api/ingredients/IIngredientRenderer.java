@@ -2,6 +2,7 @@ package mezz.jei.api.ingredients;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 

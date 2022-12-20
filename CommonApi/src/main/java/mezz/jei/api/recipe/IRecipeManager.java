@@ -2,16 +2,18 @@ package mezz.jei.api.recipe;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * The {@link IRecipeManager} offers several functions for retrieving and handling recipes.
@@ -118,6 +120,58 @@ public interface IRecipeManager {
 	<T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus);
 
 	/**
+	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
+	 *
+	 * @param recipeCategory the recipe category that the recipe belongs to
+	 * @param recipe         the specific recipe to draw.
+	 * @param focusGroup     the focuses of the recipe layout.
+	 *
+	 * @since 10.3.0
+	 */
+	default <T> Optional<IRecipeLayoutDrawable> createRecipeLayoutDrawable(
+		IRecipeCategory<T> recipeCategory,
+		T recipe,
+		IFocusGroup focusGroup
+	) {
+		IFocus<?> focus = focusGroup.getAllFocuses()
+			.stream()
+			.findFirst()
+			.orElse(null);
+		return Optional.ofNullable(createRecipeLayoutDrawable(recipeCategory, recipe, focus));
+	}
+
+	/**
+	 * Returns a drawable recipe slot, for addons that want to draw the slots somewhere.
+	 *
+	 * @param role                  the recipe ingredient role of this slot
+	 * @param ingredients           a non-null list of optional ingredients for the slot
+	 * @param focusedIngredients    indexes of the focused ingredients in "ingredients"
+	 * @param xPos                  the x position of the slot on the screen
+	 * @param yPos                  the y position of the slot on the screen
+	 * @param ingredientCycleOffset the starting index for cycling the list of ingredients when rendering.
+	 * @since 10.3.0
+	 */
+	IRecipeSlotDrawable createRecipeSlotDrawable(
+		RecipeIngredientRole role,
+		List<Optional<ITypedIngredient<?>>> ingredients,
+		Set<Integer> focusedIngredients,
+		int xPos,
+		int yPos,
+		int ingredientCycleOffset
+	);
+
+	/**
+	 * Get the registered recipe type for the given unique id.
+	 * <p>
+	 * This is useful for integrating with other mods that do not share their
+	 * recipe types directly from their API.
+	 *
+	 * @see RecipeType#getUid()
+	 * @since 10.3.0
+	 */
+	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
+
+	/**
 	 * Hide an entire recipe category of recipes from JEI.
 	 * This can be used by mods that create recipe progression.
 	 *
@@ -204,7 +258,6 @@ public interface IRecipeManager {
 	/**
 	 * Returns an unmodifiable collection of ingredients that can craft the recipes from recipeCategory.
 	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
-	 * These are registered with {@link IRecipeCatalystRegistration#addRecipeCatalyst(IIngredientType, Object, RecipeType[])}.
 	 *
 	 * @since 9.3.0
 	 * @deprecated use {@link #createRecipeCatalystLookup(RecipeType)} and
@@ -217,11 +270,6 @@ public interface IRecipeManager {
 	 * Hides a recipe so that it will not be displayed.
 	 * This can be used by mods that create recipe progression.
 	 *
-	 * @param recipe            the recipe to hide.
-	 * @param recipeCategoryUid the unique ID for the recipe category this recipe is a part of.
-	 *
-	 * @see #unhideRecipes(RecipeType, Collection)
-	 *
 	 * @deprecated use the typed {@link #hideRecipes(RecipeType, Collection)} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.5.0")
@@ -230,11 +278,6 @@ public interface IRecipeManager {
 	/**
 	 * Unhides a recipe that was hidden by {@link #hideRecipes(RecipeType, Collection)}
 	 * This can be used by mods that create recipe progression.
-	 *
-	 * @param recipe            the recipe to unhide.
-	 * @param recipeCategoryUid the unique ID for the recipe category this recipe is a part of.
-	 *
-	 * @see #hideRecipes(RecipeType, Collection)
 	 *
 	 * @deprecated use the typed {@link #unhideRecipes(RecipeType, Collection)} instead.
 	 */
@@ -273,7 +316,6 @@ public interface IRecipeManager {
 	/**
 	 * Returns an unmodifiable collection of ingredients that can craft the recipes from recipeCategory.
 	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
-	 * These are registered with {@link IRecipeCatalystRegistration#addRecipeCatalyst(IIngredientType, Object, RecipeType[])}.
 	 * @since 7.7.1
 	 *
 	 * @deprecated use {@link #createRecipeCatalystLookup(RecipeType)} and
@@ -281,4 +323,5 @@ public interface IRecipeManager {
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	List<Object> getRecipeCatalysts(IRecipeCategory<?> recipeCategory, boolean includeHidden);
+
 }

@@ -1,5 +1,6 @@
 package mezz.jei.common.util;
 
+import net.minecraft.network.chat.TranslatableComponent;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
@@ -12,7 +13,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -54,8 +54,8 @@ public final class ServerCommandUtil {
 
 		if (serverConfig.isCheatModeEnabledForGive()) {
 			return getGiveCommand(sender)
-					.map(giveCommand -> giveCommand.canUse(commandSource))
-					.orElse(false);
+				.map(giveCommand -> giveCommand.canUse(commandSource))
+				.orElse(false);
 		}
 
 		return false;
@@ -140,9 +140,7 @@ public final class ServerCommandUtil {
 		if (canStack(existingStack, itemStack)) {
 			int newCount = Math.min(existingStack.getMaxStackSize(), existingStack.getCount() + itemStack.getCount());
 			giveCount = newCount - existingStack.getCount();
-			if (giveCount > 0) {
-				existingStack.setCount(newCount);
-			}
+			existingStack.setCount(newCount);
 		} else {
 			containerMenu.setCarried(itemStack);
 			giveCount = itemStack.getCount();
@@ -156,9 +154,9 @@ public final class ServerCommandUtil {
 	}
 
 	public static boolean canStack(ItemStack a, ItemStack b) {
-		return !a.isEmpty() &&
-			!b.isEmpty() &&
-			ItemStack.isSameItemSameTags(a, b);
+		ItemStack singleStack = a.copy();
+		singleStack.setCount(1);
+		return ItemEntity.areMergable(singleStack, b);
 	}
 
 	/**
@@ -198,17 +196,17 @@ public final class ServerCommandUtil {
 		int count = stack.getCount();
 		Component stackTextComponent = stack.getDisplayName();
 		Component displayName = player.getDisplayName();
-		TranslatableComponent message = new TranslatableComponent("commands.give.success.single", count, stackTextComponent, displayName);
+		Component message = new TranslatableComponent("commands.give.success.single", count, stackTextComponent, displayName);
 		commandSource.sendSuccess(message, true);
 	}
 
 	private static Optional<CommandNode<CommandSourceStack>> getGiveCommand(Player sender) {
 		return Optional.ofNullable(sender.getServer())
-				.map(minecraftServer -> {
-					Commands commandManager = minecraftServer.getCommands();
-					CommandDispatcher<CommandSourceStack> dispatcher = commandManager.getDispatcher();
-					RootCommandNode<CommandSourceStack> root = dispatcher.getRoot();
-					return root.getChild("give");
-				});
+			.map(minecraftServer -> {
+				Commands commandManager = minecraftServer.getCommands();
+				CommandDispatcher<CommandSourceStack> dispatcher = commandManager.getDispatcher();
+				RootCommandNode<CommandSourceStack> root = dispatcher.getRoot();
+				return root.getChild("give");
+			});
 	}
 }
