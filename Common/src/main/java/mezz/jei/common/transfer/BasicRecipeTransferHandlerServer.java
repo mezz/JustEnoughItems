@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public final class BasicRecipeTransferHandlerServer {
@@ -230,7 +231,8 @@ public final class BasicRecipeTransferHandlerServer {
 			final Slot hint = entry.getValue().hint;
 
 			// Locate a slot that has what we need.
-			final Slot slot = getSlotWithStack(player, requiredStack, craftingSlots, inventorySlots, hint);
+			final Slot slot = getSlotWithStack(player, requiredStack, craftingSlots, inventorySlots, hint)
+				.orElse(null);
 			if (slot != null) {
 				// the item was found
 
@@ -281,23 +283,21 @@ public final class BasicRecipeTransferHandlerServer {
 		return fullSlots;
 	}
 
-	@Nullable
-	private static Slot getSlotWithStack(Player player, ItemStack stack, List<Slot> craftingSlots, List<Slot> inventorySlots, Slot hint) {
-		Slot slot = getSlotWithStack(player, craftingSlots, stack);
+	private static Optional<Slot> getSlotWithStack(Player player, ItemStack stack, List<Slot> craftingSlots, List<Slot> inventorySlots, Slot hint) {
+		return getSlotWithStack(player, craftingSlots, stack)
+			.or(() -> getValidatedHintSlot(player, stack, hint))
+			.or(() -> getSlotWithStack(player, inventorySlots, stack));
+	}
 
-		if (slot == null) {
-			if (
-				hint.mayPickup(player) &&
-				!hint.getItem().isEmpty() &&
-				ItemStack.isSameItemSameTags(stack, hint.getItem())
-			) {
-				return hint;
-			}
-
-			slot = getSlotWithStack(player, inventorySlots, stack);
+	private static Optional<Slot> getValidatedHintSlot(Player player, ItemStack stack, Slot hint) {
+		if (hint.mayPickup(player) &&
+			!hint.getItem().isEmpty() &&
+			ItemStack.isSameItemSameTags(stack, hint.getItem())
+		) {
+			return Optional.of(hint);
 		}
 
-		return slot;
+		return Optional.empty();
 	}
 
 	private static void stowItems(Player player, List<Slot> inventorySlots, List<ItemStack> itemStacks) {
@@ -349,17 +349,14 @@ public final class BasicRecipeTransferHandlerServer {
 	 * @param itemStack the itemStack to find
 	 * @return the slot that contains the itemStack. returns null if no slot contains the itemStack.
 	 */
-	@Nullable
-	private static Slot getSlotWithStack(Player player, Iterable<Slot> slots, ItemStack itemStack) {
-		for (Slot slot : slots) {
-			ItemStack slotStack = slot.getItem();
-			if (ItemStack.isSameItemSameTags(itemStack, slotStack) &&
-				slot.mayPickup(player)
-			) {
-				return slot;
-			}
-		}
-		return null;
+	private static Optional<Slot> getSlotWithStack(Player player, Collection<Slot> slots, ItemStack itemStack) {
+		return slots.stream()
+			.filter(slot -> {
+				ItemStack slotStack = slot.getItem();
+				return ItemStack.isSameItemSameTags(itemStack, slotStack) &&
+					slot.mayPickup(player);
+			})
+			.findFirst();
 	}
 
 	private record ItemStackWithSlotHint(Slot hint, ItemStack stack) {}

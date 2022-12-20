@@ -3,6 +3,7 @@ package mezz.jei.common.transfer;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
@@ -10,12 +11,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
-import mezz.jei.common.Internal;
-import mezz.jei.common.gui.ingredients.RecipeSlots;
-import mezz.jei.common.gui.recipes.layout.IRecipeLayoutInternal;
-import mezz.jei.common.recipes.RecipeTransferManager;
-import mezz.jei.common.util.ItemStackMatchable;
-import mezz.jei.common.util.MatchingIterable;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -23,14 +19,13 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,55 +36,47 @@ public final class RecipeTransferUtil {
 	private RecipeTransferUtil() {
 	}
 
-	@Nullable
-	public static IRecipeTransferError getTransferRecipeError(RecipeTransferManager recipeTransferManager, AbstractContainerMenu container, IRecipeLayoutInternal<?> recipeLayout, Player player) {
+	public static Optional<IRecipeTransferError> getTransferRecipeError(IRecipeTransferManager recipeTransferManager, AbstractContainerMenu container, IRecipeLayoutDrawable<?> recipeLayout, Player player) {
 		return transferRecipe(recipeTransferManager, container, recipeLayout, player, false, false);
 	}
 
-	public static boolean transferRecipe(RecipeTransferManager recipeTransferManager, AbstractContainerMenu container, IRecipeLayoutInternal<?> recipeLayout, Player player, boolean maxTransfer) {
-		IRecipeTransferError error = transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer, true);
-		return allowsTransfer(error);
+	public static boolean transferRecipe(IRecipeTransferManager recipeTransferManager, AbstractContainerMenu container, IRecipeLayoutDrawable<?> recipeLayout, Player player, boolean maxTransfer) {
+		return transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer, true)
+			.map(error -> error.getType().allowsTransfer)
+			.orElse(true);
 	}
 
-	@Nullable
-	private static <C extends AbstractContainerMenu, R> IRecipeTransferError transferRecipe(
-		RecipeTransferManager recipeTransferManager,
+	private static <C extends AbstractContainerMenu, R> Optional<IRecipeTransferError> transferRecipe(
+		IRecipeTransferManager recipeTransferManager,
 		C container,
-		IRecipeLayoutInternal<R> recipeLayout,
+		IRecipeLayoutDrawable<R> recipeLayout,
 		Player player,
 		boolean maxTransfer,
 		boolean doTransfer
 	) {
-		if (Internal.getRuntime().isEmpty()) {
-			return RecipeTransferErrorInternal.INSTANCE;
-		}
-
 		IRecipeCategory<R> recipeCategory = recipeLayout.getRecipeCategory();
-		final IRecipeTransferHandler<C, R> transferHandler = recipeTransferManager.getRecipeTransferHandler(container, recipeCategory);
-		if (transferHandler == null) {
+
+		Optional<IRecipeTransferHandler<C, R>> recipeTransferHandler = recipeTransferManager.getRecipeTransferHandler(container, recipeCategory);
+		if (recipeTransferHandler.isEmpty()) {
 			if (doTransfer) {
 				LOGGER.error("No Recipe Transfer handler for container {}", container.getClass());
 			}
-			return RecipeTransferErrorInternal.INSTANCE;
+			return Optional.of(RecipeTransferErrorInternal.INSTANCE);
 		}
 
-		RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
-		IRecipeSlotsView recipeSlotsView = recipeSlots.getView();
+		IRecipeTransferHandler<C, R> transferHandler = recipeTransferHandler.get();
+		IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
 
 		try {
-			return transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlotsView, player, maxTransfer, doTransfer);
+			IRecipeTransferError transferError = transferHandler.transferRecipe(container, recipeLayout.getRecipe(), recipeSlotsView, player, maxTransfer, doTransfer);
+			return Optional.ofNullable(transferError);
 		} catch (RuntimeException e) {
 			LOGGER.error(
-					"Recipe transfer handler '{}' for container '{}' and recipe type '{}' threw an error: ",
-					transferHandler.getClass(), transferHandler.getContainerClass(), recipeCategory.getRecipeType().getUid(), e
+				"Recipe transfer handler '{}' for container '{}' and recipe type '{}' threw an error: ",
+				transferHandler.getClass(), transferHandler.getContainerClass(), recipeCategory.getRecipeType().getUid(), e
 			);
-			return RecipeTransferErrorInternal.INSTANCE;
+			return Optional.of(RecipeTransferErrorInternal.INSTANCE);
 		}
-	}
-
-	public static boolean allowsTransfer(@Nullable IRecipeTransferError error) {
-		return error == null ||
-			error.getType() == IRecipeTransferError.Type.COSMETIC;
 	}
 
 	public static boolean validateSlots(
@@ -300,71 +287,6 @@ public final class RecipeTransferUtil {
 		}
 
 		return transferOperations;
-	}
-
-	@Nullable
-	public static <T> Map.Entry<T, ItemStack> containsAnyStackIndexed(IStackHelper stackhelper, Map<T, ItemStack> stacks, IRecipeSlotView recipeSlotView) {
-		MatchingIndexed<T> matchingStacks = new MatchingIndexed<>(stacks);
-		List<ItemStack> ingredients = recipeSlotView.getItemStacks().toList();
-		MatchingIterable matchingContains = new MatchingIterable(ingredients);
-		return containsStackMatchable(stackhelper, matchingStacks, matchingContains);
-	}
-
-	/* Returns an ItemStack from "stacks" if it isEquivalent to an ItemStack from "contains" */
-	@Nullable
-	public static <R, T> R containsStackMatchable(
-		IStackHelper stackhelper,
-		Iterable<ItemStackMatchable<R>> stacks,
-		Iterable<ItemStackMatchable<T>> contains
-	) {
-		for (ItemStackMatchable<?> containStack : contains) {
-			R matchingStack = containsStack(stackhelper, stacks, containStack);
-			if (matchingStack != null) {
-				return matchingStack;
-			}
-		}
-
-		return null;
-	}
-
-	/* Returns an ItemStack from "stacks" if it isEquivalent to "contains" */
-	@Nullable
-	public static <R> R containsStack(IStackHelper stackHelper, Iterable<ItemStackMatchable<R>> stacks, ItemStackMatchable<?> contains) {
-		for (ItemStackMatchable<R> stack : stacks) {
-			if (stackHelper.isEquivalent(contains.getStack(), stack.getStack(), UidContext.Recipe)) {
-				return stack.getResult();
-			}
-		}
-		return null;
-	}
-
-	private static class MatchingIndexed<T> implements Iterable<ItemStackMatchable<Map.Entry<T, ItemStack>>> {
-		private final Map<T, ItemStack> map;
-
-		public MatchingIndexed(Map<T, ItemStack> map) {
-			this.map = map;
-		}
-
-		@Override
-		public Iterator<ItemStackMatchable<Map.Entry<T, ItemStack>>> iterator() {
-			return new MatchingIterable.DelegateIterator<>(map.entrySet().iterator()) {
-				@Override
-				public ItemStackMatchable<Map.Entry<T, ItemStack>> next() {
-					final Map.Entry<T, ItemStack> entry = delegate.next();
-					return new ItemStackMatchable<>() {
-						@Override
-						public ItemStack getStack() {
-							return entry.getValue();
-						}
-
-						@Override
-						public Map.Entry<T, ItemStack> getResult() {
-							return entry;
-						}
-					};
-				}
-			};
-		}
 	}
 
 	private record PhantomSlotState(Slot slot, ItemStack itemStack) {}

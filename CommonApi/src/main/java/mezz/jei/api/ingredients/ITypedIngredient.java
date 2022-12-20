@@ -1,6 +1,7 @@
 package mezz.jei.api.ingredients;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
@@ -8,6 +9,8 @@ import java.util.Optional;
 /**
  * Ingredient with type information, for type safety.
  * These ingredients are validated by JEI, and only contain valid types and ingredients.
+ *
+ * Create an instance with {@link IIngredientManager#createTypedIngredient}.
  *
  * @since 9.3.0
  */
@@ -33,7 +36,9 @@ public interface ITypedIngredient<T> {
 	 *
 	 * @since 9.3.3
 	 */
-	<V> Optional<V> getIngredient(IIngredientType<V> ingredientType);
+	default <V> Optional<V> getIngredient(IIngredientType<V> ingredientType) {
+		return ingredientType.castIngredient(getIngredient());
+	}
 
 	/**
 	 * @return the ItemStack wrapped by this instance, only this holds an ItemStack ingredient.

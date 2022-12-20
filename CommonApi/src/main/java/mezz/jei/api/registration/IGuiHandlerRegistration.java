@@ -3,6 +3,7 @@ package mezz.jei.api.registration;
 import java.util.Collection;
 import java.util.List;
 
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -14,6 +15,12 @@ import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 
 public interface IGuiHandlerRegistration {
+	/**
+	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
+	 * @since 11.5.0
+	 */
+	IJeiHelpers getJeiHelpers();
+
 	/**
 	 * Add a handler to give JEI extra information about how to layout the item list next to a specific type of {@link AbstractContainerScreen}.
 	 * Multiple handlers can be registered for one {@link AbstractContainerScreen}.

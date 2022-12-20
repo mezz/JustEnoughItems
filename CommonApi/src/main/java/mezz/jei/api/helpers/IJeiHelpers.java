@@ -3,6 +3,7 @@ package mezz.jei.api.helpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
@@ -36,6 +37,13 @@ public interface IJeiHelpers {
 	IFocusFactory getFocusFactory();
 
 	/**
+	 * Helps with getting colors of ingredients.
+	 *
+	 * @since 11.5.0
+	 */
+	IColorHelper getColorHelper();
+
+	/**
 	 * Helps with handling fluid ingredients on multiple platforms (Forge and Fabric).
 	 *
 	 * @since 10.1.0
@@ -52,4 +60,11 @@ public interface IJeiHelpers {
 	 * @since 11.4.0
 	 */
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
+
+	/**
+	 * The ingredient manager, with information about all registered ingredients.
+	 *
+	 * @since 11.5.0
+	 */
+	IIngredientManager getIngredientManager();
 }

@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
-import mezz.jei.common.render.FluidTankRenderer;
+import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.fabric.ingredients.fluid.JeiFluidIngredient;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
@@ -41,10 +41,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
     }
 
     @Override
-    @Nullable
-    public TextureAtlasSprite getStillFluidSprite(IJeiFluidIngredient ingredient) {
+    public Optional<TextureAtlasSprite> getStillFluidSprite(IJeiFluidIngredient ingredient) {
         FluidVariant fluidVariant = getFluidVariant(ingredient);
-        return FluidVariantRendering.getSprite(fluidVariant);
+        TextureAtlasSprite sprite = FluidVariantRendering.getSprite(fluidVariant);
+        return Optional.ofNullable(sprite);
     }
 
     @Override

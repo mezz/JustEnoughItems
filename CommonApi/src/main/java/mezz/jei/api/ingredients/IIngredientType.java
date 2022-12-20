@@ -1,9 +1,11 @@
 package mezz.jei.api.ingredients;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A type of ingredient (i.e. ItemStack, FluidStack, etc) handled by JEI.
@@ -17,4 +19,11 @@ public interface IIngredientType<T> {
 	 * @return The class of the ingredient for this type.
 	 */
 	Class<? extends T> getIngredientClass();
+
+	default Optional<T> castIngredient(@Nullable Object ingredient) {
+		Class<? extends T> ingredientClass = getIngredientClass();
+		return Optional.ofNullable(ingredient)
+			.filter(ingredientClass::isInstance)
+			.map(ingredientClass::cast);
+	}
 }

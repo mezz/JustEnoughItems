@@ -7,7 +7,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -33,10 +32,10 @@ public class RegistryWrapper<T> implements IPlatformRegistry<T> {
         return this.registry.stream();
     }
 
-    @Nullable
     @Override
-    public T getValue(ResourceLocation resourceLocation) {
-        return this.registry.get(resourceLocation);
+    public Optional<T> getValue(ResourceLocation resourceLocation) {
+        T t = this.registry.get(resourceLocation);
+        return Optional.ofNullable(t);
     }
 
     @Override
@@ -55,8 +54,8 @@ public class RegistryWrapper<T> implements IPlatformRegistry<T> {
     }
 
     @Override
-    @Nullable
-    public ResourceLocation getRegistryName(T entry) {
-        return this.registry.getKey(entry);
+    public Optional<ResourceLocation> getRegistryName(T entry) {
+        return this.registry.getResourceKey(entry)
+            .map(ResourceKey::location);
     }
 }

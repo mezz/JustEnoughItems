@@ -17,21 +17,30 @@ public interface IRecipeTransferError {
 		 * Errors where the Transfer handler is broken or does not work.
 		 * These errors will hide the recipe transfer button, and do not display anything to the user.
 		 */
-		INTERNAL,
+		INTERNAL(false),
 
 		/**
 		 * Errors that the player can fix. Missing items, inventory full, etc.
 		 * Something informative will be shown to the player.
 		 */
-		USER_FACING,
+		USER_FACING(false),
 
 		/**
 		 * Errors that still allow the usage of the recipe transfer button.
 		 * Hovering over the button will display the error, however the button is active and can be used.
 		 * @since 6.0.2
 		 */
-		COSMETIC
+		COSMETIC(true);
 
+		/**
+		 * Returns true if this type of error will allow users to do the transfer, despite the error.
+		 * @since 11.5.0
+		 */
+		public final boolean allowsTransfer;
+
+		Type(boolean allowsTransfer) {
+			this.allowsTransfer = allowsTransfer;
+		}
 	}
 
 	Type getType();

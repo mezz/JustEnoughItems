@@ -2,6 +2,8 @@ package mezz.jei.api.recipe;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
@@ -10,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * The {@link IRecipeManager} offers several functions for retrieving and handling recipes.
@@ -107,13 +110,38 @@ public interface IRecipeManager {
 
 	/**
 	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
-	 * Layouts created this way do not have recipe transfer buttons, they are not useful for this purpose.
 	 *
 	 * @param recipeCategory the recipe category that the recipe belongs to
 	 * @param recipe         the specific recipe to draw.
-	 * @param focus          the focus of the recipe layout.
+	 * @param focusGroup     the focuses of the recipe layout.
+	 *
+	 * @since 11.5.0
 	 */
-	<T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus);
+	<T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
+		IRecipeCategory<T> recipeCategory,
+		T recipe,
+		IFocusGroup focusGroup
+	);
+
+	/**
+	 * Returns a drawable recipe slot, for addons that want to draw the slots somewhere.
+	 *
+	 * @param role                  the recipe ingredient role of this slot
+	 * @param ingredients           a non-null list of optional ingredients for the slot
+	 * @param focusedIngredients    indexes of the focused ingredients in "ingredients"
+	 * @param xPos                  the x position of the slot on the screen
+	 * @param yPos                  the y position of the slot on the screen
+	 * @param ingredientCycleOffset the starting index for cycling the list of ingredients when rendering.
+	 * @since 11.5.0
+	 */
+	IRecipeSlotDrawable createRecipeSlotDrawable(
+		RecipeIngredientRole role,
+		List<Optional<ITypedIngredient<?>>> ingredients,
+		Set<Integer> focusedIngredients,
+		int xPos,
+		int yPos,
+		int ingredientCycleOffset
+	);
 
 	/**
 	 * Get the registered recipe type for the given unique id.
@@ -125,4 +153,18 @@ public interface IRecipeManager {
 	 * @since 11.2.3
 	 */
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
+
+	/**
+	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
+	 * Layouts created this way do not have recipe transfer buttons, they are not useful for this purpose.
+	 *
+	 * @param recipeCategory the recipe category that the recipe belongs to
+	 * @param recipe         the specific recipe to draw.
+	 * @param focus          the focus of the recipe layout.
+	 *
+	 * @deprecated use {@link #createRecipeLayoutDrawable(IRecipeCategory, Object, IFocusGroup)} instead.
+	 */
+	@Deprecated(forRemoval = true, since = "11.5.0")
+	@SuppressWarnings("rawtypes")
+	<T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus);
 }

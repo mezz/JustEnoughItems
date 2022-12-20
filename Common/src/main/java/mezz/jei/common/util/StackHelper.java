@@ -3,7 +3,6 @@ package mezz.jei.common.util;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -52,13 +51,13 @@ public class StackHelper implements IStackHelper {
 		ErrorUtil.checkNotEmpty(stack, "stack");
 
 		Item item = stack.getItem();
-		IPlatformRegistry<Item> itemRegistry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
-		ResourceLocation registryName = itemRegistry.getRegistryName(item);
-		if (registryName == null) {
-			String stackInfo = ErrorUtil.getItemStackInfo(stack);
-			throw new IllegalStateException("Item has no registry name: " + stackInfo);
-		}
-
-		return registryName.toString();
+		return Services.PLATFORM
+			.getRegistry(Registry.ITEM_REGISTRY)
+			.getRegistryName(item)
+			.map(ResourceLocation::toString)
+			.orElseThrow(() -> {
+				String stackInfo = ErrorUtil.getItemStackInfo(stack);
+				throw new IllegalStateException("Item has no registry name: " + stackInfo);
+			});
 	}
 }

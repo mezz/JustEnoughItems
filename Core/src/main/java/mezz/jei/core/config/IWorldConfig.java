@@ -11,8 +11,6 @@ public interface IWorldConfig {
 
 	boolean isCheatItemsEnabled();
 
-	boolean isDeleteItemsInCheatModeActive();
-
 	void toggleCheatItemsEnabled();
 
 	void setCheatItemsEnabled(boolean value);

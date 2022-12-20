@@ -1,5 +1,6 @@
 package mezz.jei.forge.events;
 
+import mezz.jei.common.util.ErrorUtil;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.IModBusEvent;
@@ -17,6 +18,7 @@ public class RuntimeEventSubscriptions {
 	private final IEventBus eventBus;
 
 	public RuntimeEventSubscriptions(IEventBus eventBus) {
+		ErrorUtil.checkNotNull(eventBus, "eventBus");
 		this.eventBus = eventBus;
 	}
 

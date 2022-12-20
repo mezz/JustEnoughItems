@@ -8,14 +8,15 @@ import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.world.inventory.Slot;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ScreenHelper implements IPlatformScreenHelper {
     @Override
-    public @Nullable Slot getSlotUnderMouse(AbstractContainerScreen<?> containerScreen) {
-        return containerScreen.hoveredSlot;
+    public Optional<Slot> getSlotUnderMouse(AbstractContainerScreen<?> containerScreen) {
+        Slot slot = containerScreen.hoveredSlot;
+        return Optional.ofNullable(slot);
     }
 
     @Override

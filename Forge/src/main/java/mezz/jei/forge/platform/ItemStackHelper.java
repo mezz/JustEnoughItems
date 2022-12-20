@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class ItemStackHelper implements IPlatformItemStackHelper {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -40,10 +41,10 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
     }
 
     @Override
-    @Nullable
-    public String getCreatorModId(ItemStack stack) {
+    public Optional<String> getCreatorModId(ItemStack stack) {
         Item item = stack.getItem();
-        return item.getCreatorModId(stack);
+        String creatorModId = item.getCreatorModId(stack);
+        return Optional.ofNullable(creatorModId);
     }
 
     @Override

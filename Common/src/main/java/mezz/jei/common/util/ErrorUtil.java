@@ -3,7 +3,7 @@ package mezz.jei.common.util;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.ingredients.RegisteredIngredients;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
@@ -27,8 +27,8 @@ public final class ErrorUtil {
 	private ErrorUtil() {
 	}
 
-	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType, RegisteredIngredients registeredIngredients) {
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
+	public static <T> String getIngredientInfo(T ingredient, IIngredientType<T> ingredientType, IIngredientManager ingredientManager) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		return ingredientHelper.getErrorInfo(ingredient);
 	}
 
@@ -38,29 +38,27 @@ public final class ErrorUtil {
 			return "null";
 		}
 		Item item = itemStack.getItem();
-		final String itemName;
 		IPlatformRegistry<Item> itemRegistry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
-		ResourceLocation registryName = itemRegistry.getRegistryName(item);
-		if (registryName != null) {
-			itemName = registryName.toString();
-		} else if (item instanceof BlockItem) {
-			final String blockName;
-			Block block = ((BlockItem) item).getBlock();
-			if (block == null) {
-				blockName = "null";
-			} else {
-				IPlatformRegistry<Block> blockRegistry = Services.PLATFORM.getRegistry(Registry.BLOCK_REGISTRY);
-				ResourceLocation blockRegistryName = blockRegistry.getRegistryName(block);
-				if (blockRegistryName != null) {
-					blockName = blockRegistryName.toString();
+
+		final String itemName = itemRegistry.getRegistryName(item)
+			.map(ResourceLocation::toString)
+			.orElseGet(() -> {
+				if (item instanceof BlockItem) {
+					final String blockName;
+					Block block = ((BlockItem) item).getBlock();
+					if (block == null) {
+						blockName = "null";
+					} else {
+						IPlatformRegistry<Block> blockRegistry = Services.PLATFORM.getRegistry(Registry.BLOCK_REGISTRY);
+						blockName = blockRegistry.getRegistryName(block)
+							.map(ResourceLocation::toString)
+							.orElseGet(() -> block.getClass().getName());
+					}
+					return "BlockItem(" + blockName + ")";
 				} else {
-					blockName = block.getClass().getName();
+					return item.getClass().getName();
 				}
-			}
-			itemName = "BlockItem(" + blockName + ")";
-		} else {
-			itemName = item.getClass().getName();
-		}
+			});
 
 		CompoundTag nbt = itemStack.getTag();
 		if (nbt != null) {
@@ -93,7 +91,7 @@ public final class ErrorUtil {
 	public static <T> void checkNotEmpty(T[] values, String name) {
 		if (values == null) {
 			throw new NullPointerException(name + " must not be null.");
-		} else if (values.length <= 0) {
+		} else if (values.length == 0) {
 			throw new IllegalArgumentException(name + " must not be empty.");
 		}
 		for (T value : values) {
@@ -150,26 +148,33 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient, RegisteredIngredients registeredIngredients) {
-		IIngredientType<T> ingredientType = registeredIngredients.getIngredientType(ingredient);
-		IIngredientHelper<T> ingredientHelper = registeredIngredients.getIngredientHelper(ingredientType);
-
+	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient, IIngredientManager ingredientManager) {
 		CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering ingredient");
 		CrashReportCategory ingredientCategory = crashreport.addCategory("Ingredient being rendered");
+		ingredientCategory.setDetail("String Name", ingredient::toString);
+		ingredientCategory.setDetail("Class Name", () -> ingredient.getClass().toString());
 
 		IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
-		ingredientCategory.setDetail("Mod Name", () -> {
-			String modId = ingredientHelper.getDisplayModId(ingredient);
-			return modHelper.getModNameForModId(modId);
-		});
-		ingredientCategory.setDetail("Registry Name", () -> ingredientHelper.getResourceLocation(ingredient).toString());
-		ingredientCategory.setDetail("Display Name", () -> ingredientHelper.getDisplayName(ingredient));
-		ingredientCategory.setDetail("String Name", ingredient::toString);
 
-		CrashReportCategory jeiCategory = crashreport.addCategory("JEI render details");
-		jeiCategory.setDetail("Unique Id (for Blacklist)", () -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
-		jeiCategory.setDetail("Ingredient Type", () -> ingredientType.getIngredientClass().toString());
-		jeiCategory.setDetail("Error Info", () -> ingredientHelper.getErrorInfo(ingredient));
+		ingredientManager.getIngredientTypeChecked(ingredient)
+			.ifPresentOrElse(ingredientType -> {
+				IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+
+				ingredientCategory.setDetail("Mod Name", () -> {
+					String modId = ingredientHelper.getDisplayModId(ingredient);
+					return modHelper.getModNameForModId(modId);
+				});
+				ingredientCategory.setDetail("Registry Name", () -> ingredientHelper.getResourceLocation(ingredient).toString());
+				ingredientCategory.setDetail("Display Name", () -> ingredientHelper.getDisplayName(ingredient));
+
+				CrashReportCategory jeiCategory = crashreport.addCategory("JEI render details");
+				jeiCategory.setDetail("Unique Id (for Blacklist)", () -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
+				jeiCategory.setDetail("Ingredient Type", () -> ingredientType.getIngredientClass().toString());
+				jeiCategory.setDetail("Error Info", () -> ingredientHelper.getErrorInfo(ingredient));
+			}, () -> {
+				CrashReportCategory jeiCategory = crashreport.addCategory("JEI render details");
+				jeiCategory.setDetail("Ingredient Type", "Error, Unknown Ingredient Type");
+			});
 
 		throw new ReportedException(crashreport);
 	}

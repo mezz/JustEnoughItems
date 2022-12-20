@@ -26,8 +26,7 @@ public interface IPlatformRenderHelper {
 
     ItemColors getItemColors();
 
-    @Nullable
-    NativeImage getMainImage(TextureAtlasSprite sprite);
+    Optional<NativeImage> getMainImage(TextureAtlasSprite sprite);
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     void renderTooltip(Screen screen, PoseStack poseStack, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, int x, int y, @Nullable Font font, ItemStack stack);

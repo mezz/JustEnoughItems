@@ -67,6 +67,16 @@ public class ImmutableRect2i {
 			y < this.y + this.height;
 	}
 
+	public boolean intersects(ImmutableRect2i rect) {
+		if (this.isEmpty() || rect.isEmpty()) {
+			return false;
+		}
+		return rect.getX() + rect.getWidth() > x &&
+			rect.getY() + rect.getHeight() > y &&
+			rect.getX() < x + width &&
+			rect.getY() < y + height;
+	}
+
 	public ImmutableRect2i moveRight(@Nonnegative int x) {
 		if (x == 0) {
 			return this;
@@ -113,12 +123,18 @@ public class ImmutableRect2i {
 		if (amount == 0) {
 			return this;
 		}
+		if (amount > this.width) {
+			amount = this.width;
+		}
 		return new ImmutableRect2i(this.x, this.y, this.width - amount, this.height);
 	}
 
 	public ImmutableRect2i cropLeft(@Nonnegative int amount) {
 		if (amount == 0) {
 			return this;
+		}
+		if (amount > this.width) {
+			amount = this.width;
 		}
 		return new ImmutableRect2i(this.x + amount, this.y, this.width - amount, this.height);
 	}
@@ -127,12 +143,18 @@ public class ImmutableRect2i {
 		if (amount == 0) {
 			return this;
 		}
+		if (amount > this.height) {
+			amount = this.height;
+		}
 		return new ImmutableRect2i(this.x, this.y, this.width, this.height - amount);
 	}
 
 	public ImmutableRect2i cropTop(@Nonnegative int amount) {
 		if (amount == 0) {
 			return this;
+		}
+		if (amount > this.height) {
+			amount = this.height;
 		}
 		return new ImmutableRect2i(this.x, this.y + amount, this.width, this.height - amount);
 	}
@@ -141,12 +163,18 @@ public class ImmutableRect2i {
 		if (amount == this.height) {
 			return this;
 		}
+		if (amount > this.height) {
+			amount = this.height;
+		}
 		return new ImmutableRect2i(this.x, this.y, this.width, amount);
 	}
 
 	public ImmutableRect2i keepBottom(@Nonnegative int amount) {
 		if (amount == this.height) {
 			return this;
+		}
+		if (amount > this.height) {
+			amount = this.height;
 		}
 		int cropAmount = this.height - amount;
 		return new ImmutableRect2i(this.x, this.y + cropAmount, this.width, amount);
@@ -156,6 +184,9 @@ public class ImmutableRect2i {
 		if (amount == this.width) {
 			return this;
 		}
+		if (amount > this.width) {
+			amount = this.width;
+		}
 		int cropAmount = this.width - amount;
 		return new ImmutableRect2i(this.x + cropAmount, this.y, amount, this.height);
 	}
@@ -163,6 +194,9 @@ public class ImmutableRect2i {
 	public ImmutableRect2i keepLeft(@Nonnegative int amount) {
 		if (amount == this.width) {
 			return this;
+		}
+		if (amount > this.width) {
+			amount = this.width;
 		}
 		return new ImmutableRect2i(this.x, this.y, amount, this.height);
 	}
@@ -205,5 +239,9 @@ public class ImmutableRect2i {
 			.add("width", width)
 			.add("height", height)
 			.toString();
+	}
+
+	public Rect2i toMutable() {
+		return new Rect2i(x, y, width, height);
 	}
 }

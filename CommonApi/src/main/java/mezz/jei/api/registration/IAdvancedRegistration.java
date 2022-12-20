@@ -8,6 +8,9 @@ import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
  * The IAdvancedRegistration instance is passed to your mod plugin in {@link IModPlugin#registerAdvanced(IAdvancedRegistration)}.
  */
 public interface IAdvancedRegistration {
+	/**
+	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
+	 */
 	IJeiHelpers getJeiHelpers();
 
 	/**

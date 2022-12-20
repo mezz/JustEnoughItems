@@ -7,13 +7,12 @@ import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.world.inventory.Slot;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IPlatformScreenHelper {
-    @Nullable
-    Slot getSlotUnderMouse(AbstractContainerScreen<?> containerScreen);
+    Optional<Slot> getSlotUnderMouse(AbstractContainerScreen<?> containerScreen);
 
     int getGuiLeft(AbstractContainerScreen<?> containerScreen);
 

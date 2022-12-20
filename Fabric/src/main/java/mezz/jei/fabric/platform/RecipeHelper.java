@@ -10,9 +10,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public class RecipeHelper implements IPlatformRecipeHelper {
     @Override
@@ -41,13 +41,14 @@ public class RecipeHelper implements IPlatformRecipeHelper {
         return recipe.addition;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
-    @Nullable
-    public ResourceLocation getRegistryNameForRecipe(Object object) {
-        if (object instanceof Recipe recipe) {
-            return recipe.getId();
+    public Optional<ResourceLocation> getRegistryNameForRecipe(Object object) {
+        if (object instanceof Recipe<?> recipe) {
+            ResourceLocation id = recipe.getId();
+            return Optional.ofNullable(id);
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
