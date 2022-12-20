@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 
 /**
- * A drawable recipe slot, useful if you need to manually draw a slot somewhere.
+ * A drawable recipe slot, useful if you need to make JEI draw a slot somewhere.
  *
  * @since 11.5.0
  */

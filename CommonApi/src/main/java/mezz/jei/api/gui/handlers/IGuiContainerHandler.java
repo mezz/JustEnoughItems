@@ -1,5 +1,6 @@
 package mezz.jei.api.gui.handlers;
 
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickableIngredient;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
@@ -44,7 +45,10 @@ public interface IGuiContainerHandler<T extends AbstractContainerScreen<?>> {
 	@Deprecated(since = "11.5.0")
 	@Nullable
 	default Object getIngredientUnderMouse(T containerScreen, double mouseX, double mouseY) {
-		return null;
+		return getClickableIngredientUnderMouse(containerScreen, mouseX, mouseY)
+				.map(IClickableIngredient::getTypedIngredient)
+				.map(ITypedIngredient::getIngredient)
+				.orElse(null);
 	}
 
 	/**

@@ -49,7 +49,8 @@ public interface IRecipeCategory<T> {
 	 * @since 11.5.0
 	 */
 	default int getWidth() {
-		return getBackground().getWidth();
+		return getBackground()
+				.getWidth();
 	}
 
 	/**
@@ -58,7 +59,8 @@ public interface IRecipeCategory<T> {
 	 * @since 11.5.0
 	 */
 	default int getHeight() {
-		return getBackground().getHeight();
+		return getBackground()
+				.getHeight();
 	}
 
 	/**

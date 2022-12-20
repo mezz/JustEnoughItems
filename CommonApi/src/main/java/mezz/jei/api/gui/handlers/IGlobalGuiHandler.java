@@ -1,5 +1,6 @@
 package mezz.jei.api.gui.handlers;
 
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickableIngredient;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
@@ -48,7 +49,10 @@ public interface IGlobalGuiHandler {
 	@Deprecated(since = "11.5.0")
 	@Nullable
 	default Object getIngredientUnderMouse(double mouseX, double mouseY) {
-		return null;
+		return getClickableIngredientUnderMouse(mouseX, mouseY)
+				.map(IClickableIngredient::getTypedIngredient)
+				.map(ITypedIngredient::getIngredient)
+				.orElse(null);
 	}
 
 	/**

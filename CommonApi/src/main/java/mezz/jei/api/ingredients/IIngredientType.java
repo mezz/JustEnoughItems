@@ -20,6 +20,11 @@ public interface IIngredientType<T> {
 	 */
 	Class<? extends T> getIngredientClass();
 
+	/**
+	 * Helper to cast an unknown ingredient to this type if it matches.
+	 *
+	 * @since 11.5.0
+	 */
 	default Optional<T> castIngredient(@Nullable Object ingredient) {
 		Class<? extends T> ingredientClass = getIngredientClass();
 		return Optional.ofNullable(ingredient)
