@@ -84,3 +84,19 @@ tasks.withType<JavaCompile> {
         }
     }
 }
+
+publishing {
+    publications {
+        register<MavenPublication>("libraryJar") {
+            artifactId = baseArchivesName
+            artifact(tasks.jar.get())
+            artifact(sourcesJarTask.get())
+        }
+    }
+    repositories {
+        val deployDir = project.findProperty("DEPLOY_DIR")
+        if (deployDir != null) {
+            maven(deployDir)
+        }
+    }
+}
