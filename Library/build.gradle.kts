@@ -14,6 +14,8 @@ val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 
+val sourcesJarTask = tasks.named<Jar>("sourcesJar")
+
 val baseArchivesName = "${modId}-${minecraftVersion}-lib"
 base {
     archivesName.set(baseArchivesName)
