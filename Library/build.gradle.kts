@@ -14,8 +14,6 @@ val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 
-val sourcesJarTask = tasks.named<Jar>("sourcesJar")
-
 val baseArchivesName = "${modId}-${minecraftVersion}-lib"
 base {
     archivesName.set(baseArchivesName)
@@ -77,6 +75,8 @@ java {
     }
     withSourcesJar()
 }
+
+val sourcesJarTask = tasks.named<Jar>("sourcesJar")
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
