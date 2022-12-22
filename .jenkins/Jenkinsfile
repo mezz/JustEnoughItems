@@ -41,6 +41,8 @@ pipeline {
         stage('Publish Maven') {
             steps {
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
                 sh "JAVA_HOME=${env.JDK_17} ./gradlew :Common:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
