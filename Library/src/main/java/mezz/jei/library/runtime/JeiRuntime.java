@@ -16,10 +16,6 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.library.gui.BookmarkOverlayDummy;
-import mezz.jei.library.gui.IngredientListOverlayDummy;
-import mezz.jei.library.gui.recipes.RecipesGuiDummy;
-import mezz.jei.library.ingredients.IngredientFilterApiDummy;
 import mezz.jei.library.ingredients.TypedIngredient;
 
 import java.util.Optional;
@@ -33,10 +29,10 @@ public class JeiRuntime implements IJeiRuntime {
 	private final IJeiKeyMappings keyMappings;
 	private final IJeiHelpers jeiHelpers;
 	private final IScreenHelper screenHelper;
-	private IIngredientListOverlay ingredientListOverlay;
-	private IBookmarkOverlay bookmarkOverlay;
-	private IRecipesGui recipesGui;
-	private IIngredientFilter ingredientFilter;
+	private final IIngredientListOverlay ingredientListOverlay;
+	private final IBookmarkOverlay bookmarkOverlay;
+	private final IRecipesGui recipesGui;
+	private final IIngredientFilter ingredientFilter;
 
 	public JeiRuntime(
 		IRecipeManager recipeManager,
@@ -46,16 +42,20 @@ public class JeiRuntime implements IJeiRuntime {
 		IJeiHelpers jeiHelpers,
 		IScreenHelper screenHelper,
 		IRecipeTransferManager recipeTransferManager,
-		IEditModeConfig editModeConfig
+		IEditModeConfig editModeConfig,
+		IIngredientListOverlay ingredientListOverlay,
+		IBookmarkOverlay bookmarkOverlay,
+		IRecipesGui recipesGui,
+		IIngredientFilter ingredientFilter
 	) {
 		this.recipeManager = recipeManager;
 		this.recipeTransferManager = recipeTransferManager;
 		this.editModeConfig = editModeConfig;
-		this.ingredientListOverlay = IngredientListOverlayDummy.INSTANCE;
+		this.ingredientListOverlay = ingredientListOverlay;
 		this.ingredientVisibility = ingredientVisibility;
-		this.bookmarkOverlay = BookmarkOverlayDummy.INSTANCE;
-		this.recipesGui = RecipesGuiDummy.INSTANCE;
-		this.ingredientFilter = IngredientFilterApiDummy.INSTANCE;
+		this.bookmarkOverlay = bookmarkOverlay;
+		this.recipesGui = recipesGui;
+		this.ingredientFilter = ingredientFilter;
 		this.ingredientManager = ingredientManager;
 		this.keyMappings = keyMappings;
 		this.jeiHelpers = jeiHelpers;
@@ -131,25 +131,5 @@ public class JeiRuntime implements IJeiRuntime {
 	@Override
 	public IEditModeConfig getEditModeConfig() {
 		return editModeConfig;
-	}
-
-	@Override
-	public void setIngredientListOverlay(IIngredientListOverlay ingredientListOverlay) {
-		this.ingredientListOverlay = ingredientListOverlay;
-	}
-
-	@Override
-	public void setBookmarkOverlay(IBookmarkOverlay bookmarkOverlay) {
-		this.bookmarkOverlay = bookmarkOverlay;
-	}
-
-	@Override
-	public void setRecipesGui(IRecipesGui recipesGui) {
-		this.recipesGui = recipesGui;
-	}
-
-	@Override
-	public void setIngredientFilter(IIngredientFilter ingredientFilter) {
-		this.ingredientFilter = ingredientFilter;
 	}
 }

@@ -29,6 +29,7 @@ import mezz.jei.library.ingredients.IngredientVisibility;
 import mezz.jei.library.load.PluginCaller;
 import mezz.jei.library.load.PluginHelper;
 import mezz.jei.library.load.PluginLoader;
+import mezz.jei.library.load.registration.RuntimeRegistration;
 import mezz.jei.library.plugins.jei.JeiInternalPlugin;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import mezz.jei.library.recipes.RecipeManager;
@@ -122,6 +123,17 @@ public final class JeiStarter {
 		timer.start("Building runtime");
 		IScreenHelper screenHelper = pluginLoader.createGuiScreenHelper(plugins, jeiHelpers);
 
+		RuntimeRegistration runtimeRegistration = new RuntimeRegistration(
+			recipeManager,
+			jeiHelpers,
+			editModeConfig,
+			ingredientManager,
+			ingredientVisibility,
+			recipeTransferManager,
+			screenHelper
+		);
+		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration));
+
 		JeiRuntime jeiRuntime = new JeiRuntime(
 			recipeManager,
 			ingredientManager,
@@ -130,7 +142,11 @@ public final class JeiStarter {
 			jeiHelpers,
 			screenHelper,
 			recipeTransferManager,
-			editModeConfig
+			editModeConfig,
+			runtimeRegistration.getIngredientListOverlay(),
+			runtimeRegistration.getBookmarkOverlay(),
+			runtimeRegistration.getRecipesGui(),
+			runtimeRegistration.getIngredientFilter()
 		);
 		timer.stop();
 
