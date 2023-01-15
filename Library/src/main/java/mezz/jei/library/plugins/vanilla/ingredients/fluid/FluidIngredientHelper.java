@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
@@ -121,13 +122,19 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 
 	@Override
 	public Collection<ResourceLocation> getTags(T ingredient) {
+		return getTagStream(ingredient)
+			.collect(Collectors.toUnmodifiableSet());
+	}
+
+	@Override
+	public Stream<ResourceLocation> getTagStream(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
-		Stream<TagKey<Fluid>> tagKeyStream = BuiltInRegistries.FLUID.getResourceKey(fluid)
+
+		return BuiltInRegistries.FLUID.getResourceKey(fluid)
 			.flatMap(BuiltInRegistries.FLUID::getHolder)
 			.map(Holder::tags)
-			.orElse(Stream.of());
-
-		return TagUtil.getTags(tagKeyStream);
+			.orElse(Stream.of())
+			.map(TagKey::location);
 	}
 
 	@SuppressWarnings("ConstantConditions")

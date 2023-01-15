@@ -3,6 +3,7 @@ package mezz.jei.gui.ingredients;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -23,7 +24,7 @@ public interface IListElementInfo<V> {
 
 	Collection<String> getTagStrings(IIngredientManager ingredientManager);
 
-	Collection<ResourceLocation> getTagIds(IIngredientManager ingredientManager);
+	Stream<ResourceLocation> getTagIds(IIngredientManager ingredientManager);
 
 	Iterable<Integer> getColors(IIngredientManager ingredientManager);
 
