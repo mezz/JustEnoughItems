@@ -101,44 +101,4 @@ public interface IJeiRuntime {
 	 * @since 11.5.0
 	 */
 	IEditModeConfig getEditModeConfig();
-
-	/**
-	 * Set the ingredient list overlay.
-	 *
-	 * This is used by JEI's GUI and can be used by other mods
-	 * that want to override JEI's GUI and have it still work with mods that use JEI's API.
-	 *
-	 * @since 11.5.0
-	 */
-	void setIngredientListOverlay(IIngredientListOverlay ingredientListOverlay);
-
-	/**
-	 * Set the bookmark list overlay.
-	 *
-	 * This is used by JEI's GUI and can be used by other mods
-	 * that want to override JEI's GUI and have it still work with mods that use JEI's API.
-	 *
-	 * @since 11.5.0
-	 */
-	void setBookmarkOverlay(IBookmarkOverlay bookmarkOverlay);
-
-	/**
-	 * Set the Recipe GUI.
-	 *
-	 * This is used by JEI's GUI and can be used by other mods
-	 * that want to override JEI's GUI and have it still work with mods that use JEI's API.
-	 *
-	 * @since 11.5.0
-	 */
-	void setRecipesGui(IRecipesGui recipesGui);
-
-	/**
-	 * Set the Ingredient Filter.
-	 *
-	 * This is used by JEI's GUI and can be used by other mods
-	 * that want to override JEI's GUI and have it still work with mods that use JEI's API.
-	 *
-	 * @since 11.5.0
-	 */
-	void setIngredientFilter(IIngredientFilter ingredientFilter);
 }

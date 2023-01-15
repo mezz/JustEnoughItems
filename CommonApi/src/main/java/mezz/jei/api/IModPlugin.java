@@ -1,6 +1,7 @@
 package mezz.jei.api;
 
 import mezz.jei.api.helpers.IPlatformFluidHelper;
+import mezz.jei.api.registration.IRuntimeRegistration;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.registration.IAdvancedRegistration;
@@ -102,6 +103,13 @@ public interface IModPlugin {
 	 * Register advanced features for your mod plugin.
 	 */
 	default void registerAdvanced(IAdvancedRegistration registration) {
+
+	}
+
+	/**
+	 * Override the default JEI runtime.
+	 */
+	default void registerRuntime(IRuntimeRegistration registration) {
 
 	}
 
