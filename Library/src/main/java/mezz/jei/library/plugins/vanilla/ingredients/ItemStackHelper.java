@@ -15,6 +15,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	private final StackHelper stackHelper;
@@ -124,8 +127,16 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	@Deprecated
 	public Collection<ResourceLocation> getTags(ItemStack ingredient) {
-		return TagUtil.getTags(ingredient.getTags());
+		return getTagStream(ingredient)
+			.collect(Collectors.toUnmodifiableSet());
+	}
+
+	@Override
+	public Stream<ResourceLocation> getTagStream(ItemStack ingredient) {
+		return ingredient.getTags()
+			.map(TagKey::location);
 	}
 
 	@Override

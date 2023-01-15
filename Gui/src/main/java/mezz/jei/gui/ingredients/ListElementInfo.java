@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class ListElementInfo<V> implements IListElementInfo<V> {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -113,17 +114,16 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	public Collection<String> getTagStrings(IIngredientManager ingredientManager) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
-		Collection<ResourceLocation> tags = ingredientHelper.getTags(value.getIngredient());
-		return tags.stream()
+		return ingredientHelper.getTagStream(value.getIngredient())
 			.map(ResourceLocation::getPath)
 			.toList();
 	}
 
 	@Override
-	public Collection<ResourceLocation> getTagIds(IIngredientManager ingredientManager) {
+	public Stream<ResourceLocation> getTagIds(IIngredientManager ingredientManager) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
-		return ingredientHelper.getTags(value.getIngredient());
+		return ingredientHelper.getTagStream(value.getIngredient());
 	}
 
 	@Override

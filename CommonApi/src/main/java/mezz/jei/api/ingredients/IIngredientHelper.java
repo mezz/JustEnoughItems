@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * An ingredient helper allows JEI to get information about ingredients for searching and other purposes.
@@ -121,9 +122,22 @@ public interface IIngredientHelper<V> {
 	/**
 	 * Get a list of tags that include this ingredient.
 	 * Used for searching by tags.
+	 *
+	 * @deprecated use {@link #getTagStream} instead
 	 */
+	@Deprecated(since = "11.5.1")
 	default Collection<ResourceLocation> getTags(V ingredient) {
 		return Collections.emptyList();
+	}
+
+	/**
+	 * Get a stream of tags that include this ingredient.
+	 * Used for searching by tags.
+	 *
+	 * @since 11.5.1
+	 */
+	default Stream<ResourceLocation> getTagStream(V ingredient) {
+		return getTags(ingredient).stream();
 	}
 
 	/**

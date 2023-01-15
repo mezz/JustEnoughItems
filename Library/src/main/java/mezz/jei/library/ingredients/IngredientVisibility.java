@@ -6,9 +6,13 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.Constants;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.core.util.WeakList;
 import mezz.jei.library.config.EditModeConfig;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.stream.Stream;
 
 public class IngredientVisibility implements IIngredientVisibility {
 	private final IngredientBlacklistInternal blacklist;
@@ -52,6 +56,10 @@ public class IngredientVisibility implements IIngredientVisibility {
 			return false;
 		}
 		if (!ingredientHelper.isIngredientOnServer(typedIngredient.getIngredient())) {
+			return false;
+		}
+		Stream<ResourceLocation> tags = ingredientHelper.getTagStream(typedIngredient.getIngredient());
+		if (tags.anyMatch(Constants.HIDDEN_INGREDIENT_TAG::equals)) {
 			return false;
 		}
 		return worldConfig.isEditModeEnabled() || !editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient);
