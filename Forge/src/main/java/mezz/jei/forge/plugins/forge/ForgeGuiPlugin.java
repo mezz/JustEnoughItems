@@ -3,7 +3,7 @@ package mezz.jei.forge.plugins.forge;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiEventHandlers;
@@ -25,13 +25,13 @@ public class ForgeGuiPlugin implements IModPlugin {
     }
 
     @Override
-    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+    public void registerRuntime(IRuntimeRegistration registration) {
         if (!runtimeSubscriptions.isEmpty()) {
             LOGGER.error("JEI GUI is already running.");
             runtimeSubscriptions.clear();
         }
 
-        JeiEventHandlers eventHandlers = JeiGuiStarter.start(jeiRuntime);
+        JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
 
         EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
     }

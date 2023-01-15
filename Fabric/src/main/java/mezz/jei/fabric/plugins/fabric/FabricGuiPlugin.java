@@ -3,6 +3,7 @@ package mezz.jei.fabric.plugins.fabric;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.fabric.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiEventHandlers;
@@ -27,12 +28,14 @@ public class FabricGuiPlugin implements IModPlugin {
     }
 
     @Override
+    public void registerRuntime(IRuntimeRegistration registration) {
+        JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
+        eventRegistration.setEventHandlers(eventHandlers);
+    }
+
+    @Override
     public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
         runtime = jeiRuntime;
-
-        JeiEventHandlers eventHandlers = JeiGuiStarter.start(jeiRuntime);
-
-        eventRegistration.setEventHandlers(eventHandlers);
     }
 
     @Override

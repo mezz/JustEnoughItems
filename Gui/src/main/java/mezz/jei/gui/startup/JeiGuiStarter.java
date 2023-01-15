@@ -6,11 +6,11 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
@@ -59,7 +59,7 @@ import java.util.List;
 public class JeiGuiStarter {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static JeiEventHandlers start(IJeiRuntime jeiRuntime) {
+    public static JeiEventHandlers start(IRuntimeRegistration registration) {
         LOGGER.info("Starting JEI GUI");
         LoggedTimer timer = new LoggedTimer();
 
@@ -67,14 +67,14 @@ public class JeiGuiStarter {
         Textures textures = Internal.getTextures();
         IInternalKeyMappings keyMappings = Internal.getKeyMappings();
 
-        IScreenHelper screenHelper = jeiRuntime.getScreenHelper();
-        IRecipeTransferManager recipeTransferManager = jeiRuntime.getRecipeTransferManager();
-        IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
-        IIngredientVisibility ingredientVisibility = jeiRuntime.getIngredientVisibility();
-        IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
-        IEditModeConfig editModeConfig = jeiRuntime.getEditModeConfig();
+        IScreenHelper screenHelper = registration.getScreenHelper();
+        IRecipeTransferManager recipeTransferManager = registration.getRecipeTransferManager();
+        IRecipeManager recipeManager = registration.getRecipeManager();
+        IIngredientVisibility ingredientVisibility = registration.getIngredientVisibility();
+        IIngredientManager ingredientManager = registration.getIngredientManager();
+        IEditModeConfig editModeConfig = registration.getEditModeConfig();
 
-        IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
+        IJeiHelpers jeiHelpers = registration.getJeiHelpers();
         IColorHelper colorHelper = jeiHelpers.getColorHelper();
         IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
         IFocusFactory focusFactory = jeiHelpers.getFocusFactory();
@@ -120,7 +120,7 @@ public class JeiGuiStarter {
         timer.stop();
 
         IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
-        jeiRuntime.setIngredientFilter(ingredientFilterApi);
+        registration.setIngredientFilter(ingredientFilterApi);
 
         CheatUtil cheatUtil = new CheatUtil(ingredientManager);
         IngredientListOverlay ingredientListOverlay = OverlayHelper.createIngredientListOverlay(
@@ -140,7 +140,7 @@ public class JeiGuiStarter {
             colorHelper,
             cheatUtil
         );
-        jeiRuntime.setIngredientListOverlay(ingredientListOverlay);
+        registration.setIngredientListOverlay(ingredientListOverlay);
 
         BookmarkList bookmarkList = new BookmarkList(ingredientManager, bookmarkConfig);
         bookmarkConfig.loadBookmarks(ingredientManager, bookmarkList);
@@ -161,7 +161,7 @@ public class JeiGuiStarter {
             colorHelper,
             cheatUtil
         );
-        jeiRuntime.setBookmarkOverlay(bookmarkOverlay);
+        registration.setBookmarkOverlay(bookmarkOverlay);
 
         GuiEventHandler guiEventHandler = new GuiEventHandler(
             screenHelper,
@@ -179,7 +179,7 @@ public class JeiGuiStarter {
             keyMappings,
             focusFactory
         );
-        jeiRuntime.setRecipesGui(recipesGui);
+        registration.setRecipesGui(recipesGui);
 
         CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
             recipesGui,
