@@ -31,7 +31,7 @@ import mezz.jei.library.plugins.jei.ingredients.DebugIngredientRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -221,7 +221,7 @@ public class JeiDebugPlugin implements IModPlugin {
 		registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
 		registration.addRecipeCatalyst(fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER, bucketVolume, null), DebugRecipeCategory.TYPE);
 		registration.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
-		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
+		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registries.ITEM);
 		registry.getValues()
 			.limit(30)
 			.forEach(item -> {

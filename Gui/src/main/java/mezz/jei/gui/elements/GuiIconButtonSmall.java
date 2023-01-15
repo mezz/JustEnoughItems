@@ -18,13 +18,13 @@ public class GuiIconButtonSmall extends Button {
 	private final Textures textures;
 
 	public GuiIconButtonSmall(int x, int y, int widthIn, int heightIn, IDrawable icon, Button.OnPress pressable, Textures textures) {
-		super(x, y, widthIn, heightIn, CommonComponents.EMPTY, pressable);
+		super(x, y, widthIn, heightIn, CommonComponents.EMPTY, pressable, Button.DEFAULT_NARRATION);
 		this.icon = icon;
 		this.textures = textures;
 	}
 
 	public ImmutableRect2i getArea() {
-		return new ImmutableRect2i(x, y, width, height);
+		return new ImmutableRect2i(getX(), getY(), getWidth(), getHeight());
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class GuiIconButtonSmall extends Button {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			boolean hovered = isMouseOver(mouseX, mouseY);
 			DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);
-			texture.draw(poseStack, this.x, this.y, this.width, this.height);
+			texture.draw(poseStack, this.getX(), this.getY(), this.getWidth(), this.getHeight());
 			this.renderBg(poseStack, minecraft, mouseX, mouseY);
 
 			int color = 0xFFE0E0E0;
@@ -50,8 +50,8 @@ public class GuiIconButtonSmall extends Button {
 			float alpha = (color >> 24 & 255) / 255.0F;
 			RenderSystem.setShaderColor(red, blue, green, alpha);
 
-			double xOffset = x + (width - this.icon.getWidth()) / 2.0;
-			double yOffset = y + (height - this.icon.getHeight()) / 2.0;
+			double xOffset = getX() + (getWidth() - this.icon.getWidth()) / 2.0;
+			double yOffset = getY() + (getHeight() - this.icon.getHeight()) / 2.0;
 			poseStack.pushPose();
 			{
 				poseStack.translate(xOffset, yOffset, 0);

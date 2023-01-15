@@ -4,7 +4,7 @@ import mezz.jei.api.constants.ModIds;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet.ListBacked;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffect;
@@ -12,6 +12,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SuspiciousStewItem;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
@@ -28,7 +29,7 @@ public final class SuspiciousStewRecipeMaker {
 		Ingredient redMushroom = Ingredient.of(Blocks.RED_MUSHROOM.asItem());
 		Ingredient bowl = Ingredient.of(Items.BOWL);
 
-		return Registry.ITEM.getTag(ItemTags.SMALL_FLOWERS)
+		return BuiltInRegistries.ITEM.getTag(ItemTags.SMALL_FLOWERS)
 			.stream()
 			.flatMap(ListBacked::stream)
 			.map(Holder::value)
@@ -40,10 +41,10 @@ public final class SuspiciousStewRecipeMaker {
 				Ingredient flower = Ingredient.of(flowerBlock.asItem());
 				NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY, brownMushroom, redMushroom, bowl, flower);
 				ItemStack output = new ItemStack(Items.SUSPICIOUS_STEW, 1);
-				MobEffect mobeffect = flowerBlock.getSuspiciousStewEffect();
+				MobEffect mobeffect = flowerBlock.getSuspiciousEffect();
 				SuspiciousStewItem.saveMobEffect(output, mobeffect, flowerBlock.getEffectDuration());
 				ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.suspicious.stew." + flowerBlock.getDescriptionId());
-				return new ShapelessRecipe(id, group, output, inputs);
+				return new ShapelessRecipe(id, group, CraftingBookCategory.MISC, output, inputs);
 			})
 			.toList();
 	}

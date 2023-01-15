@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
@@ -111,10 +112,12 @@ public final class ColorGetter {
 	}
 
 	private static Optional<NativeImage> getNativeImage(TextureAtlasSprite textureAtlasSprite) {
-		final int iconWidth = textureAtlasSprite.getWidth();
-		final int iconHeight = textureAtlasSprite.getHeight();
-		if (iconWidth <= 0 || iconHeight <= 0) {
-			return Optional.empty();
+		try (SpriteContents contents = textureAtlasSprite.contents()) {
+			int iconWidth = contents.width();
+			int iconHeight = contents.height();
+			if (iconWidth <= 0 || iconHeight <= 0) {
+				return Optional.empty();
+			}
 		}
 
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
@@ -129,7 +132,7 @@ public final class ColorGetter {
 		BakedModel blockModel = blockModelShapes.getBlockModel(blockState);
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		TextureAtlasSprite textureAtlasSprite = renderHelper.getParticleIcon(blockModel);
-		if (textureAtlasSprite instanceof MissingTextureAtlasSprite) {
+		if (textureAtlasSprite.atlasLocation().equals(MissingTextureAtlasSprite.getLocation())) {
 			return null;
 		}
 		return textureAtlasSprite;
@@ -142,7 +145,7 @@ public final class ColorGetter {
 		BakedModel itemModel = itemModelMesher.getItemModel(itemStack);
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		TextureAtlasSprite particleTexture = renderHelper.getParticleIcon(itemModel);
-		if (particleTexture instanceof MissingTextureAtlasSprite) {
+		if (particleTexture.atlasLocation().equals(MissingTextureAtlasSprite.getLocation())) {
 			return null;
 		}
 		return particleTexture;

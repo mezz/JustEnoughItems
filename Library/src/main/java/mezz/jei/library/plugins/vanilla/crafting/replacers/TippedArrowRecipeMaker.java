@@ -6,12 +6,13 @@ import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
@@ -25,7 +26,7 @@ public final class TippedArrowRecipeMaker {
 		ItemStack arrowStack = new ItemStack(Items.ARROW);
 		Ingredient arrowIngredient = Ingredient.of(arrowStack);
 
-		IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registry.POTION_REGISTRY);
+		IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registries.POTION);
 		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
 		return potionRegistry.getValues()
 			.<CraftingRecipe>map(potion -> {
@@ -39,7 +40,7 @@ public final class TippedArrowRecipeMaker {
 					arrowIngredient, arrowIngredient, arrowIngredient
 				);
 				ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + output.getDescriptionId());
-				return new ShapedRecipe(id, group, 3, 3, inputs, output);
+				return new ShapedRecipe(id, group, CraftingBookCategory.MISC, 3, 3, inputs, output);
 			})
 			.toList();
 	}

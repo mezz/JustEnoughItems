@@ -28,12 +28,12 @@ import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
-import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidStackListFactory;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.StackHelper;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.library.plugins.vanilla.anvil.SmithingRecipeCategory;
@@ -56,12 +56,12 @@ import mezz.jei.library.plugins.vanilla.crafting.replacers.SuspiciousStewRecipeM
 import mezz.jei.library.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackListFactory;
+import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
+import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidStackListFactory;
 import mezz.jei.library.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.library.render.ItemStackRenderer;
 import mezz.jei.library.transfer.PlayerRecipeTransferHandler;
-import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.StackHelper;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;
@@ -72,7 +72,7 @@ import net.minecraft.client.gui.screens.inventory.FurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -150,7 +150,7 @@ public class VanillaPlugin implements IModPlugin {
 			for (int i = 0; i < enchantments.size(); ++i) {
 				CompoundTag compoundnbt = enchantments.getCompound(i);
 				String id = compoundnbt.getString("id");
-				IPlatformRegistry<Enchantment> enchantmentRegistry = Services.PLATFORM.getRegistry(Registry.ENCHANTMENT_REGISTRY);
+				IPlatformRegistry<Enchantment> enchantmentRegistry = Services.PLATFORM.getRegistry(Registries.ENCHANTMENT);
 				ResourceLocation resourceLocation = ResourceLocation.tryParse(id);
 				if (resourceLocation != null) {
 					enchantmentRegistry.getValue(resourceLocation)
@@ -182,7 +182,7 @@ public class VanillaPlugin implements IModPlugin {
 		ISubtypeManager subtypeManager = registration.getSubtypeManager();
 		IColorHelper colorHelper = registration.getColorHelper();
 
-		IPlatformRegistry<Fluid> registry = Services.PLATFORM.getRegistry(Registry.FLUID_REGISTRY);
+		IPlatformRegistry<Fluid> registry = Services.PLATFORM.getRegistry(Registries.FLUID);
 		List<T> fluidIngredients = FluidStackListFactory.create(registry, platformFluidHelper);
 		FluidIngredientHelper<T> fluidIngredientHelper = new FluidIngredientHelper<>(subtypeManager, colorHelper, platformFluidHelper);
 		FluidTankRenderer<T> fluidTankRenderer = new FluidTankRenderer<>(platformFluidHelper);
@@ -314,7 +314,7 @@ public class VanillaPlugin implements IModPlugin {
 	/**
 	 * By default, JEI can't handle special recipes.
 	 * This method expands some special unhandled recipes into a list of normal recipes that JEI can understand.
-	 *
+	 * <p>
 	 * If a special recipe we know how to replace is not present (because it has been removed),
 	 * we do not replace it.
 	 */

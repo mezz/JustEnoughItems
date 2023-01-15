@@ -7,6 +7,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
@@ -35,7 +36,7 @@ public final class ShulkerBoxColoringRecipeMaker {
 		Block coloredShulkerBox = ShulkerBoxBlock.getBlockByColor(color);
 		ItemStack output = new ItemStack(coloredShulkerBox);
 		ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, group + "." + output.getDescriptionId());
-		return new ShapelessRecipe(id, group, output, inputs);
+		return new ShapelessRecipe(id, group, CraftingBookCategory.MISC, output, inputs);
 	}
 
 	private ShulkerBoxColoringRecipeMaker() {

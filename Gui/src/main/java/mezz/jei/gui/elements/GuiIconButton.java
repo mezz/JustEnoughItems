@@ -25,14 +25,14 @@ public class GuiIconButton extends Button {
 	private final Textures textures;
 
 	public GuiIconButton(IDrawable icon, OnPress pressable, Textures textures) {
-		super(0, 0, 0, 0, CommonComponents.EMPTY, pressable);
+		super(0, 0, 0, 0, CommonComponents.EMPTY, pressable, Button.DEFAULT_NARRATION);
 		this.icon = icon;
 		this.textures = textures;
 	}
 
 	public void updateBounds(ImmutableRect2i area) {
-		this.x = area.getX();
-		this.y = area.getY();
+		setX(area.getX());
+		setY(area.getY());
 		this.width = area.getWidth();
 		this.height = area.getHeight();
 	}
@@ -45,13 +45,17 @@ public class GuiIconButton extends Button {
 	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (this.visible) {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			boolean hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+			boolean hovered =
+				mouseX >= this.getX() &&
+				mouseY >= this.getY() &&
+				mouseX < this.getX() + this.width &&
+				mouseY < this.getY() + this.height;
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			Minecraft minecraft = Minecraft.getInstance();
 			DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);
-			texture.draw(poseStack, this.x, this.y, this.width, this.height);
+			texture.draw(poseStack, this.getX(), this.getY(), this.width, this.height);
 			this.renderBg(poseStack, minecraft, mouseX, mouseY);
 			int color = 0xFFE0E0E0;
 			if (!this.active) {
@@ -66,8 +70,8 @@ public class GuiIconButton extends Button {
 			float alpha = (color >> 24 & 255) / 255.0F;
 			RenderSystem.setShaderColor(red, blue, green, alpha);
 
-			double xOffset = x + (width - icon.getWidth()) / 2.0;
-			double yOffset = y + (height - icon.getHeight()) / 2.0;
+			double xOffset = getX() + (width - icon.getWidth()) / 2.0;
+			double yOffset = getY() + (height - icon.getHeight()) / 2.0;
 			poseStack.pushPose();
 			{
 				poseStack.translate(xOffset, yOffset, 0);

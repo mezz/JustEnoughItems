@@ -9,8 +9,6 @@ public interface IIngredientFilterConfig {
 
 	SearchMode getTagSearchMode();
 
-	SearchMode getCreativeTabSearchMode();
-
 	SearchMode getColorSearchMode();
 
 	SearchMode getResourceLocationSearchMode();

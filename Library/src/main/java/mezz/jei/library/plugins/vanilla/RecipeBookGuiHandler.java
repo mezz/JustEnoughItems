@@ -26,7 +26,7 @@ public class RecipeBookGuiHandler<C extends AbstractContainerMenu, T extends Abs
 			List<Rect2i> tabAreas = new ArrayList<>();
 			for (RecipeBookTabButton tab : screenHelper.getTabButtons(guiRecipeBook)) {
 				if (tab.visible) {
-					tabAreas.add(new Rect2i(tab.x, tab.y, tab.getWidth(), tab.getHeight()));
+					tabAreas.add(new Rect2i(tab.getX(), tab.getY(), tab.getWidth(), tab.getHeight()));
 				}
 			}
 			return tabAreas;

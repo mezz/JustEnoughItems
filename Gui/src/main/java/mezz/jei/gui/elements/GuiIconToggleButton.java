@@ -32,15 +32,15 @@ public abstract class GuiIconToggleButton {
 	public void updateBounds(ImmutableRect2i area) {
 		this.button.setWidth(area.getWidth());
 		this.button.setHeight(area.getHeight());
-		this.button.x = area.getX();
-		this.button.y = area.getY();
+		this.button.setX(area.getX());
+		this.button.setY(area.getY());
 		this.area = area;
 	}
 
 	public void draw(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		this.button.render(poseStack, mouseX, mouseY, partialTicks);
 		IDrawable icon = isIconToggledOn() ? this.onIcon : this.offIcon;
-		icon.draw(poseStack, this.button.x + 2, this.button.y + 2);
+		icon.draw(poseStack, this.button.getX() + 2, this.button.getY() + 2);
 	}
 
 	public final boolean isMouseOver(double mouseX, double mouseY) {

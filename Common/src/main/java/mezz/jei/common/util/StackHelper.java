@@ -4,7 +4,7 @@ import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.Services;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -52,7 +52,7 @@ public class StackHelper implements IStackHelper {
 
 		Item item = stack.getItem();
 		return Services.PLATFORM
-			.getRegistry(Registry.ITEM_REGISTRY)
+			.getRegistry(Registries.ITEM)
 			.getRegistryName(item)
 			.map(ResourceLocation::toString)
 			.orElseThrow(() -> {

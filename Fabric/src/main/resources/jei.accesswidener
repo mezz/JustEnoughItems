@@ -8,8 +8,6 @@ accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScr
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageWidth I
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageHeight I
 
-accessible field net/minecraft/client/KeyboardHandler sendRepeatsToGui Z
-
 accessible field net/minecraft/client/Minecraft itemColors Lnet/minecraft/client/color/item/ItemColors;
 
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent width I
@@ -17,7 +15,7 @@ accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent xOffset I
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent tabButtons Ljava/util/List;
 
-accessible field net/minecraft/client/renderer/texture/TextureAtlasSprite mainImage [Lcom/mojang/blaze3d/platform/NativeImage;
+accessible field net/minecraft/client/renderer/texture/SpriteContents byMipLevel [Lcom/mojang/blaze3d/platform/NativeImage;
 
 accessible field net/minecraft/world/item/crafting/UpgradeRecipe base Lnet/minecraft/world/item/crafting/Ingredient;
 accessible field net/minecraft/world/item/crafting/UpgradeRecipe addition Lnet/minecraft/world/item/crafting/Ingredient;

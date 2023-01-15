@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 
-import com.mojang.math.Matrix4f;
+import org.joml.Matrix4f;
 
 public class DrawableSprite implements IDrawableStatic {
 	private final JeiSpriteUploader spriteUploader;

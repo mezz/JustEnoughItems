@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.server.packs.PackType;
 
+@SuppressWarnings("unused")
 public class JustEnoughItemsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {

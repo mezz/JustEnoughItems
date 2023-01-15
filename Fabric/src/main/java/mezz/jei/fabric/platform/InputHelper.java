@@ -5,7 +5,6 @@ import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.fabric.input.FabricJeiKeyMappingCategoryBuilder;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.KeyboardHandler;
 
 public class InputHelper implements IPlatformInputHelper {
     @Override
@@ -17,11 +16,6 @@ public class InputHelper implements IPlatformInputHelper {
             return keyMapping.matchesMouse(key.getValue());
         }
         return keyMapping.matches(key.getValue(), 0);
-    }
-
-    @Override
-    public boolean isSendRepeatsToGui(KeyboardHandler keyboardHandler) {
-        return keyboardHandler.sendRepeatsToGui;
     }
 
     @Override

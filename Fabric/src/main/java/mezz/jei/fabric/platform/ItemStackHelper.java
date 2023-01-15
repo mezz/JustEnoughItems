@@ -4,14 +4,12 @@ import mezz.jei.common.platform.IPlatformItemStackHelper;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,15 +30,6 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
     @Override
     public Optional<String> getCreatorModId(ItemStack stack) {
         return Optional.empty();
-    }
-
-    @Override
-    public Collection<CreativeModeTab> getCreativeTabs(ItemStack itemStack) {
-        CreativeModeTab creativeTab = itemStack.getItem().getItemCategory();
-        if (creativeTab == null) {
-            return List.of();
-        }
-        return List.of(creativeTab);
     }
 
     @Override

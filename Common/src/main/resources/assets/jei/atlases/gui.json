@@ -1,0 +1,9 @@
+{
+    "sources": [
+        {
+            "type": "directory",
+            "source": "jei/atlas/gui",
+            "prefix": ""
+        }
+    ]
+}

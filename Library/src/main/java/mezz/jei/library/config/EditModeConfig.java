@@ -162,6 +162,9 @@ public class EditModeConfig implements IEditModeConfig {
 
 		@Override
 		public void load(EditModeConfig config) {
+			if (!Files.exists(path)) {
+				save(config);
+			}
 			try {
 				List<String> strings = Files.readAllLines(path);
 				config.blacklist.clear();

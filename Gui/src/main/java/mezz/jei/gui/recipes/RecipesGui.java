@@ -190,16 +190,16 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		int titleHeight = font.lineHeight + borderPadding;
 		int recipeClassButtonTop = guiTop + titleHeight - buttonHeight + 2;
-		nextRecipeCategory.x = rightButtonX;
-		nextRecipeCategory.y = recipeClassButtonTop;
-		previousRecipeCategory.x = leftButtonX;
-		previousRecipeCategory.y = recipeClassButtonTop;
+		nextRecipeCategory.setX(rightButtonX);
+		nextRecipeCategory.setY(recipeClassButtonTop);
+		previousRecipeCategory.setX(leftButtonX);
+		previousRecipeCategory.setY(recipeClassButtonTop);
 
 		int pageButtonTop = recipeClassButtonTop + buttonHeight + 2;
-		nextPage.x = rightButtonX;
-		nextPage.y = pageButtonTop;
-		previousPage.x = leftButtonX;
-		previousPage.y = pageButtonTop;
+		nextPage.setX(rightButtonX);
+		nextPage.setY(pageButtonTop);
+		previousPage.setX(leftButtonX);
+		previousPage.setY(pageButtonTop);
 
 		this.headerHeight = (pageButtonTop + buttonHeight) - guiTop;
 		this.titleArea = MathUtil.union(previousRecipeCategory.getArea(), nextRecipeCategory.getArea())
@@ -232,15 +232,15 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		fill(poseStack,
 			x + borderPadding + buttonWidth,
-			nextRecipeCategory.y,
+			nextRecipeCategory.getY(),
 			x + width - borderPadding - buttonWidth,
-			nextRecipeCategory.y + buttonHeight,
+			nextRecipeCategory.getY() + buttonHeight,
 			0x30000000);
 		fill(poseStack,
 			x + borderPadding + buttonWidth,
-			nextPage.y,
+			nextPage.getY(),
 			x + width - borderPadding - buttonWidth,
-			nextPage.y + buttonHeight,
+			nextPage.getY() + buttonHeight,
 			0x30000000);
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

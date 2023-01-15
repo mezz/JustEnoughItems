@@ -6,8 +6,8 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.common.util.Translator;
+import mezz.jei.gui.config.IIngredientFilterConfig;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -124,16 +124,6 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		return ingredientHelper.getTags(value.getIngredient());
-	}
-
-	@Override
-	public Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager) {
-		ITypedIngredient<V> value = element.getTypedIngredient();
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
-		Collection<String> creativeTabsStrings = ingredientHelper.getCreativeTabNames(value.getIngredient());
-		return creativeTabsStrings.stream()
-			.map(Translator::toLowercaseWithLocale)
-			.toList();
 	}
 
 	@Override

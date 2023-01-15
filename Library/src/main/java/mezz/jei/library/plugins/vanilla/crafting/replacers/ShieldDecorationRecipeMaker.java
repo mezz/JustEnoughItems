@@ -3,7 +3,7 @@ package mezz.jei.library.plugins.vanilla.crafting.replacers;
 import mezz.jei.api.constants.ModIds;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
@@ -13,6 +13,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
@@ -25,7 +26,7 @@ import java.util.stream.StreamSupport;
 
 public final class ShieldDecorationRecipeMaker {
 	public static List<CraftingRecipe> createRecipes() {
-		Iterable<Holder<Item>> banners = Registry.ITEM.getTagOrEmpty(ItemTags.BANNERS);
+		Iterable<Holder<Item>> banners = BuiltInRegistries.ITEM.getTagOrEmpty(ItemTags.BANNERS);
 
 		Set<DyeColor> colors = EnumSet.noneOf(DyeColor.class);
 
@@ -49,7 +50,7 @@ public final class ShieldDecorationRecipeMaker {
 		ItemStack output = createOutput(banner);
 
 		ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.shield.decoration." + output.getDescriptionId());
-		return new ShapelessRecipe(id, "jei.shield.decoration", output, inputs);
+		return new ShapelessRecipe(id, "jei.shield.decoration", CraftingBookCategory.MISC, output, inputs);
 	}
 
 	private static ItemStack createOutput(BannerItem banner) {

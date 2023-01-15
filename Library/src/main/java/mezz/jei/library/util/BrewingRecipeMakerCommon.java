@@ -6,12 +6,12 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.library.ingredients.IngredientSet;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
-import net.minecraft.core.Registry;
+import mezz.jei.library.ingredients.IngredientSet;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
@@ -38,7 +38,7 @@ public class BrewingRecipeMakerCommon {
         IVanillaPotionOutputSupplier vanillaOutputSupplier
     ) {
         Set<IJeiBrewingRecipe> recipes = new HashSet<>();
-        IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registry.POTION_REGISTRY);
+        IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registries.POTION);
         IngredientSet<ItemStack> knownPotions = getBaseKnownPotions(ingredientManager, potionRegistry);
 
         List<ItemStack> potionReagents = ingredientManager.getAllItemStacks().stream()

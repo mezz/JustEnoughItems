@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
@@ -50,12 +51,14 @@ public class RenderHelper implements IPlatformRenderHelper {
 
     @Override
     public Optional<NativeImage> getMainImage(TextureAtlasSprite sprite) {
-        NativeImage[] frames = sprite.mainImage;
-        if (frames.length == 0) {
-            return Optional.empty();
+        try (SpriteContents contents = sprite.contents()) {
+            NativeImage[] frames = contents.byMipLevel;
+            if (frames.length == 0) {
+                return Optional.empty();
+            }
+            NativeImage frame = frames[0];
+            return Optional.ofNullable(frame);
         }
-        NativeImage frame = frames[0];
-        return Optional.ofNullable(frame);
     }
 
     @Override

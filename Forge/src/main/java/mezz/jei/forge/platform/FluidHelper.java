@@ -100,7 +100,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
             .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
             .apply(fluidStill);
         return Optional.of(sprite)
-            .filter(s -> s.getName() != MissingTextureAtlasSprite.getLocation());
+            .filter(s -> s.atlasLocation() != MissingTextureAtlasSprite.getLocation());
     }
 
     @Override

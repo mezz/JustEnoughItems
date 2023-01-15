@@ -7,7 +7,8 @@ import mezz.jei.core.config.IngredientSortStage;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
 import net.minecraft.core.HolderSet.ListBacked;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ArmorItem;
@@ -169,8 +170,8 @@ public class IngredientSorterComparators {
 		if (tagId.toString().equals("itemfilters:check_nbt")) {
 			return 0;
 		}
-		TagKey<Item> tagKey = TagKey.create(Registry.ITEM_REGISTRY, tagId);
-		return Registry.ITEM.getTag(tagKey)
+		TagKey<Item> tagKey = TagKey.create(Registries.ITEM, tagId);
+		return BuiltInRegistries.ITEM.getTag(tagKey)
 			.map(ListBacked::size)
 			.orElse(0);
 	}

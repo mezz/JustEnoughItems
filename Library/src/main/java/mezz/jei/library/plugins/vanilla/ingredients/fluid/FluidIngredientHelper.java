@@ -12,7 +12,8 @@ import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.TagUtil;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -37,7 +38,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 		this.subtypeManager = subtypeManager;
 		this.colorHelper = colorHelper;
 		this.platformFluidHelper = platformFluidHelper;
-		this.registry = Services.PLATFORM.getRegistry(Registry.FLUID_REGISTRY);
+		this.registry = Services.PLATFORM.getRegistry(Registries.FLUID);
 		this.fluidType = platformFluidHelper.getFluidIngredientType();
 	}
 
@@ -121,8 +122,8 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	@Override
 	public Collection<ResourceLocation> getTags(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
-		Stream<TagKey<Fluid>> tagKeyStream = Registry.FLUID.getResourceKey(fluid)
-			.flatMap(Registry.FLUID::getHolder)
+		Stream<TagKey<Fluid>> tagKeyStream = BuiltInRegistries.FLUID.getResourceKey(fluid)
+			.flatMap(BuiltInRegistries.FLUID::getHolder)
 			.map(Holder::tags)
 			.orElse(Stream.of());
 
@@ -154,6 +155,6 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 
 	@Override
 	public Optional<ResourceLocation> getTagEquivalent(Collection<T> ingredients) {
-		return TagUtil.getTagEquivalent(ingredients, fluidType::getBase, Registry.FLUID::getTags);
+		return TagUtil.getTagEquivalent(ingredients, fluidType::getBase, BuiltInRegistries.FLUID::getTags);
 	}
 }

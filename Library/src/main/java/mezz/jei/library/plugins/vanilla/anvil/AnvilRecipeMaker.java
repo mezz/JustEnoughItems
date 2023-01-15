@@ -8,7 +8,7 @@ import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -84,7 +84,7 @@ public final class AnvilRecipeMaker {
 		IVanillaRecipeFactory vanillaRecipeFactory,
 		IIngredientManager ingredientManager
 	) {
-		IPlatformRegistry<Enchantment> registry = Services.PLATFORM.getRegistry(Registry.ENCHANTMENT_REGISTRY);
+		IPlatformRegistry<Enchantment> registry = Services.PLATFORM.getRegistry(Registries.ENCHANTMENT);
 		List<EnchantmentData> enchantmentDatas = registry.getValues()
 			.map(EnchantmentData::new)
 			.toList();

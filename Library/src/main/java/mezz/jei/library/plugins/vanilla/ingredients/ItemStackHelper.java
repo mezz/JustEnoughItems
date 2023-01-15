@@ -11,16 +11,16 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.common.util.TagUtil;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
@@ -65,7 +65,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		return itemStackHelper.getCreatorModId(ingredient)
 			.or(() ->
 				Services.PLATFORM
-				.getRegistry(Registry.ITEM_REGISTRY)
+				.getRegistry(Registries.ITEM)
 				.getRegistryName(ingredient.getItem())
 				.map(ResourceLocation::getNamespace)
 			)
@@ -86,7 +86,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 		Item item = ingredient.getItem();
 		return Services.PLATFORM
-			.getRegistry(Registry.ITEM_REGISTRY)
+			.getRegistry(Registries.ITEM)
 			.getRegistryName(item)
 			.orElseThrow(() -> {
 				String stackInfo = getErrorInfo(ingredient);
@@ -119,7 +119,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public boolean isIngredientOnServer(ItemStack ingredient) {
 		Item item = ingredient.getItem();
-		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
+		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registries.ITEM);
 		return registry.contains(item);
 	}
 
@@ -129,16 +129,9 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	@Deprecated
 	public Collection<String> getCreativeTabNames(ItemStack ingredient) {
-		Collection<String> creativeTabsStrings = new ArrayList<>();
-		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
-		for (CreativeModeTab itemGroup : itemStackHelper.getCreativeTabs(ingredient)) {
-			if (itemGroup != null) {
-				String creativeTabName = itemGroup.getDisplayName().getString();
-				creativeTabsStrings.add(creativeTabName);
-			}
-		}
-		return creativeTabsStrings;
+		return List.of();
 	}
 
 	@Override
@@ -148,6 +141,6 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public Optional<ResourceLocation> getTagEquivalent(Collection<ItemStack> ingredients) {
-		return TagUtil.getTagEquivalent(ingredients, ItemStack::getItem, Registry.ITEM::getTags);
+		return TagUtil.getTagEquivalent(ingredients, ItemStack::getItem, BuiltInRegistries.ITEM::getTags);
 	}
 }

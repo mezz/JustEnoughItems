@@ -6,13 +6,13 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Matrix4f;
 import mezz.jei.common.Constants;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+import org.joml.Matrix4f;
 
 /**
  * Breaks a texture into 9 pieces so that it can be scaled to any size.

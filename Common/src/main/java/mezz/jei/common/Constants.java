@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import mezz.jei.api.constants.ModIds;
 
 public final class Constants {
-	public static final String TEXTURE_GUI_PATH = "textures/gui/";
+	public static final String TEXTURE_GUI_PATH = "textures/jei/gui/";
 	public static final String TEXTURE_GUI_VANILLA = Constants.TEXTURE_GUI_PATH + "gui_vanilla.png";
 
 	public static final ResourceLocation RECIPE_GUI_VANILLA = new ResourceLocation(ModIds.JEI_ID, TEXTURE_GUI_VANILLA);

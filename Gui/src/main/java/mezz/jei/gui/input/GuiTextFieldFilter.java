@@ -4,12 +4,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.gui.input.handlers.TextFieldInputHandler;
-import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.util.TextHistory;
+import mezz.jei.gui.input.handlers.TextFieldInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
@@ -27,7 +26,6 @@ public class GuiTextFieldFilter extends EditBox {
 	private final DrawableNineSliceTexture background;
 	private ImmutableRect2i backgroundBounds;
 
-	private boolean previousKeyboardRepeatEnabled;
 	private @Nullable AbstractWidget previouslyFocusedWidget;
 
 	public GuiTextFieldFilter(Textures textures) {
@@ -43,8 +41,8 @@ public class GuiTextFieldFilter extends EditBox {
 
 	public void updateBounds(ImmutableRect2i area) {
 		this.backgroundBounds = area;
-		this.x = area.getX() + 4;
-		this.y = area.getY() + (area.getHeight() - 8) / 2;
+		setX(area.getX() + 4);
+		setY(area.getY() + (area.getHeight() - 8) / 2);
 		this.width = area.getWidth() - 12;
 		this.height = area.getHeight();
 		this.area = area;
@@ -79,9 +77,6 @@ public class GuiTextFieldFilter extends EditBox {
 		if (previousFocus != keyboardFocus) {
 			Minecraft minecraft = Minecraft.getInstance();
 			if (keyboardFocus) {
-				IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
-				previousKeyboardRepeatEnabled = inputHelper.isSendRepeatsToGui(minecraft.keyboardHandler);
-				minecraft.keyboardHandler.setSendRepeatsToGui(true);
 				Screen screen = minecraft.screen;
 				if (screen != null) {
 					if (screen.getFocused() instanceof AbstractWidget widget) {
@@ -101,7 +96,6 @@ public class GuiTextFieldFilter extends EditBox {
 					}
 					previouslyFocusedWidget = null;
 				}
-				minecraft.keyboardHandler.setSendRepeatsToGui(previousKeyboardRepeatEnabled);
 			}
 
 			String text = getValue();

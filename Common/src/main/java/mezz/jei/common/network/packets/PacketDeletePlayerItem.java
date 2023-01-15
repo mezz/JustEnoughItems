@@ -9,7 +9,7 @@ import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.common.util.ServerCommandUtil;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,7 +36,7 @@ public class PacketDeletePlayerItem extends PacketJei {
 
 	@Override
 	public void writePacketData(FriendlyByteBuf buf) {
-		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
+		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registries.ITEM);
 		int itemId = registry.getId(itemStack.getItem());
 		buf.writeVarInt(itemId);
 	}
@@ -48,7 +48,7 @@ public class PacketDeletePlayerItem extends PacketJei {
 		int itemId = buf.readVarInt();
 
 		return Services.PLATFORM
-			.getRegistry(Registry.ITEM_REGISTRY)
+			.getRegistry(Registries.ITEM)
 			.getValue(itemId)
 			.map(item -> {
 				MinecraftServer server = player.server;

@@ -54,10 +54,10 @@ public class PageNavigation {
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (isVisible()) {
 			GuiComponent.fill(poseStack,
-				backButton.x + backButton.getWidth(),
-				backButton.y,
-				nextButton.x,
-				nextButton.y + nextButton.getHeight(),
+				backButton.getX() + backButton.getWidth(),
+				backButton.getY(),
+				nextButton.getX(),
+				nextButton.getY() + nextButton.getHeight(),
 				0x30000000);
 
 			Font font = minecraft.font;

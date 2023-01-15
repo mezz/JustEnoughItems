@@ -35,8 +35,8 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	}
 
 	public void update(Rect2i area, IRecipeTransferManager recipeTransferManager, @Nullable AbstractContainerMenu container, Player player) {
-		this.x = area.getX();
-		this.y = area.getY();
+		this.setX(area.getX());
+		this.setY(area.getY());
 		this.width = area.getWidth();
 		this.height = area.getHeight();
 
@@ -81,17 +81,17 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.visible &&
-			mouseX >= this.x &&
-			mouseY >= this.y &&
-			mouseX < this.x + this.width &&
-			mouseY < this.y + this.height;
+			mouseX >= this.getX() &&
+			mouseY >= this.getY() &&
+			mouseX < this.getX() + this.getWidth() &&
+			mouseY < this.getY() + this.getHeight();
 	}
 
 	@Override
 	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		super.render(poseStack, mouseX, mouseY, partialTicks);
 		if (this.visible && this.recipeTransferError != null && this.recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
-			fill(poseStack, this.x, this.y, this.x + this.width, this.y + this.height, this.recipeTransferError.getButtonHighlightColor());
+			fill(poseStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), this.recipeTransferError.getButtonHighlightColor());
 		}
 	}
 

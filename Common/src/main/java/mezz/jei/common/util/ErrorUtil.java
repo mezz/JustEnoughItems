@@ -12,7 +12,7 @@ import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -38,7 +38,7 @@ public final class ErrorUtil {
 			return "null";
 		}
 		Item item = itemStack.getItem();
-		IPlatformRegistry<Item> itemRegistry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
+		IPlatformRegistry<Item> itemRegistry = Services.PLATFORM.getRegistry(Registries.ITEM);
 
 		final String itemName = itemRegistry.getRegistryName(item)
 			.map(ResourceLocation::toString)
@@ -49,7 +49,7 @@ public final class ErrorUtil {
 					if (block == null) {
 						blockName = "null";
 					} else {
-						IPlatformRegistry<Block> blockRegistry = Services.PLATFORM.getRegistry(Registry.BLOCK_REGISTRY);
+						IPlatformRegistry<Block> blockRegistry = Services.PLATFORM.getRegistry(Registries.BLOCK);
 						blockName = blockRegistry.getRegistryName(block)
 							.map(ResourceLocation::toString)
 							.orElseGet(() -> block.getClass().getName());

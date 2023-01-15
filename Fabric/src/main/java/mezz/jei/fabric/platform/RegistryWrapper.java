@@ -1,10 +1,9 @@
 package mezz.jei.fabric.platform;
 
 import mezz.jei.common.platform.IPlatformRegistry;
-import net.fabricmc.fabric.mixin.registry.sync.RegistryAccessor;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
-import net.minecraft.core.WritableRegistry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
@@ -13,17 +12,20 @@ import java.util.stream.Stream;
 
 public class RegistryWrapper<T> implements IPlatformRegistry<T> {
     public static <T> IPlatformRegistry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
-        WritableRegistry<WritableRegistry<?>> rootRegistry = RegistryAccessor.getROOT();
-        WritableRegistry<?> registry = rootRegistry.get(key.location());
+        Registry<? extends Registry<?>> rootRegistry = BuiltInRegistries.REGISTRY;
+        Registry<?> registry = rootRegistry.get(key.location());
+        if (registry == null) {
+            throw new NullPointerException("Could not find registry for key: " + key);
+        }
         IPlatformRegistry<?> registryWrapper = new RegistryWrapper<>(registry);
         @SuppressWarnings("unchecked")
         IPlatformRegistry<T> castPlatformRegistry = (IPlatformRegistry<T>) registryWrapper;
         return castPlatformRegistry;
     }
 
-    private final WritableRegistry<T> registry;
+    private final Registry<T> registry;
 
-    private RegistryWrapper(WritableRegistry<T> registry) {
+    private RegistryWrapper(Registry<T> registry) {
         this.registry = registry;
     }
 
