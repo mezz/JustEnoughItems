@@ -135,12 +135,12 @@
   "config.jei.advanced.maxRecipeGuiHeight": "Макс. рецепт интерфейсінің биіктігі",
   "config.jei.advanced.maxRecipeGuiHeight.comment": "Рецепт ингрефейсінің максималды биіктігі.",
   "config.jei.advanced.giveMode": "Беру режимі",
-  "config.jei.advanced.giveMode.comment": "JEI ингредиенттерді тікелей мұқаммалға немесе курсорға салатынына жауап береді",
+  "config.jei.advanced.giveMode.comment": "JEI ингредиенттерді тікелей мұқаммалға немесе курсорға салатынына жауап береді.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI ингредиент жасыру режимі:",
   "gui.jei.editMode.description.hide": "Жасыру үшін %s",
-  "gui.jei.editMode.description.hide.wild": "Айырмалы таңба бойынша жасыру үшін%s",
+  "gui.jei.editMode.description.hide.wild": "Айырмалы таңба бойынша жасыру үшін %s",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Жасау",
