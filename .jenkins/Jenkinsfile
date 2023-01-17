@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    tools {
+        jdk "jdk-17.0.1"
+    }
+
     environment {
       ORG_GRADLE_PROJECT_curseforge_apikey = credentials('jei-curseforge-key')
       ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
@@ -15,19 +19,19 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew test --no-daemon"
+                sh "./gradlew test --no-daemon"
             }
         }
 
         stage('Build') {
             steps {
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Core:build --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:build --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Fabric:build --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Common:build --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :CommonApi:build --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :ForgeApi:build --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :FabricApi:build --no-daemon"
+                sh "./gradlew :Core:build --no-daemon"
+                sh "./gradlew :Forge:build --no-daemon"
+                sh "./gradlew :Fabric:build --no-daemon"
+                sh "./gradlew :Common:build --no-daemon"
+                sh "./gradlew :CommonApi:build --no-daemon"
+                sh "./gradlew :ForgeApi:build --no-daemon"
+                sh "./gradlew :FabricApi:build --no-daemon"
             }
         }
 
@@ -40,22 +44,22 @@ pipeline {
 
         stage('Publish Maven') {
             steps {
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Common:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :CommonApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :ForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :FabricApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "./gradlew :Forge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "./gradlew :Common:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "./gradlew :CommonApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "./gradlew :ForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "./gradlew :FabricApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
             }
         }
 
         stage('Publish CurseForge') {
             steps {
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Fabric:publishCurseForge --no-daemon"
-                sh "JAVA_HOME=${env.JDK_17} ./gradlew :Forge:publishCurseForge --no-daemon"
+                sh "./gradlew :Fabric:publishCurseForge --no-daemon"
+                sh "./gradlew :Forge:publishCurseForge --no-daemon"
             }
         }
     }
