@@ -36,7 +36,7 @@ pipeline {
 
         stage('Publish Maven') {
             steps {
-                sh "./gradlew uploadJars -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "./gradlew publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
             }
         }
 
