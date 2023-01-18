@@ -21,6 +21,7 @@ plugins {
 	id 'java'
 	id 'eclipse'
 	id 'idea'
+	id "maven-publish"
 	id 'com.matthewprenger.cursegradle' version '1.4.0'
 	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.71.4'
 }
@@ -40,15 +41,17 @@ version = "${semver}.${build_number}"
 group = 'mezz.jei' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 
 sourceSets {
-	api
+	api {
+		//The API has no resources
+		resources.srcDirs = []
+	}
 	main {
 		compileClasspath += sourceSets.api.output
 		runtimeClasspath += sourceSets.api.output
-		resources {
-			srcDir 'src/generated/resources'
-		}
 	}
 	test {
+		//The test module has no resources
+		resources.srcDirs = []
 		compileClasspath += sourceSets.api.output
 		runtimeClasspath += sourceSets.api.output
 	}
@@ -63,16 +66,16 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 dependencies {
 	minecraft([
-			group  : "${project.forgegroup}",
+			group  : "${project.forge_group}",
 			name   : 'forge',
-			version: "${project.mcversion}-${project.forgeversion}"
+			version: "${project.minecraft_version}-${project.forge_version}"
 	])
 	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
 	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
 }
 
 minecraft {
-	mappings channel: 'official', version: project.mcversion
+	mappings channel: 'official', version: project.minecraft_version
 
 	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -91,14 +94,6 @@ minecraft {
 				jei.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
 			}
 		}
-		data {
-			property 'forge.logging.console.level', 'debug'
-			workingDirectory file('run')
-			args '--mod', 'jei', '--all', '--output', file('src/generated/resources/')
-			mods {
-				jei.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
-			}
-		}
 	}
 }
 
@@ -107,7 +102,7 @@ def replaceResources = tasks.register("replaceResources", Copy) {
 	//Copy it into the build dir
 	it.from(sourceSets.main.resources) {
 		include "META-INF/mods.toml"
-		expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range
+		expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range, "loader_version": loader_version_range
 	}
 	it.into "$buildDir/resources/main/"
 }
@@ -128,7 +123,8 @@ javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
 }
 
-task makeChangelog(type: se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask) {
+task makeChangelog(type: GitChangelogTask) {
+	fromRepo = file("$projectDir")
 	file = file('changelog.html')
 	untaggedName = "Current release ${project.version}"
 	fromCommit = '2fe051cf727adce1be210a46f778aa8fe031331e'
@@ -143,6 +139,7 @@ curseforge {
 		changelog = file('changelog.html')
 		changelogType = 'html'
 		releaseType = 'beta'
+		addGameVersion "${minecraft_version}"
 	}
 }
 
@@ -245,6 +242,7 @@ jar {
 			'Implementation-Version'  : "${project.version}",
 			'Implementation-Vendor'   : 'mezz',
 			'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+			"Automatic-Module-Name": "mezz.jei",
 	])
 
 	finalizedBy 'reobfJar'
@@ -299,21 +297,15 @@ task reobf {
 	dependsOn reobfApiJar
 }
 
-task uploadJars(dependsOn: build) {
-	description = 'Uploads JARs'
-	if (project.hasProperty('local_maven')) {
-		apply plugin: 'maven-publish'
-		publishing {
-			publications { PublicationContainer publicationContainer ->
-				publicationContainer.register("maven", MavenPublication) { MavenPublication publication ->
-					publication.artifacts = [apiJar, jar, javadocJar, deobfJar, sourcesJar]
-				}
-			}
-			repositories {
-				maven {
-					url("file://${local_maven}")
-				}
-			}
+publishing {
+	publications { PublicationContainer publicationContainer ->
+		publicationContainer.register("maven", MavenPublication) { MavenPublication publication ->
+			publication.artifacts = [apiJar, jar, javadocJar, deobfJar, sourcesJar]
+		}
+	}
+	repositories {
+		if (project.hasProperty('DEPLOY_DIR')) {
+			maven { url DEPLOY_DIR }
 		}
 	}
 }
