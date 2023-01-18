@@ -30,6 +30,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isCheatToHotbarUsingHotkeysEnabled() {
+		return false;
+	}
+
+	@Override
 	public GiveMode getGiveMode() {
 		return GiveMode.INVENTORY;
 	}
