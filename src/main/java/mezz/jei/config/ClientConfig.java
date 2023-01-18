@@ -76,7 +76,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 			builder.comment("Enable cheating items into the hotbar by using the shift+number keys.");
 			cheatToHotbarUsingHotkeysEnabled = builder.define("CheatToHotbarUsingHotkeysEnabled", false);
-			
+
 			builder.comment("How items should be handed to you");
 			giveMode = builder.defineEnum("GiveMode", defaultGiveMode);
 
