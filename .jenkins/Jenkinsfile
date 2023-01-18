@@ -42,6 +42,7 @@ pipeline {
 
         stage('Publish CurseForge') {
             steps {
+                sh "./gradlew makeChangelog --no-daemon"
                 sh "./gradlew curseforge --no-daemon"
             }
         }
