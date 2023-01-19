@@ -1,12 +1,12 @@
 package mezz.jei.common.platform;
 
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 
+import java.nio.file.Path;
 import java.util.Optional;
 
 public interface IPlatformConfigHelper {
-    Optional<Screen> getConfigScreen();
+    Path createConfigDir();
 
-    Component getMissingConfigScreenMessage();
+    Optional<Screen> getConfigScreen();
 }
