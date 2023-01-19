@@ -4,6 +4,8 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.events.EventBusHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -15,11 +17,18 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.loading.FMLPaths;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class JEIClientConfig {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
 	public static final ClientConfig clientConfig = new ClientConfig(builder);
@@ -54,14 +63,29 @@ public class JEIClientConfig {
         Optional<BiFunction<Minecraft, Screen, Screen>> configGuiFactory = jeiContainer.getCustomExtension(ExtensionPoint.CONFIGGUIFACTORY);
         if (configGuiFactory.isPresent()) {
             mc.setScreen(configGuiFactory.get().apply(mc, mc.screen));
-        } else {
-            ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/configured");
-            Style style = Style.EMPTY
-                    .setUnderlined(true)
-                    .withClickEvent(clickEvent);
-            TranslationTextComponent textComponent = new TranslationTextComponent("jei.message.configured");
-            ITextComponent message = textComponent.setStyle(style);
-            mc.player.displayClientMessage(message, false);
-        }
+		} else {
+			ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/configured");
+			Style style = Style.EMPTY
+				.setUnderlined(true)
+				.withColor(TextFormatting.DARK_BLUE)
+				.withClickEvent(clickEvent);
+			TranslationTextComponent message = new TranslationTextComponent("jei.message.configured");
+			message.setStyle(style);
+
+			Path configDirectory = FMLPaths.CONFIGDIR.get().resolve(ModIds.JEI_ID);
+			try {
+				Files.createDirectories(configDirectory);
+				Style folderStyle = Style.EMPTY
+					.setUnderlined(true)
+					.withColor(TextFormatting.WHITE)
+					.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, configDirectory.toAbsolutePath().toString()));
+				ITextComponent folderMessage = new TranslationTextComponent("jei.message.config.folder").setStyle(folderStyle);
+				message.append(new StringTextComponent("\n"));
+				message.append(folderMessage);
+			} catch (IOException e) {
+				LOGGER.error("Unable to create JEI config directory: {}", configDirectory, e);
+			}
+			mc.player.displayClientMessage(message, false);
+		}
 	}
 }
