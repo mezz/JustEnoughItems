@@ -162,6 +162,7 @@
 
   "_comment": "Messages",
   "jei.message.configured": "Install the \"Configured\" mod to access the in-game config",
+  "jei.message.config.folder": "Click here to open the JEI config folder",
   "jei.message.copy.recipe.id.success": "Copied Recipe ID to clipboard: %s",
   "jei.message.copy.recipe.id.failure": "Failed to Copy Recipe ID to clipboard, the Recipe ID is unknown",
 
