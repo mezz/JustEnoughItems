@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay;
 
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.Internal;
@@ -15,8 +16,10 @@ import mezz.jei.gui.input.UserInput;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 
 import java.util.List;
 import java.util.Optional;
@@ -111,8 +114,39 @@ public class ConfigButton extends GuiIconToggleButton {
 		if (configScreen.isPresent()) {
 			mc.setScreen(configScreen.get());
 		} else {
-			Component message = configHelper.getMissingConfigScreenMessage();
+			Component message = getMissingConfigScreenMessage(configHelper);
 			mc.player.displayClientMessage(message, false);
 		}
+	}
+
+	private static Component getMissingConfigScreenMessage(IPlatformConfigHelper configHelper) {
+		MutableComponent message = new TranslatableComponent("jei.message.configured")
+			.setStyle(
+				Style.EMPTY
+					.withColor(ChatFormatting.DARK_BLUE)
+					.setUnderlined(true)
+					.withClickEvent(
+						new ClickEvent(
+							ClickEvent.Action.OPEN_URL,
+							"https://www.curseforge.com/minecraft/mc-mods/configured"
+						)
+					)
+			);
+		message.append(new TextComponent("\n"));
+		message.append(
+			new TranslatableComponent("jei.message.config.folder")
+				.setStyle(
+					Style.EMPTY
+						.withColor(ChatFormatting.WHITE)
+						.setUnderlined(true)
+						.withClickEvent(
+							new ClickEvent(
+								ClickEvent.Action.OPEN_FILE,
+								configHelper.createConfigDir().toAbsolutePath().toString()
+							)
+						)
+				)
+		);
+		return message;
 	}
 }

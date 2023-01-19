@@ -3,8 +3,6 @@ package mezz.jei.common.platform;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 
-import java.nio.file.Path;
-
 public interface IPlatformHelper {
     <T> IPlatformRegistry<T> getRegistry(ResourceKey<? extends Registry<T>> key);
 
@@ -25,6 +23,4 @@ public interface IPlatformHelper {
     IPlatformIngredientHelper getIngredientHelper();
 
     IPlatformModHelper getModHelper();
-
-    Path createConfigDir();
 }
