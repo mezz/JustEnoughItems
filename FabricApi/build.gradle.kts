@@ -1,7 +1,3 @@
-repositories {
-    maven("https://maven.parchmentmc.org")
-}
-
 plugins {
     java
     idea

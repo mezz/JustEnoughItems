@@ -1,15 +1,24 @@
 pluginManagement {
 	repositories {
-		maven("https://maven.minecraftforge.net")
-		maven("https://maven.parchmentmc.org")
-		maven("https://maven.blamejared.com")
+		fun exclusiveMaven(url: String, filter: Action<InclusiveRepositoryContentDescriptor>) =
+			exclusiveContent {
+				forRepository { maven(url) }
+				filter(filter)
+			}
+		exclusiveMaven("https://maven.minecraftforge.net") {
+			includeGroupByRegex("net\\.minecraftforge.*")
+		}
+		exclusiveMaven("https://maven.parchmentmc.org") {
+			includeGroupByRegex("org\\.parchmentmc.*")
+		}
+		exclusiveMaven("https://maven.fabricmc.net/") {
+			includeGroup("net.fabricmc")
+			includeGroup("fabric-loom")
+		}
+		exclusiveMaven("https://repo.spongepowered.org/repository/maven-public/") {
+			includeGroupByRegex("org\\.spongepowered.*")
+		}
 		gradlePluginPortal()
-		maven("https://maven.fabricmc.net/") {
-			name = "Fabric"
-		}
-		maven("https://repo.spongepowered.org/repository/maven-public/") {
-			name = "Sponge Snapshots"
-		}
 	}
 	resolutionStrategy {
 		eachPlugin {
