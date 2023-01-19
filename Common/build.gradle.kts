@@ -4,10 +4,6 @@ plugins {
     `maven-publish`
 }
 
-repositories {
-    mavenCentral()
-}
-
 // gradle.properties
 val jUnitVersion: String by extra
 val minecraftVersion: String by extra

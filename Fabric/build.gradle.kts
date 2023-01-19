@@ -1,10 +1,6 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.darkhax.curseforgegradle.Constants as CFG_Constants
 
-repositories {
-    maven("https://maven.parchmentmc.org")
-}
-
 plugins {
     java
     idea
