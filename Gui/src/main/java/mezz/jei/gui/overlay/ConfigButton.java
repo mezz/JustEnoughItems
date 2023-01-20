@@ -124,7 +124,7 @@ public class ConfigButton extends GuiIconToggleButton {
 			.setStyle(
 				Style.EMPTY
 					.withColor(ChatFormatting.DARK_BLUE)
-					.setUnderlined(true)
+					.withUnderlined(true)
 					.withClickEvent(
 						new ClickEvent(
 							ClickEvent.Action.OPEN_URL,
@@ -138,11 +138,11 @@ public class ConfigButton extends GuiIconToggleButton {
 				.setStyle(
 					Style.EMPTY
 						.withColor(ChatFormatting.WHITE)
-						.setUnderlined(true)
+						.withUnderlined(true)
 						.withClickEvent(
 							new ClickEvent(
 								ClickEvent.Action.OPEN_FILE,
-								configHelper.createConfigDir().toAbsolutePath().toString()
+								configHelper.createJeiConfigDir().toAbsolutePath().toString()
 							)
 						)
 				)

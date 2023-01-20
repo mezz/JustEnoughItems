@@ -17,7 +17,7 @@ public record GuiConfigData(
     IngredientTypeSortingConfig ingredientTypeSortingConfig
 ) {
     public static GuiConfigData create() {
-        Path configDir = Services.PLATFORM.getConfigHelper().createConfigDir();
+        Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
         JeiClientConfigs jeiClientConfigs = new JeiClientConfigs(configDir.resolve("jei-client.ini"));
         jeiClientConfigs.register();
 

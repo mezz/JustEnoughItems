@@ -69,7 +69,7 @@ public final class JeiStarter {
 			.orElse(null);
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
 
-		Path configDir = Services.PLATFORM.getConfigHelper().createConfigDir();
+		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
 
 		IConfigSchemaBuilder debugFileBuilder = new ConfigSchemaBuilder(configDir.resolve("jei-debug.ini"));
 		DebugConfig.create(debugFileBuilder);
