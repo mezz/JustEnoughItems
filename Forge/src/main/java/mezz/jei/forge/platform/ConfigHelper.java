@@ -9,24 +9,14 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
 public class ConfigHelper implements IPlatformConfigHelper {
-    @Override
-    public Path createConfigDir() {
-        Path configDir = FMLPaths.CONFIGDIR
-            .get()
-            .resolve(ModIds.JEI_ID);
 
-        try {
-            Files.createDirectories(configDir);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to create JEI config directory: " + configDir, e);
-        }
-        return configDir;
+    @Override
+    public Path getModConfigDir() {
+        return FMLPaths.CONFIGDIR.get();
     }
 
     @Override

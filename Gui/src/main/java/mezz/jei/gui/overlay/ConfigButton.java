@@ -140,7 +140,7 @@ public class ConfigButton extends GuiIconToggleButton {
 							.withClickEvent(
 								new ClickEvent(
 									ClickEvent.Action.OPEN_FILE,
-									configHelper.createConfigDir().toAbsolutePath().toString()
+									configHelper.createJeiConfigDir().toAbsolutePath().toString()
 								)
 							)
 					)
