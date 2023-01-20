@@ -259,6 +259,11 @@ public class IngredientFilterTest {
 
 	private static class NullSerializer implements EditModeConfig.ISerializer {
 		@Override
+		public void initialize(EditModeConfig config) {
+
+		}
+
+		@Override
 		public void save(EditModeConfig config) {
 
 		}
