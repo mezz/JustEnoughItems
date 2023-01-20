@@ -9,8 +9,12 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import mezz.jei.core.collect.Table;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class ReflectionUtil {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final Table<Class<?>, Class<?>, List<Field>> cache = Table.hashBasedTable();
 
 	public <T> Stream<T> getFieldWithClass(Object object, Class<? extends T> fieldClass) {
@@ -22,7 +26,8 @@ public final class ReflectionUtil {
 		Object fieldValue;
 		try {
 			fieldValue = field.get(object);
-		} catch (IllegalAccessException ignored) {
+		} catch (IllegalAccessException e) {
+			LOGGER.error("Failed to access field '" + field.getName() + "' for class " + object.getClass(), e);
 			return Optional.empty();
 		}
 		if (fieldClass.isInstance(fieldValue)) {
@@ -33,38 +38,38 @@ public final class ReflectionUtil {
 	}
 
 	private Stream<Field> getFieldsCached(Object object, Class<?> fieldClass) {
-		return cache.computeIfAbsent(fieldClass, object.getClass(), () -> getFieldUncached(object, fieldClass))
+		return cache.computeIfAbsent(fieldClass, object.getClass(), () -> getFieldUncached(object, fieldClass).toList())
 			.stream();
 	}
 
-	private List<Field> getFieldUncached(Object object, Class<?> fieldClass) {
-		return allFields(object)
+	private static Stream<Field> getFieldUncached(Object object, Class<?> fieldClass) {
+		return getAllFields(object)
 			.filter(field -> fieldClass.isAssignableFrom(field.getType()))
-			.<Field>mapMulti((field, mapper) -> {
+			.mapMulti((field, mapper) -> {
 				try {
 					field.setAccessible(true);
 					mapper.accept(field);
-				} catch (InaccessibleObjectException | SecurityException ignored) {
-
+				} catch (InaccessibleObjectException | SecurityException e) {
+					LOGGER.error("Failed to access field '" + field.getName() + "' for class " + object.getClass(), e);
 				}
-			})
-			.toList();
+			});
 	}
 
-	private Stream<Field> allFields(Object object) {
+	private static Stream<Field> getAllFields(Object object) {
 		Class<?> objectClass = object.getClass();
 		List<Class<?>> classes = new ArrayList<>();
-		do {
+		while (objectClass != Object.class) {
 			classes.add(objectClass);
 			objectClass = objectClass.getSuperclass();
-		} while (objectClass != Object.class);
+		}
 
 		return classes.stream()
 			.flatMap(c -> {
 				try {
 					Field[] fields = c.getDeclaredFields();
 					return Arrays.stream(fields);
-				} catch (SecurityException ignored) {
+				} catch (SecurityException e) {
+					LOGGER.error("Failed to access fields for class " + object.getClass(), e);
 					return Stream.of();
 				}
 			});
