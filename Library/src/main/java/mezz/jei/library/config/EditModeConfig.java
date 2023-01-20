@@ -33,6 +33,7 @@ public class EditModeConfig implements IEditModeConfig {
 		this.ingredientManager = ingredientManager;
 		Collections.addAll(blacklist, defaultBlacklist);
 		this.serializer = serializer;
+		this.serializer.initialize(this);
 		this.serializer.load(this);
 	}
 
@@ -139,6 +140,7 @@ public class EditModeConfig implements IEditModeConfig {
 	}
 
 	public interface ISerializer {
+		void initialize(EditModeConfig config);
 		void save(EditModeConfig config);
 		void load(EditModeConfig config);
 	}
@@ -148,6 +150,13 @@ public class EditModeConfig implements IEditModeConfig {
 
 		public FileSerializer(Path path) {
 			this.path = path;
+		}
+
+		@Override
+		public void initialize(EditModeConfig config) {
+			if (!Files.exists(path)) {
+				save(config);
+			}
 		}
 
 		@Override
@@ -162,6 +171,9 @@ public class EditModeConfig implements IEditModeConfig {
 
 		@Override
 		public void load(EditModeConfig config) {
+			if (!Files.exists(path)) {
+				return;
+			}
 			try {
 				List<String> strings = Files.readAllLines(path);
 				config.blacklist.clear();
