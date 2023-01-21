@@ -1,4 +1,4 @@
-package mezz.jei.common.util;
+package mezz.jei.core.util;
 
 import com.google.common.base.Stopwatch;
 import org.apache.logging.log4j.LogManager;

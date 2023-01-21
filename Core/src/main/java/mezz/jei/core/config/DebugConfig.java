@@ -1,4 +1,4 @@
-package mezz.jei.common.config;
+package mezz.jei.core.config;
 
 import mezz.jei.core.config.file.IConfigCategoryBuilder;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;

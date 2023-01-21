@@ -6,6 +6,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface IPlatformRecipeHelper {
     Ingredient getBase(UpgradeRecipe recipe);
     Ingredient getAddition(UpgradeRecipe recipe);
 
-    Optional<ResourceLocation> getRegistryNameForRecipe(Object object);
+    Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe);
 
     List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory);
 }
