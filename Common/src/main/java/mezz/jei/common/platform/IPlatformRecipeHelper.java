@@ -8,6 +8,7 @@ import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraft.world.item.enchantment.Enchantment;
 
@@ -21,7 +22,7 @@ public interface IPlatformRecipeHelper {
 	Ingredient getBase(UpgradeRecipe recipe);
 	Ingredient getAddition(UpgradeRecipe recipe);
 
-	Optional<ResourceLocation> getRegistryNameForRecipe(Object object);
+	Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe);
 
 	ItemStack getGrindstoneResult(GrindstoneMenu grindstoneMenu, ItemStack input1, ItemStack input2);
 
