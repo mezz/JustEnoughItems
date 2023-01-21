@@ -5,7 +5,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.config.IJeiClientConfigs;
-import mezz.jei.common.config.WorldConfig;
+import mezz.jei.core.config.WorldConfig;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.ClientConnectionHelper;

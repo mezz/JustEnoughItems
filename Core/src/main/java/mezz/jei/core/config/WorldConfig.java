@@ -1,6 +1,4 @@
-package mezz.jei.common.config;
-
-import mezz.jei.core.config.IWorldConfig;
+package mezz.jei.core.config;
 
 import java.util.ArrayList;
 import java.util.List;

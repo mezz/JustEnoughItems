@@ -24,7 +24,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.LoggedTimer;
+import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.core.search.BakedSubstringIndexBuilder;
 import mezz.jei.library.config.IModIdFormatConfig;
