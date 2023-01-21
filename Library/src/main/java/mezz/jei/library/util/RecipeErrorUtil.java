@@ -9,10 +9,12 @@ import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.ingredients.IIngredientSupplier;
+import net.minecraft.world.item.crafting.Recipe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public final class RecipeErrorUtil {
@@ -73,7 +75,11 @@ public final class RecipeErrorUtil {
 
 	public static String getNameForRecipe(Object recipe) {
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
-		return recipeHelper.getRegistryNameForRecipe(recipe)
+
+		return Optional.of(recipe)
+			.filter(Recipe.class::isInstance)
+			.map(Recipe.class::cast)
+			.flatMap(recipeHelper::getRegistryNameForRecipe)
 			.map(registryName -> {
 				IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
 				String modId = registryName.getNamespace();

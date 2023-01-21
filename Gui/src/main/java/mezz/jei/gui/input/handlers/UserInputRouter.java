@@ -1,7 +1,7 @@
 package mezz.jei.gui.input.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import mezz.jei.common.config.DebugConfig;
+import mezz.jei.core.config.DebugConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;

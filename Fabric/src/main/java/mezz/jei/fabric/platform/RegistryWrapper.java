@@ -47,7 +47,8 @@ public class RegistryWrapper<T> implements IPlatformRegistry<T> {
 
     @Override
     public Optional<T> getValue(int id) {
-        return this.registry.getHolder(id).map(Holder::value);
+        return this.registry.getHolder(id)
+            .map(Holder::value);
     }
 
     @Override

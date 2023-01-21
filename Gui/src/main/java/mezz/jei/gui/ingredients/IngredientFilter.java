@@ -8,7 +8,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.config.DebugConfig;
+import mezz.jei.core.config.DebugConfig;
 import mezz.jei.common.util.Translator;
 import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.gui.config.IIngredientFilterConfig;

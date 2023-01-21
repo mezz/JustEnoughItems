@@ -43,12 +43,9 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 
     @SuppressWarnings("DataFlowIssue")
     @Override
-    public Optional<ResourceLocation> getRegistryNameForRecipe(Object object) {
-        if (object instanceof Recipe<?> recipe) {
-            ResourceLocation id = recipe.getId();
-            return Optional.ofNullable(id);
-        }
-        return Optional.empty();
+    public Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe) {
+        ResourceLocation id = recipe.getId();
+        return Optional.ofNullable(id);
     }
 
     @Override
