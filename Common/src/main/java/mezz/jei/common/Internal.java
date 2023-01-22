@@ -1,11 +1,11 @@
 package mezz.jei.common;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.core.config.WorldConfig;
+import mezz.jei.common.config.WorldConfig;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.common.config.IWorldConfig;
 import org.jetbrains.annotations.Nullable;
 
 /**

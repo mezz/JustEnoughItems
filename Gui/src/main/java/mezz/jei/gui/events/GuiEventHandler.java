@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.core.config.DebugConfig;
+import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;

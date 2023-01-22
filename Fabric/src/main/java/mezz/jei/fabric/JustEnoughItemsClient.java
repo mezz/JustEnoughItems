@@ -3,7 +3,7 @@ package mezz.jei.fabric;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.core.config.IServerConfig;
+import mezz.jei.common.config.IServerConfig;
 import mezz.jei.fabric.config.ServerConfig;
 import mezz.jei.fabric.events.JeiIdentifiableResourceReloadListener;
 import mezz.jei.fabric.events.JeiLifecycleEvents;

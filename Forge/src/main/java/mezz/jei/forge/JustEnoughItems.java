@@ -2,7 +2,7 @@ package mezz.jei.forge;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Constants;
-import mezz.jei.core.config.IServerConfig;
+import mezz.jei.common.config.IServerConfig;
 import mezz.jei.forge.config.ServerConfig;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.NetworkHandler;

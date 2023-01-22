@@ -1,8 +1,8 @@
 package mezz.jei.library.config.serializers;
 
+import mezz.jei.common.config.file.serializers.DeserializeResult;
+import mezz.jei.common.config.file.serializers.IConfigValueSerializer;
 import mezz.jei.library.color.ColorName;
-import mezz.jei.core.config.file.serializers.DeserializeResult;
-import mezz.jei.core.config.file.serializers.IConfigValueSerializer;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
@@ -47,5 +47,10 @@ public class ColorNameSerializer implements IConfigValueSerializer<ColorName> {
     @Override
     public String getValidValuesDescription() {
         return "Any color name and an RGB hex color, separated by a ':'";
+    }
+
+    @Override
+    public boolean isValid(ColorName value) {
+        return true;
     }
 }

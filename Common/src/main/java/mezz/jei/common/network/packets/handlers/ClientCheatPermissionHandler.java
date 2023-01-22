@@ -2,8 +2,8 @@ package mezz.jei.common.network.packets.handlers;
 
 import mezz.jei.common.network.ClientPacketContext;
 import mezz.jei.common.util.ChatUtil;
-import mezz.jei.core.config.IServerConfig;
-import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.common.config.IServerConfig;
+import mezz.jei.common.config.IWorldConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 

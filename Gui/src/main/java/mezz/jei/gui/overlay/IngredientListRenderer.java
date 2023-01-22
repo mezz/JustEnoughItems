@@ -9,7 +9,7 @@ import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.common.config.IWorldConfig;
 import net.minecraft.client.gui.GuiComponent;
 
 import java.util.ArrayList;

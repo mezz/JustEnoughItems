@@ -1,7 +1,7 @@
 package mezz.jei.library.config.serializers;
 
-import mezz.jei.core.config.file.serializers.DeserializeResult;
-import mezz.jei.core.config.file.serializers.IConfigValueSerializer;
+import mezz.jei.common.config.file.serializers.DeserializeResult;
+import mezz.jei.common.config.file.serializers.IConfigValueSerializer;
 import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
@@ -37,7 +37,11 @@ public class ChatFormattingSerializer implements IConfigValueSerializer<List<Cha
             .<ChatFormatting>mapMulti((s, c) -> {
                 ChatFormatting chatFormatting = ChatFormatting.getByName(s);
                 if (chatFormatting != null) {
-                    c.accept(chatFormatting);
+                    if (chatFormatting == ChatFormatting.RESET) {
+                        errors.add("Chat Formatting RESET is not valid");
+                    } else {
+                        c.accept(chatFormatting);
+                    }
                 } else {
                     errors.add("No Chat Formatting found for name: '%s'".formatted(s));
                 }
@@ -68,5 +72,10 @@ public class ChatFormattingSerializer implements IConfigValueSerializer<List<Cha
             %s
             With these formatting options:
             %s""".formatted(serialize(validColors), serialize(validFormats));
+    }
+
+    @Override
+    public boolean isValid(List<ChatFormatting> value) {
+        return !value.contains(ChatFormatting.RESET);
     }
 }

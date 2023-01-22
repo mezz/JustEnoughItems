@@ -17,7 +17,7 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.util.LoggedTimer;
-import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.common.config.IWorldConfig;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.gui.config.IClientConfig;

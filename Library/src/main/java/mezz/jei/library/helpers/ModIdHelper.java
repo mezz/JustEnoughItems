@@ -6,7 +6,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.core.config.DebugConfig;
+import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.config.IModIdFormatConfig;

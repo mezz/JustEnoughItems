@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.runtime.config.IJeiConfigManager;
 
 /**
  * Gives access to JEI functions that are available once everything has loaded.
@@ -101,4 +102,11 @@ public interface IJeiRuntime {
 	 * @since 11.5.0
 	 */
 	IEditModeConfig getEditModeConfig();
+
+	/**
+	 * Get the config manager, used for displaying or updating JEI's config files.
+	 *
+	 * @since 12.1.0
+	 */
+	IJeiConfigManager getConfigManager();
 }

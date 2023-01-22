@@ -14,7 +14,7 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
-import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.common.config.IWorldConfig;
 import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.gui.config.IIngredientFilterConfig;
 import mezz.jei.gui.config.IIngredientGridConfig;

@@ -7,7 +7,7 @@ import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
-import mezz.jei.core.config.IServerConfig;
+import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.util.ServerCommandUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
