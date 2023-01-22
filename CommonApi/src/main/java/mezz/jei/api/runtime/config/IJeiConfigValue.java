@@ -1,0 +1,64 @@
+package mezz.jei.api.runtime.config;
+
+/**
+ * Represents config value used by JEI.
+ * Config values can be read or updated by mods that display in-game config files to players.
+ *
+ * These config values are automatically synced with the config file.
+ * {@link #getValue()} will automatically update based on changes to the file,
+ * and using {@link #set} will automatically update the file.
+ *
+ * @since 11.7.0
+ */
+public interface IJeiConfigValue<T> {
+    /**
+     * Get the name of this config value.
+     *
+     * @since 11.7.0
+     */
+    String getName();
+
+    /**
+     * Get the description of this config value.
+     *
+     * @since 11.7.0
+     */
+    String getDescription();
+
+    /**
+     * Get the description of what values are valid for this config value.
+     *
+     * @since 11.7.0
+     */
+    String getValidValuesDescription();
+
+    /**
+     * Get the current value.
+     * This will automatically udpate and load from the config file if there are changes.
+     *
+     * @since 11.7.0
+     */
+    T getValue();
+
+    /**
+     * Get the default value.
+     *
+     * @since 11.7.0
+     */
+    T getDefaultValue();
+
+    /**
+     * Check if a given value is valid for this config value.
+     *
+     * @since 11.7.0
+     */
+    boolean isValid(T value);
+
+    /**
+     * Set the config value to the given value.
+     * This will automatically mark the config file as dirty so that it will save the new values.
+     *
+     * @since 11.7.0
+     */
+    boolean set(T value);
+}

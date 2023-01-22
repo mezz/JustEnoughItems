@@ -15,6 +15,8 @@ import mezz.jei.api.runtime.IJeiKeyMappings;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.runtime.config.IJeiConfigManager;
+import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.ingredients.TypedIngredient;
 
@@ -131,5 +133,10 @@ public class JeiRuntime implements IJeiRuntime {
 	@Override
 	public IEditModeConfig getEditModeConfig() {
 		return editModeConfig;
+	}
+
+	@Override
+	public IJeiConfigManager getConfigManager() {
+		return ConfigManager.INSTANCE;
 	}
 }

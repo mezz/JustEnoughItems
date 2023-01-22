@@ -1,10 +1,10 @@
 package mezz.jei.gui.config;
 
-import mezz.jei.core.config.file.FileWatcher;
+import mezz.jei.common.config.file.ConfigSchemaBuilder;
+import mezz.jei.common.config.file.IConfigSchema;
+import mezz.jei.common.config.file.IConfigSchemaBuilder;
+import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.gui.util.HorizontalAlignment;
-import mezz.jei.core.config.file.ConfigSchemaBuilder;
-import mezz.jei.core.config.file.IConfigSchema;
-import mezz.jei.core.config.file.IConfigSchemaBuilder;
 
 import java.nio.file.Path;
 

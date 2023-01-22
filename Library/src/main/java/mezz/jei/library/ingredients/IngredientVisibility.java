@@ -7,7 +7,7 @@ import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.Constants;
-import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.common.config.IWorldConfig;
 import mezz.jei.core.util.WeakList;
 import mezz.jei.library.config.EditModeConfig;
 import net.minecraft.resources.ResourceLocation;

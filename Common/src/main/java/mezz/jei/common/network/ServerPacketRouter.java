@@ -6,7 +6,7 @@ import mezz.jei.common.network.packets.PacketGiveItemStack;
 import mezz.jei.common.network.packets.PacketRecipeTransfer;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
-import mezz.jei.core.config.IServerConfig;
+import mezz.jei.common.config.IServerConfig;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.LogManager;

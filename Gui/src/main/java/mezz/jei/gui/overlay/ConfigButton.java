@@ -7,7 +7,7 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.common.config.IWorldConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.input.UserInput;

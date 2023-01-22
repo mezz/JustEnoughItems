@@ -1,6 +1,6 @@
 package mezz.jei.gui.startup;
 
-import mezz.jei.core.config.file.FileWatcher;
+import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
 import mezz.jei.common.platform.Services;
