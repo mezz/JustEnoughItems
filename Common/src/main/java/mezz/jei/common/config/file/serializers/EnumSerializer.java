@@ -1,21 +1,19 @@
 package mezz.jei.common.config.file.serializers;
 
+import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
+
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class EnumSerializer<T extends Enum<T>> implements IConfigValueSerializer<T> {
+public class EnumSerializer<T extends Enum<T>> implements IJeiConfigValueSerializer<T> {
     private final Class<T> enumClass;
     private final Collection<T> validValues;
 
     public EnumSerializer(Class<T> enumClass) {
         this.enumClass = enumClass;
         this.validValues = List.of(enumClass.getEnumConstants());
-    }
-
-    public EnumSerializer(Class<T> enumClass, Collection<T> validValues) {
-        this.enumClass = enumClass;
-        this.validValues = validValues;
     }
 
     @Override
@@ -48,6 +46,11 @@ public class EnumSerializer<T extends Enum<T>> implements IConfigValueSerializer
 
     @Override
     public boolean isValid(T value) {
-        return true;
+        return validValues.contains(value);
+    }
+
+    @Override
+    public Optional<Collection<T>> getAllValidValues() {
+        return Optional.of(validValues);
     }
 }

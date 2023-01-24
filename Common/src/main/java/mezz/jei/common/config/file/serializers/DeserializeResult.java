@@ -1,10 +1,12 @@
 package mezz.jei.common.config.file.serializers;
 
+import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
-public final class DeserializeResult<T> {
+public final class DeserializeResult<T> implements IJeiConfigValueSerializer.IDeserializeResult<T> {
     private final @Nullable T result;
     private final List<String> errors;
 
@@ -21,10 +23,12 @@ public final class DeserializeResult<T> {
         this.errors = errors;
     }
 
-    public @Nullable T getResult() {
-        return result;
+    @Override
+    public Optional<T> getResult() {
+        return Optional.ofNullable(result);
     }
 
+    @Override
     public List<String> getErrors() {
         return errors;
     }

@@ -1,14 +1,19 @@
 package mezz.jei.common.config.file.serializers;
 
+import mezz.jei.api.runtime.config.IJeiConfigListValueSerializer;
+import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ListSerializer<T> implements IConfigValueSerializer<List<T>> {
-    private final IConfigValueSerializer<T> valueSerializer;
+public class ListSerializer<T> implements IJeiConfigListValueSerializer<T> {
+    private final IJeiConfigValueSerializer<T> valueSerializer;
 
-    public ListSerializer(IConfigValueSerializer<T> valueSerializer) {
+    public ListSerializer(IJeiConfigValueSerializer<T> valueSerializer) {
         this.valueSerializer = valueSerializer;
     }
 
@@ -38,10 +43,7 @@ public class ListSerializer<T> implements IConfigValueSerializer<List<T>> {
             .map(String::trim)
             .map(valueSerializer::deserialize)
             .<T>mapMulti((r, c) -> {
-                T result = r.getResult();
-                if (result != null) {
-                    c.accept(result);
-                }
+                r.getResult().ifPresent(c);
                 errors.addAll(r.getErrors());
             })
             .toList();
@@ -58,5 +60,15 @@ public class ListSerializer<T> implements IConfigValueSerializer<List<T>> {
     public boolean isValid(List<T> value) {
         return value.stream()
             .allMatch(valueSerializer::isValid);
+    }
+
+    @Override
+    public IJeiConfigValueSerializer<T> getListValueSerializer() {
+        return valueSerializer;
+    }
+
+    @Override
+    public Optional<Collection<List<T>>> getAllValidValues() {
+        return Optional.empty();
     }
 }

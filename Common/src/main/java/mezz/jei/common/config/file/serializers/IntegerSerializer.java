@@ -1,6 +1,13 @@
 package mezz.jei.common.config.file.serializers;
 
-public class IntegerSerializer implements IConfigValueSerializer<Integer> {
+import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
+
+public class IntegerSerializer implements IJeiConfigValueSerializer<Integer> {
     private final int min;
     private final int max;
 
@@ -45,5 +52,17 @@ public class IntegerSerializer implements IConfigValueSerializer<Integer> {
     @Override
     public boolean isValid(Integer value) {
         return value >= min && value <= max;
+    }
+
+    @Override
+    public Optional<Collection<Integer>> getAllValidValues() {
+        int count = max - min + 1;
+        if (count > 0 && count < 20) {
+            List<Integer> values = IntStream.rangeClosed(min, max)
+                .boxed()
+                .toList();
+            return Optional.of(values);
+        }
+        return Optional.empty();
     }
 }

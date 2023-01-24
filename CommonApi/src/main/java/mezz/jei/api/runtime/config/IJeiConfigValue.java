@@ -34,7 +34,7 @@ public interface IJeiConfigValue<T> {
 
     /**
      * Get the current value.
-     * This will automatically udpate and load from the config file if there are changes.
+     * This will automatically update and load from the config file if there are changes.
      *
      * @since 11.7.0
      */
@@ -61,4 +61,11 @@ public interface IJeiConfigValue<T> {
      * @since 11.7.0
      */
     boolean set(T value);
+
+    /**
+     * Get the helper for serializing values to and from Strings, and validating values.
+     *
+     * @since 11.7.1
+     */
+    IJeiConfigValueSerializer<T> getSerializer();
 }

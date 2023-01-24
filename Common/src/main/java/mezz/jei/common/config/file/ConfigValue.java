@@ -1,8 +1,7 @@
 package mezz.jei.common.config.file;
 
+import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.api.runtime.config.IJeiConfigValue;
-import mezz.jei.common.config.file.serializers.DeserializeResult;
-import mezz.jei.common.config.file.serializers.IConfigValueSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -15,12 +14,12 @@ public class ConfigValue<T> implements IJeiConfigValue<T> {
     private final String name;
     private final String description;
     private final T defaultValue;
-    private final IConfigValueSerializer<T> serializer;
+    private final IJeiConfigValueSerializer<T> serializer;
     private volatile T currentValue;
     @Nullable
     private IConfigSchema schema;
 
-    public ConfigValue(String name, T defaultValue, IConfigValueSerializer<T> serializer, String description) {
+    public ConfigValue(String name, T defaultValue, IJeiConfigValueSerializer<T> serializer, String description) {
         this.name = name;
         this.description = description;
         this.defaultValue = defaultValue;
@@ -43,8 +42,18 @@ public class ConfigValue<T> implements IJeiConfigValue<T> {
     }
 
     @Override
+    public String getValidValuesDescription() {
+        return serializer.getValidValuesDescription();
+    }
+
+    @Override
     public T getDefaultValue() {
         return defaultValue;
+    }
+
+    @Override
+    public boolean isValid(T value) {
+        return serializer.isValid(value);
     }
 
     @Override
@@ -56,25 +65,14 @@ public class ConfigValue<T> implements IJeiConfigValue<T> {
     }
 
     @Override
-    public String getValidValuesDescription() {
-        return this.serializer.getValidValuesDescription();
-    }
-
-    @Override
-    public boolean isValid(T value) {
-        return this.serializer.isValid(value);
-    }
-
-    public IConfigValueSerializer<T> getSerializer() {
+    public IJeiConfigValueSerializer<T> getSerializer() {
         return serializer;
     }
 
     public List<String> setFromSerializedValue(String value) {
-        DeserializeResult<T> deserializeResult = serializer.deserialize(value);
-        T result = deserializeResult.getResult();
-        if (result != null) {
-            currentValue = result;
-        }
+        IJeiConfigValueSerializer.IDeserializeResult<T> deserializeResult = serializer.deserialize(value);
+        deserializeResult.getResult()
+            .ifPresent(t -> currentValue = t);
         return deserializeResult.getErrors();
     }
 

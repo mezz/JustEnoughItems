@@ -1,8 +1,8 @@
 package mezz.jei.common.config.file;
 
+import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.BooleanSerializer;
-import mezz.jei.common.config.file.serializers.IConfigValueSerializer;
 import mezz.jei.common.config.file.serializers.IntegerSerializer;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class ConfigCategoryBuilder implements IConfigCategoryBuilder {
     }
 
     @Override
-    public <T> Supplier<List<T>> addList(String name, List<T> defaultValue, IConfigValueSerializer<List<T>> listSerializer, String description) {
+    public <T> Supplier<List<T>> addList(String name, List<T> defaultValue, IJeiConfigValueSerializer<List<T>> listSerializer, String description) {
         return addValue(new ConfigValue<>(name, defaultValue, listSerializer, description));
     }
 
