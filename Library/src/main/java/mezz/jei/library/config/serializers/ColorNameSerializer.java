@@ -1,13 +1,15 @@
 package mezz.jei.library.config.serializers;
 
+import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.common.config.file.serializers.DeserializeResult;
-import mezz.jei.common.config.file.serializers.IConfigValueSerializer;
 import mezz.jei.library.color.ColorName;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collection;
 import java.util.Locale;
+import java.util.Optional;
 
-public class ColorNameSerializer implements IConfigValueSerializer<ColorName> {
+public class ColorNameSerializer implements IJeiConfigValueSerializer<ColorName> {
     public static final ColorNameSerializer INSTANCE = new ColorNameSerializer();
 
     private ColorNameSerializer() {}
@@ -52,5 +54,10 @@ public class ColorNameSerializer implements IConfigValueSerializer<ColorName> {
     @Override
     public boolean isValid(ColorName value) {
         return true;
+    }
+
+    @Override
+    public Optional<Collection<ColorName>> getAllValidValues() {
+        return Optional.empty();
     }
 }

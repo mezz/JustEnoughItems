@@ -1,6 +1,6 @@
 package mezz.jei.common.config.file;
 
-import mezz.jei.common.config.file.serializers.IConfigValueSerializer;
+import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.core.util.PathUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -130,7 +130,7 @@ public final class ConfigSerializer {
 
     private static <T> void serializeConfigValue(List<String> serialized, ConfigValue<T> configValue) {
         String name = configValue.getName();
-        IConfigValueSerializer<T> serializer = configValue.getSerializer();
+        IJeiConfigValueSerializer<T> serializer = configValue.getSerializer();
 
         String description = "Description: %s".formatted(configValue.getDescription());
         addCommentedStrings(serialized, description);

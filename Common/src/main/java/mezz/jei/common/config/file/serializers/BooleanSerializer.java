@@ -1,6 +1,12 @@
 package mezz.jei.common.config.file.serializers;
 
-public class BooleanSerializer implements IConfigValueSerializer<Boolean> {
+import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+public class BooleanSerializer implements IJeiConfigValueSerializer<Boolean> {
     public static final BooleanSerializer INSTANCE = new BooleanSerializer();
 
     private BooleanSerializer() {}
@@ -30,5 +36,10 @@ public class BooleanSerializer implements IConfigValueSerializer<Boolean> {
     @Override
     public boolean isValid(Boolean value) {
         return true;
+    }
+
+    @Override
+    public Optional<Collection<Boolean>> getAllValidValues() {
+        return Optional.of(List.of(true, false));
     }
 }

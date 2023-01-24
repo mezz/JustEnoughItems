@@ -26,15 +26,8 @@ public interface IJeiConfigValue<T> {
     String getDescription();
 
     /**
-     * Get the description of what values are valid for this config value.
-     *
-     * @since 12.1.0
-     */
-    String getValidValuesDescription();
-
-    /**
      * Get the current value.
-     * This will automatically udpate and load from the config file if there are changes.
+     * This will automatically update and load from the config file if there are changes.
      *
      * @since 12.1.0
      */
@@ -48,17 +41,17 @@ public interface IJeiConfigValue<T> {
     T getDefaultValue();
 
     /**
-     * Check if a given value is valid for this config value.
-     *
-     * @since 12.1.0
-     */
-    boolean isValid(T value);
-
-    /**
      * Set the config value to the given value.
      * This will automatically mark the config file as dirty so that it will save the new values.
      *
      * @since 12.1.0
      */
     boolean set(T value);
+
+    /**
+     * Get the helper for serializing values to and from Strings, and validating values.
+     *
+     * @since 12.1.1
+     */
+    IJeiConfigValueSerializer<T> getSerializer();
 }
