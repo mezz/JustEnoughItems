@@ -134,12 +134,13 @@ artifacts {
 
 task("uploadJars", dependsOn: "build") {
 	description = "uploads JARs"
-	if (project.hasProperty("local_maven")) {
+	def deployDir = project.findProperty("DEPLOY_DIR")
+	if (deployDir != null) {
 		apply plugin: 'maven'
 		uploadArchives {
 			repositories {
 				mavenDeployer {
-					repository(url: "file://${local_maven}")
+					repository(url: "file://${deployDir}")
 				}
 			}
 		}
