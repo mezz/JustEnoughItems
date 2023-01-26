@@ -25,6 +25,7 @@ public final class IngredientInformationUtil {
 	@Unmodifiable
 	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove, IIngredientFilterConfig config) {
 		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
+		tooltipFlag = tooltipFlag.asCreative();
 		List<Component> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
 		return tooltip.stream()
 			.map(Component::getString)

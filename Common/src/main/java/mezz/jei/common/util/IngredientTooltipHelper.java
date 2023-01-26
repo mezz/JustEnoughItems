@@ -20,6 +20,7 @@ public class IngredientTooltipHelper {
 		try {
 			Minecraft minecraft = Minecraft.getInstance();
 			TooltipFlag.Default tooltipFlag = minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
+			tooltipFlag = tooltipFlag.asCreative();
 			List<Component> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
 			return new ArrayList<>(tooltip);
 		} catch (RuntimeException | LinkageError e) {

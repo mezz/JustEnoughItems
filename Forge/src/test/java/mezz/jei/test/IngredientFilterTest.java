@@ -180,7 +180,7 @@ public class IngredientFilterTest {
 	}
 
 	public static List<String> getTooltipStrings(IIngredientRenderer<TestIngredient> ingredientRenderer, TestIngredient testIngredient) {
-		List<Component> tooltip = ingredientRenderer.getTooltip(testIngredient, TooltipFlag.Default.NORMAL);
+		List<Component> tooltip = ingredientRenderer.getTooltip(testIngredient, TooltipFlag.Default.NORMAL.asCreative());
 		return tooltip.stream()
 			.map(Component::getString)
 			.map(Translator::toLowercaseWithLocale)
