@@ -5,6 +5,17 @@ plugins {
     id("fabric-loom") version("0.12-SNAPSHOT")
 }
 
+repositories {
+    fun exclusiveMaven(url: String, filter: Action<InclusiveRepositoryContentDescriptor>) =
+        exclusiveContent {
+            forRepository { maven(url) }
+            filter(filter)
+        }
+    exclusiveMaven("https://maven.parchmentmc.org") {
+        includeGroupByRegex("org\\.parchmentmc.*")
+    }
+}
+
 // gradle.properties
 val fabricApiVersion: String by extra
 val fabricLoaderVersion: String by extra

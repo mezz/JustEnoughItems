@@ -9,6 +9,17 @@ plugins {
     id("net.darkhax.curseforgegradle") version("1.0.8")
 }
 
+repositories {
+    fun exclusiveMaven(url: String, filter: Action<InclusiveRepositoryContentDescriptor>) =
+        exclusiveContent {
+            forRepository { maven(url) }
+            filter(filter)
+        }
+    exclusiveMaven("https://maven.parchmentmc.org") {
+        includeGroupByRegex("org\\.parchmentmc.*")
+    }
+}
+
 // gradle.properties
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
