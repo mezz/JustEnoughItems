@@ -1,12 +1,19 @@
-repositories {
-    maven("https://maven.parchmentmc.org")
-}
-
 plugins {
     java
     idea
     `maven-publish`
     id("fabric-loom")
+}
+
+repositories {
+    fun exclusiveMaven(url: String, filter: Action<InclusiveRepositoryContentDescriptor>) =
+        exclusiveContent {
+            forRepository { maven(url) }
+            filter(filter)
+        }
+    exclusiveMaven("https://maven.parchmentmc.org") {
+        includeGroupByRegex("org\\.parchmentmc.*")
+    }
 }
 
 // gradle.properties

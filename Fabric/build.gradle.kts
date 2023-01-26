@@ -1,7 +1,6 @@
 import me.modmuss50.mpp.PublishModTask
 
 repositories {
-    maven("https://maven.parchmentmc.org")
     maven("https://maven.siphalor.de/") {
         // for optional AMECS integration
         content {
@@ -17,6 +16,17 @@ plugins {
     id("fabric-loom")
     id("net.mezzdev.modshade")
     id("me.modmuss50.mod-publish-plugin")
+}
+
+repositories {
+    fun exclusiveMaven(url: String, filter: Action<InclusiveRepositoryContentDescriptor>) =
+        exclusiveContent {
+            forRepository { maven(url) }
+            filter(filter)
+        }
+    exclusiveMaven("https://maven.parchmentmc.org") {
+        includeGroupByRegex("org\\.parchmentmc.*")
+    }
 }
 
 // gradle.properties
