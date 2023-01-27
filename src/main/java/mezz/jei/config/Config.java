@@ -303,11 +303,24 @@ public final class Config {
 			}
 		}
 
+		bookmarkFile = new File("./", "jei_bookmarks.ini");
+		File oldBookmarkFile = new File(jeiConfigurationDir, "bookmarks.ini");
+		if (!bookmarkFile.exists() && oldBookmarkFile.exists()) {
+			try {
+				if (!oldBookmarkFile.renameTo(bookmarkFile)) {
+					Log.get().error("Could not move the old bookmark file from {} to {}", jeiConfigurationDir, "./");
+					return;
+				}
+			} catch (SecurityException e) {
+				Log.get().error("Could not move the old bookmark file from {} to {}", jeiConfigurationDir, "./", e);
+				return;
+			}
+		}
+
 		final File configFile = new File(jeiConfigurationDir, "jei.cfg");
 		final File itemBlacklistConfigFile = new File(jeiConfigurationDir, "itemBlacklist.cfg");
 		final File searchColorsConfigFile = new File(jeiConfigurationDir, "searchColors.cfg");
 		final File worldConfigFile = new File(jeiConfigurationDir, "worldSettings.cfg");
-		bookmarkFile = new File(jeiConfigurationDir, "bookmarks.ini");
 		worldConfig = new Configuration(worldConfigFile, "0.1.0");
 		config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.4.0");
 		itemBlacklistConfig = new LocalizedConfiguration(configKeyPrefix, itemBlacklistConfigFile, "0.1.0");
