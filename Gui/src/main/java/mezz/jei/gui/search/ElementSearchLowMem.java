@@ -1,10 +1,12 @@
 package mezz.jei.gui.search;
 
+import mezz.jei.api.search.ILanguageTransformer;
 import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,14 +19,17 @@ public class ElementSearchLowMem implements IElementSearch {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final List<IListElementInfo<?>> elementInfoList;
+	@Unmodifiable
+	private final List<ILanguageTransformer> languageTransformers;
 
-	public ElementSearchLowMem() {
+	public ElementSearchLowMem(Collection<ILanguageTransformer> languageTransformers) {
+		this.languageTransformers = List.copyOf(languageTransformers);
 		this.elementInfoList = new ArrayList<>();
 	}
 
 	@Override
 	public Set<IListElementInfo<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo) {
-		String token = tokenInfo.token();
+		String token = transform(tokenInfo.token());
 		if (token.isEmpty()) {
 			return Set.of();
 		}
@@ -35,11 +40,19 @@ public class ElementSearchLowMem implements IElementSearch {
 			.collect(Collectors.toSet());
 	}
 
-	private static boolean matches(String word, PrefixInfo<IListElementInfo<?>> prefixInfo, IListElementInfo<?> elementInfo) {
+	private String transform(String string) {
+		for (ILanguageTransformer languageTransformer : languageTransformers) {
+			string = languageTransformer.transformToken(string);
+		}
+		return string;
+	}
+
+	private boolean matches(String word, PrefixInfo<IListElementInfo<?>> prefixInfo, IListElementInfo<?> elementInfo) {
 		IListElement<?> element = elementInfo.getElement();
 		if (element.isVisible()) {
 			Collection<String> strings = prefixInfo.getStrings(elementInfo);
 			for (String string : strings) {
+				string = transform(string);
 				if (string.contains(word)) {
 					return true;
 				}

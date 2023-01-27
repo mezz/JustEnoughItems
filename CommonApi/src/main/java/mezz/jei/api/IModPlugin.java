@@ -2,6 +2,7 @@ package mezz.jei.api;
 
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.registration.IRuntimeRegistration;
+import mezz.jei.api.registration.ISearchRegistration;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.registration.IAdvancedRegistration;
@@ -78,6 +79,15 @@ public interface IModPlugin {
 	 * Register recipe transfer handlers (move ingredients from the inventory into crafting GUIs).
 	 */
 	default void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
+
+	}
+
+	/**
+	 * Register special handlers related to searching ingredients.
+	 *
+	 * @since 12.2.0
+	 */
+	default void registerSearch(ISearchRegistration registration) {
 
 	}
 
