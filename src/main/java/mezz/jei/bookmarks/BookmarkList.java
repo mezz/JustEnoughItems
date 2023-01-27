@@ -46,7 +46,7 @@ public class BookmarkList implements IIngredientGridSource {
 	public <T> boolean add(T ingredient) {
 		Object normalized = normalize(ingredient);
 		if (!contains(normalized)) {
-			if (addToLists(normalized, true)) {
+			if (addToLists(normalized, Config.isAddingBookmarksToFront())) {
 				notifyListenersOfChange();
 				saveBookmarks();
 				return true;

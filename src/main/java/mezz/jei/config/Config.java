@@ -183,6 +183,10 @@ public final class Config {
 		return values.optimizeMemoryUsage;
 	}
 
+	public static boolean isAddingBookmarksToFront() {
+		return values.addBookmarksToFront;
+	}
+
 	public static GiveMode getGiveMode() {
 		return values.giveMode;
 	}
@@ -404,6 +408,8 @@ public final class Config {
 		values.centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", defaultValues.centerSearchBarEnabled);
 
 		values.optimizeMemoryUsage = config.getBoolean(CATEGORY_ADVANCED, "optimizeMemoryUsage", defaultValues.optimizeMemoryUsage);
+
+		values.addBookmarksToFront = config.getBoolean(CATEGORY_ADVANCED, "addBookmarksToFront", defaultValues.addBookmarksToFront);
 
 		values.giveMode = config.getEnum("giveMode", CATEGORY_ADVANCED, defaultValues.giveMode, GiveMode.values());
 
