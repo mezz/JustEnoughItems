@@ -16,7 +16,7 @@ public interface IClientConfig {
 
 	boolean isCheatToHotbarUsingHotkeysEnabled();
 
-    boolean isAddingBookmarksToFront();
+	boolean isAddingBookmarksToFront();
 
 	GiveMode getGiveMode();
 
