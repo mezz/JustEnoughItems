@@ -5,6 +5,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.config.IBookmarkConfig;
+import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import net.minecraft.world.item.ItemStack;
 
@@ -17,18 +18,20 @@ public class BookmarkList implements IIngredientGridSource {
 	private final List<ITypedIngredient<?>> list = new LinkedList<>();
 	private final IIngredientManager ingredientManager;
 	private final IBookmarkConfig bookmarkConfig;
+	private final IClientConfig clientConfig;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 
-	public BookmarkList(IIngredientManager ingredientManager, IBookmarkConfig bookmarkConfig) {
+	public BookmarkList(IIngredientManager ingredientManager, IBookmarkConfig bookmarkConfig, IClientConfig clientConfig) {
 		this.ingredientManager = ingredientManager;
 		this.bookmarkConfig = bookmarkConfig;
+		this.clientConfig = clientConfig;
 	}
 
 	public <T> boolean add(ITypedIngredient<T> value) {
 		if (contains(value)) {
 			return false;
 		}
-		addToList(value, true);
+		addToList(value, clientConfig.isAddingBookmarksToFrontConfig());
 		notifyListenersOfChange();
 		bookmarkConfig.saveBookmarks(ingredientManager, list);
 		return true;

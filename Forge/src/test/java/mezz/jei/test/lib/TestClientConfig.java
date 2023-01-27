@@ -29,6 +29,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isAddingBookmarksToFront() {
+		return false;
+	}
+
+	@Override
 	public GiveMode getGiveMode() {
 		return GiveMode.INVENTORY;
 	}

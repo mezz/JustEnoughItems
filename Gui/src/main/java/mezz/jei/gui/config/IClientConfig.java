@@ -16,6 +16,8 @@ public interface IClientConfig {
 
 	boolean isCheatToHotbarUsingHotkeysEnabled();
 
+    boolean isAddingBookmarksToFront();
+
 	GiveMode getGiveMode();
 
 	int getMaxRecipeGuiHeight();

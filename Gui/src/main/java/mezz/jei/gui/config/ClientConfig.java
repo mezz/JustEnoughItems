@@ -19,6 +19,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> centerSearchBarEnabled;
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
+	private final Supplier<Boolean> addBookmarksToFront;
 	private final Supplier<GiveMode> giveMode;
 	private final Supplier<Integer> maxRecipeGuiHeight;
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
@@ -41,6 +42,11 @@ public final class ClientConfig implements IClientConfig {
 			"CheatToHotbarUsingHotkeysEnabled",
 			false,
 			"Enable cheating items into the hotbar by using the shift+number keys."
+		);
+		addBookmarksToFront = advanced.addBoolean(
+			"AddBookmarksToFrontEnabled",
+			false,
+			"Enable adding new bookmarks to the front of the bookmark list."
 		);
 		giveMode = advanced.addEnum(
 			"GiveMode",
@@ -86,6 +92,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isCheatToHotbarUsingHotkeysEnabled() {
 		return cheatToHotbarUsingHotkeysEnabled.get();
+	}
+
+	@Override
+	public boolean isAddingBookmarksToFront() {
+		return addBookmarksToFront.get();
 	}
 
 	@Override
