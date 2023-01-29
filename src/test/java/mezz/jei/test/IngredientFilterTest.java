@@ -38,7 +38,10 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class IngredientFilterTest {
@@ -166,6 +169,26 @@ public class IngredientFilterTest {
 	}
 
 	@Test
+	public void testSearchForMatchingElement() {
+		Assertions.assertNotNull(ingredientFilter);
+		Assertions.assertNotNull(baseList);
+
+		TestIngredient firstIngredient = (TestIngredient) baseList.get(0).getIngredient();
+
+		TestIngredientHelper ingredientHelper = new TestIngredientHelper();
+		Function<TestIngredient, String> uidFunction = ingredientHelper::getWildcardId;
+
+		Set<TestIngredient> expected = new HashSet<>();
+		expected.add(firstIngredient);
+
+		Set<TestIngredient> actual = ingredientFilter.searchForMatchingElement(firstIngredient, ingredientHelper, uidFunction)
+				.map(i -> i.getElement().getIngredient())
+				.collect(Collectors.toSet());
+
+		Assertions.assertEquals(expected, actual);
+	}
+
+	@Test
 	public void testConfigBlacklist() {
 		Assertions.assertNotNull(ingredientFilter);
 		Assertions.assertNotNull(ingredientManager);
@@ -174,7 +197,7 @@ public class IngredientFilterTest {
 
 		TestIngredient blacklistedIngredient = (TestIngredient) baseList.get(0).getIngredient();
 		TestIngredientHelper testIngredientHelper = new TestIngredientHelper();
-		editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, blacklistedIngredient, IngredientBlacklistType.ITEM, testIngredientHelper);
+		editModeConfig.addIngredientToConfigBlacklist(blacklistedIngredient, IngredientBlacklistType.ITEM, testIngredientHelper);
 
 		ingredientFilter.updateHidden();
 

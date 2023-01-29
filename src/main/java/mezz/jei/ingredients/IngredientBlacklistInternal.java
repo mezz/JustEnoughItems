@@ -21,6 +21,9 @@ public class IngredientBlacklistInternal {
 	}
 
 	public <V> boolean isIngredientBlacklistedByApi(V ingredient, IIngredientHelper<V> ingredientHelper) {
+		if (ingredientBlacklist.isEmpty()) {
+			return false;
+		}
 		List<String> uids = IngredientInformation.getUniqueIdsWithWildcard(ingredientHelper, ingredient, UidContext.Ingredient);
 
 		for (String uid : uids) {

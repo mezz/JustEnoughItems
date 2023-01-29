@@ -244,9 +244,9 @@ public class InputHandler {
 				LOGGER.error("Can't edit the config blacklist, the ingredient filter is null");
 			} else {
 				if (editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper)) {
-					editModeConfig.removeIngredientFromConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
+					editModeConfig.removeIngredientFromConfigBlacklist(ingredient, blacklistType, ingredientHelper);
 				} else {
-					editModeConfig.addIngredientToConfigBlacklist(ingredientFilter, ingredientManager, ingredient, blacklistType, ingredientHelper);
+					editModeConfig.addIngredientToConfigBlacklist(ingredient, blacklistType, ingredientHelper);
 				}
 			}
 		}
