@@ -24,6 +24,7 @@ plugins {
 	id "maven-publish"
 	id 'com.matthewprenger.cursegradle' version '1.4.0'
 	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.71.4'
+	id 'com.modrinth.minotaur' version '2.+'
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply from: 'buildtools/ColoredOutput.gradle'
@@ -132,6 +133,15 @@ task makeChangelog(type: GitChangelogTask) {
 	templateContent = file('changelog.mustache').getText('UTF-8')
 }
 
+task makeMarkdownChangelog(type: GitChangelogTask) {
+	fromRepo = file("$projectDir")
+	file = file('changelog.md')
+	untaggedName = "Current release ${project.version}"
+	fromCommit = '61d3bcb0d37e12dc3872bec62ef831dbe7699c59'
+	toRef = 'HEAD'
+	templateContent = file('changelog-markdown.mustache').getText('UTF-8')
+}
+
 curseforge {
 	apiKey = project.findProperty('curseforge_apikey') ?: '0'
 	project {
@@ -142,6 +152,16 @@ curseforge {
 		addGameVersion "${minecraft_version}"
 	}
 }
+
+modrinth {
+	token = project.findProperty('modrinthToken') ?: '0'
+	projectId = "jei"
+	versionType = "beta"
+	uploadFile = jar
+	changelog = provider { file("changelog.md").getText('UTF-8') }
+}
+tasks.modrinth.dependsOn(tasks.jar)
+tasks.modrinth.dependsOn(tasks.makeMarkdownChangelog)
 
 afterEvaluate {
 	tasks.curseforge238222.dependsOn makeChangelog

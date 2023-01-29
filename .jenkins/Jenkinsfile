@@ -5,8 +5,9 @@ pipeline {
     }
 
     environment {
-      ORG_GRADLE_PROJECT_curseforge_apikey = credentials('jei-curseforge-key')
-      ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
+        ORG_GRADLE_PROJECT_curseforge_apikey = credentials('jei-curseforge-key')
+        ORG_GRADLE_PROJECT_modrinthToken = credentials("modrinth-auth-token")
+        ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
     }
     stages {
         stage('Checkout') {

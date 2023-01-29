@@ -21,6 +21,7 @@ out/
 build/*
 /bin/
 changelog.html
+changelog.md
 /classes
 /logs
 /build/
