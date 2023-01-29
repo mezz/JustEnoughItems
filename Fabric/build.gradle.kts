@@ -183,6 +183,7 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 modrinth {
     token.set(modrinthToken)
     projectId.set("jei")
+    version = "${project.version}-fabric"
     versionType.set("beta")
     uploadFile.set(tasks.remapJar.get())
     changelog.set(provider { file("../Changelog/changelog.md").readText() })
