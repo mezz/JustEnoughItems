@@ -47,5 +47,11 @@ pipeline {
                 sh "./gradlew curseforge --no-daemon"
             }
         }
+
+        stage('Publish Modrinth') {
+            steps {
+                sh "./gradlew modrinth --no-daemon"
+            }
+        }
     }
 }
