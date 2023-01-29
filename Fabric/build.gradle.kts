@@ -11,6 +11,7 @@ plugins {
     `maven-publish`
     id("fabric-loom") version("0.12-SNAPSHOT")
     id("net.darkhax.curseforgegradle") version("1.0.8")
+    id("com.modrinth.minotaur") version("2.+")
 }
 
 // gradle.properties
@@ -24,6 +25,9 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentVersionFabric: String by extra
 val parchmentMinecraftVersion: String by extra
+
+// set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
+val modrinthToken: String? by project
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric"
 base {
@@ -168,6 +172,16 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
         project.ext.set("curse_file_url", "${curseHomepageUrl}/files/${mainFile.curseFileId}")
     }
 }
+
+modrinth {
+    token.set(modrinthToken)
+    projectId.set("jei")
+    versionType.set("beta")
+    uploadFile.set(tasks.remapJar.get())
+    changelog.set(provider { file("../Changelog/changelog.md").readText() })
+}
+tasks.modrinth.get().dependsOn(tasks.remapJar)
+tasks.modrinth.get().dependsOn(":Changelog:makeMarkdownChangelog")
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
