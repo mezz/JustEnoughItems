@@ -5,7 +5,8 @@ pipeline {
     }
 
     environment {
-      ORG_GRADLE_PROJECT_curseforge_apikey = credentials('jei-curseforge-key')
+      ORG_GRADLE_PROJECT_curseforge_apikey = credentials("jei-curseforge-key")
+      ORG_GRADLE_PROJECT_modrinthToken = credentials("modrinth-auth-token")
       ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
     }
     stages {
@@ -59,6 +60,13 @@ pipeline {
             steps {
                 sh "./gradlew :Fabric:publishCurseForge --no-daemon"
                 sh "./gradlew :Forge:publishCurseForge --no-daemon"
+            }
+        }
+
+        stage('Publish Modrinth') {
+            steps {
+                sh "./gradlew :Fabric:modrinth --no-daemon"
+                sh "./gradlew :Forge:modrinth --no-daemon"
             }
         }
     }
