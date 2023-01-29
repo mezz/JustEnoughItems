@@ -170,7 +170,8 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 modrinth {
 	token.set(modrinthToken)
 	projectId.set("jei")
-	version = "${project.version}-forge"
+	versionNumber.set("${project.version}")
+	versionName.set("${project.version} for Forge $minecraftVersion")
 	versionType.set("beta")
 	uploadFile.set(tasks.jar.get())
 	changelog.set(provider { file("../Changelog/changelog.md").readText() })
