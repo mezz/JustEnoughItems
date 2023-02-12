@@ -142,7 +142,7 @@ public class JeiGuiStarter {
         );
         registration.setIngredientListOverlay(ingredientListOverlay);
 
-        BookmarkList bookmarkList = new BookmarkList(ingredientManager, bookmarkConfig);
+        BookmarkList bookmarkList = new BookmarkList(ingredientManager, bookmarkConfig, clientConfig);
         bookmarkConfig.loadBookmarks(ingredientManager, bookmarkList);
 
         BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
