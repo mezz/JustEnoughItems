@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -303,7 +304,8 @@ public final class Config {
 			}
 		}
 
-		bookmarkFile = new File("./", "jei_bookmarks.ini");
+		File minecraftDir = new File(Loader.instance().getConfigDir().getParent());
+		bookmarkFile = new File(minecraftDir, "jei_bookmarks.ini");
 		File oldBookmarkFile = new File(jeiConfigurationDir, "bookmarks.ini");
 		if (!bookmarkFile.exists() && oldBookmarkFile.exists()) {
 			try {
