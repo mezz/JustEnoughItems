@@ -104,7 +104,7 @@ config.jei.advanced.giveMode.comment=Choose if JEI should give ingredients direc
 config.jei.advanced.optimizeMemoryUsage=Optimize Memory Usage
 config.jei.advanced.optimizeMemoryUsage.comment=Enable JEI memory usage optimizations.
 config.jei.advanced.addBookmarksToFront=Prepend New Bookmarks
-config.jei.advanced.addBookmarksToFront.comment=When enabled, adds new bookmarks to the front of the bookmark list
+config.jei.advanced.addBookmarksToFront.comment=When true, adds new bookmarks to the front of the bookmark list. When false, adds new bookmarks to the end of the bookmark list.
 
 # Hide Ingredients Mode
 gui.jei.editMode.description=JEI Hide Ingredients Mode:
