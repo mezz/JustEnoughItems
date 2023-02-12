@@ -45,7 +45,7 @@ public final class ClientConfig implements IClientConfig {
 		);
 		addBookmarksToFront = advanced.addBoolean(
 			"AddBookmarksToFrontEnabled",
-			false,
+			true,
 			"Enable adding new bookmarks to the front of the bookmark list."
 		);
 		giveMode = advanced.addEnum(
