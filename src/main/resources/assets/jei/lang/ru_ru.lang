@@ -42,6 +42,7 @@ key.jei.showRecipe=Показывать рецепты предметов
 key.jei.showUses=Показывать применения предметов
 key.jei.recipeBack=Показать предыдущую страницу рецептов
 key.jei.toggleCheatMode=Переключить режим жульничества
+key.jei.toggleEditMode=Переключить режим скрытия и редактирования
 key.jei.previousPage=Предыдущая
 key.jei.nextPage=Следующая
 key.jei.bookmark=Управление закладками
@@ -100,6 +101,10 @@ config.jei.advanced.maxRecipeGuiHeight=Максимальная высота
 config.jei.advanced.maxRecipeGuiHeight.comment=Максимальная высота интерфейса рецепта.
 config.jei.advanced.giveMode=Режим получения предметов
 config.jei.advanced.giveMode.comment=Выберите, должен ли JEI давать предметы напрямую в инвентарь (inventory) или же набирать их мышкой (mouse_pickup).
+config.jei.advanced.optimizeMemoryUsage=Оптимизировать использование памяти
+config.jei.advanced.optimizeMemoryUsage.comment=Включить оптимизация использования оперативной памяти JEI
+config.jei.advanced.addBookmarksToFront=Новые закладки спереди
+config.jei.advanced.addBookmarksToFront.comment=Если true, то новые закладки будут добавлятся спереди списка. Если false, новые закладки будут добавлятся в конец списка.
 
 # Hide Ingredients Mode
 gui.jei.editMode.description=Режим редактирования списка JEI:
