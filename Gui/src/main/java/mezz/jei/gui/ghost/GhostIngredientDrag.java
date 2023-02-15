@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.input.UserInput;
@@ -26,8 +27,9 @@ public class GhostIngredientDrag<T> {
 
 	private final IGhostIngredientHandler<?> handler;
 	private final List<Target<T>> targets;
+	private final List<Rect2i> targetAreas;
 	private final IIngredientRenderer<T> ingredientRenderer;
-	private final T ingredient;
+	private final ITypedIngredient<T> ingredient;
 	private final double mouseStartX;
 	private final double mouseStartY;
 	private final ImmutableRect2i origin;
@@ -36,13 +38,16 @@ public class GhostIngredientDrag<T> {
 		IGhostIngredientHandler<?> handler,
 		List<Target<T>> targets,
 		IIngredientRenderer<T> ingredientRenderer,
-		T ingredient,
+		ITypedIngredient<T> ingredient,
 		double mouseX,
 		double mouseY,
 		ImmutableRect2i origin
 	) {
 		this.handler = handler;
 		this.targets = targets;
+		this.targetAreas = targets.stream()
+			.map(Target::getArea)
+			.toList();
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredient = ingredient;
 		this.origin = origin;
@@ -52,7 +57,7 @@ public class GhostIngredientDrag<T> {
 
 	public void drawTargets(PoseStack poseStack, int mouseX, int mouseY) {
 		if (handler.shouldHighlightTargets()) {
-			drawTargets(poseStack, mouseX, mouseY, targets);
+			drawTargets(poseStack, mouseX, mouseY, targetAreas);
 		}
 	}
 
@@ -115,17 +120,15 @@ public class GhostIngredientDrag<T> {
 		poseStack.pushPose();
 		{
 			poseStack.translate(mouseX - 8, mouseY - 8, 0);
-			ingredientRenderer.render(poseStack, ingredient);
+			ingredientRenderer.render(poseStack, ingredient.getIngredient());
 		}
 		poseStack.popPose();
 		itemRenderer.blitOffset -= 150.0F;
 	}
 
-	public static <V> void drawTargets(PoseStack poseStack, int mouseX, int mouseY, List<Target<V>> targets) {
+	public static void drawTargets(PoseStack poseStack, int mouseX, int mouseY, List<Rect2i> targetAreas) {
 		RenderSystem.disableDepthTest();
-		for (Target<?> target : targets) {
-			Rect2i area = target.getArea();
-
+		for (Rect2i area : targetAreas) {
 			int color;
 			if (MathUtil.contains(area, mouseX, mouseY)) {
 				color = hoverColor;
@@ -142,7 +145,7 @@ public class GhostIngredientDrag<T> {
 			Rect2i area = target.getArea();
 			if (MathUtil.contains(area, input.getMouseX(), input.getMouseY())) {
 				if (!input.isSimulate()) {
-					target.accept(ingredient);
+					target.accept(ingredient.getIngredient());
 					handler.onComplete();
 				}
 				return true;
@@ -162,7 +165,7 @@ public class GhostIngredientDrag<T> {
 		return ingredientRenderer;
 	}
 
-	public T getIngredient() {
+	public ITypedIngredient<T> getIngredient() {
 		return ingredient;
 	}
 
