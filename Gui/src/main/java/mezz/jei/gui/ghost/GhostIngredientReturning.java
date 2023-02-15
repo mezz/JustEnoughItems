@@ -2,6 +2,7 @@ package mezz.jei.gui.ghost;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -17,7 +18,7 @@ import java.util.Optional;
 public class GhostIngredientReturning<T> {
 	private static final long DURATION_PER_SCREEN_WIDTH = 500; // milliseconds to move across a full screen
 	private final IIngredientRenderer<T> ingredientRenderer;
-	private final T ingredient;
+	private final ITypedIngredient<T> ingredient;
 	private final Vec2 start;
 	private final Vec2 end;
 	private final long startTime;
@@ -30,14 +31,14 @@ public class GhostIngredientReturning<T> {
 		}
 
 		IIngredientRenderer<T> ingredientRenderer = ghostIngredientDrag.getIngredientRenderer();
-		T ingredient = ghostIngredientDrag.getIngredient();
+		ITypedIngredient<T> ingredient = ghostIngredientDrag.getIngredient();
 		Vec2 end = new Vec2(origin.getX(), origin.getY());
 		Vec2 start = new Vec2((float) mouseX - 8, (float) mouseY - 8);
 		GhostIngredientReturning<T> returning = new GhostIngredientReturning<>(ingredientRenderer, ingredient, start, end);
 		return Optional.of(returning);
 	}
 
-	private GhostIngredientReturning(IIngredientRenderer<T> ingredientRenderer, T ingredient, Vec2 start, Vec2 end) {
+	private GhostIngredientReturning(IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> ingredient, Vec2 start, Vec2 end) {
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredient = ingredient;
 		this.start = start;
@@ -67,7 +68,7 @@ public class GhostIngredientReturning<T> {
 		poseStack.pushPose();
 		{
 			poseStack.translate(x, y, 0);
-			ingredientRenderer.render(poseStack, ingredient);
+			ingredientRenderer.render(poseStack, ingredient.getIngredient());
 		}
 		poseStack.popPose();
 		itemRenderer.blitOffset -= 150.0F;
