@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.search.ILanguageTransformer;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.util.Translator;
 import mezz.jei.gui.config.IClientConfig;
@@ -67,7 +68,8 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		NonNullList<IListElement<?>> ingredients,
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
-		IColorHelper colorHelper
+		IColorHelper colorHelper,
+		Collection<ILanguageTransformer> languageTransformers
 	) {
 		this.filterTextSource = filterTextSource;
 		this.ingredientManager = ingredientManager;
@@ -77,9 +79,9 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper);
 
 		if (clientConfig.isLowMemorySlowSearchEnabled()) {
-			this.elementSearch = new ElementSearchLowMem();
+			this.elementSearch = new ElementSearchLowMem(languageTransformers);
 		} else {
-			this.elementSearch = new ElementSearch(this.elementPrefixParser);
+			this.elementSearch = new ElementSearch(this.elementPrefixParser, languageTransformers);
 		}
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());

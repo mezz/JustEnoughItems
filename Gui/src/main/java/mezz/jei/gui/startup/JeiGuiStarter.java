@@ -12,6 +12,7 @@ import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ILanguageTransformer;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -54,6 +55,7 @@ import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Collection;
 import java.util.List;
 
 public class JeiGuiStarter {
@@ -73,6 +75,7 @@ public class JeiGuiStarter {
         IIngredientVisibility ingredientVisibility = registration.getIngredientVisibility();
         IIngredientManager ingredientManager = registration.getIngredientManager();
         IEditModeConfig editModeConfig = registration.getEditModeConfig();
+        Collection<ILanguageTransformer> languageTransformers = registration.getLanguageTransformers();
 
         IJeiHelpers jeiHelpers = registration.getJeiHelpers();
         IColorHelper colorHelper = jeiHelpers.getColorHelper();
@@ -113,7 +116,8 @@ public class JeiGuiStarter {
             ingredientList,
             modIdHelper,
             ingredientVisibility,
-            colorHelper
+            colorHelper,
+            languageTransformers
         );
         ingredientManager.registerIngredientListener(ingredientFilter);
         ingredientVisibility.registerListener(ingredientFilter::onIngredientVisibilityChanged);

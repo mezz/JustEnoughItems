@@ -35,7 +35,6 @@ public class IngredientManager implements IIngredientManager {
 			.getAllIngredients();
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public <V> IIngredientHelper<V> getIngredientHelper(V ingredient) {
 		return getIngredientTypeChecked(ingredient)
@@ -52,7 +51,6 @@ public class IngredientManager implements IIngredientManager {
 			.getIngredientHelper();
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public <V> IIngredientRenderer<V> getIngredientRenderer(V ingredient) {
 		return getIngredientTypeChecked(ingredient)

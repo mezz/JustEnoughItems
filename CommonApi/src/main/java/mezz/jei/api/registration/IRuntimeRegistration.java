@@ -11,6 +11,9 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ILanguageTransformer;
+
+import java.util.Collection;
 
 /**
  * Allows mods to override the runtime classes for JEI with their own implementation.
@@ -88,4 +91,12 @@ public interface IRuntimeRegistration {
      * This is used by JEI's GUI and can be used by other mods that want to use the same information from JEI.
      */
     IEditModeConfig getEditModeConfig();
+
+    /**
+     * Get the language transformers registered by plugins with {@link ISearchRegistration#addLanguageTransformer}.
+     *
+     * @see ILanguageTransformer
+     * @since 12.2.0
+     */
+    Collection<ILanguageTransformer> getLanguageTransformers();
 }

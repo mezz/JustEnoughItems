@@ -19,8 +19,8 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
-import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.common.util.StackHelper;
+import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.focus.FocusFactory;
@@ -35,6 +35,7 @@ import mezz.jei.library.load.registration.RecipeCatalystRegistration;
 import mezz.jei.library.load.registration.RecipeCategoryRegistration;
 import mezz.jei.library.load.registration.RecipeRegistration;
 import mezz.jei.library.load.registration.RecipeTransferRegistration;
+import mezz.jei.library.load.registration.SearchRegistration;
 import mezz.jei.library.load.registration.SubtypeRegistration;
 import mezz.jei.library.load.registration.VanillaCategoryExtensionRegistration;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
@@ -80,6 +81,13 @@ public class PluginLoader {
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
 		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager);
 		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager);
+	}
+
+	public SearchRegistration registerSearch() {
+		List<IModPlugin> plugins = data.plugins();
+		SearchRegistration searchRegistration = new SearchRegistration(getJeiHelpers());
+		PluginCaller.callOnPlugins("Registering search", plugins, p -> p.registerSearch(searchRegistration));
+		return searchRegistration;
 	}
 
 	@Unmodifiable

@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.search.ILanguageTransformer;
 import mezz.jei.common.util.Translator;
 import mezz.jei.common.config.IWorldConfig;
 import mezz.jei.gui.config.IClientConfig;
@@ -86,6 +87,7 @@ public class IngredientFilterTest {
 		IIngredientSorter ingredientListSorter = (a, b) -> Comparator.comparing(IListElementInfo::getModNameForSorting);
 		this.ingredientVisibility = new IngredientVisibility(blacklist, worldConfig, editModeConfig, ingredientManager);
 		this.filterTextSource = new FilterTextSource();
+		List<ILanguageTransformer> languageTransformers = List.of();
 		this.ingredientFilter = new IngredientFilter(
 			filterTextSource,
 			clientConfig,
@@ -95,7 +97,8 @@ public class IngredientFilterTest {
 			baseList,
 			modIdHelper,
 			ingredientVisibility,
-			colorHelper
+			colorHelper,
+			languageTransformers
 		);
 
 		this.ingredientManager.registerIngredientListener(ingredientFilter);

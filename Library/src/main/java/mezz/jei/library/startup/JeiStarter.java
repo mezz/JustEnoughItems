@@ -10,14 +10,15 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ILanguageTransformer;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.file.ConfigSchemaBuilder;
+import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.util.LoggedTimer;
-import mezz.jei.common.config.file.ConfigSchemaBuilder;
-import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.library.color.ColorHelper;
 import mezz.jei.library.config.ColorNameConfig;
 import mezz.jei.library.config.EditModeConfig;
@@ -29,6 +30,7 @@ import mezz.jei.library.load.PluginCaller;
 import mezz.jei.library.load.PluginHelper;
 import mezz.jei.library.load.PluginLoader;
 import mezz.jei.library.load.registration.RuntimeRegistration;
+import mezz.jei.library.load.registration.SearchRegistration;
 import mezz.jei.library.plugins.jei.JeiInternalPlugin;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import mezz.jei.library.recipes.RecipeManager;
@@ -41,6 +43,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 
 public final class JeiStarter {
@@ -118,6 +121,9 @@ public final class JeiStarter {
 			pluginLoader.createRecipeTransferHandlers(plugins);
 		IRecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
 
+		SearchRegistration searchRegistration = pluginLoader.registerSearch();
+		Collection<ILanguageTransformer> languageTransformers = searchRegistration.getLanguageTransformers();
+
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
 		IScreenHelper screenHelper = pluginLoader.createGuiScreenHelper(plugins, jeiHelpers);
@@ -129,7 +135,8 @@ public final class JeiStarter {
 			ingredientManager,
 			ingredientVisibility,
 			recipeTransferManager,
-			screenHelper
+			screenHelper,
+			languageTransformers
 		);
 		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration));
 

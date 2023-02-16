@@ -12,10 +12,13 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ILanguageTransformer;
 import mezz.jei.library.gui.BookmarkOverlayDummy;
 import mezz.jei.library.gui.IngredientListOverlayDummy;
 import mezz.jei.library.gui.recipes.RecipesGuiDummy;
 import mezz.jei.library.ingredients.IngredientFilterApiDummy;
+
+import java.util.Collection;
 
 public class RuntimeRegistration implements IRuntimeRegistration {
     private final IRecipeManager recipeManager;
@@ -25,6 +28,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
     private final IIngredientVisibility ingredientVisibility;
     private final IRecipeTransferManager recipeTransferManager;
     private final IScreenHelper screenHelper;
+    private final Collection<ILanguageTransformer> languageTransformers;
 
     private IIngredientListOverlay ingredientListOverlay = IngredientListOverlayDummy.INSTANCE;
     private IBookmarkOverlay bookmarkOverlay = BookmarkOverlayDummy.INSTANCE;
@@ -38,7 +42,8 @@ public class RuntimeRegistration implements IRuntimeRegistration {
         IIngredientManager ingredientManager,
         IIngredientVisibility ingredientVisibility,
         IRecipeTransferManager recipeTransferManager,
-        IScreenHelper screenHelper
+        IScreenHelper screenHelper,
+        Collection<ILanguageTransformer> languageTransformers
     ) {
         this.recipeManager = recipeManager;
         this.jeiHelpers = jeiHelpers;
@@ -47,6 +52,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
         this.ingredientVisibility = ingredientVisibility;
         this.recipeTransferManager = recipeTransferManager;
         this.screenHelper = screenHelper;
+        this.languageTransformers = languageTransformers;
     }
 
     @Override
@@ -102,6 +108,11 @@ public class RuntimeRegistration implements IRuntimeRegistration {
     @Override
     public IEditModeConfig getEditModeConfig() {
         return this.editModeConfig;
+    }
+
+    @Override
+    public Collection<ILanguageTransformer> getLanguageTransformers() {
+        return languageTransformers;
     }
 
     public IIngredientListOverlay getIngredientListOverlay() {
