@@ -1,5 +1,6 @@
 package mezz.jei.gui.config;
 
+import mezz.jei.core.config.file.FileWatcher;
 import mezz.jei.gui.util.HorizontalAlignment;
 import mezz.jei.core.config.file.ConfigSchemaBuilder;
 import mezz.jei.core.config.file.IConfigSchema;
@@ -26,8 +27,8 @@ public class JeiClientConfigs implements IJeiClientConfigs {
 		schema = builder.build();
 	}
 
-	public void register() {
-		schema.register();
+	public void register(FileWatcher fileWatcher) {
+		schema.register(fileWatcher);
 	}
 
 	@Override
