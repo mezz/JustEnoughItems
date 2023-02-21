@@ -52,7 +52,7 @@ public class ConfigSchema implements IConfigSchema {
     }
 
     @Override
-    public void register() {
+    public void register(FileWatcher fileWatcher) {
         if (!Files.exists(path)) {
             try {
                 ConfigSerializer.save(path, categories.values());
@@ -61,13 +61,6 @@ public class ConfigSchema implements IConfigSchema {
             }
         }
 
-        try {
-            Map<Path, Runnable> callbacks = Map.of(path, this::onFileChanged);
-            FileWatcher fileWatcher = new FileWatcher(callbacks);
-            Thread thread = new Thread(fileWatcher::run, "JEI Config file watcher");
-            thread.start();
-        } catch (IOException e) {
-            LOGGER.error("Failed to create FileWatcher Thread for config file: '{}'", path, e);
-        }
+        fileWatcher.addCallback(path, this::onFileChanged);
     }
 }

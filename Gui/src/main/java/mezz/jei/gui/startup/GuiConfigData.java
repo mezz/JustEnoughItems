@@ -1,5 +1,6 @@
 package mezz.jei.gui.startup;
 
+import mezz.jei.core.config.file.FileWatcher;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
 import mezz.jei.common.platform.Services;
@@ -16,10 +17,10 @@ public record GuiConfigData(
     ModNameSortingConfig modNameSortingConfig,
     IngredientTypeSortingConfig ingredientTypeSortingConfig
 ) {
-    public static GuiConfigData create() {
+    public static GuiConfigData create(FileWatcher fileWatcher) {
         Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
         JeiClientConfigs jeiClientConfigs = new JeiClientConfigs(configDir.resolve("jei-client.ini"));
-        jeiClientConfigs.register();
+        jeiClientConfigs.register(fileWatcher);
 
         IBookmarkConfig bookmarkConfig = new BookmarkConfig(configDir);
         ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(configDir.resolve("ingredient-list-mod-sort-order.ini"));
