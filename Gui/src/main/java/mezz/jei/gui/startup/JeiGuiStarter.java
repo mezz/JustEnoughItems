@@ -18,6 +18,7 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.gui.config.IClientConfig;
@@ -59,7 +60,7 @@ import java.util.List;
 public class JeiGuiStarter {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static JeiEventHandlers start(IRuntimeRegistration registration) {
+    public static JeiEventHandlers start(IRuntimeRegistration registration, FileWatcher fileWatcher) {
         LOGGER.info("Starting JEI GUI");
         LoggedTimer timer = new LoggedTimer();
 
@@ -86,7 +87,8 @@ public class JeiGuiStarter {
         timer.stop();
 
         timer.start("Building ingredient filter");
-        GuiConfigData configData = GuiConfigData.create();
+        GuiConfigData configData = GuiConfigData.create(fileWatcher);
+
         ModNameSortingConfig modNameSortingConfig = configData.modNameSortingConfig();
         IngredientTypeSortingConfig ingredientTypeSortingConfig = configData.ingredientTypeSortingConfig();
         IWorldConfig worldConfig = Internal.getWorldConfig();

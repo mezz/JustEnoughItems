@@ -13,6 +13,7 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.util.LoggedTimer;
@@ -47,6 +48,7 @@ public final class JeiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final StartData data;
+	private final FileWatcher fileWatcher = new FileWatcher("JEI Library Config file watcher");
 
 	public JeiStarter(StartData data) {
 		ErrorUtil.checkNotEmpty(data.plugins(), "plugins");
@@ -73,15 +75,17 @@ public final class JeiStarter {
 
 		IConfigSchemaBuilder debugFileBuilder = new ConfigSchemaBuilder(configDir.resolve("jei-debug.ini"));
 		DebugConfig.create(debugFileBuilder);
-		debugFileBuilder.build().register();
+		debugFileBuilder.build().register(fileWatcher);
 
 		IConfigSchemaBuilder modFileBuilder = new ConfigSchemaBuilder(configDir.resolve("jei-mod-id-format.ini"));
 		ModIdFormatConfig modIdFormatConfig = new ModIdFormatConfig(modFileBuilder);
-		modFileBuilder.build().register();
+		modFileBuilder.build().register(fileWatcher);
 
 		IConfigSchemaBuilder colorFileBuilder = new ConfigSchemaBuilder(configDir.resolve("jei-colors.ini"));
 		ColorNameConfig colorNameConfig = new ColorNameConfig(colorFileBuilder);
-		colorFileBuilder.build().register();
+		colorFileBuilder.build().register(fileWatcher);
+
+		fileWatcher.start();
 
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
 
@@ -158,5 +162,6 @@ public final class JeiStarter {
 		LOGGER.info("Stopping JEI");
 		List<IModPlugin> plugins = data.plugins();
 		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
+		fileWatcher.reset();
 	}
 }
