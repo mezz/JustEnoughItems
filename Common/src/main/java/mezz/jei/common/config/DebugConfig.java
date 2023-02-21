@@ -15,6 +15,7 @@ public final class DebugConfig {
 	}
 
 	private final Supplier<Boolean> debugModeEnabled;
+	private final Supplier<Boolean> debugInputsEnabled;
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
 		IConfigCategoryBuilder advanced = schema.addCategory("debug");
@@ -23,6 +24,11 @@ public final class DebugConfig {
 			false,
 			"Debug mode enabled"
 		);
+		debugInputsEnabled = advanced.addBoolean(
+			"DebugInputs",
+			false,
+			"Debug inputs enabled"
+		);
 	}
 
 	public static boolean isDebugModeEnabled() {
@@ -30,5 +36,12 @@ public final class DebugConfig {
 			return false;
 		}
 		return instance.debugModeEnabled.get();
+	}
+
+	public static boolean isDebugInputsEnabled() {
+		if (instance == null) {
+			return false;
+		}
+		return instance.debugInputsEnabled.get();
 	}
 }

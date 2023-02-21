@@ -24,7 +24,7 @@ public class UserInputRouter {
     }
 
     public boolean handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-        if (DebugConfig.isDebugModeEnabled()) {
+        if (DebugConfig.isDebugInputsEnabled()) {
             LOGGER.debug("Received user input: {}", input);
         }
         return switch (input.getClickState()) {
@@ -42,14 +42,14 @@ public class UserInputRouter {
     private boolean handleImmediateClick(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
         IUserInputHandler oldClick = this.pending.remove(input.getKey());
         if (oldClick != null) {
-            if (DebugConfig.isDebugModeEnabled()) {
+            if (DebugConfig.isDebugInputsEnabled()) {
                 LOGGER.debug("Canceled previous user input: {}", oldClick);
             }
         }
 
         return this.combinedInputHandler.handleUserInput(screen, input, keyBindings)
             .map(callback -> {
-                if (DebugConfig.isDebugModeEnabled()) {
+                if (DebugConfig.isDebugInputsEnabled()) {
                     LOGGER.debug("Immediate click handled by: {}\n{}", callback, input);
                 }
                 return true;
@@ -68,7 +68,7 @@ public class UserInputRouter {
     private boolean handleSimulateClick(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
         IUserInputHandler oldClick = this.pending.remove(input.getKey());
         if (oldClick != null) {
-            if (DebugConfig.isDebugModeEnabled()) {
+            if (DebugConfig.isDebugInputsEnabled()) {
                 LOGGER.debug("Canceled pending user input: {}", oldClick);
             }
         }
@@ -76,7 +76,7 @@ public class UserInputRouter {
         return this.combinedInputHandler.handleUserInput(screen, input, keyBindings)
             .map(callback -> {
                 this.pending.put(input.getKey(), callback);
-                if (DebugConfig.isDebugModeEnabled()) {
+                if (DebugConfig.isDebugInputsEnabled()) {
                     LOGGER.debug("Click successfully simulated by: {}\n{}", callback, input);
                 }
                 return true;
@@ -88,7 +88,7 @@ public class UserInputRouter {
         return Optional.ofNullable(this.pending.remove(input.getKey()))
             .flatMap(inputHandler -> inputHandler.handleUserInput(screen, input, keyBindings))
             .map(callback -> {
-                if (DebugConfig.isDebugModeEnabled()) {
+                if (DebugConfig.isDebugInputsEnabled()) {
                     LOGGER.debug("Click successfully executed by: {}\n{}", callback, input);
                 }
                 return true;
@@ -97,7 +97,7 @@ public class UserInputRouter {
     }
 
     public void handleGuiChange() {
-        if (DebugConfig.isDebugModeEnabled()) {
+        if (DebugConfig.isDebugInputsEnabled()) {
             LOGGER.debug("The GUI has changed, clearing all pending clicks");
         }
         for (InputConstants.Key key : this.pending.keySet()) {
@@ -109,7 +109,7 @@ public class UserInputRouter {
     public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
         return this.combinedInputHandler.handleMouseScrolled(mouseX, mouseY, scrollDelta)
             .map(callback -> {
-                if (DebugConfig.isDebugModeEnabled()) {
+                if (DebugConfig.isDebugInputsEnabled()) {
                     LOGGER.debug("Scroll handled by: {}", callback);
                 }
                 return true;
