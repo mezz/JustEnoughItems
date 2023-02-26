@@ -10,6 +10,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableIngredient;
@@ -23,8 +24,9 @@ public class GuiHelper implements IGuiHelper {
 	private final IIngredientManager ingredientManager;
 	private final IDrawableStatic slotDrawable;
 
-	public GuiHelper(IIngredientManager ingredientManager, Textures textures) {
+	public GuiHelper(IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
+		Textures textures = Internal.getTextures();
 		this.slotDrawable = textures.getSlotDrawable();
 	}
 

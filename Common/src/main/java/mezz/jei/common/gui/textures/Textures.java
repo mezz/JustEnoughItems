@@ -185,4 +185,8 @@ public class Textures {
 	public IDrawableStatic getFlameIcon() {
 		return flameIcon;
 	}
+
+	public JeiSpriteUploader getSpriteUploader() {
+		return spriteUploader;
+	}
 }

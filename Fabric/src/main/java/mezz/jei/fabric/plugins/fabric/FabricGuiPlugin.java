@@ -5,7 +5,6 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.fabric.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
@@ -22,7 +21,6 @@ public class FabricGuiPlugin implements IModPlugin {
     private static @Nullable IJeiRuntime runtime;
 
     private final EventRegistration eventRegistration = new EventRegistration();
-    private final FileWatcher fileWatcher = new FileWatcher("JEI GUI Config file watcher");
 
     @Override
     public ResourceLocation getPluginUid() {
@@ -31,9 +29,8 @@ public class FabricGuiPlugin implements IModPlugin {
 
     @Override
     public void registerRuntime(IRuntimeRegistration registration) {
-        JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, fileWatcher);
+        JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
         eventRegistration.setEventHandlers(eventHandlers);
-        fileWatcher.start();
     }
 
     @Override
@@ -46,7 +43,6 @@ public class FabricGuiPlugin implements IModPlugin {
         runtime = null;
         LOGGER.info("Stopping JEI GUI");
         eventRegistration.clear();
-        fileWatcher.reset();
     }
 
     public static Optional<IJeiRuntime> getRuntime() {

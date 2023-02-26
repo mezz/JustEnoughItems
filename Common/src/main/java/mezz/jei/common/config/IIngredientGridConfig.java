@@ -1,8 +1,8 @@
-package mezz.jei.gui.config;
+package mezz.jei.common.config;
 
-import mezz.jei.gui.util.HorizontalAlignment;
-import mezz.jei.gui.overlay.options.NavigationVisibility;
-import mezz.jei.gui.util.VerticalAlignment;
+import mezz.jei.common.util.HorizontalAlignment;
+import mezz.jei.common.util.NavigationVisibility;
+import mezz.jei.common.util.VerticalAlignment;
 
 public interface IIngredientGridConfig {
 	int getMaxColumns();

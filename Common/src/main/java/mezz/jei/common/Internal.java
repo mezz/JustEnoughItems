@@ -1,11 +1,15 @@
 package mezz.jei.common;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.common.config.WorldConfig;
+import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.ClientToggleState;
+import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.config.IWorldConfig;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureManager;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -19,19 +23,22 @@ public final class Internal {
 	@Nullable
 	private static IInternalKeyMappings keyMappings;
 	@Nullable
-	private static IWorldConfig worldConfig;
+	private static IClientToggleState toggleState;
+	@Nullable
+	private static IJeiClientConfigs jeiClientConfigs;
 
 	private Internal() {
 
 	}
 
 	public static Textures getTextures() {
-		Preconditions.checkState(textures != null, "Textures has not been created yet.");
+		if (textures == null) {
+			Minecraft minecraft = Minecraft.getInstance();
+			TextureManager textureManager = minecraft.getTextureManager();
+			JeiSpriteUploader spriteUploader = new JeiSpriteUploader(textureManager);
+			textures = new Textures(spriteUploader);
+		}
 		return textures;
-	}
-
-	public static void setTextures(Textures textures) {
-		Internal.textures = textures;
 	}
 
 	public static IConnectionToServer getServerConnection() {
@@ -52,10 +59,19 @@ public final class Internal {
 		Internal.keyMappings = keyMappings;
 	}
 
-	public static IWorldConfig getWorldConfig() {
-		if (worldConfig == null) {
-			worldConfig = new WorldConfig();
+	public static IClientToggleState getClientToggleState() {
+		if (toggleState == null) {
+			toggleState = new ClientToggleState();
 		}
-		return worldConfig;
+		return toggleState;
+	}
+
+	public static IJeiClientConfigs getJeiClientConfigs() {
+		Preconditions.checkState(jeiClientConfigs != null, "Jei Client Configs have not been created yet.");
+		return jeiClientConfigs;
+	}
+
+	public static void setJeiClientConfigs(IJeiClientConfigs jeiClientConfigs) {
+		Internal.jeiClientConfigs = jeiClientConfigs;
 	}
 }

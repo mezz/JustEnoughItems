@@ -12,8 +12,8 @@ import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.common.config.GiveMode;
-import mezz.jei.gui.config.IClientConfig;
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientToggleState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
@@ -26,20 +26,20 @@ import java.util.Optional;
 
 public class DeleteItemInputHandler implements IUserInputHandler {
 	private final IIngredientGrid ingredientGrid;
-	private final IWorldConfig worldConfig;
+	private final IClientToggleState toggleState;
 	private final IClientConfig clientConfig;
 	private final IConnectionToServer serverConnection;
 	private final CheatUtil cheatUtil;
 
 	public DeleteItemInputHandler(
 		IIngredientGrid ingredientGrid,
-		IWorldConfig worldConfig,
+		IClientToggleState toggleState,
 		IClientConfig clientConfig,
 		IConnectionToServer serverConnection,
 		CheatUtil cheatUtil
 	) {
 		this.ingredientGrid = ingredientGrid;
-		this.worldConfig = worldConfig;
+		this.toggleState = toggleState;
 		this.clientConfig = clientConfig;
 		this.serverConnection = serverConnection;
 		this.cheatUtil = cheatUtil;
@@ -82,7 +82,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 	}
 
 	public boolean shouldDeleteItemOnClick(Minecraft minecraft, double mouseX, double mouseY) {
-		if (!worldConfig.isCheatItemsEnabled() || !serverConnection.isJeiOnServer()) {
+		if (!toggleState.isCheatItemsEnabled() || !serverConnection.isJeiOnServer()) {
 			return false;
 		}
 		Player player = minecraft.player;

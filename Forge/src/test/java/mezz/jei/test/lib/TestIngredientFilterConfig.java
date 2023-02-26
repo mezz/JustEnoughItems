@@ -1,7 +1,7 @@
 package mezz.jei.test.lib;
 
 import mezz.jei.core.search.SearchMode;
-import mezz.jei.gui.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IIngredientFilterConfig;
 
 public class TestIngredientFilterConfig implements IIngredientFilterConfig {
 	@Override

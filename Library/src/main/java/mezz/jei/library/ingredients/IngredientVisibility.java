@@ -7,7 +7,7 @@ import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.Constants;
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.core.util.WeakList;
 import mezz.jei.library.config.EditModeConfig;
 import net.minecraft.resources.ResourceLocation;
@@ -16,19 +16,19 @@ import java.util.stream.Stream;
 
 public class IngredientVisibility implements IIngredientVisibility {
 	private final IngredientBlacklistInternal blacklist;
-	private final IWorldConfig worldConfig;
+	private final IClientToggleState toggleState;
 	private final IEditModeConfig editModeConfig;
 	private final IIngredientManager ingredientManager;
 	private final WeakList<IListener> listeners = new WeakList<>();
 
 	public IngredientVisibility(
 		IngredientBlacklistInternal blacklist,
-		IWorldConfig worldConfig,
+		IClientToggleState toggleState,
 		EditModeConfig editModeConfig,
 		IIngredientManager ingredientManager
 	) {
 		this.blacklist = blacklist;
-		this.worldConfig = worldConfig;
+		this.toggleState = toggleState;
 		this.editModeConfig = editModeConfig;
 		this.ingredientManager = ingredientManager;
 
@@ -62,7 +62,7 @@ public class IngredientVisibility implements IIngredientVisibility {
 		if (tags.anyMatch(Constants.HIDDEN_INGREDIENT_TAG::equals)) {
 			return false;
 		}
-		return worldConfig.isEditModeEnabled() || !editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient);
+		return toggleState.isEditModeEnabled() || !editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient);
 	}
 
 	@Override

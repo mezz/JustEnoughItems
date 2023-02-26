@@ -11,9 +11,9 @@ import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -49,27 +49,27 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	// data
 	private final BookmarkList bookmarkList;
-	private final IWorldConfig worldConfig;
+	private final IClientToggleState toggleState;
 
 	public BookmarkOverlay(
 		BookmarkList bookmarkList,
 		Textures textures,
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
-		IWorldConfig worldConfig,
+		IClientToggleState toggleState,
 		IScreenHelper screenHelper,
 		IConnectionToServer serverConnection,
 		IInternalKeyMappings keyBindings,
 		CheatUtil cheatUtil
 	) {
 		this.bookmarkList = bookmarkList;
-		this.worldConfig = worldConfig;
-		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, textures, worldConfig, keyBindings);
-		this.cheatInputHandler = new CheatInputHandler(this, worldConfig, clientConfig, serverConnection, cheatUtil);
+		this.toggleState = toggleState;
+		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, textures, toggleState, keyBindings);
+		this.cheatInputHandler = new CheatInputHandler(this, toggleState, clientConfig, serverConnection, cheatUtil);
 		this.contents = contents;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		bookmarkList.addSourceListChangedListener(() -> {
-			worldConfig.setBookmarkEnabled(!bookmarkList.isEmpty());
+			toggleState.setBookmarkEnabled(!bookmarkList.isEmpty());
 			Minecraft minecraft = Minecraft.getInstance();
 			Screen screen = minecraft.screen;
 			this.updateScreen(screen, null);
@@ -77,7 +77,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	public boolean isListDisplayed() {
-		return worldConfig.isBookmarkOverlayEnabled() &&
+		return toggleState.isBookmarkOverlayEnabled() &&
 			screenPropertiesCache.hasValidScreen() &&
 			contents.hasRoom() &&
 			!bookmarkList.isEmpty();

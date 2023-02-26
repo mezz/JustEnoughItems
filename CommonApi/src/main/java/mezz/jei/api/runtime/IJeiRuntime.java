@@ -106,6 +106,9 @@ public interface IJeiRuntime {
 	/**
 	 * Get the config manager, used for displaying or updating JEI's config files.
 	 *
+	 * If you need to get this config manager as soon as it is ready,
+	 * override {@link IModPlugin#onConfigManagerAvailable} instead of waiting for it to be available here.
+	 *
 	 * @since 12.1.0
 	 */
 	IJeiConfigManager getConfigManager();

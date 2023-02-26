@@ -5,7 +5,7 @@ import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
@@ -15,18 +15,18 @@ import java.util.Optional;
 
 public class EditInputHandler implements IUserInputHandler {
 	private final CombinedRecipeFocusSource focusSource;
-	private final IWorldConfig worldConfig;
+	private final IClientToggleState toggleState;
 	private final IEditModeConfig editModeConfig;
 
-	public EditInputHandler(CombinedRecipeFocusSource focusSource, IWorldConfig worldConfig, IEditModeConfig editModeConfig) {
+	public EditInputHandler(CombinedRecipeFocusSource focusSource, IClientToggleState toggleState, IEditModeConfig editModeConfig) {
 		this.focusSource = focusSource;
-		this.worldConfig = worldConfig;
+		this.toggleState = toggleState;
 		this.editModeConfig = editModeConfig;
 	}
 
 	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-		if (!worldConfig.isEditModeEnabled()) {
+		if (!toggleState.isEditModeEnabled()) {
 			return Optional.empty();
 		}
 

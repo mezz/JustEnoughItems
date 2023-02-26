@@ -1,12 +1,10 @@
-package mezz.jei.gui.config;
+package mezz.jei.common.config;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
-import mezz.jei.common.config.GiveMode;
-import mezz.jei.common.config.IngredientSortStage;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

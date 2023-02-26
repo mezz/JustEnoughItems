@@ -10,10 +10,10 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.PageNavigation;
-import mezz.jei.gui.config.IClientConfig;
-import mezz.jei.gui.config.IIngredientGridConfig;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -50,7 +50,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private final PageNavigation navigation;
 	private final IIngredientGridConfig gridConfig;
 	private final CheatUtil cheatUtil;
-	private final IWorldConfig worldConfig;
+	private final IClientToggleState toggleState;
 	private final IClientConfig clientConfig;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
@@ -65,7 +65,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	public IngredientGridWithNavigation(
 		IIngredientGridSource ingredientSource,
 		IngredientGrid ingredientGrid,
-		IWorldConfig worldConfig,
+		IClientToggleState toggleState,
 		IClientConfig clientConfig,
 		IConnectionToServer serverConnection,
 		IIngredientGridConfig gridConfig,
@@ -74,7 +74,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		Textures textures,
 		CheatUtil cheatUtil
 	) {
-		this.worldConfig = worldConfig;
+		this.toggleState = toggleState;
 		this.clientConfig = clientConfig;
 		this.ingredientGrid = ingredientGrid;
 		this.ingredientSource = ingredientSource;
@@ -245,7 +245,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public IUserInputHandler createInputHandler() {
 		return new CombinedInputHandler(
-			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.worldConfig, this.clientConfig, this.commandUtil, this.cheatUtil, this::isMouseOver),
+			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.toggleState, this.clientConfig, this.commandUtil, this.cheatUtil, this::isMouseOver),
 			this.ingredientGrid.getInputHandler(),
 			this.navigation.createInputHandler()
 		);
@@ -347,7 +347,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private static class UserInputHandler implements IUserInputHandler {
 		private final IngredientGridPaged paged;
 		private final IRecipeFocusSource focusSource;
-		private final IWorldConfig worldConfig;
+		private final IClientToggleState toggleState;
 		private final IClientConfig clientConfig;
 		private final UserInput.MouseOverable mouseOverable;
 		private final CommandUtil commandUtil;
@@ -356,14 +356,14 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		private UserInputHandler(
 			IngredientGridPaged paged,
 			IRecipeFocusSource focusSource,
-			IWorldConfig worldConfig,
+			IClientToggleState toggleState,
 			IClientConfig clientConfig,
 			CommandUtil commandUtil,
 			CheatUtil cheatUtil, UserInput.MouseOverable mouseOverable
 		) {
 			this.paged = paged;
 			this.focusSource = focusSource;
-			this.worldConfig = worldConfig;
+			this.toggleState = toggleState;
 			this.clientConfig = clientConfig;
 			this.mouseOverable = mouseOverable;
 			this.commandUtil = commandUtil;
@@ -406,7 +406,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		 */
 		protected Optional<IUserInputHandler> checkHotbarKeys(Screen screen, UserInput input) {
 			if (!clientConfig.isCheatToHotbarUsingHotkeysEnabled() ||
-				!this.worldConfig.isCheatItemsEnabled() ||
+				!this.toggleState.isCheatItemsEnabled() ||
 				screen instanceof RecipesGui
 			) {
 				return Optional.empty();

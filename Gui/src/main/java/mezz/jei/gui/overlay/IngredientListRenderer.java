@@ -9,7 +9,7 @@ import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientToggleState;
 import net.minecraft.client.gui.GuiComponent;
 
 import java.util.ArrayList;
@@ -23,14 +23,14 @@ public class IngredientListRenderer {
 	private final List<IngredientListSlot> slots = new ArrayList<>();
 	private final ElementRenderersByType renderers = new ElementRenderersByType();
 	private final IEditModeConfig editModeConfig;
-	private final IWorldConfig worldConfig;
+	private final IClientToggleState toggleState;
 	private final IIngredientManager ingredientManager;
 
 	private int blocked = 0;
 
-	public IngredientListRenderer(IEditModeConfig editModeConfig, IWorldConfig worldConfig, IIngredientManager ingredientManager) {
+	public IngredientListRenderer(IEditModeConfig editModeConfig, IClientToggleState toggleState, IIngredientManager ingredientManager) {
 		this.editModeConfig = editModeConfig;
-		this.worldConfig = worldConfig;
+		this.toggleState = toggleState;
 		this.ingredientManager = ingredientManager;
 	}
 
@@ -99,7 +99,7 @@ public class IngredientListRenderer {
 		ITypedIngredient<T> typedIngredient = slot.getTypedIngredient();
 		ImmutableRect2i area = slot.getArea();
 		int slotPadding = slot.getPadding();
-		if (worldConfig.isEditModeEnabled()) {
+		if (toggleState.isEditModeEnabled()) {
 			renderEditMode(poseStack, area, slotPadding, editModeConfig, typedIngredient);
 			RenderSystem.enableBlend();
 		}

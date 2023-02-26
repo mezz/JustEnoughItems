@@ -1,4 +1,4 @@
-package mezz.jei.gui.overlay.options;
+package mezz.jei.common.util;
 
 public enum NavigationVisibility {
 	ENABLED, AUTO_HIDE, DISABLED

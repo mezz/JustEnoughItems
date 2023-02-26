@@ -11,9 +11,9 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.IngredientTooltipHelper;
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.core.search.SearchMode;
-import mezz.jei.gui.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IIngredientFilterConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -25,7 +25,7 @@ import java.util.stream.StreamSupport;
 public final class IngredientGridTooltipHelper {
 	private final IIngredientManager ingredientManager;
 	private final IIngredientFilterConfig ingredientFilterConfig;
-	private final IWorldConfig worldConfig;
+	private final IClientToggleState toggleState;
 	private final IModIdHelper modIdHelper;
 	private final IInternalKeyMappings keyBindings;
 	private final IColorHelper colorHelper;
@@ -33,14 +33,14 @@ public final class IngredientGridTooltipHelper {
 	public IngredientGridTooltipHelper(
 		IIngredientManager ingredientManager,
 		IIngredientFilterConfig ingredientFilterConfig,
-		IWorldConfig worldConfig,
+		IClientToggleState toggleState,
 		IModIdHelper modIdHelper,
 		IInternalKeyMappings keyBindings,
 		IColorHelper colorHelper
 	) {
 		this.ingredientManager = ingredientManager;
 		this.ingredientFilterConfig = ingredientFilterConfig;
-		this.worldConfig = worldConfig;
+		this.toggleState = toggleState;
 		this.modIdHelper = modIdHelper;
 		this.keyBindings = keyBindings;
 		this.colorHelper = colorHelper;
@@ -64,7 +64,7 @@ public final class IngredientGridTooltipHelper {
 			addColorSearchInfoToTooltip(tooltip, ingredient, ingredientHelper);
 		}
 
-		if (worldConfig.isEditModeEnabled()) {
+		if (toggleState.isEditModeEnabled()) {
 			addEditModeInfoToTooltip(tooltip, keyBindings);
 		}
 

@@ -17,16 +17,15 @@ import net.minecraft.server.packs.PackType;
 public class JustEnoughItemsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		IServerConfig serverConfig = ServerConfig.getInstance();
+		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(serverConfig);
+
 		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.register((resourceManager, textureManager) -> {
-			JeiSpriteUploader spriteUploader = new JeiSpriteUploader(textureManager);
+			Textures textures = Internal.getTextures();
+			JeiSpriteUploader spriteUploader = textures.getSpriteUploader();
 			resourceManager.registerReloadListener(new JeiIdentifiableResourceReloadListener("sprite_uploader", spriteUploader));
 
-			Textures textures = new Textures(spriteUploader);
-			Internal.setTextures(textures);
-
 			ClientLifecycleEvents.CLIENT_STARTED.register(event -> {
-				IServerConfig serverConfig = ServerConfig.getInstance();
-				ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(textures, serverConfig);
 				clientLifecycleHandler.registerEvents();
 
 				ResourceManagerHelper.get(PackType.SERVER_DATA)

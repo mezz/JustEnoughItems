@@ -2,15 +2,13 @@ package mezz.jei.fabric.startup;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
-import mezz.jei.gui.config.InternalKeyMappings;
-import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.network.ClientPacketRouter;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.config.IServerConfig;
-import mezz.jei.common.config.IWorldConfig;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
 import mezz.jei.fabric.network.ClientNetworkHandler;
 import mezz.jei.fabric.network.ConnectionToServer;
+import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.minecraft.client.Minecraft;
@@ -26,21 +24,19 @@ public class ClientLifecycleHandler {
 	private final JeiStarter jeiStarter;
 	private boolean running;
 
-	public ClientLifecycleHandler(Textures textures, IServerConfig serverConfig) {
+	public ClientLifecycleHandler(IServerConfig serverConfig) {
 		IConnectionToServer serverConnection = new ConnectionToServer();
 		Internal.setServerConnection(serverConnection);
 
 		InternalKeyMappings keyMappings = new InternalKeyMappings(keyMapping -> {});
 		Internal.setKeyMappings(keyMappings);
 
-		IWorldConfig worldConfig = Internal.getWorldConfig();
-		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig, worldConfig);
+		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig);
 		ClientNetworkHandler.registerClientPacketHandler(packetRouter);
 
 		List<IModPlugin> plugins = FabricPluginFinder.getModPlugins();
 		StartData startData = new StartData(
 			plugins,
-			textures,
 			serverConnection,
 			keyMappings
 		);

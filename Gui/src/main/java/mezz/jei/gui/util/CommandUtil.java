@@ -6,7 +6,7 @@ import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.common.config.GiveMode;
-import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.common.config.IClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;

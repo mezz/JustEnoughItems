@@ -31,8 +31,6 @@ public class ConfigSchema implements IConfigSchema {
         this.categories = categoryBuilders.stream()
             .map(b -> b.build(this))
             .toList();
-
-        ConfigManager.INSTANCE.registerConfigFile(this);
     }
 
     @Override
@@ -55,12 +53,13 @@ public class ConfigSchema implements IConfigSchema {
     }
 
     @Override
-    public void register(FileWatcher fileWatcher) {
+    public void register(FileWatcher fileWatcher, ConfigManager configManager) {
         if (!Files.exists(path)) {
             save();
         }
 
         fileWatcher.addCallback(path, this::onFileChanged);
+        configManager.registerConfigFile(this);
     }
 
     private void save() {

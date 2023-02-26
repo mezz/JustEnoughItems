@@ -1,6 +1,6 @@
 package mezz.jei.common.config;
 
-public class WorldConfig implements IWorldConfig {
+public class ClientToggleState implements IClientToggleState {
 	private boolean overlayEnabled = true;
 	private boolean cheatItemsEnabled = false;
 	private boolean editModeEnabled = false;

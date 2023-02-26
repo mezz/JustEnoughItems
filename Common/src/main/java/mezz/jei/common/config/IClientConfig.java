@@ -1,7 +1,4 @@
-package mezz.jei.gui.config;
-
-import mezz.jei.common.config.GiveMode;
-import mezz.jei.common.config.IngredientSortStage;
+package mezz.jei.common.config;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package mezz.jei.common.config;
 
-public interface IWorldConfig {
+public interface IClientToggleState {
 	boolean isOverlayEnabled();
 
 	void toggleOverlayEnabled();
