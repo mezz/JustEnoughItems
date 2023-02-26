@@ -1,9 +1,10 @@
 package mezz.jei.common.network.packets.handlers;
 
+import mezz.jei.common.Internal;
 import mezz.jei.common.network.ClientPacketContext;
 import mezz.jei.common.util.ChatUtil;
 import mezz.jei.common.config.IServerConfig;
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientToggleState;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 
@@ -40,8 +41,8 @@ public class ClientCheatPermissionHandler {
                 }
             }
 
-            IWorldConfig worldConfig = context.worldConfig();
-            worldConfig.setCheatItemsEnabled(false);
+            IClientToggleState toggleState = Internal.getClientToggleState();
+            toggleState.setCheatItemsEnabled(false);
             player.closeContainer();
         }
     }

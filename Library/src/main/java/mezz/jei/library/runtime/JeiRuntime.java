@@ -16,7 +16,6 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
-import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.ingredients.TypedIngredient;
 
@@ -31,6 +30,7 @@ public class JeiRuntime implements IJeiRuntime {
 	private final IJeiKeyMappings keyMappings;
 	private final IJeiHelpers jeiHelpers;
 	private final IScreenHelper screenHelper;
+	private final IJeiConfigManager configManager;
 	private final IIngredientListOverlay ingredientListOverlay;
 	private final IBookmarkOverlay bookmarkOverlay;
 	private final IRecipesGui recipesGui;
@@ -48,7 +48,8 @@ public class JeiRuntime implements IJeiRuntime {
 		IIngredientListOverlay ingredientListOverlay,
 		IBookmarkOverlay bookmarkOverlay,
 		IRecipesGui recipesGui,
-		IIngredientFilter ingredientFilter
+		IIngredientFilter ingredientFilter,
+		IJeiConfigManager configManager
 	) {
 		this.recipeManager = recipeManager;
 		this.recipeTransferManager = recipeTransferManager;
@@ -62,6 +63,7 @@ public class JeiRuntime implements IJeiRuntime {
 		this.keyMappings = keyMappings;
 		this.jeiHelpers = jeiHelpers;
 		this.screenHelper = screenHelper;
+		this.configManager = configManager;
 	}
 
 	@SuppressWarnings("removal")
@@ -137,6 +139,6 @@ public class JeiRuntime implements IJeiRuntime {
 
 	@Override
 	public IJeiConfigManager getConfigManager() {
-		return ConfigManager.INSTANCE;
+		return configManager;
 	}
 }

@@ -7,7 +7,7 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.input.UserInput;
@@ -26,24 +26,24 @@ import java.util.function.BooleanSupplier;
 public class ConfigButton extends GuiIconToggleButton {
 	private final IInternalKeyMappings keyBindings;
 
-	public static ConfigButton create(BooleanSupplier isListDisplayed, IWorldConfig worldConfig, Textures textures, IInternalKeyMappings keyBindings) {
-		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), isListDisplayed, worldConfig, textures, keyBindings);
+	public static ConfigButton create(BooleanSupplier isListDisplayed, IClientToggleState toggleState, Textures textures, IInternalKeyMappings keyBindings) {
+		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), isListDisplayed, toggleState, textures, keyBindings);
 	}
 
 	private final BooleanSupplier isListDisplayed;
-	private final IWorldConfig worldConfig;
+	private final IClientToggleState toggleState;
 
-	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, BooleanSupplier isListDisplayed, IWorldConfig worldConfig, Textures textures, IInternalKeyMappings keyBindings) {
+	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, BooleanSupplier isListDisplayed, IClientToggleState toggleState, Textures textures, IInternalKeyMappings keyBindings) {
 		super(disabledIcon, enabledIcon, textures);
 		this.isListDisplayed = isListDisplayed;
-		this.worldConfig = worldConfig;
+		this.toggleState = toggleState;
 		this.keyBindings = keyBindings;
 	}
 
 	@Override
 	protected void getTooltips(List<Component> tooltip) {
 		tooltip.add(Component.translatable("jei.tooltip.config"));
-		if (!worldConfig.isOverlayEnabled()) {
+		if (!toggleState.isOverlayEnabled()) {
 			MutableComponent disabled = Component.translatable("jei.tooltip.ingredient.list.disabled");
 			MutableComponent disabledFix = Component.translatable(
 				"jei.tooltip.ingredient.list.disabled.how.to.fix",
@@ -55,7 +55,7 @@ public class ConfigButton extends GuiIconToggleButton {
 			MutableComponent notEnoughSpace = Component.translatable("jei.tooltip.not.enough.space");
 			tooltip.add(notEnoughSpace.withStyle(ChatFormatting.GOLD));
 		}
-		if (worldConfig.isCheatItemsEnabled()) {
+		if (toggleState.isCheatItemsEnabled()) {
 			MutableComponent enabled = Component.translatable("jei.tooltip.cheat.mode.button.enabled")
 				.withStyle(ChatFormatting.RED);
 			tooltip.add(enabled);
@@ -78,16 +78,16 @@ public class ConfigButton extends GuiIconToggleButton {
 
 	@Override
 	protected boolean isIconToggledOn() {
-		return worldConfig.isCheatItemsEnabled();
+		return toggleState.isCheatItemsEnabled();
 	}
 
 	@Override
 	protected boolean onMouseClicked(UserInput input) {
-		if (worldConfig.isOverlayEnabled()) {
+		if (toggleState.isOverlayEnabled()) {
 			if (!input.isSimulate()) {
 				if (input.is(keyBindings.getToggleCheatModeConfigButton())) {
-					worldConfig.toggleCheatItemsEnabled();
-					if (worldConfig.isCheatItemsEnabled()) {
+					toggleState.toggleCheatItemsEnabled();
+					if (toggleState.isCheatItemsEnabled()) {
 						IConnectionToServer serverConnection = Internal.getServerConnection();
 						serverConnection.sendPacketToServer(new PacketRequestCheatPermission());
 					}

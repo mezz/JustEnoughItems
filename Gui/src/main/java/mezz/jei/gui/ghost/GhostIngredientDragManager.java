@@ -9,7 +9,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.UserInput;
@@ -29,7 +29,7 @@ public class GhostIngredientDragManager {
 	private final IRecipeFocusSource source;
 	private final IScreenHelper screenHelper;
 	private final IIngredientManager ingredientManager;
-	private final IWorldConfig worldConfig;
+	private final IClientToggleState toggleState;
 	private final List<GhostIngredientReturning<?>> ghostIngredientsReturning = new ArrayList<>();
 	@Nullable
 	private GhostIngredientDrag<?> ghostIngredientDrag;
@@ -42,12 +42,12 @@ public class GhostIngredientDragManager {
 		IRecipeFocusSource source,
 		IScreenHelper screenHelper,
 		IIngredientManager ingredientManager,
-		IWorldConfig worldConfig
+		IClientToggleState toggleState
 	) {
 		this.source = source;
 		this.screenHelper = screenHelper;
 		this.ingredientManager = ingredientManager;
-		this.worldConfig = worldConfig;
+		this.toggleState = toggleState;
 	}
 
 	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
@@ -88,7 +88,7 @@ public class GhostIngredientDragManager {
 						);
 				}
 			}
-			if (this.hoveredTargetAreas != null && !worldConfig.isCheatItemsEnabled()) {
+			if (this.hoveredTargetAreas != null && !toggleState.isCheatItemsEnabled()) {
 				GhostIngredientDrag.drawTargets(poseStack, mouseX, mouseY, this.hoveredTargetAreas);
 			}
 		}

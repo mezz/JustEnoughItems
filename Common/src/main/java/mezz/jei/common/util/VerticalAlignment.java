@@ -1,4 +1,4 @@
-package mezz.jei.gui.util;
+package mezz.jei.common.util;
 
 public enum VerticalAlignment {
 	TOP, CENTER, BOTTOM

@@ -11,9 +11,9 @@ import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.GuiProperties;
-import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.input.GuiTextFieldFilter;
@@ -48,7 +48,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final GuiIconToggleButton configButton;
 	private final IngredientGridWithNavigation contents;
 	private final IClientConfig clientConfig;
-	private final IWorldConfig worldConfig;
+	private final IClientToggleState toggleState;
 	private final IConnectionToServer serverConnection;
 	private final GuiTextFieldFilter searchField;
 	private final IInternalKeyMappings keyBindings;
@@ -61,7 +61,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IScreenHelper screenHelper,
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
-		IWorldConfig worldConfig,
+		IClientToggleState toggleState,
 		IConnectionToServer serverConnection,
 		Textures textures,
 		IInternalKeyMappings keyBindings,
@@ -70,7 +70,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		this.contents = contents;
 		this.clientConfig = clientConfig;
-		this.worldConfig = worldConfig;
+		this.toggleState = toggleState;
 		this.serverConnection = serverConnection;
 
 		this.searchField = new GuiTextFieldFilter(textures);
@@ -87,13 +87,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			updateScreen(screen, null);
 		});
 
-		this.configButton = ConfigButton.create(this::isListDisplayed, worldConfig, textures, keyBindings);
+		this.configButton = ConfigButton.create(this::isListDisplayed, toggleState, textures, keyBindings);
 	}
 
 	@Override
 	public boolean isListDisplayed() {
 		// if there is no key binding to toggle it, force the overlay to display if possible
-		return (worldConfig.isOverlayEnabled() || keyBindings.getToggleOverlay().isUnbound()) &&
+		return (toggleState.isOverlayEnabled() || keyBindings.getToggleOverlay().isUnbound()) &&
 			screenPropertiesCache.hasValidScreen() &&
 			contents.hasRoom();
 	}
@@ -211,7 +211,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			this.searchField.createInputHandler(),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler(),
-			new CheatInputHandler(this.contents, worldConfig, clientConfig, serverConnection, cheatUtil)
+			new CheatInputHandler(this.contents, toggleState, clientConfig, serverConnection, cheatUtil)
 		);
 
 		final IUserInputHandler configButtonInputHandler = this.configButton.createInputHandler();

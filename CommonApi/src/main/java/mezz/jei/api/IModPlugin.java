@@ -2,6 +2,7 @@ package mezz.jei.api;
 
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.registration.IRuntimeRegistration;
+import mezz.jei.api.runtime.config.IJeiConfigManager;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.registration.IAdvancedRegistration;
@@ -114,17 +115,26 @@ public interface IModPlugin {
 	}
 
 	/**
-	 * Called when jei's runtime features are available, after all mods have registered.
+	 * Called when JEI's runtime features are available, after all mods have registered.
 	 */
 	default void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 
 	}
 
 	/**
-	 * Called when jei's runtime features are no longer available, after a user quits or logs out of a world.
+	 * Called when JEI's runtime features are no longer available, after a user quits or logs out of a world.
 	 * @since 11.5.0
 	 */
 	default void onRuntimeUnavailable() {
+
+	}
+
+	/**
+	 * Called when JEI's configs are available.
+	 * This is called early on, as soon as configs are available.
+	 * @since 11.8.0
+	 */
+	default void onConfigManagerAvailable(IJeiConfigManager configManager) {
 
 	}
 }

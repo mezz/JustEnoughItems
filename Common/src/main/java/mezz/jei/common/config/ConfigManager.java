@@ -11,11 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigManager implements IJeiConfigManager {
-    public static final ConfigManager INSTANCE = new ConfigManager();
-
     private final Map<Path, IJeiConfigFile> configFiles = new HashMap<>();
 
-    private ConfigManager() {
+    public ConfigManager() {
 
     }
 

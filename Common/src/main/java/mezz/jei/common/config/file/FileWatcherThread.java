@@ -42,7 +42,7 @@ public class FileWatcherThread extends Thread {
 
     private final Map<WatchKey, Path> watchedDirectories = new HashMap<>();
     private final Set<Path> changedPaths = new HashSet<>();
-    private long lastDirectoryCheckTime = 0;
+    private long nextDirectoryCheckTime = System.currentTimeMillis();
 
     /**
      * @param name the name of the new thread
@@ -64,7 +64,7 @@ public class FileWatcherThread extends Thread {
     public synchronized void addCallback(Path path, Runnable callback) {
         this.callbacks.put(path, callback);
         if (this.directoriesToWatch.add(path.getParent())) {
-            this.lastDirectoryCheckTime = 0;
+            this.nextDirectoryCheckTime = System.currentTimeMillis();
         }
     }
 
@@ -72,50 +72,36 @@ public class FileWatcherThread extends Thread {
     public void run() {
         try (watchService) {
             while (!Thread.currentThread().isInterrupted()) {
-                synchronized (this) {
-                    runIteration();
-                }
+                runIteration();
             }
         } catch (InterruptedException consumed) {
             LOGGER.info("FileWatcher was interrupted, stopping.");
         } catch (IOException e) {
             LOGGER.error("FileWatcher encountered an unhandled IOException, stopping.", e);
         } finally {
-            synchronized (this) {
-                watchedDirectories
-                    .keySet()
-                    .forEach(WatchKey::cancel);
-            }
+            watchedDirectories
+                .keySet()
+                .forEach(WatchKey::cancel);
         }
     }
 
     private void runIteration() throws InterruptedException {
         long time = System.currentTimeMillis();
-        if (time > lastDirectoryCheckTime + recheckDirectoriesMs) {
-            lastDirectoryCheckTime = time;
+        if (time > nextDirectoryCheckTime) {
+            nextDirectoryCheckTime = time + recheckDirectoriesMs;
             watchDirectories();
         }
 
-        if (changedPaths.isEmpty()) {
-            // There are no changes yet.
-            // Just block and wait for some changes.
-            WatchKey watchKey = watchService.take();
-            if (watchKey != null) {
-                pollWatchKey(watchKey);
-            }
+        // Collect as many changes as we can, and notify the callbacks when we stop getting new changes.
+        WatchKey watchKey = watchService.poll(quietTimeMs, TimeUnit.MILLISECONDS);
+        if (watchKey != null) {
+            pollWatchKey(watchKey);
         } else {
-            // We have some detected some changes already.
-            // Collect more changes, or notify the callbacks if there are no new changes.
-            WatchKey watchKey = watchService.poll(quietTimeMs, TimeUnit.MILLISECONDS);
-            if (watchKey != null) {
-                pollWatchKey(watchKey);
-            } else {
-                notifyChanges();
-            }
+            notifyChanges();
         }
     }
 
-    private void pollWatchKey(WatchKey watchKey) throws InterruptedException {
+    private synchronized void pollWatchKey(WatchKey watchKey) throws InterruptedException {
         Path watchedDirectory = watchedDirectories.get(watchKey);
         if (watchedDirectory == null) {
             return;
@@ -147,7 +133,7 @@ public class FileWatcherThread extends Thread {
         }
     }
 
-    private void notifyChanges() {
+    private synchronized void notifyChanges() {
         if (changedPaths.isEmpty()) {
             return;
         }
@@ -169,7 +155,7 @@ public class FileWatcherThread extends Thread {
         runThread.start();
     }
 
-    private void watchDirectories() {
+    private synchronized void watchDirectories() {
         for (Path directory : directoriesToWatch) {
             if (Thread.currentThread().isInterrupted()) {
                 return;

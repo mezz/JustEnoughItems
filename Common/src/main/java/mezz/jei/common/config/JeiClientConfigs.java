@@ -1,10 +1,10 @@
-package mezz.jei.gui.config;
+package mezz.jei.common.config;
 
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
+import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.config.file.IConfigSchema;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
-import mezz.jei.common.config.file.FileWatcher;
-import mezz.jei.gui.util.HorizontalAlignment;
+import mezz.jei.common.util.HorizontalAlignment;
 
 import java.nio.file.Path;
 
@@ -27,8 +27,8 @@ public class JeiClientConfigs implements IJeiClientConfigs {
 		schema = builder.build();
 	}
 
-	public void register(FileWatcher fileWatcher) {
-		schema.register(fileWatcher);
+	public void register(FileWatcher fileWatcher, ConfigManager configManager) {
+		schema.register(fileWatcher, configManager);
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import java.nio.file.Path;
 public class FileWatcher {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private @Nullable FileWatcherThread thread;
+    private final @Nullable FileWatcherThread thread;
 
     public FileWatcher(String threadName) {
         this.thread = createThread(threadName);
@@ -33,39 +33,13 @@ public class FileWatcher {
      */
     public void addCallback(Path path, Runnable callback) {
         if (thread != null) {
-            this.thread.addCallback(path, callback);
+            thread.addCallback(path, callback);
         }
     }
 
-    /**
-     * Start the file watcher thread
-     */
     public void start() {
         if (thread != null) {
-            this.thread.start();
+            thread.start();
         }
-    }
-
-    /**
-     * Stop the file watcher thread and clear all callbacks.
-     */
-    public void reset() {
-        if (this.thread == null) {
-            return;
-        }
-
-        String threadName = this.thread.getName();
-        this.thread.interrupt();
-        try {
-            this.thread.join(1000);
-        } catch (InterruptedException consumed) {
-            Thread.currentThread().interrupt();
-        }
-
-        if (this.thread.isAlive()) {
-            LOGGER.error("File Watcher thread could not be stopped and will be abandoned.");
-        }
-
-        this.thread = createThread(threadName);
     }
 }

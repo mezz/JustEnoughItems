@@ -1,8 +1,8 @@
 package mezz.jei.test.lib;
 
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientToggleState;
 
-public class TestWorldConfig implements IWorldConfig {
+public class TestClientToggleState implements IClientToggleState {
 	@Override
 	public boolean isOverlayEnabled() {
 		return true;

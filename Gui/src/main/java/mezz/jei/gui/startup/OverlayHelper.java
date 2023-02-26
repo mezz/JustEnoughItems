@@ -9,11 +9,11 @@ import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.gui.config.IClientConfig;
-import mezz.jei.gui.config.IIngredientFilterConfig;
-import mezz.jei.gui.config.IIngredientGridConfig;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.gui.overlay.IngredientGrid;
@@ -36,7 +36,7 @@ public final class OverlayHelper {
         IEditModeConfig editModeConfig,
         IIngredientFilterConfig ingredientFilterConfig,
         IClientConfig clientConfig,
-        IWorldConfig worldConfig,
+        IClientToggleState toggleState,
         IConnectionToServer serverConnection,
         Textures textures,
         IColorHelper colorHelper,
@@ -49,7 +49,7 @@ public final class OverlayHelper {
             editModeConfig,
             ingredientFilterConfig,
             clientConfig,
-            worldConfig,
+            toggleState,
             modIdHelper,
             serverConnection,
             keyMappings,
@@ -60,7 +60,7 @@ public final class OverlayHelper {
         return new IngredientGridWithNavigation(
             ingredientFilter,
             ingredientListGrid,
-            worldConfig,
+            toggleState,
             clientConfig,
             serverConnection,
             ingredientGridConfig,
@@ -82,7 +82,7 @@ public final class OverlayHelper {
         IInternalKeyMappings keyMappings,
         IIngredientGridConfig ingredientGridConfig,
         IClientConfig clientConfig,
-        IWorldConfig worldConfig,
+        IClientToggleState toggleState,
         IEditModeConfig editModeConfig,
         IConnectionToServer serverConnection,
         IIngredientFilterConfig ingredientFilterConfig,
@@ -101,7 +101,7 @@ public final class OverlayHelper {
             editModeConfig,
             ingredientFilterConfig,
             clientConfig,
-            worldConfig,
+            toggleState,
             serverConnection,
             textures,
             colorHelper,
@@ -115,7 +115,7 @@ public final class OverlayHelper {
             screenHelper,
             ingredientListGridNavigation,
             clientConfig,
-            worldConfig,
+            toggleState,
             serverConnection,
             textures,
             keyMappings,
@@ -133,7 +133,7 @@ public final class OverlayHelper {
         IEditModeConfig editModeConfig,
         IIngredientFilterConfig ingredientFilterConfig,
         IClientConfig clientConfig,
-        IWorldConfig worldConfig,
+        IClientToggleState toggleState,
         IConnectionToServer serverConnection,
         Textures textures,
         IColorHelper colorHelper,
@@ -150,7 +150,7 @@ public final class OverlayHelper {
             editModeConfig,
             ingredientFilterConfig,
             clientConfig,
-            worldConfig,
+            toggleState,
             serverConnection,
             textures,
             colorHelper,
@@ -162,7 +162,7 @@ public final class OverlayHelper {
             textures,
             bookmarkListGridNavigation,
             clientConfig,
-            worldConfig,
+            toggleState,
             screenHelper,
             serverConnection,
             keyMappings,

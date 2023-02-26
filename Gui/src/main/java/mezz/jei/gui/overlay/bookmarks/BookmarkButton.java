@@ -8,7 +8,7 @@ import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.config.IClientToggleState;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -16,22 +16,22 @@ import net.minecraft.network.chat.MutableComponent;
 import java.util.List;
 
 public class BookmarkButton extends GuiIconToggleButton {
-	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, Textures textures, IWorldConfig worldConfig, IInternalKeyMappings keyBindings) {
+	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, Textures textures, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
 		IDrawableStatic offIcon = textures.getBookmarkButtonDisabledIcon();
 		IDrawableStatic onIcon = textures.getBookmarkButtonEnabledIcon();
-		return new BookmarkButton(offIcon, onIcon, textures, bookmarkOverlay, bookmarkList, worldConfig, keyBindings);
+		return new BookmarkButton(offIcon, onIcon, textures, bookmarkOverlay, bookmarkList, toggleState, keyBindings);
 	}
 
 	private final BookmarkOverlay bookmarkOverlay;
 	private final BookmarkList bookmarkList;
-	private final IWorldConfig worldConfig;
+	private final IClientToggleState toggleState;
 	private final IInternalKeyMappings keyBindings;
 
-	private BookmarkButton(IDrawable offIcon, IDrawable onIcon, Textures textures, BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IWorldConfig worldConfig, IInternalKeyMappings keyBindings) {
+	private BookmarkButton(IDrawable offIcon, IDrawable onIcon, Textures textures, BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
 		super(offIcon, onIcon, textures);
 		this.bookmarkOverlay = bookmarkOverlay;
 		this.bookmarkList = bookmarkList;
-		this.worldConfig = worldConfig;
+		this.toggleState = toggleState;
 		this.keyBindings = keyBindings;
 	}
 
@@ -63,7 +63,7 @@ public class BookmarkButton extends GuiIconToggleButton {
 	protected boolean onMouseClicked(UserInput input) {
 		if (!bookmarkList.isEmpty() && bookmarkOverlay.hasRoom()) {
 			if (!input.isSimulate()) {
-				worldConfig.toggleBookmarkEnabled();
+				toggleState.toggleBookmarkEnabled();
 			}
 			return true;
 		}

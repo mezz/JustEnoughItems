@@ -1,9 +1,8 @@
 package mezz.jei.common.network;
 
+import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.network.packets.IClientPacketHandler;
 import mezz.jei.common.network.packets.PacketCheatPermission;
-import mezz.jei.common.config.IServerConfig;
-import mezz.jei.common.config.IWorldConfig;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import org.apache.logging.log4j.LogManager;
@@ -18,12 +17,10 @@ public class ClientPacketRouter {
 	public final EnumMap<PacketIdClient, IClientPacketHandler> clientHandlers = new EnumMap<>(PacketIdClient.class);
 	private final IConnectionToServer connection;
 	private final IServerConfig serverConfig;
-	private final IWorldConfig worldConfig;
 
-	public ClientPacketRouter(IConnectionToServer connection, IServerConfig serverConfig, IWorldConfig worldConfig) {
+	public ClientPacketRouter(IConnectionToServer connection, IServerConfig serverConfig) {
 		this.connection = connection;
 		this.serverConfig = serverConfig;
-		this.worldConfig = worldConfig;
 		clientHandlers.put(PacketIdClient.CHEAT_PERMISSION, PacketCheatPermission::readPacketData);
 	}
 
@@ -31,7 +28,7 @@ public class ClientPacketRouter {
 		getPacketId(packetBuffer)
 			.ifPresent(packetId -> {
 				IClientPacketHandler packetHandler = clientHandlers.get(packetId);
-				ClientPacketContext context = new ClientPacketContext(player, connection, serverConfig, worldConfig);
+				ClientPacketContext context = new ClientPacketContext(player, connection, serverConfig);
 				ClientPacketData data = new ClientPacketData(packetBuffer, context);
 				try {
 					packetHandler.readPacketData(data)

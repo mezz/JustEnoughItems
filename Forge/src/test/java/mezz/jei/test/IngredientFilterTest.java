@@ -8,8 +8,8 @@ import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.util.Translator;
-import mezz.jei.common.config.IWorldConfig;
-import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.ingredients.IIngredientSorter;
@@ -30,7 +30,7 @@ import mezz.jei.test.lib.TestIngredientFilterConfig;
 import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
-import mezz.jei.test.lib.TestWorldConfig;
+import mezz.jei.test.lib.TestClientToggleState;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
@@ -80,11 +80,11 @@ public class IngredientFilterTest {
 
 		this.editModeConfig = new EditModeConfig(new NullSerializer(), ingredientManager);
 
-		IWorldConfig worldConfig = new TestWorldConfig();
+		IClientToggleState toggleState = new TestClientToggleState();
 
 		TestIngredientFilterConfig ingredientFilterConfig = new TestIngredientFilterConfig();
 		IIngredientSorter ingredientListSorter = (a, b) -> Comparator.comparing(IListElementInfo::getModNameForSorting);
-		this.ingredientVisibility = new IngredientVisibility(blacklist, worldConfig, editModeConfig, ingredientManager);
+		this.ingredientVisibility = new IngredientVisibility(blacklist, toggleState, editModeConfig, ingredientManager);
 		this.filterTextSource = new FilterTextSource();
 		this.ingredientFilter = new IngredientFilter(
 			filterTextSource,

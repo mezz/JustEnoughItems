@@ -1,4 +1,4 @@
-package mezz.jei.gui.config;
+package mezz.jei.common.config;
 
 import mezz.jei.core.search.SearchMode;
 

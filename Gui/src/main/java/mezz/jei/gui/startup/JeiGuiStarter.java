@@ -13,18 +13,17 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
-import mezz.jei.common.config.IWorldConfig;
-import mezz.jei.common.config.file.FileWatcher;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.config.IBookmarkConfig;
-import mezz.jei.gui.config.IClientConfig;
-import mezz.jei.gui.config.IIngredientFilterConfig;
-import mezz.jei.gui.config.IIngredientGridConfig;
-import mezz.jei.gui.config.IJeiClientConfigs;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
 import mezz.jei.gui.events.GuiEventHandler;
@@ -60,7 +59,7 @@ import java.util.List;
 public class JeiGuiStarter {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static JeiEventHandlers start(IRuntimeRegistration registration, FileWatcher fileWatcher) {
+    public static JeiEventHandlers start(IRuntimeRegistration registration) {
         LOGGER.info("Starting JEI GUI");
         LoggedTimer timer = new LoggedTimer();
 
@@ -87,14 +86,14 @@ public class JeiGuiStarter {
         timer.stop();
 
         timer.start("Building ingredient filter");
-        GuiConfigData configData = GuiConfigData.create(fileWatcher);
+        GuiConfigData configData = GuiConfigData.create();
 
         ModNameSortingConfig modNameSortingConfig = configData.modNameSortingConfig();
         IngredientTypeSortingConfig ingredientTypeSortingConfig = configData.ingredientTypeSortingConfig();
-        IWorldConfig worldConfig = Internal.getWorldConfig();
+        IClientToggleState toggleState = Internal.getClientToggleState();
         IBookmarkConfig bookmarkConfig = configData.bookmarkConfig();
 
-        IJeiClientConfigs jeiClientConfigs = configData.jeiClientConfigs();
+        IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
         IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
         IIngredientGridConfig ingredientListConfig = jeiClientConfigs.getIngredientListConfig();
         IIngredientGridConfig bookmarkListConfig = jeiClientConfigs.getBookmarkListConfig();
@@ -134,7 +133,7 @@ public class JeiGuiStarter {
             keyMappings,
             ingredientListConfig,
             clientConfig,
-            worldConfig,
+            toggleState,
             editModeConfig,
             serverConnection,
             ingredientFilterConfig,
@@ -157,7 +156,7 @@ public class JeiGuiStarter {
             editModeConfig,
             ingredientFilterConfig,
             clientConfig,
-            worldConfig,
+            toggleState,
             serverConnection,
             textures,
             colorHelper,
@@ -195,12 +194,12 @@ public class JeiGuiStarter {
         );
 
         UserInputRouter userInputRouter = new UserInputRouter(
-            new EditInputHandler(recipeFocusSource, worldConfig, editModeConfig),
+            new EditInputHandler(recipeFocusSource, toggleState, editModeConfig),
             ingredientListOverlay.createInputHandler(),
             bookmarkOverlay.createInputHandler(),
             new FocusInputHandler(recipeFocusSource, recipesGui, focusFactory),
             new BookmarkInputHandler(recipeFocusSource, bookmarkList),
-            new GlobalInputHandler(worldConfig),
+            new GlobalInputHandler(toggleState),
             new GuiAreaInputHandler(screenHelper, recipesGui, focusFactory)
         );
 
