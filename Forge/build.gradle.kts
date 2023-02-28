@@ -1,5 +1,6 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.darkhax.curseforgegradle.Constants as CFG_Constants
+import java.net.URI;
 
 plugins {
 	java
@@ -57,6 +58,15 @@ java {
 	withSourcesJar()
 }
 
+repositories {
+	maven {
+		url = URI.create("https://cursemaven.com")
+		content {
+			includeGroup("curse.maven")
+		}
+	}
+}
+
 dependencies {
 	"minecraft"(
 		group = "net.minecraftforge",
@@ -76,6 +86,9 @@ dependencies {
 		name = "junit-jupiter-engine",
 		version = jUnitVersion
 	)
+
+	// https://www.curseforge.com/minecraft/mc-mods/configured/files/4011355
+	runtimeOnly(fg.deobf("curse.maven:configured-457570:4011355"))
 }
 
 minecraft {
