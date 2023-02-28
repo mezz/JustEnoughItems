@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final int minNumRows = 1;
-	private static final int defaultNumRows = 16;
+	private static final int defaultNumRows = 48;
 	private static final int largestNumRows = 100;
 
 	private static final int minNumColumns = 4;
