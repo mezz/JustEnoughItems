@@ -6,7 +6,7 @@ import mezz.jei.gui.config.ModNameSortingConfig;
 import mezz.jei.common.platform.Services;
 import mezz.jei.gui.config.BookmarkConfig;
 import mezz.jei.gui.config.IBookmarkConfig;
-import mezz.jei.gui.config.IJeiClientConfigs;
+import mezz.jei.core.config.IJeiClientConfigs;
 import mezz.jei.gui.config.JeiClientConfigs;
 
 import java.nio.file.Path;

@@ -1,4 +1,4 @@
-package mezz.jei.gui.config;
+package mezz.jei.core.config;
 
 public interface IJeiClientConfigs {
     IClientConfig getClientConfig();

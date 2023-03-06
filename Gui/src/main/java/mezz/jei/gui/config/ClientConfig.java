@@ -1,6 +1,7 @@
 package mezz.jei.gui.config;
 
 import com.google.common.base.Preconditions;
+import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.file.IConfigCategoryBuilder;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;
 import mezz.jei.core.config.file.serializers.EnumSerializer;

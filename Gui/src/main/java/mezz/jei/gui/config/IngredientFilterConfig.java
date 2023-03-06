@@ -1,5 +1,6 @@
 package mezz.jei.gui.config;
 
+import mezz.jei.core.config.IIngredientFilterConfig;
 import mezz.jei.core.config.file.IConfigCategoryBuilder;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;
 import mezz.jei.core.search.SearchMode;

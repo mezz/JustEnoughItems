@@ -6,7 +6,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.config.IIngredientFilterConfig;
+import mezz.jei.core.config.IIngredientFilterConfig;
 import mezz.jei.common.util.Translator;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;

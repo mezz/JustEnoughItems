@@ -1,4 +1,4 @@
-package mezz.jei.gui.config;
+package mezz.jei.core.config;
 
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IngredientSortStage;

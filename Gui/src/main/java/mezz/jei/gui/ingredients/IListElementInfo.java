@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.config.IIngredientFilterConfig;
+import mezz.jei.core.config.IIngredientFilterConfig;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Unmodifiable;
 

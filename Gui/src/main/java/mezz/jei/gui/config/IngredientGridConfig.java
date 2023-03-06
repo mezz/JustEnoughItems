@@ -1,8 +1,9 @@
 package mezz.jei.gui.config;
 
-import mezz.jei.gui.util.HorizontalAlignment;
-import mezz.jei.gui.overlay.options.NavigationVisibility;
-import mezz.jei.gui.util.VerticalAlignment;
+import mezz.jei.core.config.IIngredientGridConfig;
+import mezz.jei.core.util.gui.HorizontalAlignment;
+import mezz.jei.core.util.gui.NavigationVisibility;
+import mezz.jei.core.util.gui.VerticalAlignment;
 import mezz.jei.core.config.file.IConfigCategoryBuilder;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;
 

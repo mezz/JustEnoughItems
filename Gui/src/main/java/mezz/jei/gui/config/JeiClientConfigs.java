@@ -1,7 +1,11 @@
 package mezz.jei.gui.config;
 
+import mezz.jei.core.config.IClientConfig;
+import mezz.jei.core.config.IIngredientFilterConfig;
+import mezz.jei.core.config.IIngredientGridConfig;
+import mezz.jei.core.config.IJeiClientConfigs;
 import mezz.jei.core.config.file.FileWatcher;
-import mezz.jei.gui.util.HorizontalAlignment;
+import mezz.jei.core.util.gui.HorizontalAlignment;
 import mezz.jei.core.config.file.ConfigSchemaBuilder;
 import mezz.jei.core.config.file.IConfigSchema;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;
