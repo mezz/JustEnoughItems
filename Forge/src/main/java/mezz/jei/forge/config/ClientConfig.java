@@ -5,7 +5,10 @@ import mezz.jei.api.config.IClientConfig;
 import mezz.jei.api.config.IngredientSortStage;
 import net.minecraftforge.common.ForgeConfigSpec;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ClientConfig implements IClientConfig {
@@ -15,7 +18,7 @@ public class ClientConfig implements IClientConfig {
     private final ForgeConfigSpec.BooleanValue addBookmarksToFront;
     private final ForgeConfigSpec.EnumValue<GiveMode> giveMode;
     private final ForgeConfigSpec.IntValue maxRecipeGuiHeight;
-    private final ForgeConfigSpec.ConfigValue<List<? extends IngredientSortStage>> ingredientSorterStages;
+    private final ForgeConfigSpec.ConfigValue<List<? extends String>> ingredientSorterStages;
 
     public ClientConfig(ForgeConfigSpec.Builder builder) {
         builder.push("advanced");
@@ -23,7 +26,7 @@ public class ClientConfig implements IClientConfig {
             builder.comment("Display search bar in the center");
             centerSearch = builder.define("center_search", defaultCenterSearchBar);
 
-            builder.comment("LowMemorySlowSearchEnabled");
+            builder.comment("Set low-memory mode (makes search very slow, but uses less RAM)");
             lowMemorySearch = builder.define("low_memory_search", false);
 
             builder.comment("Enable cheating items into the hotbar by using the shift+number keys.");
@@ -47,11 +50,16 @@ public class ClientConfig implements IClientConfig {
 
         builder.push("sorting");
         {
-            builder.comment("Sorting order for the ingredient list");
+            var commentValues = Arrays.stream(IngredientSortStage.values())
+                    .map(Enum::name)
+                    .collect(Collectors.joining(", "));
+
+            builder.comment("Sorting order for the ingredient list.",
+                    "Valid values: " + commentValues);
             ingredientSorterStages = builder.defineListAllowEmpty(
                     List.of("ingredient_sort_stages"),
-                    () -> IngredientSortStage.defaultStages,
-                    obj -> IngredientSortStage.isValidName(obj.toString())
+                    () -> IngredientSortStage.defaultStagesNames,
+                    obj -> obj instanceof String str && IngredientSortStage.isValidName(str)
             );
         }
         builder.pop();
@@ -89,6 +97,6 @@ public class ClientConfig implements IClientConfig {
 
     @Override
     public Stream<IngredientSortStage> getIngredientSorterStages() {
-        return ingredientSorterStages.get().stream().map(stage -> (IngredientSortStage) stage);
+        return ingredientSorterStages.get().stream().map(IngredientSortStage::valueOf);
     }
 }
