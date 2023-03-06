@@ -1,5 +1,7 @@
 package mezz.jei.core.search;
 
+import mezz.jei.api.config.SearchMode;
+
 import java.util.Collection;
 import java.util.Set;
 

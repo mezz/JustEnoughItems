@@ -1,8 +1,7 @@
 package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.core.config.IngredientSortStage;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.api.config.IClientConfig;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
 

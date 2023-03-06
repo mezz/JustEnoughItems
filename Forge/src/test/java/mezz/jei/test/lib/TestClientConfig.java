@@ -1,10 +1,9 @@
 package mezz.jei.test.lib;
 
-import mezz.jei.core.config.GiveMode;
-import mezz.jei.core.config.IngredientSortStage;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.api.config.GiveMode;
+import mezz.jei.api.config.IngredientSortStage;
+import mezz.jei.api.config.IClientConfig;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 public class TestClientConfig implements IClientConfig {

@@ -1,8 +1,8 @@
-package mezz.jei.core.config;
+package mezz.jei.api.config;
 
-import mezz.jei.core.util.gui.HorizontalAlignment;
-import mezz.jei.core.util.gui.NavigationVisibility;
-import mezz.jei.core.util.gui.VerticalAlignment;
+import mezz.jei.api.config.gui.HorizontalAlignment;
+import mezz.jei.api.config.gui.NavigationVisibility;
+import mezz.jei.api.config.gui.VerticalAlignment;
 
 public interface IIngredientGridConfig {
 	 int minNumRows = 1;

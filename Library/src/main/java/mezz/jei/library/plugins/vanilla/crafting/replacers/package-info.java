@@ -2,6 +2,6 @@
 @FieldsAndMethodsAreNonnullByDefault
 package mezz.jei.library.plugins.vanilla.crafting.replacers;
 
-import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
+import mezz.jei.api.FieldsAndMethodsAreNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

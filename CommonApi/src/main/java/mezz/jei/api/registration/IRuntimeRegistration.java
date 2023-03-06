@@ -1,5 +1,6 @@
 package mezz.jei.api.registration;
 
+import mezz.jei.api.config.IClientConfigs;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
@@ -88,4 +89,7 @@ public interface IRuntimeRegistration {
      * This is used by JEI's GUI and can be used by other mods that want to use the same information from JEI.
      */
     IEditModeConfig getEditModeConfig();
+
+    // TODO: docs
+    IClientConfigs getClientConfigs();
 }

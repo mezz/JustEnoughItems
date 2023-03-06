@@ -1,15 +1,15 @@
 package mezz.jei.forge.config;
 
-import mezz.jei.core.config.IClientConfig;
-import mezz.jei.core.config.IIngredientFilterConfig;
-import mezz.jei.core.config.IIngredientGridConfig;
-import mezz.jei.core.config.IJeiClientConfigs;
-import mezz.jei.core.util.gui.HorizontalAlignment;
+import mezz.jei.api.config.IClientConfig;
+import mezz.jei.api.config.IIngredientFilterConfig;
+import mezz.jei.api.config.IIngredientGridConfig;
+import mezz.jei.api.config.IClientConfigs;
+import mezz.jei.api.config.gui.HorizontalAlignment;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 
-public class ClientConfigs implements IJeiClientConfigs {
+public class ClientConfigs implements IClientConfigs {
     private final IClientConfig clientConfig;
     private final IIngredientFilterConfig ingredientFilterConfig;
     private final IIngredientGridConfig ingredientListConfig;

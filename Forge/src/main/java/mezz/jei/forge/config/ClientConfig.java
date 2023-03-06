@@ -1,8 +1,8 @@
 package mezz.jei.forge.config;
 
-import mezz.jei.core.config.GiveMode;
-import mezz.jei.core.config.IClientConfig;
-import mezz.jei.core.config.IngredientSortStage;
+import mezz.jei.api.config.GiveMode;
+import mezz.jei.api.config.IClientConfig;
+import mezz.jei.api.config.IngredientSortStage;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.List;
@@ -51,7 +51,7 @@ public class ClientConfig implements IClientConfig {
             ingredientSorterStages = builder.defineListAllowEmpty(
                     List.of("ingredient_sort_stages"),
                     () -> IngredientSortStage.defaultStages,
-                    obj -> obj instanceof IngredientSortStage
+                    obj -> IngredientSortStage.isValidName(obj.toString())
             );
         }
         builder.pop();

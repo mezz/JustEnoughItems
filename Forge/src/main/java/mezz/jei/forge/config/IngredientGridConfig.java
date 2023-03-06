@@ -1,9 +1,9 @@
 package mezz.jei.forge.config;
 
-import mezz.jei.core.config.IIngredientGridConfig;
-import mezz.jei.core.util.gui.HorizontalAlignment;
-import mezz.jei.core.util.gui.NavigationVisibility;
-import mezz.jei.core.util.gui.VerticalAlignment;
+import mezz.jei.api.config.IIngredientGridConfig;
+import mezz.jei.api.config.gui.HorizontalAlignment;
+import mezz.jei.api.config.gui.NavigationVisibility;
+import mezz.jei.api.config.gui.VerticalAlignment;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class IngredientGridConfig implements IIngredientGridConfig {

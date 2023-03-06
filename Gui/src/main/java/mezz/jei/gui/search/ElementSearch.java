@@ -5,7 +5,7 @@ import mezz.jei.core.search.ISearchStorage;
 import mezz.jei.core.search.ISearchable;
 import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.core.search.PrefixedSearchable;
-import mezz.jei.core.search.SearchMode;
+import mezz.jei.api.config.SearchMode;
 import mezz.jei.gui.ingredients.IListElementInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

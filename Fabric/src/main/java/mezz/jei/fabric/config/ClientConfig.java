@@ -1,13 +1,13 @@
 package mezz.jei.fabric.config;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.api.config.IClientConfig;
 import mezz.jei.core.config.file.IConfigCategoryBuilder;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;
 import mezz.jei.core.config.file.serializers.EnumSerializer;
 import mezz.jei.core.config.file.serializers.ListSerializer;
-import mezz.jei.core.config.GiveMode;
-import mezz.jei.core.config.IngredientSortStage;
+import mezz.jei.api.config.GiveMode;
+import mezz.jei.api.config.IngredientSortStage;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

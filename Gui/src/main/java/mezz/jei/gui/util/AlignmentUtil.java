@@ -2,8 +2,8 @@ package mezz.jei.gui.util;
 
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
-import mezz.jei.core.util.gui.HorizontalAlignment;
-import mezz.jei.core.util.gui.VerticalAlignment;
+import mezz.jei.api.config.gui.HorizontalAlignment;
+import mezz.jei.api.config.gui.VerticalAlignment;
 
 public class AlignmentUtil {
     public static ImmutableRect2i align(ImmutableSize2i size, ImmutableRect2i availableArea, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {

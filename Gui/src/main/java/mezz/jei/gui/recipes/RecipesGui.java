@@ -30,7 +30,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.gui.GuiProperties;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.api.config.IClientConfig;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;

@@ -1,4 +1,4 @@
-package mezz.jei.core.util.gui;
+package mezz.jei.api.config.gui;
 
 public enum HorizontalAlignment {
 	LEFT, CENTER, RIGHT

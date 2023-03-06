@@ -7,7 +7,7 @@ import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.platform.Services;
 import mezz.jei.core.config.file.FileWatcher;
-import mezz.jei.fabric.config.JeiClientConfigs;
+import mezz.jei.fabric.config.ClientConfigs;
 import mezz.jei.fabric.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
@@ -34,11 +34,13 @@ public class FabricGuiPlugin implements IModPlugin {
 
     @Override
     public void registerRuntime(IRuntimeRegistration registration) {
-        Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
-        JeiClientConfigs jeiClientConfigs = new JeiClientConfigs(configDir.resolve("jei-client.ini"));
-        jeiClientConfigs.register(fileWatcher);
 
-        JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, jeiClientConfigs);
+        var clientConfigs = registration.getClientConfigs();
+
+        // TODO: This is a hack. When proper config API will be used, this will not be needed.
+        ((ClientConfigs)clientConfigs).register(fileWatcher);
+
+        JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, clientConfigs);
         eventRegistration.setEventHandlers(eventHandlers);
         fileWatcher.start();
     }

@@ -18,13 +18,12 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.core.config.file.FileWatcher;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.config.IBookmarkConfig;
-import mezz.jei.core.config.IClientConfig;
-import mezz.jei.core.config.IIngredientFilterConfig;
-import mezz.jei.core.config.IIngredientGridConfig;
-import mezz.jei.core.config.IJeiClientConfigs;
+import mezz.jei.api.config.IClientConfig;
+import mezz.jei.api.config.IIngredientFilterConfig;
+import mezz.jei.api.config.IIngredientGridConfig;
+import mezz.jei.api.config.IClientConfigs;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
 import mezz.jei.gui.events.GuiEventHandler;
@@ -60,7 +59,7 @@ import java.util.List;
 public class JeiGuiStarter {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static JeiEventHandlers start(IRuntimeRegistration registration, IJeiClientConfigs configs) {
+    public static JeiEventHandlers start(IRuntimeRegistration registration, IClientConfigs configs) {
         LOGGER.info("Starting JEI GUI");
         LoggedTimer timer = new LoggedTimer();
 

@@ -1,9 +1,9 @@
 package mezz.jei.fabric.config;
 
-import mezz.jei.core.config.IIngredientFilterConfig;
+import mezz.jei.api.config.IIngredientFilterConfig;
 import mezz.jei.core.config.file.IConfigCategoryBuilder;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;
-import mezz.jei.core.search.SearchMode;
+import mezz.jei.api.config.SearchMode;
 
 import java.util.function.Supplier;
 

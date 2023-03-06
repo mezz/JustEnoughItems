@@ -1,18 +1,18 @@
 package mezz.jei.fabric.config;
 
-import mezz.jei.core.config.IClientConfig;
-import mezz.jei.core.config.IIngredientFilterConfig;
-import mezz.jei.core.config.IIngredientGridConfig;
-import mezz.jei.core.config.IJeiClientConfigs;
+import mezz.jei.api.config.IClientConfig;
+import mezz.jei.api.config.IIngredientFilterConfig;
+import mezz.jei.api.config.IIngredientGridConfig;
+import mezz.jei.api.config.IClientConfigs;
 import mezz.jei.core.config.file.FileWatcher;
-import mezz.jei.core.util.gui.HorizontalAlignment;
+import mezz.jei.api.config.gui.HorizontalAlignment;
 import mezz.jei.core.config.file.ConfigSchemaBuilder;
 import mezz.jei.core.config.file.IConfigSchema;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;
 
 import java.nio.file.Path;
 
-public class JeiClientConfigs implements IJeiClientConfigs {
+public class ClientConfigs implements IClientConfigs {
 	private final IClientConfig clientConfig;
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IIngredientGridConfig ingredientListConfig;
@@ -20,7 +20,7 @@ public class JeiClientConfigs implements IJeiClientConfigs {
 
 	private final IConfigSchema schema;
 
-	public JeiClientConfigs(Path configFile) {
+	public ClientConfigs(Path configFile) {
 		IConfigSchemaBuilder builder = new ConfigSchemaBuilder(configFile);
 
 		clientConfig = new ClientConfig(builder);

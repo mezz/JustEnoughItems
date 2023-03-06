@@ -5,17 +5,17 @@ import mezz.jei.gui.config.ModNameSortingConfig;
 import mezz.jei.common.platform.Services;
 import mezz.jei.gui.config.BookmarkConfig;
 import mezz.jei.gui.config.IBookmarkConfig;
-import mezz.jei.core.config.IJeiClientConfigs;
+import mezz.jei.api.config.IClientConfigs;
 
 import java.nio.file.Path;
 
 public record GuiConfigData(
-    IJeiClientConfigs jeiClientConfigs,
+    IClientConfigs jeiClientConfigs,
     IBookmarkConfig bookmarkConfig,
     ModNameSortingConfig modNameSortingConfig,
     IngredientTypeSortingConfig ingredientTypeSortingConfig
 ) {
-    public static GuiConfigData create(IJeiClientConfigs configs) {
+    public static GuiConfigData create(IClientConfigs configs) {
         Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
 
         IBookmarkConfig bookmarkConfig = new BookmarkConfig(configDir);

@@ -34,6 +34,7 @@ dependencies {
         name = "log4j-api",
         version = "2.17.0"
     )
+    implementation(project(mapOf("path" to ":CommonApi")))
     testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter-api",

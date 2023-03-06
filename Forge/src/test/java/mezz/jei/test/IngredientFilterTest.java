@@ -9,7 +9,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.util.Translator;
 import mezz.jei.core.config.IWorldConfig;
-import mezz.jei.core.config.IClientConfig;
+import mezz.jei.api.config.IClientConfig;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.ingredients.IIngredientSorter;
