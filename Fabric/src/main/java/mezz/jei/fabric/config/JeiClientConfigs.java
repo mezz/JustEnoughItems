@@ -1,4 +1,4 @@
-package mezz.jei.gui.config;
+package mezz.jei.fabric.config;
 
 import mezz.jei.core.config.IClientConfig;
 import mezz.jei.core.config.IIngredientFilterConfig;

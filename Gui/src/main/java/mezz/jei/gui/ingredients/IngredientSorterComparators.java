@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class IngredientSorterComparators {
 	private final IngredientFilter ingredientFilter;
@@ -38,8 +39,8 @@ public class IngredientSorterComparators {
 		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
 	}
 
-	public Comparator<IListElementInfo<?>> getComparator(List<IngredientSortStage> ingredientSorterStages) {
-		return ingredientSorterStages.stream()
+	public Comparator<IListElementInfo<?>> getComparator(Stream<IngredientSortStage> ingredientSorterStages) {
+		return ingredientSorterStages
 			.map(this::getComparator)
 			.reduce(Comparator::thenComparing)
 			.orElseGet(this::getDefault);

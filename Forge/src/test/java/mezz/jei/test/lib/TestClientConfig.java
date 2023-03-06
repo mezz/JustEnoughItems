@@ -5,6 +5,7 @@ import mezz.jei.core.config.IngredientSortStage;
 import mezz.jei.core.config.IClientConfig;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class TestClientConfig implements IClientConfig {
 	private final boolean lowMemorySlowSearchEnabled;
@@ -44,7 +45,7 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public List<IngredientSortStage> getIngredientSorterStages() {
-		return List.of();
+	public Stream<IngredientSortStage> getIngredientSorterStages() {
+		return Stream.empty();
 	}
 }

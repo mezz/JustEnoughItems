@@ -4,6 +4,7 @@ import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IngredientSortStage;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public interface IClientConfig {
     int minRecipeGuiHeight = 175;
@@ -22,5 +23,5 @@ public interface IClientConfig {
 
 	int getMaxRecipeGuiHeight();
 
-	List<IngredientSortStage> getIngredientSorterStages();
+	Stream<IngredientSortStage> getIngredientSorterStages();
 }

@@ -30,7 +30,7 @@ public final class IngredientSorter implements IIngredientSorter {
 	public void doPreSort(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
 		IngredientSorterComparators comparators = new IngredientSorterComparators(ingredientFilter, ingredientManager, this.modNameSortingConfig, this.ingredientTypeSortingConfig);
 
-		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
+		var ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
 
 		Comparator<IListElementInfo<?>> completeComparator = comparators.getComparator(ingredientSorterStages);
 

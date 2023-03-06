@@ -1,4 +1,4 @@
-package mezz.jei.gui.config;
+package mezz.jei.fabric.config;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.core.config.IClientConfig;
@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public final class ClientConfig implements IClientConfig {
 	@Nullable
@@ -111,7 +112,7 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public List<IngredientSortStage> getIngredientSorterStages() {
-		return ingredientSorterStages.get();
+	public Stream<IngredientSortStage> getIngredientSorterStages() {
+		return ingredientSorterStages.get().stream();
 	}
 }

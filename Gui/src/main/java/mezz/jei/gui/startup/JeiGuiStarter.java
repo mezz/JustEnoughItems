@@ -60,7 +60,7 @@ import java.util.List;
 public class JeiGuiStarter {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static JeiEventHandlers start(IRuntimeRegistration registration, FileWatcher fileWatcher) {
+    public static JeiEventHandlers start(IRuntimeRegistration registration, IJeiClientConfigs configs) {
         LOGGER.info("Starting JEI GUI");
         LoggedTimer timer = new LoggedTimer();
 
@@ -87,18 +87,17 @@ public class JeiGuiStarter {
         timer.stop();
 
         timer.start("Building ingredient filter");
-        GuiConfigData configData = GuiConfigData.create(fileWatcher);
+        GuiConfigData configData = GuiConfigData.create(configs);
 
         ModNameSortingConfig modNameSortingConfig = configData.modNameSortingConfig();
         IngredientTypeSortingConfig ingredientTypeSortingConfig = configData.ingredientTypeSortingConfig();
         IWorldConfig worldConfig = Internal.getWorldConfig();
         IBookmarkConfig bookmarkConfig = configData.bookmarkConfig();
 
-        IJeiClientConfigs jeiClientConfigs = configData.jeiClientConfigs();
-        IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-        IIngredientGridConfig ingredientListConfig = jeiClientConfigs.getIngredientListConfig();
-        IIngredientGridConfig bookmarkListConfig = jeiClientConfigs.getBookmarkListConfig();
-        IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
+        IClientConfig clientConfig = configs.getClientConfig();
+        IIngredientGridConfig ingredientListConfig = configs.getIngredientListConfig();
+        IIngredientGridConfig bookmarkListConfig = configs.getBookmarkListConfig();
+        IIngredientFilterConfig ingredientFilterConfig = configs.getIngredientFilterConfig();
 
         IIngredientSorter ingredientSorter = new IngredientSorter(
             clientConfig,

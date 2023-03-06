@@ -2,9 +2,6 @@ package mezz.jei.forge;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
-import mezz.jei.forge.config.ServerConfig;
-import mezz.jei.forge.config.ClientConfig;
-import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
@@ -15,6 +12,7 @@ import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.forge.network.NetworkHandler;
 import mezz.jei.forge.startup.ForgePluginFinder;
 import mezz.jei.forge.startup.StartEventObserver;
+import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.minecraft.client.KeyMapping;
@@ -22,7 +20,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.fml.ModLoadingContext;
 
 import java.util.HashSet;
 import java.util.List;
@@ -40,11 +37,7 @@ public class JustEnoughItemsClient {
 	}
 
 	public void register() {
-		ModLoadingContext modLoadingContext = ModLoadingContext.get();
-		/*IServerConfig serverConfig = */ClientConfig.register(modLoadingContext);
-
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
-
 	}
 
 	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event) {
