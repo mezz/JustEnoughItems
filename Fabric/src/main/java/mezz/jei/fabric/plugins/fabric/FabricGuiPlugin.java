@@ -5,7 +5,6 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.common.platform.Services;
 import mezz.jei.core.config.file.FileWatcher;
 import mezz.jei.fabric.config.ClientConfigs;
 import mezz.jei.fabric.startup.EventRegistration;
@@ -16,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Path;
 import java.util.Optional;
 
 @JeiPlugin
