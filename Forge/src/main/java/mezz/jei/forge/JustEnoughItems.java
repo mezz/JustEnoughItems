@@ -28,7 +28,7 @@ public class JustEnoughItems {
 		JustEnoughItemsCommon jeiCommon = new JustEnoughItemsCommon(networkHandler, serverConfig);
 		jeiCommon.register(subscriptions);
 
-		JustEnoughItemsClient jeiClient = new JustEnoughItemsClient(networkHandler, subscriptions, serverConfig);
-		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> jeiClient::register);
+		JustEnoughItemsClientSafeRunner clientSafeRunner = new JustEnoughItemsClientSafeRunner(networkHandler, subscriptions, serverConfig);
+		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> clientSafeRunner::registerClient);
 	}
 }
