@@ -39,5 +39,4 @@ public interface IListElementInfo<V> {
 	void setSortedIndex(int sortIndex);
 
 	int getSortedIndex();
-
 }

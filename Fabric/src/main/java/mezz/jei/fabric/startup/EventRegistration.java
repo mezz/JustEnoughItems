@@ -38,6 +38,10 @@ public class EventRegistration {
 		ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) ->
 			registerScreenEvents(screen)
 		);
+		Screen currentScreen = Minecraft.getInstance().screen;
+		if (currentScreen != null) {
+			registerScreenEvents(currentScreen);
+		}
 		JeiCharTypedEvents.BEFORE_CHAR_TYPED.register(this::beforeCharTyped);
 		ScreenEvents.AFTER_INIT.register(this::afterInit);
 		JeiScreenEvents.AFTER_RENDER_BACKGROUND.register(this::afterRenderBackground);

@@ -6,8 +6,8 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.util.Translator;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.util.Translator;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -168,5 +168,4 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	public int getSortedIndex() {
 		return sortedIndex;
 	}
-
 }

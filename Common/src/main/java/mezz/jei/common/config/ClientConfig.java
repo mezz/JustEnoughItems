@@ -17,6 +17,8 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> centerSearchBarEnabled;
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
+	private final Supplier<Boolean> asyncLoadingEnabled;
+	private final Supplier<Boolean> parallelPluginLoadingEnabled;
 	private final Supplier<Boolean> addBookmarksToFront;
 	private final Supplier<Boolean> lookupFluidContents;
 	private final Supplier<GiveMode> giveMode;
@@ -64,6 +66,16 @@ public final class ClientConfig implements IClientConfig {
 			Integer.MAX_VALUE,
 			"Max. recipe gui height"
 		);
+		asyncLoadingEnabled = advanced.addBoolean(
+			"asyncLoadingEnabled",
+			false,
+			"Whether JEI should load asynchronously, so that it starts some time after world join."
+		);
+		parallelPluginLoadingEnabled = advanced.addBoolean(
+			"parallelPluginLoadingEnabled",
+			false,
+			"Whether JEI should load plugins in parallel. This may cause plugins to crash."
+		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
 		ingredientSorterStages = sorting.addList(
@@ -96,6 +108,16 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isCheatToHotbarUsingHotkeysEnabled() {
 		return cheatToHotbarUsingHotkeysEnabled.get();
+	}
+
+	@Override
+	public boolean getAsyncLoadingEnabled() {
+		return asyncLoadingEnabled.get();
+	}
+
+	@Override
+	public boolean getParallelPluginLoadingEnabled() {
+		return parallelPluginLoadingEnabled.get();
 	}
 
 	@Override

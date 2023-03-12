@@ -34,4 +34,25 @@ public class MinecraftMixin {
         JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.invoker()
                 .registerResourceReloadListener(resourceManager, textureManager);
     }
+
+    @Inject(
+        method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/renderer/GameRenderer;resetData()V",
+            ordinal = 0,
+            shift = At.Shift.AFTER
+        )
+    )
+    public void clearLevel(Screen screen, CallbackInfo ci) {
+        JeiLifecycleEvents.GAME_STOP.invoker().run();
+    }
+
+    @Inject(
+        method = "tick",
+        at = @At("TAIL")
+    )
+    private void jeiOnTickEnd(CallbackInfo ci) {
+        JeiLifecycleEvents.CLIENT_TICK_END.invoker().run();
+    }
 }
