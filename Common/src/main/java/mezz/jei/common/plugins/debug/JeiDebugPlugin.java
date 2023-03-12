@@ -24,6 +24,7 @@ import mezz.jei.common.plugins.jei.ingredients.DebugIngredient;
 import mezz.jei.common.plugins.jei.ingredients.DebugIngredientHelper;
 import mezz.jei.common.plugins.jei.ingredients.DebugIngredientListFactory;
 import mezz.jei.common.plugins.jei.ingredients.DebugIngredientRenderer;
+import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -221,6 +222,7 @@ public class JeiDebugPlugin implements IModPlugin {
 		JeiDebugPlugin.jeiRuntime = jeiRuntime;
 
 		if (ClientConfig.getInstance().isDebugModeEnabled()) {
+			ErrorUtil.assertMainThread();
 			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
 			ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create());
 		}
