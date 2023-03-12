@@ -12,6 +12,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.async.JeiStartTask;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.ingredients.IIngredientSupplier;
@@ -116,12 +117,19 @@ public class RecipeManagerInternal {
 		IRecipeCategory<T> recipeCategory = recipeTypeData.getRecipeCategory();
 		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
 
-		List<T> addedRecipes = new ArrayList<>(recipes.size());
-		for (T recipe : recipes) {
-			if (addRecipe(recipeCategory, recipe, hiddenRecipes)) {
-				addedRecipes.add(recipe);
-			}
-		}
+		List<T> addedRecipes = recipes.stream()
+			.filter(recipe -> {
+				if (hiddenRecipes.contains(recipe) || !recipeCategory.isHandled(recipe)) {
+					return false;
+				}
+				IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
+				if (ingredientSupplier == null) {
+					return false;
+				}
+				JeiStartTask.checkStartInterruption();
+				return addRecipe(recipeCategory, recipe, ingredientSupplier);
+			})
+			.toList();
 
 		if (!addedRecipes.isEmpty()) {
 			recipeTypeData.addRecipes(addedRecipes);

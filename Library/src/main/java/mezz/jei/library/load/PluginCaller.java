@@ -2,7 +2,7 @@ package mezz.jei.library.load;
 
 import com.google.common.base.Stopwatch;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.library.plugins.vanilla.VanillaPlugin;
+import mezz.jei.common.async.JeiStartTask;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +19,7 @@ public class PluginCaller {
 
 		try (PluginCallerTimer timer = new PluginCallerTimer()) {
 			for (IModPlugin plugin : plugins) {
+				JeiStartTask.checkStartInterruption();
 				try {
 					ResourceLocation pluginUid = plugin.getPluginUid();
 					timer.begin(title, pluginUid);

@@ -35,17 +35,11 @@ public final class ClientConfig implements IClientConfig {
 
 	// advanced
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
-	private final Supplier<Boolean> catchRenderErrorsEnabled;
-	private final Supplier<Boolean> lookupFluidContentsEnabled;
-	private final Supplier<Boolean> lookupBlockTagsEnabled;
-	private final Supplier<Boolean> showTagRecipesEnabled;
-	private final Supplier<Boolean> showCreativeTabNamesEnabled;
-
-	// input
-	private final Supplier<Integer> dragDelayMs;
-	private final Supplier<Integer> smoothScrollRate;
-
-	// sorting
+	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
+	private final Supplier<Boolean> asyncLoadingEnabled;
+	private final Supplier<Boolean> addBookmarksToFront;
+	private final Supplier<GiveMode> giveMode;
+	private final Supplier<Integer> maxRecipeGuiHeight;
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
 	private final ConfigValue<List<RecipeSorterStage>> recipeSorterStages;
 
@@ -143,6 +137,11 @@ public final class ClientConfig implements IClientConfig {
 			false,
 			"Show creative tab names in ingredient tooltips."
 		);
+		asyncLoadingEnabled = advanced.addBoolean(
+				"AsyncLoading",
+				false,
+				"Whether JEI should load asynchronously"
+		);
 
 		IConfigCategoryBuilder input = schema.addCategory("input");
 		dragDelayMs = input.addInteger(
@@ -217,8 +216,13 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isAddingBookmarksToFrontEnabled() {
-		return addBookmarksToFrontEnabled.get();
+	public boolean isAsyncLoadingEnabled() {
+		return asyncLoadingEnabled.get();
+	}
+
+	@Override
+	public boolean isAddingBookmarksToFront() {
+		return addBookmarksToFront.get();
 	}
 
 	@Override
