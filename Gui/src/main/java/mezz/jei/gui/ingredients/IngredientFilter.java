@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.async.JeiStartTask;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.util.Translator;
 import mezz.jei.common.config.IClientConfig;
@@ -95,7 +96,12 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		});
 	}
 
+	/* used to check for interruption periodically */
+	private int ingredientNum = 0;
+
 	public <V> void addIngredient(IListElementInfo<V> info) {
+		if(((ingredientNum++) % 100) == 0)
+			JeiStartTask.checkStartInterruption();
 		IListElement<V> element = info.getElement();
 		updateHiddenState(element);
 

@@ -11,6 +11,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
+import mezz.jei.common.async.JeiStartTask;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientToggleState;
@@ -59,6 +60,8 @@ public final class JeiStarter {
 	private final FileWatcher fileWatcher = new FileWatcher("JEI Config File Watcher");
 	private final ConfigManager configManager;
 
+	private JeiStartTask currentStartTask = null;
+
 	public JeiStarter(StartData data) {
 		ErrorUtil.checkNotEmpty(data.plugins(), "plugins");
 		this.data = data;
@@ -96,15 +99,32 @@ public final class JeiStarter {
 		PluginCaller.callOnPlugins("Sending ConfigManager", plugins, p -> p.onConfigManagerAvailable(configManager));
 	}
 
+	/**
+	 * Starts JEI, either synchronously or asynchronously depending on config. Should only be called from
+	 * the main thread.
+	 */
 	public void start() {
+		if(currentStartTask != null) {
+			LOGGER.error("JEI start requested but it is already starting.");
+			return;
+		}
 		Minecraft minecraft = Minecraft.getInstance();
 		if (minecraft.level == null) {
 			LOGGER.error("Failed to start JEI, there is no Minecraft client level.");
 			return;
 		}
+		JeiStartTask task = new JeiStartTask(this::doActualStart);
+		if(Internal.getJeiClientConfigs().getClientConfig().isAsyncLoadingEnabled()) {
+			currentStartTask = task;
+			task.start();
+		} else {
+			task.run();
+		}
+	}
 
+	private void doActualStart() {
 		LoggedTimer totalTime = new LoggedTimer();
-		totalTime.start("Starting JEI");
+		totalTime.start("Starting JEI" + ((Thread.currentThread() instanceof JeiStartTask) ? " (asynchronously)" : ""));
 
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
 
@@ -137,7 +157,7 @@ public final class JeiStarter {
 			ingredientVisibility
 		);
 		ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers =
-			pluginLoader.createRecipeTransferHandlers(plugins);
+				pluginLoader.createRecipeTransferHandlers(plugins);
 		IRecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
 
 		LoggedTimer timer = new LoggedTimer();
@@ -179,6 +199,11 @@ public final class JeiStarter {
 
 	public void stop() {
 		LOGGER.info("Stopping JEI");
+		if(currentStartTask != null) {
+			currentStartTask.interruptStart();
+			Minecraft.getInstance().managedBlock(() -> !currentStartTask.isAlive());
+			currentStartTask = null;
+		}
 		List<IModPlugin> plugins = data.plugins();
 		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
 	}
