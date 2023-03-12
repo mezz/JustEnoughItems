@@ -59,6 +59,11 @@ public class ClientLifecycleHandler {
 	public ResourceManagerReloadListener getReloadListener() {
 		return (resourceManager) -> {
 			if (running) {
+				Minecraft minecraft = Minecraft.getInstance();
+				if (!minecraft.isSameThread()) {
+					// we may receive reload events on the server thread in single-player, ignore them
+					return;
+				}
 				stopJei();
 				startJei();
 			}
