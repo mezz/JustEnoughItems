@@ -1,26 +1,15 @@
-package mezz.jei.gui.config;
+package mezz.jei.fabric.config;
 
-import mezz.jei.gui.util.HorizontalAlignment;
-import mezz.jei.gui.overlay.options.NavigationVisibility;
-import mezz.jei.gui.util.VerticalAlignment;
+import mezz.jei.api.config.IIngredientGridConfig;
+import mezz.jei.api.config.gui.HorizontalAlignment;
+import mezz.jei.api.config.gui.NavigationVisibility;
+import mezz.jei.api.config.gui.VerticalAlignment;
 import mezz.jei.core.config.file.IConfigCategoryBuilder;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;
 
 import java.util.function.Supplier;
 
 public class IngredientGridConfig implements IIngredientGridConfig {
-	private static final int minNumRows = 1;
-	private static final int defaultNumRows = 16;
-	private static final int largestNumRows = 100;
-
-	private static final int minNumColumns = 4;
-	private static final int defaultNumColumns = 9;
-	private static final int largestNumColumns = 100;
-
-	private static final VerticalAlignment defaultVerticalAlignment = VerticalAlignment.TOP;
-	private static final NavigationVisibility defaultButtonNavigationVisibility = NavigationVisibility.ENABLED;
-	private static final boolean defaultDrawBackground = false;
-
 	private final Supplier<Integer> maxRows;
 	private final Supplier<Integer> maxColumns;
 	private final Supplier<HorizontalAlignment> horizontalAlignment;

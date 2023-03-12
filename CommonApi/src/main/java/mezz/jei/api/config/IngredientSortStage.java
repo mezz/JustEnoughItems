@@ -1,4 +1,4 @@
-package mezz.jei.core.config;
+package mezz.jei.api.config;
 
 import java.util.List;
 
@@ -10,4 +10,14 @@ public enum IngredientSortStage {
 		IngredientSortStage.INGREDIENT_TYPE,
 		IngredientSortStage.CREATIVE_MENU
 	);
+	public static final List<String> defaultStagesNames = defaultStages.stream().map(stage -> stage.name()).toList();
+
+	public static boolean isValidName(String name) {
+		try {
+			valueOf(name);
+			return true;
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+	}
 }

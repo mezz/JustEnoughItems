@@ -16,7 +16,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.GuiProperties;
-import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.api.config.IClientConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;

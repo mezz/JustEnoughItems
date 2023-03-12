@@ -1,5 +1,7 @@
 package mezz.jei.core.search;
 
+import mezz.jei.api.config.SearchMode;
+
 import java.util.Set;
 
 public interface ISearchable<T> {

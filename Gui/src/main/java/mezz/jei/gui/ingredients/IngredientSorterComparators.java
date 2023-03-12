@@ -3,7 +3,7 @@ package mezz.jei.gui.ingredients;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.core.config.IngredientSortStage;
+import mezz.jei.api.config.IngredientSortStage;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
 import net.minecraft.core.HolderSet.ListBacked;
@@ -16,9 +16,9 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class IngredientSorterComparators {
 	private final IngredientFilter ingredientFilter;
@@ -38,8 +38,8 @@ public class IngredientSorterComparators {
 		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
 	}
 
-	public Comparator<IListElementInfo<?>> getComparator(List<IngredientSortStage> ingredientSorterStages) {
-		return ingredientSorterStages.stream()
+	public Comparator<IListElementInfo<?>> getComparator(Stream<IngredientSortStage> ingredientSorterStages) {
+		return ingredientSorterStages
 			.map(this::getComparator)
 			.reduce(Comparator::thenComparing)
 			.orElseGet(this::getDefault);

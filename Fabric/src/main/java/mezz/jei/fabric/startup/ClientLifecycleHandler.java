@@ -1,6 +1,7 @@
 package mezz.jei.fabric.startup;
 
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.config.IClientConfigs;
 import mezz.jei.common.Internal;
 import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.common.gui.textures.Textures;
@@ -26,7 +27,7 @@ public class ClientLifecycleHandler {
 	private final JeiStarter jeiStarter;
 	private boolean running;
 
-	public ClientLifecycleHandler(Textures textures, IServerConfig serverConfig) {
+	public ClientLifecycleHandler(Textures textures, IServerConfig serverConfig, IClientConfigs clientConfigs) {
 		IConnectionToServer serverConnection = new ConnectionToServer();
 		Internal.setServerConnection(serverConnection);
 
@@ -42,7 +43,8 @@ public class ClientLifecycleHandler {
 			plugins,
 			textures,
 			serverConnection,
-			keyMappings
+			keyMappings,
+			clientConfigs
 		);
 
 		this.jeiStarter = new JeiStarter(startData);

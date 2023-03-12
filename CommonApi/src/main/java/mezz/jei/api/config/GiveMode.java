@@ -1,4 +1,4 @@
-package mezz.jei.core.config;
+package mezz.jei.api.config;
 
 public enum GiveMode {
 	INVENTORY, MOUSE_PICKUP;

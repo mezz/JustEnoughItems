@@ -1,5 +1,6 @@
 package mezz.jei.library.load.registration;
 
+import mezz.jei.api.config.IClientConfigs;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
@@ -25,6 +26,8 @@ public class RuntimeRegistration implements IRuntimeRegistration {
     private final IIngredientVisibility ingredientVisibility;
     private final IRecipeTransferManager recipeTransferManager;
     private final IScreenHelper screenHelper;
+    private final IClientConfigs clientConfigs;
+
 
     private IIngredientListOverlay ingredientListOverlay = IngredientListOverlayDummy.INSTANCE;
     private IBookmarkOverlay bookmarkOverlay = BookmarkOverlayDummy.INSTANCE;
@@ -38,8 +41,8 @@ public class RuntimeRegistration implements IRuntimeRegistration {
         IIngredientManager ingredientManager,
         IIngredientVisibility ingredientVisibility,
         IRecipeTransferManager recipeTransferManager,
-        IScreenHelper screenHelper
-    ) {
+        IScreenHelper screenHelper,
+        IClientConfigs clientConfigs) {
         this.recipeManager = recipeManager;
         this.jeiHelpers = jeiHelpers;
         this.editModeConfig = editModeConfig;
@@ -47,6 +50,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
         this.ingredientVisibility = ingredientVisibility;
         this.recipeTransferManager = recipeTransferManager;
         this.screenHelper = screenHelper;
+        this.clientConfigs = clientConfigs;
     }
 
     @Override
@@ -102,6 +106,11 @@ public class RuntimeRegistration implements IRuntimeRegistration {
     @Override
     public IEditModeConfig getEditModeConfig() {
         return this.editModeConfig;
+    }
+
+    @Override
+    public IClientConfigs getClientConfigs() {
+        return this.clientConfigs;
     }
 
     public IIngredientListOverlay getIngredientListOverlay() {

@@ -1,18 +1,20 @@
 package mezz.jei.forge;
 
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.config.IClientConfigs;
 import mezz.jei.common.Internal;
-import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.forge.config.ClientConfigs;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.forge.network.NetworkHandler;
 import mezz.jei.forge.startup.ForgePluginFinder;
 import mezz.jei.forge.startup.StartEventObserver;
+import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.minecraft.client.KeyMapping;
@@ -20,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 
 import java.util.HashSet;
 import java.util.List;
@@ -29,11 +32,13 @@ public class JustEnoughItemsClient {
 	private final NetworkHandler networkHandler;
 	private final PermanentEventSubscriptions subscriptions;
 	private final IServerConfig serverConfig;
+	private final IClientConfigs clientConfigs;
 
 	public JustEnoughItemsClient(NetworkHandler networkHandler, PermanentEventSubscriptions subscriptions, IServerConfig serverConfig) {
 		this.networkHandler = networkHandler;
 		this.subscriptions = subscriptions;
 		this.serverConfig = serverConfig;
+		this.clientConfigs = ClientConfigs.register(ModLoadingContext.get());
 	}
 
 	public void register() {
@@ -60,7 +65,8 @@ public class JustEnoughItemsClient {
 			plugins,
 			textures,
 			serverConnection,
-			keyMappings
+			keyMappings,
+			clientConfigs
 		);
 
 		JeiStarter jeiStarter = new JeiStarter(startData);

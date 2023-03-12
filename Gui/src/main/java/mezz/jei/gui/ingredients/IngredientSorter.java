@@ -1,8 +1,7 @@
 package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.core.config.IngredientSortStage;
-import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.api.config.IClientConfig;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
 
@@ -30,7 +29,7 @@ public final class IngredientSorter implements IIngredientSorter {
 	public void doPreSort(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
 		IngredientSorterComparators comparators = new IngredientSorterComparators(ingredientFilter, ingredientManager, this.modNameSortingConfig, this.ingredientTypeSortingConfig);
 
-		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
+		var ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
 
 		Comparator<IListElementInfo<?>> completeComparator = comparators.getComparator(ingredientSorterStages);
 

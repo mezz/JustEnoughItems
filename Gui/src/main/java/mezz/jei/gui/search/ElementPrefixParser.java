@@ -7,9 +7,9 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.Translator;
 import mezz.jei.core.search.LimitedStringStorage;
 import mezz.jei.core.search.PrefixInfo;
-import mezz.jei.core.search.SearchMode;
+import mezz.jei.api.config.SearchMode;
 import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
-import mezz.jei.gui.config.IIngredientFilterConfig;
+import mezz.jei.api.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IListElementInfo;
 
 import java.util.ArrayList;

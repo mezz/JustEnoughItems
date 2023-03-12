@@ -1,5 +1,6 @@
 package mezz.jei.core.search;
 
+import mezz.jei.api.config.SearchMode;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;

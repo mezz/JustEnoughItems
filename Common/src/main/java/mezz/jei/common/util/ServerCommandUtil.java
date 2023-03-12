@@ -6,7 +6,7 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.PacketCheatPermission;
-import mezz.jei.core.config.GiveMode;
+import mezz.jei.api.config.GiveMode;
 import mezz.jei.core.config.IServerConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;

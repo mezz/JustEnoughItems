@@ -1,6 +1,6 @@
-package mezz.jei.gui.config;
+package mezz.jei.api.config;
 
-public interface IJeiClientConfigs {
+public interface IClientConfigs {
     IClientConfig getClientConfig();
 
     IIngredientFilterConfig getIngredientFilterConfig();
