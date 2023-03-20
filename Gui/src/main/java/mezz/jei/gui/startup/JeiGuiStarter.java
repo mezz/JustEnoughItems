@@ -114,7 +114,8 @@ public class JeiGuiStarter {
             ingredientList,
             modIdHelper,
             ingredientVisibility,
-            colorHelper
+            colorHelper,
+            registration.getClientExecutor()
         );
         ingredientManager.registerIngredientListener(ingredientFilter);
         ingredientVisibility.registerListener(ingredientFilter::onIngredientVisibilityChanged);

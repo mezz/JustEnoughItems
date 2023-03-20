@@ -3,6 +3,8 @@ package mezz.jei.gui.ingredients;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.stream.Stream;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -37,5 +39,7 @@ public interface IListElementInfo<V> {
 	void setSortedIndex(int sortIndex);
 
 	int getSortedIndex();
+
+	CompletableFuture<Void> cacheTooltips(IIngredientFilterConfig config, IIngredientManager ingredientManager, Executor clientExecutor);
 
 }

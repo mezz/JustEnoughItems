@@ -179,7 +179,8 @@ public final class JeiStarter {
 			ingredientManager,
 			ingredientVisibility,
 			recipeTransferManager,
-			screenHelper
+			screenHelper,
+			taskExecutor
 		);
 		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration));
 
