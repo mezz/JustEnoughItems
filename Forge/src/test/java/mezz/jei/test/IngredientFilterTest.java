@@ -1,5 +1,6 @@
 package mezz.jei.test;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -94,7 +95,7 @@ public class IngredientFilterTest {
 			modIdHelper,
 			ingredientVisibility,
 			colorHelper,
-			toggleState
+			MoreExecutors.directExecutor()
 		);
 
 		this.ingredientManager.registerIngredientListener(blacklist);

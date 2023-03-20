@@ -34,9 +34,12 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class IngredientFilter implements
@@ -73,7 +76,7 @@ public class IngredientFilter implements
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
 		IColorHelper colorHelper,
-		IClientToggleState clientToggleState
+		Executor clientExecutor
 	) {
 		this.filterTextSource = filterTextSource;
 		this.clientConfig = clientConfig;
@@ -86,8 +89,17 @@ public class IngredientFilter implements
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
-		for (IListElementInfo<?> ingredient : ingredients) {
-			addIngredient(ingredient);
+		List<IListElementInfo<?>> elementInfos = ingredients.stream()
+			.map(i -> ListElementInfo.create(i, ingredientManager, modIdHelper))
+			.flatMap(Optional::stream)
+			.collect(Collectors.toList());
+		List<CompletableFuture<?>> futures = new ArrayList<>();
+		for(IListElementInfo<?> elementInfo : elementInfos) {
+			futures.add(elementInfo.cacheTooltips(config, ingredientManager, clientExecutor));
+		}
+		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+		for(IListElementInfo<?> elementInfo : elementInfos) {
+			this.addIngredient(elementInfo);
 		}
 		LOGGER.info("Added {} ingredients", ingredients.size());
 		if (DebugConfig.isLogSuffixTreeStatsEnabled()) {

@@ -1,5 +1,7 @@
 package mezz.jei.gui.ingredients;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -26,6 +28,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class ListElementInfo<V> implements IListElementInfo<V> {
@@ -37,6 +42,8 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final ResourceLocation resourceLocation;
+	private int sortedIndex = Integer.MAX_VALUE;
+	private List<String> tooltipCache = null;
 
 	@Nullable
 	public static <V> IListElementInfo<V> create(ITypedIngredient<V> value, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
@@ -116,23 +123,19 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	@Unmodifiable
-	public final Set<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager) {
-		ITypedIngredient<V> value = element.getTypedIngredient();
-		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(value.getType());
-		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
-		tooltipFlag = tooltipFlag.asCreative();
-
-		ListElementInfoTooltip tooltip = new ListElementInfoTooltip();
-		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, value, tooltipFlag);
-		Set<String> strings = tooltip.getStrings();
-
-		strings.remove(this.names.get(0));
-		strings.remove(this.modNames.get(0).toLowerCase(Locale.ENGLISH));
-		strings.remove(this.modIds.get(0));
-		strings.remove(resourceLocation.getPath());
-
-		return strings;
+	public final List<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager) {
+		if(this.tooltipCache == null) {
+			String modName = this.modNames.get(0);
+			String modId = this.modIds.get(0);
+			String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
+			ITypedIngredient<V> value = element.getTypedIngredient();
+			IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(value.getType());
+			ImmutableSet<String> toRemove = ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceLocation.getPath());
+			// use ImmutableList to automatically deduplicate empty lists to the singleton empty list
+			this.tooltipCache = ImmutableList.copyOf(IngredientInformationUtil.getTooltipStrings(value.getIngredient(),
+					ingredientRenderer, toRemove, config));
+		}
+		return this.tooltipCache;
 	}
 
 	@Override
@@ -198,5 +201,19 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	@Override
 	public int getCreatedIndex() {
 		return element.getCreatedIndex();
+	}
+
+	@Override
+	public int getSortedIndex() {
+		return sortedIndex;
+	}
+
+	@Override
+	public CompletableFuture<Void> cacheTooltips(IIngredientFilterConfig config, IIngredientManager ingredientManager,
+												 Executor clientExecutor) {
+		if(this.tooltipCache == null) {
+			return CompletableFuture.runAsync(() -> this.getTooltipStrings(config, ingredientManager), clientExecutor);
+		} else
+			return CompletableFuture.completedFuture(null);
 	}
 }

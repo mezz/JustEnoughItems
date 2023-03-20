@@ -110,13 +110,21 @@ public class JeiGuiStarter {
 		IIngredientGridConfig bookmarkListConfig = jeiClientConfigs.getBookmarkListConfig();
 		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
 
-		Comparator<IListElement<?>> ingredientComparator = IngredientSorter.sortIngredients(
-			clientConfig,
-			modNameSortingConfig,
-			ingredientTypeSortingConfig,
-			ingredientManager,
-			ingredientList
-		);
+        IngredientFilter ingredientFilter = new IngredientFilter(
+            filterTextSource,
+            clientConfig,
+            ingredientFilterConfig,
+            ingredientManager,
+            ingredientSorter,
+            ingredientList,
+            modIdHelper,
+            ingredientVisibility,
+            colorHelper,
+            registration.getClientExecutor()
+        );
+        ingredientManager.registerIngredientListener(ingredientFilter);
+        ingredientVisibility.registerListener(ingredientFilter::onIngredientVisibilityChanged);
+        timer.stop();
 
 		IngredientFilter ingredientFilter = new IngredientFilter(
 			filterTextSource,

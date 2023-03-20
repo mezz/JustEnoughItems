@@ -161,7 +161,8 @@ public final class JeiStarter {
 			editModeConfig,
 			ingredientManager,
 			recipeTransferManager,
-			screenHelper
+			screenHelper,
+			taskExecutor
 		);
 		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration));
 
