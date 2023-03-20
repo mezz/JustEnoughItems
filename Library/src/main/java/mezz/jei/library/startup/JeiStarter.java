@@ -1,5 +1,7 @@
 package mezz.jei.library.startup;
 
+import com.google.common.collect.ImmutableTable;
+import com.google.common.util.concurrent.MoreExecutors;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
@@ -36,9 +38,13 @@ import mezz.jei.library.runtime.JeiRuntime;
 import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 public final class JeiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -52,7 +58,7 @@ public final class JeiStarter {
 	@SuppressWarnings("FieldCanBeLocal")
 	private final FileWatcher fileWatcher = new FileWatcher("JEI Config File Watcher");
 	private final ConfigManager configManager;
-	private final JeiClientConfigs jeiClientConfigs;
+	private Executor taskExecutor;
 
 	private JeiStartTask currentStartTask = null;
 
@@ -110,8 +116,10 @@ public final class JeiStarter {
 		JeiStartTask task = new JeiStartTask(this::doActualStart);
 		if(Internal.getJeiClientConfigs().getClientConfig().isAsyncLoadingEnabled()) {
 			currentStartTask = task;
+			this.taskExecutor = new ClientTaskExecutor();
 			task.start();
 		} else {
+			this.taskExecutor = MoreExecutors.directExecutor();
 			task.run();
 		}
 	}
@@ -189,5 +197,32 @@ public final class JeiStarter {
 		List<IModPlugin> plugins = data.plugins();
 		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
 		Internal.setRuntime(null);
+	}
+
+	static final class ClientTaskExecutor implements Executor {
+		private static final long TICK_BUDGET = TimeUnit.MILLISECONDS.toNanos(2);
+
+		final ConcurrentLinkedQueue<Runnable> startTasks = new ConcurrentLinkedQueue<>();
+
+		public void tick() {
+			long startTime = System.nanoTime();
+			do {
+				Runnable r = this.startTasks.poll();
+				if(r != null)
+					r.run();
+				else
+					break;
+			} while((System.nanoTime() - startTime) < TICK_BUDGET);
+		}
+
+		@Override
+		public void execute(@NotNull Runnable runnable) {
+			this.startTasks.add(runnable);
+		}
+	}
+
+	public void tick() {
+		if(this.taskExecutor instanceof ClientTaskExecutor)
+			((ClientTaskExecutor)this.taskExecutor).tick();
 	}
 }

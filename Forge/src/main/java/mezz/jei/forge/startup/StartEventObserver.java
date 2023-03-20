@@ -8,6 +8,7 @@ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.Event;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,11 +36,13 @@ public class StartEventObserver {
 	private final Set<Class<? extends Event>> observedEvents = new HashSet<>();
 	private final Runnable startRunnable;
 	private final Runnable stopRunnable;
+	private final Runnable tickRunnable;
 	private State state = State.DISABLED;
 
-	public StartEventObserver(Runnable startRunnable, Runnable stopRunnable) {
+	public StartEventObserver(Runnable startRunnable, Runnable stopRunnable, Runnable tickRunnable) {
 		this.startRunnable = startRunnable;
 		this.stopRunnable = stopRunnable;
+		this.tickRunnable = tickRunnable;
 	}
 
 	public void register(PermanentEventSubscriptions subscriptions) {
@@ -75,6 +78,12 @@ public class StartEventObserver {
 					transitionState(State.ENABLED);
 					transitionState(State.JEI_STARTED);
 				}
+			}
+		});
+
+		subscriptions.register(TickEvent.ClientTickEvent.class, event -> {
+			if(event.phase == TickEvent.Phase.END && this.state == State.JEI_STARTED) {
+				this.tickRunnable.run();
 			}
 		});
 	}

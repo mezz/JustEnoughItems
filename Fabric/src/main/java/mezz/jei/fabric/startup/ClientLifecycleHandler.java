@@ -55,6 +55,7 @@ public class ClientLifecycleHandler {
 			})
 		);
 		JeiLifecycleEvents.GAME_STOP.register(this::stopJei);
+		JeiLifecycleEvents.CLIENT_TICK_END.register(this.jeiStarter::tick);
 	}
 
 	public ResourceManagerReloadListener getReloadListener() {
