@@ -17,6 +17,8 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.EnumSet;
+
 /**
  * The main class to implement to create a JEI plugin. Everything communicated between a mod and JEI is through this class.
  * IModPlugins must have the {@link JeiPlugin} annotation to get loaded by JEI.
@@ -158,5 +160,17 @@ public interface IModPlugin {
 	 */
 	default void onConfigManagerAvailable(IJeiConfigManager configManager) {
 
+	}
+
+	/**
+	 * Called to find out whether this plugin wants to load on the main thread (legacy behavior), instead of the async
+	 * loading thread.
+	 * <p></p>
+	 * Most plugins should use Minecraft.getInstance().executeBlocking() for their purposes, as plugins loading on the
+	 * main thread will cause lag spikes.
+	 * @since TODO
+	 */
+	default boolean needsLoadingOnClientThread() {
+		return false;
 	}
 }
