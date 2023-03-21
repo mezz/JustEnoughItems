@@ -235,7 +235,11 @@ public final class JeiStarter {
 
 		@Override
 		public void execute(@NotNull Runnable runnable) {
-			this.startTasks.add(runnable);
+			// sanity check, in case a task is submitted from the main thread to the main thread
+			if(Minecraft.getInstance().isSameThread())
+				runnable.run();
+			else
+				this.startTasks.add(runnable);
 		}
 	}
 
