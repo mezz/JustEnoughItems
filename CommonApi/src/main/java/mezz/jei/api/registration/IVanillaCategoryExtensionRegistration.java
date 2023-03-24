@@ -16,6 +16,8 @@ import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategor
 public interface IVanillaCategoryExtensionRegistration {
 	/**
 	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
+	 *
+	 * @since 12.4.0
 	 */
 	IJeiHelpers getJeiHelpers();
 	/**
