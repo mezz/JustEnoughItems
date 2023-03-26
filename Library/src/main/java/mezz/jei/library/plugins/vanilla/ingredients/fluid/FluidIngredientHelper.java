@@ -13,6 +13,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.TagUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -162,5 +163,20 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	@Override
 	public Optional<ResourceLocation> getTagEquivalent(Collection<T> ingredients) {
 		return TagUtil.getTagEquivalent(ingredients, fluidType::getBase, Registry.FLUID::getTags);
+	}
+
+	@Override
+	public CompoundTag serialize(T ingredient) {
+		return platformFluidHelper.serialize(ingredient);
+	}
+
+	@Override
+	public Optional<T> deserialize(CompoundTag tag) {
+		return platformFluidHelper.deserialize(tag);
+	}
+
+	@Override
+	public Optional<T> merge(T ingredientA, T ingredientB) {
+		return platformFluidHelper.merge(ingredientA, ingredientB);
 	}
 }

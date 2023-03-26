@@ -24,6 +24,7 @@ public class Textures {
 	private final DrawableNineSliceTexture ingredientListBackground;
 	private final DrawableNineSliceTexture bookmarkListBackground;
 	private final DrawableNineSliceTexture recipeBackground;
+	private final DrawableNineSliceTexture recipePreviewBackground;
 	private final DrawableNineSliceTexture searchBackground;
 
 	private final HighResolutionDrawable shapelessIcon;
@@ -37,6 +38,7 @@ public class Textures {
 	private final IDrawableStatic infoIcon;
 	private final DrawableNineSliceTexture catalystTab;
 	private final IDrawableStatic flameIcon;
+	private final IDrawableStatic recipeBookmarkBackground;
 
 	public Textures(JeiSpriteUploader spriteUploader) {
 		this.spriteUploader = spriteUploader;
@@ -54,6 +56,7 @@ public class Textures {
 		this.ingredientListBackground = registerNineSliceGuiSprite("ingredient_list_background", 64, 64, 16, 16, 16, 16);
 		this.bookmarkListBackground = registerNineSliceGuiSprite("bookmark_list_background", 64, 64, 16, 16, 16, 16);
 		this.recipeBackground = registerNineSliceGuiSprite("single_recipe_background", 64, 64, 16, 16, 16, 16);
+		this.recipePreviewBackground = registerNineSliceGuiSprite("recipe_preview_background", 64, 64, 16, 16, 16, 16);
 		this.searchBackground = registerNineSliceGuiSprite("search_background", 20, 20, 6, 6, 6, 6);
 		this.catalystTab = registerNineSliceGuiSprite("catalyst_tab", 28, 28, 8, 9, 8, 8);
 
@@ -72,6 +75,7 @@ public class Textures {
 		this.bookmarkButtonEnabledIcon = registerGuiSprite("icons/bookmark_button_enabled", 16, 16);
 		this.infoIcon = registerGuiSprite("icons/info", 16, 16);
 		this.flameIcon = registerGuiSprite("icons/flame", 14, 14);
+		this.recipeBookmarkBackground = registerGuiSprite("recipe_bookmark_background", 16, 16);
 	}
 
 	private ResourceLocation registerSprite(String name) {
@@ -160,6 +164,10 @@ public class Textures {
 		return recipeBackground;
 	}
 
+	public DrawableNineSliceTexture getRecipePreviewBackground() {
+		return recipePreviewBackground;
+	}
+
 	public DrawableNineSliceTexture getSearchBackground() {
 		return searchBackground;
 	}
@@ -186,5 +194,9 @@ public class Textures {
 
 	public IDrawableStatic getFlameIcon() {
 		return flameIcon;
+	}
+
+	public IDrawableStatic getRecipeBookmarkBackground() {
+		return recipeBookmarkBackground;
 	}
 }

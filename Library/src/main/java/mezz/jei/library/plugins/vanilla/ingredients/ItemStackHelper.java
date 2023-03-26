@@ -12,6 +12,7 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.common.util.TagUtil;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -160,5 +161,31 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public Optional<ResourceLocation> getTagEquivalent(Collection<ItemStack> ingredients) {
 		return TagUtil.getTagEquivalent(ingredients, ItemStack::getItem, Registry.ITEM::getTags);
+	}
+
+	@Override
+	public CompoundTag serialize(ItemStack ingredient) {
+		return ingredient.save(new CompoundTag());
+	}
+
+	@Override
+	public Optional<ItemStack> deserialize(CompoundTag tag) {
+		return Optional.of(ItemStack.of(tag));
+	}
+
+	@Override
+	public Optional<ItemStack> merge(ItemStack ingredientA, ItemStack ingredientB) {
+		if (ingredientA.isEmpty()) {
+			return Optional.of(ingredientB.copy());
+		}
+		if (ingredientB.isEmpty()) {
+			return Optional.of(ingredientA.copy());
+		}
+		if(ingredientA.sameItemStackIgnoreDurability(ingredientB) && ItemStack.tagMatches(ingredientA, ingredientB)) {
+			ItemStack result = ingredientA.copy();
+			result.grow(ingredientB.getCount());
+			return Optional.of(result);
+		}
+		return Optional.empty();
 	}
 }

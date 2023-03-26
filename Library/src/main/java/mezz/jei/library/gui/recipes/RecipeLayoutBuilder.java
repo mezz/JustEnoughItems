@@ -129,6 +129,30 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		}
 	}
 
+	public <R> void setRecipeLayout(SimpleRecipeLayout<R> recipeLayout, IFocusGroup focuses, IIngredientVisibility ingredientVisibility) {
+		if (this.shapeless) {
+			if (this.shapelessX >= 0 && this.shapelessY >= 0) {
+				recipeLayout.setShapeless(this.shapelessX, this.shapelessY);
+			} else {
+				recipeLayout.setShapeless();
+			}
+		}
+		for (IRecipeLayoutSlotSource slot : this.slots) {
+			IntSet focusMatches = slot.getMatches(focuses);
+			slot.setRecipeSlots(recipeLayout.getRecipeSlots(), focusMatches, ingredientVisibility);
+		}
+
+		for (List<IRecipeLayoutSlotSource> slots : this.focusLinkedSlots) {
+			IntSet focusMatches = new IntArraySet();
+			for (IRecipeLayoutSlotSource slot : slots) {
+				focusMatches.addAll(slot.getMatches(focuses));
+			}
+			for (IRecipeLayoutSlotSource slot : slots) {
+				slot.setRecipeSlots(recipeLayout.getRecipeSlots(), focusMatches, ingredientVisibility);
+			}
+		}
+	}
+
 	private Stream<IRecipeLayoutSlotSource> slotStream() {
 		return Stream.concat(
 			this.slots.stream(),
@@ -149,5 +173,11 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		return slotStream()
 			.filter(slot -> slot.getRole() == role)
 			.flatMap(slot -> slot.getIngredients(ingredientType));
+	}
+
+	@Override
+	public Stream<IRecipeLayoutSlotSource> getSlotStream(RecipeIngredientRole role) {
+		return slotStream()
+			.filter(slot -> slot.getRole() == role);
 	}
 }

@@ -11,12 +11,16 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.IngredientTooltipHelper;
+import mezz.jei.common.util.TooltipComponentHelper;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.core.search.SearchMode;
 import mezz.jei.gui.config.IIngredientFilterConfig;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,11 +56,11 @@ public final class IngredientGridTooltipHelper {
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
-		List<Component> tooltip = getTooltip(ingredient, ingredientRenderer, ingredientHelper);
-		TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, ingredient, ingredientRenderer);
+		List<ClientTooltipComponent> tooltip = getTooltip(ingredient, ingredientRenderer, ingredientHelper);
+		TooltipRenderer.drawHoveringComponent(poseStack, tooltip, mouseX, mouseY, ingredient, ingredientRenderer);
 	}
 
-	public <T> List<Component> getTooltip(T ingredient, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
+	public <T> List<ClientTooltipComponent> getTooltip(T ingredient, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
 		List<Component> ingredientTooltipSafe = IngredientTooltipHelper.getMutableIngredientTooltipSafe(ingredient, ingredientRenderer);
 		List<Component> tooltip = modIdHelper.addModNameToIngredientTooltip(ingredientTooltipSafe, ingredient, ingredientHelper);
 
@@ -67,8 +71,11 @@ public final class IngredientGridTooltipHelper {
 		if (worldConfig.isEditModeEnabled()) {
 			addEditModeInfoToTooltip(tooltip, keyBindings);
 		}
+		Minecraft minecraft = Minecraft.getInstance();
+		List<ClientTooltipComponent> tooltipComponents = TooltipComponentHelper.from(tooltip);
+		ingredientRenderer.addTooltipComponment(tooltipComponents, ingredient, minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL);
 
-		return tooltip;
+		return tooltipComponents;
 	}
 
 	private <T> void addColorSearchInfoToTooltip(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {

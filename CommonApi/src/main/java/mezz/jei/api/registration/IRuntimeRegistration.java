@@ -3,14 +3,7 @@ package mezz.jei.api.registration;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.api.runtime.IBookmarkOverlay;
-import mezz.jei.api.runtime.IEditModeConfig;
-import mezz.jei.api.runtime.IIngredientFilter;
-import mezz.jei.api.runtime.IIngredientListOverlay;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.api.runtime.IRecipesGui;
-import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.runtime.*;
 
 /**
  * Allows mods to override the runtime classes for JEI with their own implementation.
@@ -88,4 +81,11 @@ public interface IRuntimeRegistration {
      * This is used by JEI's GUI and can be used by other mods that want to use the same information from JEI.
      */
     IEditModeConfig getEditModeConfig();
+
+    /**
+     * Get access to the bookmark manager, which lets users bookmark recipes.
+     * This is used by JEI's GUI and can be used by other mods that want to use the same information from JEI.
+     */
+    IBookmarkManager getBookmarkManager();
+
 }

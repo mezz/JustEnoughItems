@@ -27,6 +27,14 @@ public class CycleTimer {
 		return list.get(Math.toIntExact(index));
 	}
 
+	public Optional<ITypedIngredient<?>> getCycledIngredient(List<ITypedIngredient<?>> list) {
+		if (list.isEmpty()) {
+			return Optional.empty();
+		}
+		long index = ((drawTime - startTime) / cycleTime) % list.size();
+		return Optional.of(list.get(Math.toIntExact(index)));
+	}
+
 	public void onDraw() {
 		if (!Screen.hasShiftDown()) {
 			if (pausedDuration > 0) {

@@ -2,6 +2,7 @@ package mezz.jei.forge;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
+import mezz.jei.library.gui.RecipeBookmarkTooltip;
 import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
@@ -19,11 +20,13 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 public class JustEnoughItemsClient {
 	private final NetworkHandler networkHandler;
@@ -38,6 +41,7 @@ public class JustEnoughItemsClient {
 
 	public void register() {
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
+		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipComponentFactoriesEvent);
 	}
 
 	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event) {
@@ -67,6 +71,10 @@ public class JustEnoughItemsClient {
 		StartEventObserver startEventObserver = new StartEventObserver(jeiStarter::start, jeiStarter::stop);
 		startEventObserver.register(subscriptions);
 		event.registerReloadListener(startEventObserver);
+	}
+
+	private void onRegisterClientTooltipComponentFactoriesEvent(RegisterClientTooltipComponentFactoriesEvent event) {
+		event.register(RecipeBookmarkTooltip.class, Function.identity());
 	}
 
 	private static Textures createTextures(RegisterClientReloadListenersEvent event) {

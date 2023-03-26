@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
+import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
@@ -21,6 +22,7 @@ import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.common.util.StackHelper;
+import mezz.jei.library.InternalLibrary;
 import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.focus.FocusFactory;
@@ -28,15 +30,7 @@ import mezz.jei.library.gui.GuiHelper;
 import mezz.jei.library.helpers.ModIdHelper;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
-import mezz.jei.library.load.registration.AdvancedRegistration;
-import mezz.jei.library.load.registration.GuiHandlerRegistration;
-import mezz.jei.library.load.registration.IngredientManagerBuilder;
-import mezz.jei.library.load.registration.RecipeCatalystRegistration;
-import mezz.jei.library.load.registration.RecipeCategoryRegistration;
-import mezz.jei.library.load.registration.RecipeRegistration;
-import mezz.jei.library.load.registration.RecipeTransferRegistration;
-import mezz.jei.library.load.registration.SubtypeRegistration;
-import mezz.jei.library.load.registration.VanillaCategoryExtensionRegistration;
+import mezz.jei.library.load.registration.*;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
@@ -55,6 +49,7 @@ public class PluginLoader {
 	private final StartData data;
 	private final LoggedTimer timer;
 	private final IIngredientManager ingredientManager;
+	private final IBookmarkManager bookmarkManager;
 	private final JeiHelpers jeiHelpers;
 
 	public PluginLoader(StartData data, IModIdFormatConfig modIdFormatConfig, IColorHelper colorHelper) {
@@ -73,13 +68,19 @@ public class PluginLoader {
 
 		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
+
+		BookmarkManagerBuilder bookmarkManagerBuilder = new BookmarkManagerBuilder(ingredientManagerBuilder);
+		PluginCaller.callOnPlugins("Registering bookmarks", plugins, p -> p.registerCustomBookmark(bookmarkManagerBuilder));
 		this.ingredientManager = ingredientManagerBuilder.build();
+		this.bookmarkManager = bookmarkManagerBuilder.build();
 
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(ingredientManager, data.textures());
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
 		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager);
 		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager);
+		InternalLibrary.setIngredientManager(ingredientManager);
+		InternalLibrary.setFocusFactory(focusFactory);
 	}
 
 	@Unmodifiable
@@ -145,6 +146,10 @@ public class PluginLoader {
 
 	public IIngredientManager getIngredientManager() {
 		return ingredientManager;
+	}
+
+	public IBookmarkManager getBookmarkManager() {
+		return bookmarkManager;
 	}
 
 	public JeiHelpers getJeiHelpers() {

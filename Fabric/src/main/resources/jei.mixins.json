@@ -4,6 +4,7 @@
   "package": "mezz.jei.fabric.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "ScreenAccessor"
   ],
   "client": [
     "AbstractContainerScreenMixin",

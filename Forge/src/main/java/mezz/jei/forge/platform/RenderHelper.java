@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
@@ -77,6 +78,17 @@ public class RenderHelper implements IPlatformRenderHelper {
             y,
             font,
             stack
+        );
+    }
+
+    @Override
+    public void renderTooltipComponent(Screen screen, PoseStack poseStack, List<ClientTooltipComponent> tooltipComponent, int x, int y, @Nullable Font font, ItemStack stack) {
+        //TODO: set tooltipFont and tooltipStack
+        screen.renderTooltipInternal(
+            poseStack,
+            tooltipComponent,
+            x,
+            y
         );
     }
 }

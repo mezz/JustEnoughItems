@@ -26,6 +26,8 @@ public interface IRecipeGuiLogic {
 
 	void setRecipeCategory(IRecipeCategory<?> category);
 
+	void setRecipeIndex(int recipeIndex);
+
 	boolean hasMultiplePages();
 
 	void previousPage();

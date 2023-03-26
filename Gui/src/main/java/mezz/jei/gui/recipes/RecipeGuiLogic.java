@@ -1,5 +1,6 @@
 package mezz.jei.gui.recipes;
 
+import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
@@ -203,6 +204,15 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		if (state.setRecipeCategory(category)) {
 			stateListener.onStateChange();
 		}
+	}
+
+	@Override
+	public void setRecipeIndex(int recipeIndex) {
+		int allSize = state.getFocusedRecipes().getRecipes().size();
+		boolean recipeIndexValid = recipeIndex >= 0 && recipeIndex < allSize;
+		Preconditions.checkArgument(recipeIndexValid, "recipeIndex is out of bounds: [0," + allSize + ") but index is :" + recipeIndex);
+		state.setRecipeIndex(recipeIndex);
+		stateListener.onStateChange();
 	}
 
 	@Override

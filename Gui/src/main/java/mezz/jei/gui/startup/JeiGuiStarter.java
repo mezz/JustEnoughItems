@@ -7,11 +7,7 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.registration.IRuntimeRegistration;
-import mezz.jei.api.runtime.IEditModeConfig;
-import mezz.jei.api.runtime.IIngredientFilter;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.runtime.*;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -73,6 +69,7 @@ public class JeiGuiStarter {
         IRecipeManager recipeManager = registration.getRecipeManager();
         IIngredientVisibility ingredientVisibility = registration.getIngredientVisibility();
         IIngredientManager ingredientManager = registration.getIngredientManager();
+        IBookmarkManager bookmarkManager = registration.getBookmarkManager();
         IEditModeConfig editModeConfig = registration.getEditModeConfig();
 
         IJeiHelpers jeiHelpers = registration.getJeiHelpers();
@@ -144,33 +141,6 @@ public class JeiGuiStarter {
         );
         registration.setIngredientListOverlay(ingredientListOverlay);
 
-        BookmarkList bookmarkList = new BookmarkList(ingredientManager, bookmarkConfig, clientConfig);
-        bookmarkConfig.loadBookmarks(ingredientManager, bookmarkList);
-
-        BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
-            ingredientManager,
-            screenHelper,
-            bookmarkList,
-            modIdHelper,
-            keyMappings,
-            bookmarkListConfig,
-            editModeConfig,
-            ingredientFilterConfig,
-            clientConfig,
-            worldConfig,
-            serverConnection,
-            textures,
-            colorHelper,
-            cheatUtil
-        );
-        registration.setBookmarkOverlay(bookmarkOverlay);
-
-        GuiEventHandler guiEventHandler = new GuiEventHandler(
-            screenHelper,
-            bookmarkOverlay,
-            ingredientListOverlay
-        );
-
         RecipesGui recipesGui = new RecipesGui(
             recipeManager,
             recipeTransferManager,
@@ -182,6 +152,34 @@ public class JeiGuiStarter {
             focusFactory
         );
         registration.setRecipesGui(recipesGui);
+
+
+        BookmarkList bookmarkList = new BookmarkList(ingredientManager, bookmarkManager , bookmarkConfig, clientConfig);
+        bookmarkConfig.loadBookmarks(ingredientManager, bookmarkManager , bookmarkList);
+
+        BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
+                ingredientManager,
+                screenHelper,
+                bookmarkList,
+                modIdHelper,
+                keyMappings,
+                bookmarkListConfig,
+                editModeConfig,
+                ingredientFilterConfig,
+                clientConfig,
+                worldConfig,
+                serverConnection,
+                textures,
+                colorHelper,
+                cheatUtil
+        );
+        registration.setBookmarkOverlay(bookmarkOverlay);
+
+        GuiEventHandler guiEventHandler = new GuiEventHandler(
+                screenHelper,
+                bookmarkOverlay,
+                ingredientListOverlay
+        );
 
         CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
             recipesGui,

@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceKey;
 
 public class PlatformHelper implements IPlatformHelper {
     private final CachedSupplier<ItemStackHelper> itemStackHelper = new CachedSupplier<>(ItemStackHelper::new);
-    private final CachedSupplier<FluidHelper> fluidHelper = new CachedSupplier<>(FluidHelper::new);
+    private final CachedSupplier<FluidHelper> fluidHelper = new CachedSupplier<>(() -> new FluidHelper(getRegistry((Registry.FLUID_REGISTRY))));
     private final CachedSupplier<RenderHelper> renderHelper = new CachedSupplier<>(RenderHelper::new);
     private final CachedSupplier<RecipeHelper> recipeHelper = new CachedSupplier<>(RecipeHelper::new);
     private final CachedSupplier<ConfigHelper> configHelper = new CachedSupplier<>(ConfigHelper::new);

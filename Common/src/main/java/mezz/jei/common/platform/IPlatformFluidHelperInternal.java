@@ -32,4 +32,13 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
     T copy(T ingredient);
 
     T normalize(T ingredient);
+
+    CompoundTag serialize(T ingredient);
+
+    Optional<T> deserialize(CompoundTag tag);
+
+    default Optional<T> merge(T ingredientA, T ingredientB) {
+        return Optional.empty();
+    }
+
 }

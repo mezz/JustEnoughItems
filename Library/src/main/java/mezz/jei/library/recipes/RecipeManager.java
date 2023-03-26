@@ -4,14 +4,7 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.IRecipeCatalystLookup;
-import mezz.jei.api.recipe.IRecipeCategoriesLookup;
-import mezz.jei.api.recipe.IRecipeLookup;
-import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.*;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
@@ -20,6 +13,7 @@ import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.library.gui.recipes.SimpleRecipeLayout;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,6 +51,13 @@ public class RecipeManager implements IRecipeManager {
 	@Override
 	public IRecipeCatalystLookup createRecipeCatalystLookup(RecipeType<?> recipeType) {
 		return new RecipeCatalystLookup(recipeType, internal);
+	}
+
+	@Override
+	public <R> Optional<R> getRecipeByUid(RecipeType<R> recipeType, ResourceLocation recipeUid) {
+		ErrorUtil.checkNotNull(recipeType, "recipeType");
+		ErrorUtil.checkNotNull(recipeUid, "recipeUid");
+		return internal.getRecipeById(recipeType, recipeUid);
 	}
 
 	@Override
@@ -99,6 +100,22 @@ public class RecipeManager implements IRecipeManager {
 			ingredientVisibility,
 			modIdHelper,
 			textures
+		);
+	}
+
+	@Override
+	public <T> Optional<IRecipeLayoutDrawable<T>> createSimpleRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup) {
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
+		return SimpleRecipeLayout.create(
+				recipeCategory,
+				recipe,
+				focusGroup,
+				ingredientManager,
+				ingredientVisibility,
+				modIdHelper,
+				textures
 		);
 	}
 

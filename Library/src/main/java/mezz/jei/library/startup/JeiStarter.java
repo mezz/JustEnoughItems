@@ -7,6 +7,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
@@ -19,6 +20,7 @@ import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.core.config.file.ConfigSchemaBuilder;
 import mezz.jei.core.config.file.FileWatcher;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;
+import mezz.jei.library.InternalLibrary;
 import mezz.jei.library.color.ColorHelper;
 import mezz.jei.library.config.ColorNameConfig;
 import mezz.jei.library.config.EditModeConfig;
@@ -118,6 +120,11 @@ public final class JeiStarter {
 			modIdHelper,
 			ingredientVisibility
 		);
+
+		InternalLibrary.setRecipeManager(recipeManager);
+
+		IBookmarkManager bookmarkManager = pluginLoader.getBookmarkManager();
+
 		ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers =
 			pluginLoader.createRecipeTransferHandlers(plugins);
 		IRecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
@@ -133,7 +140,8 @@ public final class JeiStarter {
 			ingredientManager,
 			ingredientVisibility,
 			recipeTransferManager,
-			screenHelper
+			screenHelper,
+			bookmarkManager
 		);
 		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration));
 

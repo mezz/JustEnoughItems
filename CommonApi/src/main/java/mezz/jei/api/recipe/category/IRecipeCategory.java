@@ -161,4 +161,17 @@ public interface IRecipeCategory<T> {
 		}
 		return null;
 	}
+
+	/**
+	 * This is usually the same as the return value of getRegistryName,
+	 * but it is mainly used for serialisation and deserialization of recipes and not for uses such as rendering of tooltips,
+	 * and it should support some special recipes (e.g. brewing recipes).
+	 *
+	 * @return the unique id of the recipe, if a recipe can't be serialized, it should return null.
+	 */
+	@Nullable
+	default ResourceLocation getUniqueId(T recipe) {
+		return getRegistryName(recipe);
+	}
+
 }

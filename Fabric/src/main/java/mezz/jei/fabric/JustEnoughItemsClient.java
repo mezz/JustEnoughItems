@@ -8,8 +8,10 @@ import mezz.jei.fabric.config.ServerConfig;
 import mezz.jei.fabric.events.JeiIdentifiableResourceReloadListener;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
 import mezz.jei.fabric.startup.ClientLifecycleHandler;
+import mezz.jei.library.gui.RecipeBookmarkTooltip;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.server.packs.PackType;
 
@@ -32,5 +34,6 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 						.registerReloadListener(new JeiIdentifiableResourceReloadListener("lifecycle", clientLifecycleHandler.getReloadListener()));
 			});
 		});
+		TooltipComponentCallback.EVENT.register(data -> data instanceof RecipeBookmarkTooltip component ? component : null);
 	}
 }

@@ -1,6 +1,7 @@
 package mezz.jei.library.plugins.vanilla.brewing;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -15,11 +16,15 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.common.Constants;
+import mezz.jei.library.util.RecipeUidHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -104,6 +109,16 @@ public class BrewingRecipeCategory implements IRecipeCategory<IJeiBrewingRecipe>
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 81, 3)
 			.addItemStack(recipe.getPotionOutput())
 			.setBackground(slotDrawable, -1, -1);
+	}
+
+	@Override
+	public @Nullable ResourceLocation getUniqueId(IJeiBrewingRecipe recipe) {
+		CompoundTag recipeTag = new CompoundTag();
+		RecipeUidHelper.putAll(recipeTag, "ingredient#", recipe.getIngredients());
+		RecipeUidHelper.putAll(recipeTag, "potionInput#", recipe.getPotionInputs());
+		recipeTag.put("potionOutput", recipe.getPotionOutput().save(new CompoundTag()));
+		recipeTag.putInt("brewingSteps", recipe.getBrewingSteps());
+		return new ResourceLocation(ModIds.JEI_ID, "brewing/" + DigestUtils.md5Hex(recipeTag.toString()));
 	}
 
 	private static class BrewingBubblesTickTimer implements ITickTimer {
