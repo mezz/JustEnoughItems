@@ -237,7 +237,7 @@ public final class RecipeTransferUtil {
 			}
 
 			// Descending sort
-			// if counts are equal, push groups with lowest slot index to top
+			// if counts are equal, push groups with the lowest slot index to the top
 			countedAndSorted.sort((o1, o2) -> {
 				int compare = Long.compare(o2.totalItemCount, o1.totalItemCount);
 
@@ -274,7 +274,8 @@ public final class RecipeTransferUtil {
 				.get(requiredItemStack)
 				.stream()
 				.flatMap(PhantomSlotStateList::stream)
-				.findFirst().orElse(null);
+				.findFirst()
+				.orElse(null);
 
 			if (matching == null) {
 				transferOperations.missingItems.add(requiredItemStack);
