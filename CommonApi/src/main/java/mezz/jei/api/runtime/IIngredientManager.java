@@ -94,21 +94,6 @@ public interface IIngredientManager {
 	<V> Optional<IIngredientType<V>> getIngredientTypeChecked(Class<? extends V> ingredientClass);
 
 	/**
-	 * Helper method to get ingredient type for an ingredient.
-	 * @deprecated use {@link #getIngredientTypeChecked(Object)}
-	 */
-	@Deprecated(since = "11.5.0", forRemoval = true)
-	<V> IIngredientType<V> getIngredientType(V ingredient);
-
-	/**
-	 * Helper method to get ingredient type from a legacy ingredient class.
-	 *
-	 * @deprecated use {@link #getIngredientTypeChecked(Class)}
-	 */
-	@Deprecated(since = "11.5.0", forRemoval = true)
-	<V> IIngredientType<V> getIngredientType(Class<? extends V> ingredientClass);
-
-	/**
 	 * Create a typed ingredient, if the given ingredient is valid.
 	 *
 	 * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient}

@@ -35,7 +35,6 @@ public class IngredientManager implements IIngredientManager {
 			.getAllIngredients();
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public <V> IIngredientHelper<V> getIngredientHelper(V ingredient) {
 		return getIngredientTypeChecked(ingredient)
@@ -52,7 +51,6 @@ public class IngredientManager implements IIngredientManager {
 			.getIngredientHelper();
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public <V> IIngredientRenderer<V> getIngredientRenderer(V ingredient) {
 		return getIngredientTypeChecked(ingredient)
@@ -107,25 +105,10 @@ public class IngredientManager implements IIngredientManager {
 		}
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public <V> IIngredientType<V> getIngredientType(V ingredient) {
-		return getIngredientTypeChecked(ingredient)
-			.orElseThrow(() -> new IllegalArgumentException("Unknown ingredient class: " + ingredient.getClass()));
-	}
-
 	@Override
 	public <V> Optional<IIngredientType<V>> getIngredientTypeChecked(V ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		return this.registeredIngredients.getIngredientType(ingredient);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public <V> IIngredientType<V> getIngredientType(Class<? extends V> ingredientClass) {
-		Optional<IIngredientType<V>> ingredientType = getIngredientTypeChecked(ingredientClass);
-		return ingredientType
-			.orElseThrow(() -> new IllegalArgumentException("Unknown ingredient class: " + ingredientClass));
 	}
 
 	@Override

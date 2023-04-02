@@ -2,8 +2,6 @@ package mezz.jei.api.runtime;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
@@ -69,15 +67,6 @@ public interface IJeiRuntime {
 	 * @since 11.0.1
 	 */
 	IJeiKeyMappings getKeyMappings();
-
-	/**
-	 * Returns a new typed ingredient.
-	 *
-	 * @since 9.3.0
-	 * @deprecated use {@link IIngredientManager#createTypedIngredient(IIngredientType, Object)} instead.
-	 */
-	@Deprecated(since = "11.5.0", forRemoval = true)
-	<T> ITypedIngredient<T> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient);
 
 	/**
 	 * Get a helper for all runtime Screen functions.

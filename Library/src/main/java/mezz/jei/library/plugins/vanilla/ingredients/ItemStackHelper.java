@@ -21,9 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
@@ -74,7 +72,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			)
 			.orElseThrow(() -> {
 				String stackInfo = getErrorInfo(ingredient);
-				throw new IllegalStateException("null registryName for: " + stackInfo);
+				return new IllegalStateException("null registryName for: " + stackInfo);
 			});
 	}
 
@@ -93,7 +91,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			.getRegistryName(item)
 			.orElseThrow(() -> {
 				String stackInfo = getErrorInfo(ingredient);
-				throw new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
+				return new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
 			});
 	}
 
@@ -127,22 +125,9 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
-	public Collection<ResourceLocation> getTags(ItemStack ingredient) {
-		return getTagStream(ingredient)
-			.collect(Collectors.toUnmodifiableSet());
-	}
-
-	@Override
 	public Stream<ResourceLocation> getTagStream(ItemStack ingredient) {
 		return ingredient.getTags()
 			.map(TagKey::location);
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	@Deprecated
-	public Collection<String> getCreativeTabNames(ItemStack ingredient) {
-		return List.of();
 	}
 
 	@Override

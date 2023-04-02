@@ -5,7 +5,6 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -15,16 +14,6 @@ import java.util.stream.Stream;
 
 public class FocusGroup implements IFocusGroup {
 	public static final IFocusGroup EMPTY = new FocusGroup(List.of());
-
-	/**
-	 * Make sure any IFocus coming in through API calls is validated
-	 */
-	public static <V> IFocusGroup createFromNullable(@Nullable IFocus<V> focus, IIngredientManager ingredientManager) {
-		if (focus == null) {
-			return EMPTY;
-		}
-		return Focus.checkOne(focus, ingredientManager);
-	}
 
 	/**
 	 * Make sure any IFocus coming in through API calls is validated

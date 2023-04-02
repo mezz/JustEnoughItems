@@ -12,7 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class KeyboardHandlerMixin {
     @Inject(
         method = "method_1458(Lnet/minecraft/client/gui/components/events/GuiEventListener;II)V",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/events/GuiEventListener;charTyped(CI)Z"),
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/components/events/GuiEventListener;charTyped(CI)Z",
+            ordinal = 0
+        ),
         cancellable = true
     )
     private static void beforeCharTypedEvent(GuiEventListener guiEventListener, int i, int modifiers, CallbackInfo ci) {
@@ -21,7 +25,11 @@ public class KeyboardHandlerMixin {
 
     @Inject(
         method = "method_1473(Lnet/minecraft/client/gui/components/events/GuiEventListener;CI)V",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/events/GuiEventListener;charTyped(CI)Z"),
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/components/events/GuiEventListener;charTyped(CI)Z",
+            ordinal = 0
+        ),
         cancellable = true
     )
     private static void beforeCharTypedEvent2(GuiEventListener guiEventListener, char codepoint, int modifiers, CallbackInfo ci) {
@@ -33,6 +41,7 @@ public class KeyboardHandlerMixin {
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/gui/components/events/GuiEventListener;charTyped(CI)Z",
+            ordinal = 0,
             shift = At.Shift.AFTER
         ),
         cancellable = true
@@ -46,6 +55,7 @@ public class KeyboardHandlerMixin {
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/gui/components/events/GuiEventListener;charTyped(CI)Z",
+            ordinal = 0,
             shift = At.Shift.AFTER
         ),
         cancellable = true

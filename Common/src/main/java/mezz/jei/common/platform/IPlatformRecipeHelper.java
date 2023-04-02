@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.UpgradeRecipe;
+import net.minecraft.world.item.crafting.SmithingRecipe;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,8 +16,9 @@ public interface IPlatformRecipeHelper {
     <T extends CraftingRecipe> int getWidth(T recipe);
     <T extends CraftingRecipe> int getHeight(T recipe);
 
-    Ingredient getBase(UpgradeRecipe recipe);
-    Ingredient getAddition(UpgradeRecipe recipe);
+    Ingredient getBase(SmithingRecipe recipe);
+    Ingredient getAddition(SmithingRecipe recipe);
+    boolean isHandled(SmithingRecipe recipe);
 
     Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe);
 

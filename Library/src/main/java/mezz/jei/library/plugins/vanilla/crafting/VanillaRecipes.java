@@ -13,9 +13,9 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
-import net.minecraft.world.item.crafting.UpgradeRecipe;
 
 import java.util.List;
 import java.util.Map;
@@ -67,8 +67,8 @@ public final class VanillaRecipes {
 		return getValidHandledRecipes(recipeManager, RecipeType.CAMPFIRE_COOKING, validator);
 	}
 
-	public List<UpgradeRecipe> getSmithingRecipes(IRecipeCategory<UpgradeRecipe> smithingCategory) {
-		CategoryRecipeValidator<UpgradeRecipe> validator = new CategoryRecipeValidator<>(smithingCategory, ingredientManager, 0);
+	public List<SmithingRecipe> getSmithingRecipes(IRecipeCategory<SmithingRecipe> smithingCategory) {
+		CategoryRecipeValidator<SmithingRecipe> validator = new CategoryRecipeValidator<>(smithingCategory, ingredientManager, 0);
 		return getValidHandledRecipes(recipeManager, RecipeType.SMITHING, validator);
 	}
 

@@ -3,6 +3,7 @@ package mezz.jei.library.plugins.vanilla.crafting;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.util.RecipeErrorUtil;
+import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -37,7 +38,7 @@ public final class CategoryRecipeValidator<T extends Recipe<?>> {
 		if (recipe.isSpecial()) {
 			return true;
 		}
-		ItemStack recipeOutput = recipe.getResultItem();
+		ItemStack recipeOutput = RecipeUtil.getResultItem(recipe);
 		if (recipeOutput == null || recipeOutput.isEmpty()) {
 			if (LOGGER.isDebugEnabled()) {
 				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);

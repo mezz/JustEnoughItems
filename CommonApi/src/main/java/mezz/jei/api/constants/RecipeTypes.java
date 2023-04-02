@@ -12,9 +12,9 @@ import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
-import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraft.world.level.block.ComposterBlock;
 
 /**
@@ -118,12 +118,16 @@ public final class RecipeTypes {
 
 	/**
 	 * The smithing recipe type.
-	 * Automatically includes every {@link UpgradeRecipe}.
+	 * Automatically includes every
+	 * {@link net.minecraft.world.item.crafting.LegacyUpgradeRecipe}
+	 * {@link net.minecraft.world.item.crafting.SmithingTrimRecipe}
+	 * {@link net.minecraft.world.item.crafting.SmithingTransformRecipe}
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<UpgradeRecipe> SMITHING =
-		RecipeType.create(ModIds.MINECRAFT_ID, "smithing", UpgradeRecipe.class);
+	@SuppressWarnings("removal")
+	public static final RecipeType<SmithingRecipe> SMITHING =
+		RecipeType.create(ModIds.MINECRAFT_ID, "smithing", SmithingRecipe.class);
 
 	/**
 	 * The composting recipe type.

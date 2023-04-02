@@ -128,7 +128,7 @@ public class IngredientSorterComparators {
 	private static int getArmorSlotIndex(ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		if (item instanceof ArmorItem armorItem) {
-			return armorItem.getSlot().getFilterFlag();
+			return armorItem.getEquipmentSlot().getFilterFlag();
 		}
 		return 0;
 	}

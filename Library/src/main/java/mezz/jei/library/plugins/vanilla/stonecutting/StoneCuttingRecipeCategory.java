@@ -6,6 +6,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
@@ -57,7 +58,7 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRe
 			.addIngredients(recipe.getIngredients().get(0));
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 61,  9)
-			.addItemStack(recipe.getResultItem());
+			.addItemStack(RecipeUtil.getResultItem(recipe));
 	}
 
 	@Override

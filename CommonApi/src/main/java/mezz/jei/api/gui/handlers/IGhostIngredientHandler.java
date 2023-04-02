@@ -23,23 +23,9 @@ public interface IGhostIngredientHandler<T extends Screen> {
 	 * This is called when a player hovers over an ingredient with doStart=false,
 	 * and called again when they pick up the ingredient with doStart=true.
 	 *
-	 * @deprecated implement {@link #getTargetsTyped} instead
-	 */
-	@Deprecated(since = "12.2.0")
-	<I> List<Target<I>> getTargets(T gui, I ingredient, boolean doStart);
-
-	/**
-	 * Called when a player wants to drag an ingredient on to your gui.
-	 * Return the targets that can accept the ingredient.
-	 *
-	 * This is called when a player hovers over an ingredient with doStart=false,
-	 * and called again when they pick up the ingredient with doStart=true.
-	 *
 	 * @since 12.2.0
 	 */
-	default <I> List<Target<I>> getTargetsTyped(T gui, ITypedIngredient<I> ingredient, boolean doStart) {
-		return getTargets(gui, ingredient.getIngredient(), doStart);
-	}
+	<I> List<Target<I>> getTargetsTyped(T gui, ITypedIngredient<I> ingredient, boolean doStart);
 
 	/**
 	 * Called when the player is done dragging an ingredient.

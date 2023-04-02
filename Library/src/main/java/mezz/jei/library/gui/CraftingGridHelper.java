@@ -31,12 +31,6 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		return inputSlots;
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public <T> void setInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height) {
-		createAndSetInputs(builder, ingredientType, inputs, width, height);
-	}
-
 	@Override
 	public <T> void setInputs(List<IRecipeSlotBuilder> slotBuilders, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height) {
 		if (width <= 0 || height <= 0) {
@@ -64,12 +58,6 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 			outputSlot.addIngredients(ingredientType, outputs);
 		}
 		return outputSlot;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public <T> void setOutputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, @Nullable List<@Nullable T> outputs) {
-		createAndSetOutputs(builder, ingredientType, outputs);
 	}
 
 	private static int getShapelessSize(int total) {

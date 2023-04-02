@@ -11,11 +11,9 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.input.UserInput;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.phys.Vec2;
 import org.lwjgl.opengl.GL11;
 
@@ -79,7 +77,7 @@ public class GhostIngredientDrag<T> {
 		return mouseDistSq > 64.0;
 	}
 
-	public void drawItem(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+	public void drawItem(PoseStack poseStack, int mouseX, int mouseY) {
 		if (!farEnoughToDraw(this, mouseX, mouseY)) {
 			return;
 		}
@@ -88,7 +86,6 @@ public class GhostIngredientDrag<T> {
 			int originX = origin.getX() + (origin.getWidth() / 2);
 			int originY = origin.getY() + (origin.getHeight() / 2);
 
-			RenderSystem.disableTexture();
 			RenderSystem.disableDepthTest();
 			RenderSystem.depthMask(false);
 
@@ -111,19 +108,15 @@ public class GhostIngredientDrag<T> {
 
 			RenderSystem.setShader(() -> oldShader);
 			RenderSystem.enableDepthTest();
-			RenderSystem.enableTexture();
 			RenderSystem.depthMask(true);
 		}
 
-		ItemRenderer itemRenderer = minecraft.getItemRenderer();
-		itemRenderer.blitOffset += 150.0F;
 		poseStack.pushPose();
 		{
 			poseStack.translate(mouseX - 8, mouseY - 8, 0);
 			ingredientRenderer.render(poseStack, ingredient.getIngredient());
 		}
 		poseStack.popPose();
-		itemRenderer.blitOffset -= 150.0F;
 	}
 
 	public static void drawTargets(PoseStack poseStack, int mouseX, int mouseY, List<Rect2i> targetAreas) {

@@ -6,6 +6,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -25,7 +26,7 @@ public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICra
 		List<List<ItemStack>> inputs = recipe.getIngredients().stream()
 			.map(ingredient -> List.of(ingredient.getItems()))
 			.toList();
-		ItemStack resultItem = recipe.getResultItem();
+		ItemStack resultItem = RecipeUtil.getResultItem(recipe);
 
 		int width = getWidth();
 		int height = getHeight();

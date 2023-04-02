@@ -1,8 +1,6 @@
 package mezz.jei.library.runtime;
 
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IBookmarkOverlay;
@@ -16,10 +14,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
-import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.library.ingredients.TypedIngredient;
 
-import java.util.Optional;
 
 public class JeiRuntime implements IJeiRuntime {
 	private final IRecipeManager recipeManager;
@@ -64,17 +59,6 @@ public class JeiRuntime implements IJeiRuntime {
 		this.jeiHelpers = jeiHelpers;
 		this.screenHelper = screenHelper;
 		this.configManager = configManager;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public <T> ITypedIngredient<T> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient) {
-		Optional<ITypedIngredient<T>> result = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient);
-		if (result.isEmpty()) {
-			String ingredientInfo = ErrorUtil.getIngredientInfo(ingredient, ingredientType, ingredientManager);
-			throw new IllegalArgumentException("Invalid ingredient: " + ingredientInfo);
-		}
-		return result.get();
 	}
 
 	@Override

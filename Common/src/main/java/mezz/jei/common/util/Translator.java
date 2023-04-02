@@ -1,13 +1,11 @@
 package mezz.jei.common.util;
 
-import java.util.Locale;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.resources.language.LanguageInfo;
 import net.minecraft.client.resources.language.LanguageManager;
 
 import javax.annotation.Nullable;
+import java.util.Locale;
 
 public final class Translator {
 	@Nullable
@@ -37,12 +35,7 @@ public final class Translator {
 			return Locale.getDefault();
 		}
 		LanguageManager languageManager = minecraft.getLanguageManager();
-		LanguageInfo selected = languageManager.getSelected();
-		return getLocale(selected);
-	}
-
-	private static Locale getLocale(LanguageInfo currentLanguage) {
-		String code = currentLanguage.getCode();
+		String code = languageManager.getSelected();
 		if (cachedLocale == null || !code.equals(cachedLocaleCode)) {
 			cachedLocaleCode = code;
 			String[] splitLangCode = code.split("_", 2);

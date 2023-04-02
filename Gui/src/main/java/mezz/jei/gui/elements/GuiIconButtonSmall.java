@@ -6,7 +6,6 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.CommonComponents;
 
@@ -30,12 +29,10 @@ public class GuiIconButtonSmall extends Button {
 	@Override
 	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (this.visible) {
-			Minecraft minecraft = Minecraft.getInstance();
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			boolean hovered = isMouseOver(mouseX, mouseY);
 			DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);
 			texture.draw(poseStack, this.getX(), this.getY(), this.getWidth(), this.getHeight());
-			this.renderBg(poseStack, minecraft, mouseX, mouseY);
 
 			int color = 0xFFE0E0E0;
 			if (!this.active) {

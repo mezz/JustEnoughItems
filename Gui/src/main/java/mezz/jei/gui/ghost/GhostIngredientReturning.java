@@ -7,7 +7,6 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.phys.Vec2;
 
 import java.util.Optional;
@@ -55,7 +54,7 @@ public class GhostIngredientReturning<T> {
 		}
 	}
 
-	public void drawItem(Minecraft minecraft, PoseStack poseStack) {
+	public void drawItem(PoseStack poseStack) {
 		long time = System.currentTimeMillis();
 		long elapsed = time - startTime;
 		double percent = Math.min(elapsed / (double) this.duration, 1);
@@ -63,15 +62,12 @@ public class GhostIngredientReturning<T> {
 		double dy = end.y - start.y;
 		double x = start.x + Math.round(dx * percent);
 		double y = start.y + Math.round(dy * percent);
-		ItemRenderer itemRenderer = minecraft.getItemRenderer();
-		itemRenderer.blitOffset += 150.0F;
 		poseStack.pushPose();
 		{
 			poseStack.translate(x, y, 0);
 			ingredientRenderer.render(poseStack, ingredient.getIngredient());
 		}
 		poseStack.popPose();
-		itemRenderer.blitOffset -= 150.0F;
 	}
 
 	public boolean isComplete() {

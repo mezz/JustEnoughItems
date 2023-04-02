@@ -53,10 +53,9 @@ public class GuiIconButton extends Button {
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			Minecraft minecraft = Minecraft.getInstance();
 			DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);
 			texture.draw(poseStack, this.getX(), this.getY(), this.width, this.height);
-			this.renderBg(poseStack, minecraft, mouseX, mouseY);
+
 			int color = 0xFFE0E0E0;
 			if (!this.active) {
 				color = 0xFFA0A0A0;

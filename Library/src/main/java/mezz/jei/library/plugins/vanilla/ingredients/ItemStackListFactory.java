@@ -4,7 +4,9 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.StackHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
@@ -43,12 +45,20 @@ public final class ItemStackListFactory {
 				.map(Player::canUseGameMasterBlocks)
 				.orElse(false);
 
+		ClientLevel level = minecraft.level;
+		if (level == null) {
+			throw new NullPointerException("minecraft.level must be set before JEI fetches ingredients");
+		}
+		RegistryAccess registryAccess = level.registryAccess();
+		final CreativeModeTab.ItemDisplayParameters displayParameters =
+			new CreativeModeTab.ItemDisplayParameters(features, hasPermissions, registryAccess);
+
 		for (CreativeModeTab itemGroup : CreativeModeTabs.allTabs()) {
 			if (itemGroup.getType() != CreativeModeTab.Type.CATEGORY) {
 				continue;
 			}
 			try {
-				itemGroup.buildContents(features, hasPermissions);
+				itemGroup.buildContents(displayParameters);
 			} catch (RuntimeException | LinkageError e) {
 				LOGGER.error("Item Group crashed while building contents." +
 						"Items from this group will be missing from the JEI ingredient list. {}", itemGroup, e);

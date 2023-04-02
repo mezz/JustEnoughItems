@@ -104,15 +104,11 @@ public class GuiTextFieldFilter extends EditBox {
 	}
 
 	@Override
-	public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (this.isVisible()) {
 			RenderSystem.setShaderColor(1, 1, 1, 1);
 			background.draw(poseStack, this.backgroundBounds);
 		}
-		super.renderButton(poseStack, mouseX, mouseY, partialTicks);
-	}
-
-	public ImmutableRect2i getArea() {
-		return area;
+		super.renderWidget(poseStack, mouseX, mouseY, partialTicks);
 	}
 }

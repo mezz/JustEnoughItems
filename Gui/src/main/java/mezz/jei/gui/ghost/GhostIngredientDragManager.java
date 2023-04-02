@@ -50,9 +50,9 @@ public class GhostIngredientDragManager {
 			drawGhostIngredientHighlights(minecraft, poseStack, mouseX, mouseY);
 		}
 		if (ghostIngredientDrag != null) {
-			ghostIngredientDrag.drawItem(minecraft, poseStack, mouseX, mouseY);
+			ghostIngredientDrag.drawItem(poseStack, mouseX, mouseY);
 		}
-		ghostIngredientsReturning.forEach(returning -> returning.drawItem(minecraft, poseStack));
+		ghostIngredientsReturning.forEach(returning -> returning.drawItem(poseStack));
 		ghostIngredientsReturning.removeIf(GhostIngredientReturning::isComplete);
 	}
 

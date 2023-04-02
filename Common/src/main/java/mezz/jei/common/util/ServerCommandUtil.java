@@ -180,7 +180,7 @@ public final class ServerCommandUtil {
 			ItemEntity entityitem = entityplayermp.drop(itemStack, false);
 			if (entityitem != null) {
 				entityitem.setNoPickUpDelay();
-				entityitem.setOwner(entityplayermp.getUUID());
+				entityitem.setTarget(entityplayermp.getUUID());
 			}
 		}
 

@@ -15,6 +15,7 @@ public class AbstractContainerScreenMixin {
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;renderLabels(Lcom/mojang/blaze3d/vertex/PoseStack;II)V",
+            ordinal = 0,
             shift = At.Shift.AFTER
         )
     )

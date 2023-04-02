@@ -6,18 +6,18 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Constants;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.UpgradeRecipe;
-
+import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.SmithingRecipe;
+import net.minecraft.world.level.block.Blocks;
 
-public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
+public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 	private final IDrawable background;
 	private final IDrawable icon;
 
@@ -27,7 +27,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
 	}
 
 	@Override
-	public RecipeType<UpgradeRecipe> getRecipeType() {
+	public RecipeType<SmithingRecipe> getRecipeType() {
 		return RecipeTypes.SMITHING;
 	}
 
@@ -47,7 +47,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, UpgradeRecipe recipe, IFocusGroup focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, SmithingRecipe recipe, IFocusGroup focuses) {
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
@@ -57,11 +57,12 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
 			.addIngredients(recipeHelper.getAddition(recipe));
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 1)
-			.addItemStack(recipe.getResultItem());
+			.addItemStack(RecipeUtil.getResultItem(recipe));
 	}
 
 	@Override
-	public boolean isHandled(UpgradeRecipe recipe) {
-		return !recipe.isSpecial();
+	public boolean isHandled(SmithingRecipe recipe) {
+		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
+		return recipeHelper.isHandled(recipe);
 	}
 }

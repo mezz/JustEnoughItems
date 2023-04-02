@@ -177,7 +177,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public void drawScreen(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
-			this.searchField.renderButton(poseStack, mouseX, mouseY, partialTicks);
+			this.searchField.renderWidget(poseStack, mouseX, mouseY, partialTicks);
 			this.contents.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {

@@ -93,11 +93,11 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
 import net.minecraft.world.item.crafting.ShulkerBoxColoring;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.SuspiciousStewRecipe;
 import net.minecraft.world.item.crafting.TippedArrowRecipe;
-import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
@@ -131,7 +131,7 @@ public class VanillaPlugin implements IModPlugin {
 	@Nullable
 	private IRecipeCategory<CampfireCookingRecipe> campfireCategory;
 	@Nullable
-	private IRecipeCategory<UpgradeRecipe> smithingCategory;
+	private IRecipeCategory<SmithingRecipe> smithingCategory;
 
 	@Override
 	public ResourceLocation getPluginUid() {

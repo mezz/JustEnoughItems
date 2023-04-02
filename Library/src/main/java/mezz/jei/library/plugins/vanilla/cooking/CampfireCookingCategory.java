@@ -11,6 +11,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.common.Constants;
+import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.level.block.Blocks;
 
@@ -48,6 +49,6 @@ public class CampfireCookingCategory extends AbstractCookingCategory<CampfireCoo
 			.addIngredients(recipe.getIngredients().get(0));
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 61, 9)
-			.addItemStack(recipe.getResultItem());
+			.addItemStack(RecipeUtil.getResultItem(recipe));
 	}
 }

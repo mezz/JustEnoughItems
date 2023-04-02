@@ -25,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
@@ -99,7 +98,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 		return registry.getRegistryName(fluid)
 			.orElseThrow(() -> {
 				String ingredientInfo = getErrorInfo(ingredient);
-				throw new IllegalStateException("null registry name for: " + ingredientInfo);
+				return new IllegalStateException("null registry name for: " + ingredientInfo);
 			});
 	}
 
@@ -118,12 +117,6 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	@Override
 	public T normalizeIngredient(T ingredient) {
 		return platformFluidHelper.normalize(ingredient);
-	}
-
-	@Override
-	public Collection<ResourceLocation> getTags(T ingredient) {
-		return getTagStream(ingredient)
-			.collect(Collectors.toUnmodifiableSet());
 	}
 
 	@Override

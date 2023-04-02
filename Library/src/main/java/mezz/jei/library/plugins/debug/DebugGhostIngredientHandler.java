@@ -11,7 +11,6 @@ import mezz.jei.common.platform.Services;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,33 +24,6 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 
 	public DebugGhostIngredientHandler(IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
-	}
-
-	@Override
-	public <I> List<Target<I>> getTargets(T gui, I ingredient, boolean doStart) {
-		List<Target<I>> targets = new ArrayList<>();
-		targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(0, 0, 20, 20), ingredientManager));
-		if (doStart) {
-			IIngredientType<I> ingredientType = ingredientManager.getIngredientTypeChecked(ingredient)
-				.orElseThrow();
-			IIngredientHelper<I> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-			LOGGER.info("Ghost Ingredient Handling Starting with {}", ingredientHelper.getErrorInfo(ingredient));
-			targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(20, 20, 20, 20), ingredientManager));
-		}
-		if (ingredient instanceof ItemStack) {
-			boolean even = true;
-			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-			for (Slot slot : gui.getMenu().slots) {
-				if (even) {
-					int guiLeft = screenHelper.getGuiLeft(gui);
-					int guiTop = screenHelper.getGuiTop(gui);
-					Rect2i area = new Rect2i(guiLeft + slot.x, guiTop + slot.y, 16, 16);
-					targets.add(new DebugInfoTarget<>("Got an Ingredient in Gui", area, ingredientManager));
-				}
-				even = !even;
-			}
-		}
-		return targets;
 	}
 
 	@Override

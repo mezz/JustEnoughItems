@@ -120,35 +120,13 @@ public interface IIngredientHelper<V> {
 	}
 
 	/**
-	 * Get a list of tags that include this ingredient.
-	 * Used for searching by tags.
-	 *
-	 * @deprecated use {@link #getTagStream} instead
-	 */
-	@Deprecated(since = "12.0.1")
-	default Collection<ResourceLocation> getTags(V ingredient) {
-		return Collections.emptyList();
-	}
-
-	/**
 	 * Get a stream of tags that include this ingredient.
 	 * Used for searching by tags.
 	 *
 	 * @since 12.0.1
 	 */
 	default Stream<ResourceLocation> getTagStream(V ingredient) {
-		return getTags(ingredient).stream();
-	}
-
-	/**
-	 * Get a list of creative tab names that include this ingredient.
-	 * Used for searching by creative tab name.
-	 *
-	 * @deprecated since 12.0.0, this is no longer supported
-	 */
-	@Deprecated
-	default Collection<String> getCreativeTabNames(V ingredient) {
-		return Collections.emptyList();
+		return Stream.empty();
 	}
 
 	/**
