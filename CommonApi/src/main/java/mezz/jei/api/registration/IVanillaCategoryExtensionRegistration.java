@@ -17,7 +17,7 @@ public interface IVanillaCategoryExtensionRegistration {
 	/**
 	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
 	 *
-	 * @since 12.4.0
+	 * @since 13.1.0
 	 */
 	IJeiHelpers getJeiHelpers();
 
