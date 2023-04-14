@@ -12,8 +12,6 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 
-import java.util.concurrent.Executor;
-
 /**
  * Allows mods to override the runtime classes for JEI with their own implementation.
  *
@@ -90,9 +88,4 @@ public interface IRuntimeRegistration {
      * This is used by JEI's GUI and can be used by other mods that want to use the same information from JEI.
      */
     IEditModeConfig getEditModeConfig();
-
-    /**
-     * Get access to the client executor, which budgets. running background tasks on the main thread
-     */
-    Executor getClientExecutor();
 }

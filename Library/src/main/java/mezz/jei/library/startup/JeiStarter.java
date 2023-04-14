@@ -140,7 +140,7 @@ public final class JeiStarter {
 
 		IClientToggleState toggleState = Internal.getClientToggleState();
 
-		PluginLoader pluginLoader = new PluginLoader(data, modIdFormatConfig, colorHelper);
+		PluginLoader pluginLoader = new PluginLoader(data, modIdFormatConfig, colorHelper, taskExecutor);
 		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 
@@ -181,8 +181,7 @@ public final class JeiStarter {
 			ingredientManager,
 			ingredientVisibility,
 			recipeTransferManager,
-			screenHelper,
-			taskExecutor
+			screenHelper
 		);
 		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration));
 
