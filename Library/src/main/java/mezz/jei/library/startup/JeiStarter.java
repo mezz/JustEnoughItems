@@ -138,6 +138,15 @@ public final class JeiStarter {
 
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
 
+		PluginLoader pluginLoader = new PluginLoader(data, modIdFormatConfig, colorHelper, taskExecutor);
+		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
+		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
+
+		IIngredientManager ingredientManager = pluginLoader.getIngredientManager();
+
+		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
+		ingredientManager.registerIngredientListener(blacklist);
+
 		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
 		EditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.cfg")), ingredientManager);
 
@@ -164,8 +173,7 @@ public final class JeiStarter {
 			editModeConfig,
 			ingredientManager,
 			recipeTransferManager,
-			screenHelper,
-			taskExecutor
+			screenHelper
 		);
 		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration));
 

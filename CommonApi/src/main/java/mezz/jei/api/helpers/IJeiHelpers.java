@@ -9,7 +9,7 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.concurrent.Executor;
 
 /**
  * {@link IJeiHelpers} provides helpers and tools for addon mods.
@@ -92,17 +92,7 @@ public interface IJeiHelpers {
 	IIngredientManager getIngredientManager();
 
 	/**
-	 * The {@link IVanillaRecipeFactory} allows creation of vanilla recipes.
-	 *
-	 * @since 15.19.1
+	 * Get access to the client executor, which budgets running background tasks on the main thread.
 	 */
-	IVanillaRecipeFactory getVanillaRecipeFactory();
-
-	/**
-	 * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
-	 * ingredients based on what is visible in JEI.
-	 *
-	 * @since 15.19.1
-	 */
-	IIngredientVisibility getIngredientVisibility();
+	Executor getClientExecutor();
 }

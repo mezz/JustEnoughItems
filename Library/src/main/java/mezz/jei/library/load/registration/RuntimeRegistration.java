@@ -16,8 +16,6 @@ import mezz.jei.library.gui.IngredientListOverlayDummy;
 import mezz.jei.library.gui.recipes.RecipesGuiDummy;
 import mezz.jei.library.ingredients.IngredientFilterApiDummy;
 
-import java.util.concurrent.Executor;
-
 public class RuntimeRegistration implements IRuntimeRegistration {
     private final IRecipeManager recipeManager;
     private final IJeiHelpers jeiHelpers;
@@ -26,7 +24,6 @@ public class RuntimeRegistration implements IRuntimeRegistration {
     private final IIngredientVisibility ingredientVisibility;
     private final IRecipeTransferManager recipeTransferManager;
     private final IScreenHelper screenHelper;
-    private final Executor clientExecutor;
 
 	private IIngredientListOverlay ingredientListOverlay = IngredientListOverlayDummy.INSTANCE;
 	private IBookmarkOverlay bookmarkOverlay = BookmarkOverlayDummy.INSTANCE;
@@ -40,8 +37,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
         IIngredientManager ingredientManager,
         IIngredientVisibility ingredientVisibility,
         IRecipeTransferManager recipeTransferManager,
-        IScreenHelper screenHelper,
-        Executor clientExecutor
+        IScreenHelper screenHelper
     ) {
         this.recipeManager = recipeManager;
         this.jeiHelpers = jeiHelpers;
@@ -50,7 +46,6 @@ public class RuntimeRegistration implements IRuntimeRegistration {
         this.ingredientVisibility = ingredientVisibility;
         this.recipeTransferManager = recipeTransferManager;
         this.screenHelper = screenHelper;
-        this.clientExecutor = clientExecutor;
     }
 
 	@Override
@@ -121,10 +116,5 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 
     public IIngredientFilter getIngredientFilter() {
         return this.ingredientFilter;
-    }
-
-    @Override
-    public Executor getClientExecutor() {
-        return this.clientExecutor;
     }
 }

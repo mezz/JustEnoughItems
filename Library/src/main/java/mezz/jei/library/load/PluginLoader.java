@@ -57,11 +57,15 @@ import mezz.jei.library.transfer.RecipeTransferHandlerHelper;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public final class PluginLoader {
 	private PluginLoader() {}
 
-	public static SubtypeManager registerSubtypes(StartData data) {
+	public PluginLoader(StartData data, IModIdFormatConfig modIdFormatConfig, IColorHelper colorHelper, Executor clientExecutor) {
+		this.data = data;
+		this.timer = new LoggedTimer();
+
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		List<IModPlugin> plugins = data.plugins();
 		SubtypeRegistration subtypeRegistration = new SubtypeRegistration();
@@ -98,19 +102,7 @@ public final class PluginLoader {
 		GuiHelper guiHelper = new GuiHelper(ingredientManager);
 
 		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager);
-
-		IClientToggleState toggleState = Internal.getClientToggleState();
-		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
-		ingredientManager.registerIngredientListener(blacklist);
-
-		IIngredientVisibility ingredientVisibility = new IngredientVisibility(
-			blacklist,
-			toggleState,
-			editModeConfig,
-			ingredientManager
-		);
-
-		return new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager, vanillaRecipeFactory, ingredientVisibility);
+		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager, clientExecutor);
 	}
 
 	@Unmodifiable
