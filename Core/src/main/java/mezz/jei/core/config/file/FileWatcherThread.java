@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -48,6 +49,7 @@ public class FileWatcherThread extends Thread {
      */
     public FileWatcherThread(String name) throws IOException {
         super(name);
+        this.setDaemon(true);
         this.callbacks = new HashMap<>();
         this.directoriesToWatch = new HashSet<>();
         FileSystem fileSystem = FileSystems.getDefault();
@@ -150,13 +152,21 @@ public class FileWatcherThread extends Thread {
             return;
         }
         LOGGER.info("Detected changes in files:\n{}", changedPaths.stream().map(Path::toString).collect(Collectors.joining("\n")));
-        for (Path changedPath : changedPaths) {
-            Runnable runnable = callbacks.get(changedPath);
-            if (runnable != null) {
-                runnable.run();
-            }
-        }
+
+        List<Runnable> runnables = changedPaths.stream()
+            .map(callbacks::get)
+            .filter(Objects::nonNull)
+            .toList();
+
         changedPaths.clear();
+
+        // The FileWatcherThread is a daemon thread, so it can stop suddenly
+        // when the JVM exits.
+        // Because they read and write from the disk, we must run the callbacks
+        // in a separate, non-daemon thread so that it prevents the JVM from exiting.
+        // This ensures that they can finish running completely, without corrupting data.
+        Thread runThread = new CallbackRunner(runnables);
+        runThread.start();
     }
 
     private void watchDirectories() {
@@ -180,6 +190,20 @@ public class FileWatcherThread extends Thread {
                     LOGGER.error("Failed to watch directory: {}", directory, e);
                 }
             }
+        }
+    }
+
+    private static class CallbackRunner extends Thread {
+        private final List<Runnable> runnables;
+
+        public CallbackRunner(List<Runnable> runnables) {
+            super("JEI File Watcher Callback Runner");
+            this.runnables = List.copyOf(runnables);
+        }
+
+        @Override
+        public void run() {
+            runnables.forEach(Runnable::run);
         }
     }
 }
