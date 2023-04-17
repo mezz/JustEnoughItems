@@ -7,8 +7,10 @@ import java.util.Set;
 import mezz.jei.api.IBookmarkOverlay;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.bookmarks.BookmarkList;
@@ -16,12 +18,14 @@ import mezz.jei.config.Config;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
+import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.overlay.GridAlignment;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IClickedIngredient;
 import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.util.CommandUtil;
 
 public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, IBookmarkOverlay {
@@ -34,6 +38,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	// display elements
 	private final IngredientGridWithNavigation contents;
 	private final GuiIconToggleButton bookmarkButton;
+	private final GhostIngredientDragManager ghostIngredientDragManager;
 
 	// visibility
 	private boolean hasRoom = false;
@@ -41,10 +46,11 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	// data
 	private final BookmarkList bookmarkList;
 
-	public BookmarkOverlay(BookmarkList bookmarkList, GuiHelper guiHelper, GuiScreenHelper guiScreenHelper) {
+	public BookmarkOverlay(BookmarkList bookmarkList, GuiHelper guiHelper, GuiScreenHelper guiScreenHelper, IngredientRegistry ingredientRegistry) {
 		this.bookmarkList = bookmarkList;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, guiHelper);
 		this.contents = new IngredientGridWithNavigation(bookmarkList, guiScreenHelper, GridAlignment.RIGHT);
+		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, ingredientRegistry);
 		bookmarkList.addListener(() -> contents.updateLayoutKeepingPageAnchorVisible());
 	}
 
@@ -66,17 +72,26 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
 		if (this.isListDisplayed()) {
 			this.contents.draw(minecraft, mouseX, mouseY, partialTicks);
+		} else {
+			this.ghostIngredientDragManager.stopDrag();
 		}
 		this.bookmarkButton.draw(minecraft, mouseX, mouseY, partialTicks);
 	}
 
 	@Override
 	public void drawOnForeground(GuiContainer gui, int mouseX, int mouseY) {
+		if (isListDisplayed()) {
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
+			this.ghostIngredientDragManager.drawOnForeground(gui.mc, mouseX, mouseY);
+			GlStateManager.popMatrix();
+		}
 	}
 
 	@Override
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
+			this.ghostIngredientDragManager.drawTooltips(minecraft, mouseX, mouseY);
 			this.contents.drawTooltips(minecraft, mouseX, mouseY);
 		}
 		bookmarkButton.drawTooltips(minecraft, mouseX, mouseY);
@@ -150,6 +165,9 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	@Override
 	public boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton) {
 		if (isListDisplayed()) {
+			if (this.ghostIngredientDragManager.handleMouseClicked(mouseX, mouseY)) {
+				return true;
+			}
 			if (displayArea.contains(mouseX, mouseY)) {
 				Minecraft minecraft = Minecraft.getMinecraft();
 				GuiScreen currentScreen = minecraft.currentScreen;
@@ -165,6 +183,15 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 							clicked.onClickHandled();
 							return true;
 						}
+						EntityPlayerSP player = minecraft.player;
+						if (player != null && player.inventory.getItemStack().isEmpty()) {
+							if (mouseButton == 0 && GuiScreen.isShiftKeyDown() && this.ghostIngredientDragManager.handleQuickMoveGhostIngredient(currentScreen, clicked)) {
+								return true;
+							}
+							if (this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
+								return true;
+							}
+						}
 					}
 				}
 			}
@@ -176,6 +203,11 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 			return bookmarkButton.handleMouseClick(mouseX, mouseY);
 		}
 		return false;
+	}
+
+	@Override
+	public void onHidden() {
+		this.ghostIngredientDragManager.stopDrag();
 	}
 
 	@Nullable

@@ -72,6 +72,7 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		if (hasContent()) {
 			IGuiProperties currentGuiProperties = guiScreenHelper.getGuiProperties(guiScreen);
 			if (currentGuiProperties == null) {
+				contents.get(current).onHidden();
 				guiProperties = null;
 			} else {
 				ILeftAreaContent content = contents.get(current);

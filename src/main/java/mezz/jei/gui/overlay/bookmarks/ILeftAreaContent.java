@@ -22,4 +22,7 @@ public interface ILeftAreaContent extends IShowsRecipeFocuses {
 
 	boolean handleMouseClicked(int mouseX, int mouseY, int mouseButton);
 
+	default void onHidden() {
+	}
+
 }
