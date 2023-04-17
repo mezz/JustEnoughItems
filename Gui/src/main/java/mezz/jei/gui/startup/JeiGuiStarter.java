@@ -205,7 +205,8 @@ public class JeiGuiStarter {
         );
 
         DragRouter dragRouter = new DragRouter(
-            ingredientListOverlay.createDragHandler()
+            ingredientListOverlay.createDragHandler(),
+            bookmarkOverlay.createDragHandler()
         );
         ClientInputHandler clientInputHandler = new ClientInputHandler(
             charTypedHandlers,

@@ -3,6 +3,8 @@ package mezz.jei.gui.overlay;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IClickableIngredientInternal;
@@ -14,6 +16,8 @@ import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.gui.config.IIngredientGridConfig;
+import mezz.jei.gui.ghost.GhostIngredientDragManager;
+import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -57,6 +61,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private final DrawableNineSliceTexture background;
 	private final DrawableNineSliceTexture slotBackground;
 	private final CommandUtil commandUtil;
+	private final GhostIngredientDragManager ghostIngredientDragManager;
 
 	private ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i slotBackgroundArea = ImmutableRect2i.EMPTY;
@@ -72,7 +77,9 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		DrawableNineSliceTexture background,
 		DrawableNineSliceTexture slotBackground,
 		Textures textures,
-		CheatUtil cheatUtil
+		CheatUtil cheatUtil,
+		IScreenHelper screenHelper,
+		IIngredientManager ingredientManager
 	) {
 		this.worldConfig = worldConfig;
 		this.clientConfig = clientConfig;
@@ -85,6 +92,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.background = background;
 		this.slotBackground = slotBackground;
 		this.commandUtil = new CommandUtil(clientConfig, serverConnection);
+		this.ghostIngredientDragManager = new GhostIngredientDragManager(this, screenHelper, ingredientManager, worldConfig);
 
 		this.ingredientSource.addSourceListChangedListener(() -> updateLayout(true));
 	}
@@ -234,6 +242,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+		this.ghostIngredientDragManager.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 		this.ingredientGrid.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 	}
 
@@ -262,6 +271,18 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public boolean isEmpty() {
 		return this.ingredientSource.getIngredientList().isEmpty();
+	}
+
+	public void close() {
+		this.ghostIngredientDragManager.stopDrag();
+	}
+
+	public void drawOnForeground(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+		this.ghostIngredientDragManager.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
+	}
+
+	public IDragHandler createDragHandler() {
+		return this.ghostIngredientDragManager.createDragHandler();
 	}
 
 	private class IngredientGridPaged implements IPaged {
