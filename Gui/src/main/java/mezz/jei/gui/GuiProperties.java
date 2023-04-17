@@ -89,8 +89,6 @@ public class GuiProperties implements IGuiProperties {
 	}
 
 	public GuiProperties(Class<? extends Screen> screenClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
-		Preconditions.checkArgument(guiLeft >= 0, "guiLeft must be >= 0");
-		Preconditions.checkArgument(guiTop >= 0, "guiTop must be >= 0");
 		Preconditions.checkArgument(guiXSize > 0, "guiXSize must be > 0");
 		Preconditions.checkArgument(guiYSize > 0, "guiYSize must be > 0");
 		Preconditions.checkArgument(screenWidth > 0, "screenWidth must be > 0");
