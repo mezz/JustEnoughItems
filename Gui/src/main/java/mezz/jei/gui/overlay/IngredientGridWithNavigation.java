@@ -18,6 +18,8 @@ import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.gui.ghost.GhostIngredientDragManager;
+import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
