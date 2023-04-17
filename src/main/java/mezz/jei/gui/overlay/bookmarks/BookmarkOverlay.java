@@ -12,8 +12,11 @@ import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.textures.Textures;
 import mezz.jei.input.IClickedIngredient;
+import mezz.jei.input.IMouseDragHandler;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IShowsRecipeFocuses;
+import mezz.jei.input.NullMouseDragHandler;
+import mezz.jei.input.ProxyMouseDragHandler;
 import mezz.jei.input.click.MouseClickState;
 import mezz.jei.util.CommandUtil;
 import mezz.jei.util.MathUtil;
@@ -159,6 +162,28 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	@Override
 	public IMouseHandler getMouseHandler() {
 		return this.mouseHandler;
+	}
+
+	@Override
+	public IMouseDragHandler getMouseDragHandler() {
+		return new ProxyMouseDragHandler(() -> {
+			if (isListDisplayed()) {
+				return this.contents.getMouseDragHandler();
+			}
+			return NullMouseDragHandler.INSTANCE;
+		});
+	}
+
+	@Override
+	public void drawOnForeground(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+		if (isListDisplayed()) {
+			this.contents.drawOnForeground(minecraft, matrixStack, mouseX, mouseY);
+		}
+	}
+
+	@Override
+	public void close() {
+		this.contents.close();
 	}
 
 	private class MouseHandler implements IMouseHandler {

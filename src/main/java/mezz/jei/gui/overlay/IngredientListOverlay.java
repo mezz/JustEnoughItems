@@ -11,9 +11,7 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.ingredients.IIngredientListElement;
-import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.CombinedMouseHandler;
 import mezz.jei.input.GuiTextFieldFilter;
 import mezz.jei.input.IClickedIngredient;
@@ -49,7 +47,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 	private final IWorldConfig worldConfig;
 	private final GuiScreenHelper guiScreenHelper;
 	private final GuiTextFieldFilter searchField;
-	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private final IMouseHandler displayedMouseHandler;
 	private final IMouseHandler hiddenMouseHandler;
 	private Rectangle2d displayArea = new Rectangle2d(0, 0, 0, 0);
@@ -61,7 +58,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 
 	public IngredientListOverlay(
 		IIngredientGridSource ingredientGridSource,
-		IngredientManager ingredientManager,
 		GuiScreenHelper guiScreenHelper,
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
@@ -74,7 +70,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		ingredientGridSource.addListener(() -> onSetFilterText(worldConfig.getFilterText()));
 		this.searchField = new GuiTextFieldFilter(ingredientGridSource, worldConfig);
 		this.configButton = ConfigButton.create(this, worldConfig);
-		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, guiScreenHelper, ingredientManager, worldConfig);
 
 		this.displayedMouseHandler = new CombinedMouseHandler(
 				this.configButton.getMouseHandler(),
@@ -108,7 +103,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 			if (this.guiProperties != null) {
 				this.guiProperties = null;
 				clearKeyboardFocus();
-				this.ghostIngredientDragManager.stopDrag();
+				this.contents.close();
 			}
 		} else {
 			final boolean guiPropertiesChanged = this.guiProperties == null || !GuiProperties.areEqual(this.guiProperties, guiProperties);
@@ -126,7 +121,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		this.guiProperties = guiProperties;
 		this.displayArea = createDisplayArea(guiProperties);
 		if (guiPropertiesChanged) {
-			this.ghostIngredientDragManager.stopDrag();
+			this.contents.close();
 		}
 
 		final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, guiProperties);
@@ -196,7 +191,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 
 	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			this.ghostIngredientDragManager.drawTooltips(minecraft, matrixStack, mouseX, mouseY);
 			this.contents.drawTooltips(minecraft, matrixStack, mouseX, mouseY);
 		}
 		if (this.guiProperties != null) {
@@ -208,7 +202,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		if (isListDisplayed()) {
 			matrixStack.pushPose();
 			matrixStack.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
-			this.ghostIngredientDragManager.drawOnForeground(minecraft, matrixStack, mouseX, mouseY);
+			this.contents.drawOnForeground(minecraft, matrixStack, mouseX, mouseY);
 			matrixStack.popPose();
 		}
 	}
@@ -262,7 +256,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 	public IMouseDragHandler getMouseDragHandler() {
 		return new ProxyMouseDragHandler(() -> {
 			if (isListDisplayed()) {
-				return this.ghostIngredientDragManager.getMouseDragHandler();
+				return this.contents.getMouseDragHandler();
 			}
 			return NullMouseDragHandler.INSTANCE;
 		});

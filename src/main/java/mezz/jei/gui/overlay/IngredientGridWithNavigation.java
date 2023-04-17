@@ -24,10 +24,13 @@ import mezz.jei.config.IWorldConfig;
 import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.PageNavigation;
+import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.ghost.IGhostIngredientDragSource;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.ingredients.IngredientManager;
 import mezz.jei.input.IClickedIngredient;
+import mezz.jei.input.IMouseDragHandler;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.input.IPaged;
 import mezz.jei.input.IShowsRecipeFocuses;
@@ -54,6 +57,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 	private final IClientConfig clientConfig;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
+	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private final IMouseHandler mouseHandler;
 	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
 
@@ -62,6 +66,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 		IFilterTextSource filterTextSource,
 		GuiScreenHelper guiScreenHelper,
 		IngredientGrid ingredientGrid,
+		IngredientManager ingredientManager,
 		IWorldConfig worldConfig,
 		IClientConfig clientConfig
 	) {
@@ -71,6 +76,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 		this.ingredientGrid = ingredientGrid;
 		this.ingredientSource = ingredientSource;
 		this.guiScreenHelper = guiScreenHelper;
+		this.ghostIngredientDragManager = new GhostIngredientDragManager(this, guiScreenHelper, ingredientManager, worldConfig);
 		this.pageDelegate = new IngredientGridPaged();
 		this.navigation = new PageNavigation(this.pageDelegate, false);
 		this.mouseHandler = new CombinedMouseHandler(this.pageDelegate, this.ingredientGrid.getMouseHandler(), this.navigation.getMouseHandler());
@@ -135,7 +141,20 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 	}
 
 	public void drawTooltips(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+		this.ghostIngredientDragManager.drawTooltips(minecraft, matrixStack, mouseX, mouseY);
 		this.ingredientGrid.drawTooltips(minecraft, matrixStack, mouseX, mouseY);
+	}
+
+	public void close() {
+		this.ghostIngredientDragManager.stopDrag();
+	}
+
+	public void drawOnForeground(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+		this.ghostIngredientDragManager.drawOnForeground(minecraft, matrixStack, mouseX, mouseY);
+	}
+
+	public IMouseDragHandler getMouseDragHandler() {
+		return this.ghostIngredientDragManager.getMouseDragHandler();
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {

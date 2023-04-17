@@ -7,7 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import mezz.jei.input.IMouseDragHandler;
 import mezz.jei.input.IMouseHandler;
+import mezz.jei.input.NullMouseDragHandler;
+import mezz.jei.input.ProxyMouseDragHandler;
 import mezz.jei.input.click.MouseClickState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -67,12 +70,19 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		}
 	}
 
+	public void drawOnForeground(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+		if (canShow && hasContent()) {
+			contents.get(current).drawOnForeground(minecraft, matrixStack, mouseX, mouseY);
+		}
+	}
+
 	public void updateScreen(@Nullable Screen guiScreen, boolean forceUpdate) {
 		canShow = false;
 		if (hasContent()) {
 			IGuiProperties currentGuiProperties = guiScreenHelper.getGuiProperties(guiScreen);
 			if (currentGuiProperties == null) {
 				guiProperties = null;
+				contents.get(current).close();
 			} else {
 				ILeftAreaContent content = contents.get(current);
 				if (forceUpdate || !GuiProperties.areEqual(guiProperties, currentGuiProperties)) {
@@ -193,6 +203,15 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 
 	public IMouseHandler getMouseHandler() {
 		return mouseHandler;
+	}
+
+	public IMouseDragHandler getMouseDragHandler() {
+		return new ProxyMouseDragHandler(() -> {
+			if (canShow && hasContent()) {
+				return contents.get(current).getMouseDragHandler();
+			}
+			return NullMouseDragHandler.INSTANCE;
+		});
 	}
 
 	private class MouseHandler implements IMouseHandler {

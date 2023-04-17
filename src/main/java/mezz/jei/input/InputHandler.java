@@ -86,7 +86,10 @@ public class InputHandler {
 			new ClickGlobalHandler(),
 			new GuiAreaClickHandlerGenerator()
 		);
-		this.mouseDragHandler = ingredientListOverlay.getMouseDragHandler();
+		this.mouseDragHandler = new CombinedMouseDragHandler(
+			ingredientListOverlay.getMouseDragHandler(),
+			leftAreaDispatcher.getMouseDragHandler()
+		);
 	}
 
 	public void registerToEventBus() {

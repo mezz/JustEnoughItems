@@ -4,7 +4,9 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import java.util.Set;
 
+import mezz.jei.input.IMouseDragHandler;
 import mezz.jei.input.IMouseHandler;
+import mezz.jei.input.NullMouseDragHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rectangle2d;
 
@@ -19,5 +21,15 @@ public interface ILeftAreaContent extends IShowsRecipeFocuses {
 	void updateBounds(Rectangle2d area, Set<Rectangle2d> guiExclusionAreas);
 
 	IMouseHandler getMouseHandler();
+
+	default IMouseDragHandler getMouseDragHandler() {
+		return NullMouseDragHandler.INSTANCE;
+	}
+
+	default void drawOnForeground(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+	}
+
+	default void close() {
+	}
 
 }

@@ -103,7 +103,12 @@ public class GuiEventHandler {
 		if (minecraft == null) {
 			return;
 		}
-		ingredientListOverlay.drawOnForeground(minecraft, event.getMatrixStack(), gui, event.getMouseX(), event.getMouseY());
+		MatrixStack matrixStack = event.getMatrixStack();
+		ingredientListOverlay.drawOnForeground(minecraft, matrixStack, gui, event.getMouseX(), event.getMouseY());
+		matrixStack.pushPose();
+		matrixStack.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
+		leftAreaDispatcher.drawOnForeground(minecraft, matrixStack, event.getMouseX(), event.getMouseY());
+		matrixStack.popPose();
 	}
 
 	public void onDrawScreenEventPost(GuiScreenEvent.DrawScreenEvent.Post event) {
