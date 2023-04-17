@@ -81,7 +81,14 @@ public class GuiEventHandler {
 	 */
 	public void onDrawForeground(AbstractContainerScreen<?> screen, PoseStack poseStack, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
-		ingredientListOverlay.drawOnForeground(minecraft, poseStack, screen, mouseX, mouseY);
+		poseStack.pushPose();
+		{
+			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+			poseStack.translate(-screenHelper.getGuiLeft(screen), -screenHelper.getGuiTop(screen), 0);
+			bookmarkOverlay.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
+			ingredientListOverlay.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
+		}
+		poseStack.popPose();
 	}
 
 	public void onDrawScreenPost(Screen screen, PoseStack poseStack, int mouseX, int mouseY) {
