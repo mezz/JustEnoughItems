@@ -50,7 +50,7 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
         try {
             List<Component> tooltip = new ArrayList<>();
             tooltip.add(Component.literal("JEI Tooltip Testing for mod name formatting"));
-            ItemTooltipEvent tooltipEvent = ForgeEventFactory.onItemTooltip(itemStack, player, tooltip, TooltipFlag.Default.NORMAL);
+            ItemTooltipEvent tooltipEvent = ForgeEventFactory.onItemTooltip(itemStack, player, tooltip, TooltipFlag.Default.NORMAL.asCreative());
             return tooltipEvent.getToolTip();
         } catch (LinkageError | RuntimeException e) {
             LOGGER.error("Error while Testing for mod name formatting", e);

@@ -35,7 +35,7 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
     @Override
     public List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
         try {
-            return itemStack.getTooltipLines(player, TooltipFlag.Default.NORMAL);
+            return itemStack.getTooltipLines(player, TooltipFlag.Default.NORMAL.asCreative());
         } catch (LinkageError | RuntimeException e) {
             LOGGER.error("Error while Testing for mod name formatting", e);
         }
