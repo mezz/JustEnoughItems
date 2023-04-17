@@ -5,21 +5,17 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.platform.IPlatformScreenHelper;
-import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.filter.IFilterTextSource;
-import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.input.ICharTypedHandler;
 import mezz.jei.gui.input.IDragHandler;
@@ -35,7 +31,6 @@ import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.util.CheatUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -58,13 +53,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final GuiTextFieldFilter searchField;
 	private final IInternalKeyMappings keyBindings;
 	private final CheatUtil cheatUtil;
-	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private final ScreenPropertiesCache screenPropertiesCache;
 
 	public IngredientListOverlay(
 		IIngredientGridSource ingredientGridSource,
 		IFilterTextSource filterTextSource,
-		IIngredientManager ingredientManager,
 		IScreenHelper screenHelper,
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
@@ -95,7 +88,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		});
 
 		this.configButton = ConfigButton.create(this::isListDisplayed, worldConfig, textures, keyBindings);
-		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, screenHelper, ingredientManager, worldConfig);
 	}
 
 	@Override
@@ -123,7 +115,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 				Set<ImmutableRect2i> guiExclusionAreas = screenPropertiesCache.getGuiExclusionAreas();
 				updateBounds(guiProperties, displayArea, guiExclusionAreas);
 			}, () -> {
-				this.ghostIngredientDragManager.stopDrag();
+				this.contents.close();
 				this.searchField.setFocused(false);
 			});
 	}
@@ -187,7 +179,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			this.ghostIngredientDragManager.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 			this.contents.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
@@ -195,15 +186,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		}
 	}
 
-	public void drawOnForeground(Minecraft minecraft, PoseStack poseStack, AbstractContainerScreen<?> gui, int mouseX, int mouseY) {
+	public void drawOnForeground(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			poseStack.pushPose();
-			{
-				IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-				poseStack.translate(-screenHelper.getGuiLeft(gui), -screenHelper.getGuiTop(gui), 0);
-				this.ghostIngredientDragManager.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
-			}
-			poseStack.popPose();
+			this.contents.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
 		}
 	}
 
@@ -243,7 +228,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	public IDragHandler createDragHandler() {
-		final IDragHandler displayedDragHandler = this.ghostIngredientDragManager.createDragHandler();
+		final IDragHandler displayedDragHandler = this.contents.createDragHandler();
 
 		return new ProxyDragHandler(() -> {
 			if (isListDisplayed()) {
