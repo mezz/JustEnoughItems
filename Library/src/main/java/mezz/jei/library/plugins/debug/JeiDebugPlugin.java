@@ -224,7 +224,7 @@ public class JeiDebugPlugin implements IModPlugin {
 		registration.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
 		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registries.ITEM);
 		registry.getValues()
-			.limit(30)
+			.limit(300)
 			.forEach(item -> {
 				ItemStack catalystIngredient = new ItemStack(item);
 				if (!catalystIngredient.isEmpty()) {

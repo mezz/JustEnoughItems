@@ -98,7 +98,14 @@ public class ImmutableRect2i {
 		if (amount == 0) {
 			return this;
 		}
-		return new ImmutableRect2i(this.x + amount, this.y + amount, this.width - (amount * 2), this.height - (amount * 2));
+		amount = Math.min(amount, this.width / 2);
+		amount = Math.min(amount, this.height / 2);
+		return new ImmutableRect2i(
+			this.x + amount,
+			this.y + amount,
+			this.width - amount * 2,
+			this.height - amount * 2
+		);
 	}
 
 	public ImmutableRect2i expandBy(int amount) {
@@ -153,7 +160,7 @@ public class ImmutableRect2i {
 			return this;
 		}
 		if (amount > this.height) {
-			amount = this.height;
+			return this;
 		}
 		return new ImmutableRect2i(this.x, this.y, this.width, amount);
 	}
@@ -163,7 +170,7 @@ public class ImmutableRect2i {
 			return this;
 		}
 		if (amount > this.height) {
-			amount = this.height;
+			return this;
 		}
 		int cropAmount = this.height - amount;
 		return new ImmutableRect2i(this.x, this.y + cropAmount, this.width, amount);
@@ -174,7 +181,7 @@ public class ImmutableRect2i {
 			return this;
 		}
 		if (amount > this.width) {
-			amount = this.width;
+			return this;
 		}
 		int cropAmount = this.width - amount;
 		return new ImmutableRect2i(this.x + cropAmount, this.y, amount, this.height);
@@ -185,7 +192,7 @@ public class ImmutableRect2i {
 			return this;
 		}
 		if (amount > this.width) {
-			amount = this.width;
+			return this;
 		}
 		return new ImmutableRect2i(this.x, this.y, amount, this.height);
 	}
