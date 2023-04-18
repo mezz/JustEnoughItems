@@ -103,7 +103,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	private void updateBounds(IGuiProperties guiProperties, Set<ImmutableRect2i> guiExclusionAreas) {
-		ImmutableRect2i displayArea =  new ImmutableRect2i(0, 0, guiProperties.getGuiLeft(), guiProperties.getScreenHeight());
+		ImmutableRect2i displayArea = getDisplayArea(guiProperties);
 
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas);
@@ -124,6 +124,15 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.keepLeft(BUTTON_SIZE);
 			this.bookmarkButton.updateBounds(bookmarkButtonArea);
 		}
+	}
+
+	private static ImmutableRect2i getDisplayArea(IGuiProperties guiProperties) {
+		int width = guiProperties.getGuiLeft();
+		if (width <= 0) {
+			width = 0;
+		}
+		int screenHeight = guiProperties.getScreenHeight();
+		return new ImmutableRect2i(0, 0, width, screenHeight);
 	}
 
 	public void drawScreen(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
