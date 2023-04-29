@@ -1,10 +1,13 @@
 package mezz.jei.api.runtime;
 
+import javax.annotation.Nullable
+
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
+import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 
 /**
  * Gives access to JEI functions that are available once everything has loaded.
@@ -101,4 +104,14 @@ public interface IJeiRuntime {
 	 * @since 12.1.0
 	 */
 	IJeiConfigManager getConfigManager();
+
+        /**
+         * Returns the default JEI RecipeManagerPlugin
+         *
+         * @return returns null if you are not the default JEI runtime and don't have a IRecipeManagerPlugin of your own
+        */
+        @Nullable
+        default IRecipeManagerPlugin getRecipeManagerPlugin() {
+            return null;
+        }
 }

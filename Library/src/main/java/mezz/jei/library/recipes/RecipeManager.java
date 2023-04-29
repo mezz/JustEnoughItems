@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class RecipeManager implements IRecipeManager {
-	private final RecipeManagerInternal internal;
+	public final RecipeManagerInternal internal;
 	private final IModIdHelper modIdHelper;
 	private final IIngredientManager ingredientManager;
 	private final Textures textures;

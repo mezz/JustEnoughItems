@@ -2,6 +2,7 @@ package mezz.jei.library.runtime;
 
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IEditModeConfig;
@@ -14,6 +15,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
+import mezz.jei.library.recipes.RecipeManager;
 
 
 public class JeiRuntime implements IJeiRuntime {
@@ -125,4 +127,10 @@ public class JeiRuntime implements IJeiRuntime {
 	public IJeiConfigManager getConfigManager() {
 		return configManager;
 	}
+
+        @Override
+        public IRecipeManagerPlugin getRecipeManagerPlugin() {
+        	return ((RecipeManager) getRecipeManager()).internal.pluginManager.defaultIRecipeManagerPlugin;
+
+        }
 }

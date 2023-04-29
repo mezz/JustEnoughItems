@@ -21,9 +21,12 @@ import java.util.stream.Stream;
 public class PluginManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
+	public final IRecipeManagerPlugin defaultIRecipeManagerPlugin;
+	
 	private final List<IRecipeManagerPlugin> plugins = new ArrayList<>();
 
 	public PluginManager(IRecipeManagerPlugin internalRecipeManagerPlugin, List<IRecipeManagerPlugin> plugins) {
+		defaultIRecipeManagerPlugin = internalRecipeManagerPlugin;
 		this.plugins.add(internalRecipeManagerPlugin);
 		this.plugins.addAll(plugins);
 	}
