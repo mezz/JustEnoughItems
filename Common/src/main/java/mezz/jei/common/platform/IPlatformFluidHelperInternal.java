@@ -2,6 +2,7 @@ package mezz.jei.common.platform;
 
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundTag;
@@ -32,4 +33,6 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
     T copy(T ingredient);
 
     T normalize(T ingredient);
+
+    Optional<T> getContainedFluid(ITypedIngredient<?> ingredient);
 }

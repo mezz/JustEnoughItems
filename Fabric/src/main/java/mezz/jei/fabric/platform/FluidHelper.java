@@ -4,15 +4,19 @@ import mezz.jei.api.fabric.constants.FabricTypes;
 import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
-import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.fabric.ingredients.fluid.JeiFluidIngredient;
+import mezz.jei.library.render.FluidTankRenderer;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -20,6 +24,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -108,6 +113,20 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
     public IJeiFluidIngredient normalize(IJeiFluidIngredient ingredient) {
         CompoundTag tag = ingredient.getTag().orElse(null);
         return new JeiFluidIngredient(ingredient.getFluid(), bucketVolume(), tag);
+    }
+
+    @Override
+    public Optional<IJeiFluidIngredient> getContainedFluid(ITypedIngredient<?> ingredient) {
+        return ingredient.getItemStack()
+            .map(ContainerItemContext::withConstant)
+            .map(c -> c.find(FluidStorage.ITEM))
+            .map(Storage::iterator)
+            .filter(Iterator::hasNext)
+            .map(Iterator::next)
+            .map(view -> {
+                FluidVariant resource = view.getResource();
+                return new JeiFluidIngredient(resource.getFluid(), bucketVolume(), resource.copyNbt());
+            });
     }
 
     private static class AllFluidNbt implements IIngredientSubtypeInterpreter<IJeiFluidIngredient> {

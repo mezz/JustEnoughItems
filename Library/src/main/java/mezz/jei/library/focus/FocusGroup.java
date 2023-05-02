@@ -5,6 +5,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.config.ClientConfig;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,6 +20,7 @@ public class FocusGroup implements IFocusGroup {
 	 * Make sure any IFocus coming in through API calls is validated
 	 */
 	public static IFocusGroup create(Collection<? extends IFocus<?>> focuses, IIngredientManager ingredientManager) {
+		ClientConfig.getInstance();
 		List<Focus<?>> checkedFocuses = focuses.stream()
 			.filter(Objects::nonNull)
 			.<Focus<?>>map(f -> Focus.checkOne(f, ingredientManager))

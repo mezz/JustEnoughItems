@@ -10,8 +10,6 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.platform.IPlatformScreenHelper;
-import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.GuiProperties;
@@ -33,7 +31,6 @@ import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.util.CheatUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;

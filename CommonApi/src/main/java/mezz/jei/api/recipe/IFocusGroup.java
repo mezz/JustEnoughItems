@@ -13,6 +13,9 @@ import java.util.stream.Stream;
  * Helper functions make this simpler to use than a regular `List<IFocus<?>>`
  * when you only care about certain types of focuses.
  *
+ * Create an instance with {@link IFocusFactory#createFocusGroup}
+ * or get the empty one from {@link IFocusFactory#getEmptyFocusGroup}
+ *
  * @since 9.4.0
  */
 public interface IFocusGroup {
