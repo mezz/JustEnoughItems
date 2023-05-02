@@ -51,9 +51,10 @@ public class ConfigSchema implements IConfigSchema {
 
     @Override
     public void register(FileWatcher fileWatcher, ConfigManager configManager) {
-        if (!Files.exists(path)) {
-            save();
+        if (Files.exists(path)) {
+            loadIfNeeded();
         }
+        save();
 
         fileWatcher.addCallback(path, this::onFileChanged);
         configManager.registerConfigFile(this);
