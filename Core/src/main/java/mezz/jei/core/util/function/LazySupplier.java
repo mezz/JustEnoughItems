@@ -4,12 +4,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-public class CachedSupplier<T> implements Supplier<T> {
+public class LazySupplier<T> implements Supplier<T> {
     private final Supplier<T> supplier;
     @Nullable
     private T cachedResult;
 
-    public CachedSupplier(Supplier<T> supplier) {
+    public LazySupplier(Supplier<T> supplier) {
         this.supplier = supplier;
     }
 
