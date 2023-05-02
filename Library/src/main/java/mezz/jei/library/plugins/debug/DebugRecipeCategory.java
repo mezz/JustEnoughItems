@@ -130,11 +130,11 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	public void setRecipe(IRecipeLayoutBuilder builder, DebugRecipe recipe, IFocusGroup focuses) {
 		// ITEM type
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 70, 0)
-			.addItemStack(new ItemStack(Items.WATER_BUCKET))
+			.addItemStack(new ItemStack(Items.FARMLAND))
 			.addItemStack(new ItemStack(Items.BUNDLE));
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 110, 0)
-				.addIngredientsUnsafe(Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));
+				.addIngredientsUnsafe(Arrays.asList(new ItemStack(Items.RABBIT), null));
 
 		// FLUID type
 		long bucketVolume = platformFluidHelper.bucketVolume();
@@ -171,7 +171,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 			.addIngredient(DebugIngredient.TYPE, new DebugIngredient(3))
 			.addIngredientsUnsafe(List.of(
 				platformFluidHelper.create(Fluids.LAVA, (int) ((1.0 + Math.random()) * bucketVolume)),
-				new ItemStack(Items.LAVA_BUCKET)
+				new ItemStack(Items.ACACIA_LEAVES)
 			))
 			.addTooltipCallback((recipeSlotView, tooltip) -> {
 				switch (recipeSlotView.getRole()) {
