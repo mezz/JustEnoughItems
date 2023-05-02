@@ -31,7 +31,7 @@ public final class ConfigSerializer {
     }
 
     public static void load(Path path, @Unmodifiable List<ConfigCategory> categories) throws IOException {
-        LOGGER.info("Loading config file: {}", path);
+        LOGGER.debug("Loading config file: {}", path);
         List<String> lines = Files.readAllLines(path);
 
         Map<String, ConfigCategory> categoriesMap = new LinkedHashMap<>();
@@ -116,7 +116,7 @@ public final class ConfigSerializer {
             serializeCategory(serialized, category);
             serialized.add("");
         });
-        LOGGER.info("Saving config file: {}", path);
+        LOGGER.debug("Saving config file: {}", path);
         PathUtil.writeUsingTempFile(path, serialized);
     }
 
