@@ -7,6 +7,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.registration.JeiRegistrationStep;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
@@ -93,7 +94,7 @@ public final class JeiStarter {
 
 		this.recipeCategorySortingConfig = new RecipeCategorySortingConfig(configDir.resolve("recipe-category-sort-order.ini"));
 
-		PluginCaller.callOnPlugins("Sending ConfigManager", plugins, p -> p.onConfigManagerAvailable(configManager));
+		PluginCaller.callOnPlugins(JeiRegistrationStep.CONFIG_MANAGER, plugins, p -> p.onConfigManagerAvailable(configManager));
 	}
 
 	public void start() {
@@ -153,7 +154,7 @@ public final class JeiStarter {
 			recipeTransferManager,
 			screenHelper
 		);
-		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration));
+		PluginCaller.callOnPlugins(JeiRegistrationStep.RUNTIME, plugins, p -> p.registerRuntime(runtimeRegistration));
 
 		JeiRuntime jeiRuntime = new JeiRuntime(
 			recipeManager,
@@ -172,7 +173,7 @@ public final class JeiStarter {
 		);
 		timer.stop();
 
-		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime));
+		PluginCaller.callOnPlugins(JeiRegistrationStep.RUNTIME_AVAILABLE, plugins, p -> p.onRuntimeAvailable(jeiRuntime));
 
 		totalTime.stop();
 	}
@@ -180,6 +181,6 @@ public final class JeiStarter {
 	public void stop() {
 		LOGGER.info("Stopping JEI");
 		List<IModPlugin> plugins = data.plugins();
-		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
+		PluginCaller.callOnPlugins(JeiRegistrationStep.RUNTIME_UNAVAILABLE, plugins, IModPlugin::onRuntimeUnavailable);
 	}
 }

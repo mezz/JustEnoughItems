@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
+import mezz.jei.api.registration.JeiRegistrationStep;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
@@ -65,15 +66,15 @@ public class PluginLoader {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		List<IModPlugin> plugins = data.plugins();
 		SubtypeRegistration subtypeRegistration = new SubtypeRegistration();
-		PluginCaller.callOnPlugins("Registering item subtypes", plugins, p -> p.registerItemSubtypes(subtypeRegistration));
-		PluginCaller.callOnPlugins("Registering fluid subtypes", plugins, p ->
+		PluginCaller.callOnPlugins(JeiRegistrationStep.ITEM_SUBTYPES, plugins, p -> p.registerItemSubtypes(subtypeRegistration));
+		PluginCaller.callOnPlugins(JeiRegistrationStep.FLUID_SUBTYPES, plugins, p ->
 			p.registerFluidSubtypes(subtypeRegistration, fluidHelper)
 		);
 		SubtypeInterpreters subtypeInterpreters = subtypeRegistration.getInterpreters();
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeInterpreters);
 
 		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
-		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
+		PluginCaller.callOnPlugins(JeiRegistrationStep.INGREDIENTS, plugins, p -> p.registerIngredients(ingredientManagerBuilder));
 		this.ingredientManager = ingredientManagerBuilder.build();
 
 		StackHelper stackHelper = new StackHelper(subtypeManager);
@@ -86,17 +87,17 @@ public class PluginLoader {
 	@Unmodifiable
 	private List<IRecipeCategory<?>> createRecipeCategories(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin) {
 		RecipeCategoryRegistration recipeCategoryRegistration = new RecipeCategoryRegistration(jeiHelpers);
-		PluginCaller.callOnPlugins("Registering categories", plugins, p -> p.registerCategories(recipeCategoryRegistration));
+		PluginCaller.callOnPlugins(JeiRegistrationStep.CATEGORIES, plugins, p -> p.registerCategories(recipeCategoryRegistration));
 		CraftingRecipeCategory craftingCategory = vanillaPlugin.getCraftingCategory()
 			.orElseThrow(() -> new NullPointerException("vanilla crafting category"));
 		VanillaCategoryExtensionRegistration vanillaCategoryExtensionRegistration = new VanillaCategoryExtensionRegistration(craftingCategory, jeiHelpers);
-		PluginCaller.callOnPlugins("Registering vanilla category extensions", plugins, p -> p.registerVanillaCategoryExtensions(vanillaCategoryExtensionRegistration));
+		PluginCaller.callOnPlugins(JeiRegistrationStep.VANILLA_CATEGORY_EXTENSIONS, plugins, p -> p.registerVanillaCategoryExtensions(vanillaCategoryExtensionRegistration));
 		return recipeCategoryRegistration.getRecipeCategories();
 	}
 
 	public IScreenHelper createGuiScreenHelper(List<IModPlugin> plugins, IJeiHelpers jeiHelpers) {
 		GuiHandlerRegistration guiHandlerRegistration = new GuiHandlerRegistration(jeiHelpers);
-		PluginCaller.callOnPlugins("Registering gui handlers", plugins, p -> p.registerGuiHandlers(guiHandlerRegistration));
+		PluginCaller.callOnPlugins(JeiRegistrationStep.GUI_HANDLERS, plugins, p -> p.registerGuiHandlers(guiHandlerRegistration));
 		return guiHandlerRegistration.createGuiScreenHelper(ingredientManager);
 	}
 
@@ -104,7 +105,7 @@ public class PluginLoader {
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 		IRecipeTransferHandlerHelper handlerHelper = new RecipeTransferHandlerHelper(stackHelper);
 		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(stackHelper, handlerHelper, this.jeiHelpers, data.serverConnection());
-		PluginCaller.callOnPlugins("Registering recipes transfer handlers", plugins, p -> p.registerRecipeTransferHandlers(recipeTransferRegistration));
+		PluginCaller.callOnPlugins(JeiRegistrationStep.RECIPE_TRANSFER_HANDLERS, plugins, p -> p.registerRecipeTransferHandlers(recipeTransferRegistration));
 		return recipeTransferRegistration.getRecipeTransferHandlers();
 	}
 
@@ -118,11 +119,11 @@ public class PluginLoader {
 		List<IRecipeCategory<?>> recipeCategories = createRecipeCategories(plugins, vanillaPlugin);
 
 		RecipeCatalystRegistration recipeCatalystRegistration = new RecipeCatalystRegistration(ingredientManager, jeiHelpers);
-		PluginCaller.callOnPlugins("Registering recipe catalysts", plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration));
+		PluginCaller.callOnPlugins(JeiRegistrationStep.RECIPE_CATALYSTS, plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration));
 		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
 
 		AdvancedRegistration advancedRegistration = new AdvancedRegistration(jeiHelpers);
-		PluginCaller.callOnPlugins("Registering advanced plugins", plugins, p -> p.registerAdvanced(advancedRegistration));
+		PluginCaller.callOnPlugins(JeiRegistrationStep.ADVANCED, plugins, p -> p.registerAdvanced(advancedRegistration));
 		List<IRecipeManagerPlugin> recipeManagerPlugins = advancedRegistration.getRecipeManagerPlugins();
 
 		timer.start("Building recipe registry");
@@ -138,7 +139,7 @@ public class PluginLoader {
 
 		VanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory(ingredientManager);
 		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, ingredientVisibility, vanillaRecipeFactory, recipeManagerInternal);
-		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
+		PluginCaller.callOnPlugins(JeiRegistrationStep.RECIPES, plugins, p -> p.registerRecipes(recipeRegistration));
 
 		Textures textures = Internal.getTextures();
 		return new RecipeManager(recipeManagerInternal, modIdHelper, ingredientManager, textures, ingredientVisibility);
