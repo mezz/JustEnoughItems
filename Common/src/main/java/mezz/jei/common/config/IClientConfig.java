@@ -18,7 +18,9 @@ public interface IClientConfig {
 
 	boolean isAddingBookmarksToFront();
 
-	GiveMode getGiveMode();
+    boolean isLookupFluidContents();
+
+    GiveMode getGiveMode();
 
 	int getMaxRecipeGuiHeight();
 

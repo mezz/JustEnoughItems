@@ -38,6 +38,9 @@ public abstract class GuiIconToggleButton {
 	}
 
 	public void draw(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+		if (this.area.isEmpty()) {
+			return;
+		}
 		this.button.render(poseStack, mouseX, mouseY, partialTicks);
 		IDrawable icon = isIconToggledOn() ? this.onIcon : this.offIcon;
 		icon.draw(poseStack, this.button.getX() + 2, this.button.getY() + 2);

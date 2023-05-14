@@ -21,6 +21,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> asyncLoadingEnabled;
 	private final Supplier<List<String>> mainThreadPluginUids;
 	private final Supplier<Boolean> addBookmarksToFront;
+	private final Supplier<Boolean> lookupFluidContents;
 	private final Supplier<GiveMode> giveMode;
 	private final Supplier<Integer> maxRecipeGuiHeight;
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
@@ -48,6 +49,11 @@ public final class ClientConfig implements IClientConfig {
 			"AddBookmarksToFrontEnabled",
 			true,
 			"Enable adding new bookmarks to the front of the bookmark list."
+		);
+		lookupFluidContents = advanced.addBoolean(
+			"LookupFluidContents",
+			false,
+			"When looking up recipes with items that contain fluids, also look up recipes for the fluids."
 		);
 		giveMode = advanced.addEnum(
 			"GiveMode",
@@ -118,6 +124,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isAddingBookmarksToFront() {
 		return addBookmarksToFront.get();
+	}
+
+	@Override
+	public boolean isLookupFluidContents() {
+		return lookupFluidContents.get();
 	}
 
 	@Override

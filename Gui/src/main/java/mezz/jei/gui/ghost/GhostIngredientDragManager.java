@@ -38,7 +38,12 @@ public class GhostIngredientDragManager {
 	@Nullable
 	private List<Rect2i> hoveredTargetAreas;
 
-	public GhostIngredientDragManager(IRecipeFocusSource source, IScreenHelper screenHelper, IIngredientManager ingredientManager, IClientToggleState toggleState) {
+	public GhostIngredientDragManager(
+		IRecipeFocusSource source,
+		IScreenHelper screenHelper,
+		IIngredientManager ingredientManager,
+		IClientToggleState toggleState
+	) {
 		this.source = source;
 		this.screenHelper = screenHelper;
 		this.ingredientManager = ingredientManager;

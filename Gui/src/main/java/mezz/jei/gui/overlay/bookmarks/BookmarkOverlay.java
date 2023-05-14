@@ -6,20 +6,23 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
+import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.MouseUtil;
 import mezz.jei.gui.input.handlers.CheatInputHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
+import mezz.jei.gui.input.handlers.NullDragHandler;
+import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.ScreenPropertiesCache;
@@ -93,14 +96,14 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	private void onScreenPropertiesChanged() {
 		this.screenPropertiesCache.getGuiProperties()
-			.ifPresent(guiProperties -> {
+			.ifPresentOrElse(guiProperties -> {
 				Set<ImmutableRect2i> guiExclusionAreas = this.screenPropertiesCache.getGuiExclusionAreas();
 				updateBounds(guiProperties, guiExclusionAreas);
-			});
+			}, this.contents::close);
 	}
 
 	private void updateBounds(IGuiProperties guiProperties, Set<ImmutableRect2i> guiExclusionAreas) {
-		ImmutableRect2i displayArea =  new ImmutableRect2i(0, 0, guiProperties.getGuiLeft(), guiProperties.getScreenHeight());
+		ImmutableRect2i displayArea = getDisplayArea(guiProperties);
 
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas);
@@ -121,6 +124,15 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.keepLeft(BUTTON_SIZE);
 			this.bookmarkButton.updateBounds(bookmarkButtonArea);
 		}
+	}
+
+	private static ImmutableRect2i getDisplayArea(IGuiProperties guiProperties) {
+		int width = guiProperties.getGuiLeft();
+		if (width <= 0) {
+			width = 0;
+		}
+		int screenHeight = guiProperties.getScreenHeight();
+		return new ImmutableRect2i(0, 0, width, screenHeight);
 	}
 
 	public void drawScreen(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
@@ -186,5 +198,22 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			}
 			return bookmarkButtonInputHandler;
 		});
+	}
+
+	public IDragHandler createDragHandler() {
+		final IDragHandler displayedDragHandler = this.contents.createDragHandler();
+
+		return new ProxyDragHandler(() -> {
+			if (isListDisplayed()) {
+				return displayedDragHandler;
+			}
+			return NullDragHandler.INSTANCE;
+		});
+	}
+
+	public void drawOnForeground(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+		if (isListDisplayed()) {
+			this.contents.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
+		}
 	}
 }

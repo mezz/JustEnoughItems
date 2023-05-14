@@ -40,7 +40,8 @@ public final class OverlayHelper {
         IConnectionToServer serverConnection,
         Textures textures,
         IColorHelper colorHelper,
-        CheatUtil cheatUtil
+        CheatUtil cheatUtil,
+        IScreenHelper screenHelper
     ) {
         IngredientGrid ingredientListGrid = new IngredientGrid(
             ingredientManager,
@@ -66,7 +67,9 @@ public final class OverlayHelper {
             background,
             slotBackground,
             textures,
-            cheatUtil
+            cheatUtil,
+            screenHelper,
+            ingredientManager
         );
     }
 
@@ -102,13 +105,13 @@ public final class OverlayHelper {
             serverConnection,
             textures,
             colorHelper,
-            cheatUtil
+            cheatUtil,
+            screenHelper
         );
 
         return new IngredientListOverlay(
             ingredientFilter,
             filterTextSource,
-            ingredientManager,
             screenHelper,
             ingredientListGridNavigation,
             clientConfig,
@@ -151,8 +154,8 @@ public final class OverlayHelper {
             serverConnection,
             textures,
             colorHelper,
-            cheatUtil
-        );
+            cheatUtil,
+            screenHelper);
 
         return new BookmarkOverlay(
             bookmarkList,

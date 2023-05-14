@@ -21,7 +21,8 @@ import mezz.jei.core.util.SubString;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintWriter;
-import java.util.Set;
+import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * A Generalized Suffix Tree, based on the Ukkonen's paper "On-line construction of suffix trees"
@@ -80,21 +81,21 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 	 * supplied as input.
 	 *
 	 * @param word the key to search for
-	 * @param results the indexes associated with the input <tt>word</tt>
+	 * @param resultsConsumer accepts the results data
 	 */
 	@Override
-	public void getSearchResults(String word, Set<T> results) {
+	public void getSearchResults(String word, Consumer<Collection<T>> resultsConsumer) {
 		Node<T> tmpNode = searchNode(root, word);
 		if (tmpNode == null) {
 			return;
 		}
 
-		tmpNode.getData(results);
+		tmpNode.getData(resultsConsumer);
 	}
 
 	@Override
-	public void getAllElements(Set<T> results) {
-		root.getData(results);
+	public void getAllElements(Consumer<Collection<T>> resultsConsumer) {
+		root.getData(resultsConsumer);
 	}
 
 	/**
