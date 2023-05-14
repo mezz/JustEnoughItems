@@ -1,11 +1,12 @@
 package mezz.jei.core.search;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.function.Consumer;
 
 public interface ISearchable<T> {
-	void getSearchResults(String token, Set<T> results);
+	void getSearchResults(String token, Consumer<Collection<T>> resultsConsumer);
 
-	void getAllElements(Set<T> results);
+	void getAllElements(Consumer<Collection<T>> resultsConsumer);
 
 	default SearchMode getMode() {
 		return SearchMode.ENABLED;

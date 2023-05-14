@@ -42,15 +42,15 @@ public class ElementSearch implements IElementSearch {
 
 		PrefixInfo<IListElementInfo<?>> prefixInfo = tokenInfo.prefixInfo();
 		if (prefixInfo == ElementPrefixParser.NO_PREFIX) {
-			combinedSearchables.getSearchResults(token, results);
+			combinedSearchables.getSearchResults(token, results::addAll);
 			return results;
 		}
 		final ISearchable<IListElementInfo<?>> searchable = this.prefixedSearchables.get(prefixInfo);
 		if (searchable == null || searchable.getMode() == SearchMode.DISABLED) {
-			combinedSearchables.getSearchResults(token, results);
+			combinedSearchables.getSearchResults(token, results::addAll);
 			return results;
 		}
-		searchable.getSearchResults(token, results);
+		searchable.getSearchResults(token, results::addAll);
 		return results;
 	}
 
@@ -71,7 +71,8 @@ public class ElementSearch implements IElementSearch {
 	@Override
 	public Set<IListElementInfo<?>> getAllIngredients() {
 		Set<IListElementInfo<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
-		this.prefixedSearchables.get(ElementPrefixParser.NO_PREFIX).getAllElements(results);
+		PrefixedSearchable<IListElementInfo<?>> noPrefixSearchables = this.prefixedSearchables.get(ElementPrefixParser.NO_PREFIX);
+		noPrefixSearchables.getAllElements(results::addAll);
 		return results;
 	}
 

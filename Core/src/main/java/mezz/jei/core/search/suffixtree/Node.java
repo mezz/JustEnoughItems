@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.IntSummaryStatistics;
 import java.util.List;
-import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 /**
@@ -78,11 +78,13 @@ class Node<T> {
 	 * Gets data from the payload of both this node and its children, the string representation
 	 * of the path to this node is a substring of the one of the children nodes.
 	 */
-	public void getData(Set<T> results) {
-		results.addAll(this.data);
+	public void getData(Consumer<Collection<T>> resultsConsumer) {
+		if (!this.data.isEmpty()) {
+			resultsConsumer.accept(Collections.unmodifiableCollection(this.data));
+		}
 		for (Edge<T> edge : edges.values()) {
 			Node<T> dest = edge.getDest();
-			dest.getData(results);
+			dest.getData(resultsConsumer);
 		}
 	}
 
@@ -257,7 +259,7 @@ class Node<T> {
 	private void printEdges(PrintWriter out) {
 		for (Edge<T> edge : edges.values()) {
 			Node<T> child = edge.getDest();
-			out.println("\t" + nodeId(this) + " -> " + nodeId(child) + " [label=\"" + edge.commit() + "\",weight=10]");
+			out.println("\t" + nodeId(this) + " -> " + nodeId(child) + " [label=\"" + edge + "\",weight=10]");
 			child.printEdges(out);
 		}
 	}

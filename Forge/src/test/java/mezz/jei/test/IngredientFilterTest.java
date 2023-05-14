@@ -98,8 +98,8 @@ public class IngredientFilterTest {
 			colorHelper
 		);
 
-		this.ingredientManager.registerIngredientListener(ingredientFilter);
 		this.ingredientManager.registerIngredientListener(blacklist);
+		this.ingredientManager.registerIngredientListener(ingredientFilter);
 
 		this.ingredientVisibility.registerListener(this.ingredientFilter::onIngredientVisibilityChanged);
 	}
