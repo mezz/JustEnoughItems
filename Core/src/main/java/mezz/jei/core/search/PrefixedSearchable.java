@@ -1,7 +1,7 @@
 package mezz.jei.core.search;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.function.Consumer;
 
 public class PrefixedSearchable<T> implements ISearchable<T> {
 	private final ISearchStorage<T> searchStorage;
@@ -26,12 +26,12 @@ public class PrefixedSearchable<T> implements ISearchable<T> {
 	}
 
 	@Override
-	public void getSearchResults(String token, Set<T> results) {
-		searchStorage.getSearchResults(token, results);
+	public void getSearchResults(String token, Consumer<Collection<T>> resultsConsumer) {
+		searchStorage.getSearchResults(token, resultsConsumer);
 	}
 
 	@Override
-	public void getAllElements(Set<T> results) {
-		searchStorage.getAllElements(results);
+	public void getAllElements(Consumer<Collection<T>> resultsConsumer) {
+		searchStorage.getAllElements(resultsConsumer);
 	}
 }
