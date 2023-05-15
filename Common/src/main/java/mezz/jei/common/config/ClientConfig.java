@@ -5,7 +5,6 @@ import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
-import mezz.jei.common.config.file.serializers.StringSerializer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
 	private final Supplier<Boolean> asyncLoadingEnabled;
-	private final Supplier<List<String>> mainThreadPluginUids;
+	private final Supplier<Boolean> parallelPluginLoadingEnabled;
 	private final Supplier<Boolean> addBookmarksToFront;
 	private final Supplier<Boolean> lookupFluidContents;
 	private final Supplier<GiveMode> giveMode;
@@ -68,14 +67,14 @@ public final class ClientConfig implements IClientConfig {
 			"Max. recipe gui height"
 		);
 		asyncLoadingEnabled = advanced.addBoolean(
-				"AsyncLoading",
-				false,
-				"Whether JEI should load asynchronously"
+			"asyncLoadingEnabled",
+			false,
+			"Whether JEI should load asynchronously, so that it starts some time after world join."
 		);
-		mainThreadPluginUids = advanced.addList("AsyncPluginCompat",
-				List.of("namespace:mod"),
-				new ListSerializer<>(new StringSerializer()),
-				"List of plugin UIDs that should be loaded on the main thread"
+		parallelPluginLoadingEnabled = advanced.addBoolean(
+			"parallelPluginLoadingEnabled",
+			false,
+			"Whether JEI should load plugins in parallel. This may cause plugins to crash."
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
@@ -112,13 +111,13 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isAsyncLoadingEnabled() {
+	public boolean getAsyncLoadingEnabled() {
 		return asyncLoadingEnabled.get();
 	}
 
 	@Override
-	public List<String> getAsyncCompatPluginUids() {
-		return mainThreadPluginUids.get();
+	public boolean getParallelPluginLoadingEnabled() {
+		return parallelPluginLoadingEnabled.get();
 	}
 
 	@Override

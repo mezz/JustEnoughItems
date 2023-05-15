@@ -1,6 +1,5 @@
 package mezz.jei.fabric.startup;
 
-import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.network.ClientPacketRouter;
@@ -15,8 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.List;
 
 public class ClientLifecycleHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -34,9 +31,9 @@ public class ClientLifecycleHandler {
 		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig);
 		ClientNetworkHandler.registerClientPacketHandler(packetRouter);
 
-		List<IModPlugin> plugins = FabricPluginFinder.getModPlugins();
-		StartData startData = new StartData(
-			plugins,
+		FabricPluginFinder pluginFinder = new FabricPluginFinder();
+		StartData startData = StartData.create(
+			pluginFinder,
 			serverConnection,
 			keyMappings
 		);

@@ -117,7 +117,7 @@ public class RecipeManagerInternal {
 				if (ingredientSupplier == null) {
 					return false;
 				}
-				JeiStartTask.checkStartInterruption();
+				JeiStartTask.interruptIfCanceled();
 				return addRecipe(recipeCategory, recipe, ingredientSupplier);
 			})
 			.toList();

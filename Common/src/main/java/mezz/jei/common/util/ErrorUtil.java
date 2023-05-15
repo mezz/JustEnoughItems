@@ -10,7 +10,6 @@ import mezz.jei.common.platform.Services;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -132,19 +131,6 @@ public final class ErrorUtil {
 					throw new NullPointerException(name + " must not contain null values.");
 				}
 			}
-		}
-	}
-
-	@SuppressWarnings("ConstantConditions")
-	public static void assertMainThread() {
-		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft != null && !minecraft.isSameThread()) {
-			Thread currentThread = Thread.currentThread();
-			throw new IllegalStateException(
-				"A JEI API method is being called by another mod from the wrong thread:\n" +
-					currentThread + "\n" +
-					"It must be called on the main thread by using Minecraft.addScheduledTask."
-			);
 		}
 	}
 
