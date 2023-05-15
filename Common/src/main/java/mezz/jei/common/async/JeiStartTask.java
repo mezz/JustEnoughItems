@@ -39,4 +39,9 @@ public class JeiStartTask extends Thread {
 
         }
     }
+
+    private static final class JeiAsyncStartInterrupt extends Error {
+        public JeiAsyncStartInterrupt() {
+        }
+    }
 }
