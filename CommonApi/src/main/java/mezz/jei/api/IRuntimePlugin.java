@@ -20,11 +20,15 @@ public interface IRuntimePlugin {
 	/**
 	 * The unique ID for this mod plugin.
 	 * The namespace should be your mod's modId.
+	 *
+	 * @since 13.2.0
 	 */
 	ResourceLocation getPluginUid();
 
 	/**
 	 * Override the default JEI runtime.
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, IJeiClientExecutor clientExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -32,6 +36,8 @@ public interface IRuntimePlugin {
 
 	/**
 	 * Called when JEI's runtime features are available, after all mods have registered.
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, IJeiClientExecutor clientExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -39,6 +45,8 @@ public interface IRuntimePlugin {
 
 	/**
 	 * Called when JEI's runtime features are no longer available, after a user quits or logs out of a world.
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> onRuntimeUnavailable(IJeiClientExecutor clientExecutor) {
 		return CompletableFuture.completedFuture(null);
