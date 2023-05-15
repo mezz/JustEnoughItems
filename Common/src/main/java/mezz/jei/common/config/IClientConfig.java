@@ -16,8 +16,9 @@ public interface IClientConfig {
 
 	boolean isCheatToHotbarUsingHotkeysEnabled();
 
-	boolean isAsyncLoadingEnabled();
-	List<String> getAsyncCompatPluginUids();
+	boolean getAsyncLoadingEnabled();
+
+	boolean getParallelPluginLoadingEnabled();
 
 	boolean isAddingBookmarksToFront();
 	boolean isAddingBookmarksToFrontEnabled();

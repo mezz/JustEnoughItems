@@ -2,7 +2,7 @@ package mezz.jei.fabric.mixin;
 
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.fabric.plugins.fabric.FabricGuiPlugin;
+import mezz.jei.fabric.plugins.fabric.FabricRuntimePlugin;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.network.chat.Component;
@@ -18,17 +18,17 @@ public abstract class EffectRenderingInventoryScreenMixin extends AbstractContai
 		super(menu, inventory, component);
 	}
 
-	@ModifyVariable(
-		method = "renderEffects(Lnet/minecraft/client/gui/GuiGraphics;II)V",
-		index = 7,
-		name = "bl",
-		at = @At("STORE")
-	)
-	public boolean modifyHasRoom(boolean bl) {
-		boolean ingredientListDisplayed = FabricGuiPlugin.getRuntime()
-			.map(IJeiRuntime::getIngredientListOverlay)
-			.map(IIngredientListOverlay::isListDisplayed)
-			.orElse(false);
+    @ModifyVariable(
+        method = "renderEffects(Lcom/mojang/blaze3d/vertex/PoseStack;II)V",
+        index = 7,
+        name = "bl",
+        at = @At("STORE")
+    )
+    public boolean modifyHasRoom(boolean bl) {
+        boolean ingredientListDisplayed = FabricRuntimePlugin.getRuntime()
+            .map(IJeiRuntime::getIngredientListOverlay)
+            .map(IIngredientListOverlay::isListDisplayed)
+            .orElse(false);
 
 		if (ingredientListDisplayed) {
 			// make the potion effects think that there is not enough room,

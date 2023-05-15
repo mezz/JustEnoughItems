@@ -1,5 +1,6 @@
 package mezz.jei.library.load;
 
+import mezz.jei.common.config.DebugConfig;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,7 +41,7 @@ public class PluginCallerTimerRunnable {
 
 	public void stop() {
 		Duration elapsed = Duration.ofNanos(System.nanoTime() - this.startTime);
-		if (elapsed.toMillis() > startReportDurationMs) {
+		if (elapsed.toMillis() > startReportDurationMs || DebugConfig.isDebugModeEnabled()) {
 			LOGGER.info("{}: {} took {}", title, pluginUid, toHumanString(elapsed));
 		}
 	}

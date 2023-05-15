@@ -31,7 +31,6 @@ import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredient;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredientHelper;
@@ -349,7 +348,6 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 		if (DebugConfig.isDebugModeEnabled()) {
-			ErrorUtil.assertMainThread();
 			if (debugRecipeCategory != null) {
 				debugRecipeCategory.setRuntime(jeiRuntime);
 			}

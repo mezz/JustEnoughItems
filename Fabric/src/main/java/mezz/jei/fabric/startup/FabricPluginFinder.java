@@ -1,7 +1,9 @@
 package mezz.jei.fabric.startup;
 
+import mezz.jei.api.IAsyncModPlugin;
 import mezz.jei.api.IModPlugin;
-import net.fabricmc.loader.api.EntrypointException;
+import mezz.jei.api.IRuntimePlugin;
+import mezz.jei.library.startup.IPluginFinder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
@@ -12,15 +14,20 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class FabricPluginFinder {
-	private static final Logger LOGGER = LogManager.getLogger();
-
-	private FabricPluginFinder() {
-
+public final class FabricPluginFinder implements IPluginFinder {
+	@Override
+	public List<IModPlugin> getModPlugins() {
+		return getInstances("jei_mod_plugin", IModPlugin.class);
 	}
 
-	public static List<IModPlugin> getModPlugins() {
-		return getInstances("jei_mod_plugin", IModPlugin.class);
+	@Override
+	public List<IAsyncModPlugin> getAsyncModPlugins() {
+		return getInstances("jei_async_mod_plugin", IAsyncModPlugin.class);
+	}
+
+	@Override
+	public List<IRuntimePlugin> getRuntimePlugins() {
+		return getInstances("jei_runtime_plugin", IRuntimePlugin.class);
 	}
 
 	@SuppressWarnings("SameParameterValue")

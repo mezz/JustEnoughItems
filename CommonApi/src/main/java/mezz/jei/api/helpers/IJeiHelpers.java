@@ -9,7 +9,6 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
-import java.util.concurrent.Executor;
 
 /**
  * {@link IJeiHelpers} provides helpers and tools for addon mods.
@@ -90,9 +89,4 @@ public interface IJeiHelpers {
 	 * @since 11.5.0
 	 */
 	IIngredientManager getIngredientManager();
-
-	/**
-	 * Get access to the client executor, which budgets running background tasks on the main thread.
-	 */
-	Executor getClientExecutor();
 }

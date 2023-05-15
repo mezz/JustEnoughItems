@@ -1,46 +1,42 @@
 package mezz.jei.common.async;
 
 public class JeiStartTask extends Thread {
-    private final Runnable startTask;
     private boolean isCancelled = false;
 
-    public JeiStartTask(Runnable startTask) {
-        this.startTask = startTask;
-        this.setName("JEI Start");
+    public JeiStartTask(Runnable target) {
+        super(target, "JEI Start");
+        setDaemon(true);
     }
 
-    public void interruptStart() {
+    public void cancelStart() {
         isCancelled = true;
     }
 
     /**
-     * Check whether the startup should be interrupted. If this is not running on a JEI startup thread,
-     * false is returned.
+     * Check whether the startup should be interrupted.
+     * If this is not running on a JEI startup thread, false is returned.
      */
-    private static boolean isStartInterrupted() {
+    private static boolean isCanceled() {
         Thread t = Thread.currentThread();
-        if(t instanceof JeiStartTask) {
-            return ((JeiStartTask)t).isCancelled;
-        } else
+        if (t instanceof JeiStartTask startTask) {
+            return startTask.isCancelled;
+        } else {
             return false;
+        }
     }
 
-    private static final JeiAsyncStartInterrupt INTERRUPT_START = new JeiAsyncStartInterrupt();
-
-    public static void checkStartInterruption() {
-        if(isStartInterrupted())
-            forceInterrupt();
-    }
-
-    public static void forceInterrupt() {
-        throw INTERRUPT_START;
+    public static void interruptIfCanceled() {
+        if (isCanceled()) {
+            throw new JeiAsyncStartInterrupt();
+        }
     }
 
     @Override
     public void run() {
         try {
-            startTask.run();
-        } catch(JeiAsyncStartInterrupt ignored) {
+            super.run();
+        } catch (JeiAsyncStartInterrupt ignored) {
+
         }
     }
 }

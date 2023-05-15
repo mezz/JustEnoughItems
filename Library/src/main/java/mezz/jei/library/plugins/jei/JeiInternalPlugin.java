@@ -1,7 +1,7 @@
 package mezz.jei.library.plugins.jei;
 
-import mezz.jei.api.IModPlugin;
-import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.IAsyncModPlugin;
+import mezz.jei.api.JeiAsyncPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -10,8 +10,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.api.registration.IRecipeRegistration;
-import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IJeiClientExecutor;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
@@ -26,21 +25,17 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
+import java.util.concurrent.CompletableFuture;
 
-@JeiPlugin
-public class JeiInternalPlugin implements IModPlugin {
-	private final List<TagInfoRecipeMaker<?, ?>> tagInfoRecipeMakers = new ArrayList<>();
-
+@JeiAsyncPlugin
+public class JeiInternalPlugin implements IAsyncModPlugin {
 	@Override
 	public ResourceLocation getPluginUid() {
 		return new ResourceLocation(ModIds.JEI_ID, "internal");
 	}
 
 	@Override
-	public void registerCategories(IRecipeCategoryRegistration registration) {
+	public CompletableFuture<Void> registerCategories(IRecipeCategoryRegistration registration, IJeiClientExecutor clientExecutor) {
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
 		Textures textures = Internal.getTextures();
@@ -140,8 +135,7 @@ public class JeiInternalPlugin implements IModPlugin {
 		registration.addRecipeCategories(
 			new TagInfoRecipeCategory<>(guiHelper, recipeType, registryLocation)
 		);
-		tagInfoRecipeMakers.add(new TagInfoRecipeMaker<>(knownType, recipeType, knownType::getDefaultIngredient, registry.key()));
-		return true;
+		return CompletableFuture.completedFuture(null);
 	}
 
 	private static <B extends ItemLike> boolean createAndRegisterItemLikeTagCategory(

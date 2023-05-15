@@ -14,6 +14,9 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.runtime.IJeiClientExecutor;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTimer;
@@ -29,10 +32,23 @@ import java.util.Set;
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
 	private final IIngredientManager ingredientManager;
+	private final Textures textures;
+	private final IIngredientVisibility ingredientVisibility;
+	private final IJeiClientExecutor clientExecutor;
 
-	public RecipeManager(RecipeManagerInternal internal, IIngredientManager ingredientManager) {
+	public RecipeManager(
+		RecipeManagerInternal internal,
+		IModIdHelper modIdHelper,
+		IIngredientManager ingredientManager,
+		Textures textures,
+		IIngredientVisibility ingredientVisibility,
+		IJeiClientExecutor clientExecutor
+	) {
 		this.internal = internal;
 		this.ingredientManager = ingredientManager;
+		this.textures = textures;
+		this.ingredientVisibility = ingredientVisibility;
+		this.clientExecutor = clientExecutor;
 	}
 
 	@Override
@@ -60,10 +76,7 @@ public class RecipeManager implements IRecipeManager {
 	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(recipes, "recipes");
-		ErrorUtil.validateRecipes(recipeType, recipes);
-		ErrorUtil.assertMainThread();
-
-		internal.addRecipes(recipeType, recipes);
+		clientExecutor.runOnClientThread(() -> internal.addRecipes(recipeType, recipes));
 	}
 
 	@Override
@@ -122,32 +135,26 @@ public class RecipeManager implements IRecipeManager {
 	public <T> void hideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {
 		ErrorUtil.checkNotNull(recipes, "recipe");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		ErrorUtil.validateRecipes(recipeType, recipes);
-		ErrorUtil.assertMainThread();
-		internal.hideRecipes(recipeType, recipes);
+		clientExecutor.runOnClientThread(() -> internal.hideRecipes(recipeType, recipes));
 	}
 
 	@Override
 	public <T> void unhideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {
 		ErrorUtil.checkNotNull(recipes, "recipe");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		ErrorUtil.validateRecipes(recipeType, recipes);
-		ErrorUtil.assertMainThread();
-		internal.unhideRecipes(recipeType, recipes);
+		clientExecutor.runOnClientThread(() -> internal.unhideRecipes(recipeType, recipes));
 	}
 
 	@Override
 	public void hideRecipeCategory(RecipeType<?> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		ErrorUtil.assertMainThread();
-		internal.hideRecipeCategory(recipeType);
+		clientExecutor.runOnClientThread(() -> internal.hideRecipeCategory(recipeType));
 	}
 
 	@Override
 	public void unhideRecipeCategory(RecipeType<?> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		ErrorUtil.assertMainThread();
-		internal.unhideRecipeCategory(recipeType);
+		clientExecutor.runOnClientThread(() -> internal.unhideRecipeCategory(recipeType));
 	}
 
 	@Override

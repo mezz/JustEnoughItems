@@ -20,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.concurrent.Executor;
 
 public class JeiHelpers implements IJeiHelpers {
 	private final GuiHelper guiHelper;
@@ -32,7 +31,6 @@ public class JeiHelpers implements IJeiHelpers {
 	private final IVanillaRecipeFactory vanillaRecipeFactory;
 	private final IIngredientVisibility ingredientVisibility;
 	private final IPlatformFluidHelper<?> platformFluidHelper;
-	private final Executor clientExecutor;
 	private @Nullable Collection<IRecipeCategory<?>> recipeCategories;
 
 	public JeiHelpers(
@@ -41,8 +39,7 @@ public class JeiHelpers implements IJeiHelpers {
 		IModIdHelper modIdHelper,
 		IFocusFactory focusFactory,
 		IColorHelper colorHelper,
-		IIngredientManager ingredientManager,
-		Executor clientExecutor
+		IIngredientManager ingredientManager
 	) {
 		this.guiHelper = guiHelper;
 		this.stackHelper = stackHelper;
@@ -53,7 +50,6 @@ public class JeiHelpers implements IJeiHelpers {
 		this.vanillaRecipeFactory = vanillaRecipeFactory;
 		this.ingredientVisibility = ingredientVisibility;
 		this.platformFluidHelper = Services.PLATFORM.getFluidHelper();
-		this.clientExecutor = clientExecutor;
 	}
 
 	public void setRecipeCategories(Collection<IRecipeCategory<?>> recipeCategories) {
@@ -128,10 +124,5 @@ public class JeiHelpers implements IJeiHelpers {
 	@Override
 	public IIngredientManager getIngredientManager() {
 		return ingredientManager;
-	}
-
-	@Override
-	public Executor getClientExecutor() {
-		return clientExecutor;
 	}
 }

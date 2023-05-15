@@ -10,7 +10,7 @@ import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
-import net.minecraft.client.Minecraft;
+import net.minecraft.ReportedException;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -148,27 +148,11 @@ public final class ErrorUtil {
 		}
 	}
 
-	@SuppressWarnings("ConstantConditions")
-	public static void assertMainThread() {
-		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft != null && !minecraft.isSameThread()) {
-			Thread currentThread = Thread.currentThread();
-			throw new IllegalStateException(
-				"A JEI API method is being called by another mod from the wrong thread:\n" +
-					currentThread + "\n" +
-					"It must be called on the main thread by using Minecraft.addScheduledTask."
-			);
-		}
-	}
-
-	public static <T> void validateRecipes(RecipeType<T> recipeType, Iterable<? extends T> recipes) {
-		Class<?> recipeClass = recipeType.getRecipeClass();
-		for (T recipe : recipes) {
-			if (!recipeClass.isInstance(recipe)) {
-				throw new IllegalArgumentException(recipeType + " recipes must be an instance of " + recipeClass + ". Instead got: " + recipe.getClass());
-			}
-		}
-	}
+	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient, IIngredientManager ingredientManager) {
+		CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering ingredient");
+		CrashReportCategory ingredientCategory = crashreport.addCategory("Ingredient being rendered");
+		ingredientCategory.setDetail("String Name", ingredient::toString);
+		ingredientCategory.setDetail("Class Name", () -> ingredient.getClass().toString());
 
 	public static <T> CrashReport createIngredientCrashReport(Throwable throwable, String title, IIngredientManager ingredientManager, IIngredientType<T> ingredientType, T ingredient) {
 		CrashReport crashReport = CrashReport.forThrowable(throwable, title);

@@ -1,5 +1,6 @@
 package mezz.jei.gui.ingredients;
 
+import com.google.common.collect.Lists;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -8,6 +9,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.runtime.IJeiClientExecutor;
 import mezz.jei.common.async.JeiStartTask;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
@@ -35,7 +37,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,12 +73,10 @@ public class IngredientFilter implements
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
 		IIngredientManager ingredientManager,
-		Comparator<IListElement<?>> ingredientComparator,
-		List<IListElementInfo<?>> ingredients,
+		IIngredientSorter sorter,
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
-		IColorHelper colorHelper,
-		Executor clientExecutor
+		IColorHelper colorHelper
 	) {
 		this.filterTextSource = filterTextSource;
 		this.clientConfig = clientConfig;
@@ -88,46 +88,42 @@ public class IngredientFilter implements
 
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
 
-		LOGGER.info("Adding {} ingredients", ingredients.size());
-		List<IListElementInfo<?>> elementInfos = ingredients.stream()
-			.map(i -> ListElementInfo.create(i, ingredientManager, modIdHelper))
-			.flatMap(Optional::stream)
-			.collect(Collectors.toList());
-		List<CompletableFuture<?>> futures = new ArrayList<>();
-		for(IListElementInfo<?> elementInfo : elementInfos) {
-			futures.add(elementInfo.cacheTooltips(config, ingredientManager, clientExecutor));
-		}
-		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-		for(IListElementInfo<?> elementInfo : elementInfos) {
-			this.addIngredient(elementInfo);
-		}
-		LOGGER.info("Added {} ingredients", ingredients.size());
-		if (DebugConfig.isLogSuffixTreeStatsEnabled()) {
-			this.elementSearch.logStatistics();
-		}
-
 		this.filterTextSource.addListener(filterText -> {
 			ingredientListCached = null;
 			notifyListenersOfChange();
 		});
-
-		clientToggleState.addEditModeToggleListener(this);
 	}
 
-	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser) {
-		if (clientConfig.isLowMemorySlowSearchEnabled()) {
-			return new ElementSearchLowMem();
-		} else {
-			return new ElementSearch(elementPrefixParser);
-		}
-	}
+	public CompletableFuture<Void> addIngredientsAsync(
+		NonNullList<IListElement<?>> ingredients,
+		IJeiClientExecutor clientExecutor
+	) {
+		int ingredientCount = ingredients.size();
+		LOGGER.info("Adding {} ingredients", ingredientCount);
+		List<IListElementInfo<?>> elementInfos = ingredients.stream()
+			.map(i -> ListElementInfo.create(i, ingredientManager, modIdHelper))
+			.flatMap(Optional::stream)
+			.collect(Collectors.toList());
 
-	/* used to check for interruption periodically */
-	private int ingredientNum = 0;
+		int batchSize = 100;
+		AtomicInteger addedTotal = new AtomicInteger(0);
+		Stream<CompletableFuture<Void>> futures = Lists.partition(elementInfos, batchSize)
+			.stream()
+			.map(batch -> clientExecutor.runOnClientThread(() -> {
+				JeiStartTask.interruptIfCanceled();
+				for (IListElementInfo<?> elementInfo : batch) {
+					this.addIngredient(elementInfo);
+				}
+				int added = addedTotal.addAndGet(batch.size());
+				if (added % (10 * batchSize) == 0 || added == ingredientCount) {
+					LOGGER.info("Added {}/{} ingredients", added, ingredientCount);
+				}
+			}));
+
+		return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
+	}
 
 	public <V> void addIngredient(IListElementInfo<V> info) {
-		if(((ingredientNum++) % 100) == 0)
-			JeiStartTask.checkStartInterruption();
 		IListElement<V> element = info.getElement();
 		updateHiddenState(element);
 

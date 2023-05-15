@@ -22,6 +22,7 @@ import mezz.jei.library.ingredients.IngredientVisibility;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
+import mezz.jei.library.startup.JeiClientExecutor;
 import mezz.jei.test.lib.TestClientConfig;
 import mezz.jei.test.lib.TestClientToggleState;
 import mezz.jei.test.lib.TestColorHelper;
@@ -41,7 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 public class IngredientFilterTest {
 	private static final int EXTRA_INGREDIENT_COUNT = 5;
@@ -61,8 +62,9 @@ public class IngredientFilterTest {
 	private IModIdHelper modIdHelper;
 
 	@BeforeEach
-	public void setup() {
+	public void setup() throws ExecutionException, InterruptedException {
 		TestPlugin testPlugin = new TestPlugin();
+		JeiClientExecutor clientExecutor = new JeiClientExecutor(MoreExecutors.directExecutor());
 
 		SubtypeInterpreters subtypeInterpreters = new SubtypeInterpreters();
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeInterpreters);
@@ -90,13 +92,12 @@ public class IngredientFilterTest {
 			clientConfig,
 			ingredientFilterConfig,
 			ingredientManager,
-			Comparator.comparingInt(Object::hashCode),
-			baseList,
+			ingredientListSorter,
 			modIdHelper,
 			ingredientVisibility,
-			colorHelper,
-			MoreExecutors.directExecutor()
+			colorHelper
 		);
+		this.ingredientFilter.addIngredientsAsync(baseList, clientExecutor).get();
 
 		this.ingredientManager.registerIngredientListener(blacklist);
 		this.ingredientManager.registerIngredientListener(ingredientFilter);
