@@ -13,7 +13,6 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
 import mezz.jei.common.async.JeiStartTask;
-import mezz.jei.common.config.ClientConfig;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientToggleState;
