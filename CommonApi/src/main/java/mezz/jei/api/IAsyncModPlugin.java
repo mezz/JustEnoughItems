@@ -36,11 +36,15 @@ public interface IAsyncModPlugin {
 	/**
 	 * The unique ID for this mod plugin.
 	 * The namespace should be your mod's modId.
+	 *
+	 * @since 13.2.0
 	 */
 	ResourceLocation getPluginUid();
 
 	/**
 	 * If your item has subtypes that depend on NBT or capabilities, use this to help JEI identify those subtypes correctly.
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> registerItemSubtypes(ISubtypeRegistration registration, IJeiClientExecutor clientThreadExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -50,7 +54,7 @@ public interface IAsyncModPlugin {
 	 * If your fluid has subtypes that depend on NBT or capabilities,
 	 * use this to help JEI identify those subtypes correctly.
 	 *
-	 * @since 10.1.0
+	 * @since 13.2.0
 	 */
 	default <T> CompletableFuture<Void> registerFluidSubtypes(ISubtypeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper, IJeiClientExecutor clientThreadExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -58,6 +62,8 @@ public interface IAsyncModPlugin {
 
 	/**
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> registerIngredients(IModIngredientRegistration registration, IJeiClientExecutor clientThreadExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -66,6 +72,8 @@ public interface IAsyncModPlugin {
 	/**
 	 * Register the categories handled by this plugin.
 	 * These are registered before recipes so they can be checked for validity.
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> registerCategories(IRecipeCategoryRegistration registration, IJeiClientExecutor clientThreadExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -74,6 +82,8 @@ public interface IAsyncModPlugin {
 	/**
 	 * Register modded extensions to the vanilla crafting recipe category.
 	 * Custom crafting recipes for your mod should use this to tell JEI how they work.
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration, IJeiClientExecutor clientThreadExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -81,6 +91,8 @@ public interface IAsyncModPlugin {
 
 	/**
 	 * Register modded recipes.
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> registerRecipes(IRecipeRegistration registration, IJeiClientExecutor clientThreadExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -88,6 +100,8 @@ public interface IAsyncModPlugin {
 
 	/**
 	 * Register recipe transfer handlers (move ingredients from the inventory into crafting GUIs).
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> registerRecipeTransferHandlers(IRecipeTransferRegistration registration, IJeiClientExecutor clientThreadExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -97,6 +111,8 @@ public interface IAsyncModPlugin {
 	 * Register recipe catalysts.
 	 * Recipe Catalysts are ingredients that are needed in order to craft other things.
 	 * Vanilla examples of Recipe Catalysts are the Crafting Table and Furnace.
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> registerRecipeCatalysts(IRecipeCatalystRegistration registration, IJeiClientExecutor clientThreadExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -106,6 +122,8 @@ public interface IAsyncModPlugin {
 	 * Register various GUI-related things for your mod.
 	 * This includes adding clickable areas in your guis to open JEI,
 	 * and adding areas on the screen that JEI should avoid drawing.
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> registerGuiHandlers(IGuiHandlerRegistration registration, IJeiClientExecutor clientThreadExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -113,6 +131,8 @@ public interface IAsyncModPlugin {
 
 	/**
 	 * Register advanced features for your mod plugin.
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> registerAdvanced(IAdvancedRegistration registration, IJeiClientExecutor clientThreadExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -120,6 +140,8 @@ public interface IAsyncModPlugin {
 
 	/**
 	 * Called when JEI's runtime features are available, after all mods have registered.
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, IJeiClientExecutor clientThreadExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -127,7 +149,8 @@ public interface IAsyncModPlugin {
 
 	/**
 	 * Called when JEI's runtime features are no longer available, after a user quits or logs out of a world.
-	 * @since 11.5.0
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> onRuntimeUnavailable(IJeiClientExecutor clientThreadExecutor) {
 		return CompletableFuture.completedFuture(null);
@@ -136,7 +159,8 @@ public interface IAsyncModPlugin {
 	/**
 	 * Called when JEI's configs are available.
 	 * This is called early on, as soon as configs are available.
-	 * @since 12.3.0
+	 *
+	 * @since 13.2.0
 	 */
 	default CompletableFuture<Void> onConfigManagerAvailable(IJeiConfigManager configManager, IJeiClientExecutor clientThreadExecutor) {
 		return CompletableFuture.completedFuture(null);
