@@ -87,6 +87,8 @@ public final class BasicRecipeTransferHandlerServer {
 		for (ItemStack oldCraftingItem : clearedCraftingItems) {
 			int added = addStack(container, inventorySlots, oldCraftingItem);
 			if (added < oldCraftingItem.getCount()) {
+				// only drop the items which were not added to the inventory
+				oldCraftingItem.shrink(added);
 				if (!player.inventory.addItemStackToInventory(oldCraftingItem)) {
 					player.dropItem(oldCraftingItem, false);
 				}
