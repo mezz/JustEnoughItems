@@ -29,13 +29,13 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean getParallelPluginLoadingEnabled() {
+	public boolean getAsyncLoadingEnabled() {
 		return false;
 	}
 
 	@Override
-	public List<String> getAsyncCompatPluginUids() {
-		return List.of();
+	public boolean getParallelPluginLoadingEnabled() {
+		return false;
 	}
 
 	@Override
