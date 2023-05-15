@@ -219,7 +219,7 @@ public final class JeiStarter {
 			p -> p.onRuntimeAvailable(jeiRuntime, clientExecutor)
 		);
 		pluginCaller.callOnRuntimePlugins(
-			"Registering Runtime",
+			"Sending Runtime",
 			p -> p.onRuntimeAvailable(jeiRuntime, clientExecutor)
 		);
 
@@ -236,6 +236,10 @@ public final class JeiStarter {
 		pluginCaller.callOnPlugins(
 			"Sending Runtime Unavailable",
 			IModPlugin::onRuntimeUnavailable,
+			p -> p.onRuntimeUnavailable(clientExecutor)
+		);
+		pluginCaller.callOnRuntimePlugins(
+			"Sending Runtime Unavailable",
 			p -> p.onRuntimeUnavailable(clientExecutor)
 		);
 	}
