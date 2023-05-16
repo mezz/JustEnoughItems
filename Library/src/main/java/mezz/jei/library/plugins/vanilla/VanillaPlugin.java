@@ -2,6 +2,7 @@ package mezz.jei.library.plugins.vanilla;
 
 import mezz.jei.api.IAsyncModPlugin;
 import mezz.jei.api.JeiAsyncPlugin;
+import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
@@ -116,7 +117,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-@JeiAsyncPlugin
+@JeiPlugin
 public class VanillaPlugin implements IAsyncModPlugin {
 	private static final Logger LOGGER = LogManager.getLogger();
 

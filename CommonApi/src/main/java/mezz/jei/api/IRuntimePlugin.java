@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * In a Forge environment, IRuntimePlugins must have the {@link JeiRuntimePlugin} annotation to get loaded by JEI.
+ * In a Forge environment, IRuntimePlugins must have the {@link JeiPlugin} annotation to get loaded by JEI.
  *
  * In a Fabric environment, IModPlugins must be declared under `entrypoints.jei_runtime_plugin` in `fabric.mod.json`.
  * See <a href="https://fabricmc.net/wiki/documentation:entrypoint">the Fabric Wiki</a> for more information.

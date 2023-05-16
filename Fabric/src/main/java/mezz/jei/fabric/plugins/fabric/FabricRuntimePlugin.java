@@ -1,7 +1,7 @@
 package mezz.jei.fabric.plugins.fabric;
 
 import mezz.jei.api.IRuntimePlugin;
-import mezz.jei.api.JeiRuntimePlugin;
+import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.runtime.IJeiClientExecutor;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-@JeiRuntimePlugin
+@JeiPlugin
 public class FabricRuntimePlugin implements IRuntimePlugin {
     private static final Logger LOGGER = LogManager.getLogger();
     private static @Nullable IJeiRuntime runtime;
