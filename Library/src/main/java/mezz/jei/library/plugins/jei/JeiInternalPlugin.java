@@ -2,6 +2,7 @@ package mezz.jei.library.plugins.jei;
 
 import mezz.jei.api.IAsyncModPlugin;
 import mezz.jei.api.JeiAsyncPlugin;
+import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -27,7 +28,7 @@ import net.minecraft.world.level.ItemLike;
 
 import java.util.concurrent.CompletableFuture;
 
-@JeiAsyncPlugin
+@JeiPlugin
 public class JeiInternalPlugin implements IAsyncModPlugin {
 	@Override
 	public ResourceLocation getPluginUid() {

@@ -21,9 +21,9 @@ public record StartData(
         IInternalKeyMappings keyBindings
     ) {
         return new StartData(
-            pluginFinder.getModPlugins(),
-            pluginFinder.getAsyncModPlugins(),
-            pluginFinder.getRuntimePlugins(),
+            pluginFinder.getPlugins(IModPlugin.class),
+            pluginFinder.getPlugins(IAsyncModPlugin.class),
+            pluginFinder.getPlugins(IRuntimePlugin.class),
             connectionToServer,
             keyBindings
         );

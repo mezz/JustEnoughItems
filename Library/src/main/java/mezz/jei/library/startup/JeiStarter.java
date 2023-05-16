@@ -17,7 +17,6 @@ import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.library.color.ColorHelper;
 import mezz.jei.library.config.ColorNameConfig;
@@ -62,7 +61,6 @@ public final class JeiStarter {
 	private JeiStartTask currentStartTask = null;
 
 	public JeiStarter(StartData data) {
-		ErrorUtil.checkNotEmpty(data.plugins(), "plugins");
 		this.data = data;
 		List<IModPlugin> plugins = data.plugins();
 		List<IAsyncModPlugin> asyncModPlugins = data.asyncPlugins();
