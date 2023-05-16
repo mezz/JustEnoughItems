@@ -110,7 +110,6 @@ public class IngredientFilter implements
 		Stream<CompletableFuture<Void>> futures = Lists.partition(elementInfos, batchSize)
 			.stream()
 			.map(batch -> clientExecutor.runOnClientThread(() -> {
-				JeiStartTask.interruptIfCanceled();
 				for (IListElementInfo<?> elementInfo : batch) {
 					this.addIngredient(elementInfo);
 				}
