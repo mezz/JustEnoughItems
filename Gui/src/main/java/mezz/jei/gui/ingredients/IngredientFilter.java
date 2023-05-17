@@ -120,7 +120,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		IIngredientType<V> type = typedIngredient.getType();
 		Function<ITypedIngredient<V>, String> uidFunction = (i) -> ingredientHelper.getUniqueId(i.getIngredient(), UidContext.Ingredient);
 		String ingredientUid = uidFunction.apply(typedIngredient);
-		String displayName = ingredientHelper.getDisplayName(ingredient);
+		String displayName = IngredientInformationUtil.getDisplayName(ingredient, ingredientHelper);
 		String lowercaseDisplayName = Translator.toLowercaseWithLocale(displayName);
 
 		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, ElementPrefixParser.NO_PREFIX);
