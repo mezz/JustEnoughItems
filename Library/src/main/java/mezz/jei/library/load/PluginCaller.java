@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -24,20 +25,20 @@ public class PluginCaller {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final List<IModPlugin> plugins;
 	private final List<IAsyncModPlugin> asyncPlugins;
-	private final List<IRuntimePlugin> runtimePlugins;
+	private final IRuntimePlugin runtimePlugin;
 	private final JeiClientExecutor clientExecutor;
 	private final IClientConfig clientConfig;
 
 	public PluginCaller(
 		List<IModPlugin> plugins,
 		List<IAsyncModPlugin> asyncPlugins,
-		List<IRuntimePlugin> runtimePlugins,
+		IRuntimePlugin runtimePlugin,
 		JeiClientExecutor clientExecutor,
 		IClientConfig clientConfig
 	) {
 		this.plugins = plugins;
 		this.asyncPlugins = asyncPlugins;
-		this.runtimePlugins = runtimePlugins;
+		this.runtimePlugin = runtimePlugin;
 		this.clientExecutor = clientExecutor;
 		this.clientConfig = clientConfig;
 	}
@@ -154,13 +155,15 @@ public class PluginCaller {
 		LOGGER.info("{} took {}", title, stopwatch);
 	}
 
-	public void callOnRuntimePlugins(
+	public void callOnRuntimePlugin(
 		String title,
 		Function<IRuntimePlugin, CompletableFuture<Void>> asyncFun
 	) {
 		LOGGER.info("{}...", title);
 		Stopwatch stopwatch = Stopwatch.createStarted();
 
+		List<IRuntimePlugin> runtimePlugins = new ArrayList<>();
+		runtimePlugins.add(runtimePlugin);
 		try (PluginCallerTimer timer = new PluginCallerTimer()) {
 			callAsync(
 				title,
