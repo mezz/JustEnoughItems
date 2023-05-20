@@ -103,7 +103,7 @@ public final class JeiStarter {
 		this.pluginCaller = new PluginCaller(
 			data.plugins(),
 			data.asyncPlugins(),
-			data.runtimePlugins(),
+			data.runtimePlugin(),
 			clientExecutor,
 			jeiClientConfigs.getClientConfig()
 		);
@@ -198,7 +198,7 @@ public final class JeiStarter {
 			p -> p.registerRuntime(runtimeRegistration),
 			p -> CompletableFuture.completedFuture(null)
 		);
-		pluginCaller.callOnRuntimePlugins(
+		pluginCaller.callOnRuntimePlugin(
 			"Registering Runtime",
 			p -> p.registerRuntime(runtimeRegistration, clientExecutor)
 		);
@@ -225,8 +225,8 @@ public final class JeiStarter {
 			p -> p.onRuntimeAvailable(jeiRuntime),
 			p -> p.onRuntimeAvailable(jeiRuntime, clientExecutor)
 		);
-		pluginCaller.callOnRuntimePlugins(
-			"Sending Runtime",
+		pluginCaller.callOnRuntimePlugin(
+			"Sending Runtime to Runtime Plugin",
 			p -> p.onRuntimeAvailable(jeiRuntime, clientExecutor)
 		);
 
@@ -245,8 +245,8 @@ public final class JeiStarter {
 			IModPlugin::onRuntimeUnavailable,
 			p -> p.onRuntimeUnavailable(clientExecutor)
 		);
-		pluginCaller.callOnRuntimePlugins(
-			"Sending Runtime Unavailable",
+		pluginCaller.callOnRuntimePlugin(
+			"Sending Runtime Unavailable to Runtime Plugin",
 			p -> p.onRuntimeUnavailable(clientExecutor)
 		);
 	}

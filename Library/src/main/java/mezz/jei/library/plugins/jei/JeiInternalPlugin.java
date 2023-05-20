@@ -1,7 +1,6 @@
 package mezz.jei.library.plugins.jei;
 
 import mezz.jei.api.IAsyncModPlugin;
-import mezz.jei.api.JeiAsyncPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IGuiHelper;

@@ -10,7 +10,6 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IJeiClientExecutor;
-import mezz.jei.common.async.JeiStartTask;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.util.Translator;
 import mezz.jei.common.config.IClientConfig;

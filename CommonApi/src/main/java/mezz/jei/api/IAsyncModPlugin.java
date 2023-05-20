@@ -20,9 +20,8 @@ import java.util.concurrent.CompletableFuture;
 /**
  * The main async class to implement to create a JEI plugin.
  * Everything communicated between a mod and JEI is through this class.
- * IAsyncModPlugin must have the {@link JeiPlugin} annotation to get loaded by JEI.
  *
- * In a Forge environment, IModPlugins must have the {@link JeiAsyncPlugin} annotation to get loaded by JEI.
+ * In a Forge environment, IModPlugins must have the {@link JeiPlugin} annotation to get loaded by JEI.
  *
  * In a Fabric environment, IModPlugins must be declared under `entrypoints.jei_async_mod_plugin` in `fabric.mod.json`.
  * See <a href="https://fabricmc.net/wiki/documentation:entrypoint">the Fabric Wiki</a> for more information.
