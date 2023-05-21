@@ -1,6 +1,6 @@
 package mezz.jei.library.plugins.jei;
 
-import mezz.jei.api.IAsyncModPlugin;
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
@@ -10,7 +10,6 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.api.runtime.IJeiClientExecutor;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
@@ -25,17 +24,15 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 
-import java.util.concurrent.CompletableFuture;
-
 @JeiPlugin
-public class JeiInternalPlugin implements IAsyncModPlugin {
+public class JeiInternalPlugin implements IModPlugin {
 	@Override
 	public ResourceLocation getPluginUid() {
 		return new ResourceLocation(ModIds.JEI_ID, "internal");
 	}
 
 	@Override
-	public CompletableFuture<Void> registerCategories(IRecipeCategoryRegistration registration, IJeiClientExecutor clientExecutor) {
+	public void registerCategories(IRecipeCategoryRegistration registration) {
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
 		Textures textures = Internal.getTextures();
@@ -135,7 +132,6 @@ public class JeiInternalPlugin implements IAsyncModPlugin {
 		registration.addRecipeCategories(
 			new TagInfoRecipeCategory<>(guiHelper, recipeType, registryLocation)
 		);
-		return CompletableFuture.completedFuture(null);
 	}
 
 	private static <B extends ItemLike> boolean createAndRegisterItemLikeTagCategory(

@@ -12,7 +12,6 @@ import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.api.runtime.IJeiClientExecutor;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
@@ -62,11 +61,12 @@ import org.apache.logging.log4j.Logger;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 public class JeiGuiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-    public static CompletableFuture<JeiEventHandlers> start(IRuntimeRegistration registration, IJeiClientExecutor clientExecutor) {
+    public static CompletableFuture<JeiEventHandlers> start(IRuntimeRegistration registration, Executor clientExecutor) {
         LOGGER.info("Starting JEI GUI");
         LoggedTimer timer = new LoggedTimer();
 
@@ -230,6 +230,6 @@ public class JeiGuiStarter {
                     guiEventHandler,
                     clientInputHandler
                 );
-            });
+            }, clientExecutor);
     }
 }
