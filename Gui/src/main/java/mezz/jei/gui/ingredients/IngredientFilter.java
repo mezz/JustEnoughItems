@@ -9,11 +9,10 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.api.runtime.IJeiClientExecutor;
 import mezz.jei.common.config.DebugConfig;
-import mezz.jei.common.util.Translator;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.util.Translator;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.gui.search.ElementPrefixParser;
@@ -37,6 +36,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -94,7 +94,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 
 	public CompletableFuture<Void> addIngredientsAsync(
 		NonNullList<IListElement<?>> ingredients,
-		IJeiClientExecutor clientExecutor
+		Executor clientExecutor
 	) {
 		int ingredientCount = ingredients.size();
 		LOGGER.info("Adding {} ingredients", ingredientCount);
@@ -103,19 +103,21 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			.flatMap(Optional::stream)
 			.collect(Collectors.toList());
 
-		int batchSize = 100;
+		int batchSize = 1000;
 		AtomicInteger addedTotal = new AtomicInteger(0);
 		Stream<CompletableFuture<Void>> futures = Lists.partition(elementInfos, batchSize)
 			.stream()
-			.map(batch -> clientExecutor.runOnClientThread(() -> {
-				for (IListElementInfo<?> elementInfo : batch) {
-					this.addIngredient(elementInfo);
-				}
-				int added = addedTotal.addAndGet(batch.size());
-				if (added % (10 * batchSize) == 0 || added == ingredientCount) {
-					LOGGER.info("Added {}/{} ingredients", added, ingredientCount);
-				}
-			}));
+			.map(batch ->
+				CompletableFuture.runAsync(() -> {
+					for (IListElementInfo<?> elementInfo : batch) {
+						this.addIngredient(elementInfo);
+					}
+					int added = addedTotal.addAndGet(batch.size());
+					if (added % (10 * batchSize) == 0 || added == ingredientCount) {
+						LOGGER.info("Added {}/{} ingredients", added, ingredientCount);
+					}
+				}, clientExecutor)
+			);
 
 		return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
 	}

@@ -4,7 +4,6 @@ import mezz.jei.api.IRuntimePlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IRuntimeRegistration;
-import mezz.jei.api.runtime.IJeiClientExecutor;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiGuiStarter;
@@ -14,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @JeiPlugin
 public class ForgeRuntimePlugin implements IRuntimePlugin {
@@ -27,7 +27,7 @@ public class ForgeRuntimePlugin implements IRuntimePlugin {
     }
 
     @Override
-    public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, IJeiClientExecutor clientExecutor) {
+    public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor clientExecutor) {
         if (!runtimeSubscriptions.isEmpty()) {
             LOGGER.error("JEI GUI is already running.");
             runtimeSubscriptions.clear();
@@ -36,11 +36,11 @@ public class ForgeRuntimePlugin implements IRuntimePlugin {
         return JeiGuiStarter.start(registration, clientExecutor)
             .thenAcceptAsync(eventHandlers -> {
                 EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
-            }, clientExecutor.getExecutor());
+            }, clientExecutor);
     }
 
     @Override
-    public CompletableFuture<Void> onRuntimeUnavailable(IJeiClientExecutor clientExecuto) {
+    public CompletableFuture<Void> onRuntimeUnavailable(Executor clientExecutor) {
         LOGGER.info("Stopping JEI GUI");
         runtimeSubscriptions.clear();
         return CompletableFuture.completedFuture(null);

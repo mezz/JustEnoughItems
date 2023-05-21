@@ -7,12 +7,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
-public final class ClientTaskExecutor implements Executor, Tickable {
+public final class ClientTaskExecutor implements Executor {
     private static final long TICK_BUDGET = TimeUnit.MILLISECONDS.toNanos(2);
 
     private final ConcurrentLinkedQueue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
 
-    @Override
     public void tick() {
         final long startTime = System.nanoTime();
         do {

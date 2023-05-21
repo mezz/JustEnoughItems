@@ -15,8 +15,6 @@ public interface IClientConfig {
 
 	boolean getAsyncLoadingEnabled();
 
-	boolean getParallelPluginLoadingEnabled();
-
 	boolean isAddingBookmarksToFront();
 
     boolean isLookupFluidContents();

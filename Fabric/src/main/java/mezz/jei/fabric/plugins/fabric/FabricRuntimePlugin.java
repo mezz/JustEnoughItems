@@ -4,7 +4,6 @@ import mezz.jei.api.IRuntimePlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IRuntimeRegistration;
-import mezz.jei.api.runtime.IJeiClientExecutor;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.fabric.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiGuiStarter;
@@ -15,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @JeiPlugin
 public class FabricRuntimePlugin implements IRuntimePlugin {
@@ -29,19 +29,19 @@ public class FabricRuntimePlugin implements IRuntimePlugin {
     }
 
     @Override
-    public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, IJeiClientExecutor clientExecutor) {
+    public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor clientExecutor) {
         return JeiGuiStarter.start(registration, clientExecutor)
             .thenAccept(eventRegistration::setEventHandlers);
     }
 
     @Override
-    public CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, IJeiClientExecutor clientExecutor) {
+    public CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor clientExecutor) {
         runtime = jeiRuntime;
         return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public CompletableFuture<Void> onRuntimeUnavailable(IJeiClientExecutor clientExecutor) {
+    public CompletableFuture<Void> onRuntimeUnavailable(Executor clientExecutor) {
         runtime = null;
         LOGGER.info("Stopping JEI GUI");
         eventRegistration.clear();

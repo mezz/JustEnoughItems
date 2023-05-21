@@ -34,11 +34,6 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean getParallelPluginLoadingEnabled() {
-		return false;
-	}
-
-	@Override
 	public boolean isAddingBookmarksToFront() {
 		return false;
 	}

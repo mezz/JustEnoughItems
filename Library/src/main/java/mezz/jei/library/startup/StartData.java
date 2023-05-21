@@ -1,6 +1,5 @@
 package mezz.jei.library.startup;
 
-import mezz.jei.api.IAsyncModPlugin;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IRuntimePlugin;
 import mezz.jei.api.constants.ModIds;
@@ -16,7 +15,6 @@ import java.util.stream.Collectors;
 
 public record StartData(
     List<IModPlugin> plugins,
-    List<IAsyncModPlugin> asyncPlugins,
     IRuntimePlugin runtimePlugin,
     IConnectionToServer serverConnection,
     IInternalKeyMappings keyBindings
@@ -56,7 +54,6 @@ public record StartData(
 
         return new StartData(
             pluginFinder.getPlugins(IModPlugin.class),
-            pluginFinder.getPlugins(IAsyncModPlugin.class),
             runtimePlugin,
             connectionToServer,
             keyBindings
