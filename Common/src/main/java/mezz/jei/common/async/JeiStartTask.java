@@ -12,22 +12,12 @@ public class JeiStartTask extends Thread {
         isCancelled = true;
     }
 
-    /**
-     * Check whether the startup should be interrupted.
-     * If this is not running on a JEI startup thread, false is returned.
-     */
-    private static boolean isCanceled() {
+    public static void interruptIfCanceled() {
         Thread t = Thread.currentThread();
         if (t instanceof JeiStartTask startTask) {
-            return startTask.isCancelled;
-        } else {
-            return false;
-        }
-    }
-
-    public static void interruptIfCanceled() {
-        if (isCanceled()) {
-            throw new JeiAsyncStartInterrupt();
+            if (startTask.isCancelled) {
+                throw new JeiAsyncStartInterrupt();
+            }
         }
     }
 
