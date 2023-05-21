@@ -1,7 +1,6 @@
 package mezz.jei.library.startup;
 
 import com.google.common.collect.ImmutableTable;
-import mezz.jei.api.IAsyncModPlugin;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -15,6 +14,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.async.JeiStartTask;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.JeiClientConfigs;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
@@ -46,7 +46,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public final class JeiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -59,7 +58,7 @@ public final class JeiStarter {
 	@SuppressWarnings("FieldCanBeLocal")
 	private final FileWatcher fileWatcher = new FileWatcher("JEI Config File Watcher");
 	private final ConfigManager configManager;
-	private final JeiClientExecutor clientExecutor;
+	private final ClientTaskExecutor clientExecutor;
 	private final PluginCaller pluginCaller;
 	private final JeiClientConfigs jeiClientConfigs;
 
@@ -68,12 +67,11 @@ public final class JeiStarter {
 	public JeiStarter(StartData data) {
 		this.data = data;
 		List<IModPlugin> plugins = data.plugins();
-		List<IAsyncModPlugin> asyncModPlugins = data.asyncPlugins();
-		this.vanillaPlugin = PluginHelper.getPluginWithClass(VanillaPlugin.class, plugins, asyncModPlugins)
+		this.vanillaPlugin = PluginHelper.getPluginWithClass(VanillaPlugin.class, plugins)
 			.orElseThrow(() -> new IllegalStateException("vanilla plugin not found"));
-		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins, asyncModPlugins)
+		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins)
 			.orElse(null);
-		PluginHelper.sortPlugins(asyncModPlugins, vanillaPlugin, jeiInternalPlugin);
+		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
 
 		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
 
@@ -99,19 +97,16 @@ public final class JeiStarter {
 
 		this.recipeCategorySortingConfig = new RecipeCategorySortingConfig(configDir.resolve("recipe-category-sort-order.ini"));
 
-		this.clientExecutor = new JeiClientExecutor(new ClientTaskExecutor());
+		this.clientExecutor = new ClientTaskExecutor();
 		this.pluginCaller = new PluginCaller(
 			data.plugins(),
-			data.asyncPlugins(),
 			data.runtimePlugin(),
-			clientExecutor,
-			jeiClientConfigs.getClientConfig()
+			clientExecutor
 		);
 
 		pluginCaller.callOnPlugins(
 			"Sending ConfigManager",
-			p -> p.onConfigManagerAvailable(configManager),
-			p -> p.onConfigManagerAvailable(configManager, clientExecutor)
+			p -> p.onConfigManagerAvailable(configManager)
 		);
 	}
 
@@ -130,7 +125,8 @@ public final class JeiStarter {
 			return;
 		}
 
-		if (jeiClientConfigs.getClientConfig().getAsyncLoadingEnabled()) {
+		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+		if (clientConfig.getAsyncLoadingEnabled()) {
 			currentStartTask = new JeiStartTask(this::doActualStart);
 			currentStartTask.start();
 		} else {
@@ -195,12 +191,11 @@ public final class JeiStarter {
 		//noinspection removal
 		pluginCaller.callOnPlugins(
 			"Registering Runtime (legacy)",
-			p -> p.registerRuntime(runtimeRegistration),
-			p -> CompletableFuture.completedFuture(null)
+			p -> p.registerRuntime(runtimeRegistration)
 		);
 		pluginCaller.callOnRuntimePlugin(
 			"Registering Runtime",
-			p -> p.registerRuntime(runtimeRegistration, clientExecutor)
+			p -> p.registerRuntime(runtimeRegistration, clientExecutor.getExecutor())
 		);
 
 		JeiRuntime jeiRuntime = new JeiRuntime(
@@ -222,12 +217,11 @@ public final class JeiStarter {
 
 		pluginCaller.callOnPlugins(
 			"Sending Runtime",
-			p -> p.onRuntimeAvailable(jeiRuntime),
-			p -> p.onRuntimeAvailable(jeiRuntime, clientExecutor)
+			p -> p.onRuntimeAvailable(jeiRuntime)
 		);
 		pluginCaller.callOnRuntimePlugin(
 			"Sending Runtime to Runtime Plugin",
-			p -> p.onRuntimeAvailable(jeiRuntime, clientExecutor)
+			p -> p.onRuntimeAvailable(jeiRuntime, clientExecutor.getExecutor())
 		);
 
 		totalTime.stop();
@@ -242,12 +236,11 @@ public final class JeiStarter {
 		}
 		pluginCaller.callOnPlugins(
 			"Sending Runtime Unavailable",
-			IModPlugin::onRuntimeUnavailable,
-			p -> p.onRuntimeUnavailable(clientExecutor)
+			IModPlugin::onRuntimeUnavailable
 		);
 		pluginCaller.callOnRuntimePlugin(
 			"Sending Runtime Unavailable to Runtime Plugin",
-			p -> p.onRuntimeUnavailable(clientExecutor)
+			p -> p.onRuntimeUnavailable(clientExecutor.getExecutor())
 		);
 	}
 

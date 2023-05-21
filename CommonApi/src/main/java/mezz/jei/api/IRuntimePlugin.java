@@ -1,11 +1,11 @@
 package mezz.jei.api;
 
 import mezz.jei.api.registration.IRuntimeRegistration;
-import mezz.jei.api.runtime.IJeiClientExecutor;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 /**
  * A runtime plugin is used to override the default JEI runtime.
@@ -34,7 +34,7 @@ public interface IRuntimePlugin {
 	 *
 	 * @since 11.9.0
 	 */
-	default CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, IJeiClientExecutor clientExecutor) {
+	default CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor clientExecutor) {
 		return CompletableFuture.completedFuture(null);
 	}
 
@@ -43,7 +43,7 @@ public interface IRuntimePlugin {
 	 *
 	 * @since 11.9.0
 	 */
-	default CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, IJeiClientExecutor clientExecutor) {
+	default CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor clientExecutor) {
 		return CompletableFuture.completedFuture(null);
 	}
 
@@ -52,7 +52,7 @@ public interface IRuntimePlugin {
 	 *
 	 * @since 11.9.0
 	 */
-	default CompletableFuture<Void> onRuntimeUnavailable(IJeiClientExecutor clientExecutor) {
+	default CompletableFuture<Void> onRuntimeUnavailable(Executor clientExecutor) {
 		return CompletableFuture.completedFuture(null);
 	}
 }

@@ -8,9 +8,9 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.util.Translator;
-import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.util.Translator;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.ingredients.IIngredientSorter;
@@ -24,15 +24,14 @@ import mezz.jei.library.ingredients.IngredientVisibility;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
-import mezz.jei.library.startup.JeiClientExecutor;
 import mezz.jei.test.lib.TestClientConfig;
+import mezz.jei.test.lib.TestClientToggleState;
 import mezz.jei.test.lib.TestColorHelper;
 import mezz.jei.test.lib.TestIngredient;
 import mezz.jei.test.lib.TestIngredientFilterConfig;
 import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
-import mezz.jei.test.lib.TestClientToggleState;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
@@ -47,6 +46,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
 public class IngredientFilterTest {
 	private static final int EXTRA_INGREDIENT_COUNT = 5;
@@ -66,7 +66,7 @@ public class IngredientFilterTest {
 	@BeforeEach
 	public void setup() throws ExecutionException, InterruptedException {
 		TestPlugin testPlugin = new TestPlugin();
-		JeiClientExecutor clientExecutor = new JeiClientExecutor(MoreExecutors.directExecutor());
+		Executor clientExecutor = MoreExecutors.directExecutor();
 
 		SubtypeInterpreters subtypeInterpreters = new SubtypeInterpreters();
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeInterpreters);

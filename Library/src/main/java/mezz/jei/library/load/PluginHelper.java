@@ -1,6 +1,5 @@
 package mezz.jei.library.load;
 
-import mezz.jei.api.IAsyncModPlugin;
 import mezz.jei.library.plugins.jei.JeiInternalPlugin;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
@@ -11,7 +10,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 
 public class PluginHelper {
-	public static void sortPlugins(List<IAsyncModPlugin> plugins, VanillaPlugin vanillaPlugin, @Nullable JeiInternalPlugin jeiInternalPlugin) {
+	public static void sortPlugins(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin, @Nullable JeiInternalPlugin jeiInternalPlugin) {
 		plugins.remove(vanillaPlugin);
 		plugins.add(0, vanillaPlugin);
 
@@ -21,11 +20,8 @@ public class PluginHelper {
 		}
 	}
 
-	public static <T> Optional<T> getPluginWithClass(Class<? extends T> pluginClass, List<IModPlugin> modPlugins, List<IAsyncModPlugin> asyncModPlugins) {
-		return Stream.concat(
-			modPlugins.stream(),
-			asyncModPlugins.stream()
-		)
+	public static <T> Optional<T> getPluginWithClass(Class<? extends T> pluginClass, List<IModPlugin> modPlugins) {
+		return modPlugins.stream()
 			.filter(pluginClass::isInstance)
 			.<T>map(pluginClass::cast)
 			.findFirst();

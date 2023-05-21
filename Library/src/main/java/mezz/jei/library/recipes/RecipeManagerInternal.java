@@ -9,7 +9,6 @@ import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.async.JeiStartTask;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.ingredients.IIngredientSupplier;
@@ -117,7 +116,6 @@ public class RecipeManagerInternal {
 				if (ingredientSupplier == null) {
 					return false;
 				}
-				JeiStartTask.interruptIfCanceled();
 				return addRecipe(recipeCategory, recipe, ingredientSupplier);
 			})
 			.toList();

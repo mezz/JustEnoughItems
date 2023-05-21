@@ -44,7 +44,7 @@ import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.library.recipes.RecipeManager;
 import mezz.jei.library.recipes.RecipeManagerInternal;
 import mezz.jei.library.runtime.JeiHelpers;
-import mezz.jei.library.startup.JeiClientExecutor;
+import mezz.jei.library.startup.ClientTaskExecutor;
 import mezz.jei.library.transfer.RecipeTransferHandlerHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -55,7 +55,7 @@ import java.util.List;
 public class PluginLoader {
 	private final IConnectionToServer serverConnection;
 	private final PluginCaller pluginCaller;
-	private final JeiClientExecutor clientExecutor;
+	private final ClientTaskExecutor clientExecutor;
 	private final LoggedTimer timer;
 	private final IIngredientManager ingredientManager;
 	private final JeiHelpers jeiHelpers;
@@ -65,7 +65,7 @@ public class PluginLoader {
 		PluginCaller pluginCaller,
 		IModIdFormatConfig modIdFormatConfig,
 		IColorHelper colorHelper,
-		JeiClientExecutor clientExecutor
+		ClientTaskExecutor clientExecutor
 	) {
 		this.serverConnection = serverConnection;
 		this.pluginCaller = pluginCaller;
@@ -76,13 +76,11 @@ public class PluginLoader {
 		SubtypeRegistration subtypeRegistration = new SubtypeRegistration();
 		pluginCaller.callOnPlugins(
 			"Registering item subtypes",
-			p -> p.registerItemSubtypes(subtypeRegistration),
-			p -> p.registerItemSubtypes(subtypeRegistration, clientExecutor)
+			p -> p.registerItemSubtypes(subtypeRegistration)
 		);
 		pluginCaller.callOnPlugins(
 			"Registering fluid subtypes",
-			p -> p.registerFluidSubtypes(subtypeRegistration, fluidHelper),
-			p -> p.registerFluidSubtypes(subtypeRegistration, fluidHelper, clientExecutor)
+			p -> p.registerFluidSubtypes(subtypeRegistration, fluidHelper)
 		);
 		SubtypeInterpreters subtypeInterpreters = subtypeRegistration.getInterpreters();
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeInterpreters);
@@ -90,8 +88,7 @@ public class PluginLoader {
 		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
 		pluginCaller.callOnPlugins(
 			"Registering ingredients",
-			p -> p.registerIngredients(ingredientManagerBuilder),
-			p -> p.registerIngredients(ingredientManagerBuilder, clientExecutor)
+			p -> p.registerIngredients(ingredientManagerBuilder)
 		);
 		this.ingredientManager = ingredientManagerBuilder.build();
 
@@ -107,16 +104,14 @@ public class PluginLoader {
 		RecipeCategoryRegistration recipeCategoryRegistration = new RecipeCategoryRegistration(jeiHelpers);
 		pluginCaller.callOnPlugins(
 			"Registering categories",
-			p -> p.registerCategories(recipeCategoryRegistration),
-			p ->p.registerCategories(recipeCategoryRegistration, clientExecutor)
+			p -> p.registerCategories(recipeCategoryRegistration)
 		);
 		CraftingRecipeCategory craftingCategory = vanillaPlugin.getCraftingCategory()
 			.orElseThrow(() -> new NullPointerException("vanilla crafting category"));
 		VanillaCategoryExtensionRegistration vanillaCategoryExtensionRegistration = new VanillaCategoryExtensionRegistration(craftingCategory);
 		pluginCaller.callOnPlugins(
 			"Registering vanilla category extensions",
-			p -> p.registerVanillaCategoryExtensions(vanillaCategoryExtensionRegistration),
-			p -> p.registerVanillaCategoryExtensions(vanillaCategoryExtensionRegistration, clientExecutor)
+			p -> p.registerVanillaCategoryExtensions(vanillaCategoryExtensionRegistration)
 		);
 		return recipeCategoryRegistration.getRecipeCategories();
 	}
@@ -125,8 +120,7 @@ public class PluginLoader {
 		GuiHandlerRegistration guiHandlerRegistration = new GuiHandlerRegistration(jeiHelpers);
 		pluginCaller.callOnPlugins(
 			"Registering gui handlers",
-			p -> p.registerGuiHandlers(guiHandlerRegistration),
-			p -> p.registerGuiHandlers(guiHandlerRegistration, clientExecutor)
+			p -> p.registerGuiHandlers(guiHandlerRegistration)
 		);
 		return guiHandlerRegistration.createGuiScreenHelper(ingredientManager);
 	}
@@ -137,8 +131,7 @@ public class PluginLoader {
 		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(stackHelper, handlerHelper, jeiHelpers, serverConnection);
 		pluginCaller.callOnPlugins(
 			"Registering recipes transfer handlers",
-			p -> p.registerRecipeTransferHandlers(recipeTransferRegistration),
-			p -> p.registerRecipeTransferHandlers(recipeTransferRegistration, clientExecutor)
+			p -> p.registerRecipeTransferHandlers(recipeTransferRegistration)
 		);
 		return recipeTransferRegistration.getRecipeTransferHandlers();
 	}
@@ -154,16 +147,14 @@ public class PluginLoader {
 		RecipeCatalystRegistration recipeCatalystRegistration = new RecipeCatalystRegistration(ingredientManager, jeiHelpers);
 		pluginCaller.callOnPlugins(
 			"Registering recipe catalysts",
-			p -> p.registerRecipeCatalysts(recipeCatalystRegistration),
-			p -> p.registerRecipeCatalysts(recipeCatalystRegistration, clientExecutor)
+			p -> p.registerRecipeCatalysts(recipeCatalystRegistration)
 		);
 		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
 
 		AdvancedRegistration advancedRegistration = new AdvancedRegistration(jeiHelpers);
 		pluginCaller.callOnPlugins(
 			"Registering advanced plugins",
-			p -> p.registerAdvanced(advancedRegistration),
-			p -> p.registerAdvanced(advancedRegistration, clientExecutor)
+			p -> p.registerAdvanced(advancedRegistration)
 		);
 		List<IRecipeManagerPlugin> recipeManagerPlugins = advancedRegistration.getRecipeManagerPlugins();
 
@@ -182,8 +173,7 @@ public class PluginLoader {
 		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, ingredientVisibility, vanillaRecipeFactory, recipeManagerInternal);
 		pluginCaller.callOnPlugins(
 			"Registering recipes",
-			p -> p.registerRecipes(recipeRegistration),
-			p -> p.registerRecipes(recipeRegistration, clientExecutor)
+			p -> p.registerRecipes(recipeRegistration)
 		);
 
 		Textures textures = Internal.getTextures();

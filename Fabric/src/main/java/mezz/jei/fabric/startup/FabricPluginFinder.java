@@ -1,6 +1,5 @@
 package mezz.jei.fabric.startup;
 
-import mezz.jei.api.IAsyncModPlugin;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IRuntimePlugin;
 import mezz.jei.library.startup.IPluginFinder;
@@ -14,7 +13,6 @@ import java.util.stream.Collectors;
 public final class FabricPluginFinder implements IPluginFinder {
 	private static final Map<Class<?>, String> entryPointKeys = Map.of(
 		IModPlugin.class, "jei_mod_plugin",
-		IAsyncModPlugin.class, "jei_async_mod_plugin",
 		IRuntimePlugin.class, "jei_runtime_plugin"
 	);
 
