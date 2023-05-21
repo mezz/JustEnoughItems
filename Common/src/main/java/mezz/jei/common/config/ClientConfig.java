@@ -137,13 +137,15 @@ public final class ClientConfig implements IClientConfig {
 			false,
 			"Show creative tab names in ingredient tooltips."
 		);
-		asyncLoadingEnabled = advanced.addBoolean(
+
+		IConfigCategoryBuilder loading = schema.addCategory("loading");
+		asyncLoadingEnabled = loading.addBoolean(
 			"asyncLoadingEnabled",
 			false,
-			"Whether JEI should load asynchronously, so that it starts some time after world join."
+			"Whether JEI should load asynchronously, so that it starts finishes loading after world join."
 		);
-		parallelPluginLoadingEnabled = advanced.addBoolean(
-			"parallelPluginLoadingEnabled",
+		parallelPluginLoadingEnabled = loading.addBoolean(
+			"experimentalParallelPluginLoadingEnabled",
 			false,
 			"Whether JEI should load plugins in parallel. This may cause plugins to crash."
 		);
