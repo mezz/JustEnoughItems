@@ -56,21 +56,27 @@ public class PluginCaller {
 			.map(plugin ->
 				CompletableFuture.<CompletableFuture<Void>>supplyAsync(() -> {
 						JeiStartTask.interruptIfCanceled();
-						ResourceLocation pluginUid = uidFunc.apply(plugin);
-						var t = timer.begin(title, pluginUid);
 						try {
-							return func.apply(plugin)
-								.handle((v, e) -> {
-									if (e != null) {
-										LOGGER.error("Caught an error from mod plugin: {} {}", plugin.getClass(), pluginUid, e);
-									}
-									t.close();
-									return null;
-								});
-						} catch (RuntimeException | LinkageError e) {
-							LOGGER.error("Caught an error from mod plugin: {} {}", plugin.getClass(), pluginUid, e);
+							ResourceLocation pluginUid = uidFunc.apply(plugin);
+							var t = timer.begin(title, pluginUid);
+							try {
+								return func.apply(plugin)
+									.handle((v, e) -> {
+										if (e != null) {
+											LOGGER.error("Caught an error from mod plugin: {} {}", plugin.getClass(), pluginUid, e);
+										}
+										t.close();
+										return null;
+									});
+							} catch (RuntimeException | LinkageError e) {
+								LOGGER.error("Caught an error from mod plugin: {} {}", plugin.getClass(), pluginUid, e);
+								erroredPlugins.add(plugin);
+								t.close();
+								return CompletableFuture.completedFuture(null);
+							}
+						} catch (RuntimeException e) {
+							LOGGER.error("Caught an error from mod plugin: {}", plugin.getClass(), e);
 							erroredPlugins.add(plugin);
-							t.close();
 							return CompletableFuture.completedFuture(null);
 						}
 					})
@@ -103,11 +109,16 @@ public class PluginCaller {
 	) {
 		Set<T> erroredPlugins = ConcurrentHashMap.newKeySet();
 		for (T plugin : plugins) {
-			ResourceLocation pluginUid = uidFunc.apply(plugin);
-			try (var ignored = timer.begin(title, pluginUid)) {
-				func.accept(plugin);
-			} catch (RuntimeException | LinkageError e) {
-				LOGGER.error("Caught an error from mod plugin: {} {}", plugin.getClass(), pluginUid, e);
+			try {
+				ResourceLocation pluginUid = uidFunc.apply(plugin);
+				try (var ignored = timer.begin(title, pluginUid)) {
+					func.accept(plugin);
+				} catch (RuntimeException | LinkageError e) {
+					LOGGER.error("Caught an error from mod plugin: {} {}", plugin.getClass(), pluginUid, e);
+					erroredPlugins.add(plugin);
+				}
+			} catch (RuntimeException e) {
+				LOGGER.error("Caught an error from mod plugin: {}", plugin.getClass(), e);
 				erroredPlugins.add(plugin);
 			}
 		}
