@@ -21,9 +21,9 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
@@ -154,7 +154,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
     @Override
     public Optional<FluidStack> getContainedFluid(ITypedIngredient<?> ingredient) {
         return ingredient.getItemStack()
-            .flatMap(i -> i.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve())
+            .flatMap(i -> i.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).resolve())
             .map(c -> c.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE));
     }
 }
