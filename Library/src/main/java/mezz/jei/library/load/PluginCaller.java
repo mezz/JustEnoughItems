@@ -47,7 +47,7 @@ public class PluginCaller {
 					try {
 						ResourceLocation pluginUid = uidFunc.apply(plugin);
 						try (var ignored = timer.begin(title, pluginUid)) {
-							clientExecutor.runAsync(() -> func.accept(plugin));
+							func.accept(plugin);
 						} catch (RuntimeException | LinkageError e) {
 							LOGGER.error("Caught an error from mod plugin: {} {}", plugin.getClass(), pluginUid, e);
 							erroredPlugins.add(plugin);
