@@ -70,7 +70,7 @@ public final class ClientConfig implements IClientConfig {
 		asyncLoadingEnabled = loading.addBoolean(
 			"asyncLoadingEnabled",
 			false,
-			"Whether JEI should load asynchronously, so that it starts finishes loading after world join."
+			"Whether JEI should load asynchronously, so that it finishes loading after world join."
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
