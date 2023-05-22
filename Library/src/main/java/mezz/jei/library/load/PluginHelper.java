@@ -4,7 +4,6 @@ import mezz.jei.library.plugins.jei.JeiInternalPlugin;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
