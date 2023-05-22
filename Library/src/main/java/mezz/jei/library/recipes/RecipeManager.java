@@ -70,7 +70,7 @@ public class RecipeManager implements IRecipeManager {
 	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(recipes, "recipes");
-		clientExecutor.execute(() -> internal.addRecipes(recipeType, recipes));
+		clientExecutor.runAsync(() -> internal.addRecipes(recipeType, recipes));
 	}
 
 	@Override
@@ -100,26 +100,26 @@ public class RecipeManager implements IRecipeManager {
 	public <T> void hideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {
 		ErrorUtil.checkNotNull(recipes, "recipe");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		clientExecutor.execute(() -> internal.hideRecipes(recipeType, recipes));
+		clientExecutor.runAsync(() -> internal.hideRecipes(recipeType, recipes));
 	}
 
 	@Override
 	public <T> void unhideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {
 		ErrorUtil.checkNotNull(recipes, "recipe");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		clientExecutor.execute(() -> internal.unhideRecipes(recipeType, recipes));
+		clientExecutor.runAsync(() -> internal.unhideRecipes(recipeType, recipes));
 	}
 
 	@Override
 	public void hideRecipeCategory(RecipeType<?> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		clientExecutor.execute(() -> internal.hideRecipeCategory(recipeType));
+		clientExecutor.runAsync(() -> internal.hideRecipeCategory(recipeType));
 	}
 
 	@Override
 	public void unhideRecipeCategory(RecipeType<?> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		clientExecutor.execute(() -> internal.unhideRecipeCategory(recipeType));
+		clientExecutor.runAsync(() -> internal.unhideRecipeCategory(recipeType));
 	}
 
 	@Override

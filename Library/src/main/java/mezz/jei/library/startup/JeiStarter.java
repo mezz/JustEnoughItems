@@ -14,6 +14,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.async.JeiStartTask;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.JeiClientConfigs;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
@@ -124,7 +125,8 @@ public final class JeiStarter {
 			return;
 		}
 
-		if (jeiClientConfigs.getClientConfig().getAsyncLoadingEnabled()) {
+		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+		if (clientConfig.getAsyncLoadingEnabled()) {
 			currentStartTask = new JeiStartTask(this::doActualStart);
 			currentStartTask.start();
 		} else {
@@ -193,7 +195,7 @@ public final class JeiStarter {
 		);
 		pluginCaller.callOnRuntimePlugin(
 			"Registering Runtime",
-			p -> p.registerRuntime(runtimeRegistration, clientExecutor)
+			p -> p.registerRuntime(runtimeRegistration, clientExecutor.getExecutor())
 		);
 
 		JeiRuntime jeiRuntime = new JeiRuntime(
@@ -219,7 +221,7 @@ public final class JeiStarter {
 		);
 		pluginCaller.callOnRuntimePlugin(
 			"Sending Runtime to Runtime Plugin",
-			p -> p.onRuntimeAvailable(jeiRuntime, clientExecutor)
+			p -> p.onRuntimeAvailable(jeiRuntime, clientExecutor.getExecutor())
 		);
 
 		totalTime.stop();
@@ -238,7 +240,7 @@ public final class JeiStarter {
 		);
 		pluginCaller.callOnRuntimePlugin(
 			"Sending Runtime Unavailable to Runtime Plugin",
-			p -> p.onRuntimeUnavailable(clientExecutor)
+			p -> p.onRuntimeUnavailable(clientExecutor.getExecutor())
 		);
 	}
 

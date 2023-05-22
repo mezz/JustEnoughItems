@@ -16,6 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class PluginCaller {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -41,20 +42,26 @@ public class PluginCaller {
 		Consumer<T> func
 	) {
 		Set<T> erroredPlugins = ConcurrentHashMap.newKeySet();
-		for (T plugin : plugins) {
-			try {
-				ResourceLocation pluginUid = uidFunc.apply(plugin);
-				try (var ignored = timer.begin(title, pluginUid)) {
-					func.accept(plugin);
-				} catch (RuntimeException | LinkageError e) {
-					LOGGER.error("Caught an error from mod plugin: {} {}", plugin.getClass(), pluginUid, e);
-					erroredPlugins.add(plugin);
-				}
-			} catch (RuntimeException e) {
-				LOGGER.error("Caught an error from mod plugin: {}", plugin.getClass(), e);
-				erroredPlugins.add(plugin);
-			}
-		}
+		Stream<Runnable> runnables = plugins.stream()
+			.map(plugin -> {
+				return () -> {
+					try {
+						ResourceLocation pluginUid = uidFunc.apply(plugin);
+						try (var ignored = timer.begin(title, pluginUid)) {
+							clientExecutor.runAsync(() -> func.accept(plugin));
+						} catch (RuntimeException | LinkageError e) {
+							LOGGER.error("Caught an error from mod plugin: {} {}", plugin.getClass(), pluginUid, e);
+							erroredPlugins.add(plugin);
+						}
+					} catch (RuntimeException e) {
+						LOGGER.error("Caught an error from mod plugin: {}", plugin.getClass(), e);
+						erroredPlugins.add(plugin);
+					}
+				};
+			});
+
+		clientExecutor.runAsync(runnables);
+
 		plugins.removeAll(erroredPlugins);
 	}
 
@@ -67,15 +74,13 @@ public class PluginCaller {
 		Stopwatch stopwatch = Stopwatch.createStarted();
 
 		try (PluginCallerTimer timer = new PluginCallerTimer()) {
-			CompletableFuture.runAsync(() -> {
-				callSync(
-					title,
-					timer,
-					plugins,
-					IModPlugin::getPluginUid,
-					func
-				);
-			}, clientExecutor).join();
+			callSync(
+				title,
+				timer,
+				plugins,
+				IModPlugin::getPluginUid,
+				func
+			);
 		}
 
 		LOGGER.info("{} took {}", title, stopwatch);
@@ -91,20 +96,7 @@ public class PluginCaller {
 		try (PluginCallerTimer timer = new PluginCallerTimer()) {
 			ResourceLocation pluginUid = runtimePlugin.getPluginUid();
 			try (var ignored = timer.begin(title, pluginUid)) {
-				CompletableFuture<Void> future = CompletableFuture.supplyAsync(() -> asyncFun.apply(runtimePlugin))
-					.thenCompose(f -> f);
-
-				Minecraft minecraft = Minecraft.getInstance();
-				if (minecraft.isSameThread()) {
-					minecraft.managedBlock(() -> {
-						if (future.isDone()) {
-							return true;
-						}
-						clientExecutor.tick();
-						return false;
-					});
-				}
-				future.join();
+				clientExecutor.runAsync(() -> asyncFun.apply(runtimePlugin));
 			}
 		}
 
