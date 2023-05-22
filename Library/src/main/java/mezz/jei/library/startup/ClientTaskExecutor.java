@@ -36,8 +36,8 @@ public final class ClientTaskExecutor {
 
     @SuppressWarnings("UnusedReturnValue")
     private <T> T join(CompletableFuture<T> future) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.isSameThread()) {
+        if (RenderSystem.isOnRenderThreadOrInit()) {
+            Minecraft minecraft = Minecraft.getInstance();
             minecraft.managedBlock(() -> {
                 if (future.isDone()) {
                     return true;
@@ -72,13 +72,7 @@ public final class ClientTaskExecutor {
 
         @Override
         public void execute(Runnable runnable) {
-            if (RenderSystem.isOnRenderThreadOrInit()) {
-                // we can't queue on the client render thread,
-                // it would block forever waiting for the next tick to happen
-                runnable.run();
-            } else {
-                taskQueue.add(runnable);
-            }
+            taskQueue.add(runnable);
         }
     }
 
