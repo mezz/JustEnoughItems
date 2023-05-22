@@ -5,7 +5,6 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IRuntimePlugin;
 import mezz.jei.common.async.JeiStartTask;
 import mezz.jei.library.startup.ClientTaskExecutor;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
