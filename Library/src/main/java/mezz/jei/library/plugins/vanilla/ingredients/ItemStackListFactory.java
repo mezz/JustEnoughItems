@@ -24,7 +24,7 @@ public final class ItemStackListFactory {
 		final Set<String> itemNameSet = new HashSet<>();
 
 		for (CreativeModeTab itemGroup : CreativeModeTab.TABS) {
-			if (itemGroup == CreativeModeTab.TAB_HOTBAR || itemGroup == CreativeModeTab.TAB_INVENTORY) {
+			if (itemGroup == null || itemGroup == CreativeModeTab.TAB_HOTBAR || itemGroup == CreativeModeTab.TAB_INVENTORY) {
 				continue;
 			}
 			NonNullList<ItemStack> creativeTabItemStacks = NonNullList.create();
