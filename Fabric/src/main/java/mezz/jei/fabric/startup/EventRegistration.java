@@ -1,6 +1,6 @@
 package mezz.jei.fabric.startup;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.InputType;
@@ -92,9 +92,9 @@ public class EventRegistration {
 		return !clientInputHandler.onGuiMouseScroll(mouseX, mouseY, verticalAmount);
 	}
 
-	private void afterRender(Screen screen, PoseStack poseStack, int mouseX, int mouseY, float tickDelta) {
+	private void afterRender(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
 		if (guiEventHandler != null) {
-			guiEventHandler.onDrawScreenPost(screen, poseStack, mouseX, mouseY);
+			guiEventHandler.onDrawScreenPost(screen, guiGraphics, mouseX, mouseY);
 		}
 	}
 
@@ -111,15 +111,15 @@ public class EventRegistration {
 		}
 	}
 
-	private void afterRenderBackground(Screen screen, PoseStack poseStack) {
+	private void afterRenderBackground(Screen screen, GuiGraphics guiGraphics) {
 		if (guiEventHandler != null) {
-			guiEventHandler.onDrawBackgroundPost(screen, poseStack);
+			guiEventHandler.onDrawBackgroundPost(screen, guiGraphics);
 		}
 	}
 
-	private void drawForeground(AbstractContainerScreen<?> screen, PoseStack poseStack, int mouseX, int mouseY) {
+	private void drawForeground(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (guiEventHandler != null) {
-			guiEventHandler.onDrawForeground(screen, poseStack, mouseX, mouseY);
+			guiEventHandler.onDrawForeground(screen, guiGraphics, mouseX, mouseY);
 		}
 	}
 

@@ -1,7 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -136,14 +136,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		background = textures.getRecipeGuiBackground();
 	}
 
-	private static void drawCenteredStringWithShadow(PoseStack poseStack, Font font, String string, ImmutableRect2i area) {
+	private static void drawCenteredStringWithShadow(GuiGraphics guiGraphics, Font font, String string, ImmutableRect2i area) {
 		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, string);
-		font.drawShadow(poseStack, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
+		guiGraphics.drawString(font, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 
-	private static void drawCenteredStringWithShadow(PoseStack poseStack, Font font, Component text, ImmutableRect2i area) {
+	private static void drawCenteredStringWithShadow(GuiGraphics guiGraphics, Font font, Component text, ImmutableRect2i area) {
 		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, text);
-		font.drawShadow(poseStack, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
+		guiGraphics.drawString(font, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 
 	public ImmutableRect2i getArea() {
@@ -216,27 +216,27 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (minecraft == null) {
 			return;
 		}
-		renderBackground(poseStack);
+		renderBackground(guiGraphics);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		final int x = area.getX();
 		final int y = area.getY();
 		final int width = area.getWidth();
 		final int height = area.getHeight();
-		this.background.draw(poseStack, x, y, width, height);
+		this.background.draw(guiGraphics, x, y, width, height);
 
 		RenderSystem.disableBlend();
 
-		fill(poseStack,
+		guiGraphics.fill(
 			x + borderPadding + buttonWidth,
 			nextRecipeCategory.getY(),
 			x + width - borderPadding - buttonWidth,
 			nextRecipeCategory.getY() + buttonHeight,
 			0x30000000);
-		fill(poseStack,
+		guiGraphics.fill(
 			x + borderPadding + buttonWidth,
 			nextPage.getY(),
 			x + width - borderPadding - buttonWidth,
@@ -245,58 +245,58 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-		drawCenteredStringWithShadow(poseStack, font, title, titleArea);
+		drawCenteredStringWithShadow(guiGraphics, font, title, titleArea);
 
 		ImmutableRect2i pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
-		drawCenteredStringWithShadow(poseStack, font, pageString, pageArea);
+		drawCenteredStringWithShadow(guiGraphics, font, pageString, pageArea);
 
-		nextRecipeCategory.render(poseStack, mouseX, mouseY, partialTicks);
-		previousRecipeCategory.render(poseStack, mouseX, mouseY, partialTicks);
-		nextPage.render(poseStack, mouseX, mouseY, partialTicks);
-		previousPage.render(poseStack, mouseX, mouseY, partialTicks);
+		nextRecipeCategory.render(guiGraphics, mouseX, mouseY, partialTicks);
+		previousRecipeCategory.render(guiGraphics, mouseX, mouseY, partialTicks);
+		nextPage.render(guiGraphics, mouseX, mouseY, partialTicks);
+		previousPage.render(guiGraphics, mouseX, mouseY, partialTicks);
 
-		Optional<IRecipeLayoutDrawable<?>> hoveredRecipeLayout = drawLayouts(poseStack, mouseX, mouseY);
-		Optional<IRecipeSlotDrawable> hoveredRecipeCatalyst = recipeCatalysts.draw(poseStack, mouseX, mouseY);
+		Optional<IRecipeLayoutDrawable<?>> hoveredRecipeLayout = drawLayouts(guiGraphics, mouseX, mouseY);
+		Optional<IRecipeSlotDrawable> hoveredRecipeCatalyst = recipeCatalysts.draw(guiGraphics, mouseX, mouseY);
 
-		recipeGuiTabs.draw(minecraft, poseStack, mouseX, mouseY, modIdHelper);
+		recipeGuiTabs.draw(minecraft, guiGraphics, mouseX, mouseY, modIdHelper);
 
 		for (RecipeTransferButton button : recipeTransferButtons) {
-			button.drawToolTip(poseStack, mouseX, mouseY);
+			button.drawToolTip(guiGraphics, mouseX, mouseY);
 		}
 		RenderSystem.disableBlend();
 
-		hoveredRecipeLayout.ifPresent(l -> l.drawOverlays(poseStack, mouseX, mouseY));
-		hoveredRecipeCatalyst.ifPresent(h -> h.drawHoverOverlays(poseStack));
+		hoveredRecipeLayout.ifPresent(l -> l.drawOverlays(guiGraphics, mouseX, mouseY));
+		hoveredRecipeCatalyst.ifPresent(h -> h.drawHoverOverlays(guiGraphics));
 
 		hoveredRecipeCatalyst.ifPresent(h ->
 			h.getDisplayedIngredient()
 				.ifPresent(i -> {
 					List<Component> tooltip = h.getTooltip();
 					tooltip = modIdHelper.addModNameToIngredientTooltip(tooltip, i);
-					TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, i, ingredientManager);
+					TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY, i, ingredientManager);
 				})
 		);
 		RenderSystem.enableDepthTest();
 
 		if (titleStringArea.contains(mouseX, mouseY) && !logic.hasAllCategories()) {
 			MutableComponent showAllRecipesString = Component.translatable("jei.tooltip.show.all.recipes");
-			TooltipRenderer.drawHoveringText(poseStack, List.of(showAllRecipesString), mouseX, mouseY);
+			TooltipRenderer.drawHoveringText(guiGraphics, List.of(showAllRecipesString), mouseX, mouseY);
 		}
 	}
 
-	private Optional<IRecipeLayoutDrawable<?>> drawLayouts(PoseStack poseStack, int mouseX, int mouseY) {
+	private Optional<IRecipeLayoutDrawable<?>> drawLayouts(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		IRecipeLayoutDrawable<?> hoveredLayout = null;
 		for (IRecipeLayoutDrawable<?> recipeLayout : recipeLayouts) {
 			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
 				hoveredLayout = recipeLayout;
 			}
-			recipeLayout.drawRecipe(poseStack, mouseX, mouseY);
+			recipeLayout.drawRecipe(guiGraphics, mouseX, mouseY);
 		}
 
 		Minecraft minecraft = Minecraft.getInstance();
 		float partialTicks = minecraft.getFrameTime();
 		for (RecipeTransferButton button : recipeTransferButtons) {
-			button.render(poseStack, mouseX, mouseY, partialTicks);
+			button.render(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		RenderSystem.disableBlend();
 		return Optional.ofNullable(hoveredLayout);

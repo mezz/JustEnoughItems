@@ -40,7 +40,6 @@
   "depends": {
     "fabricloader": ">=${fabricLoaderVersion}",
     "fabric-api": ">=${fabricApiVersion}",
-    "minecraft": "${minecraftVersion}",
     "java": ">=${modJavaVersion}"
   }
 }

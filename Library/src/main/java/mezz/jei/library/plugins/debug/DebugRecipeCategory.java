@@ -1,7 +1,7 @@
 package mezz.jei.library.plugins.debug;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -98,21 +98,21 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public void draw(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		if (runtime != null) {
-			this.item.draw(poseStack, 50, 20);
+			this.item.draw(guiGraphics, 50, 20);
 
 			IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
 			Minecraft minecraft = Minecraft.getInstance();
-			minecraft.font.draw(poseStack, ingredientFilter.getFilterText(), 20, 52, 0);
+			guiGraphics.drawString(minecraft.font, ingredientFilter.getFilterText(), 20, 52, 0, false);
 
 			IIngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
 			Optional<ITypedIngredient<?>> ingredientUnderMouse = getIngredientUnderMouse(ingredientListOverlay, runtime.getBookmarkOverlay());
-			ingredientUnderMouse.ifPresent(typedIngredient -> drawIngredientName(minecraft, poseStack, typedIngredient));
+			ingredientUnderMouse.ifPresent(typedIngredient -> drawIngredientName(minecraft, guiGraphics, typedIngredient));
 		}
 
 		Button button = recipe.getButton();
-		button.render(poseStack, (int) mouseX, (int) mouseY, 0);
+		button.render(guiGraphics, (int) mouseX, (int) mouseY, 0);
 	}
 
 	private static Optional<ITypedIngredient<?>> getIngredientUnderMouse(IIngredientListOverlay ingredientListOverlay, IBookmarkOverlay bookmarkOverlay) {
@@ -120,10 +120,10 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 			.or(bookmarkOverlay::getIngredientUnderMouse);
 	}
 
-	private <T> void drawIngredientName(Minecraft minecraft, PoseStack poseStack, ITypedIngredient<T> ingredient) {
+	private <T> void drawIngredientName(Minecraft minecraft, GuiGraphics guiGraphics, ITypedIngredient<T> ingredient) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient.getType());
 		String jeiUid = ingredientHelper.getUniqueId(ingredient.getIngredient(), UidContext.Ingredient);
-		minecraft.font.draw(poseStack, jeiUid, 50, 52, 0);
+		guiGraphics.drawString(minecraft.font, jeiUid, 50, 52, 0, false);
 	}
 
 	@Override

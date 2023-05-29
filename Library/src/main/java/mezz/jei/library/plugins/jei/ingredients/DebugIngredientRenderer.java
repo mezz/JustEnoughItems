@@ -1,7 +1,7 @@
 package mezz.jei.library.plugins.jei.ingredients;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.ChatFormatting;
@@ -22,11 +22,11 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 	}
 
 	@Override
-	public void render(PoseStack poseStack, DebugIngredient ingredient) {
+	public void render(GuiGraphics guiGraphics, DebugIngredient ingredient) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = getFontRenderer(minecraft, ingredient);
-		font.draw(poseStack, "JEI", 0, 0, 0xFFFF0000);
-		font.draw(poseStack, "#" + ingredient.getNumber(), 0, 8, 0xFFFF0000);
+		guiGraphics.drawString(font, "JEI", 0, 0, 0xFFFF0000, false);
+		guiGraphics.drawString(font, "#" + ingredient.getNumber(), 0, 8, 0xFFFF0000, false);
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 

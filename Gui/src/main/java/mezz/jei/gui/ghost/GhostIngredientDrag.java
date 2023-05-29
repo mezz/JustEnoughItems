@@ -2,7 +2,7 @@ package mezz.jei.gui.ghost;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
@@ -11,7 +11,6 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.input.UserInput;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.phys.Vec2;
@@ -53,9 +52,9 @@ public class GhostIngredientDrag<T> {
 		this.mouseStartY = mouseY;
 	}
 
-	public void drawTargets(PoseStack poseStack, int mouseX, int mouseY) {
+	public void drawTargets(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (handler.shouldHighlightTargets()) {
-			drawTargets(poseStack, mouseX, mouseY, targetAreas);
+			drawTargets(guiGraphics, mouseX, mouseY, targetAreas);
 		}
 	}
 
@@ -77,7 +76,7 @@ public class GhostIngredientDrag<T> {
 		return mouseDistSq > 64.0;
 	}
 
-	public void drawItem(PoseStack poseStack, int mouseX, int mouseY) {
+	public void drawItem(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (!farEnoughToDraw(this, mouseX, mouseY)) {
 			return;
 		}
@@ -111,15 +110,16 @@ public class GhostIngredientDrag<T> {
 			RenderSystem.depthMask(true);
 		}
 
+		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
 			poseStack.translate(mouseX - 8, mouseY - 8, 0);
-			ingredientRenderer.render(poseStack, ingredient.getIngredient());
+			ingredientRenderer.render(guiGraphics, ingredient.getIngredient());
 		}
 		poseStack.popPose();
 	}
 
-	public static void drawTargets(PoseStack poseStack, int mouseX, int mouseY, List<Rect2i> targetAreas) {
+	public static void drawTargets(GuiGraphics guiGraphics, int mouseX, int mouseY, List<Rect2i> targetAreas) {
 		RenderSystem.disableDepthTest();
 		for (Rect2i area : targetAreas) {
 			int color;
@@ -128,7 +128,7 @@ public class GhostIngredientDrag<T> {
 			} else {
 				color = targetColor;
 			}
-			GuiComponent.fill(poseStack, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), color);
+			guiGraphics.fill(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), color);
 		}
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}

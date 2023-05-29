@@ -86,7 +86,7 @@ public final class CommandUtil {
 				ItemStack sendAllRemaining = copyWithSize(stack, amount);
 				sendSlotPacket(sendAllRemaining, i);
 				amount = 0;
-			} else if (currentStack.sameItem(stack) && currentStack.getMaxStackSize() > currentStack.getCount()) {
+			} else if (ItemStack.isSameItem(currentStack, stack) && currentStack.getMaxStackSize() > currentStack.getCount()) {
 				int canAdd = Math.min(currentStack.getMaxStackSize() - currentStack.getCount(), amount);
 				ItemStack fillRemainingSpace = copyWithSize(stack, canAdd + currentStack.getCount());
 				sendSlotPacket(fillRemainingSpace, i);

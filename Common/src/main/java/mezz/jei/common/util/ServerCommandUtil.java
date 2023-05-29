@@ -117,7 +117,7 @@ public final class ServerCommandUtil {
 			}
 			ItemStack itemStackCopy = itemStack.copy();
 			sender.getInventory().setItem(hotbarSlot, itemStack);
-			sender.level.playSound(null, sender.getX(), sender.getY(), sender.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((sender.getRandom().nextFloat() - sender.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			sender.level().playSound(null, sender.getX(), sender.getY(), sender.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((sender.getRandom().nextFloat() - sender.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			sender.inventoryMenu.broadcastChanges();
 			notifyGive(sender, itemStackCopy);
 		} else {
@@ -174,7 +174,7 @@ public final class ServerCommandUtil {
 				entityitem.makeFakeItem();
 			}
 
-			entityplayermp.level.playSound(null, entityplayermp.getX(), entityplayermp.getY(), entityplayermp.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((entityplayermp.getRandom().nextFloat() - entityplayermp.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+			entityplayermp.level().playSound(null, entityplayermp.getX(), entityplayermp.getY(), entityplayermp.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((entityplayermp.getRandom().nextFloat() - entityplayermp.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			entityplayermp.inventoryMenu.broadcastChanges();
 		} else {
 			ItemEntity entityitem = entityplayermp.drop(itemStack, false);
@@ -196,7 +196,7 @@ public final class ServerCommandUtil {
 		Component stackTextComponent = stack.getDisplayName();
 		Component displayName = player.getDisplayName();
 		Component message = Component.translatable("commands.give.success.single", count, stackTextComponent, displayName);
-		commandSource.sendSuccess(message, true);
+		commandSource.sendSuccess(() -> message, true);
 	}
 
 	private static Optional<CommandNode<CommandSourceStack>> getGiveCommand(Player sender) {

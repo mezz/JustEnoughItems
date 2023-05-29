@@ -1,11 +1,11 @@
 package mezz.jei.gui.ghost;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.phys.Vec2;
 
@@ -54,7 +54,7 @@ public class GhostIngredientReturning<T> {
 		}
 	}
 
-	public void drawItem(PoseStack poseStack) {
+	public void drawItem(GuiGraphics guiGraphics) {
 		long time = System.currentTimeMillis();
 		long elapsed = time - startTime;
 		double percent = Math.min(elapsed / (double) this.duration, 1);
@@ -62,10 +62,11 @@ public class GhostIngredientReturning<T> {
 		double dy = end.y - start.y;
 		double x = start.x + Math.round(dx * percent);
 		double y = start.y + Math.round(dy * percent);
+		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
 			poseStack.translate(x, y, 0);
-			ingredientRenderer.render(poseStack, ingredient.getIngredient());
+			ingredientRenderer.render(guiGraphics, ingredient.getIngredient());
 		}
 		poseStack.popPose();
 	}

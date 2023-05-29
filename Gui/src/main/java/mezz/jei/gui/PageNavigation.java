@@ -1,6 +1,6 @@
 package mezz.jei.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.gui.elements.GuiIconButton;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.input.IPaged;
@@ -10,7 +10,6 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
 
 public class PageNavigation {
 	private final IPaged paged;
@@ -51,9 +50,9 @@ public class PageNavigation {
 		this.pageNumDisplayString = String.format("%d/%d", pageNum + 1, pageCount);
 	}
 
-	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isVisible()) {
-			GuiComponent.fill(poseStack,
+			guiGraphics.fill(
 				backButton.getX() + backButton.getWidth(),
 				backButton.getY(),
 				nextButton.getX(),
@@ -62,9 +61,9 @@ public class PageNavigation {
 
 			Font font = minecraft.font;
 			ImmutableRect2i centerArea = MathUtil.centerTextArea(this.area, font, this.pageNumDisplayString);
-			font.drawShadow(poseStack, pageNumDisplayString, centerArea.getX(), centerArea.getY(), 0xFFFFFFFF);
-			nextButton.render(poseStack, mouseX, mouseY, partialTicks);
-			backButton.render(poseStack, mouseX, mouseY, partialTicks);
+			guiGraphics.drawString(font, pageNumDisplayString, centerArea.getX(), centerArea.getY(), 0xFFFFFFFF);
+			nextButton.render(guiGraphics, mouseX, mouseY, partialTicks);
+			backButton.render(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 	}
 

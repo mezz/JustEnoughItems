@@ -1,8 +1,8 @@
 package mezz.jei.common.gui.elements;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
+import net.minecraft.client.gui.GuiGraphics;
 
 /**
  * Draws an icon at a higher resolution than normal (determined by the scale parameter).
@@ -38,22 +38,24 @@ public class HighResolutionDrawable implements IDrawable {
 	}
 
 	@Override
-	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
+	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
 			poseStack.translate(xOffset, yOffset, 0);
 			poseStack.scale(1 / (float) scale, 1 / (float) scale, 1);
-			this.drawable.draw(poseStack);
+			this.drawable.draw(guiGraphics);
 		}
 		poseStack.popPose();
 	}
 
 	@Override
-	public void draw(PoseStack poseStack) {
+	public void draw(GuiGraphics guiGraphics) {
+		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
 			poseStack.scale(1 / (float) scale, 1 / (float) scale, 1);
-			this.drawable.draw(poseStack);
+			this.drawable.draw(guiGraphics);
 		}
 		poseStack.popPose();
 	}

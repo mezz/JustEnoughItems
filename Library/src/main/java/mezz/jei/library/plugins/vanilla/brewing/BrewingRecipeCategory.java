@@ -1,6 +1,6 @@
 package mezz.jei.library.plugins.vanilla.brewing;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -73,16 +73,16 @@ public class BrewingRecipeCategory implements IRecipeCategory<IJeiBrewingRecipe>
 	}
 
 	@Override
-	public void draw(IJeiBrewingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
-		blazeHeat.draw(poseStack, 5, 30);
-		bubbles.draw(poseStack, 8, 0);
-		arrow.draw(poseStack, 42, 2);
+	public void draw(IJeiBrewingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+		blazeHeat.draw(guiGraphics, 5, 30);
+		bubbles.draw(guiGraphics, 8, 0);
+		arrow.draw(guiGraphics, 42, 2);
 
 		int brewingSteps = recipe.getBrewingSteps();
 		String brewingStepsString = brewingSteps < Integer.MAX_VALUE ? Integer.toString(brewingSteps) : "?";
 		Component steps = Component.translatable("gui.jei.category.brewing.steps", brewingStepsString);
 		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.font.draw(poseStack, steps, 70, 28, 0xFF808080);
+		guiGraphics.drawString(minecraft.font, steps, 70, 28, 0xFF808080, false);
 	}
 
 	@Override

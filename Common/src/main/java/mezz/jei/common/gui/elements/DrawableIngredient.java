@@ -1,9 +1,9 @@
 package mezz.jei.common.gui.elements;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import net.minecraft.client.gui.GuiGraphics;
 
 public class DrawableIngredient<V> implements IDrawable {
 	private final V ingredient;
@@ -25,18 +25,19 @@ public class DrawableIngredient<V> implements IDrawable {
 	}
 
 	@Override
-	public void draw(PoseStack poseStack) {
+	public void draw(GuiGraphics guiGraphics) {
 		RenderSystem.enableDepthTest();
-		this.ingredientRenderer.render(poseStack, ingredient);
+		this.ingredientRenderer.render(guiGraphics, ingredient);
 		RenderSystem.disableDepthTest();
 	}
 
 	@Override
-	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
+	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
 			poseStack.translate(xOffset, yOffset, 0);
-			draw(poseStack);
+			draw(guiGraphics);
 		}
 		poseStack.popPose();
 	}

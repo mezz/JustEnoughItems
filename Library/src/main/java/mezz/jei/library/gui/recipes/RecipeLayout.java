@@ -1,7 +1,6 @@
 package mezz.jei.library.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
@@ -20,6 +19,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RecipeSlots;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -139,7 +139,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	}
 
 	@Override
-	public void drawRecipe(PoseStack poseStack, int mouseX, int mouseY) {
+	public void drawRecipe(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		IDrawable background = recipeCategory.getBackground();
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -147,19 +147,20 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		final int recipeMouseX = mouseX - posX;
 		final int recipeMouseY = mouseY - posY;
 
+		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
 			poseStack.translate(posX, posY, 0);
 
 			int width = recipeCategory.getWidth() + (2 * RECIPE_BORDER_PADDING);
 			int height = recipeCategory.getHeight() + (2 * RECIPE_BORDER_PADDING);
-			recipeBorder.draw(poseStack, -RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING, width, height);
-			background.draw(poseStack);
+			recipeBorder.draw(guiGraphics, -RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING, width, height);
+			background.draw(guiGraphics);
 
 			// defensive push/pop to protect against recipe categories changing the last pose
 			poseStack.pushPose();
 			{
-				recipeCategory.draw(recipe, recipeSlots.getView(), poseStack, recipeMouseX, recipeMouseY);
+				recipeCategory.draw(recipe, recipeSlots.getView(), guiGraphics, recipeMouseX, recipeMouseY);
 
 				// drawExtras and drawInfo often render text which messes with the color, this clears it
 				RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -167,10 +168,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			poseStack.popPose();
 
 			if (shapelessIcon != null) {
-				shapelessIcon.draw(poseStack);
+				shapelessIcon.draw(guiGraphics);
 			}
 
-			recipeSlots.draw(poseStack);
+			recipeSlots.draw(guiGraphics);
 		}
 		poseStack.popPose();
 
@@ -178,7 +179,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	}
 
 	@Override
-	public void drawOverlays(PoseStack poseStack, int mouseX, int mouseY) {
+	public void drawOverlays(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
 		final int recipeMouseX = mouseX - posX;
@@ -189,11 +190,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 		RenderSystem.disableBlend();
 
+		var poseStack = guiGraphics.pose();
 		if (hoveredSlot != null) {
 			poseStack.pushPose();
 			{
 				poseStack.translate(posX, posY, 0);
-				hoveredSlot.drawHoverOverlays(poseStack);
+				hoveredSlot.drawHoverOverlays(guiGraphics);
 			}
 			poseStack.popPose();
 
@@ -201,7 +203,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 				.ifPresent(i -> {
 					List<Component> tooltip = hoveredSlot.getTooltip();
 					tooltip = modIdHelper.addModNameToIngredientTooltip(tooltip, i);
-					TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, i, ingredientManager);
+					TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY, i, ingredientManager);
 				});
 		} else if (isMouseOver(mouseX, mouseY)) {
 			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeSlots.getView(), recipeMouseX, recipeMouseY);
@@ -209,7 +211,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 				tooltipStrings = shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY);
 			}
 			if (!tooltipStrings.isEmpty()) {
-				TooltipRenderer.drawHoveringText(poseStack, tooltipStrings, mouseX, mouseY);
+				TooltipRenderer.drawHoveringText(guiGraphics, tooltipStrings, mouseX, mouseY);
 			}
 		}
 	}

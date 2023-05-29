@@ -1,7 +1,7 @@
 package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -25,7 +25,6 @@ import mezz.jei.gui.input.handlers.DeleteItemInputHandler;
 import mezz.jei.gui.util.AlignmentUtil;
 import mezz.jei.gui.util.CheatUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 import java.util.List;
@@ -138,10 +137,10 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return area;
 	}
 
-	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		RenderSystem.disableBlend();
 
-		ingredientListRenderer.render(poseStack);
+		ingredientListRenderer.render(guiGraphics);
 
 		if (isMouseOver(mouseX, mouseY)) {
 			if (!this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
@@ -149,34 +148,34 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 					.filter(s -> s.getArea().contains(mouseX, mouseY))
 					.filter(s -> s.getIngredientRenderer().isPresent())
 					.findFirst()
-					.ifPresent(s -> drawHighlight(poseStack, s.getArea()));
+					.ifPresent(s -> drawHighlight(guiGraphics, s.getArea()));
 			}
 		}
 	}
 
 	/**
-	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlight(PoseStack, int, int, int)}
+	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlight(GuiGraphics, int, int, int)}
 	 * but with a custom area width and height
 	 */
-	public static void drawHighlight(PoseStack poseStack, ImmutableRect2i area) {
+	public static void drawHighlight(GuiGraphics guiGraphics, ImmutableRect2i area) {
 		RenderSystem.disableDepthTest();
 		RenderSystem.colorMask(true, true, true, false);
-		GuiComponent.fill(poseStack, area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF);
+		guiGraphics.fill(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF);
 		RenderSystem.colorMask(true, true, true, true);
 		RenderSystem.enableDepthTest();
 	}
 
-	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
-				this.deleteItemHandler.drawTooltips(poseStack, mouseX, mouseY);
+				this.deleteItemHandler.drawTooltips(guiGraphics, mouseX, mouseY);
 			} else {
 				ingredientListRenderer.getSlots()
 					.filter(s -> s.isMouseOver(mouseX, mouseY))
 					.map(IngredientListSlot::getTypedIngredient)
 					.flatMap(Optional::stream)
 					.findFirst()
-					.ifPresent(ingredient -> tooltipHelper.drawTooltip(poseStack, mouseX, mouseY, ingredient));
+					.ifPresent(ingredient -> tooltipHelper.drawTooltip(guiGraphics, mouseX, mouseY, ingredient));
 			}
 		}
 	}

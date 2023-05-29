@@ -1,6 +1,6 @@
 package mezz.jei.gui.elements;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableBlank;
@@ -37,13 +37,13 @@ public abstract class GuiIconToggleButton {
 		this.area = area;
 	}
 
-	public void draw(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (this.area.isEmpty()) {
 			return;
 		}
-		this.button.render(poseStack, mouseX, mouseY, partialTicks);
+		this.button.render(guiGraphics, mouseX, mouseY, partialTicks);
 		IDrawable icon = isIconToggledOn() ? this.onIcon : this.offIcon;
-		icon.draw(poseStack, this.button.getX() + 2, this.button.getY() + 2);
+		icon.draw(guiGraphics, this.button.getX() + 2, this.button.getY() + 2);
 	}
 
 	public final boolean isMouseOver(double mouseX, double mouseY) {
@@ -54,11 +54,11 @@ public abstract class GuiIconToggleButton {
 		return new UserInputHandler();
 	}
 
-	public final void drawTooltips(PoseStack poseStack, int mouseX, int mouseY) {
+	public final void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			List<Component> tooltip = new ArrayList<>();
 			getTooltips(tooltip);
-			TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY);
+			TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY);
 		}
 	}
 

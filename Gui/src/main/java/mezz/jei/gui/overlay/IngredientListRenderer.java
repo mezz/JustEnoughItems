@@ -1,7 +1,7 @@
 package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -10,7 +10,6 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.config.IClientToggleState;
-import net.minecraft.client.gui.GuiComponent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,26 +80,26 @@ public class IngredientListRenderer {
 		renderers.put(ingredientType, renderer);
 	}
 
-	public void render(PoseStack poseStack) {
+	public void render(GuiGraphics guiGraphics) {
 		for (IIngredientType<?> ingredientType : renderers.getTypes()) {
-			renderIngredientType(poseStack, ingredientType);
+			renderIngredientType(guiGraphics, ingredientType);
 		}
 	}
 
-	private <T> void renderIngredientType(PoseStack poseStack, IIngredientType<T> ingredientType) {
+	private <T> void renderIngredientType(GuiGraphics guiGraphics, IIngredientType<T> ingredientType) {
 		Collection<ElementRenderer<T>> slots = renderers.get(ingredientType);
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		for (ElementRenderer<T> slot : slots) {
-			renderIngredient(poseStack, slot, ingredientRenderer);
+			renderIngredient(guiGraphics, slot, ingredientRenderer);
 		}
 	}
 
-	private <T> void renderIngredient(PoseStack poseStack, ElementRenderer<T> slot, IIngredientRenderer<T> ingredientRenderer) {
+	private <T> void renderIngredient(GuiGraphics guiGraphics, ElementRenderer<T> slot, IIngredientRenderer<T> ingredientRenderer) {
 		ITypedIngredient<T> typedIngredient = slot.getTypedIngredient();
 		ImmutableRect2i area = slot.getArea();
 		int slotPadding = slot.getPadding();
 		if (toggleState.isEditModeEnabled()) {
-			renderEditMode(poseStack, area, slotPadding, editModeConfig, typedIngredient);
+			renderEditMode(guiGraphics, area, slotPadding, editModeConfig, typedIngredient);
 			RenderSystem.enableBlend();
 		}
 
@@ -108,10 +107,11 @@ public class IngredientListRenderer {
 		try {
 			int xPosition = area.getX() + slotPadding;
 			int yPosition = area.getY() + slotPadding;
+			var poseStack = guiGraphics.pose();
 			poseStack.pushPose();
 			{
 				poseStack.translate(xPosition, yPosition, 0);
-				ingredientRenderer.render(poseStack, ingredient);
+				ingredientRenderer.render(guiGraphics, ingredient);
 			}
 			poseStack.popPose();
 		} catch (RuntimeException | LinkageError e) {
@@ -119,9 +119,9 @@ public class IngredientListRenderer {
 		}
 	}
 
-	private static <T> void renderEditMode(PoseStack poseStack, ImmutableRect2i area, int padding, IEditModeConfig editModeConfig, ITypedIngredient<T> typedIngredient) {
+	private static <T> void renderEditMode(GuiGraphics guiGraphics, ImmutableRect2i area, int padding, IEditModeConfig editModeConfig, ITypedIngredient<T> typedIngredient) {
 		if (editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient)) {
-			GuiComponent.fill(poseStack, area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
+			guiGraphics.fill(area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
 			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 		}
 	}

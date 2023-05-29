@@ -1,7 +1,7 @@
 package mezz.jei.library.plugins.vanilla.crafting;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -72,11 +72,11 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	}
 
 	@Override
-	public void draw(CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
 		int recipeWidth = this.getWidth();
 		int recipeHeight = this.getHeight();
-		extension.drawInfo(recipeWidth, recipeHeight, poseStack, mouseX, mouseY);
+		extension.drawInfo(recipeWidth, recipeHeight, guiGraphics, mouseX, mouseY);
 	}
 
 	@Override

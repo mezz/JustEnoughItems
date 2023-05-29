@@ -1,7 +1,7 @@
 package mezz.jei.common.platform;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
@@ -29,5 +29,5 @@ public interface IPlatformRenderHelper {
     Optional<NativeImage> getMainImage(TextureAtlasSprite sprite);
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    void renderTooltip(Screen screen, PoseStack poseStack, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, int x, int y, @Nullable Font font, ItemStack stack);
+    void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, int x, int y, @Nullable Font font, ItemStack stack);
 }

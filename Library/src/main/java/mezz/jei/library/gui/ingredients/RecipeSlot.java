@@ -1,7 +1,7 @@
 package mezz.jei.library.gui.ingredients;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
@@ -17,7 +17,6 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.IngredientTooltipHelper;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -32,7 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipeSlotDrawable {
+public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int MAX_DISPLAYED_INGREDIENTS = 100;
 
@@ -120,14 +119,14 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 	}
 
 	@Override
-	public void drawHighlight(PoseStack poseStack, int color) {
+	public void drawHighlight(GuiGraphics guiGraphics, int color) {
 		int x = this.rect.getX();
 		int y = this.rect.getY();
 		int width = this.rect.getWidth();
 		int height = this.rect.getHeight();
 
 		RenderSystem.disableDepthTest();
-		fill(poseStack, x, y, x + width, y + height , color);
+		guiGraphics.fill(x, y, x + width, y + height , color);
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 
@@ -213,23 +212,24 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 	}
 
 	@Override
-	public void draw(PoseStack poseStack) {
+	public void draw(GuiGraphics guiGraphics) {
 		cycleTimer.onDraw();
 
 		final int x = this.rect.getX();
 		final int y = this.rect.getY();
+		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
 			poseStack.translate(x, y, 0);
 
 			if (background != null) {
-				background.draw(poseStack);
+				background.draw(guiGraphics);
 			}
 
 			RenderSystem.enableBlend();
 
 			getDisplayedIngredient()
-				.ifPresent(ingredient -> drawIngredient(poseStack, ingredient));
+				.ifPresent(ingredient -> drawIngredient(guiGraphics, ingredient));
 
 			if (overlay != null) {
 				RenderSystem.enableBlend();
@@ -237,7 +237,7 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 				poseStack.pushPose();
 				{
 					poseStack.translate(0, 0, 200);
-					overlay.draw(poseStack);
+					overlay.draw(guiGraphics);
 				}
 				poseStack.popPose();
 			}
@@ -247,21 +247,21 @@ public class RecipeSlot extends GuiComponent implements IRecipeSlotView, IRecipe
 		poseStack.popPose();
 	}
 
-	private <T> void drawIngredient(PoseStack poseStack, ITypedIngredient<T> typedIngredient) {
+	private <T> void drawIngredient(GuiGraphics guiGraphics, ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		T ingredient = typedIngredient.getIngredient();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 
 		try {
-			ingredientRenderer.render(poseStack, ingredient);
+			ingredientRenderer.render(guiGraphics, ingredient);
 		} catch (RuntimeException | LinkageError e) {
 			throw ErrorUtil.createRenderIngredientException(e, ingredient, ingredientManager);
 		}
 	}
 
 	@Override
-	public void drawHoverOverlays(PoseStack poseStack) {
-		drawHighlight(poseStack, 0x80FFFFFF);
+	public void drawHoverOverlays(GuiGraphics guiGraphics) {
+		drawHighlight(guiGraphics, 0x80FFFFFF);
 	}
 
 	@Override

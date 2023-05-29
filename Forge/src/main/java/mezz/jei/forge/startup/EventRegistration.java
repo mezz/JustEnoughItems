@@ -1,6 +1,7 @@
 package mezz.jei.forge.startup;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.UserInput;
@@ -96,21 +97,21 @@ public class EventRegistration {
 		subscriptions.register(ScreenEvent.BackgroundRendered.class, event -> {
 			Screen screen = event.getScreen();
 			PoseStack poseStack = event.getPoseStack();
-			guiEventHandler.onDrawBackgroundPost(screen, poseStack);
+			guiEventHandler.onDrawBackgroundPost(screen, guiGraphics);
 		});
 		subscriptions.register(ContainerScreenEvent.Render.Foreground.class, event -> {
 			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
 			PoseStack poseStack = event.getPoseStack();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.onDrawForeground(containerScreen, poseStack, mouseX, mouseY);
+			guiEventHandler.onDrawForeground(containerScreen, guiGraphics, mouseX, mouseY);
 		});
 		subscriptions.register(ScreenEvent.Render.Post.class, event -> {
 			Screen screen = event.getScreen();
 			PoseStack poseStack = event.getPoseStack();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.onDrawScreenPost(screen, poseStack, mouseX, mouseY);
+			guiEventHandler.onDrawScreenPost(screen, guiGraphics, mouseX, mouseY);
 		});
 		subscriptions.register(TickEvent.ClientTickEvent.class, event -> {
 			if (event.phase == TickEvent.Phase.START) {

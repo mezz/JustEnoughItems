@@ -1,6 +1,6 @@
 package mezz.jei.library.plugins.jei.info;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -55,13 +55,13 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IJeiIngredi
 	}
 
 	@Override
-	public void draw(IJeiIngredientInfoRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(IJeiIngredientInfoRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		int xPos = 0;
 		int yPos = slotBackground.getHeight() + 4;
 
 		Minecraft minecraft = Minecraft.getInstance();
 		for (FormattedText descriptionLine : recipe.getDescription()) {
-			minecraft.font.draw(poseStack, Language.getInstance().getVisualOrder(descriptionLine), xPos, yPos, 0xFF000000);
+			guiGraphics.drawString(minecraft.font, Language.getInstance().getVisualOrder(descriptionLine), xPos, yPos, 0xFF000000, false);
 			yPos += minecraft.font.lineHeight + IngredientInfoRecipe.lineSpacing;
 		}
 	}

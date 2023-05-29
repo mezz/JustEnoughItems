@@ -1,6 +1,6 @@
 package mezz.jei.library.plugins.vanilla.compostable;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -61,8 +61,8 @@ public class CompostableRecipeCategory implements IRecipeCategory<IJeiComposting
 	}
 
 	@Override
-	public void draw(IJeiCompostingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
-		slot.draw(poseStack);
+	public void draw(IJeiCompostingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+		slot.draw(guiGraphics);
 
 		float chance = recipe.getChance();
 		int chancePercent = (int) Math.floor(chance * 100);
@@ -70,6 +70,6 @@ public class CompostableRecipeCategory implements IRecipeCategory<IJeiComposting
 
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = minecraft.font;
-		font.draw(poseStack, text, 24, 5, 0xFF808080);
+		guiGraphics.drawString(font, text, 24, 5, 0xFF808080, false);
 	}
 }

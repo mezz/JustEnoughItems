@@ -1,6 +1,6 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.List;
 
@@ -34,10 +34,10 @@ public abstract class RecipeGuiTab implements IUserInputHandler {
 
 	public abstract boolean isSelected(IRecipeCategory<?> selectedCategory);
 
-	public void draw(boolean selected, PoseStack poseStack, int mouseX, int mouseY) {
+	public void draw(boolean selected, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		IDrawable tab = selected ? textures.getTabSelected() : textures.getTabUnselected();
 
-		tab.draw(poseStack, x, y);
+		tab.draw(guiGraphics, x, y);
 	}
 
 	public abstract List<Component> getTooltip(IModIdHelper modIdHelper);
