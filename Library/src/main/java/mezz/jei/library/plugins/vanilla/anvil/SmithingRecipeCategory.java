@@ -56,6 +56,8 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 		builder.addSlot(RecipeIngredientRole.INPUT, 50, 1)
 			.addIngredients(recipeHelper.getAddition(recipe));
 
+		// TODO Add template slot
+
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 1)
 			.addItemStack(RecipeUtil.getResultItem(recipe));
 	}

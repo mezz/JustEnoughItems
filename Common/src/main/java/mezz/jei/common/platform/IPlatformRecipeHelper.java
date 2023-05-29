@@ -18,6 +18,7 @@ public interface IPlatformRecipeHelper {
 
     Ingredient getBase(SmithingRecipe recipe);
     Ingredient getAddition(SmithingRecipe recipe);
+    Ingredient getTemplate(SmithingRecipe recipe);
     boolean isHandled(SmithingRecipe recipe);
 
     Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe);

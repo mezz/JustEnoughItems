@@ -33,7 +33,6 @@ public class RecipeHelper implements IPlatformRecipeHelper {
         return 0;
     }
 
-    @SuppressWarnings("removal")
     @Override
     public Ingredient getBase(SmithingRecipe recipe) {
         if (recipe instanceof SmithingTransformRecipe transformRecipe) {
@@ -45,7 +44,6 @@ public class RecipeHelper implements IPlatformRecipeHelper {
         return Ingredient.EMPTY;
     }
 
-    @SuppressWarnings("removal")
     @Override
     public Ingredient getAddition(SmithingRecipe recipe) {
         if (recipe instanceof SmithingTransformRecipe transformRecipe) {
@@ -57,7 +55,17 @@ public class RecipeHelper implements IPlatformRecipeHelper {
         return Ingredient.EMPTY;
     }
 
-    @SuppressWarnings("removal")
+    @Override
+    public Ingredient getTemplate(SmithingRecipe recipe) {
+        if (recipe instanceof SmithingTransformRecipe transformRecipe) {
+            return transformRecipe.template;
+        }
+        if (recipe instanceof SmithingTrimRecipe trimRecipe) {
+            return trimRecipe.template;
+        }
+        return Ingredient.EMPTY;
+    }
+
     @Override
     public boolean isHandled(SmithingRecipe recipe) {
         if (recipe.isIncomplete()) {

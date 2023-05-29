@@ -33,12 +33,8 @@ public class RecipeHelper implements IPlatformRecipeHelper {
         return 0;
     }
 
-    @SuppressWarnings("removal")
     @Override
     public Ingredient getBase(SmithingRecipe recipe) {
-        if (recipe instanceof net.minecraft.world.item.crafting.LegacyUpgradeRecipe legacyRecipe) {
-            return legacyRecipe.base;
-        }
         if (recipe instanceof SmithingTransformRecipe transformRecipe) {
             return transformRecipe.base;
         }
@@ -48,17 +44,24 @@ public class RecipeHelper implements IPlatformRecipeHelper {
         return Ingredient.EMPTY;
     }
 
-    @SuppressWarnings("removal")
     @Override
     public Ingredient getAddition(SmithingRecipe recipe) {
-        if (recipe instanceof net.minecraft.world.item.crafting.LegacyUpgradeRecipe legacyRecipe) {
-            return legacyRecipe.addition;
-        }
         if (recipe instanceof SmithingTransformRecipe transformRecipe) {
             return transformRecipe.addition;
         }
         if (recipe instanceof SmithingTrimRecipe trimRecipe) {
             return trimRecipe.addition;
+        }
+        return Ingredient.EMPTY;
+    }
+
+    @Override
+    public Ingredient getTemplate(SmithingRecipe recipe) {
+        if (recipe instanceof SmithingTransformRecipe transformRecipe) {
+            return transformRecipe.template;
+        }
+        if (recipe instanceof SmithingTrimRecipe trimRecipe) {
+            return trimRecipe.template;
         }
         return Ingredient.EMPTY;
     }
@@ -69,9 +72,7 @@ public class RecipeHelper implements IPlatformRecipeHelper {
         if (recipe.isIncomplete()) {
             return false;
         }
-        return recipe instanceof net.minecraft.world.item.crafting.LegacyUpgradeRecipe ||
-            recipe instanceof SmithingTransformRecipe ||
-            recipe instanceof SmithingTrimRecipe;
+        return recipe instanceof SmithingTransformRecipe || recipe instanceof SmithingTrimRecipe;
     }
 
     @SuppressWarnings("DataFlowIssue")
