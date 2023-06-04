@@ -1,6 +1,9 @@
 package mezz.jei.forge.startup;
 
+import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
+import mezz.jei.forge.plugins.forge.ForgeGuiPlugin;
+import mezz.jei.gui.overlay.IngredientListOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -104,7 +107,19 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 
 	@Override
 	public void onResourceManagerReload(ResourceManager pResourceManager) {
-		restart();
+		if (this.state == State.JEI_STARTED) {
+			reloadItemList();
+		}
+	}
+
+	private void reloadItemList() {
+		ForgeGuiPlugin.getRuntime().ifPresent(runtime -> {
+			LoggedTimer timer = new LoggedTimer();
+			timer.start("Updating ingredient filter");
+			runtime.getIngredientFilter().rebuildItemFilter();
+			timer.stop();
+			((IngredientListOverlay)runtime.getIngredientListOverlay()).updateScreen(Minecraft.getInstance().screen, null);
+		});
 	}
 
 	private void restart() {

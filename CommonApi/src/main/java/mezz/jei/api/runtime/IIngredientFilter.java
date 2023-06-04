@@ -45,4 +45,9 @@ public interface IIngredientFilter {
 	 * to get all the ingredients known to JEI, not just ones currently shown by the filter
 	 */
 	<T> List<T> getFilteredIngredients(IIngredientType<T> ingredientType);
+
+	/**
+	 * Rebuild the ingredient filter data structures. Called by JEI when client-side resources reload.
+	 */
+	void rebuildItemFilter();
 }
