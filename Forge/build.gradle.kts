@@ -83,7 +83,8 @@ dependencies {
 }
 
 minecraft {
-	mappings("parchment", parchmentVersionForge)
+	// TODO when 1.20 becomes available -> change. mappings("parchment", parchmentVersionForge)
+	mappings("official", minecraftVersion)
 
 	accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 

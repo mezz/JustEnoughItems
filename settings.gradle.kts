@@ -39,7 +39,7 @@ include(
 	"Core",
 	"Changelog",
 	"Common", "CommonApi",
-	//"Forge", "ForgeApi",
+	"Forge", "ForgeApi",
 	"Fabric", "FabricApi",
 	"Library",
 	"Gui"
