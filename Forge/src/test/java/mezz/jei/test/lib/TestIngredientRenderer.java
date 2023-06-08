@@ -1,6 +1,5 @@
 package mezz.jei.test.lib;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.network.chat.Component;

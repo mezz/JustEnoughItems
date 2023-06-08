@@ -7,7 +7,6 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.util.Translator;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.filter.FilterTextSource;
@@ -183,7 +182,7 @@ public class IngredientFilterTest {
 		List<Component> tooltip = ingredientRenderer.getTooltip(testIngredient, TooltipFlag.Default.NORMAL);
 		return tooltip.stream()
 			.map(Component::getString)
-			.map(Translator::toLowercaseWithLocale)
+			.map(String::toLowerCase)
 			.filter(line -> !StringUtil.isNullOrEmpty(line))
 			.toList();
 	}
