@@ -22,7 +22,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 	private final IDrawable icon;
 
 	public SmithingRecipeCategory(IGuiHelper guiHelper) {
-		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18);
+		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 168, 108, 18);
 		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.SMITHING_TABLE));
 	}
 
@@ -51,14 +51,15 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
+				.addIngredients(recipeHelper.getTemplate(recipe));
+
+		builder.addSlot(RecipeIngredientRole.INPUT, 19, 1)
 			.addIngredients(recipeHelper.getBase(recipe));
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 50, 1)
+		builder.addSlot(RecipeIngredientRole.INPUT, 37, 1)
 			.addIngredients(recipeHelper.getAddition(recipe));
 
-		// TODO Add template slot
-
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 1)
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 91, 1)
 			.addItemStack(RecipeUtil.getResultItem(recipe));
 	}
 
