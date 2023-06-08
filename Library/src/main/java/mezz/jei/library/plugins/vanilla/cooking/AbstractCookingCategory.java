@@ -3,7 +3,7 @@ package mezz.jei.library.plugins.vanilla.cooking;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -65,28 +65,28 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	}
 
 	@Override
-	public void draw(T recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
-		animatedFlame.draw(poseStack, 1, 20);
+	public void draw(T recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+		animatedFlame.draw(guiGraphics, 1, 20);
 
 		IDrawableAnimated arrow = getArrow(recipe);
-		arrow.draw(poseStack, 24, 18);
+		arrow.draw(guiGraphics, 24, 18);
 
-		drawExperience(recipe, poseStack, 0);
-		drawCookTime(recipe, poseStack, 45);
+		drawExperience(recipe, guiGraphics, 0);
+		drawCookTime(recipe, guiGraphics, 45);
 	}
 
-	protected void drawExperience(T recipe, PoseStack poseStack, int y) {
+	protected void drawExperience(T recipe, GuiGraphics guiGraphics, int y) {
 		float experience = recipe.getExperience();
 		if (experience > 0) {
 			Component experienceString = Component.translatable("gui.jei.category.smelting.experience", experience);
 			Minecraft minecraft = Minecraft.getInstance();
 			Font fontRenderer = minecraft.font;
 			int stringWidth = fontRenderer.width(experienceString);
-			fontRenderer.draw(poseStack, experienceString, getWidth() - stringWidth, y, 0xFF808080);
+			guiGraphics.drawString(fontRenderer, experienceString, getWidth() - stringWidth, y, 0xFF808080, false);
 		}
 	}
 
-	protected void drawCookTime(T recipe, PoseStack poseStack, int y) {
+	protected void drawCookTime(T recipe, GuiGraphics guiGraphics, int y) {
 		int cookTime = recipe.getCookingTime();
 		if (cookTime > 0) {
 			int cookTimeSeconds = cookTime / 20;
@@ -94,7 +94,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 			Minecraft minecraft = Minecraft.getInstance();
 			Font fontRenderer = minecraft.font;
 			int stringWidth = fontRenderer.width(timeString);
-			fontRenderer.draw(poseStack, timeString, getWidth() - stringWidth, y, 0xFF808080);
+			guiGraphics.drawString(fontRenderer, timeString, getWidth() - stringWidth, y, 0xFF808080, false);
 		}
 	}
 

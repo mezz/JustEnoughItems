@@ -1,6 +1,6 @@
 package mezz.jei.common.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -21,27 +21,27 @@ public final class TooltipRenderer {
 	private TooltipRenderer() {
 	}
 
-	public static void drawHoveringText(PoseStack poseStack, List<Component> textLines, int x, int y) {
+	public static void drawHoveringText(GuiGraphics guiGraphics, List<Component> textLines, int x, int y) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = minecraft.font;
-		drawHoveringText(poseStack, textLines, x, y, ItemStack.EMPTY, font);
+		drawHoveringText(guiGraphics, textLines, x, y, ItemStack.EMPTY, font);
 	}
 
-	public static <T> void drawHoveringText(PoseStack poseStack, List<Component> textLines, int x, int y, ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
+	public static <T> void drawHoveringText(GuiGraphics guiGraphics, List<Component> textLines, int x, int y, ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		T ingredient = typedIngredient.getIngredient();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
-		drawHoveringText(poseStack, textLines, x, y, ingredient, ingredientRenderer);
+		drawHoveringText(guiGraphics, textLines, x, y, ingredient, ingredientRenderer);
 	}
 
-	public static <T> void drawHoveringText(PoseStack poseStack, List<Component> textLines, int x, int y, T ingredient, IIngredientRenderer<T> ingredientRenderer) {
+	public static <T> void drawHoveringText(GuiGraphics guiGraphics, List<Component> textLines, int x, int y, T ingredient, IIngredientRenderer<T> ingredientRenderer) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = ingredientRenderer.getFontRenderer(minecraft, ingredient);
 		ItemStack itemStack = ingredient instanceof ItemStack ? (ItemStack) ingredient : ItemStack.EMPTY;
-		drawHoveringText(poseStack, textLines, x, y, itemStack, font);
+		drawHoveringText(guiGraphics, textLines, x, y, itemStack, font);
 	}
 
-	private static void drawHoveringText(PoseStack poseStack, List<Component> textLines, int x, int y, ItemStack itemStack, Font font) {
+	private static void drawHoveringText(GuiGraphics guiGraphics, List<Component> textLines, int x, int y, ItemStack itemStack, Font font) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Screen screen = minecraft.screen;
 		if (screen == null) {
@@ -50,6 +50,6 @@ public final class TooltipRenderer {
 
 		Optional<TooltipComponent> tooltipImage = itemStack.getTooltipImage();
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-		renderHelper.renderTooltip(screen, poseStack, textLines, tooltipImage, x, y, font, itemStack);
+		renderHelper.renderTooltip(screen, guiGraphics, textLines, tooltipImage, x, y, font, itemStack);
 	}
 }

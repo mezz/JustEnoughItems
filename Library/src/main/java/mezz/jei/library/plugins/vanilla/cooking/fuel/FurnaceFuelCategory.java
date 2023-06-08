@@ -3,7 +3,7 @@ package mezz.jei.library.plugins.vanilla.cooking.fuel;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -91,15 +91,15 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecip
 	}
 
 	@Override
-	public void draw(IJeiFuelingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(IJeiFuelingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		int burnTime = recipe.getBurnTime();
 		IDrawableAnimated flame = cachedFlames.getUnchecked(burnTime);
-		flame.draw(poseStack, 1, 0);
+		flame.draw(guiGraphics, 1, 0);
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = minecraft.font;
 		Component smeltCountText = createSmeltCountText(burnTime);
 		ImmutableRect2i centerArea = MathUtil.centerTextArea(this.textArea, font, smeltCountText);
-		font.draw(poseStack, smeltCountText, centerArea.getX(), centerArea.getY(), 0xFF808080);
+		guiGraphics.drawString(font, smeltCountText, centerArea.getX(), centerArea.getY(), 0xFF808080, false);
 	}
 
 	private static Component createSmeltCountText(int burnTime) {

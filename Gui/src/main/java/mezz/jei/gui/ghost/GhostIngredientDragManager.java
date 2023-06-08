@@ -1,6 +1,5 @@
 package mezz.jei.gui.ghost;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -14,6 +13,7 @@ import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
@@ -50,24 +50,24 @@ public class GhostIngredientDragManager {
 		this.toggleState = toggleState;
 	}
 
-	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (!(minecraft.screen instanceof AbstractContainerScreen)) { // guiContainer uses drawOnForeground
-			drawGhostIngredientHighlights(minecraft, poseStack, mouseX, mouseY);
+			drawGhostIngredientHighlights(minecraft, guiGraphics, mouseX, mouseY);
 		}
 		if (ghostIngredientDrag != null) {
-			ghostIngredientDrag.drawItem(poseStack, mouseX, mouseY);
+			ghostIngredientDrag.drawItem(guiGraphics, mouseX, mouseY);
 		}
-		ghostIngredientsReturning.forEach(returning -> returning.drawItem(poseStack));
+		ghostIngredientsReturning.forEach(returning -> returning.drawItem(guiGraphics));
 		ghostIngredientsReturning.removeIf(GhostIngredientReturning::isComplete);
 	}
 
-	public void drawOnForeground(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
-		drawGhostIngredientHighlights(minecraft, poseStack, mouseX, mouseY);
+	public void drawOnForeground(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		drawGhostIngredientHighlights(minecraft, guiGraphics, mouseX, mouseY);
 	}
 
-	private void drawGhostIngredientHighlights(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+	private void drawGhostIngredientHighlights(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (this.ghostIngredientDrag != null) {
-			this.ghostIngredientDrag.drawTargets(poseStack, mouseX, mouseY);
+			this.ghostIngredientDrag.drawTargets(guiGraphics, mouseX, mouseY);
 		} else {
 			ITypedIngredient<?> hovered = this.source.getIngredientUnderMouse(mouseX, mouseY)
 				.map(IClickableIngredientInternal::getTypedIngredient)
@@ -89,7 +89,7 @@ public class GhostIngredientDragManager {
 				}
 			}
 			if (this.hoveredTargetAreas != null && !toggleState.isCheatItemsEnabled()) {
-				GhostIngredientDrag.drawTargets(poseStack, mouseX, mouseY, this.hoveredTargetAreas);
+				GhostIngredientDrag.drawTargets(guiGraphics, mouseX, mouseY, this.hoveredTargetAreas);
 			}
 		}
 	}

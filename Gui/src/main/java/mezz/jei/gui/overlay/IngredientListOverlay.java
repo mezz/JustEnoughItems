@@ -1,6 +1,5 @@
 package mezz.jei.gui.overlay;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -30,6 +29,7 @@ import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.util.CheatUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
@@ -167,28 +167,28 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		}
 	}
 
-	public void drawScreen(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
-			this.searchField.renderWidget(poseStack, mouseX, mouseY, partialTicks);
-			this.contents.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
+			this.searchField.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
+			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
-			this.configButton.draw(poseStack, mouseX, mouseY, partialTicks);
+			this.configButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 	}
 
-	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			this.contents.drawTooltips(minecraft, poseStack, mouseX, mouseY);
+			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
-			this.configButton.drawTooltips(poseStack, mouseX, mouseY);
+			this.configButton.drawTooltips(guiGraphics, mouseX, mouseY);
 		}
 	}
 
-	public void drawOnForeground(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+	public void drawOnForeground(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			this.contents.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
+			this.contents.drawOnForeground(minecraft, guiGraphics, mouseX, mouseY);
 		}
 	}
 

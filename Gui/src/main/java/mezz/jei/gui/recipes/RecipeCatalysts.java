@@ -1,7 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -95,7 +95,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		);
 	}
 
-	public Optional<IRecipeSlotDrawable> draw(PoseStack poseStack, int mouseX, int mouseY) {
+	public Optional<IRecipeSlotDrawable> draw(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		int ingredientCount = recipeSlots.size();
 		if (ingredientCount > 0) {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -104,8 +104,8 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 			{
 				int slotWidth = width - (2 * borderSize);
 				int slotHeight = height - (2 * borderSize);
-				backgroundTab.draw(poseStack, this.left, this.top, width, height);
-				slotBackground.draw(poseStack, this.left + borderSize, this.top + borderSize, slotWidth, slotHeight);
+				backgroundTab.draw(guiGraphics, this.left, this.top, width, height);
+				slotBackground.draw(guiGraphics, this.left + borderSize, this.top + borderSize, slotWidth, slotHeight);
 			}
 			RenderSystem.enableDepthTest();
 
@@ -115,7 +115,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 				if (MathUtil.contains(rect, mouseX, mouseY)) {
 					hovered = recipeSlot;
 				}
-				recipeSlot.draw(poseStack);
+				recipeSlot.draw(guiGraphics);
 			}
 			return Optional.ofNullable(hovered);
 		}

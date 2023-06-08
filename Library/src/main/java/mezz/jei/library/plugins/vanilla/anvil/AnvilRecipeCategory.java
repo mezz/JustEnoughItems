@@ -1,6 +1,6 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -87,7 +87,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 	}
 
 	@Override
-	public void draw(IJeiAnvilRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+	public void draw(IJeiAnvilRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		Optional<ItemStack> leftStack = recipeSlotsView.findSlotByName(leftSlotName)
 			.flatMap(IRecipeSlotView::getDisplayedItemStack);
 
@@ -106,7 +106,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 		LocalPlayer player = minecraft.player;
 		// Show red if the player doesn't have enough levels
 		int mainColor = playerHasEnoughLevels(player, cost) ? 0xFF80FF20 : 0xFFFF6060;
-		drawRepairCost(minecraft, poseStack, text, mainColor);
+		drawRepairCost(minecraft, guiGraphics, text, mainColor);
 	}
 
 	private static boolean playerHasEnoughLevels(@Nullable LocalPlayer player, int cost) {
@@ -119,10 +119,10 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 		return cost < 40 && cost <= player.experienceLevel;
 	}
 
-	private void drawRepairCost(Minecraft minecraft, PoseStack poseStack, String text, int mainColor) {
+	private void drawRepairCost(Minecraft minecraft, GuiGraphics guiGraphics, String text, int mainColor) {
 		int width = minecraft.font.width(text);
 		int x = getWidth() - 2 - width;
 		int y = 27;
-		minecraft.font.drawShadow(poseStack, text, x, y, mainColor);
+		guiGraphics.drawString(minecraft.font, text, x, y, mainColor);
 	}
 }

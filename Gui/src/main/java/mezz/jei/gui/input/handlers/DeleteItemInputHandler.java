@@ -1,6 +1,6 @@
 package mezz.jei.gui.input.handlers;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.gui.overlay.IIngredientGrid;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -76,9 +76,9 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 	}
 
 	@SuppressWarnings("MethodMayBeStatic")
-	public void drawTooltips(PoseStack poseStack, int mouseX, int mouseY) {
+	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		Component deleteItem = Component.translatable("jei.tooltip.delete.item");
-		TooltipRenderer.drawHoveringText(poseStack, List.of(deleteItem), mouseX, mouseY);
+		TooltipRenderer.drawHoveringText(guiGraphics, List.of(deleteItem), mouseX, mouseY);
 	}
 
 	public boolean shouldDeleteItemOnClick(Minecraft minecraft, double mouseX, double mouseY) {

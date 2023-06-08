@@ -1,7 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -108,7 +108,7 @@ public class RecipeGuiTabs implements IPaged {
 		pageNavigation.updatePageNumber();
 	}
 
-	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, IModIdHelper modIdHelper) {
+	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, IModIdHelper modIdHelper) {
 		IRecipeCategory<?> selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -119,7 +119,7 @@ public class RecipeGuiTabs implements IPaged {
 		{
 			for (RecipeGuiTab tab : tabs) {
 				boolean selected = tab.isSelected(selectedCategory);
-				tab.draw(selected, poseStack, mouseX, mouseY);
+				tab.draw(selected, guiGraphics, mouseX, mouseY);
 				if (tab.isMouseOver(mouseX, mouseY)) {
 					hovered = tab;
 				}
@@ -127,11 +127,11 @@ public class RecipeGuiTabs implements IPaged {
 		}
 		RenderSystem.enableDepthTest();
 
-		pageNavigation.draw(minecraft, poseStack, mouseX, mouseY, minecraft.getFrameTime());
+		pageNavigation.draw(minecraft, guiGraphics, mouseX, mouseY, minecraft.getFrameTime());
 
 		if (hovered != null) {
 			List<Component> tooltip = hovered.getTooltip(modIdHelper);
-			TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY);
+			TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY);
 		}
 	}
 

@@ -3,7 +3,7 @@ package mezz.jei.common.gui.elements;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.common.Constants;
@@ -40,11 +40,11 @@ public class DrawableNineSliceTexture {
 		this.sliceBottom = bottom;
 	}
 
-	public void draw(PoseStack poseStack, ImmutableRect2i area) {
-		draw(poseStack, area.getX(), area.getY(), area.getWidth(), area.getHeight());
+	public void draw(GuiGraphics guiGraphics, ImmutableRect2i area) {
+		draw(guiGraphics, area.getX(), area.getY(), area.getWidth(), area.getHeight());
 	}
 
-	public void draw(PoseStack poseStack, int xOffset, int yOffset, int width, int height) {
+	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int width, int height) {
 		TextureAtlasSprite sprite = spriteUploader.getSprite(location);
 		int leftWidth = sliceLeft;
 		int rightWidth = sliceRight;
@@ -71,7 +71,9 @@ public class DrawableNineSliceTexture {
 		Tesselator tessellator = Tesselator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuilder();
 		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		Matrix4f matrix = poseStack.last().pose();
+		Matrix4f matrix = guiGraphics.pose().last().pose();
+
+		// TODO Investigate GuiGraphics helper for the same thing (nineSliced)
 
 		// left top
 		draw(bufferBuilder, matrix, uMin, vMin, uLeft, vTop, xOffset, yOffset, leftWidth, topHeight);

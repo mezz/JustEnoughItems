@@ -1,6 +1,6 @@
 package mezz.jei.library.gui.recipes;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.gui.elements.HighResolutionDrawable;
 import mezz.jei.common.gui.textures.Textures;
@@ -28,8 +28,8 @@ public class ShapelessIcon {
 		this.area = new ImmutableRect2i(posX, posY, icon.getWidth(), icon.getHeight());
 	}
 
-	public void draw(PoseStack poseStack) {
-		this.icon.draw(poseStack, area.getX(), area.getY());
+	public void draw(GuiGraphics guiGraphics) {
+		this.icon.draw(guiGraphics, area.getX(), area.getY());
 	}
 
 	public List<Component> getTooltipStrings(int mouseX, int mouseY) {

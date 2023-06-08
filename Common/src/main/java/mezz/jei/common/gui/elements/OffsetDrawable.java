@@ -1,6 +1,6 @@
 package mezz.jei.common.gui.elements;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.drawable.IDrawable;
 
 /**
@@ -35,16 +35,16 @@ public class OffsetDrawable implements IDrawable {
 	}
 
 	@Override
-	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
+	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
 		this.drawable.draw(
-			poseStack,
+			guiGraphics,
 			this.xOffset + xOffset,
 			this.yOffset + yOffset
 		);
 	}
 
 	@Override
-	public void draw(PoseStack poseStack) {
-		this.drawable.draw(poseStack, this.xOffset, this.yOffset);
+	public void draw(GuiGraphics guiGraphics) {
+		this.drawable.draw(guiGraphics, this.xOffset, this.yOffset);
 	}
 }

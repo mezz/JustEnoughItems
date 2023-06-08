@@ -1,6 +1,6 @@
 package mezz.jei.api.gui.ingredient;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
@@ -24,14 +24,14 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 *
 	 * @since 11.5.0
 	 */
-	void draw(PoseStack poseStack);
+	void draw(GuiGraphics guiGraphics);
 
 	/**
 	 * Draws the recipe slot overlays, called when the mouse is hovering over this recipe slot.
 	 *
 	 * @since 11.5.0
 	 */
-	void drawHoverOverlays(PoseStack poseStack);
+	void drawHoverOverlays(GuiGraphics guiGraphics);
 
 	/**
 	 * Get the tooltip for this recipe slot.

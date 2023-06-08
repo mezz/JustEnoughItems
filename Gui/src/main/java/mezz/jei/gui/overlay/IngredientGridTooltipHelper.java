@@ -1,6 +1,6 @@
 package mezz.jei.gui.overlay;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -46,14 +46,14 @@ public final class IngredientGridTooltipHelper {
 		this.colorHelper = colorHelper;
 	}
 
-	public <T> void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, ITypedIngredient<T> value) {
+	public <T> void drawTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY, ITypedIngredient<T> value) {
 		IIngredientType<T> ingredientType = value.getType();
 		T ingredient = value.getIngredient();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
 		List<Component> tooltip = getTooltip(ingredient, ingredientRenderer, ingredientHelper);
-		TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, ingredient, ingredientRenderer);
+		TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY, ingredient, ingredientRenderer);
 	}
 
 	public <T> List<Component> getTooltip(T ingredient, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {

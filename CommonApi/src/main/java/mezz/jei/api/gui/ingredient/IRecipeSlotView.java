@@ -1,6 +1,6 @@
 package mezz.jei.api.gui.ingredient;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -118,5 +118,5 @@ public interface IRecipeSlotView {
 	 *
 	 * @since 9.3.0
 	 */
-	void drawHighlight(PoseStack stack, int color);
+	void drawHighlight(GuiGraphics guiGraphics, int color);
 }

@@ -1,6 +1,6 @@
 package mezz.jei.common.gui.elements;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -56,7 +56,7 @@ public class DrawableAnimated implements IDrawableAnimated {
 	}
 
 	@Override
-	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
+	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
 		int maskLeft = 0;
 		int maskRight = 0;
 		int maskTop = 0;
@@ -72,6 +72,6 @@ public class DrawableAnimated implements IDrawableAnimated {
 			default -> throw new IllegalStateException("Unknown startDirection " + startDirection);
 		}
 
-		drawable.draw(poseStack, xOffset, yOffset, maskTop, maskBottom, maskLeft, maskRight);
+		drawable.draw(guiGraphics, xOffset, yOffset, maskTop, maskBottom, maskLeft, maskRight);
 	}
 }

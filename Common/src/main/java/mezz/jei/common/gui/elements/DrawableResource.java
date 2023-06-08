@@ -1,7 +1,7 @@
 package mezz.jei.common.gui.elements;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -54,12 +54,12 @@ public class DrawableResource implements IDrawableStatic {
 	}
 
 	@Override
-	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
-		draw(poseStack, xOffset, yOffset, 0, 0, 0, 0);
+	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+		draw(guiGraphics, xOffset, yOffset, 0, 0, 0, 0);
 	}
 
 	@Override
-	public void draw(PoseStack poseStack, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, this.resourceLocation);
 
@@ -74,7 +74,7 @@ public class DrawableResource implements IDrawableStatic {
 		Tesselator tessellator = Tesselator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuilder();
 		bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		Matrix4f matrix = poseStack.last().pose();
+		Matrix4f matrix = guiGraphics.pose().last().pose();
 		bufferbuilder.vertex(matrix, x, y + height, 0).uv(u * f, (v + (float) height) * f1).endVertex();
 		bufferbuilder.vertex(matrix, x + width, y + height, 0).uv((u + (float) width) * f, (v + (float) height) * f1).endVertex();
 		bufferbuilder.vertex(matrix, x + width, y, 0).uv((u + (float) width) * f, v * f1).endVertex();

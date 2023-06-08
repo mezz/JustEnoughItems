@@ -1,6 +1,6 @@
 package mezz.jei.api.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -28,12 +28,12 @@ public interface IRecipeLayoutDrawable<R> {
 	/**
 	 * Draw the recipe without overlays such as item tool tips.
 	 */
-	void drawRecipe(PoseStack stack, int mouseX, int mouseY);
+	void drawRecipe(GuiGraphics guiGraphics, int mouseX, int mouseY);
 
 	/**
 	 * Draw the recipe overlays such as item tool tips.
 	 */
-	void drawOverlays(PoseStack stack, int mouseX, int mouseY);
+	void drawOverlays(GuiGraphics guiGraphics, int mouseX, int mouseY);
 
 	/**
 	 * Returns true if the mouse is hovering over the recipe.

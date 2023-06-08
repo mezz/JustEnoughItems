@@ -1,7 +1,7 @@
 package mezz.jei.fabric.platform;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
@@ -56,7 +56,7 @@ public class RenderHelper implements IPlatformRenderHelper {
     @Override
     public void renderTooltip(
         Screen screen,
-        PoseStack poseStack,
+        GuiGraphics guiGraphics,
         List<Component> textComponents,
         Optional<TooltipComponent> tooltipComponent,
         int x,
@@ -64,8 +64,8 @@ public class RenderHelper implements IPlatformRenderHelper {
         @Nullable Font font,
         ItemStack stack
     ) {
-        screen.renderTooltip(
-            poseStack,
+        guiGraphics.renderTooltip(
+            font,
             textComponents,
             tooltipComponent,
             x,

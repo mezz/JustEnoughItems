@@ -1,8 +1,7 @@
 package mezz.jei.common.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,13 +23,12 @@ public final class RectDebugger {
         this.rects.put(id, new Rect(rect, color));
     }
 
-    public void draw(PoseStack poseStack) {
+    public void draw(GuiGraphics guiGraphics) {
         RenderSystem.disableDepthTest();
 
         for (Rect rect : rects.values()) {
             ImmutableRect2i rect1 = rect.rect;
-            GuiComponent.fill(
-                poseStack,
+            guiGraphics.fill(
                 rect1.getX(),
                 rect1.getY(),
                 rect1.getX() + rect1.getWidth(),

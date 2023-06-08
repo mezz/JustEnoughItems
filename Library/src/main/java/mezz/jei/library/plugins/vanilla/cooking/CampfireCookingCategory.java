@@ -1,6 +1,6 @@
 package mezz.jei.library.plugins.vanilla.cooking;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -36,11 +36,11 @@ public class CampfireCookingCategory extends AbstractCookingCategory<CampfireCoo
 	}
 
 	@Override
-	public void draw(CampfireCookingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
-		animatedFlame.draw(poseStack, 1, 20);
+	public void draw(CampfireCookingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+		animatedFlame.draw(guiGraphics, 1, 20);
 		IDrawableAnimated arrow = getArrow(recipe);
-		arrow.draw(poseStack, 24, 8);
-		drawCookTime(recipe, poseStack, 35);
+		arrow.draw(guiGraphics, 24, 8);
+		drawCookTime(recipe, guiGraphics, 35);
 	}
 
 	@Override

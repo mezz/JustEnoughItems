@@ -1,11 +1,11 @@
 package mezz.jei.gui.elements;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.CommonComponents;
 
@@ -27,12 +27,12 @@ public class GuiIconButtonSmall extends Button {
 	}
 
 	@Override
-	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (this.visible) {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			boolean hovered = isMouseOver(mouseX, mouseY);
 			DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);
-			texture.draw(poseStack, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+			texture.draw(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
 			int color = 0xFFE0E0E0;
 			if (!this.active) {
@@ -49,10 +49,11 @@ public class GuiIconButtonSmall extends Button {
 
 			double xOffset = getX() + (getWidth() - this.icon.getWidth()) / 2.0;
 			double yOffset = getY() + (getHeight() - this.icon.getHeight()) / 2.0;
+			var poseStack = guiGraphics.pose();
 			poseStack.pushPose();
 			{
 				poseStack.translate(xOffset, yOffset, 0);
-				this.icon.draw(poseStack);
+				this.icon.draw(guiGraphics);
 			}
 			poseStack.popPose();
 		}

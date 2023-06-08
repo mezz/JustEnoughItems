@@ -1,6 +1,5 @@
 package mezz.jei.gui.overlay.bookmarks;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -28,6 +27,7 @@ import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.ScreenPropertiesCache;
 import mezz.jei.gui.util.CheatUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
@@ -135,21 +135,21 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		return new ImmutableRect2i(0, 0, width, screenHeight);
 	}
 
-	public void drawScreen(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
-			this.contents.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
+			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
-			this.bookmarkButton.draw(poseStack, mouseX, mouseY, partialTicks);
+			this.bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 	}
 
-	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			this.contents.drawTooltips(minecraft, poseStack, mouseX, mouseY);
+			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
-			bookmarkButton.drawTooltips(poseStack, mouseX, mouseY);
+			bookmarkButton.drawTooltips(guiGraphics, mouseX, mouseY);
 		}
 	}
 
@@ -211,9 +211,9 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		});
 	}
 
-	public void drawOnForeground(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+	public void drawOnForeground(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			this.contents.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
+			this.contents.drawOnForeground(minecraft, guiGraphics, mouseX, mouseY);
 		}
 	}
 }

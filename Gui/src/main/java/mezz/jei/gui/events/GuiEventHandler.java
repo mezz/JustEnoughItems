@@ -1,7 +1,6 @@
 package mezz.jei.gui.events;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.DebugConfig;
@@ -15,7 +14,7 @@ import mezz.jei.gui.input.MouseUtil;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -61,7 +60,7 @@ public class GuiEventHandler {
 		bookmarkOverlay.updateScreen(screen, null);
 	}
 
-	public void onDrawBackgroundPost(Screen screen, PoseStack poseStack) {
+	public void onDrawBackgroundPost(Screen screen, GuiGraphics guiGraphics) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
 			.map(ImmutableRect2i::new)
@@ -72,26 +71,27 @@ public class GuiEventHandler {
 		drawnOnBackground = true;
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
-		ingredientListOverlay.drawScreen(minecraft, poseStack, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
-		bookmarkOverlay.drawScreen(minecraft, poseStack, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
+		ingredientListOverlay.drawScreen(minecraft, guiGraphics, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
+		bookmarkOverlay.drawScreen(minecraft, guiGraphics, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
 	}
 
 	/**
 	 * Draws above most ContainerScreen elements, but below the tooltips.
 	 */
-	public void onDrawForeground(AbstractContainerScreen<?> screen, PoseStack poseStack, int mouseX, int mouseY) {
+	public void onDrawForeground(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
+		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
 			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 			poseStack.translate(-screenHelper.getGuiLeft(screen), -screenHelper.getGuiTop(screen), 0);
-			bookmarkOverlay.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
-			ingredientListOverlay.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
+			bookmarkOverlay.drawOnForeground(minecraft, guiGraphics, mouseX, mouseY);
+			ingredientListOverlay.drawOnForeground(minecraft, guiGraphics, mouseX, mouseY);
 		}
 		poseStack.popPose();
 	}
 
-	public void onDrawScreenPost(Screen screen, PoseStack poseStack, int mouseX, int mouseY) {
+	public void onDrawScreenPost(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
 
 		ingredientListOverlay.updateScreen(screen, null);
@@ -102,8 +102,8 @@ public class GuiEventHandler {
 				String guiName = screen.getClass().getName();
 				missingBackgroundLogger.log(Level.WARN, guiName, "GUI did not draw the dark background layer behind itself, this may result in display issues: {}", guiName);
 			}
-			ingredientListOverlay.drawScreen(minecraft, poseStack, mouseX, mouseY, minecraft.getFrameTime());
-			bookmarkOverlay.drawScreen(minecraft, poseStack, mouseX, mouseY, minecraft.getFrameTime());
+			ingredientListOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, minecraft.getFrameTime());
+			bookmarkOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, minecraft.getFrameTime());
 		}
 		drawnOnBackground = false;
 
@@ -119,15 +119,15 @@ public class GuiEventHandler {
 					if (tooltipStrings.isEmpty()) {
 						tooltipStrings = List.of(Component.translatable("jei.tooltip.show.recipes"));
 					}
-					TooltipRenderer.drawHoveringText(poseStack, tooltipStrings, mouseX, mouseY);
+					TooltipRenderer.drawHoveringText(guiGraphics, tooltipStrings, mouseX, mouseY);
 				});
 		}
 
-		ingredientListOverlay.drawTooltips(minecraft, poseStack, mouseX, mouseY);
-		bookmarkOverlay.drawTooltips(minecraft, poseStack, mouseX, mouseY);
+		ingredientListOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+		bookmarkOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 
 		if (DebugConfig.isDebugModeEnabled()) {
-			drawDebugInfoForScreen(screen, poseStack);
+			drawDebugInfoForScreen(screen, guiGraphics);
 		}
 	}
 
@@ -139,8 +139,8 @@ public class GuiEventHandler {
 		return ingredientListOverlay.isListDisplayed();
 	}
 
-	private void drawDebugInfoForScreen(Screen screen, PoseStack poseStack) {
-		RectDebugger.INSTANCE.draw(poseStack);
+	private void drawDebugInfoForScreen(Screen screen, GuiGraphics guiGraphics) {
+		RectDebugger.INSTANCE.draw(guiGraphics);
 
 		screenHelper.getGuiProperties(screen)
 			.ifPresent(guiProperties -> {
@@ -151,8 +151,7 @@ public class GuiEventHandler {
 
 				// draw the gui exclusion areas
 				for (Rect2i area : guiExclusionAreas) {
-					GuiComponent.fill(
-						poseStack,
+					guiGraphics.fill(
 						area.getX(),
 						area.getY(),
 						area.getX() + area.getWidth(),
@@ -162,8 +161,7 @@ public class GuiEventHandler {
 				}
 
 				// draw the gui area
-				GuiComponent.fill(
-					poseStack,
+				guiGraphics.fill(
 					guiProperties.getGuiLeft(),
 					guiProperties.getGuiTop(),
 					guiProperties.getGuiLeft() + guiProperties.getGuiXSize(),

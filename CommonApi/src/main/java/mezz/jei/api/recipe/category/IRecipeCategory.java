@@ -1,7 +1,6 @@
 package mezz.jei.api.recipe.category;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -11,6 +10,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
@@ -87,7 +87,7 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @param recipe          the current recipe being drawn.
 	 * @param recipeSlotsView a view of the current recipe slots being drawn.
-	 * @param stack           the current {@link PoseStack} for rendering.
+	 * @param guiGraphics     the current {@link GuiGraphics} for rendering.
 	 * @param mouseX          the X position of the mouse, relative to the recipe.
 	 * @param mouseY          the Y position of the mouse, relative to the recipe.
 	 *
@@ -97,7 +97,7 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @since 9.3.0
 	 */
-	default void draw(T recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
+	default void draw(T recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 
 	}
 

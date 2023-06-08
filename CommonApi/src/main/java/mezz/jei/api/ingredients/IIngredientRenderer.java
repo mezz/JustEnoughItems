@@ -1,12 +1,11 @@
 package mezz.jei.api.ingredients;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.TooltipFlag;
 
 import mezz.jei.api.registration.IModIngredientRegistration;
@@ -23,12 +22,12 @@ public interface IIngredientRenderer<T> {
 	/**
 	 * Renders an ingredient at a specific location.
 	 *
-	 * @param stack  The current {@link PoseStack} for rendering the ingredient.
+	 * @param guiGraphics The current {@link GuiGraphics} for rendering the ingredient.
 	 * @param ingredient the ingredient to render.
 	 *
 	 * @since 9.3.0
 	 */
-	void render(PoseStack stack, T ingredient);
+	void render(GuiGraphics guiGraphics, T ingredient);
 
 	/**
 	 * Get the tooltip text for this ingredient. JEI renders the tooltip based on this.

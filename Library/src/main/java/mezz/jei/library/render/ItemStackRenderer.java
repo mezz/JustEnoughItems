@@ -1,7 +1,7 @@
 package mezz.jei.library.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
@@ -9,7 +9,6 @@ import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
@@ -26,15 +25,14 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Override
-	public void render(PoseStack poseStack, @Nullable ItemStack ingredient) {
+	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient) {
 		if (ingredient != null) {
 			RenderSystem.enableDepthTest();
 
 			Minecraft minecraft = Minecraft.getInstance();
 			Font font = getFontRenderer(minecraft, ingredient);
-			ItemRenderer itemRenderer = minecraft.getItemRenderer();
-			itemRenderer.renderAndDecorateFakeItem(poseStack, ingredient, 0, 0);
-			itemRenderer.renderGuiItemDecorations(poseStack, font, ingredient, 0, 0);
+			guiGraphics.renderFakeItem(ingredient, 0, 0);
+			guiGraphics.renderItemDecorations(font, ingredient, 0, 0);
 			RenderSystem.disableBlend();
 		}
 	}

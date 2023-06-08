@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import org.joml.Matrix4f;
@@ -66,17 +66,17 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	}
 
 	@Override
-	public void render(PoseStack poseStack, T fluidStack) {
+	public void render(GuiGraphics guiGraphics, T fluidStack) {
 		RenderSystem.enableBlend();
 
-		drawFluid(poseStack, width, height, fluidStack);
+		drawFluid(guiGraphics, width, height, fluidStack);
 
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 
 		RenderSystem.disableBlend();
 	}
 
-	private void drawFluid(PoseStack poseStack, final int width, final int height, T fluidStack) {
+	private void drawFluid(GuiGraphics guiGraphics, final int width, final int height, T fluidStack) {
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluid = type.getBase(fluidStack);
 		if (fluid.isSame(Fluids.EMPTY)) {
@@ -96,13 +96,13 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 					scaledAmount = height;
 				}
 
-				drawTiledSprite(poseStack, width, height, fluidColor, scaledAmount, fluidStillSprite);
+				drawTiledSprite(guiGraphics, width, height, fluidColor, scaledAmount, fluidStillSprite);
 			});
 	}
 
-	private static void drawTiledSprite(PoseStack poseStack, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite) {
+	private static void drawTiledSprite(GuiGraphics guiGraphics, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite) {
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-		Matrix4f matrix = poseStack.last().pose();
+		Matrix4f matrix = guiGraphics.pose().last().pose();
 		setGLColorFromInt(color);
 
 		final int xTileCount = tiledWidth / TEXTURE_SIZE;

@@ -1,6 +1,5 @@
 package mezz.jei.api.gui.drawable;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -10,7 +9,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
  * An animated {@link IDrawable}, useful for showing a gui animation like furnace flames or progress arrows.
  *
  * Useful for drawing miscellaneous things in
- * {@link IRecipeCategory#draw(Object, IRecipeSlotsView, PoseStack, double, double)}.
+ * {@link IRecipeCategory#draw(Object, IRecipeSlotsView, guiGraphics, double, double)}.
  *
  * To create an instance, call
  * {@link IGuiHelper#createAnimatedDrawable(IDrawableStatic, int, StartDirection, boolean)}

@@ -1,7 +1,6 @@
 package mezz.jei.gui.input;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformScreenHelper;
@@ -10,6 +9,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.util.TextHistory;
 import mezz.jei.gui.input.handlers.TextFieldInputHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -104,11 +104,11 @@ public class GuiTextFieldFilter extends EditBox {
 	}
 
 	@Override
-	public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (this.isVisible()) {
 			RenderSystem.setShaderColor(1, 1, 1, 1);
-			background.draw(poseStack, this.backgroundBounds);
+			background.draw(guiGraphics, this.backgroundBounds);
 		}
-		super.renderWidget(poseStack, mouseX, mouseY, partialTicks);
+		super.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
 	}
 }

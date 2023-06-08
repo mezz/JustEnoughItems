@@ -1,6 +1,5 @@
 package mezz.jei.gui.overlay;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -31,6 +30,7 @@ import mezz.jei.gui.util.MaximalRectangle;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
 
@@ -231,19 +231,19 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		return this.backgroundArea;
 	}
 
-	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (gridConfig.drawBackground()) {
-			background.draw(poseStack, this.backgroundArea);
-			slotBackground.draw(poseStack, this.slotBackgroundArea);
+			background.draw(guiGraphics, this.backgroundArea);
+			slotBackground.draw(guiGraphics, this.slotBackgroundArea);
 		}
 
-		this.ingredientGrid.draw(minecraft, poseStack, mouseX, mouseY);
-		this.navigation.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
+		this.ingredientGrid.draw(minecraft, guiGraphics, mouseX, mouseY);
+		this.navigation.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 	}
 
-	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
-		this.ghostIngredientDragManager.drawTooltips(minecraft, poseStack, mouseX, mouseY);
-		this.ingredientGrid.drawTooltips(minecraft, poseStack, mouseX, mouseY);
+	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		this.ghostIngredientDragManager.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+		this.ingredientGrid.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
@@ -277,8 +277,8 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.ghostIngredientDragManager.stopDrag();
 	}
 
-	public void drawOnForeground(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
-		this.ghostIngredientDragManager.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
+	public void drawOnForeground(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		this.ghostIngredientDragManager.drawOnForeground(minecraft, guiGraphics, mouseX, mouseY);
 	}
 
 	public IDragHandler createDragHandler() {

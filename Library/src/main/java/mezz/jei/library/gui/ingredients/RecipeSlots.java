@@ -1,6 +1,6 @@
 package mezz.jei.library.gui.ingredients;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.common.util.MathUtil;
@@ -31,9 +31,9 @@ public class RecipeSlots {
 		this.slots.add(slot);
 	}
 
-	public void draw(PoseStack poseStack) {
+	public void draw(GuiGraphics guiGraphics) {
 		for (IRecipeSlotDrawable slot : slots) {
-			slot.draw(poseStack);
+			slot.draw(guiGraphics);
 		}
 	}
 

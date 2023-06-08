@@ -1,8 +1,8 @@
 package mezz.jei.library.transfer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 import java.util.Collection;
@@ -18,14 +18,15 @@ public class RecipeTransferErrorMissingSlots extends RecipeTransferErrorTooltip 
 	}
 
 	@Override
-	public void showError(PoseStack poseStack, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
-		super.showError(poseStack, mouseX, mouseY, recipeSlotsView, recipeX, recipeY);
+	public void showError(GuiGraphics guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
+		super.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeX, recipeY);
+		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
 			poseStack.translate(recipeX, recipeY, 0);
 
 			for (IRecipeSlotView slot : slots) {
-				slot.drawHighlight(poseStack, HIGHLIGHT_COLOR);
+				slot.drawHighlight(guiGraphics, HIGHLIGHT_COLOR);
 			}
 		}
 		poseStack.popPose();

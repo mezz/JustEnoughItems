@@ -1,6 +1,6 @@
 package mezz.jei.fabric.events;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.Event;
@@ -10,16 +10,16 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 public class JeiScreenEvents {
     public static final Event<AfterRenderBackground> AFTER_RENDER_BACKGROUND =
-        EventFactory.createArrayBacked(AfterRenderBackground.class, callbacks -> (screen, poseStack) -> {
+        EventFactory.createArrayBacked(AfterRenderBackground.class, callbacks -> (screen, guiGraphics) -> {
             for (AfterRenderBackground callback : callbacks) {
-                callback.afterRenderBackground(screen, poseStack);
+                callback.afterRenderBackground(screen, guiGraphics);
             }
         });
 
     public static final Event<DrawForeground> DRAW_FOREGROUND =
-        EventFactory.createArrayBacked(DrawForeground.class, callbacks -> (screen, poseStack, mouseX, mouseY) -> {
+        EventFactory.createArrayBacked(DrawForeground.class, callbacks -> (screen, guiGraphics, mouseX, mouseY) -> {
             for (DrawForeground callback : callbacks) {
-                callback.drawForeground(screen, poseStack, mouseX, mouseY);
+                callback.drawForeground(screen, guiGraphics, mouseX, mouseY);
             }
         });
 
@@ -27,12 +27,12 @@ public class JeiScreenEvents {
     @Environment(EnvType.CLIENT)
     @FunctionalInterface
     public interface AfterRenderBackground {
-        void afterRenderBackground(Screen screen, PoseStack poseStack);
+        void afterRenderBackground(Screen screen, GuiGraphics guiGraphics);
     }
 
     @Environment(EnvType.CLIENT)
     @FunctionalInterface
     public interface DrawForeground {
-        void drawForeground(AbstractContainerScreen<?> screen, PoseStack poseStack, int mouseX, int mouseY);
+        void drawForeground(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY);
     }
 }
