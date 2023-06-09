@@ -19,7 +19,7 @@ public abstract class EffectRenderingInventoryScreenMixin extends AbstractContai
     }
 
     @ModifyVariable(
-        method = "renderEffects(Lcom/mojang/blaze3d/vertex/PoseStack;II)V",
+        method = "renderEffects(Lnet/minecraft/client/gui/GuiGraphics;II)V",
         index = 7,
         name = "bl",
         at = @At("STORE")
