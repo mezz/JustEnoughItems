@@ -50,7 +50,6 @@ public class EventRegistration {
 			return;
 		}
 
-		guiEventHandler.onGuiInit(screen);
 		ScreenKeyboardEvents.allowKeyPress(screen).register(this::allowKeyPress);
 		ScreenMouseEvents.allowMouseClick(screen).register(this::allowMouseClick);
 		ScreenMouseEvents.beforeMouseRelease(screen).register(this::beforeMouseRelease);
@@ -107,6 +106,7 @@ public class EventRegistration {
 
 	private void afterInit(Minecraft client, Screen screen, int scaledWidth, int scaledHeight) {
 		if (guiEventHandler != null) {
+			guiEventHandler.onGuiInit(screen);
 			guiEventHandler.onGuiOpen(screen);
 		}
 	}
