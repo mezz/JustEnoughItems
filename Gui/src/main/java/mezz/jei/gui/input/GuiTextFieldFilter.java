@@ -17,10 +17,12 @@ import net.minecraft.network.chat.CommonComponents;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 public class GuiTextFieldFilter extends EditBox {
 	private static final int maxSearchLength = 128;
 	private static final TextHistory history = new TextHistory();
+	private final BooleanSupplier filterEmpty;
 
 	private ImmutableRect2i area;
 	private final DrawableNineSliceTexture background;
@@ -28,9 +30,10 @@ public class GuiTextFieldFilter extends EditBox {
 
 	private @Nullable AbstractWidget previouslyFocusedWidget;
 
-	public GuiTextFieldFilter(Textures textures) {
+	public GuiTextFieldFilter(Textures textures, BooleanSupplier filterEmpty) {
 		// TODO narrator string
 		super(Minecraft.getInstance().font, 0, 0, 0, 0, CommonComponents.EMPTY);
+		this.filterEmpty = filterEmpty;
 
 		setMaxLength(maxSearchLength);
 		this.area = ImmutableRect2i.EMPTY;
@@ -53,6 +56,8 @@ public class GuiTextFieldFilter extends EditBox {
 		if (!filterText.equals(getValue())) {
 			super.setValue(filterText);
 		}
+		int color = filterEmpty.getAsBoolean() ? 0xFFFF0000 : 0xFFFFFFFF;
+		setTextColor(color);
 	}
 
 	public Optional<String> getHistory(TextHistory.Direction direction) {

@@ -54,6 +54,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IInternalKeyMappings keyBindings;
 	private final CheatUtil cheatUtil;
 	private final ScreenPropertiesCache screenPropertiesCache;
+	private final IFilterTextSource filterTextSource;
 
 	public IngredientListOverlay(
 		IIngredientGridSource ingredientGridSource,
@@ -73,9 +74,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.toggleState = toggleState;
 		this.serverConnection = serverConnection;
 
-		this.searchField = new GuiTextFieldFilter(textures);
+		this.searchField = new GuiTextFieldFilter(textures, contents::isEmpty);
 		this.keyBindings = keyBindings;
 		this.cheatUtil = cheatUtil;
+		this.filterTextSource = filterTextSource;
 		this.searchField.setValue(filterTextSource.getFilterText());
 		this.searchField.setFocused(false);
 		this.searchField.setResponder(filterTextSource::setFilterText);
@@ -131,8 +133,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		final ImmutableRect2i searchArea = searchAndConfigArea.cropRight(BUTTON_SIZE);
 		final ImmutableRect2i configButtonArea = searchAndConfigArea.keepRight(BUTTON_SIZE);
 
-		int searchTextColor = this.contents.isEmpty() ? 0xFFFF0000 : 0xFFFFFFFF;
-		this.searchField.setTextColor(searchTextColor);
+		this.searchField.setValue(filterTextSource.getFilterText());
 		this.searchField.updateBounds(searchArea);
 
 		this.configButton.updateBounds(configButtonArea);
