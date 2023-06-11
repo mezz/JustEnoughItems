@@ -42,7 +42,7 @@ public final class ColorGetter {
 			return unsafeGetColors(itemStack, colorCount);
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-			LOGGER.debug("Failed to get color name for {}", itemStackInfo, e);
+			LOGGER.warn("Failed to get color name for {}", itemStackInfo, e);
 			return Collections.emptyList();
 		}
 	}
@@ -112,12 +112,11 @@ public final class ColorGetter {
 	}
 
 	private static Optional<NativeImage> getNativeImage(TextureAtlasSprite textureAtlasSprite) {
-		try (SpriteContents contents = textureAtlasSprite.contents()) {
-			int iconWidth = contents.width();
-			int iconHeight = contents.height();
-			if (iconWidth <= 0 || iconHeight <= 0) {
-				return Optional.empty();
-			}
+		SpriteContents contents = textureAtlasSprite.contents();
+		int iconWidth = contents.width();
+		int iconHeight = contents.height();
+		if (iconWidth <= 0 || iconHeight <= 0) {
+			return Optional.empty();
 		}
 
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
