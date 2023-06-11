@@ -68,11 +68,11 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 			.addItemStacks(leftInputs)
 			.setSlotName(leftSlotName);
 
-		IRecipeSlotBuilder rightInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 50, 1)
+		IRecipeSlotBuilder rightInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 37, 1)
 			.addItemStacks(rightInputs)
 			.setSlotName(rightSlotName);
 
-		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 1)
+		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 91, 1)
 			.addItemStacks(outputs);
 
 		if (leftInputs.size() == rightInputs.size()) {
