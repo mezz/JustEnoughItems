@@ -13,6 +13,7 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.Vec2;
 import org.lwjgl.opengl.GL11;
 
@@ -128,7 +129,14 @@ public class GhostIngredientDrag<T> {
 			} else {
 				color = targetColor;
 			}
-			guiGraphics.fill(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), color);
+			guiGraphics.fill(
+				RenderType.guiOverlay(),
+				area.getX(),
+				area.getY(),
+				area.getX() + area.getWidth(),
+				area.getY() + area.getHeight(),
+				color
+			);
 		}
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}

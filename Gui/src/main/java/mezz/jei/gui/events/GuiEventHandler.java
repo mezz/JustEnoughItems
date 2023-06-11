@@ -18,6 +18,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -152,6 +153,7 @@ public class GuiEventHandler {
 				// draw the gui exclusion areas
 				for (Rect2i area : guiExclusionAreas) {
 					guiGraphics.fill(
+						RenderType.gui(),
 						area.getX(),
 						area.getY(),
 						area.getX() + area.getWidth(),
@@ -162,6 +164,7 @@ public class GuiEventHandler {
 
 				// draw the gui area
 				guiGraphics.fill(
+					RenderType.gui(),
 					guiProperties.getGuiLeft(),
 					guiProperties.getGuiTop(),
 					guiProperties.getGuiLeft() + guiProperties.getGuiXSize(),

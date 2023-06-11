@@ -10,6 +10,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.config.IClientToggleState;
+import net.minecraft.client.renderer.RenderType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -121,7 +122,14 @@ public class IngredientListRenderer {
 
 	private static <T> void renderEditMode(GuiGraphics guiGraphics, ImmutableRect2i area, int padding, IEditModeConfig editModeConfig, ITypedIngredient<T> typedIngredient) {
 		if (editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient)) {
-			guiGraphics.fill(area.getX() + padding, area.getY() + padding, area.getX() + 16 + padding, area.getY() + 16 + padding, BLACKLIST_COLOR);
+			guiGraphics.fill(
+				RenderType.guiOverlay(),
+				area.getX() + padding,
+				area.getY() + padding,
+				area.getX() + 16 + padding,
+				area.getY() + 16 + padding,
+				BLACKLIST_COLOR
+			);
 			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 		}
 	}

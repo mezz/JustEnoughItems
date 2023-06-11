@@ -26,6 +26,7 @@ import mezz.jei.gui.util.AlignmentUtil;
 import mezz.jei.gui.util.CheatUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderType;
 
 import java.util.List;
 import java.util.Optional;
@@ -158,11 +159,16 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	 * but with a custom area width and height
 	 */
 	public static void drawHighlight(GuiGraphics guiGraphics, ImmutableRect2i area) {
-		RenderSystem.disableDepthTest();
-		RenderSystem.colorMask(true, true, true, false);
-		guiGraphics.fill(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x80FFFFFF);
-		RenderSystem.colorMask(true, true, true, true);
-		RenderSystem.enableDepthTest();
+		guiGraphics.fillGradient(
+			RenderType.guiOverlay(),
+			area.getX(),
+			area.getY(),
+			area.getX() + area.getWidth(),
+			area.getY() + area.getHeight(),
+			0x80FFFFFF,
+			0x80FFFFFF,
+			0
+		);
 	}
 
 	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {

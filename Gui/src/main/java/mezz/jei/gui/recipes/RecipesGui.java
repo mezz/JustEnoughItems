@@ -44,6 +44,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -231,17 +232,21 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		RenderSystem.disableBlend();
 
 		guiGraphics.fill(
+			RenderType.gui(),
 			x + borderPadding + buttonWidth,
 			nextRecipeCategory.getY(),
 			x + width - borderPadding - buttonWidth,
 			nextRecipeCategory.getY() + buttonHeight,
-			0x30000000);
+			0x30000000
+		);
 		guiGraphics.fill(
+			RenderType.gui(),
 			x + borderPadding + buttonWidth,
 			nextPage.getY(),
 			x + width - borderPadding - buttonWidth,
 			nextPage.getY() + buttonHeight,
-			0x30000000);
+			0x30000000
+		);
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 

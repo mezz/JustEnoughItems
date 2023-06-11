@@ -13,6 +13,7 @@ import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -91,7 +92,14 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 		if (this.visible && this.recipeTransferError != null && this.recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
-			guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), this.recipeTransferError.getButtonHighlightColor());
+			guiGraphics.fill(
+				RenderType.guiOverlay(),
+				this.getX(),
+				this.getY(),
+				this.getX() + this.getWidth(),
+				this.getY() + this.getHeight(),
+				this.recipeTransferError.getButtonHighlightColor()
+			);
 		}
 	}
 

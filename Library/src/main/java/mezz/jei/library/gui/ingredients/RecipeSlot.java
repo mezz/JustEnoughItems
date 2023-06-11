@@ -1,7 +1,6 @@
 package mezz.jei.library.gui.ingredients;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
@@ -17,7 +16,9 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.IngredientTooltipHelper;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.apache.logging.log4j.LogManager;
@@ -125,9 +126,16 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		int width = this.rect.getWidth();
 		int height = this.rect.getHeight();
 
-		RenderSystem.disableDepthTest();
-		guiGraphics.fill(x, y, x + width, y + height , color);
-		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+		guiGraphics.fillGradient(
+			RenderType.guiOverlay(),
+			x,
+			y,
+			x + width,
+			y + height,
+			color,
+			color,
+			0
+		);
 	}
 
 	private <T> List<Component> getTooltip(ITypedIngredient<T> typedIngredient) {

@@ -10,6 +10,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.RenderType;
 
 public class PageNavigation {
 	private final IPaged paged;
@@ -53,11 +54,13 @@ public class PageNavigation {
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isVisible()) {
 			guiGraphics.fill(
+				RenderType.gui(),
 				backButton.getX() + backButton.getWidth(),
 				backButton.getY(),
 				nextButton.getX(),
 				nextButton.getY() + nextButton.getHeight(),
-				0x30000000);
+				0x30000000
+			);
 
 			Font font = minecraft.font;
 			ImmutableRect2i centerArea = MathUtil.centerTextArea(this.area, font, this.pageNumDisplayString);
