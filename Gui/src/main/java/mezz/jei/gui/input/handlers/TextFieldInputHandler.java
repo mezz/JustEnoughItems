@@ -44,6 +44,7 @@ public class TextFieldInputHandler implements IUserInputHandler {
 			textFieldFilter::mouseClicked,
 			textFieldFilter::keyPressed
 		)) {
+			handleSetFocused(input, true);
 			return true;
 		}
 
