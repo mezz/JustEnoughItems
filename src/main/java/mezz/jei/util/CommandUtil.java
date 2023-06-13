@@ -57,6 +57,7 @@ public final class CommandUtil {
 		if (ServerInfo.isJeiOnServer()) {
 			ItemStack sendStack = ItemHandlerHelper.copyStackWithSize(itemStack, itemStack.getMaxStackSize());
 			PacketSetHotbarItemStack packet = new PacketSetHotbarItemStack(sendStack, hotbarSlot);
+			// test commit
 			if (player.inventoryMenu.getCarried().getCount() < player.inventoryMenu.getCarried().getMaxStackSize()) {
 				Network.sendPacketToServer(packet);
 			}
