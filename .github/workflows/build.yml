@@ -1,0 +1,32 @@
+name: 'Build and Test'
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+          cache: 'gradle'
+      - name: Build with Gradle
+        run: ./gradlew build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: |
+            Common/build/libs/*.jar
+            CommonApi/build/libs/*.jar
+            Core/build/libs/*.jar
+            Fabric/build/libs/*.jar
+            FabricApi/build/libs/*.jar
+            Forge/build/libs/*.jar
+            ForgeApi/build/libs/*.jar
+            Gui/build/libs/*.jar
+            Library/build/libs/*.jar
