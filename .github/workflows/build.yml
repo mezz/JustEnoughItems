@@ -17,16 +17,20 @@ jobs:
           cache: 'gradle'
       - name: Build with Gradle
         run: ./gradlew build
+      - name: Copy together artifacts
+        shell: bash
+        run: |
+          mkdir dist
+          cp Common/build/libs/*.jar dist
+          cp CommonApi/build/libs/*.jar dist
+          cp Core/build/libs/*.jar dist
+          cp Fabric/build/libs/*.jar dist
+          cp FabricApi/build/libs/*.jar dist
+          cp Forge/build/libs/*.jar dist
+          cp ForgeApi/build/libs/*.jar dist
+          cp Gui/build/libs/*.jar dist
+          cp Library/build/libs/*.jar dist
       - uses: actions/upload-artifact@v3
         with:
-          name: dist
-          path: |
-            Common/build/libs/*.jar
-            CommonApi/build/libs/*.jar
-            Core/build/libs/*.jar
-            Fabric/build/libs/*.jar
-            FabricApi/build/libs/*.jar
-            Forge/build/libs/*.jar
-            ForgeApi/build/libs/*.jar
-            Gui/build/libs/*.jar
-            Library/build/libs/*.jar
+          if-no-files-found: error
+          path: dist/*
