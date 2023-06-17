@@ -3,6 +3,8 @@ package mezz.jei.forge;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Constants;
 import mezz.jei.common.config.IServerConfig;
+import mezz.jei.common.util.MinecraftLocaleSupplier;
+import mezz.jei.common.util.Translator;
 import mezz.jei.forge.config.ServerConfig;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.NetworkHandler;
@@ -17,6 +19,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod(ModIds.JEI_ID)
 public class JustEnoughItems {
 	public JustEnoughItems() {
+		Translator.setLocaleSupplier(new MinecraftLocaleSupplier());
 		IEventBus eventBus = MinecraftForge.EVENT_BUS;
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		PermanentEventSubscriptions subscriptions = new PermanentEventSubscriptions(eventBus, modEventBus);

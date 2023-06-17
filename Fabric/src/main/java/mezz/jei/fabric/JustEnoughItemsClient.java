@@ -4,6 +4,8 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.config.IServerConfig;
+import mezz.jei.common.util.MinecraftLocaleSupplier;
+import mezz.jei.common.util.Translator;
 import mezz.jei.fabric.config.ServerConfig;
 import mezz.jei.fabric.events.JeiIdentifiableResourceReloadListener;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
@@ -17,6 +19,7 @@ import net.minecraft.server.packs.PackType;
 public class JustEnoughItemsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		Translator.setLocaleSupplier(new MinecraftLocaleSupplier());
 		IServerConfig serverConfig = ServerConfig.getInstance();
 		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(serverConfig);
 
