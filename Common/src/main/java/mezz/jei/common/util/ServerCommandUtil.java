@@ -139,7 +139,9 @@ public final class ServerCommandUtil {
 		if (canStack(existingStack, itemStack)) {
 			int newCount = Math.min(existingStack.getMaxStackSize(), existingStack.getCount() + itemStack.getCount());
 			giveCount = newCount - existingStack.getCount();
-			existingStack.setCount(newCount);
+			if (giveCount > 0) {
+				existingStack.setCount(newCount);
+			}
 		} else {
 			containerMenu.setCarried(itemStack);
 			giveCount = itemStack.getCount();
@@ -153,9 +155,9 @@ public final class ServerCommandUtil {
 	}
 
 	public static boolean canStack(ItemStack a, ItemStack b) {
-		ItemStack singleStack = a.copy();
-		singleStack.setCount(1);
-		return ItemEntity.areMergable(singleStack, b);
+		ItemStack singleA = a.copyWithCount(1);
+		ItemStack singleB = b.copyWithCount(1);
+		return ItemEntity.areMergable(singleA, singleB);
 	}
 
 	/**
