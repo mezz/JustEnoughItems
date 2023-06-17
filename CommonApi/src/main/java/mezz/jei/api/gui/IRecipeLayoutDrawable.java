@@ -1,5 +1,6 @@
 package mezz.jei.api.gui;
 
+import mezz.jei.api.recipe.category.extensions.IGlobalRecipeCategoryExtension;
 import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
@@ -11,6 +12,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -86,6 +88,8 @@ public interface IRecipeLayoutDrawable<R> {
 	 * @since 11.5.0
 	 */
 	IRecipeCategory<R> getRecipeCategory();
+
+	Collection<IGlobalRecipeCategoryExtension<R>> getExtensions();
 
 	/**
 	 * Get the recipe that this recipe layout displays.

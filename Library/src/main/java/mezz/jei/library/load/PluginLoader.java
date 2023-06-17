@@ -2,6 +2,7 @@ package mezz.jei.library.load;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Multimap;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
@@ -11,6 +12,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.IGlobalRecipeCategoryExtension;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -29,15 +31,7 @@ import mezz.jei.library.gui.GuiHelper;
 import mezz.jei.library.helpers.ModIdHelper;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
-import mezz.jei.library.load.registration.AdvancedRegistration;
-import mezz.jei.library.load.registration.GuiHandlerRegistration;
-import mezz.jei.library.load.registration.IngredientManagerBuilder;
-import mezz.jei.library.load.registration.RecipeCatalystRegistration;
-import mezz.jei.library.load.registration.RecipeCategoryRegistration;
-import mezz.jei.library.load.registration.RecipeRegistration;
-import mezz.jei.library.load.registration.RecipeTransferRegistration;
-import mezz.jei.library.load.registration.SubtypeRegistration;
-import mezz.jei.library.load.registration.VanillaCategoryExtensionRegistration;
+import mezz.jei.library.load.registration.*;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
@@ -124,6 +118,7 @@ public class PluginLoader {
 		AdvancedRegistration advancedRegistration = new AdvancedRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering advanced plugins", plugins, p -> p.registerAdvanced(advancedRegistration));
 		List<IRecipeManagerPlugin> recipeManagerPlugins = advancedRegistration.getRecipeManagerPlugins();
+		Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions = advancedRegistration.createExtensionsMap();
 
 		timer.start("Building recipe registry");
 		RecipeManagerInternal recipeManagerInternal = new RecipeManagerInternal(
@@ -132,7 +127,8 @@ public class PluginLoader {
 			ingredientManager,
 			recipeManagerPlugins,
 			recipeCategorySortingConfig,
-			ingredientVisibility
+			ingredientVisibility,
+			recipeCategoryExtensions
 		);
 		timer.stop();
 

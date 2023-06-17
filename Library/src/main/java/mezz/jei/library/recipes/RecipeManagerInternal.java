@@ -1,12 +1,14 @@
 package mezz.jei.library.recipes;
 
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Multimap;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.IGlobalRecipeCategoryExtension;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.util.ErrorUtil;
@@ -44,23 +46,25 @@ public class RecipeManagerInternal {
 	private final PluginManager pluginManager;
 	private final Set<RecipeType<?>> hiddenRecipeTypes = new HashSet<>();
 	private final IIngredientVisibility ingredientVisibility;
+	private final Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions;
 
 	@Nullable
 	@Unmodifiable
 	private List<IRecipeCategory<?>> recipeCategoriesVisibleCache = null;
 
 	public RecipeManagerInternal(
-		List<IRecipeCategory<?>> recipeCategories,
-		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
-		IIngredientManager ingredientManager,
-		List<IRecipeManagerPlugin> plugins,
-		RecipeCategorySortingConfig recipeCategorySortingConfig,
-		IIngredientVisibility ingredientVisibility
-	) {
+			List<IRecipeCategory<?>> recipeCategories,
+			ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
+			IIngredientManager ingredientManager,
+			List<IRecipeManagerPlugin> plugins,
+			RecipeCategorySortingConfig recipeCategorySortingConfig,
+			IIngredientVisibility ingredientVisibility,
+			Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
 		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
+		this.recipeCategoryExtensions = recipeCategoryExtensions;
 
 		Collection<RecipeType<?>> recipeTypes = recipeCategories.stream()
 			.<RecipeType<?>>map(IRecipeCategory::getRecipeType)
@@ -252,5 +256,10 @@ public class RecipeManagerInternal {
 
 	public Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid) {
 		return recipeTypeDataMap.getType(recipeUid);
+	}
+
+	@Unmodifiable
+	public Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> getRecipeCategoryExtensions() {
+		return recipeCategoryExtensions;
 	}
 }

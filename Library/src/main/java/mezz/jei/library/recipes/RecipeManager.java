@@ -12,6 +12,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.IGlobalRecipeCategoryExtension;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.textures.Textures;
@@ -19,11 +20,9 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
@@ -67,17 +66,23 @@ public class RecipeManager implements IRecipeManager {
 
 	@Override
 	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup) {
+		return createRecipeLayoutDrawable(recipeCategory, recipe, focusGroup, Collections.emptyList());
+	}
+
+	@Override
+	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup, Collection<IGlobalRecipeCategoryExtension<T>> extensions) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
 		return RecipeLayout.create(
-			recipeCategory,
-			recipe,
-			focusGroup,
-			ingredientManager,
-			ingredientVisibility,
-			modIdHelper,
-			textures
+				recipeCategory,
+				recipe,
+				focusGroup,
+				ingredientManager,
+				ingredientVisibility,
+				modIdHelper,
+				textures,
+				extensions
 		);
 	}
 
@@ -121,5 +126,12 @@ public class RecipeManager implements IRecipeManager {
 	@Override
 	public Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid) {
 		return internal.getRecipeType(recipeUid);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	@Unmodifiable
+	public <T> Collection<IGlobalRecipeCategoryExtension<T>> getRecipeCategoryExtensions(IRecipeCategory<T> recipeCategory) {
+		return (Collection<IGlobalRecipeCategoryExtension<T>>) (Object) internal.getRecipeCategoryExtensions().get(recipeCategory);
 	}
 }

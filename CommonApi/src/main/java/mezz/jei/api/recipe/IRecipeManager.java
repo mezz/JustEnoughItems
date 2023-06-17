@@ -5,8 +5,10 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.IGlobalRecipeCategoryExtension;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.List;
@@ -123,6 +125,23 @@ public interface IRecipeManager {
 	);
 
 	/**
+	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
+	 *
+	 * @param recipeCategory the recipe category that the recipe belongs to
+	 * @param recipe         the specific recipe to draw.
+	 * @param focusGroup     the focuses of the recipe layout.
+	 * @param extensions     extensions for the recipe category
+	 *
+	 * @since VERSION_HERE_AU_CHECK
+	 */
+	<T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
+			IRecipeCategory<T> recipeCategory,
+			T recipe,
+			IFocusGroup focusGroup,
+			Collection<IGlobalRecipeCategoryExtension<T>> extensions
+	);
+
+	/**
 	 * Returns a drawable recipe slot, for addons that want to draw the slots somewhere.
 	 *
 	 * @param role                  the recipe ingredient role of this slot
@@ -152,4 +171,7 @@ public interface IRecipeManager {
 	 * @since 11.2.3
 	 */
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
+
+	@Unmodifiable
+	<T> Collection<IGlobalRecipeCategoryExtension<T>> getRecipeCategoryExtensions(IRecipeCategory<T> recipeCategory);
 }

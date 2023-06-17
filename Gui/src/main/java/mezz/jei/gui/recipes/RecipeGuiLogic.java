@@ -180,7 +180,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		final int firstRecipeIndex = state.getRecipeIndex() - (state.getRecipeIndex() % state.getRecipesPerPage());
 		for (int recipeIndex = firstRecipeIndex; recipeIndex < recipes.size() && recipeLayouts.size() < state.getRecipesPerPage(); recipeIndex++) {
 			T recipe = recipes.get(recipeIndex);
-			recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
+			recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses(), recipeManager.getRecipeCategoryExtensions(recipeCategory))
 				.ifPresentOrElse(recipeLayouts::add, () -> brokenRecipes.add(recipe));
 		}
 

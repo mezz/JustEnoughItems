@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.IGlobalRecipeCategoryExtension;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.TooltipRenderer;
@@ -27,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +39,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);
 	private final IRecipeCategory<R> recipeCategory;
+	private final Collection<IGlobalRecipeCategoryExtension<R>> extensions;
 	private final IIngredientManager ingredientManager;
 	private final IModIdHelper modIdHelper;
 	private final Textures textures;
@@ -50,8 +53,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private int posX;
 	private int posY;
 
-	public static <T> Optional<IRecipeLayoutDrawable<T>> create(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, IIngredientManager ingredientManager, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, Textures textures) {
-		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, recipe, ingredientManager, modIdHelper, textures);
+	public static <T> Optional<IRecipeLayoutDrawable<T>> create(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, IIngredientManager ingredientManager, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, Textures textures, Collection<IGlobalRecipeCategoryExtension<T>> extensions) {
+		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, recipe, ingredientManager, modIdHelper, textures, extensions);
 		if (recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses, ingredientVisibility)) {
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 			if (recipeName != null) {
@@ -100,12 +103,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		R recipe,
 		IIngredientManager ingredientManager,
 		IModIdHelper modIdHelper,
-		Textures textures
+		Textures textures,
+		Collection<IGlobalRecipeCategoryExtension<R>> extensions
 	) {
 		this.recipeCategory = recipeCategory;
 		this.ingredientManager = ingredientManager;
 		this.modIdHelper = modIdHelper;
 		this.textures = textures;
+		this.extensions = extensions;
 		this.recipeSlots = new RecipeSlots();
 
 		int width = recipeCategory.getWidth();
@@ -267,6 +272,11 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	@Override
 	public IRecipeCategory<R> getRecipeCategory() {
 		return recipeCategory;
+	}
+
+	@Override
+	public Collection<IGlobalRecipeCategoryExtension<R>> getExtensions() {
+		return extensions;
 	}
 
 	@Override
