@@ -24,9 +24,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Server-side-safe utilities for commands.
@@ -53,10 +53,9 @@ public final class ServerCommandUtil {
 		}
 
 		if (serverConfig.isCheatModeEnabledForGive()) {
-			CommandNode<CommandSourceStack> giveCommand = getGiveCommand(sender);
-			if (giveCommand != null) {
-				return giveCommand.canUse(commandSource);
-			}
+			return getGiveCommand(sender)
+					.map(giveCommand -> giveCommand.canUse(commandSource))
+					.orElse(false);
 		}
 
 		return false;
@@ -141,7 +140,9 @@ public final class ServerCommandUtil {
 		if (canStack(existingStack, itemStack)) {
 			int newCount = Math.min(existingStack.getMaxStackSize(), existingStack.getCount() + itemStack.getCount());
 			giveCount = newCount - existingStack.getCount();
-			existingStack.setCount(newCount);
+			if (giveCount > 0) {
+				existingStack.setCount(newCount);
+			}
 		} else {
 			containerMenu.setCarried(itemStack);
 			giveCount = itemStack.getCount();
@@ -155,9 +156,11 @@ public final class ServerCommandUtil {
 	}
 
 	public static boolean canStack(ItemStack a, ItemStack b) {
-		ItemStack singleStack = a.copy();
-		singleStack.setCount(1);
-		return ItemEntity.areMergable(singleStack, b);
+		ItemStack singleA = a.copy();
+		singleA.setCount(1);
+		ItemStack singleB = b.copy();
+		singleB.setCount(1);
+		return ItemEntity.areMergable(singleA, singleB);
 	}
 
 	/**
@@ -201,15 +204,13 @@ public final class ServerCommandUtil {
 		commandSource.sendSuccess(message, true);
 	}
 
-	@Nullable
-	private static CommandNode<CommandSourceStack> getGiveCommand(Player sender) {
-		MinecraftServer minecraftServer = sender.getServer();
-		if (minecraftServer == null) {
-			return null;
-		}
-		Commands commandManager = minecraftServer.getCommands();
-		CommandDispatcher<CommandSourceStack> dispatcher = commandManager.getDispatcher();
-		RootCommandNode<CommandSourceStack> root = dispatcher.getRoot();
-		return root.getChild("give");
+	private static Optional<CommandNode<CommandSourceStack>> getGiveCommand(Player sender) {
+		return Optional.ofNullable(sender.getServer())
+				.map(minecraftServer -> {
+					Commands commandManager = minecraftServer.getCommands();
+					CommandDispatcher<CommandSourceStack> dispatcher = commandManager.getDispatcher();
+					RootCommandNode<CommandSourceStack> root = dispatcher.getRoot();
+					return root.getChild("give");
+				});
 	}
 }
