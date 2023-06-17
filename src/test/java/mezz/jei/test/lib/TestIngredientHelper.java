@@ -20,7 +20,7 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 
 	@Override
 	public String getDisplayName(TestIngredient ingredient) {
-		return "Test Ingredient Display Name " + ingredient;
+		return "§eTest Ingredient Display Name " + ingredient;
 	}
 
 	@Override
