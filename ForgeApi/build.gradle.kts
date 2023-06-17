@@ -1,7 +1,7 @@
 plugins {
-	java
-	`maven-publish`
-	id("net.minecraftforge.gradle") version ("5.1.+")
+	id("java")
+	id("maven-publish")
+	id("net.minecraftforge.gradle") version("[6.0,6.2)")
 	id("org.parchmentmc.librarian.forgegradle") version ("1.+")
 }
 
@@ -61,6 +61,8 @@ dependencies {
 
 minecraft {
 	mappings("parchment", parchmentVersionForge)
+
+	copyIdeResources.set(true)
 
 	// All minecraft configurations in the multi-project must be identical, including ATs,
 	// because of a ForgeGradle bug https://github.com/MinecraftForge/ForgeGradle/issues/844

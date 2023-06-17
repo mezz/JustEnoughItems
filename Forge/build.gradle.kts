@@ -2,11 +2,11 @@ import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.darkhax.curseforgegradle.Constants as CFG_Constants
 
 plugins {
-	java
-	idea
-	eclipse
-	`maven-publish`
-	id("net.minecraftforge.gradle") version("5.1.+")
+	id("java")
+	id("idea")
+	id("eclipse")
+	id("maven-publish")
+	id("net.minecraftforge.gradle") version("[6.0,6.2)")
 	id("org.parchmentmc.librarian.forgegradle") version("1.+")
 	id("net.darkhax.curseforgegradle") version("1.0.8")
 	id("com.modrinth.minotaur") version("2.+")
@@ -84,6 +84,8 @@ dependencies {
 
 minecraft {
 	mappings("parchment", parchmentVersionForge)
+
+	copyIdeResources.set(true)
 
 	accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 
