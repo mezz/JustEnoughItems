@@ -139,7 +139,9 @@ public final class ServerCommandUtil {
 		if (canStack(existingStack, itemStack)) {
 			int newCount = Math.min(existingStack.getMaxStackSize(), existingStack.getCount() + itemStack.getCount());
 			giveCount = newCount - existingStack.getCount();
-			existingStack.setCount(newCount);
+			if (giveCount > 0) {
+				existingStack.setCount(newCount);
+			}
 		} else {
 			containerMenu.setCarried(itemStack);
 			giveCount = itemStack.getCount();
