@@ -1,0 +1,36 @@
+name: 'Build and Test'
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+          cache: 'gradle'
+      - name: Build with Gradle
+        run: ./gradlew build
+      - name: Copy together artifacts
+        shell: bash
+        run: |
+          mkdir dist
+          cp Common/build/libs/*.jar dist
+          cp CommonApi/build/libs/*.jar dist
+          cp Core/build/libs/*.jar dist
+          cp Fabric/build/libs/*.jar dist
+          cp FabricApi/build/libs/*.jar dist
+          cp Forge/build/libs/*.jar dist
+          cp ForgeApi/build/libs/*.jar dist
+          cp Gui/build/libs/*.jar dist
+          cp Library/build/libs/*.jar dist
+      - uses: actions/upload-artifact@v3
+        with:
+          if-no-files-found: error
+          path: dist/*
