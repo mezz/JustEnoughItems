@@ -1,6 +1,5 @@
 package mezz.jei.api.gui;
 
-import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
@@ -88,12 +87,6 @@ public interface IRecipeLayoutDrawable<R> {
 	 * @since 11.5.0
 	 */
 	IRecipeCategory<R> getRecipeCategory();
-
-	/**
-	 * Get the decorators for the recipe category of this recipe layout.
-	 * @since 15.1.0
-	 */
-	Collection<IRecipeCategoryDecorator<R>> getRecipeCategoryDecorators();
 
 	/**
 	 * Get the recipe that this recipe layout displays.

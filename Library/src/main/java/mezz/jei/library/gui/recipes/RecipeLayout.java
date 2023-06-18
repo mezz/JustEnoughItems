@@ -172,7 +172,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			}
 			poseStack.popPose();
 
-			for (IRecipeCategoryDecorator<R> decorator : getRecipeCategoryDecorators()) {
+			for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
 				// defensive push/pop to protect against recipe category decorators changing the last pose
 				poseStack.pushPose();
 				{
@@ -224,7 +224,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 				});
 		} else if (isMouseOver(mouseX, mouseY)) {
 			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeSlots.getView(), recipeMouseX, recipeMouseY);
-			for (IRecipeCategoryDecorator<R> decorator : getRecipeCategoryDecorators()) {
+			for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
 				tooltipStrings = decorator.decorateExistingTooltips(tooltipStrings, recipe, recipeCategory, recipeSlots.getView(), recipeMouseX, recipeMouseY);
 			}
 
@@ -288,11 +288,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	@Override
 	public IRecipeCategory<R> getRecipeCategory() {
 		return recipeCategory;
-	}
-
-	@Override
-	public Collection<IRecipeCategoryDecorator<R>> getRecipeCategoryDecorators() {
-		return recipeCategoryDecorators;
 	}
 
 	@Override
