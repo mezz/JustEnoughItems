@@ -17,8 +17,8 @@ import java.util.Optional;
 
 /**
  * For addons that want to draw recipe layouts somewhere themselves.
- *
- * Create an instance with {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocusGroup)}.
+ * <p>
+ * Create an instance with {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Collection, Object, IFocusGroup)}.
  */
 public interface IRecipeLayoutDrawable<R> {
 	/**

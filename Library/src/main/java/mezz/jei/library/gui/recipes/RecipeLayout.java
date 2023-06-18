@@ -224,12 +224,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 				});
 		} else if (isMouseOver(mouseX, mouseY)) {
 			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeSlots.getView(), recipeMouseX, recipeMouseY);
-
 			for (IGlobalRecipeCategoryExtension<R> extension : getRecipeCategoryExtensions()) {
 				tooltipStrings = extension.decorateExistingTooltips(tooltipStrings, recipe, recipeCategory, recipeSlots.getView(), recipeMouseX, recipeMouseY);
-			}
-			for (IGlobalRecipeCategoryExtension<R> extension : getRecipeCategoryExtensions()) {
-				tooltipStrings.addAll(extension.getTooltipStrings(recipe, recipeCategory, recipeSlots.getView(), recipeMouseX, recipeMouseY));
 			}
 
 			if (tooltipStrings.isEmpty() && shapelessIcon != null) {

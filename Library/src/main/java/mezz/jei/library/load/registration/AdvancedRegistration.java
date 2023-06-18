@@ -47,20 +47,6 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-    public <T> void addGlobalRecipeCategoryExtension(Class<T> recipeClass, IGlobalRecipeCategoryExtension<T> extension) {
-        ErrorUtil.checkNotNull(recipeClass, "recipeClass");
-		ErrorUtil.checkNotNull(extension, "extension");
-
-		for (IRecipeCategory<?> recipeCategory : jeiHelpers.getRecipeCategories()) {
-			var type = recipeCategory.getRecipeType();
-			if (type.getRecipeClass().isAssignableFrom(recipeClass)) {
-				addGlobalRecipeCategoryExtension(recipeCategory, (IGlobalRecipeCategoryExtension) extension);
-			}
-		}
-    }
-
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	@Override
 	public <T> void addGlobalRecipeCategoryExtension(RecipeType<T> recipeType, IGlobalRecipeCategoryExtension<T> extension) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(extension, "extension");

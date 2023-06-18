@@ -113,21 +113,6 @@ public interface IRecipeManager {
 	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
 	 *
 	 * @param recipeCategory the recipe category that the recipe belongs to
-	 * @param recipe         the specific recipe to draw.
-	 * @param focusGroup     the focuses of the recipe layout.
-	 *
-	 * @since 11.5.0
-	 */
-	<T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
-		IRecipeCategory<T> recipeCategory,
-		T recipe,
-		IFocusGroup focusGroup
-	);
-
-	/**
-	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
-	 *
-	 * @param recipeCategory the recipe category that the recipe belongs to
 	 * @param extensions	 the extensions for the recipe category.
 	 * @param recipe         the specific recipe to draw.
 	 * @param focusGroup     the focuses of the recipe layout.

@@ -29,13 +29,6 @@ public interface IAdvancedRegistration {
 	<T> void addGlobalRecipeCategoryExtension(IRecipeCategory<T> recipeCategory, IGlobalRecipeCategoryExtension<T> extension);
 
 	/**
-	 * Register a {@link IGlobalRecipeCategoryExtension} for a recipe class.
-	 *
-	 * @since 15.1.0
-	 */
-	<T> void addGlobalRecipeCategoryExtension(Class<T> recipeClass, IGlobalRecipeCategoryExtension<T> extension);
-
-	/**
 	 * Register a {@link IGlobalRecipeCategoryExtension} for a recipe type.
 	 *
 	 * @since 15.1.0

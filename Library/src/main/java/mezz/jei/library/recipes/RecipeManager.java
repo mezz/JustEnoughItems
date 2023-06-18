@@ -23,7 +23,6 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -66,11 +65,6 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.assertMainThread();
 
 		internal.addRecipes(recipeType, recipes);
-	}
-
-	@Override
-	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup) {
-		return createRecipeLayoutDrawable(recipeCategory, Collections.emptyList(), recipe, focusGroup);
 	}
 
 	@Override
