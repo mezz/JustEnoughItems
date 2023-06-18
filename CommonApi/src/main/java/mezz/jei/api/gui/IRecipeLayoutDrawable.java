@@ -89,7 +89,11 @@ public interface IRecipeLayoutDrawable<R> {
 	 */
 	IRecipeCategory<R> getRecipeCategory();
 
-	Collection<IGlobalRecipeCategoryExtension<R>> getExtensions();
+	/**
+	 * Get the extensions for the recipe category of this recipe layout.
+	 * @since 15.1.0
+	 */
+	Collection<IGlobalRecipeCategoryExtension<R>> getRecipeCategoryExtensions();
 
 	/**
 	 * Get the recipe that this recipe layout displays.

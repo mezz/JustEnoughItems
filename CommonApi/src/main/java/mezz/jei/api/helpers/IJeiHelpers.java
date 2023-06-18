@@ -63,6 +63,11 @@ public interface IJeiHelpers {
 	 */
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
 
+	/**
+	 * Get all registered recipe categories.
+	 *
+	 * @since 15.1.0
+	 */
 	Collection<IRecipeCategory<?>> getRecipeCategories();
 
 	/**

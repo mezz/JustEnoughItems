@@ -3,9 +3,7 @@ package mezz.jei.test.lib;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
-import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -30,19 +28,4 @@ public class TestPlugin implements IModPlugin {
 		registration.register(TestIngredient.TYPE, baseTestIngredients, new TestIngredientHelper(), new TestIngredientRenderer());
 	}
 
-    @Override
-    public void registerAdvanced(IAdvancedRegistration registration) {
-
-    }
-
-	@Override
-	public void registerCategories(IRecipeCategoryRegistration registration) {
-		registration.addRecipeCategories();
-	}
-
-	//
-//    @Override
-//    public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
-//        registration.getCraftingCategory().addCategoryExtension();
-//    }
 }

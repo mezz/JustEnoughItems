@@ -31,7 +31,15 @@ import mezz.jei.library.gui.GuiHelper;
 import mezz.jei.library.helpers.ModIdHelper;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
-import mezz.jei.library.load.registration.*;
+import mezz.jei.library.load.registration.AdvancedRegistration;
+import mezz.jei.library.load.registration.GuiHandlerRegistration;
+import mezz.jei.library.load.registration.IngredientManagerBuilder;
+import mezz.jei.library.load.registration.RecipeCatalystRegistration;
+import mezz.jei.library.load.registration.RecipeCategoryRegistration;
+import mezz.jei.library.load.registration.RecipeRegistration;
+import mezz.jei.library.load.registration.RecipeTransferRegistration;
+import mezz.jei.library.load.registration.SubtypeRegistration;
+import mezz.jei.library.load.registration.VanillaCategoryExtensionRegistration;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
@@ -118,17 +126,17 @@ public class PluginLoader {
 		AdvancedRegistration advancedRegistration = new AdvancedRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering advanced plugins", plugins, p -> p.registerAdvanced(advancedRegistration));
 		List<IRecipeManagerPlugin> recipeManagerPlugins = advancedRegistration.getRecipeManagerPlugins();
-		Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions = advancedRegistration.createExtensionsMap();
+		Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions = advancedRegistration.getRecipeCategoryExtensions();
 
 		timer.start("Building recipe registry");
 		RecipeManagerInternal recipeManagerInternal = new RecipeManagerInternal(
 			recipeCategories,
 			recipeCatalysts,
+			recipeCategoryExtensions,
 			ingredientManager,
 			recipeManagerPlugins,
 			recipeCategorySortingConfig,
-			ingredientVisibility,
-			recipeCategoryExtensions
+			ingredientVisibility
 		);
 		timer.stop();
 

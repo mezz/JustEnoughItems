@@ -128,17 +128,17 @@ public interface IRecipeManager {
 	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
 	 *
 	 * @param recipeCategory the recipe category that the recipe belongs to
+	 * @param extensions	 the extensions for the recipe category.
 	 * @param recipe         the specific recipe to draw.
 	 * @param focusGroup     the focuses of the recipe layout.
-	 * @param extensions     extensions for the recipe category
 	 *
-	 * @since VERSION_HERE_AU_CHECK
+	 * @since 15.1.0
 	 */
 	<T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
-			IRecipeCategory<T> recipeCategory,
-			T recipe,
-			IFocusGroup focusGroup,
-			Collection<IGlobalRecipeCategoryExtension<T>> extensions
+		IRecipeCategory<T> recipeCategory,
+		Collection<IGlobalRecipeCategoryExtension<T>> extensions,
+		T recipe,
+		IFocusGroup focusGroup
 	);
 
 	/**
@@ -172,6 +172,11 @@ public interface IRecipeManager {
 	 */
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
 
+	/**
+	 * Get the registered extensions for the given recipe category.
+	 *
+	 * @since 15.1.0
+	 */
 	@Unmodifiable
 	<T> Collection<IGlobalRecipeCategoryExtension<T>> getRecipeCategoryExtensions(IRecipeCategory<T> recipeCategory);
 }

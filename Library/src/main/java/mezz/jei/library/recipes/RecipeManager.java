@@ -22,7 +22,11 @@ import mezz.jei.library.gui.recipes.RecipeLayout;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
@@ -66,23 +70,24 @@ public class RecipeManager implements IRecipeManager {
 
 	@Override
 	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup) {
-		return createRecipeLayoutDrawable(recipeCategory, recipe, focusGroup, Collections.emptyList());
+		return createRecipeLayoutDrawable(recipeCategory, Collections.emptyList(), recipe, focusGroup);
 	}
 
 	@Override
-	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup, Collection<IGlobalRecipeCategoryExtension<T>> extensions) {
+	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, Collection<IGlobalRecipeCategoryExtension<T>> extensions, T recipe, IFocusGroup focusGroup) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+		ErrorUtil.checkNotNull(extensions, "extensions");
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
 		return RecipeLayout.create(
-				recipeCategory,
-				recipe,
-				focusGroup,
-				ingredientManager,
-				ingredientVisibility,
-				modIdHelper,
-				textures,
-				extensions
+			recipeCategory,
+			extensions,
+			recipe,
+			focusGroup,
+			ingredientManager,
+			ingredientVisibility,
+			modIdHelper,
+			textures
 		);
 	}
 

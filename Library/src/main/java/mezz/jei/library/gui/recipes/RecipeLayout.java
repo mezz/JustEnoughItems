@@ -39,7 +39,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);
 	private final IRecipeCategory<R> recipeCategory;
-	private final Collection<IGlobalRecipeCategoryExtension<R>> extensions;
+	private final Collection<IGlobalRecipeCategoryExtension<R>> recipeCategoryExtensions;
 	private final IIngredientManager ingredientManager;
 	private final IModIdHelper modIdHelper;
 	private final Textures textures;
@@ -53,8 +53,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private int posX;
 	private int posY;
 
-	public static <T> Optional<IRecipeLayoutDrawable<T>> create(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses, IIngredientManager ingredientManager, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, Textures textures, Collection<IGlobalRecipeCategoryExtension<T>> extensions) {
-		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, recipe, ingredientManager, modIdHelper, textures, extensions);
+	public static <T> Optional<IRecipeLayoutDrawable<T>> create(IRecipeCategory<T> recipeCategory, Collection<IGlobalRecipeCategoryExtension<T>> extensions, T recipe, IFocusGroup focuses, IIngredientManager ingredientManager, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, Textures textures) {
+		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, extensions, recipe, ingredientManager, modIdHelper, textures);
 		if (recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses, ingredientVisibility)) {
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 			if (recipeName != null) {
@@ -100,17 +100,17 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	public RecipeLayout(
 		IRecipeCategory<R> recipeCategory,
+		Collection<IGlobalRecipeCategoryExtension<R>> recipeCategoryExtensions,
 		R recipe,
 		IIngredientManager ingredientManager,
 		IModIdHelper modIdHelper,
-		Textures textures,
-		Collection<IGlobalRecipeCategoryExtension<R>> extensions
+		Textures textures
 	) {
 		this.recipeCategory = recipeCategory;
+		this.recipeCategoryExtensions = recipeCategoryExtensions;
 		this.ingredientManager = ingredientManager;
 		this.modIdHelper = modIdHelper;
 		this.textures = textures;
-		this.extensions = extensions;
 		this.recipeSlots = new RecipeSlots();
 
 		int width = recipeCategory.getWidth();
@@ -275,8 +275,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	}
 
 	@Override
-	public Collection<IGlobalRecipeCategoryExtension<R>> getExtensions() {
-		return extensions;
+	public Collection<IGlobalRecipeCategoryExtension<R>> getRecipeCategoryExtensions() {
+		return recipeCategoryExtensions;
 	}
 
 	@Override

@@ -39,6 +39,7 @@ public class RecipeManagerInternal {
 
 	@Unmodifiable
 	private final List<IRecipeCategory<?>> recipeCategories;
+	private final Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions;
 	private final IIngredientManager ingredientManager;
 	private final RecipeTypeDataMap recipeTypeDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
@@ -46,25 +47,25 @@ public class RecipeManagerInternal {
 	private final PluginManager pluginManager;
 	private final Set<RecipeType<?>> hiddenRecipeTypes = new HashSet<>();
 	private final IIngredientVisibility ingredientVisibility;
-	private final Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions;
 
 	@Nullable
 	@Unmodifiable
 	private List<IRecipeCategory<?>> recipeCategoriesVisibleCache = null;
 
 	public RecipeManagerInternal(
-			List<IRecipeCategory<?>> recipeCategories,
-			ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
-			IIngredientManager ingredientManager,
-			List<IRecipeManagerPlugin> plugins,
-			RecipeCategorySortingConfig recipeCategorySortingConfig,
-			IIngredientVisibility ingredientVisibility,
-			Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions) {
+		List<IRecipeCategory<?>> recipeCategories,
+		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
+		Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions,
+		IIngredientManager ingredientManager,
+		List<IRecipeManagerPlugin> plugins,
+		RecipeCategorySortingConfig recipeCategorySortingConfig,
+		IIngredientVisibility ingredientVisibility
+	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
+		this.recipeCategoryExtensions = recipeCategoryExtensions;
 		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
-		this.recipeCategoryExtensions = recipeCategoryExtensions;
 
 		Collection<RecipeType<?>> recipeTypes = recipeCategories.stream()
 			.<RecipeType<?>>map(IRecipeCategory::getRecipeType)

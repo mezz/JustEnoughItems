@@ -21,7 +21,7 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final List<IRecipeManagerPlugin> recipeManagerPlugins = new ArrayList<>();
-	private final Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensionsMap = HashMultimap.create();
+	private final Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions = HashMultimap.create();
 	private final IJeiHelpers jeiHelpers;
 
 	public AdvancedRegistration(IJeiHelpers jeiHelpers) {
@@ -42,7 +42,7 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 		ErrorUtil.checkNotNull(extension, "extension");
 
 		LOGGER.info("Added global recipe category extension: {} for recipe category: {}", extension.getClass(), recipeCategory.getRecipeType().getUid());
-		recipeCategoryExtensionsMap.put(recipeCategory, extension);
+		recipeCategoryExtensions.put(recipeCategory, extension);
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -83,7 +83,8 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 		return List.copyOf(recipeManagerPlugins);
 	}
 
-	public Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> createExtensionsMap() {
-		return ImmutableMultimap.copyOf(recipeCategoryExtensionsMap);
+	@Unmodifiable
+	public Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> getRecipeCategoryExtensions() {
+		return ImmutableMultimap.copyOf(recipeCategoryExtensions);
 	}
 }
