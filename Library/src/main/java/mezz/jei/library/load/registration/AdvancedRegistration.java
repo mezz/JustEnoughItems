@@ -7,7 +7,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.category.extensions.IGlobalRecipeCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.common.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
@@ -21,7 +21,7 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final List<IRecipeManagerPlugin> recipeManagerPlugins = new ArrayList<>();
-	private final Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions = HashMultimap.create();
+	private final Multimap<IRecipeCategory<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators = HashMultimap.create();
 	private final List<IRecipeCategory<?>> recipeCategories;
 	private final IJeiHelpers jeiHelpers;
 
@@ -39,24 +39,24 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	}
 
 	@Override
-	public <T> void addGlobalRecipeCategoryExtension(IRecipeCategory<T> recipeCategory, IGlobalRecipeCategoryExtension<T> extension) {
+	public <T> void addRecipeCategoryDecorator(IRecipeCategory<T> recipeCategory, IRecipeCategoryDecorator<T> decorator) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		ErrorUtil.checkNotNull(extension, "extension");
+		ErrorUtil.checkNotNull(decorator, "decorator");
 
-		LOGGER.info("Added global recipe category extension: {} for recipe category: {}", extension.getClass(), recipeCategory.getRecipeType().getUid());
-		recipeCategoryExtensions.put(recipeCategory, extension);
+		LOGGER.info("Added global recipe category decorator: {} for recipe category: {}", decorator.getClass(), recipeCategory.getRecipeType().getUid());
+		recipeCategoryDecorators.put(recipeCategory, decorator);
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public <T> void addGlobalRecipeCategoryExtension(RecipeType<T> recipeType, IGlobalRecipeCategoryExtension<T> extension) {
+	public <T> void addRecipeCategoryDecorator(RecipeType<T> recipeType, IRecipeCategoryDecorator<T> decorator) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		ErrorUtil.checkNotNull(extension, "extension");
+		ErrorUtil.checkNotNull(decorator, "decorator");
 
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
 			var type = recipeCategory.getRecipeType();
 			if (type.equals(recipeType)) {
-				addGlobalRecipeCategoryExtension(recipeCategory, (IGlobalRecipeCategoryExtension) extension);
+				addRecipeCategoryDecorator(recipeCategory, (IRecipeCategoryDecorator) decorator);
 			}
 		}
 	}
@@ -72,7 +72,7 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	}
 
 	@Unmodifiable
-	public Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> getRecipeCategoryExtensions() {
-		return ImmutableMultimap.copyOf(recipeCategoryExtensions);
+	public Multimap<IRecipeCategory<?>, IRecipeCategoryDecorator<?>> getRecipeCategoryDecorators() {
+		return ImmutableMultimap.copyOf(recipeCategoryDecorators);
 	}
 }

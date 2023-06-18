@@ -8,7 +8,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.category.extensions.IGlobalRecipeCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.util.ErrorUtil;
@@ -39,7 +39,7 @@ public class RecipeManagerInternal {
 
 	@Unmodifiable
 	private final List<IRecipeCategory<?>> recipeCategories;
-	private final Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions;
+	private final Multimap<IRecipeCategory<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 	private final IIngredientManager ingredientManager;
 	private final RecipeTypeDataMap recipeTypeDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
@@ -55,7 +55,7 @@ public class RecipeManagerInternal {
 	public RecipeManagerInternal(
 		List<IRecipeCategory<?>> recipeCategories,
 		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
-		Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions,
+		Multimap<IRecipeCategory<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
 		IIngredientManager ingredientManager,
 		List<IRecipeManagerPlugin> plugins,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
@@ -63,7 +63,7 @@ public class RecipeManagerInternal {
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
-		this.recipeCategoryExtensions = recipeCategoryExtensions;
+		this.recipeCategoryDecorators = recipeCategoryDecorators;
 		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
 
@@ -260,7 +260,7 @@ public class RecipeManagerInternal {
 	}
 
 	@Unmodifiable
-	public Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> getRecipeCategoryExtensions() {
-		return recipeCategoryExtensions;
+	public Multimap<IRecipeCategory<?>, IRecipeCategoryDecorator<?>> getRecipeCategoryDecorators() {
+		return recipeCategoryDecorators;
 	}
 }

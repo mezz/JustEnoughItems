@@ -12,7 +12,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.category.extensions.IGlobalRecipeCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.textures.Textures;
@@ -68,14 +68,14 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, Collection<IGlobalRecipeCategoryExtension<T>> extensions, T recipe, IFocusGroup focusGroup) {
+	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, Collection<IRecipeCategoryDecorator<T>> decorators, T recipe, IFocusGroup focusGroup) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		ErrorUtil.checkNotNull(extensions, "extensions");
+		ErrorUtil.checkNotNull(decorators, "decorators");
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
 		return RecipeLayout.create(
 			recipeCategory,
-			extensions,
+			decorators,
 			recipe,
 			focusGroup,
 			ingredientManager,
@@ -130,7 +130,7 @@ public class RecipeManager implements IRecipeManager {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Unmodifiable
-	public <T> Collection<IGlobalRecipeCategoryExtension<T>> getRecipeCategoryExtensions(IRecipeCategory<T> recipeCategory) {
-		return (Collection<IGlobalRecipeCategoryExtension<T>>) (Object) internal.getRecipeCategoryExtensions().get(recipeCategory);
+	public <T> Collection<IRecipeCategoryDecorator<T>> getRecipeCategoryDecorators(IRecipeCategory<T> recipeCategory) {
+		return (Collection<IRecipeCategoryDecorator<T>>) (Object) internal.getRecipeCategoryDecorators().get(recipeCategory);
 	}
 }
