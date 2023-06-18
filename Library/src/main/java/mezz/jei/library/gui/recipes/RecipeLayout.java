@@ -172,6 +172,18 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			}
 			poseStack.popPose();
 
+			for (IGlobalRecipeCategoryExtension<R> extension : getRecipeCategoryExtensions()) {
+				// defensive push/pop to protect against recipe category extensions changing the last pose
+				poseStack.pushPose();
+				{
+					extension.draw(recipe, recipeCategory, recipeSlots.getView(), guiGraphics, recipeMouseX, recipeMouseY);
+
+					// drawExtras and drawInfo often render text which messes with the color, this clears it
+					RenderSystem.setShaderColor(1, 1, 1, 1);
+				}
+				poseStack.popPose();
+			}
+
 			if (shapelessIcon != null) {
 				shapelessIcon.draw(guiGraphics);
 			}
@@ -212,6 +224,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 				});
 		} else if (isMouseOver(mouseX, mouseY)) {
 			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeSlots.getView(), recipeMouseX, recipeMouseY);
+
+			for (IGlobalRecipeCategoryExtension<R> extension : getRecipeCategoryExtensions()) {
+				tooltipStrings = extension.decorateExistingTooltips(tooltipStrings, recipe, recipeCategory, recipeSlots.getView(), recipeMouseX, recipeMouseY);
+			}
+			for (IGlobalRecipeCategoryExtension<R> extension : getRecipeCategoryExtensions()) {
+				tooltipStrings.addAll(extension.getTooltipStrings(recipe, recipeCategory, recipeSlots.getView(), recipeMouseX, recipeMouseY));
+			}
+
 			if (tooltipStrings.isEmpty() && shapelessIcon != null) {
 				tooltipStrings = shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY);
 			}
