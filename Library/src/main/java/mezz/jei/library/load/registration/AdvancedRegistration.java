@@ -22,9 +22,11 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 
 	private final List<IRecipeManagerPlugin> recipeManagerPlugins = new ArrayList<>();
 	private final Multimap<IRecipeCategory<?>, IGlobalRecipeCategoryExtension<?>> recipeCategoryExtensions = HashMultimap.create();
+	private final List<IRecipeCategory<?>> recipeCategories;
 	private final IJeiHelpers jeiHelpers;
 
-	public AdvancedRegistration(IJeiHelpers jeiHelpers) {
+	public AdvancedRegistration(List<IRecipeCategory<?>> recipeCategories, IJeiHelpers jeiHelpers) {
+		this.recipeCategories = recipeCategories;
 		this.jeiHelpers = jeiHelpers;
 	}
 
@@ -51,7 +53,7 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(extension, "extension");
 
-		for (IRecipeCategory<?> recipeCategory : jeiHelpers.getRecipeCategories()) {
+		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
 			var type = recipeCategory.getRecipeType();
 			if (type.equals(recipeType)) {
 				addGlobalRecipeCategoryExtension(recipeCategory, (IGlobalRecipeCategoryExtension) extension);

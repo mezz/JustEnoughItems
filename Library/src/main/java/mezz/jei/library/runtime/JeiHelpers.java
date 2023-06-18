@@ -91,11 +91,6 @@ public class JeiHelpers implements IJeiHelpers {
 	}
 
 	@Override
-	public Collection<IRecipeCategory<?>> getRecipeCategories() {
-		return Collections.unmodifiableCollection(this.recipeCategories == null ? Collections.emptyList() : this.recipeCategories);
-	}
-
-	@Override
 	public IIngredientManager getIngredientManager() {
 		return ingredientManager;
 	}

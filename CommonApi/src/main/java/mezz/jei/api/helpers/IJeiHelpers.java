@@ -3,11 +3,9 @@ package mezz.jei.api.helpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -62,13 +60,6 @@ public interface IJeiHelpers {
 	 * @since 11.4.0
 	 */
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
-
-	/**
-	 * Get all registered recipe categories.
-	 *
-	 * @since 15.1.0
-	 */
-	Collection<IRecipeCategory<?>> getRecipeCategories();
 
 	/**
 	 * The ingredient manager, with information about all registered ingredients.
