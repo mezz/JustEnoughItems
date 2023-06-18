@@ -4,7 +4,6 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 
 /**
@@ -20,13 +19,6 @@ public interface IAdvancedRegistration {
 	 * Register your own {@link IRecipeManagerPlugin} here.
 	 */
 	void addRecipeManagerPlugin(IRecipeManagerPlugin recipeManagerPlugin);
-
-	/**
-	 * Register a {@link IRecipeCategoryDecorator} for a recipe category.
-	 *
-	 * @since 15.1.0
-	 */
-	<T> void addRecipeCategoryDecorator(IRecipeCategory<T> recipeCategory, IRecipeCategoryDecorator<T> decorator);
 
 	/**
 	 * Register a {@link IRecipeCategoryDecorator} for a recipe type.

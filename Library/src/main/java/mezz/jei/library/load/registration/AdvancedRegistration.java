@@ -39,16 +39,6 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	}
 
 	@Override
-	public <T> void addRecipeCategoryDecorator(IRecipeCategory<T> recipeCategory, IRecipeCategoryDecorator<T> decorator) {
-		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		ErrorUtil.checkNotNull(decorator, "decorator");
-
-		LOGGER.info("Added global recipe category decorator: {} for recipe category: {}", decorator.getClass(), recipeCategory.getRecipeType().getUid());
-		recipeCategoryDecorators.put(recipeCategory, decorator);
-	}
-
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	@Override
 	public <T> void addRecipeCategoryDecorator(RecipeType<T> recipeType, IRecipeCategoryDecorator<T> decorator) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(decorator, "decorator");
@@ -56,7 +46,8 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
 			var type = recipeCategory.getRecipeType();
 			if (type.equals(recipeType)) {
-				addRecipeCategoryDecorator(recipeCategory, (IRecipeCategoryDecorator) decorator);
+				LOGGER.info("Added global recipe category decorator: {} for recipe category: {}", decorator.getClass(), recipeCategory.getRecipeType().getUid());
+				recipeCategoryDecorators.put(recipeCategory, decorator);
 			}
 		}
 	}
