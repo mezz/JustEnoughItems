@@ -20,7 +20,6 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.List;
@@ -68,11 +67,13 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, Collection<IRecipeCategoryDecorator<T>> decorators, T recipe, IFocusGroup focusGroup) {
+	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		ErrorUtil.checkNotNull(decorators, "decorators");
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
+
+		RecipeType<T> recipeType = recipeCategory.getRecipeType();
+		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
 		return RecipeLayout.create(
 			recipeCategory,
 			decorators,
@@ -127,10 +128,4 @@ public class RecipeManager implements IRecipeManager {
 		return internal.getRecipeType(recipeUid);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	@Unmodifiable
-	public <T> Collection<IRecipeCategoryDecorator<T>> getRecipeCategoryDecorators(IRecipeCategory<T> recipeCategory) {
-		return (Collection<IRecipeCategoryDecorator<T>>) (Object) internal.getRecipeCategoryDecorators().get(recipeCategory);
-	}
 }

@@ -7,7 +7,6 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.ingredients.IngredientLookupState;
@@ -18,7 +17,6 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnegative;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Stream;
@@ -181,9 +179,8 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		final int firstRecipeIndex = state.getRecipeIndex() - (state.getRecipeIndex() % state.getRecipesPerPage());
 		for (int recipeIndex = firstRecipeIndex; recipeIndex < recipes.size() && recipeLayouts.size() < state.getRecipesPerPage(); recipeIndex++) {
-			Collection<IRecipeCategoryDecorator<T>> decorators = recipeManager.getRecipeCategoryDecorators(recipeCategory);
 			T recipe = recipes.get(recipeIndex);
-			recipeManager.createRecipeLayoutDrawable(recipeCategory, decorators, recipe, state.getFocuses())
+			recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
 				.ifPresentOrElse(recipeLayouts::add, () -> brokenRecipes.add(recipe));
 		}
 

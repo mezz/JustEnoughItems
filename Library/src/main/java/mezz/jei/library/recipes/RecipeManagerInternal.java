@@ -1,7 +1,7 @@
 package mezz.jei.library.recipes;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.Multimap;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -39,7 +39,7 @@ public class RecipeManagerInternal {
 
 	@Unmodifiable
 	private final List<IRecipeCategory<?>> recipeCategories;
-	private final Multimap<IRecipeCategory<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
+	private final ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 	private final IIngredientManager ingredientManager;
 	private final RecipeTypeDataMap recipeTypeDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
@@ -55,7 +55,7 @@ public class RecipeManagerInternal {
 	public RecipeManagerInternal(
 		List<IRecipeCategory<?>> recipeCategories,
 		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
-		Multimap<IRecipeCategory<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
+		ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
 		IIngredientManager ingredientManager,
 		List<IRecipeManagerPlugin> plugins,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
@@ -260,7 +260,9 @@ public class RecipeManagerInternal {
 	}
 
 	@Unmodifiable
-	public Multimap<IRecipeCategory<?>, IRecipeCategoryDecorator<?>> getRecipeCategoryDecorators() {
-		return recipeCategoryDecorators;
+	@SuppressWarnings("unchecked")
+	public <T> List<IRecipeCategoryDecorator<T>> getRecipeCategoryDecorators(RecipeType<T> recipeType) {
+		ImmutableList<IRecipeCategoryDecorator<?>> decorators = recipeCategoryDecorators.get(recipeType);
+		return (List<IRecipeCategoryDecorator<T>>) (Object) decorators;
 	}
 }

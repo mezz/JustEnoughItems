@@ -2,7 +2,6 @@ package mezz.jei.library.load;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Multimap;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
@@ -123,10 +122,10 @@ public class PluginLoader {
 		PluginCaller.callOnPlugins("Registering recipe catalysts", plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration));
 		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
 
-		AdvancedRegistration advancedRegistration = new AdvancedRegistration(recipeCategories, jeiHelpers);
+		AdvancedRegistration advancedRegistration = new AdvancedRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering advanced plugins", plugins, p -> p.registerAdvanced(advancedRegistration));
 		List<IRecipeManagerPlugin> recipeManagerPlugins = advancedRegistration.getRecipeManagerPlugins();
-		Multimap<IRecipeCategory<?>, IRecipeCategoryDecorator<?>> recipeCategoryExtensions = advancedRegistration.getRecipeCategoryDecorators();
+		ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryExtensions = advancedRegistration.getRecipeCategoryDecorators();
 
 		timer.start("Building recipe registry");
 		RecipeManagerInternal recipeManagerInternal = new RecipeManagerInternal(

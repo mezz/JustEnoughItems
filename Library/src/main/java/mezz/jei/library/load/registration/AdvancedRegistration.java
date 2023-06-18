@@ -1,15 +1,13 @@
 package mezz.jei.library.load.registration;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.core.collect.ListMultiMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
@@ -21,12 +19,10 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final List<IRecipeManagerPlugin> recipeManagerPlugins = new ArrayList<>();
-	private final Multimap<IRecipeCategory<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators = HashMultimap.create();
-	private final List<IRecipeCategory<?>> recipeCategories;
+	private final ListMultiMap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators = new ListMultiMap<>();
 	private final IJeiHelpers jeiHelpers;
 
-	public AdvancedRegistration(List<IRecipeCategory<?>> recipeCategories, IJeiHelpers jeiHelpers) {
-		this.recipeCategories = recipeCategories;
+	public AdvancedRegistration(IJeiHelpers jeiHelpers) {
 		this.jeiHelpers = jeiHelpers;
 	}
 
@@ -43,13 +39,8 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(decorator, "decorator");
 
-		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
-			var type = recipeCategory.getRecipeType();
-			if (type.equals(recipeType)) {
-				LOGGER.info("Added global recipe category decorator: {} for recipe category: {}", decorator.getClass(), recipeCategory.getRecipeType().getUid());
-				recipeCategoryDecorators.put(recipeCategory, decorator);
-			}
-		}
+		LOGGER.info("Added global recipe category decorator: {} for recipe type: {}", decorator.getClass(), recipeType.getUid());
+		recipeCategoryDecorators.put(recipeType, decorator);
 	}
 
 	@Override
@@ -63,7 +54,7 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	}
 
 	@Unmodifiable
-	public Multimap<IRecipeCategory<?>, IRecipeCategoryDecorator<?>> getRecipeCategoryDecorators() {
-		return ImmutableMultimap.copyOf(recipeCategoryDecorators);
+	public ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> getRecipeCategoryDecorators() {
+		return recipeCategoryDecorators.toImmutable();
 	}
 }
