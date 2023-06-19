@@ -39,7 +39,7 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(decorator, "decorator");
 
-		LOGGER.info("Added global recipe category decorator: {} for recipe type: {}", decorator.getClass(), recipeType.getUid());
+		LOGGER.info("Added recipe category decorator: {} for recipe type: {}", decorator.getClass(), recipeType.getUid());
 		recipeCategoryDecorators.put(recipeType, decorator);
 	}
 
