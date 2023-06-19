@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ImmutablePoint2i;
@@ -136,6 +137,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 
 	public RecipeLayout<T> buildRecipeLayout(
 		IFocusGroup focuses,
+		Collection<IRecipeCategoryDecorator<T>> recipeCategoryDecorators,
 		IScalableDrawable recipeBackground,
 		int recipeBorderPadding
 	) {
@@ -173,6 +175,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 
 		return new RecipeLayout<>(
 			recipeCategory,
+			recipeCategoryDecorators,
 			recipe,
 			recipeBackground,
 			recipeBorderPadding,

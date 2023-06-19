@@ -12,6 +12,7 @@ import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
@@ -20,10 +21,12 @@ import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +38,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	public static final int RECIPE_BUTTON_SPACING = 2;
 
 	private final IRecipeCategory<R> recipeCategory;
+	private final Collection<IRecipeCategoryDecorator<R>> recipeCategoryDecorators;
 	/**
 	 * Slots handled by the recipe category directly.
 	 */
@@ -50,6 +54,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	public static <T> Optional<IRecipeLayoutDrawable<T>> create(
 		IRecipeCategory<T> recipeCategory,
+		Collection<IRecipeCategoryDecorator<T>> recipeCategoryDecorators,
 		T recipe,
 		IFocusGroup focuses,
 		IIngredientManager ingredientManager
@@ -57,6 +62,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		DrawableNineSliceTexture recipeBackground = Internal.getTextures().getRecipeBackground();
 		return create(
 			recipeCategory,
+			recipeCategoryDecorators,
 			recipe,
 			focuses,
 			ingredientManager,
@@ -67,6 +73,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	public static <T> Optional<IRecipeLayoutDrawable<T>> create(
 		IRecipeCategory<T> recipeCategory,
+		Collection<IRecipeCategoryDecorator<T>> recipeCategoryDecorators,
 		T recipe,
 		IFocusGroup focuses,
 		IIngredientManager ingredientManager,
@@ -78,6 +85,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			recipeCategory.setRecipe(builder, recipe, focuses);
 			RecipeLayout<T> recipeLayout = builder.buildRecipeLayout(
 				focuses,
+				recipeCategoryDecorators,
 				recipeBackground,
 				recipeBorderPadding
 			);
@@ -90,6 +98,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	public RecipeLayout(
 		IRecipeCategory<R> recipeCategory,
+		Collection<IRecipeCategoryDecorator<R>> recipeCategoryDecorators,
 		R recipe,
 		IScalableDrawable recipeBackground,
 		int recipeBorderPadding,
@@ -98,6 +107,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		List<IRecipeSlotDrawable> recipeCategorySlots
 	) {
 		this.recipeCategory = recipeCategory;
+		this.recipeCategoryDecorators = recipeCategoryDecorators;
 		this.inputHandler = new RecipeLayoutInputHandler<>(this);
 
 		this.recipeCategorySlots = recipeCategorySlots;
@@ -156,6 +166,18 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			}
 			poseStack.popPose();
 
+			for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
+				// defensive push/pop to protect against recipe category decorators changing the last pose
+				poseStack.pushPose();
+				{
+					decorator.draw(recipe, recipeCategory, recipeCategorySlotsView, poseStack, recipeMouseX, recipeMouseY);
+
+					// drawExtras and drawInfo often render text which messes with the color, this clears it
+					RenderSystem.setShaderColor(1, 1, 1, 1);
+				}
+				poseStack.popPose();
+			}
+
 			if (shapelessIcon != null) {
 				shapelessIcon.draw(poseStack);
 			}
@@ -193,6 +215,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		} else if (isMouseOver(mouseX, mouseY)) {
 			JeiTooltip tooltip = new JeiTooltip();
 			tooltip.addAll(recipeCategory.getTooltipStrings(recipe, recipeCategorySlotsView, recipeMouseX, recipeMouseY));
+			for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
+				List<Component> components = tooltip.getLegacyComponents();
+				var results = decorator.decorateExistingTooltips(components, recipe, recipeCategory, recipeCategorySlotsView, recipeMouseX, recipeMouseY);
+				if (results != components) {
+					tooltip = new JeiTooltip();
+					tooltip.addAll(results);
+				}
+			}
 
 			if (tooltip.isEmpty() && shapelessIcon != null) {
 				if (shapelessIcon.isMouseOver(recipeMouseX, recipeMouseY)) {

@@ -7,6 +7,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * {@link IJeiHelpers} provides helpers and tools for addon mods.
@@ -60,6 +61,13 @@ public interface IJeiHelpers {
 	 * @since 11.4.0
 	 */
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
+
+	/**
+	 * Get all registered recipe types.
+	 *
+	 * @since 11.8.0
+	 */
+	Stream<RecipeType<?>> getAllRecipeTypes();
 
 	/**
 	 * The ingredient manager, with information about all registered ingredients.
