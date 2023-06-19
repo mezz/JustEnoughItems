@@ -15,8 +15,7 @@ import java.util.List;
  * The {@link IRecipeCategoryDecorator} allows further customization of recipe categories.
  * It can be used to draw additional elements or tooltips on recipes, even of other mods.
  * <p>
- * Register it with {@link IAdvancedRegistration#addRecipeCategoryDecorator(IRecipeCategory, IRecipeCategoryDecorator)} or
- * {@link IAdvancedRegistration#addRecipeCategoryDecorator(RecipeType, IRecipeCategoryDecorator)}.
+ * Register it with {@link IAdvancedRegistration#addRecipeCategoryDecorator(RecipeType, IRecipeCategoryDecorator)}.
  *
  * @since 15.1.0
  */
