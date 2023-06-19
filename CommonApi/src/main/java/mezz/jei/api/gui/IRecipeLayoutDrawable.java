@@ -11,13 +11,12 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
  * For addons that want to draw recipe layouts somewhere themselves.
- * <p>
- * Create an instance with {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Collection, Object, IFocusGroup)}.
+ *
+ * Create an instance with {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocusGroup)}.
  */
 public interface IRecipeLayoutDrawable<R> {
 	/**
