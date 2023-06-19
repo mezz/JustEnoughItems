@@ -127,5 +127,4 @@ public class RecipeManager implements IRecipeManager {
 	public Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid) {
 		return internal.getRecipeType(recipeUid);
 	}
-
 }
