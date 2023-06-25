@@ -137,6 +137,22 @@ public interface IIngredientManager {
 	}
 
 	/**
+	 * Create a typed ingredient, if the given ingredient is valid and has a known type.
+	 *
+	 * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient}
+	 * cannot be created into {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
+	 * This helps turn all special cases like {@link ItemStack#EMPTY} into {@link Optional#empty()} instead.
+	 *
+	 * @return {@link Optional#empty()} if there is no known type for the given ingredient or the ingredient is invalid.
+	 *
+	 * @since 10.23.0
+	 */
+	default <V> Optional<ITypedIngredient<V>> createTypedIngredient(V ingredient) {
+		return getIngredientTypeChecked(ingredient)
+			.flatMap(ingredientType -> createTypedIngredient(ingredientType, ingredient));
+	}
+
+	/**
 	 * Get an ingredient by the given unique id.
 	 * This uses the uids from {@link IIngredientHelper#getUniqueId(Object, UidContext)}
 	 *
