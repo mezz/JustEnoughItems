@@ -169,10 +169,10 @@
   "jei.message.copy.recipe.id.failure": "제작법 ID를 클립보드에 복사하지 못했습니다. 제작법 ID를 알 수 없습니다.",
 
   "_comment": "Key Combinations",
-  "jei.key.combo.shift": "Shift + %s",
-  "jei.key.combo.control": "Ctrl + %s",
+  "jei.key.combo.shift": "SHIFT + %s",
+  "jei.key.combo.control": "CTRL + %s",
   "jei.key.combo.command": "CMD + %s",
-  "jei.key.combo.alt": "Alt + %s",
+  "jei.key.combo.alt": "ALT + %s",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "나무 문을 통해 건물에 괴물이 들어오지 못하게 막을 수 있습니다.\\n문장을 테스트하는 중입니다.",
