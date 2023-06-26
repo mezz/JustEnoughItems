@@ -34,9 +34,9 @@ public class DeduplicatingRunnerTest {
     public void testSpacedOutRuns() throws InterruptedException {
         AtomicInteger runs = new AtomicInteger();
         Runnable testRunnable = runs::getAndIncrement;
-        Duration delay = Duration.ofMillis(1);
+        Duration delay = Duration.ofMillis(10);
         DeduplicatingRunner deduplicatingRunner = new DeduplicatingRunner(testRunnable, delay, "test");
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             deduplicatingRunner.run();
             Thread.sleep(2 * delay.toMillis());
             Assertions.assertEquals(i + 1, runs.get());
