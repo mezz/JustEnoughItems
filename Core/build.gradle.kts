@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     java
     `maven-publish`
@@ -62,6 +65,10 @@ tasks.named<Test>("test") {
     include("mezz/jei/test/**")
     exclude("mezz/jei/test/lib/**")
     outputs.upToDateWhen { false }
+    testLogging {
+        events = setOf(TestLogEvent.FAILED)
+        exceptionFormat = TestExceptionFormat.FULL
+    }
 }
 
 java {

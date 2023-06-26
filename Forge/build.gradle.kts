@@ -1,4 +1,6 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import net.darkhax.curseforgegradle.Constants as CFG_Constants
 
 plugins {
@@ -186,6 +188,10 @@ tasks.named<Test>("test") {
 	include("mezz/jei/test/**")
 	exclude("mezz/jei/test/lib/**")
 	outputs.upToDateWhen { false }
+	testLogging {
+		events = setOf(TestLogEvent.FAILED)
+		exceptionFormat = TestExceptionFormat.FULL
+	}
 }
 
 artifacts {
