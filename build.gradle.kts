@@ -1,5 +1,7 @@
 import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 plugins {
 	id("com.diffplug.spotless") version("8.10.0")
@@ -75,6 +77,13 @@ subprojects {
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
         options.release.set(JavaLanguageVersion.of(modJavaVersion).asInt())
+    }
+
+    tasks.withType<Test>().configureEach {
+        testLogging {
+            events = setOf(TestLogEvent.FAILED)
+            exceptionFormat = TestExceptionFormat.FULL
+        }
     }
 
     tasks.withType<Jar> {
