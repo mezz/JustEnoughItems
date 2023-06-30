@@ -14,7 +14,7 @@
   },
 
   "license": "The MIT License (MIT)",
-  "icon": "assets/modid/icon.png",
+  "icon": "jei-icon.png",
 
   "environment": "*",
   "entrypoints": {
