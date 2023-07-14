@@ -14,7 +14,7 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v5.1.1
+      - uses: actions/stale@main
         with:
           stale-issue-message: "This has been automatically marked as stale because it has not had recent activity, and will be closed if no further activity occurs. If this was overlooked, forgotten, or should remain open for any other reason, please reply here to call attention to it and remove the stale status. Thank you for your contributions."
           close-issue-message: "This has been automatically closed because it has not had recent activity. Please feel free to update or reopen it."
