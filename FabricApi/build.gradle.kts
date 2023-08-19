@@ -47,6 +47,12 @@ tasks.withType<JavaCompile> {
     }
 }
 
+tasks.withType<Jar> {
+    manifest {
+        attributes["Fabric-Loom-Remap"] = true
+    }
+}
+
 dependencies {
     minecraft(
         group = "com.mojang",

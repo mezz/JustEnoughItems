@@ -59,7 +59,6 @@ subprojects {
     }
 
     tasks.withType<Jar> {
-        val now = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(java.util.Date())
         manifest {
             attributes(mapOf(
                 "Specification-Title" to modName,
@@ -67,8 +66,7 @@ subprojects {
                 "Specification-Version" to specificationVersion,
                 "Implementation-Title" to name,
                 "Implementation-Version" to archiveVersion,
-                "Implementation-Vendor" to modAuthor,
-                "Implementation-Timestamp" to now,
+                "Implementation-Vendor" to modAuthor
             ))
         }
     }
@@ -95,5 +93,12 @@ subprojects {
                 "version" to version,
             ))
         }
+    }
+
+    // Activate reproducible builds
+    // https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives
+    tasks.withType<AbstractArchiveTask>().configureEach {
+        isPreserveFileTimestamps = false
+        isReproducibleFileOrder = true
     }
 }
