@@ -459,7 +459,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	private <R> boolean handleRecipeLayoutInput(IRecipeLayoutDrawable<R> recipeLayout, UserInput input) {
-		if (!isMouseOver(input.getMouseX(), input.getMouseY())) {
+		if (!recipeLayout.isMouseOver(input.getMouseX(), input.getMouseY())) {
 			return false;
 		}
 
