@@ -48,4 +48,11 @@ public class MinecraftMixin {
     public void clearLevel(Screen screen, CallbackInfo ci) {
         JeiLifecycleEvents.GAME_STOP.invoker().run();
     }
+    @Inject(
+        method = "tick",
+        at = @At("TAIL")
+    )
+    private void jeiOnTickEnd(CallbackInfo ci) {
+        JeiLifecycleEvents.CLIENT_TICK_END.invoker().run();
+    }
 }

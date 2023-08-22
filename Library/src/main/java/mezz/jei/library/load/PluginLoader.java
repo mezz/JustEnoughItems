@@ -51,6 +51,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public class PluginLoader {
 	private final StartData data;
@@ -58,7 +59,7 @@ public class PluginLoader {
 	private final IIngredientManager ingredientManager;
 	private final JeiHelpers jeiHelpers;
 
-	public PluginLoader(StartData data, IModIdFormatConfig modIdFormatConfig, IColorHelper colorHelper) {
+	public PluginLoader(StartData data, IModIdFormatConfig modIdFormatConfig, IColorHelper colorHelper, Executor clientExecutor) {
 		this.data = data;
 		this.timer = new LoggedTimer();
 
@@ -80,7 +81,7 @@ public class PluginLoader {
 		GuiHelper guiHelper = new GuiHelper(ingredientManager);
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
 		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager);
-		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager);
+		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager, clientExecutor);
 	}
 
 	@Unmodifiable

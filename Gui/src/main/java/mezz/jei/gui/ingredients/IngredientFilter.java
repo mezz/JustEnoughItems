@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.async.JeiStartTask;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.util.Translator;
 import mezz.jei.common.config.IClientConfig;
@@ -34,9 +35,12 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class IngredientFilter implements IIngredientGridSource, IIngredientManager.IIngredientListener {
@@ -67,7 +71,8 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		NonNullList<IListElement<?>> ingredients,
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
-		IColorHelper colorHelper
+		IColorHelper colorHelper,
+		Executor clientExecutor
 	) {
 		this.filterTextSource = filterTextSource;
 		this.ingredientManager = ingredientManager;
@@ -83,10 +88,18 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		}
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
-		ingredients.stream()
+		List<IListElementInfo<?>> elementInfos = ingredients.stream()
 			.map(i -> ListElementInfo.create(i, ingredientManager, modIdHelper))
 			.flatMap(Optional::stream)
-			.forEach(this::addIngredient);
+			.collect(Collectors.toList());
+		List<CompletableFuture<?>> futures = new ArrayList<>();
+		for(IListElementInfo<?> elementInfo : elementInfos) {
+			futures.add(elementInfo.cacheTooltips(config, ingredientManager, clientExecutor));
+		}
+		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+		for(IListElementInfo<?> elementInfo : elementInfos) {
+			this.addIngredient(elementInfo);
+		}
 		LOGGER.info("Added {} ingredients", ingredients.size());
 
 		this.filterTextSource.addListener(filterText -> {
@@ -95,7 +108,12 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		});
 	}
 
+	/* used to check for interruption periodically */
+	private int ingredientNum = 0;
+
 	public <V> void addIngredient(IListElementInfo<V> info) {
+		if(((ingredientNum++) % 100) == 0)
+			JeiStartTask.checkStartInterruption();
 		IListElement<V> element = info.getElement();
 		updateHiddenState(element);
 
