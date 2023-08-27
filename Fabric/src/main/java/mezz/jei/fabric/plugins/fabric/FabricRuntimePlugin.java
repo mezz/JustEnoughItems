@@ -1,12 +1,11 @@
 package mezz.jei.fabric.plugins.fabric;
 
-import mezz.jei.api.IModPlugin;
+import mezz.jei.api.IRuntimePlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.fabric.startup.EventRegistration;
-import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -14,9 +13,11 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @JeiPlugin
-public class FabricGuiPlugin implements IModPlugin {
+public class FabricRuntimePlugin implements IRuntimePlugin {
     private static final Logger LOGGER = LogManager.getLogger();
     private static @Nullable IJeiRuntime runtime;
 
@@ -24,25 +25,27 @@ public class FabricGuiPlugin implements IModPlugin {
 
     @Override
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation(ModIds.JEI_ID, "fabric_gui");
+        return new ResourceLocation(ModIds.JEI_ID, "fabric_runtime");
     }
 
     @Override
-    public void registerRuntime(IRuntimeRegistration registration) {
-        JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
-        eventRegistration.setEventHandlers(eventHandlers);
+    public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor clientExecutor) {
+        return JeiGuiStarter.start(registration, clientExecutor)
+            .thenAccept(eventRegistration::setEventHandlers);
     }
 
     @Override
-    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+    public CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor clientExecutor) {
         runtime = jeiRuntime;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public void onRuntimeUnavailable() {
+    public CompletableFuture<Void> onRuntimeUnavailable(Executor clientExecutor) {
         runtime = null;
         LOGGER.info("Stopping JEI GUI");
         eventRegistration.clear();
+        return CompletableFuture.completedFuture(null);
     }
 
     public static Optional<IJeiRuntime> getRuntime() {

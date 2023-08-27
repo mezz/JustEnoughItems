@@ -1,6 +1,5 @@
 package mezz.jei.forge;
 
-import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.gui.textures.Textures;
@@ -18,7 +17,6 @@ import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class JustEnoughItemsClient {
@@ -41,16 +39,16 @@ public class JustEnoughItemsClient {
 		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig);
 		networkHandler.registerClientPacketHandler(packetRouter);
 
-		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
-		StartData startData = new StartData(
-			plugins,
+		ForgePluginFinder forgePluginFinder = new ForgePluginFinder();
+		StartData startData = StartData.create(
+			forgePluginFinder,
 			serverConnection,
 			keyMappings
 		);
 
 		JeiStarter jeiStarter = new JeiStarter(startData);
 
-		this.startEventObserver = new StartEventObserver(jeiStarter::start, jeiStarter::stop);
+		this.startEventObserver = new StartEventObserver(jeiStarter::start, jeiStarter::stop, jeiStarter::tick);
 		this.startEventObserver.register(subscriptions);
 	}
 

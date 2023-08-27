@@ -17,6 +17,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> centerSearchBarEnabled;
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
+	private final Supplier<Boolean> asyncLoadingEnabled;
 	private final Supplier<Boolean> addBookmarksToFront;
 	private final Supplier<Boolean> lookupFluidContents;
 	private final Supplier<GiveMode> giveMode;
@@ -65,6 +66,13 @@ public final class ClientConfig implements IClientConfig {
 			"Max. recipe gui height"
 		);
 
+		IConfigCategoryBuilder loading = schema.addCategory("loading");
+		asyncLoadingEnabled = loading.addBoolean(
+			"asyncLoadingEnabled",
+			false,
+			"Whether JEI should load asynchronously, so that it finishes loading after world join."
+		);
+
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
 		ingredientSorterStages = sorting.addList(
 			"IngredientSortStages",
@@ -96,6 +104,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isCheatToHotbarUsingHotkeysEnabled() {
 		return cheatToHotbarUsingHotkeysEnabled.get();
+	}
+
+	@Override
+	public boolean getAsyncLoadingEnabled() {
+		return asyncLoadingEnabled.get();
 	}
 
 	@Override

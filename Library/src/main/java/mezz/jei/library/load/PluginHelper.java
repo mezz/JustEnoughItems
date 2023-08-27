@@ -19,13 +19,10 @@ public class PluginHelper {
 		}
 	}
 
-	public static <T extends IModPlugin> Optional<T> getPluginWithClass(Class<? extends T> pluginClass, List<IModPlugin> modPlugins) {
-		for (IModPlugin modPlugin : modPlugins) {
-			if (pluginClass.isInstance(modPlugin)) {
-				T cast = pluginClass.cast(modPlugin);
-				return Optional.of(cast);
-			}
-		}
-		return Optional.empty();
+	public static <T> Optional<T> getPluginWithClass(Class<? extends T> pluginClass, List<IModPlugin> modPlugins) {
+		return modPlugins.stream()
+			.filter(pluginClass::isInstance)
+			.<T>map(pluginClass::cast)
+			.findFirst();
 	}
 }
