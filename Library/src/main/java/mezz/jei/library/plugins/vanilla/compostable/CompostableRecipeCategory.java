@@ -1,6 +1,7 @@
 package mezz.jei.library.plugins.vanilla.compostable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -12,11 +13,19 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
 import mezz.jei.common.util.Translator;
+import mezz.jei.library.util.RecipeUidHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.List;
 
 public class CompostableRecipeCategory implements IRecipeCategory<IJeiCompostingRecipe> {
 	public static final int width = 120;
@@ -71,5 +80,14 @@ public class CompostableRecipeCategory implements IRecipeCategory<IJeiComposting
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = minecraft.font;
 		font.draw(poseStack, text, 24, 5, 0xFF808080);
+	}
+
+	@Override
+	public @Nullable ResourceLocation getUniqueId(IJeiCompostingRecipe recipe) {
+		CompoundTag recipeTag = new CompoundTag();
+		@Unmodifiable List<ItemStack> inputs = recipe.getInputs();
+		RecipeUidHelper.putAll(recipeTag, "input#", inputs);
+		recipeTag.putFloat("chance", recipe.getChance());
+		return new ResourceLocation(ModIds.JEI_ID, "compostable/" + DigestUtils.md5Hex(recipeTag.toString()));
 	}
 }

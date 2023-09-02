@@ -2,6 +2,7 @@ package mezz.jei.api.ingredients;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -163,4 +164,27 @@ public interface IIngredientHelper<V> {
 	default Optional<ResourceLocation> getTagEquivalent(Collection<V> ingredients) {
 		return Optional.empty();
 	}
+
+	/**
+	 * Serialize an ingredient to a tag.
+	 * @param ingredient The ingredient to serialize
+	 * @return A tag that can be used to deserialize the ingredient
+	 */
+	default CompoundTag serialize(V ingredient) {
+		return new CompoundTag();
+	}
+
+	/**
+	 * Deserialize an ingredient from a tag.
+	 * @param tag The tag to deserialize
+	 * @return The deserialized ingredient
+	 */
+	default Optional<V> deserialize(CompoundTag tag) {
+		return Optional.empty();
+	}
+
+	default Optional<V> merge(V ingredientA, V ingredientB) {
+		return Optional.empty();
+	}
+
 }

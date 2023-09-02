@@ -3,6 +3,7 @@ package mezz.jei.gui.bookmarks;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.gui.config.IClientConfig;
@@ -17,12 +18,14 @@ import java.util.Optional;
 public class BookmarkList implements IIngredientGridSource {
 	private final List<ITypedIngredient<?>> list = new LinkedList<>();
 	private final IIngredientManager ingredientManager;
+	private final IBookmarkManager bookmarkManager;
 	private final IBookmarkConfig bookmarkConfig;
 	private final IClientConfig clientConfig;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 
-	public BookmarkList(IIngredientManager ingredientManager, IBookmarkConfig bookmarkConfig, IClientConfig clientConfig) {
+	public BookmarkList(IIngredientManager ingredientManager, IBookmarkManager bookmarkManager, IBookmarkConfig bookmarkConfig, IClientConfig clientConfig) {
 		this.ingredientManager = ingredientManager;
+		this.bookmarkManager = bookmarkManager;
 		this.bookmarkConfig = bookmarkConfig;
 		this.clientConfig = clientConfig;
 	}
@@ -33,7 +36,7 @@ public class BookmarkList implements IIngredientGridSource {
 		}
 		addToList(value, clientConfig.isAddingBookmarksToFront());
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(ingredientManager, list);
+		bookmarkConfig.saveBookmarks(ingredientManager, bookmarkManager , list);
 		return true;
 	}
 
@@ -94,7 +97,7 @@ public class BookmarkList implements IIngredientGridSource {
 
 		list.remove(index);
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(ingredientManager, list);
+		bookmarkConfig.saveBookmarks(ingredientManager, bookmarkManager , list);
 		return true;
 	}
 

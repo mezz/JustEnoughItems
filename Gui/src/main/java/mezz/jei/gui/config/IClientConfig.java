@@ -1,5 +1,6 @@
 package mezz.jei.gui.config;
 
+import mezz.jei.core.config.BookmarkTooltipMode;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IngredientSortStage;
 
@@ -22,5 +23,6 @@ public interface IClientConfig {
 
 	int getMaxRecipeGuiHeight();
 
+	BookmarkTooltipMode getBookmarkTooltipMode();
 	List<IngredientSortStage> getIngredientSorterStages();
 }

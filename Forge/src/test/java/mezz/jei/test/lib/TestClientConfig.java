@@ -1,5 +1,6 @@
 package mezz.jei.test.lib;
 
+import mezz.jei.core.config.BookmarkTooltipMode;
 import mezz.jei.core.config.GiveMode;
 import mezz.jei.core.config.IngredientSortStage;
 import mezz.jei.gui.config.IClientConfig;
@@ -41,6 +42,11 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public int getMaxRecipeGuiHeight() {
 		return 500;
+	}
+
+	@Override
+	public BookmarkTooltipMode getBookmarkTooltipMode() {
+		return BookmarkTooltipMode.PREVIEW;
 	}
 
 	@Override

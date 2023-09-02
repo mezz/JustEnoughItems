@@ -1,5 +1,6 @@
 package mezz.jei.gui.recipes;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
@@ -7,14 +8,11 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IFocusFactory;
-import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.*;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -30,6 +28,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.gui.GuiProperties;
+import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.config.IClientConfig;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.gui.input.IRecipeFocusSource;
@@ -63,6 +62,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private static final int buttonWidth = 13;
 	private static final int buttonHeight = 13;
 
+	private final IRecipeManager recipeManager;
 	private final IRecipeTransferManager recipeTransferManager;
 	private final IModIdHelper modIdHelper;
 	private final IClientConfig clientConfig;
@@ -114,6 +114,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		super(Component.literal("Recipes"));
 		this.textures = textures;
 		this.recipeTransferButtons = new ArrayList<>();
+		this.recipeManager = recipeManager;
 		this.recipeTransferManager = recipeTransferManager;
 		this.ingredientManager = ingredientManager;
 		this.modIdHelper = modIdHelper;
@@ -347,9 +348,33 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	private Stream<IClickableIngredientInternal<?>> getRecipeLayoutsIngredientUnderMouse(double mouseX, double mouseY) {
+		Stream<IClickableIngredientInternal<?>> real = this.recipeLayouts.stream()
+				.map(recipeLayout -> getRecipeLayoutIngredientUnderMouse(recipeLayout, mouseX, mouseY))
+				.flatMap(Optional::stream);
+		return Stream.concat(real, wrapLayout(mouseX, mouseY)
+		);
+	}
+
+	private Stream<IClickableIngredientInternal<?>> wrapLayout(double mouseX, double mouseY) {
 		return this.recipeLayouts.stream()
-			.map(recipeLayout -> getRecipeLayoutIngredientUnderMouse(recipeLayout, mouseX, mouseY))
-			.flatMap(Optional::stream);
+				.filter(layout -> layout.isMouseOver(mouseX, mouseY))
+				.findFirst()
+				.map(layout -> wrap(layout,ingredientManager, focusFactory, recipeManager))
+				.stream()
+				.flatMap(Optional::stream);
+	}
+
+	private static <C> Optional<IClickableIngredientInternal<?>> wrap(IRecipeLayoutDrawable<C> layout, IIngredientManager ingredientManager, IFocusFactory focusFactory, IRecipeManager recipeManager){
+		ImmutableRect2i area = absoluteClickedArea(layout, layout.getRect());
+		List<ITypedIngredient<?>> targets =  layout.getRecipeSlotsView()
+				.getSlotViews(RecipeIngredientRole.OUTPUT)
+				.stream()
+				.flatMap(IRecipeSlotView::getAllIngredients)
+				.toList();
+		if (targets.isEmpty()) return Optional.empty();
+		RecipeBookmark recipeBookmark = new RecipeBookmark<>(layout.getRecipe(), layout.getRecipeCategory(), targets, ingredientManager,focusFactory, recipeManager);
+		return ingredientManager.createTypedIngredient(RecipeBookmark.TYPE, recipeBookmark)
+				.map(ingredient -> new ClickableIngredientInternal<>(ingredient, area, false, true));
 	}
 
 	private static Optional<IClickableIngredientInternal<?>> getRecipeLayoutIngredientUnderMouse(IRecipeLayoutDrawable<?> recipeLayout, double mouseX, double mouseY) {
@@ -530,6 +555,21 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		if (logic.setFocus(checkedFocuses)) {
 			open();
 		}
+	}
+
+	@Override
+	public void setRecipeCategory(IRecipeCategory<?> recipeCategory) {
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+
+		if (logic.getRecipeCategories().contains(recipeCategory)) {
+			logic.setRecipeCategory(recipeCategory);
+			open();
+		}
+	}
+
+	@Override
+	public void setRecipeIndex(int recipeIndex) {
+		logic.setRecipeIndex(recipeIndex);
 	}
 
 	@Override

@@ -4,9 +4,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.item.TooltipFlag;
 
 import mezz.jei.api.registration.IModIngredientRegistration;
@@ -38,6 +40,10 @@ public interface IIngredientRenderer<T> {
 	 * @return The tooltip text for the ingredient.
 	 */
 	List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag);
+
+	default List<ClientTooltipComponent> addTooltipComponment(List<ClientTooltipComponent> components, T ingredient, TooltipFlag tooltipFlag){
+		return components;
+	}
 
 	/**
 	 * Get the tooltip font renderer for this ingredient. JEI renders the tooltip based on this.

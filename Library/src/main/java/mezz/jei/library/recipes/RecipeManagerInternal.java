@@ -23,13 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class RecipeManagerInternal {
@@ -138,6 +132,10 @@ public class RecipeManagerInternal {
 			LOGGER.error("Found a broken recipe, failed to addRecipe: {}\n", recipeInfo, e);
 			return false;
 		}
+	}
+
+	public <R> Optional<R> getRecipeById(RecipeType<R> recipeType, ResourceLocation recipeId) {
+		return recipeTypeDataMap.get(recipeType).getRecipeById(recipeId);
 	}
 
 	public boolean isCategoryHidden(IRecipeCategory<?> recipeCategory, IFocusGroup focuses) {

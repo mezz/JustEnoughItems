@@ -147,4 +147,23 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
         copy.setAmount(FluidType.BUCKET_VOLUME);
         return copy;
     }
+
+    @Override
+    public CompoundTag serialize(FluidStack ingredient) {
+        return ingredient.writeToNBT(new CompoundTag());
+    }
+
+    @Override
+    public Optional<FluidStack> deserialize(CompoundTag tag) {
+        return Optional.of(FluidStack.loadFluidStackFromNBT(tag));
+    }
+
+    @Override
+    public Optional<FluidStack> merge(FluidStack ingredientA, FluidStack ingredientB) {
+        if (ingredientA.isFluidEqual(ingredientB)) {
+            int amount = ingredientA.getAmount() + ingredientB.getAmount();
+            return Optional.of(new FluidStack(ingredientA.getFluid(), amount, ingredientA.getTag()));
+        }
+        return Optional.empty();
+    }
 }

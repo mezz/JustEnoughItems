@@ -2,6 +2,7 @@ package mezz.jei.library.plugins.vanilla;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.constants.BookmarkIdentifiers;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
@@ -17,26 +18,21 @@ import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategor
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
-import mezz.jei.api.registration.IGuiHandlerRegistration;
-import mezz.jei.api.registration.IModIngredientRegistration;
-import mezz.jei.api.registration.IRecipeCatalystRegistration;
-import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.api.registration.IRecipeRegistration;
-import mezz.jei.api.registration.IRecipeTransferRegistration;
-import mezz.jei.api.registration.ISubtypeRegistration;
-import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
+import mezz.jei.api.registration.*;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
-import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidStackListFactory;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.StackHelper;
+import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.library.plugins.vanilla.anvil.SmithingRecipeCategory;
+import mezz.jei.library.plugins.vanilla.bookmark.RecipeBookmarkHelper;
 import mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.brewing.PotionSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.compostable.CompostableRecipeCategory;
@@ -56,48 +52,23 @@ import mezz.jei.library.plugins.vanilla.crafting.replacers.SuspiciousStewRecipeM
 import mezz.jei.library.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackListFactory;
+import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
+import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidStackListFactory;
 import mezz.jei.library.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.library.render.ItemStackRenderer;
+import mezz.jei.library.render.RecipeBookmarkRender;
 import mezz.jei.library.transfer.PlayerRecipeTransferHandler;
-import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.StackHelper;
-import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
-import net.minecraft.client.gui.screens.inventory.AnvilScreen;
-import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;
-import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
-import net.minecraft.client.gui.screens.inventory.CraftingScreen;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.FurnaceScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.gui.screens.inventory.SmithingScreen;
-import net.minecraft.client.gui.screens.inventory.SmokerScreen;
+import net.minecraft.client.gui.screens.inventory.*;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.inventory.BlastFurnaceMenu;
-import net.minecraft.world.inventory.BrewingStandMenu;
-import net.minecraft.world.inventory.CraftingMenu;
-import net.minecraft.world.inventory.FurnaceMenu;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.SmithingMenu;
-import net.minecraft.world.inventory.SmokerMenu;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.BlastingRecipe;
-import net.minecraft.world.item.crafting.CampfireCookingRecipe;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
-import net.minecraft.world.item.crafting.ShulkerBoxColoring;
-import net.minecraft.world.item.crafting.SmeltingRecipe;
-import net.minecraft.world.item.crafting.SmokingRecipe;
-import net.minecraft.world.item.crafting.StonecutterRecipe;
-import net.minecraft.world.item.crafting.SuspiciousStewRecipe;
-import net.minecraft.world.item.crafting.TippedArrowRecipe;
-import net.minecraft.world.item.crafting.UpgradeRecipe;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
@@ -105,12 +76,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -176,6 +142,16 @@ public class VanillaPlugin implements IModPlugin {
 
 		IPlatformFluidHelperInternal<?> platformFluidHelper = Services.PLATFORM.getFluidHelper();
 		registerFluidIngredients(registration, platformFluidHelper);
+	}
+
+	@Override
+	public void registerCustomBookmark(ICustomBookmarkRegistration registration) {
+		Textures textures = Internal.getTextures();
+		registration.registerCustomBookmark(BookmarkIdentifiers.ITEM, VanillaTypes.ITEM_STACK);
+		registration.registerCustomBookmark(BookmarkIdentifiers.RECIPE,
+				RecipeBookmark.TYPE,
+				new RecipeBookmarkHelper(),
+				new RecipeBookmarkRender(textures.getRecipeBookmarkBackground()));
 	}
 
 	private <T> void registerFluidIngredients(IModIngredientRegistration registration, IPlatformFluidHelperInternal<T> platformFluidHelper) {

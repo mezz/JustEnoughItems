@@ -42,6 +42,7 @@ sourceSets {
 }
 
 dependencies {
+    implementation(project(mapOf("path" to ":Gui")))
     compileOnly(
         group = "org.spongepowered",
         name = "mixin",

@@ -12,6 +12,7 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.ingredients.IngredientInfo;
 import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.RegisteredIngredients;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,6 +62,16 @@ public class IngredientManagerBuilder implements IModIngredientRegistration {
 	@Override
 	public IColorHelper getColorHelper() {
 		return colorHelper;
+	}
+
+	public <T> Pair<IIngredientHelper<T>, IIngredientRenderer<T>> getHelpers(IIngredientType<T> ingredientType) {
+		IngredientInfo<T> ingredientInfo = ingredientInfos.stream()
+			.filter(info -> info.getIngredientType() == ingredientType)
+			.map(info -> (IngredientInfo<T>) info)
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException("Ingredient type not registered: " + ingredientType.getIngredientClass()));
+
+		return Pair.of(ingredientInfo.getIngredientHelper(), ingredientInfo.getIngredientRenderer());
 	}
 
 	public IIngredientManager build() {

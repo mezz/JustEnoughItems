@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
  * JEI's gui for displaying recipes. Use this interface to open recipes.
@@ -35,6 +36,10 @@ public interface IRecipesGui {
 	 * @since 9.3.0
 	 */
 	void show(List<IFocus<?>> focuses);
+
+	void setRecipeCategory(IRecipeCategory<?> recipeCategory);
+
+	void setRecipeIndex(int recipeIndex);
 
 	/**
 	 * Show entire categories of recipes.

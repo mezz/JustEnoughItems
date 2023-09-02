@@ -4,11 +4,12 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IRecipesGui;
+import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.bookmarks.RecipeBookmark;
+import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
@@ -43,13 +44,26 @@ public class FocusInputHandler implements IUserInputHandler {
 			.findFirst()
 			.map(clicked -> {
 				if (!input.isSimulate()) {
-					List<IFocus<?>> focuses = roles.stream()
-						.<IFocus<?>>map(role -> focusFactory.createFocus(role, clicked.getTypedIngredient()))
-						.toList();
-					recipesGui.show(focuses);
+					boolean handled = handleRecipeBookmark(clicked, recipesGui);
+					if (!handled) {
+						List<IFocus<?>> focuses = roles.stream()
+								.<IFocus<?>>map(role -> focusFactory.createFocus(role, clicked.getTypedIngredient()))
+								.toList();
+						recipesGui.show(focuses);
+					}
 				}
-				ImmutableRect2i area = clicked.getArea();
-				return LimitedAreaInputHandler.create(this, area);
+				return LimitedAreaInputHandler.create(this, clicked.getArea());
 			});
 	}
+
+	private <T> boolean handleRecipeBookmark(IClickableIngredientInternal<T> clicked, IRecipesGui recipesGui) {
+		if (clicked.getTypedIngredient().getIngredient() instanceof RecipeBookmark<?> recipeBookmark){
+			recipesGui.show(recipeBookmark.getFocuses().getAllFocuses());
+			recipesGui.setRecipeCategory(recipeBookmark.getRecipeCategory());
+			recipesGui.setRecipeIndex(recipeBookmark.getIndex());
+			return true;
+		}
+		return false;
+	}
+
 }

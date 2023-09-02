@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -20,9 +21,14 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceVariantCategory;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.library.util.RecipeUidHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
 
@@ -111,5 +117,13 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecip
 			String smeltCount = numberInstance.format(burnTime / 200f);
 			return Component.translatable("gui.jei.category.fuel.smeltCount", smeltCount);
 		}
+	}
+
+	@Override
+	public @Nullable ResourceLocation getUniqueId(IJeiFuelingRecipe recipe) {
+		CompoundTag recipeTag = new CompoundTag();
+		RecipeUidHelper.putAll(recipeTag, "input#" ,recipe.getInputs());
+		recipeTag.putInt("burnTime", recipe.getBurnTime());
+		return new ResourceLocation(ModIds.JEI_ID, "fueling/" + DigestUtils.md5Hex(recipeTag.toString()));
 	}
 }

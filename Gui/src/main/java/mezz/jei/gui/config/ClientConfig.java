@@ -1,6 +1,7 @@
 package mezz.jei.gui.config;
 
 import com.google.common.base.Preconditions;
+import mezz.jei.core.config.BookmarkTooltipMode;
 import mezz.jei.core.config.file.IConfigCategoryBuilder;
 import mezz.jei.core.config.file.IConfigSchemaBuilder;
 import mezz.jei.core.config.file.serializers.EnumSerializer;
@@ -22,6 +23,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> addBookmarksToFront;
 	private final Supplier<GiveMode> giveMode;
 	private final Supplier<Integer> maxRecipeGuiHeight;
+	private final Supplier<BookmarkTooltipMode> bookmarkTooltipMode;
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
 
 	public ClientConfig(IConfigSchemaBuilder schema) {
@@ -59,6 +61,11 @@ public final class ClientConfig implements IClientConfig {
 			minRecipeGuiHeight,
 			Integer.MAX_VALUE,
 			"Max. recipe gui height"
+		);
+		bookmarkTooltipMode = advanced.addEnum(
+			"BookmarkTooltipMode",
+			BookmarkTooltipMode.defaultMode,
+			"How extra bookmark tooltips should be displayed"
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
@@ -107,6 +114,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public int getMaxRecipeGuiHeight() {
 		return maxRecipeGuiHeight.get();
+	}
+
+	@Override
+	public BookmarkTooltipMode getBookmarkTooltipMode() {
+		return bookmarkTooltipMode.get();
 	}
 
 	@Override

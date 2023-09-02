@@ -49,6 +49,8 @@ public interface IRecipeManager {
 	 */
 	IRecipeCatalystLookup createRecipeCatalystLookup(RecipeType<?> recipeType);
 
+	<R> Optional<R> getRecipeByUid(RecipeType<R> recipeType, ResourceLocation recipeUid);
+
 	/**
 	 * Hides recipes so that they will not be displayed.
 	 * This can be used by mods that create recipe progression.
@@ -118,6 +120,12 @@ public interface IRecipeManager {
 	 * @since 11.5.0
 	 */
 	<T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
+		IRecipeCategory<T> recipeCategory,
+		T recipe,
+		IFocusGroup focusGroup
+	);
+
+	<T> Optional<IRecipeLayoutDrawable<T>> createSimpleRecipeLayoutDrawable(
 		IRecipeCategory<T> recipeCategory,
 		T recipe,
 		IFocusGroup focusGroup

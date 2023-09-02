@@ -1,6 +1,7 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -14,12 +15,16 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.common.Constants;
+import mezz.jei.library.util.RecipeUidHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -107,6 +112,15 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 		// Show red if the player doesn't have enough levels
 		int mainColor = playerHasEnoughLevels(player, cost) ? 0xFF80FF20 : 0xFFFF6060;
 		drawRepairCost(minecraft, poseStack, text, mainColor);
+	}
+
+	@Override
+	public @Nullable ResourceLocation getUniqueId(IJeiAnvilRecipe recipe) {
+		CompoundTag recipeTag = new CompoundTag();
+		RecipeUidHelper.putAll(recipeTag,"left#", recipe.getLeftInputs());
+		RecipeUidHelper.putAll(recipeTag,"right#", recipe.getRightInputs());
+		RecipeUidHelper.putAll(recipeTag,"output#", recipe.getOutputs());
+		return new ResourceLocation(ModIds.JEI_ID, "anvil/" + DigestUtils.md5Hex(recipeTag.toString()));
 	}
 
 	private static boolean playerHasEnoughLevels(@Nullable LocalPlayer player, int cost) {
