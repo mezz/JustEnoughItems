@@ -15,13 +15,14 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 
 import java.util.List;
 
 public final class TippedArrowRecipeMaker {
 
-	public static List<CraftingRecipe> createRecipes(IStackHelper stackHelper) {
+	public static List<RecipeHolder<CraftingRecipe>> createRecipes(IStackHelper stackHelper) {
 		String group = "jei.tipped.arrow";
 		ItemStack arrowStack = new ItemStack(Items.ARROW);
 		Ingredient arrowIngredient = Ingredient.of(arrowStack);
@@ -29,7 +30,7 @@ public final class TippedArrowRecipeMaker {
 		IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registries.POTION);
 		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
 		return potionRegistry.getValues()
-			.<CraftingRecipe>map(potion -> {
+			.map(potion -> {
 				ItemStack input = PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), potion);
 				ItemStack output = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, 8), potion);
 
@@ -40,7 +41,8 @@ public final class TippedArrowRecipeMaker {
 					arrowIngredient, arrowIngredient, arrowIngredient
 				);
 				ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + output.getDescriptionId());
-				return new ShapedRecipe(id, group, CraftingBookCategory.MISC, 3, 3, inputs, output);
+				CraftingRecipe recipe = new ShapedRecipe(group, CraftingBookCategory.MISC, 3, 3, inputs, output);
+				return new RecipeHolder<>(id, recipe);
 			})
 			.toList();
 	}

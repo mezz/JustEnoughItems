@@ -193,12 +193,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		}
 	}
 
-	public void handleTick() {
-		if (this.isListDisplayed()) {
-			this.searchField.tick();
-		}
-	}
-
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {

@@ -1,11 +1,11 @@
 package mezz.jei.forge.platform;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -17,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.client.extensions.common.IClientMobEffectExtensions;
 import net.minecraftforge.client.model.data.ModelData;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -68,13 +67,9 @@ public class RenderHelper implements IPlatformRenderHelper {
         Optional<TooltipComponent> tooltipComponent,
         int x,
         int y,
-        @Nullable Font font,
+        Font font,
         ItemStack stack
     ) {
-        if (font == null) {
-            font = screen.getMinecraft().font;
-        }
-
         guiGraphics.renderTooltip(
             font,
             textComponents,

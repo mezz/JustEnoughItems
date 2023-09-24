@@ -37,6 +37,7 @@ public class GuiIconButton extends Button {
 		this.height = area.getHeight();
 	}
 
+	@Override
 	public void setHeight(int value) {
 		this.height = value;
 	}

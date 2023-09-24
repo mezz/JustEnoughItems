@@ -4,17 +4,14 @@ import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 
 import java.util.List;
-import java.util.Optional;
 
 public class RecipeHelper implements IPlatformRecipeHelper {
     @Override
@@ -66,20 +63,12 @@ public class RecipeHelper implements IPlatformRecipeHelper {
         return Ingredient.EMPTY;
     }
 
-    @SuppressWarnings("removal")
     @Override
     public boolean isHandled(SmithingRecipe recipe) {
         if (recipe.isIncomplete()) {
             return false;
         }
         return recipe instanceof SmithingTransformRecipe || recipe instanceof SmithingTrimRecipe;
-    }
-
-    @SuppressWarnings("DataFlowIssue")
-    @Override
-    public Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe) {
-        ResourceLocation id = recipe.getId();
-        return Optional.ofNullable(id);
     }
 
     @Override

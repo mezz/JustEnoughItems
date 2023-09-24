@@ -106,8 +106,8 @@ public class UserInputRouter {
         this.pending.clear();
     }
 
-    public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-        return this.combinedInputHandler.handleMouseScrolled(mouseX, mouseY, scrollDelta)
+    public boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+        return this.combinedInputHandler.handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY)
             .map(callback -> {
                 if (DebugConfig.isDebugInputsEnabled()) {
                     LOGGER.debug("Scroll handled by: {}", callback);

@@ -132,10 +132,6 @@ public class GuiEventHandler {
 		}
 	}
 
-	public void onClientTick() {
-		ingredientListOverlay.handleTick();
-	}
-
 	public boolean renderCompactPotionIndicators() {
 		return ingredientListOverlay.isListDisplayed();
 	}

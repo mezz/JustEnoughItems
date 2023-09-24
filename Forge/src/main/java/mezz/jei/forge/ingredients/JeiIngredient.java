@@ -1,11 +1,9 @@
 package mezz.jei.forge.ingredients;
 
-import com.google.gson.JsonElement;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import org.apache.commons.lang3.NotImplementedException;
 
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
@@ -28,10 +26,5 @@ public class JeiIngredient extends Ingredient {
     @Override
     public boolean isSimple() {
         return false;
-    }
-
-    @Override
-    public JsonElement toJson() {
-        throw new NotImplementedException("JeiIngredient should only be used internally for JEI at runtime");
     }
 }

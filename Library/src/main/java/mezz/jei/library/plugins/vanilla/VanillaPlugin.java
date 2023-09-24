@@ -12,8 +12,7 @@ import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
-import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.vanilla.crafting.IExtendableCraftingRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
@@ -90,6 +89,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
 import net.minecraft.world.item.crafting.ShulkerBoxColoring;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
@@ -121,17 +121,17 @@ public class VanillaPlugin implements IModPlugin {
 	@Nullable
 	private CraftingRecipeCategory craftingCategory;
 	@Nullable
-	private IRecipeCategory<StonecutterRecipe> stonecuttingCategory;
+	private IRecipeCategory<RecipeHolder<StonecutterRecipe>> stonecuttingCategory;
 	@Nullable
-	private IRecipeCategory<SmeltingRecipe> furnaceCategory;
+	private IRecipeCategory<RecipeHolder<SmeltingRecipe>> furnaceCategory;
 	@Nullable
-	private IRecipeCategory<SmokingRecipe> smokingCategory;
+	private IRecipeCategory<RecipeHolder<SmokingRecipe>> smokingCategory;
 	@Nullable
-	private IRecipeCategory<BlastingRecipe> blastingCategory;
+	private IRecipeCategory<RecipeHolder<BlastingRecipe>> blastingCategory;
 	@Nullable
-	private IRecipeCategory<CampfireCookingRecipe> campfireCategory;
+	private IRecipeCategory<RecipeHolder<CampfireCookingRecipe>> campfireCategory;
 	@Nullable
-	private IRecipeCategory<SmithingRecipe> smithingCategory;
+	private IRecipeCategory<RecipeHolder<SmithingRecipe>> smithingCategory;
 
 	@Override
 	public ResourceLocation getPluginUid() {
@@ -212,8 +212,8 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
-		IExtendableRecipeCategory<CraftingRecipe, ICraftingCategoryExtension> craftingCategory = registration.getCraftingCategory();
-		craftingCategory.addCategoryExtension(CraftingRecipe.class, r -> !r.isSpecial(), CraftingCategoryExtension::new);
+		IExtendableCraftingRecipeCategory craftingCategory = registration.getCraftingCategory();
+		craftingCategory.addExtension(CraftingRecipe.class, new CraftingCategoryExtension());
 	}
 
 	@Override
@@ -232,10 +232,10 @@ public class VanillaPlugin implements IModPlugin {
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 		VanillaRecipes vanillaRecipes = new VanillaRecipes(ingredientManager);
 
-		Map<Boolean, List<CraftingRecipe>> craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
-		List<CraftingRecipe> handledCraftingRecipes = craftingRecipes.get(true);
-		List<CraftingRecipe> unhandledCraftingRecipes = craftingRecipes.get(false);
-		List<CraftingRecipe> specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, stackHelper);
+		var craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
+		var handledCraftingRecipes = craftingRecipes.get(true);
+		var unhandledCraftingRecipes = craftingRecipes.get(false);
+		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, stackHelper);
 
 		registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);
 		registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);
@@ -318,24 +318,25 @@ public class VanillaPlugin implements IModPlugin {
 	 * If a special recipe we know how to replace is not present (because it has been removed),
 	 * we do not replace it.
 	 */
-	private static List<CraftingRecipe> replaceSpecialCraftingRecipes(List<CraftingRecipe> unhandledCraftingRecipes, IStackHelper stackHelper) {
-		Map<Class<? extends CraftingRecipe>, Supplier<List<CraftingRecipe>>> replacers = new IdentityHashMap<>();
+	private static List<RecipeHolder<CraftingRecipe>> replaceSpecialCraftingRecipes(List<RecipeHolder<CraftingRecipe>> unhandledCraftingRecipes, IStackHelper stackHelper) {
+		Map<Class<? extends CraftingRecipe>, Supplier<List<RecipeHolder<CraftingRecipe>>>> replacers = new IdentityHashMap<>();
 		replacers.put(TippedArrowRecipe.class, () -> TippedArrowRecipeMaker.createRecipes(stackHelper));
 		replacers.put(ShulkerBoxColoring.class, ShulkerBoxColoringRecipeMaker::createRecipes);
 		replacers.put(SuspiciousStewRecipe.class, SuspiciousStewRecipeMaker::createRecipes);
 		replacers.put(ShieldDecorationRecipe.class, ShieldDecorationRecipeMaker::createRecipes);
 
 		return unhandledCraftingRecipes.stream()
+			.map(RecipeHolder::value)
 			.map(CraftingRecipe::getClass)
 			.distinct()
 			.filter(replacers::containsKey)
 			// distinct + this limit will ensure we stop iterating early if we find all the recipes we're looking for.
 			.limit(replacers.size())
 			.flatMap(recipeClass -> {
-				Supplier<List<CraftingRecipe>> supplier = replacers.get(recipeClass);
+				var supplier = replacers.get(recipeClass);
 				try {
-					List<CraftingRecipe> results = supplier.get();
-					return results.stream();
+					return supplier.get()
+						.stream();
 				} catch (RuntimeException e) {
 					LOGGER.error("Failed to create JEI recipes for {}", recipeClass, e);
 					return Stream.of();

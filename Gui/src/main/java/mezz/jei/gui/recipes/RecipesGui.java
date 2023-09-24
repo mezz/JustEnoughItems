@@ -221,7 +221,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		if (minecraft == null) {
 			return;
 		}
-		renderBackground(guiGraphics);
+		renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		final int x = area.getX();
 		final int y = area.getY();
@@ -385,19 +385,19 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	public boolean mouseScrolled(double scrollX, double scrollY, double scrollDelta) {
+	public boolean mouseScrolled(double scrollX, double scrollY, double scrollDeltaX, double scrollDeltaY) {
 		final double x = MouseUtil.getX();
 		final double y = MouseUtil.getY();
 		if (isMouseOver(x, y)) {
-			if (scrollDelta < 0) {
+			if (scrollDeltaY < 0) {
 				logic.nextPage();
 				return true;
-			} else if (scrollDelta > 0) {
+			} else if (scrollDeltaY > 0) {
 				logic.previousPage();
 				return true;
 			}
 		}
-		return super.mouseScrolled(scrollX, scrollY, scrollDelta);
+		return super.mouseScrolled(scrollX, scrollY, scrollDeltaX, scrollDeltaY);
 	}
 
 	@Override

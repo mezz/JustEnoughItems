@@ -14,10 +14,11 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.level.block.Blocks;
 
-public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
+public class SmithingRecipeCategory implements IRecipeCategory<RecipeHolder<SmithingRecipe>> {
 	private final IDrawable background;
 	private final IDrawable icon;
 
@@ -27,7 +28,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 	}
 
 	@Override
-	public RecipeType<SmithingRecipe> getRecipeType() {
+	public RecipeType<RecipeHolder<SmithingRecipe>> getRecipeType() {
 		return RecipeTypes.SMITHING;
 	}
 
@@ -47,7 +48,9 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, SmithingRecipe recipe, IFocusGroup focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<SmithingRecipe> recipeHolder, IFocusGroup focuses) {
+		SmithingRecipe recipe = recipeHolder.value();
+
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
@@ -64,7 +67,8 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe> {
 	}
 
 	@Override
-	public boolean isHandled(SmithingRecipe recipe) {
+	public boolean isHandled(RecipeHolder<SmithingRecipe> recipeHolder) {
+		SmithingRecipe recipe = recipeHolder.value();
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		return recipeHelper.isHandled(recipe);
 	}

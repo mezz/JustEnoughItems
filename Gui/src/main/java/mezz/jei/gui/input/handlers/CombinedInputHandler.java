@@ -58,9 +58,9 @@ public class CombinedInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
+	public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
 		return inputHandlers.stream()
-			.flatMap(inputHandler -> inputHandler.handleMouseScrolled(mouseX, mouseY, scrollDelta).stream())
+			.flatMap(inputHandler -> inputHandler.handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY).stream())
 			.findFirst();
 	}
 }

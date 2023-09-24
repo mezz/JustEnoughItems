@@ -7,6 +7,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.library.util.RecipeUtil;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
@@ -17,7 +18,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.common.Constants;
 import net.minecraft.network.chat.Component;
 
-public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRecipe> {
+public class StoneCuttingRecipeCategory implements IRecipeCategory<RecipeHolder<StonecutterRecipe>> {
 	public static final int width = 82;
 	public static final int height = 34;
 
@@ -33,7 +34,7 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRe
 	}
 
 	@Override
-	public RecipeType<StonecutterRecipe> getRecipeType() {
+	public RecipeType<RecipeHolder<StonecutterRecipe>> getRecipeType() {
 		return RecipeTypes.STONECUTTING;
 	}
 
@@ -53,7 +54,9 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRe
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, StonecutterRecipe recipe, IFocusGroup focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<StonecutterRecipe> recipeHolder, IFocusGroup focuses) {
+		StonecutterRecipe recipe = recipeHolder.value();
+
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 9)
 			.addIngredients(recipe.getIngredients().get(0));
 
@@ -62,7 +65,8 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRe
 	}
 
 	@Override
-	public boolean isHandled(StonecutterRecipe recipe) {
+	public boolean isHandled(RecipeHolder<StonecutterRecipe> recipeHolder) {
+		StonecutterRecipe recipe = recipeHolder.value();
 		return !recipe.isSpecial();
 	}
 }

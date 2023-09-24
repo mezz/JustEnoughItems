@@ -1,16 +1,15 @@
 package mezz.jei.forge.startup;
 
+import mezz.jei.forge.events.RuntimeEventSubscriptions;
+import mezz.jei.forge.input.ForgeUserInput;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
-import mezz.jei.forge.events.RuntimeEventSubscriptions;
-import mezz.jei.forge.input.ForgeUserInput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.event.TickEvent;
 
 public class EventRegistration {
 	public static void registerEvents(RuntimeEventSubscriptions subscriptions, JeiEventHandlers eventHandlers) {
@@ -76,8 +75,9 @@ public class EventRegistration {
 		subscriptions.register(ScreenEvent.MouseScrolled.Pre.class, event -> {
 			double mouseX = event.getMouseX();
 			double mouseY = event.getMouseY();
-			double scrollDelta = event.getScrollDelta();
-			if (handler.onGuiMouseScroll(mouseX, mouseY, scrollDelta)) {
+			double scrollDeltaX = event.getDeltaX();
+			double scrollDeltaY = event.getDeltaY();
+			if (handler.onGuiMouseScroll(mouseX, mouseY, scrollDeltaX, scrollDeltaY)) {
 				event.setCanceled(true);
 			}
 		});
@@ -110,11 +110,6 @@ public class EventRegistration {
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
 			guiEventHandler.onDrawScreenPost(screen, guiGraphics, mouseX, mouseY);
-		});
-		subscriptions.register(TickEvent.ClientTickEvent.class, event -> {
-			if (event.phase == TickEvent.Phase.START) {
-				guiEventHandler.onClientTick();
-			}
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
 			if (guiEventHandler.renderCompactPotionIndicators()) {

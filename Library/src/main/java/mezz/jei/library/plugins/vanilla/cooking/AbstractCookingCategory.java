@@ -17,12 +17,13 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
 
 import static mezz.jei.api.recipe.RecipeIngredientRole.INPUT;
 import static mezz.jei.api.recipe.RecipeIngredientRole.OUTPUT;
 
-public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> extends FurnaceVariantCategory<T> {
+public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> extends FurnaceVariantCategory<RecipeHolder<T>> {
 	private final IDrawable background;
 	private final int regularCookTime;
 	private final IDrawable icon;
@@ -46,7 +47,8 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 			});
 	}
 
-	protected IDrawableAnimated getArrow(T recipe) {
+	protected IDrawableAnimated getArrow(RecipeHolder<T> recipeHolder) {
+		T recipe = recipeHolder.value();
 		int cookTime = recipe.getCookingTime();
 		if (cookTime <= 0) {
 			cookTime = regularCookTime;
@@ -65,17 +67,18 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	}
 
 	@Override
-	public void draw(T recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	public void draw(RecipeHolder<T> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		animatedFlame.draw(guiGraphics, 1, 20);
 
-		IDrawableAnimated arrow = getArrow(recipe);
+		IDrawableAnimated arrow = getArrow(recipeHolder);
 		arrow.draw(guiGraphics, 24, 18);
 
-		drawExperience(recipe, guiGraphics, 0);
-		drawCookTime(recipe, guiGraphics, 45);
+		drawExperience(recipeHolder, guiGraphics, 0);
+		drawCookTime(recipeHolder, guiGraphics, 45);
 	}
 
-	protected void drawExperience(T recipe, GuiGraphics guiGraphics, int y) {
+	protected void drawExperience(RecipeHolder<T> recipeHolder, GuiGraphics guiGraphics, int y) {
+		T recipe = recipeHolder.value();
 		float experience = recipe.getExperience();
 		if (experience > 0) {
 			Component experienceString = Component.translatable("gui.jei.category.smelting.experience", experience);
@@ -86,7 +89,8 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		}
 	}
 
-	protected void drawCookTime(T recipe, GuiGraphics guiGraphics, int y) {
+	protected void drawCookTime(RecipeHolder<T> recipeHolder, GuiGraphics guiGraphics, int y) {
+		T recipe = recipeHolder.value();
 		int cookTime = recipe.getCookingTime();
 		if (cookTime > 0) {
 			int cookTimeSeconds = cookTime / 20;
@@ -104,7 +108,9 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<T> recipeHolder, IFocusGroup focuses) {
+		T recipe = recipeHolder.value();
+
 		builder.addSlot(INPUT, 1, 1)
 			.addIngredients(recipe.getIngredients().get(0));
 
@@ -113,7 +119,8 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	}
 
 	@Override
-	public boolean isHandled(T recipe) {
+	public boolean isHandled(RecipeHolder<T> recipeHolder) {
+		T recipe = recipeHolder.value();
 		return !recipe.isSpecial();
 	}
 }

@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -21,7 +22,7 @@ import java.util.List;
 public final class ShulkerBoxColoringRecipeMaker {
 	private static final String group = "jei.shulker.color";
 
-	public static List<CraftingRecipe> createRecipes() {
+	public static List<RecipeHolder<CraftingRecipe>> createRecipes() {
 		ItemStack baseShulkerStack = new ItemStack(Blocks.SHULKER_BOX);
 		Ingredient baseShulkerIngredient = Ingredient.of(baseShulkerStack);
 		return Arrays.stream(DyeColor.values())
@@ -29,14 +30,15 @@ public final class ShulkerBoxColoringRecipeMaker {
 			.toList();
 	}
 
-	private static CraftingRecipe createRecipe(DyeColor color, Ingredient baseShulkerIngredient) {
+	private static RecipeHolder<CraftingRecipe> createRecipe(DyeColor color, Ingredient baseShulkerIngredient) {
 		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
 		Ingredient colorIngredient = ingredientHelper.createShulkerDyeIngredient(color);
 		NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY, baseShulkerIngredient, colorIngredient);
 		Block coloredShulkerBox = ShulkerBoxBlock.getBlockByColor(color);
 		ItemStack output = new ItemStack(coloredShulkerBox);
 		ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, group + "." + output.getDescriptionId());
-		return new ShapelessRecipe(id, group, CraftingBookCategory.MISC, output, inputs);
+		CraftingRecipe recipe = new ShapelessRecipe(group, CraftingBookCategory.MISC, output, inputs);
+		return new RecipeHolder<>(id, recipe);
 	}
 
 	private ShulkerBoxColoringRecipeMaker() {

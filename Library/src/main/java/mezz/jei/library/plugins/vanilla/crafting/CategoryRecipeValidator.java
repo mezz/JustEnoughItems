@@ -7,6 +7,7 @@ import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,33 +16,34 @@ import java.util.List;
 public final class CategoryRecipeValidator<T extends Recipe<?>> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int INVALID_COUNT = -1;
-	private final IRecipeCategory<T> recipeCategory;
+	private final IRecipeCategory<RecipeHolder<T>> recipeCategory;
 	private final IIngredientManager ingredientManager;
 	private final int maxInputs;
 
-	public CategoryRecipeValidator(IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager, int maxInputs) {
+	public CategoryRecipeValidator(IRecipeCategory<RecipeHolder<T>> recipeCategory, IIngredientManager ingredientManager, int maxInputs) {
 		this.recipeCategory = recipeCategory;
 		this.ingredientManager = ingredientManager;
 		this.maxInputs = maxInputs;
 	}
 
-	public boolean isRecipeValid(T recipe) {
-		return hasValidInputsAndOutputs(recipe);
+	public boolean isRecipeValid(RecipeHolder<T> recipeHolder) {
+		return hasValidInputsAndOutputs(recipeHolder);
 	}
 
-	public boolean isRecipeHandled(T recipe) {
-		return this.recipeCategory.isHandled(recipe);
+	public boolean isRecipeHandled(RecipeHolder<T> recipeHolder) {
+		return this.recipeCategory.isHandled(recipeHolder);
 	}
 
 	@SuppressWarnings("ConstantConditions")
-	private boolean hasValidInputsAndOutputs(T recipe) {
+	private boolean hasValidInputsAndOutputs(RecipeHolder<T> recipeHolder) {
+		T recipe = recipeHolder.value();
 		if (recipe.isSpecial()) {
 			return true;
 		}
 		ItemStack recipeOutput = RecipeUtil.getResultItem(recipe);
 		if (recipeOutput == null || recipeOutput.isEmpty()) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
 				LOGGER.debug("Skipping Recipe because it has no output. {}", recipeInfo);
 			}
 			return false;
@@ -49,7 +51,7 @@ public final class CategoryRecipeValidator<T extends Recipe<?>> {
 		List<Ingredient> ingredients = recipe.getIngredients();
 		if (ingredients == null) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
 				LOGGER.debug("Skipping Recipe because it has no input Ingredients. {}", recipeInfo);
 			}
 			return false;
@@ -57,19 +59,19 @@ public final class CategoryRecipeValidator<T extends Recipe<?>> {
 		int inputCount = getInputCount(ingredients);
 		if (inputCount == INVALID_COUNT) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
 				LOGGER.debug("Skipping Recipe because it contains invalid inputs. {}", recipeInfo);
 			}
 			return false;
 		} else if (inputCount > maxInputs) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
 				LOGGER.debug("Skipping Recipe because it has too many inputs. {}", recipeInfo);
 			}
 			return false;
 		} else if (inputCount == 0 && maxInputs > 0) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
 				LOGGER.debug("Skipping Recipe because it has no inputs. {}", recipeInfo);
 			}
 			return false;

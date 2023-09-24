@@ -13,7 +13,7 @@ import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -156,8 +156,8 @@ public interface IRecipeCategory<T> {
 	 */
 	@Nullable
 	default ResourceLocation getRegistryName(T recipe) {
-		if (recipe instanceof Recipe<?> vanillaRecipe) {
-			return vanillaRecipe.getId();
+		if (recipe instanceof RecipeHolder<?> recipeHolder) {
+			return recipeHolder.id();
 		}
 		return null;
 	}

@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.common.Constants;
 import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
 
 public class CampfireCookingCategory extends AbstractCookingCategory<CampfireCookingRecipe> {
@@ -26,7 +27,7 @@ public class CampfireCookingCategory extends AbstractCookingCategory<CampfireCoo
 	}
 
 	@Override
-	public RecipeType<CampfireCookingRecipe> getRecipeType() {
+	public RecipeType<RecipeHolder<CampfireCookingRecipe>> getRecipeType() {
 		return RecipeTypes.CAMPFIRE_COOKING;
 	}
 
@@ -36,15 +37,16 @@ public class CampfireCookingCategory extends AbstractCookingCategory<CampfireCoo
 	}
 
 	@Override
-	public void draw(CampfireCookingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	public void draw(RecipeHolder<CampfireCookingRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		animatedFlame.draw(guiGraphics, 1, 20);
-		IDrawableAnimated arrow = getArrow(recipe);
+		IDrawableAnimated arrow = getArrow(recipeHolder);
 		arrow.draw(guiGraphics, 24, 8);
-		drawCookTime(recipe, guiGraphics, 35);
+		drawCookTime(recipeHolder, guiGraphics, 35);
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, CampfireCookingRecipe recipe, IFocusGroup focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<CampfireCookingRecipe> recipeHolder, IFocusGroup focuses) {
+		CampfireCookingRecipe recipe = recipeHolder.value();
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.addIngredients(recipe.getIngredients().get(0));
 

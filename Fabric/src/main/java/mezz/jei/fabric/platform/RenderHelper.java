@@ -60,7 +60,7 @@ public class RenderHelper implements IPlatformRenderHelper {
         Optional<TooltipComponent> tooltipComponent,
         int x,
         int y,
-        @Nullable Font font,
+        Font font,
         ItemStack stack
     ) {
         guiGraphics.renderTooltip(

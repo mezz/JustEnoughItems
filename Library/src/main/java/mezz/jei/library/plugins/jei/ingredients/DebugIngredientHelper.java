@@ -30,11 +30,6 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 	}
 
 	@Override
-	public ItemStack getCheatItemStack(DebugIngredient ingredient) {
-		return ItemStack.EMPTY;
-	}
-
-	@Override
 	public DebugIngredient copyIngredient(DebugIngredient ingredient) {
 		return ingredient.copy();
 	}

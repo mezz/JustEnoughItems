@@ -29,5 +29,5 @@ public interface IPlatformRenderHelper {
     Optional<NativeImage> getMainImage(TextureAtlasSprite sprite);
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, int x, int y, @Nullable Font font, ItemStack stack);
+    void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, int x, int y, Font font, ItemStack stack);
 }

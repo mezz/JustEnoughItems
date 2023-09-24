@@ -6,10 +6,9 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
-import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.ingredients.IIngredientSupplier;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -74,12 +73,10 @@ public final class RecipeErrorUtil {
 	}
 
 	public static String getNameForRecipe(Object recipe) {
-		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
-
 		return Optional.of(recipe)
-			.filter(Recipe.class::isInstance)
-			.map(Recipe.class::cast)
-			.flatMap(recipeHelper::getRegistryNameForRecipe)
+			.filter(RecipeHolder.class::isInstance)
+			.map(RecipeHolder.class::cast)
+			.map(RecipeHolder::id)
 			.map(registryName -> {
 				IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
 				String modId = registryName.getNamespace();

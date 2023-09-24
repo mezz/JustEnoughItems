@@ -10,45 +10,48 @@ import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
-import org.jetbrains.annotations.Nullable;
 import java.util.List;
+import java.util.Optional;
 
-public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICraftingCategoryExtension {
-	protected final T recipe;
-
-	public CraftingCategoryExtension(T recipe) {
-		this.recipe = recipe;
-	}
-
+public class CraftingCategoryExtension implements ICraftingCategoryExtension<CraftingRecipe> {
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
+	public void setRecipe(RecipeHolder<CraftingRecipe> recipeHolder, IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
+		CraftingRecipe recipe = recipeHolder.value();
 		List<List<ItemStack>> inputs = recipe.getIngredients().stream()
 			.map(ingredient -> List.of(ingredient.getItems()))
 			.toList();
 		ItemStack resultItem = RecipeUtil.getResultItem(recipe);
 
-		int width = getWidth();
-		int height = getHeight();
+		int width = getWidth(recipeHolder);
+		int height = getHeight(recipeHolder);
 		craftingGridHelper.createAndSetOutputs(builder, List.of(resultItem));
 		craftingGridHelper.createAndSetInputs(builder, inputs, width, height);
 	}
 
-	@Nullable
 	@Override
-	public ResourceLocation getRegistryName() {
-		return recipe.getId();
+	public Optional<ResourceLocation> getRegistryName(RecipeHolder<CraftingRecipe> recipeHolder) {
+		return Optional.of(recipeHolder.id());
 	}
 
 	@Override
-	public int getWidth() {
+	public int getWidth(RecipeHolder<CraftingRecipe> recipeHolder) {
+		CraftingRecipe recipe = recipeHolder.value();
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		return recipeHelper.getWidth(recipe);
 	}
 
 	@Override
-	public int getHeight() {
+	public int getHeight(RecipeHolder<CraftingRecipe> recipeHolder) {
+		CraftingRecipe recipe = recipeHolder.value();
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		return recipeHelper.getHeight(recipe);
+	}
+
+	@Override
+	public boolean isHandled(RecipeHolder<CraftingRecipe> recipeHolder) {
+		CraftingRecipe recipe = recipeHolder.value();
+		return !recipe.isSpecial();
 	}
 }

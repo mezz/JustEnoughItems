@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class BookmarkOverlayDummy implements IBookmarkOverlay {
-	public static IBookmarkOverlay INSTANCE = new BookmarkOverlayDummy();
+	public static final IBookmarkOverlay INSTANCE = new BookmarkOverlayDummy();
 
 	private BookmarkOverlayDummy() {
 

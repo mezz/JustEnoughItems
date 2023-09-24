@@ -15,12 +15,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 
-public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<InventoryMenu, CraftingRecipe> {
+public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<InventoryMenu, RecipeHolder<CraftingRecipe>> {
 	/**
 	 * Indexes from the crafting recipe inputs that fit into the player crafting grid
 	 * when we trim the right and bottom edges.
@@ -28,7 +29,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 	private static final IntSet PLAYER_INV_INDEXES = IntArraySet.of(0, 1, 3, 4);
 
 	private final IRecipeTransferHandlerHelper handlerHelper;
-	private final IRecipeTransferHandler<InventoryMenu, CraftingRecipe> handler;
+	private final IRecipeTransferHandler<InventoryMenu, RecipeHolder<CraftingRecipe>> handler;
 
 	public PlayerRecipeTransferHandler(IRecipeTransferHandlerHelper handlerHelper) {
 		this.handlerHelper = handlerHelper;
@@ -47,13 +48,13 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 	}
 
 	@Override
-	public RecipeType<CraftingRecipe> getRecipeType() {
+	public RecipeType<RecipeHolder<CraftingRecipe>> getRecipeType() {
 		return RecipeTypes.CRAFTING;
 	}
 
 	@Nullable
 	@Override
-	public IRecipeTransferError transferRecipe(InventoryMenu container, CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, Player player, boolean maxTransfer, boolean doTransfer) {
+	public IRecipeTransferError transferRecipe(InventoryMenu container, RecipeHolder<CraftingRecipe> recipe, IRecipeSlotsView recipeSlotsView, Player player, boolean maxTransfer, boolean doTransfer) {
 		if (!handlerHelper.recipeTransferHasServerSupport()) {
 			Component tooltipMessage = Component.translatable("jei.tooltip.error.recipe.transfer.no.server");
 			return this.handlerHelper.createUserErrorWithTooltip(tooltipMessage);

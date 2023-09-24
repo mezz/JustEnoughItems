@@ -39,25 +39,6 @@ public class RecipeTypeDataMap {
 		return recipeTypeData;
 	}
 
-	public <T> RecipeTypeData<T> get(Iterable<? extends T> recipes, RecipeType<T> recipeType) {
-		RecipeTypeData<T> recipeTypeData = get(recipeType);
-		return validate(recipes, recipeTypeData);
-	}
-
-	private static <T> RecipeTypeData<T> validate(Iterable<? extends T> recipes, RecipeTypeData<?> recipeTypeData) {
-		IRecipeCategory<?> recipeCategory = recipeTypeData.getRecipeCategory();
-		RecipeType<?> recipeType = recipeCategory.getRecipeType();
-		Class<?> recipeClass = recipeType.getRecipeClass();
-		for (T recipe : recipes) {
-			if (!recipeClass.isInstance(recipe)) {
-				throw new IllegalArgumentException(recipeType.getUid() + " recipes must be an instance of " + recipeClass + ". Instead got: " + recipe.getClass());
-			}
-		}
-		@SuppressWarnings("unchecked")
-		RecipeTypeData<T> castRecipeTypeData = (RecipeTypeData<T>) recipeTypeData;
-		return castRecipeTypeData;
-	}
-
 	public void validate(RecipeType<?> recipeType) {
 		if (!uidMap.containsKey(recipeType.getUid())) {
 			throw new IllegalStateException("There is no recipe type registered for: " + recipeType.getUid());

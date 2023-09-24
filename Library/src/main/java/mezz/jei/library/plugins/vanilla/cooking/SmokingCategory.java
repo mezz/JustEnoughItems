@@ -2,6 +2,7 @@ package mezz.jei.library.plugins.vanilla.cooking;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.recipe.RecipeType;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 
@@ -13,7 +14,7 @@ public class SmokingCategory extends AbstractCookingCategory<SmokingRecipe> {
 	}
 
 	@Override
-	public RecipeType<SmokingRecipe> getRecipeType() {
+	public RecipeType<RecipeHolder<SmokingRecipe>> getRecipeType() {
 		return RecipeTypes.SMOKING;
 	}
 }

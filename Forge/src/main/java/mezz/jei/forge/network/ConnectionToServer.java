@@ -1,20 +1,18 @@
 package mezz.jei.forge.network;
 
-import com.google.common.collect.ImmutableMap;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketJei;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
-import net.minecraftforge.network.ConnectionData;
+import net.minecraftforge.network.EventNetworkChannel;
 import net.minecraftforge.network.ICustomPacket;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkHooks;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public final class ConnectionToServer implements IConnectionToServer {
@@ -37,13 +35,9 @@ public final class ConnectionToServer implements IConnectionToServer {
 		UUID id = clientPacketListener.getId();
 		if (!id.equals(jeiOnServerCacheUuid)) {
 			jeiOnServerCacheUuid = id;
-			jeiOnServerCacheValue = Optional.of(clientPacketListener)
-				.map(ClientPacketListener::getConnection)
-				.map(NetworkHooks::getConnectionData)
-				.map(ConnectionData::getChannels)
-				.map(ImmutableMap::keySet)
-				.map(keys -> keys.contains(networkHandler.getChannelId()))
-				.orElse(false);
+			Connection connection = clientPacketListener.getConnection();
+			EventNetworkChannel networkChannel = networkHandler.getChannel();
+			jeiOnServerCacheValue = networkChannel.isRemotePresent(connection);
 		}
 		return jeiOnServerCacheValue;
 	}
@@ -54,7 +48,7 @@ public final class ConnectionToServer implements IConnectionToServer {
 		ClientPacketListener netHandler = minecraft.getConnection();
 		if (netHandler != null && isJeiOnServer()) {
 			Pair<FriendlyByteBuf, Integer> packetData = packet.getPacketData();
-			ICustomPacket<Packet<?>> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(packetData, networkHandler.getChannelId());
+			ICustomPacket<Packet<?>> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(packetData.getKey(), networkHandler.getChannelId());
 			netHandler.send(payload.getThis());
 		}
 	}

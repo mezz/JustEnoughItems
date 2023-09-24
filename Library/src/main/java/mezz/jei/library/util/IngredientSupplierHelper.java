@@ -17,11 +17,17 @@ public final class IngredientSupplierHelper {
 
 	@Nullable
 	public static <T> IIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager) {
+		if (!recipeCategory.isHandled(recipe)) {
+			return null;
+		}
 		try {
 			RecipeLayoutBuilder builder = new RecipeLayoutBuilder(ingredientManager, 0);
 			recipeCategory.setRecipe(builder, recipe, FocusGroup.EMPTY);
 			if (builder.isUsed()) {
 				return builder;
+			} else {
+				String recipeName = RecipeErrorUtil.getNameForRecipe(recipe);
+				LOGGER.warn("The recipe category for '{}' failed to set anything in its setRecipe method, for recipe: {}", recipeCategory.getRecipeType(), recipeName);
 			}
 		} catch (RuntimeException | LinkageError e) {
 			String recipeName = RecipeErrorUtil.getNameForRecipe(recipe);

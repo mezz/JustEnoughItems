@@ -1,7 +1,6 @@
 package mezz.jei.library.plugins.vanilla.crafting;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -10,24 +9,23 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.vanilla.crafting.IExtendableCraftingRecipeCategory;
 import mezz.jei.common.Constants;
-import mezz.jei.library.recipes.ExtendableRecipeCategoryHelper;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.library.recipes.CraftingExtensionHelper;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
-public class CraftingRecipeCategory implements IExtendableRecipeCategory<CraftingRecipe, ICraftingCategoryExtension> {
+public class CraftingRecipeCategory implements IExtendableCraftingRecipeCategory, IRecipeCategory<RecipeHolder<CraftingRecipe>> {
 	public static final int width = 116;
 	public static final int height = 54;
 
@@ -35,7 +33,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	private final IDrawable icon;
 	private final Component localizedName;
 	private final ICraftingGridHelper craftingGridHelper;
-	private final ExtendableRecipeCategoryHelper<Recipe<?>, ICraftingCategoryExtension> extendableHelper = new ExtendableRecipeCategoryHelper<>(CraftingRecipe.class);
+	private final CraftingExtensionHelper extendableHelper = new CraftingExtensionHelper();
 
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
@@ -46,7 +44,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	}
 
 	@Override
-	public RecipeType<CraftingRecipe> getRecipeType() {
+	public RecipeType<RecipeHolder<CraftingRecipe>> getRecipeType() {
 		return RecipeTypes.CRAFTING;
 	}
 
@@ -66,57 +64,49 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, CraftingRecipe recipe, IFocusGroup focuses) {
-		ICraftingCategoryExtension recipeExtension = this.extendableHelper.getRecipeExtension(recipe);
-		recipeExtension.setRecipe(builder, craftingGridHelper, focuses);
+	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<CraftingRecipe> recipeHolder, IFocusGroup focuses) {
+		var recipeExtension = this.extendableHelper.getRecipeExtension(recipeHolder);
+		recipeExtension.setRecipe(recipeHolder, builder, craftingGridHelper, focuses);
 	}
 
 	@Override
-	public void draw(CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
+	public void draw(RecipeHolder<CraftingRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+		var extension = this.extendableHelper.getRecipeExtension(recipeHolder);
 		int recipeWidth = this.getWidth();
 		int recipeHeight = this.getHeight();
-		extension.drawInfo(recipeWidth, recipeHeight, guiGraphics, mouseX, mouseY);
+		extension.drawInfo(recipeHolder, recipeWidth, recipeHeight, guiGraphics, mouseX, mouseY);
 	}
 
 	@Override
-	public List<Component> getTooltipStrings(CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
-		return extension.getTooltipStrings(mouseX, mouseY);
+	public List<Component> getTooltipStrings(RecipeHolder<CraftingRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+		var extension = this.extendableHelper.getRecipeExtension(recipeHolder);
+		return extension.getTooltipStrings(recipeHolder, mouseX, mouseY);
 	}
 
 	@Override
-	public boolean handleInput(CraftingRecipe recipe, double mouseX, double mouseY, InputConstants.Key input) {
-		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
-		return extension.handleInput(mouseX, mouseY, input);
+	public boolean handleInput(RecipeHolder<CraftingRecipe> recipeHolder, double mouseX, double mouseY, InputConstants.Key input) {
+		var extension = this.extendableHelper.getRecipeExtension(recipeHolder);
+		return extension.handleInput(recipeHolder, mouseX, mouseY, input);
 	}
 
 	@Override
-	public boolean isHandled(CraftingRecipe recipe) {
-		return this.extendableHelper.getOptionalRecipeExtension(recipe)
+	public boolean isHandled(RecipeHolder<CraftingRecipe> recipeHolder) {
+		return this.extendableHelper.getOptionalRecipeExtension(recipeHolder)
 			.isPresent();
 	}
 
 	@Override
-	public <R extends CraftingRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
+	public <R extends CraftingRecipe> void addExtension(Class<? extends R> recipeClass, ICraftingCategoryExtension<R> extension) {
 		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
-		ErrorUtil.checkNotNull(extensionFactory, "extensionFactory");
-		extendableHelper.addRecipeExtensionFactory(recipeClass, null, extensionFactory);
+		ErrorUtil.checkNotNull(extension, "extension");
+		extendableHelper.addRecipeExtension(recipeClass, extension);
 	}
 
 	@Override
-	public <R extends CraftingRecipe> void addCategoryExtension(Class<? extends R> recipeClass, Predicate<R> extensionFilter, Function<R, ? extends ICraftingCategoryExtension> extensionFactory) {
-		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
-		ErrorUtil.checkNotNull(extensionFilter, "extensionFilter");
-		ErrorUtil.checkNotNull(extensionFactory, "extensionFactory");
-		extendableHelper.addRecipeExtensionFactory(recipeClass, extensionFilter, extensionFactory);
-	}
-
-	@Override
-	public ResourceLocation getRegistryName(CraftingRecipe recipe) {
-		ErrorUtil.checkNotNull(recipe, "recipe");
-		return this.extendableHelper.getOptionalRecipeExtension(recipe)
-			.flatMap(extension -> Optional.ofNullable(extension.getRegistryName()))
-			.orElseGet(recipe::getId);
+	public ResourceLocation getRegistryName(RecipeHolder<CraftingRecipe> recipeHolder) {
+		ErrorUtil.checkNotNull(recipeHolder, "recipeHolder");
+		return this.extendableHelper.getOptionalRecipeExtension(recipeHolder)
+			.flatMap(extension -> extension.getRegistryName(recipeHolder))
+			.orElseGet(recipeHolder::id);
 	}
 }

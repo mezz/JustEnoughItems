@@ -44,7 +44,7 @@ import java.util.stream.IntStream;
  * - formatting
  * - refactored and optimized
  */
-class Node<T> {
+public class Node<T> {
 
 	/**
 	 * The payload array used to store the data (indexes) associated with this node.

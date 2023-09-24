@@ -91,8 +91,8 @@ public class ClientInputHandler {
 		return handled;
 	}
 
-	public boolean onGuiMouseScroll(double mouseX, double mouseY, double scrollDelta) {
-		return this.inputRouter.handleMouseScrolled(mouseX, mouseY, scrollDelta);
+	public boolean onGuiMouseScroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+		return this.inputRouter.handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
 	}
 
 	private boolean handleCharTyped(char codePoint, int modifiers) {

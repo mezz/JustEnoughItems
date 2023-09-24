@@ -16,6 +16,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -25,7 +26,7 @@ import java.util.Set;
 import java.util.stream.StreamSupport;
 
 public final class ShieldDecorationRecipeMaker {
-	public static List<CraftingRecipe> createRecipes() {
+	public static List<RecipeHolder<CraftingRecipe>> createRecipes() {
 		Iterable<Holder<Item>> banners = BuiltInRegistries.ITEM.getTagOrEmpty(ItemTags.BANNERS);
 
 		Set<DyeColor> colors = EnumSet.noneOf(DyeColor.class);
@@ -40,7 +41,7 @@ public final class ShieldDecorationRecipeMaker {
 			.toList();
 	}
 
-	private static CraftingRecipe createRecipe(BannerItem banner) {
+	private static RecipeHolder<CraftingRecipe> createRecipe(BannerItem banner) {
 		NonNullList<Ingredient> inputs = NonNullList.of(
 			Ingredient.EMPTY,
 			Ingredient.of(Items.SHIELD),
@@ -50,7 +51,8 @@ public final class ShieldDecorationRecipeMaker {
 		ItemStack output = createOutput(banner);
 
 		ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.shield.decoration." + output.getDescriptionId());
-		return new ShapelessRecipe(id, "jei.shield.decoration", CraftingBookCategory.MISC, output, inputs);
+		CraftingRecipe recipe = new ShapelessRecipe("jei.shield.decoration", CraftingBookCategory.MISC, output, inputs);
+		return new RecipeHolder<>(id, recipe);
 	}
 
 	private static ItemStack createOutput(BannerItem banner) {

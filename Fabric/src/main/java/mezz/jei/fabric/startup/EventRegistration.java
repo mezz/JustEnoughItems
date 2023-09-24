@@ -1,18 +1,17 @@
 package mezz.jei.fabric.startup;
 
-import net.minecraft.client.gui.GuiGraphics;
+import mezz.jei.fabric.events.JeiCharTypedEvents;
+import mezz.jei.fabric.events.JeiScreenEvents;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.InputType;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
-import mezz.jei.fabric.events.JeiCharTypedEvents;
-import mezz.jei.fabric.events.JeiScreenEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -42,7 +41,6 @@ public class EventRegistration {
 		ScreenEvents.AFTER_INIT.register(this::afterInit);
 		JeiScreenEvents.AFTER_RENDER_BACKGROUND.register(this::afterRenderBackground);
 		JeiScreenEvents.DRAW_FOREGROUND.register(this::drawForeground);
-		ClientTickEvents.START_CLIENT_TICK.register(this::onStartTick);
 	}
 
 	private void registerScreenEvents(Screen screen) {
@@ -88,7 +86,7 @@ public class EventRegistration {
 		if (clientInputHandler == null) {
 			return false;
 		}
-		return !clientInputHandler.onGuiMouseScroll(mouseX, mouseY, verticalAmount);
+		return !clientInputHandler.onGuiMouseScroll(mouseX, mouseY, horizontalAmount, verticalAmount);
 	}
 
 	private void afterRender(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
@@ -120,12 +118,6 @@ public class EventRegistration {
 	private void drawForeground(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (guiEventHandler != null) {
 			guiEventHandler.onDrawForeground(screen, guiGraphics, mouseX, mouseY);
-		}
-	}
-
-	private void onStartTick(Minecraft client) {
-		if (guiEventHandler != null) {
-			guiEventHandler.onClientTick();
 		}
 	}
 

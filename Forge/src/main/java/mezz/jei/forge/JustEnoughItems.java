@@ -27,7 +27,7 @@ public class JustEnoughItems {
 		ModLoadingContext modLoadingContext = ModLoadingContext.get();
 		IServerConfig serverConfig = ServerConfig.register(modLoadingContext);
 
-		NetworkHandler networkHandler = new NetworkHandler(Constants.NETWORK_CHANNEL_ID, "1.0.0");
+		NetworkHandler networkHandler = new NetworkHandler(Constants.NETWORK_CHANNEL_ID, 2);
 		JustEnoughItemsCommon jeiCommon = new JustEnoughItemsCommon(networkHandler, serverConfig);
 		jeiCommon.register(subscriptions);
 

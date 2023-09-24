@@ -2,6 +2,7 @@ package mezz.jei.library.plugins.vanilla.cooking;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.recipe.RecipeType;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 
@@ -13,7 +14,7 @@ public class BlastingCategory extends AbstractCookingCategory<BlastingRecipe> {
 	}
 
 	@Override
-	public RecipeType<BlastingRecipe> getRecipeType() {
+	public RecipeType<RecipeHolder<BlastingRecipe>> getRecipeType() {
 		return RecipeTypes.BLASTING;
 	}
 }
