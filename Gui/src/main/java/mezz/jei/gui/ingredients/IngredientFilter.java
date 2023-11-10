@@ -74,7 +74,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		this.sorter = sorter;
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
-		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper);
+		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper);
 
 		if (clientConfig.isLowMemorySlowSearchEnabled()) {
 			this.elementSearch = new ElementSearchLowMem();
