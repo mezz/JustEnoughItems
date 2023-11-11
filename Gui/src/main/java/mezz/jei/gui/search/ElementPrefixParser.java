@@ -115,7 +115,7 @@ public class ElementPrefixParser {
 		List<String> words = new ArrayList<>(List.of(modName.split("(?=[A-Z_-])|\\s+")));
         //if modName only have one word, we can't find its shortened form.
 		if (words.size() <= 1) return Collections.emptySet();
-		words.removeIf(s -> s.isEmpty() || s.isBlank());
+		words.removeIf(s -> s.isEmpty() || s.isBlank() || s.equals("-") || s.equals("_"));
 
 		Set<String> sortIds = new HashSet<>();
         sortIds.add(pickAndCombine(words, 1));
