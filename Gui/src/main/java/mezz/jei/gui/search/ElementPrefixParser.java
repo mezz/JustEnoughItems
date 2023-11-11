@@ -43,9 +43,10 @@ public class ElementPrefixParser {
 						.map(ElementPrefixParser::convertModNameToSortId)
 						.flatMap(Set::stream)
 						.toList();
-                Set<String> modIds = new HashSet<>(modNames);
-                modIds.addAll(info.getModNameStrings());
-                return modIds;
+                Set<String> modIdAlias = new HashSet<>(modNames);
+				modIdAlias.addAll(info.getModNameStrings());
+				modIdAlias.addAll(modIdHelper.getModAliases(info.getResourceLocation().getNamespace()));
+                return modIdAlias;
 			},
 			LimitedStringStorage::new
 		));
@@ -110,7 +111,6 @@ public class ElementPrefixParser {
 	}
 
 	private static Set<String> convertModNameToSortId(String modName) {
-		if ("Minecraft".equals(modName)) return Collections.singleton("mc");
 		//spilt modName by UpperCase or _ or -.
 		List<String> words = new ArrayList<>(List.of(modName.split("(?=[A-Z_-])|\\s+")));
         //if modName only have one word, we can't find its shortened form.

@@ -16,8 +16,10 @@ import mezz.jei.library.ingredients.RegisteredIngredients;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class IngredientManagerBuilder implements IModIngredientRegistration {
@@ -25,6 +27,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration {
 	private final Set<IIngredientType<?>> registeredIngredientSet = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
+	private final Map<String, Set<String>> modAliases = new HashMap<>();
 
 	public IngredientManagerBuilder(ISubtypeManager subtypeManager, IColorHelper colorHelper) {
 		this.subtypeManager = subtypeManager;
@@ -54,6 +57,14 @@ public class IngredientManagerBuilder implements IModIngredientRegistration {
 	}
 
 	@Override
+	public void registerModAliases(String modid, Collection<String> aliases) {
+		if (modAliases.containsKey(modid)) {
+			throw new IllegalArgumentException("Mod aliases have already been registered for modid: " + modid);
+		}
+		modAliases.put(modid, Set.copyOf(aliases));
+	}
+
+	@Override
 	public ISubtypeManager getSubtypeManager() {
 		return subtypeManager;
 	}
@@ -66,5 +77,9 @@ public class IngredientManagerBuilder implements IModIngredientRegistration {
 	public IIngredientManager build() {
 		RegisteredIngredients registeredIngredients = new RegisteredIngredients(ingredientInfos);
 		return new IngredientManager(registeredIngredients);
+	}
+
+	public Map<String, Set<String>> getModAliases() {
+		return modAliases;
 	}
 }

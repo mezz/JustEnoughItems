@@ -111,6 +111,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -176,6 +177,7 @@ public class VanillaPlugin implements IModPlugin {
 
 		IPlatformFluidHelperInternal<?> platformFluidHelper = Services.PLATFORM.getFluidHelper();
 		registerFluidIngredients(registration, platformFluidHelper);
+		registration.registerModAliases("minecraft", Set.of("mc"));
 	}
 
 	private <T> void registerFluidIngredients(IModIngredientRegistration registration, IPlatformFluidHelperInternal<T> platformFluidHelper) {

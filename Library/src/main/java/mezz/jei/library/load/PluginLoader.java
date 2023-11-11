@@ -80,7 +80,7 @@ public class PluginLoader {
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(ingredientManager);
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
-		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager);
+		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager, ingredientManagerBuilder.getModAliases());
 		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager);
 	}
 
