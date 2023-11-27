@@ -15,10 +15,19 @@ pluginManagement {
 			includeGroup("net.fabricmc")
 			includeGroup("fabric-loom")
 		}
+		exclusiveMaven("https://maven.neoforged.net/releases") {
+			includeGroupByRegex("net\\.neoforged.*")
+			includeGroup("codechicken")
+			includeGroup("net.covers1624")
+		}
 		exclusiveMaven("https://repo.spongepowered.org/repository/maven-public/") {
 			includeGroupByRegex("org\\.spongepowered.*")
 		}
 		gradlePluginPortal()
+	}
+	plugins {
+		id("net.neoforged.gradle.common") version("7.0.49")
+		id("net.neoforged.gradle.userdev") version("7.0.49")
 	}
 	resolutionStrategy {
 		eachPlugin {
@@ -39,6 +48,7 @@ include(
 	"Core",
 	"Changelog",
 	"Common", "CommonApi",
+	"NeoForge", "NeoForgeApi",
 	"Forge", "ForgeApi",
 	"Fabric", "FabricApi",
 	"Library",
