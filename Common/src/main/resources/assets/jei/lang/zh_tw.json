@@ -26,11 +26,11 @@
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "遺失的物品",
   "jei.tooltip.error.recipe.transfer.inventory.full": "物品欄已滿",
-  "jei.tooltip.error.recipe.transfer.unknown": "未知的錯誤，請查看 log",
+  "jei.tooltip.error.recipe.transfer.unknown": "未知的錯誤，請查看日誌",
   "jei.tooltip.error.recipe.transfer.no.server": "伺服器必須安裝 JEI",
   "jei.tooltip.error.recipe.transfer.disabled": "這個伺服器的設置已停用 JEI 配方轉移",
   "jei.tooltip.error.recipe.transfer.too.large.player.inventory": "合成配方太大，無法在 2x2 玩家合成台製作。",
-  "jei.tooltip.error.crash": "物品提示錯誤，請查看 log",
+  "jei.tooltip.error.crash": "物品提示錯誤，請查看日誌",
 
   "_comment": "Error Messages",
   "jei.chat.error.no.cheat.permission.1": "你沒有使用 JEI 作弊模式的權限。",
