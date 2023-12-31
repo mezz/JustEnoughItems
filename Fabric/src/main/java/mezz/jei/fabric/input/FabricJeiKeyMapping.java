@@ -5,56 +5,43 @@ import java.util.function.Consumer;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 
 public class FabricJeiKeyMapping implements IJeiKeyMappingInternal {
-	private final String category;
-	private final String description;
-	private final JeiKeyConflictContext context;
-	private final JeiKeyModifier modifier;
-	private final InputConstants.Type type;
-	private final InputConstants.Key key;
+    protected final KeyMapping keyMapping;
+    protected final JeiKeyConflictContext context;
 
-	public FabricJeiKeyMapping(
-		String category,
-		String description,
-		JeiKeyConflictContext context,
-		JeiKeyModifier modifier,
-		InputConstants.Type type,
-		int keyCode
-	) {
-		this.category = category;
-		this.description = description;
-		this.context = context;
-		this.modifier = modifier;
-		this.type = type;
-		this.key = type.getOrCreate(keyCode);
-	}
+    public FabricJeiKeyMapping(KeyMapping keyMapping, JeiKeyConflictContext context) {
+        this.keyMapping = keyMapping;
+        this.context = context;
+    }
 
-	@Override
-	public boolean isActiveAndMatches(InputConstants.Key key) {
-		if (isUnbound()) {
-			return false;
-		}
-		if (!this.key.equals(key)) {
-			return false;
-		}
-		return context.isActive() && modifier.isActive(context);
-	}
+    @Override
+    public boolean isActiveAndMatches(InputConstants.Key key) {
+        if (isUnbound()) {
+            return false;
+        }
+        if (!KeyBindingHelper.getBoundKeyOf(this.keyMapping).equals(key)) {
+            return false;
+        }
+        return context.isActive();
+    }
 
-	@Override
-	public boolean isUnbound() {
-		return this.key.equals(InputConstants.UNKNOWN);
-	}
+    @Override
+    public boolean isUnbound() {
+        return this.keyMapping.isUnbound();
+    }
 
-	@Override
-	public Component getTranslatedKeyMessage() {
-		return modifier.getCombinedName(key);
-	}
+    @Override
+    public Component getTranslatedKeyMessage() {
+        return this.keyMapping.getTranslatedKeyMessage();
+    }
 
-	@Override
-	public IJeiKeyMappingInternal register(Consumer<KeyMapping> registerMethod) {
-		return this;
-	}
+    @Override
+    public IJeiKeyMappingInternal register(Consumer<KeyMapping> registerMethod) {
+        registerMethod.accept(this.keyMapping);
+        return this;
+    }
 }
