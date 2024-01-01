@@ -8,12 +8,21 @@ import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 
-public class AmecsJeiKeyMapping extends FabricJeiKeyMapping {
+public class AmecsJeiKeyMapping extends AbstractJeiKeyMapping {
 	protected final AmecsKeyBinding amecsMapping;
 
 	public AmecsJeiKeyMapping(AmecsKeyBinding amecsMapping, JeiKeyConflictContext context) {
-		super(amecsMapping, context);
+		super(context);
 		this.amecsMapping = amecsMapping;
+	}
+
+	protected AmecsKeyBinding getMapping() {
+		return this.amecsMapping;
+	}
+
+	protected InputConstants.Key getMappedKey()
+	{
+		return KeyBindingHelper.getBoundKeyOf(this.amecsMapping);
 	}
 
 	@Override
@@ -21,7 +30,7 @@ public class AmecsJeiKeyMapping extends FabricJeiKeyMapping {
 		if (isUnbound()) {
 			return false;
 		}
-		if (!KeyBindingHelper.getBoundKeyOf(this.keyMapping).equals(key)) {
+		if (!this.getMappedKey().equals(key)) {
 			return false;
 		}
 		if (!context.isActive()) return false;

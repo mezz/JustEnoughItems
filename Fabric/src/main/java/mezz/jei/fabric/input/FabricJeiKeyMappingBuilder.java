@@ -6,7 +6,6 @@ import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.IJeiKeyMappingBuilder;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
-import net.minecraft.client.KeyMapping;
 
 public class FabricJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
 	protected final String category;
@@ -31,13 +30,25 @@ public class FabricJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
 
 	@Override
 	protected IJeiKeyMappingInternal buildMouse(int mouseButton) {
-		KeyMapping keyMapping = new KeyMapping(description, InputConstants.Type.MOUSE, mouseButton, category);
+		FabricKeyMapping keyMapping = new FabricKeyMapping(
+			description,
+			InputConstants.Type.MOUSE,
+			mouseButton,
+			category,
+			context
+		);
 		return new FabricJeiKeyMapping(keyMapping, context);
 	}
 
 	@Override
 	public IJeiKeyMappingInternal buildKeyboardKey(int key) {
-		KeyMapping keyMapping = new KeyMapping(description, InputConstants.Type.KEYSYM, key, category);
+		FabricKeyMapping keyMapping = new FabricKeyMapping(
+			description,
+			InputConstants.Type.KEYSYM,
+			key,
+			category,
+			context
+		);
 		return new FabricJeiKeyMapping(keyMapping, context);
 	}
 }
