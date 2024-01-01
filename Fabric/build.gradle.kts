@@ -21,6 +21,11 @@ repositories {
     exclusiveMaven("https://maven.parchmentmc.org") {
         includeGroupByRegex("org\\.parchmentmc.*")
     }
+    maven {
+        // for optional AMECS integration
+        url = uri("https://maven.siphalor.de/")
+        name = "Siphalor's Maven"
+    }
 }
 
 // gradle.properties
@@ -34,6 +39,8 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentVersionFabric: String by extra
 val parchmentMinecraftVersion: String by extra
+val amecsVersionFabric: String by extra
+val amecsMinecraftVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -92,6 +99,11 @@ dependencies {
         group = "net.fabricmc.fabric-api",
         name = "fabric-api",
         version = fabricApiVersion,
+    )
+    modImplementation(
+        group = "de.siphalor",
+        name = "amecsapi-${amecsMinecraftVersion}",
+        version = amecsVersionFabric
     )
     dependencyProjects.forEach {
         implementation(it)
