@@ -2,8 +2,11 @@ package mezz.jei.neoforge.startup;
 
 import mezz.jei.neoforge.events.PermanentEventSubscriptions;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.Connection;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -14,6 +17,7 @@ import net.neoforged.bus.api.Event;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,13 +35,14 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	private static final Set<Class<? extends Event>> requiredEvents = Set.of(TagsUpdatedEvent.class, RecipesUpdatedEvent.class);
 
 	private enum State {
-		DISABLED, ENABLED, JEI_STARTED
+		LISTENING, JEI_STARTED
 	}
 
 	private final Set<Class<? extends Event>> observedEvents = new HashSet<>();
 	private final Runnable startRunnable;
 	private final Runnable stopRunnable;
-	private State state = State.DISABLED;
+	private WeakReference<Connection> currentConnection = new WeakReference<>(null);
+	private State state = State.LISTENING;
 
 	public StartEventObserver(Runnable startRunnable, Runnable stopRunnable) {
 		this.startRunnable = startRunnable;
@@ -48,19 +53,10 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		requiredEvents
 			.forEach(eventClass -> subscriptions.register(eventClass, this::onEvent));
 
-		subscriptions.register(ClientPlayerNetworkEvent.LoggingIn.class, event -> {
-			if (event.getPlayer() != null) {
-				LOGGER.info("JEI StartEventObserver received {}", event.getClass());
-				if (this.state == State.DISABLED) {
-					transitionState(State.ENABLED);
-				}
-			}
-		});
-
 		subscriptions.register(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
 			if (event.getPlayer() != null) {
 				LOGGER.info("JEI StartEventObserver received {}", event.getClass());
-				transitionState(State.DISABLED);
+				transitionState(State.LISTENING);
 			}
 		});
 
@@ -73,8 +69,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 							A Screen is opening but JEI hasn't started yet.
 							Normally, JEI is started after ClientPlayerNetworkEvent.LoggedInEvent, TagsUpdatedEvent, and RecipesUpdatedEvent.
 							Something has caused one or more of these events to fail, so JEI is starting very late.""");
-					transitionState(State.DISABLED);
-					transitionState(State.ENABLED);
+					transitionState(State.LISTENING);
 					transitionState(State.JEI_STARTED);
 				}
 			}
@@ -85,7 +80,30 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	 * Observe an event and start JEI if we have observed all the required events.
 	 */
 	private <T extends Event> void onEvent(T event) {
-		if (this.state == State.DISABLED) {
+		Connection observingConnection = this.currentConnection.get();
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientPacketListener packetListener = minecraft.getConnection();
+		Connection currentConnection;
+		if (packetListener != null) {
+			currentConnection = packetListener.connection;
+		} else if (minecraft.pendingConnection != null) {
+			// TagsUpdatedEvent is fired very early in the connection process, so packetListener is not yet initialized.
+			// Instead we grab it from pendingConnection (singleplayer) or...
+			currentConnection = minecraft.pendingConnection;
+		} else if (minecraft.screen instanceof ConnectScreen connectScreen) {
+			//...the connect screen (multiplayer)
+			currentConnection = connectScreen.connection;
+		} else {
+			currentConnection = null;
+		}
+		if (currentConnection != observingConnection) {
+			// Connection changed => any information we previously got is useless now
+			observedEvents.clear();
+			this.currentConnection = new WeakReference<>(currentConnection);
+		}
+		if (currentConnection == null) {
+			// No connection => Disregard, this probably an event being fired on the integrated server thread
+			LOGGER.info("JEI StartEventObserver received {} too early, ignoring", event.getClass());
 			return;
 		}
 		LOGGER.info("JEI StartEventObserver received {}", event.getClass());
@@ -111,8 +129,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		if (this.state != State.JEI_STARTED) {
 			return;
 		}
-		transitionState(State.DISABLED);
-		transitionState(State.ENABLED);
+		transitionState(State.LISTENING);
 		transitionState(State.JEI_STARTED);
 	}
 
@@ -120,18 +137,13 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		LOGGER.info("JEI StartEventObserver transitioning state from " + this.state + " to " + newState);
 
 		switch (newState) {
-			case DISABLED -> {
+			case LISTENING -> {
 				if (this.state == State.JEI_STARTED) {
 					this.stopRunnable.run();
 				}
 			}
-			case ENABLED -> {
-				if (this.state != State.DISABLED) {
-					throw new IllegalStateException("Attempted Illegal state transition from " + this.state + " to " + newState);
-				}
-			}
 			case JEI_STARTED -> {
-				if (this.state != State.ENABLED) {
+				if (this.state != State.LISTENING) {
 					throw new IllegalStateException("Attempted Illegal state transition from " + this.state + " to " + newState);
 				}
 				this.startRunnable.run();
