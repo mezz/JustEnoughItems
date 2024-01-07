@@ -21,8 +21,8 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -154,7 +154,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
     @Override
     public Optional<FluidStack> getContainedFluid(ITypedIngredient<?> ingredient) {
         return ingredient.getItemStack()
-            .flatMap(i -> i.getCapability(Capabilities.FLUID_HANDLER_ITEM).resolve())
+            .flatMap(i -> Optional.ofNullable(i.getCapability(Capabilities.FluidHandler.ITEM)))
             .map(c -> c.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE));
     }
 }

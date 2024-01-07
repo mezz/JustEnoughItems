@@ -55,6 +55,20 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(":Changelog")
 
+val notNeoTask = { it: Task -> !it.name.startsWith("neo") };
+
+tasks.withType<JavaCompile>().matching(notNeoTask).configureEach {
+    dependencyProjects.forEach {
+        source(it.sourceSets.main.get().getAllSource())
+    }
+}
+
+tasks.withType<ProcessResources>().matching(notNeoTask).configureEach {
+    dependencyProjects.forEach {
+        from(it.sourceSets.main.get().getResources())
+    }
+}
+
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))

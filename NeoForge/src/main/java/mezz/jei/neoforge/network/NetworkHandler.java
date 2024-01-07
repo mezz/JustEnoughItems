@@ -41,7 +41,7 @@ public class NetworkHandler {
 	public void registerServerPacketHandler(ServerPacketRouter packetRouter) {
 		channel.addListener(event -> {
 			NetworkEvent.Context context = event.getSource();
-			if (context.getDirection() == PlayNetworkDirection.PLAY_TO_SERVER) {
+			if (context.getDirection() == PlayNetworkDirection.PLAY_TO_SERVER && event.getPayload() != null) {
 				ServerPlayer sender = context.getSender();
 				if (sender == null) {
 					LOGGER.error("Packet error, the sender player is missing for event: {}", event);
@@ -57,7 +57,7 @@ public class NetworkHandler {
 	public void registerClientPacketHandler(ClientPacketRouter packetRouter) {
 		channel.addListener(event -> {
 			NetworkEvent.Context context = event.getSource();
-			if (context.getDirection() == PlayNetworkDirection.PLAY_TO_CLIENT) {
+			if (context.getDirection() == PlayNetworkDirection.PLAY_TO_CLIENT && event.getPayload() != null) {
 				Minecraft minecraft = Minecraft.getInstance();
 				LocalPlayer player = minecraft.player;
 				if (player == null) {

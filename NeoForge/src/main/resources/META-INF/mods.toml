@@ -53,7 +53,7 @@ ${modDescription}
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.jei]]
     modId="neoforge" #mandatory
-    mandatory=true #mandatory
+    type="required" #mandatory
     versionRange="${neoforgeVersionRange}" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
@@ -62,7 +62,7 @@ ${modDescription}
 
 [[dependencies.jei]]
     modId="minecraft" #mandatory
-    mandatory=true #mandatory
+    type="required" #mandatory
     versionRange="${minecraftVersionRange}" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
