@@ -1,5 +1,6 @@
 package mezz.jei.gui.input.handlers;
 
+import mezz.jei.common.network.packets.PacketJeiToServer;
 import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.gui.overlay.IIngredientGrid;
@@ -8,7 +9,6 @@ import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
-import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.common.config.GiveMode;
@@ -69,7 +69,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 		}
 		if (!userInput.isSimulate()) {
 			player.containerMenu.setCarried(ItemStack.EMPTY);
-			PacketJei packet = new PacketDeletePlayerItem(itemStack);
+			PacketJeiToServer packet = new PacketDeletePlayerItem(itemStack.getItem());
 			serverConnection.sendPacketToServer(packet);
 		}
 		return Optional.of(this);

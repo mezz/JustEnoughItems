@@ -3,6 +3,8 @@ package mezz.jei.common.network;
 import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.network.packets.IClientPacketHandler;
 import mezz.jei.common.network.packets.PacketCheatPermission;
+import mezz.jei.common.network.packets.PacketJeiToClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import org.apache.logging.log4j.LogManager;
@@ -29,13 +31,15 @@ public class ClientPacketRouter {
 			.ifPresent(packetId -> {
 				IClientPacketHandler packetHandler = clientHandlers.get(packetId);
 				ClientPacketContext context = new ClientPacketContext(player, connection, serverConfig);
-				ClientPacketData data = new ClientPacketData(packetBuffer, context);
 				try {
-					packetHandler.readPacketData(data)
-						.exceptionally(e -> {
-							LOGGER.error("Packet error while executing packet on the client thread: {}", packetId.name(), e);
-							return null;
-						});
+					PacketJeiToClient packet = packetHandler.readPacketData(packetBuffer);
+					if (packet != null) {
+						Minecraft.getInstance().submit(() -> packet.processOnClientThread(context))
+							.exceptionally(e -> {
+								LOGGER.error("Packet error while executing packet on the client thread: {}", packetId.name(), e);
+								return null;
+							});
+					}
 				} catch (Throwable e) {
 					LOGGER.error("Packet error when reading packet: {}", packetId.name(), e);
 				}

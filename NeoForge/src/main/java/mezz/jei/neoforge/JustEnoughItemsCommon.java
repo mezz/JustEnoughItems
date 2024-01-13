@@ -18,12 +18,12 @@ public class JustEnoughItemsCommon {
 	}
 
 	public void register(PermanentEventSubscriptions subscriptions) {
-		subscriptions.register(FMLCommonSetupEvent.class, event -> this.commonSetup());
+		subscriptions.register(FMLCommonSetupEvent.class, event -> this.commonSetup(subscriptions));
 	}
 
-	private void commonSetup() {
-		IConnectionToClient connection = new ConnectionToClient(this.networkHandler);
+	private void commonSetup(PermanentEventSubscriptions subscriptions) {
+		IConnectionToClient connection = new ConnectionToClient();
 		ServerPacketRouter packetRouter = new ServerPacketRouter(connection, serverConfig);
-		this.networkHandler.registerServerPacketHandler(packetRouter);
+		this.networkHandler.registerServerPacketHandler(packetRouter, connection, subscriptions);
 	}
 }

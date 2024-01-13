@@ -1,72 +1,78 @@
 package mezz.jei.neoforge.network;
 
-import mezz.jei.common.network.ClientPacketRouter;
-import mezz.jei.common.network.ServerPacketRouter;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
+import mezz.jei.api.constants.ModIds;
+import mezz.jei.common.config.IServerConfig;
+import mezz.jei.common.network.*;
+import mezz.jei.neoforge.events.PermanentEventSubscriptions;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.NetworkEvent;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
-import net.neoforged.neoforge.network.event.EventNetworkChannel;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+
+import java.util.Locale;
 
 public class NetworkHandler {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String TO_CLIENT_NAMESPACE = ModIds.JEI_ID + "_to_client";
+	private static final String TO_SERVER_NAMESPACE = ModIds.JEI_ID + "_to_server";
 
 	private final ResourceLocation channelId;
-	private final EventNetworkChannel channel;
+	private final String protocolVersion;
+	private final IServerConfig serverConfig;
 
-	public NetworkHandler(ResourceLocation channelId, String protocolVersion) {
+	public NetworkHandler(ResourceLocation channelId, String protocolVersion, IServerConfig serverConfig) {
 		this.channelId = channelId;
-		this.channel = NetworkRegistry.ChannelBuilder.named(channelId)
-			.networkProtocolVersion(() -> protocolVersion)
-			.clientAcceptedVersions(s -> NetworkRegistry.ABSENT.version().equals(s) || s.equals(protocolVersion))
-			.serverAcceptedVersions(s -> NetworkRegistry.ABSENT.version().equals(s) || s.equals(protocolVersion))
-			.eventNetworkChannel();
+		this.protocolVersion = protocolVersion;
+		this.serverConfig = serverConfig;
 	}
 
 	public ResourceLocation getChannelId() {
 		return channelId;
 	}
 
-	public EventNetworkChannel getChannel() {
-		return channel;
-	}
-
-	public void registerServerPacketHandler(ServerPacketRouter packetRouter) {
-		channel.addListener(event -> {
-			NetworkEvent.Context context = event.getSource();
-			if (context.getDirection() == PlayNetworkDirection.PLAY_TO_SERVER && event.getPayload() != null) {
-				ServerPlayer sender = context.getSender();
-				if (sender == null) {
-					LOGGER.error("Packet error, the sender player is missing for event: {}", event);
-					return;
-				}
-				packetRouter.onPacket(event.getPayload(), sender);
-				context.setPacketHandled(true);
-			}
+	public void registerServerPacketHandler(
+			ServerPacketRouter packetRouter, IConnectionToClient connection, PermanentEventSubscriptions subscriptions
+	) {
+		subscriptions.register(RegisterPayloadHandlerEvent.class, ev -> {
+			var registrar = ev.registrar(TO_SERVER_NAMESPACE)
+					.versioned(this.protocolVersion)
+					.optional();
+			// TODO use configuration phase?
+			packetRouter.handlers.forEach((key, value) -> {
+				ResourceLocation name = toServerID(key);
+				registrar.play(
+						name,
+						buf -> new WrappingPayload<>(value.readPacketData(buf), name),
+						(packet, context) -> WrappingPayload.processToServer(packet, context, connection, serverConfig)
+				);
+			});
 		});
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void registerClientPacketHandler(ClientPacketRouter packetRouter) {
-		channel.addListener(event -> {
-			NetworkEvent.Context context = event.getSource();
-			if (context.getDirection() == PlayNetworkDirection.PLAY_TO_CLIENT && event.getPayload() != null) {
-				Minecraft minecraft = Minecraft.getInstance();
-				LocalPlayer player = minecraft.player;
-				if (player == null) {
-					LOGGER.error("Packet error, the local player is missing for event: {}", event);
-					return;
-				}
-				packetRouter.onPacket(event.getPayload(), player);
-				context.setPacketHandled(true);
-			}
+	public void registerClientPacketHandler(
+			ClientPacketRouter packetRouter, IConnectionToServer connection, PermanentEventSubscriptions subscriptions
+	) {
+		subscriptions.register(RegisterPayloadHandlerEvent.class, ev -> {
+			var registrar = ev.registrar(TO_CLIENT_NAMESPACE)
+					.versioned(this.protocolVersion)
+					.optional();
+			// TODO use configuration phase?
+			packetRouter.clientHandlers.forEach((key, value) -> {
+				ResourceLocation name = toClientID(key);
+				registrar.play(
+						name,
+						buf -> new WrappingPayload<>(value.readPacketData(buf), name),
+						(packet, context) -> WrappingPayload.processToClient(packet, context, connection, serverConfig)
+				);
+			});
 		});
+	}
+
+	public static ResourceLocation toServerID(PacketIdServer id) {
+		return new ResourceLocation(TO_SERVER_NAMESPACE, id.name().toLowerCase(Locale.ROOT));
+	}
+
+	public static ResourceLocation toClientID(PacketIdClient id) {
+		return new ResourceLocation(TO_CLIENT_NAMESPACE, id.name().toLowerCase(Locale.ROOT));
 	}
 }

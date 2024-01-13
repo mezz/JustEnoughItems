@@ -1,19 +1,13 @@
 package mezz.jei.common.network.packets;
 
-import mezz.jei.common.network.IPacketId;
 import mezz.jei.common.network.PacketIdServer;
 import mezz.jei.common.network.ServerPacketContext;
-import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.util.ServerCommandUtil;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.concurrent.CompletableFuture;
-
-public class PacketGiveItemStack extends PacketJei {
+public class PacketGiveItemStack extends PacketJeiToServer {
 	private final ItemStack itemStack;
 	private final GiveMode giveMode;
 
@@ -23,7 +17,7 @@ public class PacketGiveItemStack extends PacketJei {
 	}
 
 	@Override
-	public IPacketId getPacketId() {
+	public PacketIdServer getPacketId() {
 		return PacketIdServer.GIVE_ITEM;
 	}
 
@@ -33,13 +27,14 @@ public class PacketGiveItemStack extends PacketJei {
 		buf.writeEnum(giveMode);
 	}
 
-	public static CompletableFuture<Void> readPacketData(ServerPacketData data) {
-		FriendlyByteBuf buf = data.buf();
+	public static PacketGiveItemStack readPacketData(FriendlyByteBuf buf) {
 		ItemStack itemStack = buf.readItem();
 		GiveMode giveMode = buf.readEnum(GiveMode.class);
-		ServerPacketContext context = data.context();
-		ServerPlayer player = context.player();
-		MinecraftServer server = player.server;
-		return server.submit(() -> ServerCommandUtil.executeGive(context, itemStack, giveMode));
+		return new PacketGiveItemStack(itemStack, giveMode);
+	}
+
+	@Override
+	public void processOnServerThread(ServerPacketContext context) {
+		ServerCommandUtil.executeGive(context, itemStack, giveMode);
 	}
 }

@@ -26,8 +26,8 @@ pluginManagement {
 		gradlePluginPortal()
 	}
 	plugins {
-		id("net.neoforged.gradle.common") version("7.0.72")
-		id("net.neoforged.gradle.userdev") version("7.0.72")
+		id("net.neoforged.gradle.common") version("7.0.80")
+		id("net.neoforged.gradle.userdev") version("7.0.80")
 	}
 	resolutionStrategy {
 		eachPlugin {

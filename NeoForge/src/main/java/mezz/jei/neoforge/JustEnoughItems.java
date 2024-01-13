@@ -11,27 +11,30 @@ import mezz.jei.neoforge.network.NetworkHandler;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(ModIds.JEI_ID)
 public class JustEnoughItems {
-	public JustEnoughItems() {
+
+	public JustEnoughItems(IEventBus modEventBus, Dist dist) {
 		Translator.setLocaleSupplier(new MinecraftLocaleSupplier());
         IEventBus eventBus = NeoForge.EVENT_BUS;
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		PermanentEventSubscriptions subscriptions = new PermanentEventSubscriptions(eventBus, modEventBus);
 
 		ModLoadingContext modLoadingContext = ModLoadingContext.get();
 		IServerConfig serverConfig = ServerConfig.register(modLoadingContext);
 
-		NetworkHandler networkHandler = new NetworkHandler(Constants.NETWORK_CHANNEL_ID, "2");
+		NetworkHandler networkHandler = new NetworkHandler(
+				Constants.NETWORK_CHANNEL_ID, "2", serverConfig
+		);
 		JustEnoughItemsCommon jeiCommon = new JustEnoughItemsCommon(networkHandler, serverConfig);
 		jeiCommon.register(subscriptions);
 
 		JustEnoughItemsClientSafeRunner clientSafeRunner = new JustEnoughItemsClientSafeRunner(networkHandler, subscriptions, serverConfig);
-		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> clientSafeRunner::registerClient);
+		if (dist.isClient()) {
+			// TODO test dedi server
+			clientSafeRunner.registerClient();
+		}
 	}
 }

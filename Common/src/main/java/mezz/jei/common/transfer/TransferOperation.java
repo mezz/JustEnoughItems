@@ -7,18 +7,23 @@ import net.minecraft.world.inventory.Slot;
 /**
  * Represents transferring an ItemStack from inventorySlot to craftingSlot.
  */
-public record TransferOperation(Slot inventorySlot, Slot craftingSlot) {
-	public static TransferOperation readPacketData(FriendlyByteBuf buf, AbstractContainerMenu container) {
+public record TransferOperation(int inventorySlotId, int craftingSlotId) {
+	public static TransferOperation readPacketData(FriendlyByteBuf buf) {
 		int inventorySlotIndex = buf.readVarInt();
 		int craftingSlotIndex = buf.readVarInt();
-
-		Slot inventorySlot = container.getSlot(inventorySlotIndex);
-		Slot craftingSlot = container.getSlot(craftingSlotIndex);
-		return new TransferOperation(inventorySlot, craftingSlot);
+		return new TransferOperation(inventorySlotIndex, craftingSlotIndex);
 	}
 
 	public void writePacketData(FriendlyByteBuf buf) {
-		buf.writeVarInt(inventorySlot.index);
-		buf.writeVarInt(craftingSlot.index);
+		buf.writeVarInt(inventorySlotId);
+		buf.writeVarInt(craftingSlotId);
+	}
+
+	public Slot inventorySlot(AbstractContainerMenu container) {
+		return container.getSlot(inventorySlotId);
+	}
+
+	public Slot craftingSlot(AbstractContainerMenu container) {
+		return container.getSlot(craftingSlotId);
 	}
 }

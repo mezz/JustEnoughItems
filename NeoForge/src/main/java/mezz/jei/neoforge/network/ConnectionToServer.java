@@ -1,16 +1,12 @@
 package mezz.jei.neoforge.network;
 
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.network.packets.PacketJei;
+import mezz.jei.common.network.PacketIdServer;
+import mezz.jei.common.network.packets.PacketJeiToServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.Packet;
-import net.neoforged.neoforge.network.INetworkDirection;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
-import net.neoforged.neoforge.network.event.EventNetworkChannel;
-import org.apache.commons.lang3.tuple.Pair;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -19,11 +15,6 @@ public final class ConnectionToServer implements IConnectionToServer {
 	@Nullable
 	private static UUID jeiOnServerCacheUuid = null;
 	private static boolean jeiOnServerCacheValue = false;
-	private final NetworkHandler networkHandler;
-
-	public ConnectionToServer(NetworkHandler networkHandler) {
-		this.networkHandler = networkHandler;
-	}
 
 	@Override
 	public boolean isJeiOnServer() {
@@ -35,21 +26,18 @@ public final class ConnectionToServer implements IConnectionToServer {
 		UUID id = clientPacketListener.getId();
 		if (!id.equals(jeiOnServerCacheUuid)) {
 			jeiOnServerCacheUuid = id;
-			Connection connection = clientPacketListener.getConnection();
-			EventNetworkChannel networkChannel = networkHandler.getChannel();
-			jeiOnServerCacheValue = networkChannel.isRemotePresent(connection);
+			jeiOnServerCacheValue = clientPacketListener.isConnected(NetworkHandler.toServerID(PacketIdServer.DELETE_ITEM));
 		}
 		return jeiOnServerCacheValue;
 	}
 
 	@Override
-	public void sendPacketToServer(PacketJei packet) {
+	public void sendPacketToServer(PacketJeiToServer packet) {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPacketListener netHandler = minecraft.getConnection();
 		if (netHandler != null && isJeiOnServer()) {
-			Pair<FriendlyByteBuf, Integer> packetData = packet.getPacketData();
-			Packet<?> payload = PlayNetworkDirection.PLAY_TO_SERVER.buildPacket(new INetworkDirection.PacketData(packetData.getKey(), 0), networkHandler.getChannelId());
-			netHandler.send(payload);
+			ResourceLocation id = NetworkHandler.toServerID(packet.getPacketId());
+			PacketDistributor.SERVER.noArg().send(new WrappingPayload<>(packet, id));
 		}
 	}
 }

@@ -32,14 +32,14 @@ public class JustEnoughItemsClient {
 	) {
 		this.subscriptions = subscriptions;
 
-		ConnectionToServer serverConnection = new ConnectionToServer(networkHandler);
+		ConnectionToServer serverConnection = new ConnectionToServer();
 		Internal.setServerConnection(serverConnection);
 
 		InternalKeyMappings keyMappings = createKeyMappings(subscriptions);
 		Internal.setKeyMappings(keyMappings);
 
 		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig);
-		networkHandler.registerClientPacketHandler(packetRouter);
+		networkHandler.registerClientPacketHandler(packetRouter, serverConnection, subscriptions);
 
 		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
 		StartData startData = new StartData(

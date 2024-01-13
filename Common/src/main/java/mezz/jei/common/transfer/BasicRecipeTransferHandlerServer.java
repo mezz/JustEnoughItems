@@ -136,8 +136,8 @@ public final class BasicRecipeTransferHandlerServer {
 	private static Map<Slot, ItemStackWithSlotHint> calculateRequiredStacks(List<TransferOperation> transferOperations, Player player) {
 		Map<Slot, ItemStackWithSlotHint> recipeSlotToRequired = new HashMap<>(transferOperations.size());
 		for (TransferOperation transferOperation : transferOperations) {
-			Slot recipeSlot = transferOperation.craftingSlot();
-			Slot inventorySlot = transferOperation.inventorySlot();
+			Slot recipeSlot = transferOperation.craftingSlot(player.containerMenu);
+			Slot inventorySlot = transferOperation.inventorySlot(player.containerMenu);
 			if (!inventorySlot.mayPickup(player)) {
 				LOGGER.error(
 					"Tried to transfer recipe but was given an" +

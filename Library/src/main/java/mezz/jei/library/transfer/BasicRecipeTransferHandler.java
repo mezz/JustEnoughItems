@@ -127,7 +127,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 
 		if (doTransfer) {
 			boolean requireCompleteSets = transferInfo.requireCompleteSets(container, recipe);
-			PacketRecipeTransfer packet = new PacketRecipeTransfer(
+			PacketRecipeTransfer packet = PacketRecipeTransfer.fromSlots(
 				transferOperations.results,
 				craftingSlots,
 				inventorySlots,

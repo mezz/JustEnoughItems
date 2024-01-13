@@ -1,11 +1,6 @@
 package mezz.jei.common.network;
 
-import mezz.jei.common.network.packets.IServerPacketHandler;
-import mezz.jei.common.network.packets.PacketDeletePlayerItem;
-import mezz.jei.common.network.packets.PacketGiveItemStack;
-import mezz.jei.common.network.packets.PacketRecipeTransfer;
-import mezz.jei.common.network.packets.PacketRequestCheatPermission;
-import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
+import mezz.jei.common.network.packets.*;
 import mezz.jei.common.config.IServerConfig;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -37,13 +32,14 @@ public class ServerPacketRouter {
 			.ifPresent(packetId -> {
 				IServerPacketHandler packetHandler = handlers.get(packetId);
 				ServerPacketContext context = new ServerPacketContext(player, serverConfig, connection);
-				ServerPacketData data = new ServerPacketData(packetBuffer, context);
 				try {
-					packetHandler.readPacketData(data)
-						.exceptionally(e -> {
+					PacketJeiToServer task = packetHandler.readPacketData(packetBuffer);
+					if (task != null) {
+						player.server.submit(() -> task.processOnServerThread(context)).exceptionally(e -> {
 							LOGGER.error("Packet error while executing packet on the server thread: {}", packetId.name(), e);
 							return null;
 						});
+					}
 				} catch (Throwable e) {
 					LOGGER.error("Packet error when reading packet: {}", packetId.name(), e);
 				}
