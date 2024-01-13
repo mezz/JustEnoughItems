@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.gradle.plugin.idea-ext") version("1.1.7")
     // Side-Step class-loading issues
     id("net.neoforged.gradle.userdev") apply(false)
+    id("fabric-loom") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
