@@ -8,7 +8,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PacketRecipeTransfer extends PacketJeiToServer {
@@ -55,21 +54,9 @@ public class PacketRecipeTransfer extends PacketJeiToServer {
 
 	@Override
 	public void writePacketData(FriendlyByteBuf buf) {
-		buf.writeVarInt(transferOperations.size());
-		for (TransferOperation operation : transferOperations) {
-			operation.writePacketData(buf);
-		}
-
-		buf.writeVarInt(craftingSlots.size());
-		for (int craftingSlot : craftingSlots) {
-			buf.writeVarInt(craftingSlot);
-		}
-
-		buf.writeVarInt(inventorySlots.size());
-		for (int inventorySlot : inventorySlots) {
-			buf.writeVarInt(inventorySlot);
-		}
-
+		buf.writeCollection(transferOperations, (b, op) -> op.writePacketData(b));
+		buf.writeCollection(craftingSlots, FriendlyByteBuf::writeVarInt);
+		buf.writeCollection(inventorySlots, FriendlyByteBuf::writeVarInt);
 		buf.writeBoolean(maxTransfer);
 		buf.writeBoolean(requireCompleteSets);
 	}
@@ -88,26 +75,9 @@ public class PacketRecipeTransfer extends PacketJeiToServer {
 	}
 
 	public static PacketRecipeTransfer readPacketData(FriendlyByteBuf buf) {
-		int transferOperationsSize = buf.readVarInt();
-		List<TransferOperation> transferOperations = new ArrayList<>();
-		for (int i = 0; i < transferOperationsSize; i++) {
-			TransferOperation transferOperation = TransferOperation.readPacketData(buf);
-			transferOperations.add(transferOperation);
-		}
-
-		int craftingSlotsSize = buf.readVarInt();
-		List<Integer> craftingSlots = new ArrayList<>();
-		for (int i = 0; i < craftingSlotsSize; i++) {
-			int slotIndex = buf.readVarInt();
-			craftingSlots.add(slotIndex);
-		}
-
-		int inventorySlotsSize = buf.readVarInt();
-		List<Integer> inventorySlots = new ArrayList<>();
-		for (int i = 0; i < inventorySlotsSize; i++) {
-			int slotIndex = buf.readVarInt();
-			inventorySlots.add(slotIndex);
-		}
+		List<TransferOperation> transferOperations = buf.readList(TransferOperation::readPacketData);
+		List<Integer> craftingSlots = buf.readList(FriendlyByteBuf::readVarInt);
+		List<Integer> inventorySlots = buf.readList(FriendlyByteBuf::readVarInt);
 		boolean maxTransfer = buf.readBoolean();
 		boolean requireCompleteSets = buf.readBoolean();
 
