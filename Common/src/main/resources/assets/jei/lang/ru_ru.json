@@ -54,6 +54,7 @@
   "key.jei.nextCategory": "Следующая категория рецепта",
   "key.jei.previousRecipePage": "Предыдущая страница рецепта",
   "key.jei.nextRecipePage": "Следующая страница рецепта",
+  "key.jei.closeRecipeGui": "Закрыть интерфейс рецепта",
 
   "jei.key.category.cheat.mode": "JEI (режим жульничества)",
   "key.jei.toggleCheatMode": "Вкл/выкл режим жульничества",
@@ -136,8 +137,8 @@
   "config.jei.advanced.giveMode": "Режим выдачи",
   "config.jei.advanced.giveMode.comment": "Выбери, должен ли JEI давать ингредиенты прямо в инвентарь (inventory) либо собирать их мышкой (mouse_pickup).",
 
-  "_comment": "Hide Ingredients Mode",
-  "gui.jei.editMode.description": "Режим скрытия ингредиента JEI:",
+  "_comment": "Режим скрытия ингредиентов",
+  "gui.jei.editMode.description": "Режим скрытия ингредиентов JEI:",
   "gui.jei.editMode.description.hide": "%s, чтобы скрыть.",
   "gui.jei.editMode.description.hide.wild": "%s, чтобы скрыть символом.",
 
@@ -161,6 +162,7 @@
 
   "_comment": "Сообщения",
   "jei.message.configured": "Установи мод \"Configured\" для доступа к внутриигровой конфигурации.",
+  "jei.message.config.folder": "Нажмите здесь, чтобы открыть папку конфигурации JEI",
   "jei.message.copy.recipe.id.success": "Идентификатор рецепта скопирован в буфер обмена: %s",
   "jei.message.copy.recipe.id.failure": "Не удалось скопировать идентификатор рецепта в буфер обмена, идентификатор рецепта неизвестен.",
 
