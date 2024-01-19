@@ -1,11 +1,8 @@
 plugins {
 	id("com.diffplug.spotless") version("5.14.3")
     id("com.dorongold.task-tree") version("2.1.0")
-    // Fixes conflicts between both VanillaGradle and NeoGradle trying to apply this plugin
-    id("org.jetbrains.gradle.plugin.idea-ext") version("1.1.7")
-    // Side-Step class-loading issues
-    id("net.neoforged.gradle.userdev") apply(false)
-    id("fabric-loom") apply(false)
+    id("fabric-loom") version("1.1.+") apply(false)
+    id("net.neoforged.gradle.userdev") version("7.0.80") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")

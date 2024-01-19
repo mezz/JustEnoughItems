@@ -25,11 +25,6 @@ pluginManagement {
 		}
 		gradlePluginPortal()
 	}
-	plugins {
-		id("net.neoforged.gradle.common") version("7.0.80")
-		id("net.neoforged.gradle.userdev") version("7.0.80")
-		id("fabric-loom") version("1.1.+")
-	}
 	resolutionStrategy {
 		eachPlugin {
 			if (requested.id.id == "net.minecraftforge.gradle") {
