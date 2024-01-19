@@ -6,7 +6,7 @@ import io.netty.buffer.Unpooled;
 import mezz.jei.common.network.IPacketId;
 import org.apache.commons.lang3.tuple.Pair;
 
-public abstract class PacketJei {
+public abstract class PacketJei<IDType extends IPacketId> {
 	public final Pair<FriendlyByteBuf, Integer> getPacketData() {
 		IPacketId packetId = getPacketId();
 		int packetIdOrdinal = packetId.ordinal();
@@ -16,7 +16,7 @@ public abstract class PacketJei {
 		return Pair.of(packetBuffer, packetIdOrdinal);
 	}
 
-	protected abstract IPacketId getPacketId();
+	public abstract IDType getPacketId();
 
-	protected abstract void writePacketData(FriendlyByteBuf buf);
+	public abstract void writePacketData(FriendlyByteBuf buf);
 }

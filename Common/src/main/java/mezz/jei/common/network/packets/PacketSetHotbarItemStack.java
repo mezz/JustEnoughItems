@@ -1,21 +1,15 @@
 package mezz.jei.common.network.packets;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.common.network.IPacketId;
 import mezz.jei.common.network.PacketIdServer;
 import mezz.jei.common.network.ServerPacketContext;
-import mezz.jei.common.network.ServerPacketData;
 import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.concurrent.CompletableFuture;
-
-public class PacketSetHotbarItemStack extends PacketJei {
+public class PacketSetHotbarItemStack extends PacketJeiToServer {
 	private final ItemStack itemStack;
 	private final int hotbarSlot;
 
@@ -27,7 +21,7 @@ public class PacketSetHotbarItemStack extends PacketJei {
 	}
 
 	@Override
-	public IPacketId getPacketId() {
+	public PacketIdServer getPacketId() {
 		return PacketIdServer.SET_HOTBAR_ITEM;
 	}
 
@@ -37,13 +31,14 @@ public class PacketSetHotbarItemStack extends PacketJei {
 		buf.writeVarInt(hotbarSlot);
 	}
 
-	public static CompletableFuture<Void> readPacketData(ServerPacketData data) {
-		FriendlyByteBuf buf = data.buf();
+	@Override
+	public void processOnServerThread(ServerPacketContext context) {
+		ServerCommandUtil.setHotbarSlot(context, itemStack, hotbarSlot);
+	}
+
+	public static PacketSetHotbarItemStack readPacketData(FriendlyByteBuf buf) {
 		ItemStack itemStack = buf.readItem();
 		int hotbarSlot = buf.readVarInt();
-		ServerPacketContext context = data.context();
-		ServerPlayer player = context.player();
-		MinecraftServer server = player.server;
-		return server.submit(() -> ServerCommandUtil.setHotbarSlot(context, itemStack, hotbarSlot));
+		return new PacketSetHotbarItemStack(itemStack, hotbarSlot);
 	}
 }

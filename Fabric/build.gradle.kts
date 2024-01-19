@@ -7,7 +7,7 @@ plugins {
     java
     idea
     `maven-publish`
-    id("fabric-loom") version("0.12-SNAPSHOT")
+    id("fabric-loom")
     id("net.darkhax.curseforgegradle") version("1.0.8")
     id("com.modrinth.minotaur") version("2.+")
 }
@@ -78,7 +78,6 @@ dependencies {
         name = "minecraft",
         version = minecraftVersion,
     )
-    @Suppress("UnstableApiUsage")
     mappings(loom.layered {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-${parchmentMinecraftVersion}:${parchmentVersionFabric}@zip")
@@ -92,6 +91,11 @@ dependencies {
         group = "net.fabricmc.fabric-api",
         name = "fabric-api",
         version = fabricApiVersion,
+    )
+    implementation(
+        group = "com.google.code.findbugs",
+        name = "jsr305",
+        version = "3.0.1"
     )
     dependencyProjects.forEach {
         implementation(it)

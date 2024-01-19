@@ -1,16 +1,12 @@
 package mezz.jei.common.network.packets;
 
 import mezz.jei.common.network.ClientPacketContext;
-import mezz.jei.common.network.ClientPacketData;
-import mezz.jei.common.network.IPacketId;
 import mezz.jei.common.network.PacketIdClient;
 import mezz.jei.common.network.packets.handlers.ClientCheatPermissionHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 
-import java.util.concurrent.CompletableFuture;
 
-public class PacketCheatPermission extends PacketJei {
+public class PacketCheatPermission extends PacketJeiToClient {
 	private final boolean hasPermission;
 
 	public PacketCheatPermission(boolean hasPermission) {
@@ -18,7 +14,7 @@ public class PacketCheatPermission extends PacketJei {
 	}
 
 	@Override
-	public IPacketId getPacketId() {
+	public PacketIdClient getPacketId() {
 		return PacketIdClient.CHEAT_PERMISSION;
 	}
 
@@ -27,11 +23,13 @@ public class PacketCheatPermission extends PacketJei {
 		buf.writeBoolean(hasPermission);
 	}
 
-	public static CompletableFuture<Void> readPacketData(ClientPacketData data) {
-		FriendlyByteBuf buf = data.buf();
+	@Override
+	public void processOnClientThread(ClientPacketContext context) {
+		ClientCheatPermissionHandler.handleHasCheatPermission(context, hasPermission);
+	}
+
+	public static PacketCheatPermission readPacketData(FriendlyByteBuf buf) {
 		boolean hasPermission = buf.readBoolean();
-		Minecraft minecraft = Minecraft.getInstance();
-		ClientPacketContext context = data.context();
-		return minecraft.submit(() -> ClientCheatPermissionHandler.handleHasCheatPermission(context, hasPermission));
+		return new PacketCheatPermission(hasPermission);
 	}
 }

@@ -1,10 +1,11 @@
 package mezz.jei.common.network.packets;
 
-import mezz.jei.common.network.ServerPacketData;
+import net.minecraft.network.FriendlyByteBuf;
 
-import java.util.concurrent.CompletableFuture;
+import javax.annotation.Nullable;
 
 @FunctionalInterface
 public interface IServerPacketHandler {
-	CompletableFuture<Void> readPacketData(ServerPacketData data);
+	@Nullable
+	PacketJeiToServer readPacketData(FriendlyByteBuf buffer);
 }

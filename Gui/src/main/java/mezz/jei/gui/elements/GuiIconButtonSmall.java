@@ -27,35 +27,33 @@ public class GuiIconButtonSmall extends Button {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		if (this.visible) {
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			boolean hovered = isMouseOver(mouseX, mouseY);
-			DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);
-			texture.draw(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		boolean hovered = isMouseOver(mouseX, mouseY);
+		DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);
+		texture.draw(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
-			int color = 0xFFE0E0E0;
-			if (!this.active) {
-				color = 0xFFA0A0A0;
-			} else if (hovered) {
-				color = 0xFFFFFFFF;
-			}
-
-			float red = (color >> 16 & 255) / 255.0F;
-			float blue = (color >> 8 & 255) / 255.0F;
-			float green = (color & 255) / 255.0F;
-			float alpha = (color >> 24 & 255) / 255.0F;
-			RenderSystem.setShaderColor(red, blue, green, alpha);
-
-			double xOffset = getX() + (getWidth() - this.icon.getWidth()) / 2.0;
-			double yOffset = getY() + (getHeight() - this.icon.getHeight()) / 2.0;
-			var poseStack = guiGraphics.pose();
-			poseStack.pushPose();
-			{
-				poseStack.translate(xOffset, yOffset, 0);
-				this.icon.draw(guiGraphics);
-			}
-			poseStack.popPose();
+		int color = 0xFFE0E0E0;
+		if (!this.active) {
+			color = 0xFFA0A0A0;
+		} else if (hovered) {
+			color = 0xFFFFFFFF;
 		}
+
+		float red = (color >> 16 & 255) / 255.0F;
+		float blue = (color >> 8 & 255) / 255.0F;
+		float green = (color & 255) / 255.0F;
+		float alpha = (color >> 24 & 255) / 255.0F;
+		RenderSystem.setShaderColor(red, blue, green, alpha);
+
+		double xOffset = getX() + (getWidth() - this.icon.getWidth()) / 2.0;
+		double yOffset = getY() + (getHeight() - this.icon.getHeight()) / 2.0;
+		var poseStack = guiGraphics.pose();
+		poseStack.pushPose();
+		{
+			poseStack.translate(xOffset, yOffset, 0);
+			this.icon.draw(guiGraphics);
+		}
+		poseStack.popPose();
 	}
 }

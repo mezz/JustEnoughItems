@@ -70,7 +70,7 @@ dependencies {
 		version = "${minecraftVersion}-${forgeVersion}"
 	)
 	dependencyProjects.forEach {
-		implementation(it)
+		compileOnly(it)
 	}
 	testImplementation(
 		group = "org.junit.jupiter",
@@ -99,9 +99,6 @@ minecraft {
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
-					for (p in dependencyProjects) {
-						source(p.sourceSets.main.get())
-					}
 				}
 			}
 		}
@@ -124,20 +121,26 @@ minecraft {
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
-					for (p in dependencyProjects) {
-						source(p.sourceSets.main.get())
-					}
 				}
 			}
 		}
 	}
 }
 
+tasks.withType<JavaCompile>().configureEach {
+    dependencyProjects.forEach {
+        source(it.sourceSets.main.get().getAllSource())
+    }
+}
+
+tasks.processResources {
+    dependencyProjects.forEach {
+        from(it.sourceSets.main.get().getResources())
+    }
+}
+
 tasks.jar {
 	from(sourceSets.main.get().output)
-	for (p in dependencyProjects) {
-		from(p.sourceSets.main.get().output)
-	}
 
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	finalizedBy("reobfJar")
@@ -231,4 +234,10 @@ idea {
 			excludeDirs.add(file(fileName))
 		}
 	}
+}
+// Required because FG, copied from the MDK
+sourceSets.forEach {
+    val outputDir = layout.buildDirectory.file("sourcesSets/${it.name}").get().getAsFile()
+    it.output.setResourcesDir(outputDir)
+    it.java.destinationDirectory.set(outputDir)
 }
