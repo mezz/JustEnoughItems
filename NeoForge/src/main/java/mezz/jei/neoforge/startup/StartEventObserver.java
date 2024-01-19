@@ -16,6 +16,7 @@ import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.bus.api.Event;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
@@ -81,21 +82,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	 */
 	private <T extends Event> void onEvent(T event) {
 		Connection observingConnection = this.currentConnection.get();
-		Minecraft minecraft = Minecraft.getInstance();
-		ClientPacketListener packetListener = minecraft.getConnection();
-		Connection currentConnection;
-		if (packetListener != null) {
-			currentConnection = packetListener.connection;
-		} else if (minecraft.pendingConnection != null) {
-			// TagsUpdatedEvent is fired very early in the connection process, so packetListener is not yet initialized.
-			// Instead we grab it from pendingConnection (singleplayer) or...
-			currentConnection = minecraft.pendingConnection;
-		} else if (minecraft.screen instanceof ConnectScreen connectScreen) {
-			//...the connect screen (multiplayer)
-			currentConnection = connectScreen.connection;
-		} else {
-			currentConnection = null;
-		}
+		Connection currentConnection = getCurrentConnection();
 		if (currentConnection != observingConnection) {
 			// Connection changed => any information we previously got is useless now
 			observedEvents.clear();
@@ -117,6 +104,25 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 			} else {
 				transitionState(State.JEI_STARTED);
 			}
+		}
+	}
+
+	@Nullable
+	private static Connection getCurrentConnection() {
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientPacketListener packetListener = minecraft.getConnection();
+		if (packetListener != null) {
+			return packetListener.connection;
+		} else if (minecraft.pendingConnection != null) {
+			// TagsUpdatedEvent is fired very early in the connection process,
+			// so packetListener is not yet initialized.
+			// Instead, we grab it from pendingConnection (singleplayer) or...
+			return minecraft.pendingConnection;
+		} else if (minecraft.screen instanceof ConnectScreen connectScreen) {
+			//...the connect screen (multiplayer)
+			return connectScreen.connection;
+		} else {
+			return null;
 		}
 	}
 
