@@ -8,11 +8,11 @@ import net.neoforged.neoforge.fluids.FluidStack;
 /**
  * Built-in {@link IIngredientType} for NeoForge Minecraft.
  *
- * @since 9.6.0
+ * @since 17.0.0
  */
 public final class NeoForgeTypes {
     /**
-     * @since 9.7.0
+     * @since 17.0.0
      */
     public static final IIngredientTypeWithSubtypes<Fluid, FluidStack> FLUID_STACK = new IIngredientTypeWithSubtypes<>() {
         @Override
