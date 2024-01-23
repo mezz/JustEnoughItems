@@ -1,21 +1,14 @@
 package mezz.jei.common.network.packets;
 
-import mezz.jei.common.network.IPacketId;
-import mezz.jei.common.network.PacketIdServer;
-import mezz.jei.common.network.ServerPacketContext;
-import mezz.jei.common.network.ServerPacketData;
+import mezz.jei.common.network.*;
 import mezz.jei.common.config.IServerConfig;
-import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.util.ServerCommandUtil;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.concurrent.CompletableFuture;
-
-public class PacketRequestCheatPermission extends PacketJei {
+public class PacketRequestCheatPermission extends PacketJeiToServer {
 	@Override
-	public IPacketId getPacketId() {
+	public PacketIdServer getPacketId() {
 		return PacketIdServer.CHEAT_PERMISSION_REQUEST;
 	}
 
@@ -24,17 +17,18 @@ public class PacketRequestCheatPermission extends PacketJei {
 		// the packet itself is the only data needed
 	}
 
-	public static CompletableFuture<Void> readPacketData(ServerPacketData data) {
-		ServerPacketContext context = data.context();
+	public static PacketRequestCheatPermission readPacketData(FriendlyByteBuf buf) {
+		return new PacketRequestCheatPermission();
+	}
+
+	@Override
+	public void processOnServerThread(ServerPacketContext context) {
 		ServerPlayer player = context.player();
 		IServerConfig serverConfig = context.serverConfig();
-		MinecraftServer server = player.server;
-		return server.submit(() -> {
-			boolean hasPermission = ServerCommandUtil.hasPermissionForCheatMode(player, serverConfig);
-			PacketCheatPermission packetCheatPermission = new PacketCheatPermission(hasPermission);
+		boolean hasPermission = ServerCommandUtil.hasPermissionForCheatMode(player, serverConfig);
+		PacketCheatPermission packetCheatPermission = new PacketCheatPermission(hasPermission);
 
-			IConnectionToClient connection = context.connection();
-			connection.sendPacketToClient(packetCheatPermission, player);
-		});
+		IConnectionToClient connection = context.connection();
+		connection.sendPacketToClient(packetCheatPermission, player);
 	}
 }

@@ -28,6 +28,8 @@ jobs:
           cp FabricApi/build/libs/*.jar dist
           cp Forge/build/libs/*.jar dist
           cp ForgeApi/build/libs/*.jar dist
+          cp NeoForge/build/libs/*.jar dist
+          cp NeoForgeApi/build/libs/*.jar dist
           cp Gui/build/libs/*.jar dist
           cp Library/build/libs/*.jar dist
       - uses: actions/upload-artifact@v3

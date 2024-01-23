@@ -43,44 +43,47 @@ public class GuiIconButton extends Button {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		if (this.visible) {
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			boolean hovered =
+	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		boolean hovered =
 				mouseX >= this.getX() &&
-				mouseY >= this.getY() &&
-				mouseX < this.getX() + this.width &&
-				mouseY < this.getY() + this.height;
-			RenderSystem.enableBlend();
-			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);
-			texture.draw(guiGraphics, this.getX(), this.getY(), this.width, this.height);
+						mouseY >= this.getY() &&
+						mouseX < this.getX() + this.width &&
+						mouseY < this.getY() + this.height;
+		RenderSystem.enableBlend();
+		RenderSystem.blendFuncSeparate(
+				GlStateManager.SourceFactor.SRC_ALPHA,
+				GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+				GlStateManager.SourceFactor.ONE,
+				GlStateManager.DestFactor.ZERO
+		);
+		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);
+		texture.draw(guiGraphics, this.getX(), this.getY(), this.width, this.height);
 
-			int color = 0xFFE0E0E0;
-			if (!this.active) {
-				color = 0xFFA0A0A0;
-			} else if (hovered) {
-				color = 0xFFFFFFFF;
-			}
-
-			float red = (color >> 16 & 255) / 255.0F;
-			float blue = (color >> 8 & 255) / 255.0F;
-			float green = (color & 255) / 255.0F;
-			float alpha = (color >> 24 & 255) / 255.0F;
-			RenderSystem.setShaderColor(red, blue, green, alpha);
-
-			double xOffset = getX() + (width - icon.getWidth()) / 2.0;
-			double yOffset = getY() + (height - icon.getHeight()) / 2.0;
-			var poseStack = guiGraphics.pose();
-			poseStack.pushPose();
-			{
-				poseStack.translate(xOffset, yOffset, 0);
-				icon.draw(guiGraphics);
-			}
-			poseStack.popPose();
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		int color = 0xFFE0E0E0;
+		if (!this.active) {
+			color = 0xFFA0A0A0;
+		} else if (hovered) {
+			color = 0xFFFFFFFF;
 		}
+
+		float red = (color >> 16 & 255) / 255.0F;
+		float blue = (color >> 8 & 255) / 255.0F;
+		float green = (color & 255) / 255.0F;
+		float alpha = (color >> 24 & 255) / 255.0F;
+		RenderSystem.setShaderColor(red, blue, green, alpha);
+
+		double xOffset = getX() + (width - icon.getWidth()) / 2.0;
+		double yOffset = getY() + (height - icon.getHeight()) / 2.0;
+		var poseStack = guiGraphics.pose();
+		poseStack.pushPose();
+		{
+			poseStack.translate(xOffset, yOffset, 0);
+			icon.draw(guiGraphics);
+		}
+		poseStack.popPose();
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	public IUserInputHandler createInputHandler() {

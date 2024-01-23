@@ -1,7 +1,7 @@
 package mezz.jei.forge.network;
 
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.network.packets.PacketJei;
+import mezz.jei.common.network.packets.PacketJeiToServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
@@ -43,7 +43,7 @@ public final class ConnectionToServer implements IConnectionToServer {
 	}
 
 	@Override
-	public void sendPacketToServer(PacketJei packet) {
+	public void sendPacketToServer(PacketJeiToServer packet) {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPacketListener netHandler = minecraft.getConnection();
 		if (netHandler != null && isJeiOnServer()) {

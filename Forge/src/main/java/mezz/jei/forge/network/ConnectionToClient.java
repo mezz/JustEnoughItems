@@ -1,7 +1,7 @@
 package mezz.jei.forge.network;
 
 import mezz.jei.common.network.IConnectionToClient;
-import mezz.jei.common.network.packets.PacketJei;
+import mezz.jei.common.network.packets.PacketJeiToClient;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,7 +17,7 @@ public class ConnectionToClient implements IConnectionToClient {
 	}
 
 	@Override
-	public void sendPacketToClient(PacketJei packet, ServerPlayer player) {
+	public void sendPacketToClient(PacketJeiToClient packet, ServerPlayer player) {
 		Pair<FriendlyByteBuf, Integer> packetData = packet.getPacketData();
 		ICustomPacket<Packet<?>> payload = NetworkDirection.PLAY_TO_CLIENT.buildPacket(packetData.getKey(), networkHandler.getChannelId());
 		player.connection.send(payload.getThis());

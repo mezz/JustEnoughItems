@@ -12,13 +12,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public final class TippedArrowRecipeMaker {
 
@@ -41,7 +38,8 @@ public final class TippedArrowRecipeMaker {
 					arrowIngredient, arrowIngredient, arrowIngredient
 				);
 				ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + output.getDescriptionId());
-				CraftingRecipe recipe = new ShapedRecipe(group, CraftingBookCategory.MISC, 3, 3, inputs, output);
+				ShapedRecipePattern pattern = new ShapedRecipePattern(3, 3, inputs, Optional.empty());
+				CraftingRecipe recipe = new ShapedRecipe(group, CraftingBookCategory.MISC, pattern, output);
 				return new RecipeHolder<>(id, recipe);
 			})
 			.toList();

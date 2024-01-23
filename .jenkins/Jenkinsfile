@@ -29,10 +29,12 @@ pipeline {
                 sh "./gradlew :Core:build --no-daemon"
                 sh "./gradlew :Forge:build --no-daemon"
                 sh "./gradlew :Fabric:build --no-daemon"
+                sh "./gradlew :NeoForge:build --no-daemon"
                 sh "./gradlew :Common:build --no-daemon"
                 sh "./gradlew :CommonApi:build --no-daemon"
                 sh "./gradlew :ForgeApi:build --no-daemon"
                 sh "./gradlew :FabricApi:build --no-daemon"
+                sh "./gradlew :NeoForgeApi:build --no-daemon"
             }
         }
 
@@ -49,10 +51,12 @@ pipeline {
                 sh "./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
                 sh "./gradlew :Forge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
                 sh "./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "./gradlew :NeoForge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
                 sh "./gradlew :Common:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
                 sh "./gradlew :CommonApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
                 sh "./gradlew :ForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
                 sh "./gradlew :FabricApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "./gradlew :NeoForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
             }
         }
 
@@ -60,6 +64,7 @@ pipeline {
             steps {
                 sh "./gradlew :Fabric:publishCurseForge --no-daemon"
                 sh "./gradlew :Forge:publishCurseForge --no-daemon"
+                sh "./gradlew :NeoForge:publishCurseForge --no-daemon"
             }
         }
 
@@ -67,6 +72,7 @@ pipeline {
             steps {
                 sh "./gradlew :Fabric:modrinth --no-daemon"
                 sh "./gradlew :Forge:modrinth --no-daemon"
+                sh "./gradlew :NeoForge:modrinth --no-daemon"
             }
         }
     }
