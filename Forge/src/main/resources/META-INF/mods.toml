@@ -15,9 +15,6 @@ issueTrackerURL="${githubUrl}/issues?q=is%3Aissue" #optional
 # License
 license="The MIT License (MIT)"
 
-# A file name (in the root of the mod JAR) containing a logo for display
-#logoFile="examplemod.png" #optional
-
 # A text field displayed in the mod UI
 #credits="Thanks for this example mod goes to Java" #optional
 
@@ -41,6 +38,9 @@ displayURL="${curseHomepageUrl}" #optional
 
 # A text field displayed in the mod UI
 # credits="" #optional
+
+# A file name (in the root of the mod JAR) containing a logo for display
+logoFile="jei-icon.png"
 
 # A text field displayed in the mod UI
 authors="${modAuthor}" #optional
