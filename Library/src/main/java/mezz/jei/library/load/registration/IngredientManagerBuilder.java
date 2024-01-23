@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,10 +59,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration {
 
 	@Override
 	public void registerModAliases(String modid, Collection<String> aliases) {
-		if (modAliases.containsKey(modid)) {
-			throw new IllegalArgumentException("Mod aliases have already been registered for modid: " + modid);
-		}
-		modAliases.put(modid, Set.copyOf(aliases));
+		modAliases.computeIfAbsent(modid, k -> new HashSet<>()).addAll(aliases);
 	}
 
 	@Override

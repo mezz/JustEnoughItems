@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.StreamSupport;
 
 public class ElementPrefixParser {
@@ -37,14 +38,14 @@ public class ElementPrefixParser {
 			'@',
 			config::getModNameSearchMode,
 			info -> {
-                List<String> modNames = info.getModNameStrings()
+                List<String> generatedAlias = info.getModNameStrings()
 						.stream()
 						.map(modIdHelper::getModNameForModId)
 						.map(ElementPrefixParser::convertModNameToSortId)
 						.flatMap(Set::stream)
 						.toList();
-                Set<String> modIdAlias = new HashSet<>(modNames);
-				modIdAlias.addAll(info.getModNameStrings());
+                Set<String> modIdAlias = new TreeSet<>(info.getModNameStrings());
+				modIdAlias.addAll(generatedAlias);
 				modIdAlias.addAll(modIdHelper.getModAliases(info.getResourceLocation().getNamespace()));
                 return modIdAlias;
 			},
@@ -120,7 +121,6 @@ public class ElementPrefixParser {
 		Set<String> sortIds = new HashSet<>();
         sortIds.add(pickAndCombine(words, 1));
         //some mod name only have two words, so they may have a special sortId,such as crafttweaker -> crt, Tinkers' Construct -> tic.
-		//For mods with single word names like Mekanism, we currently have no good way to find its shortened form.
         if (words.size() == 2) sortIds.add(pickAndCombine(words, 2));
         return sortIds;
 	}
