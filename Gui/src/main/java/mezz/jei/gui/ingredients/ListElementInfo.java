@@ -12,19 +12,14 @@ import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class ListElementInfo<V> implements IListElementInfo<V> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
 
 	private final IListElement<V> element;
 	private final String displayNameLowercase;
@@ -57,11 +52,9 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		this.resourceLocation = ingredientHelper.getResourceLocation(ingredient);
 		String displayModId = ingredientHelper.getDisplayModId(ingredient);
 		String modId = this.resourceLocation.getNamespace();
-		this.modIds = new ArrayList<>();
-		this.modIds.add(displayModId);
-		if (!modId.equals(displayModId)) {
-			this.modIds.add(modId);
-		}
+		this.modIds = Stream.of(displayModId, modId)
+			.distinct()
+			.toList();
 		this.modNames = this.modIds.stream()
 			.map(modIdHelper::getModNameForModId)
 			.toList();
@@ -80,23 +73,13 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public Set<String> getModNameStrings() {
-		Set<String> modNameStrings = new HashSet<>();
-		for (int i = 0; i < modIds.size(); i++) {
-			String modId = modIds.get(i);
-			String modName = modNames.get(i);
-			addModNameStrings(modNameStrings, modId, modName);
-		}
-		return modNameStrings;
+	public List<String> getModNames() {
+		return modNames;
 	}
 
-	private static void addModNameStrings(Set<String> modNames, String modId, String modName) {
-		String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
-		String modNameNoSpaces = SPACE_PATTERN.matcher(modNameLowercase).replaceAll("");
-		String modIdNoSpaces = SPACE_PATTERN.matcher(modId).replaceAll("");
-		modNames.add(modId);
-		modNames.add(modNameNoSpaces);
-		modNames.add(modIdNoSpaces);
+	@Override
+	public List<String> getModIds() {
+		return modIds;
 	}
 
 	@Override

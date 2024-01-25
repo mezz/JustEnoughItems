@@ -1,6 +1,7 @@
 package mezz.jei.api;
 
 import mezz.jei.api.helpers.IPlatformFluidHelper;
+import mezz.jei.api.registration.IModInfoRegistration;
 import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
 import net.minecraft.resources.ResourceLocation;
@@ -49,6 +50,15 @@ public interface IModPlugin {
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
 	 */
 	default void registerIngredients(IModIngredientRegistration registration) {
+
+	}
+
+	/**
+	 * Register extra info about a mod, such as aliases for the mod that users can search for.
+	 *
+	 * @since 17.1.0
+	 */
+	default void registerModInfo(IModInfoRegistration modAliasRegistration) {
 
 	}
 
