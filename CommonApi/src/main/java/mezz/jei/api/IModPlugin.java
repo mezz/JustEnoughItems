@@ -5,6 +5,7 @@ import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
+import mezz.jei.api.registration.IModInfoRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
@@ -82,6 +83,15 @@ public interface IModPlugin {
 	 * @since 10.8.0
 	 */
 	default void registerIngredientAliases(IIngredientAliasRegistration registration) {
+
+	}
+
+	/**
+	 * Register extra info about a mod, such as aliases for the mod that users can search for.
+	 *
+	 * @since 10.10.0
+	 */
+	default void registerModInfo(IModInfoRegistration registration) {
 
 	}
 

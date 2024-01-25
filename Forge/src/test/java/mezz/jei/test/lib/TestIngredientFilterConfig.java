@@ -46,12 +46,17 @@ public class TestIngredientFilterConfig implements IIngredientFilterConfig {
 	}
 
 	@Override
-	public boolean getSearchShortModNames() {
+	public boolean getSearchModAliases() {
 		return false;
 	}
 
 	@Override
 	public boolean getSearchIngredientAliases() {
+		return false;
+	}
+
+	@Override
+	public boolean getSearchShortModNames() {
 		return false;
 	}
 }

@@ -149,7 +149,8 @@ public class ElementSearchIngredientsTest {
 		ElementPrefixParser elementPrefixParser = new ElementPrefixParser(
 			ingredientManager,
 			FILTER_CONFIG,
-			COLOR_HELPER
+			COLOR_HELPER,
+			MOD_ID_HELPER
 		);
 		return new SearchFixture(ingredientManager, elementPrefixParser, new ElementSearch(elementPrefixParser));
 	}
