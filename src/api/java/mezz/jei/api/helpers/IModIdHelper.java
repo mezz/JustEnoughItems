@@ -1,6 +1,8 @@
 package mezz.jei.api.helpers;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -24,6 +26,15 @@ public interface IModIdHelper {
 	 * Returns the mod name with color formatting, as specified in JEI's config. (default is blue italic)
 	 */
 	String getFormattedModNameForModId(String modId);
+
+	/**
+	 * Returns alternative mod names used for searching.
+	 *
+	 * @since 7.16.0
+	 */
+	default Set<String> getModAliases(String modId) {
+		return Collections.emptySet();
+	}
 
 	/**
 	 * Adds the mod name to the tooltip with color formatting.

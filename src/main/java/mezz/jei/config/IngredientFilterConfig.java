@@ -12,6 +12,7 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	public final ForgeConfigSpec.EnumValue<SearchMode> resourceIdSearchMode;
 	public final ForgeConfigSpec.BooleanValue searchAdvancedTooltips;
 	public final ForgeConfigSpec.BooleanValue searchIngredientAliases;
+	public final ForgeConfigSpec.BooleanValue searchModAliases;
 
 	public IngredientFilterConfig(ForgeConfigSpec.Builder builder) {
 		builder.push("search");
@@ -31,6 +32,8 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 		searchAdvancedTooltips = builder.define("SearchAdvancedTooltips", false);
 		builder.comment("Search ingredient aliases (alternative names) that are added by plugins.");
 		searchIngredientAliases = builder.define("SearchIngredientAliases", true);
+		builder.comment("Search mod aliases in addition to mod names.");
+		searchModAliases = builder.define("SearchModAliases", true);
 		builder.pop();
 	}
 
@@ -72,6 +75,11 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	@Override
 	public boolean getSearchIngredientAliases() {
 		return searchIngredientAliases.get();
+	}
+
+	@Override
+	public boolean getSearchModAliases() {
+		return searchModAliases.get();
 	}
 
 }

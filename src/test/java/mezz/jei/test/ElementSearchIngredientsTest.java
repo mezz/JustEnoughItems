@@ -1,6 +1,6 @@
 package mezz.jei.test;
 
-import mezz.jei.api.helpers.IModIdHelper;
+import com.google.common.collect.ImmutableSetMultimap;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IIngredientListElementInfo;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
@@ -32,8 +32,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ElementSearchIngredientsTest {
-	private static final IModIdHelper MOD_ID_HELPER = new TestModIdHelper();
+	private static final TestModIdHelper MOD_ID_HELPER = new TestModIdHelper();
 	private static final TestIngredientFilterConfig FILTER_CONFIG = new TestIngredientFilterConfig();
+
+	static {
+		MOD_ID_HELPER.setModAliases(ImmutableSetMultimap.of("jei_test_mod", "fixture"));
+	}
 
 	@Test
 	public void newSearchHasNoIngredients() {
@@ -159,6 +163,26 @@ public class ElementSearchIngredientsTest {
 		Set<Integer> results = fixture.searchIngredientNumbers("first test ingredient");
 
 		Assertions.assertEquals(numbers(0), results);
+	}
+
+	@Test
+	public void modAliasSearchFindsIngredient() {
+		SearchFixture fixture = createFixture();
+		addAll(fixture.search, fixture.createBaseInfos());
+
+		Set<Integer> results = fixture.searchIngredientNumbers("@fixture");
+
+		Assertions.assertEquals(numbers(0, 1), results);
+	}
+
+	@Test
+	public void shortModNameSearchFindsIngredient() {
+		SearchFixture fixture = createFixture();
+		addAll(fixture.search, fixture.createBaseInfos());
+
+		Set<Integer> results = fixture.searchIngredientNumbers("@jet");
+
+		Assertions.assertEquals(numbers(0, 1), results);
 	}
 
 	private static SearchFixture createFixture() {

@@ -16,4 +16,6 @@ public interface IIngredientFilterConfig {
 	boolean getSearchAdvancedTooltips();
 
 	boolean getSearchIngredientAliases();
+
+	boolean getSearchModAliases();
 }

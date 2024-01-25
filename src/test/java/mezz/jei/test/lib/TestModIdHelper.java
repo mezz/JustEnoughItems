@@ -5,6 +5,9 @@ import mezz.jei.ingredients.AbstractModIdHelper;
 public class TestModIdHelper extends AbstractModIdHelper {
 	@Override
 	public String getModNameForModId(String modId) {
+		if (modId.equals("jei_test_mod")) {
+			return "Just Enough Tests";
+		}
 		return "ModName(" + modId + ")";
 	}
 

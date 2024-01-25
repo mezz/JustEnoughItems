@@ -28,8 +28,10 @@ import java.util.stream.Collectors;
 public class IngredientListElementInfo<V> implements IIngredientListElementInfo<V> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
+	private static final Pattern MOD_NAME_SEPARATOR_PATTERN = Pattern.compile("(?=[A-Z_-])|\\s+");
 
 	private final IIngredientListElement<V> element;
+	private final IModIdHelper modIdHelper;
 	private final String displayName;
 	private final List<String> names;
 	private final List<String> modIds;
@@ -56,6 +58,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 
 	protected IngredientListElementInfo(IIngredientListElement<V> element, IIngredientHelper<V> ingredientHelper, IModIdHelper modIdHelper, Collection<String> aliases) {
 		this.element = element;
+		this.modIdHelper = modIdHelper;
 		V ingredient = element.getIngredient();
 		this.resourceLocation = ingredientHelper.getResourceLocation(ingredient);
 		String displayModId = ingredientHelper.getDisplayModId(ingredient);
@@ -99,17 +102,43 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 			String modId = modIds.get(i);
 			String modName = modNames.get(i);
 			addModNameStrings(modNameStrings, modId, modName);
+			for (String alias : modIdHelper.getModAliases(modId)) {
+				modNameStrings.add(removeSpacesAndLowercase(alias));
+			}
+			for (String shortModName : getShortModNames(modName)) {
+				modNameStrings.add(shortModName.toLowerCase(Locale.ENGLISH));
+			}
 		}
 		return modNameStrings;
 	}
 
+	private static Collection<String> getShortModNames(String modName) {
+		String[] words = MOD_NAME_SEPARATOR_PATTERN.split(modName);
+		if (words.length <= 1) {
+			return ImmutableSet.of();
+		}
+		return ImmutableSet.of(combineFirstLetters(words, 1), combineFirstLetters(words, 2));
+	}
+
+	private static String combineFirstLetters(String[] words, int count) {
+		StringBuilder result = new StringBuilder();
+		for (String word : words) {
+			int end = Math.min(count, word.length());
+			result.append(word, 0, end);
+		}
+		return result.toString();
+	}
+
 	private static void addModNameStrings(Set<String> modNames, String modId, String modName) {
-		String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
-		String modNameNoSpaces = SPACE_PATTERN.matcher(modNameLowercase).replaceAll("");
-		String modIdNoSpaces = SPACE_PATTERN.matcher(modId).replaceAll("");
+		String modNameNoSpaces = removeSpacesAndLowercase(modName);
+		String modIdNoSpaces = removeSpacesAndLowercase(modId);
 		modNames.add(modId);
 		modNames.add(modNameNoSpaces);
 		modNames.add(modIdNoSpaces);
+	}
+
+	private static String removeSpacesAndLowercase(String value) {
+		return SPACE_PATTERN.matcher(value.toLowerCase(Locale.ENGLISH)).replaceAll("");
 	}
 
 	@Override

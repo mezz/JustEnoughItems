@@ -20,6 +20,7 @@ import mezz.jei.config.sorting.RecipeCategorySortingConfig;
 import mezz.jei.gui.GuiHelper;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.textures.Textures;
+import mezz.jei.ingredients.AbstractModIdHelper;
 import mezz.jei.ingredients.IIngredientSorter;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
 import mezz.jei.ingredients.IngredientFilter;
@@ -30,6 +31,7 @@ import mezz.jei.ingredients.RegisteredIngredient;
 import mezz.jei.ingredients.SubtypeManager;
 import mezz.jei.load.registration.AdvancedRegistration;
 import mezz.jei.load.registration.GuiHandlerRegistration;
+import mezz.jei.load.registration.ModInfoRegistration;
 import mezz.jei.load.registration.RecipeCatalystRegistration;
 import mezz.jei.load.registration.RecipeCategoryRegistration;
 import mezz.jei.load.registration.RecipeRegistration;
@@ -84,6 +86,12 @@ public class PluginLoader {
 		this.timer = new LoggedTimer();
 		this.modIdHelper = modIdHelper;
 		this.blacklist = new IngredientBlacklistInternal();
+
+		if (ingredientFilterConfig.getSearchModAliases() && modIdHelper instanceof AbstractModIdHelper) {
+			ModInfoRegistration modInfoRegistration = new ModInfoRegistration();
+			PluginCaller.callOnPlugins("Registering mod info", plugins, p -> p.registerModInfo(modInfoRegistration));
+			((AbstractModIdHelper) modIdHelper).setModAliases(modInfoRegistration.getModAliases());
+		}
 
 		SubtypeRegistration subtypeRegistration = new SubtypeRegistration();
 		PluginCaller.callOnPlugins("Registering item subtypes", plugins, p -> p.registerItemSubtypes(subtypeRegistration));
