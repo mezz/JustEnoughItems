@@ -27,6 +27,10 @@ public interface IModIdHelper {
 	 */
 	String getFormattedModNameForModId(String modId);
 
+	/**
+	 * Returns alternative mod names, used for searching for a mod by a different name.
+	 * @since 17.1.0
+	 */
 	Set<String> getModAliases(String modId);
 
 	/**

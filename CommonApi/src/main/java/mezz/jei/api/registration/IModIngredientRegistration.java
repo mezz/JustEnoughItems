@@ -41,12 +41,4 @@ public interface IModIngredientRegistration {
 		IIngredientHelper<V> ingredientHelper,
 		IIngredientRenderer<V> ingredientRenderer
 	);
-
-	/**
-	 *  Register aliases for a modid.
-	 *  Used to simplify search input for players.
-	 * @param modid The modid to register aliases for
-	 * @param aliases The aliases to register
-	 */
-	void registerModAliases(String modid, Collection<String> aliases);
 }

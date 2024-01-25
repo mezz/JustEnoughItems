@@ -2,7 +2,6 @@ package mezz.jei.gui.ingredients;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -17,7 +16,9 @@ public interface IListElementInfo<V> {
 
 	String getModNameForSorting();
 
-	Set<String> getModNameStrings();
+	List<String> getModNames();
+
+	List<String> getModIds();
 
 	@Unmodifiable
 	List<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager);

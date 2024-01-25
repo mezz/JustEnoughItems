@@ -5,21 +5,20 @@ import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.util.Translator;
 import mezz.jei.core.search.LimitedStringStorage;
 import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.core.search.SearchMode;
 import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
-import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IListElementInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class ElementPrefixParser {
@@ -29,6 +28,8 @@ public class ElementPrefixParser {
 			i -> List.of(i.getName()),
 			GeneralizedSuffixTree::new
 	);
+	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
+	private static final Pattern MOD_NAME_SEPARATOR_PATTERN = Pattern.compile("(?=[A-Z_-])|\\s+");
 
 	private final Char2ObjectMap<PrefixInfo<IListElementInfo<?>>> map = new Char2ObjectOpenHashMap<>();
 
@@ -37,16 +38,39 @@ public class ElementPrefixParser {
 			'@',
 			config::getModNameSearchMode,
 			info -> {
-                List<String> modNames = info.getModNameStrings()
+				Stream<String> modNames = info.getModNames()
+					.stream();
+
+				if (config.getSearchModIds()) {
+					Stream<String> modIds = info.getModIds()
+						.stream();
+
+					modNames = Stream.concat(modNames, modIds);
+				}
+
+				if (config.getSearchModAliases()) {
+					Stream<String> modAliases = info.getModIds()
 						.stream()
-						.map(modIdHelper::getModNameForModId)
-						.map(ElementPrefixParser::convertModNameToSortId)
-						.flatMap(Set::stream)
-						.toList();
-                Set<String> modIdAlias = new HashSet<>(modNames);
-				modIdAlias.addAll(info.getModNameStrings());
-				modIdAlias.addAll(modIdHelper.getModAliases(info.getResourceLocation().getNamespace()));
-                return modIdAlias;
+						.map(modIdHelper::getModAliases)
+						.flatMap(Collection::stream);
+
+					modNames = Stream.concat(modNames, modAliases);
+				}
+
+				if (config.getSearchShortModNames()) {
+					Stream<String> shortModNames = info.getModNames()
+						.stream()
+						.flatMap(ElementPrefixParser::getShortModNames);
+
+					modNames = Stream.concat(modNames, shortModNames);
+				}
+
+                return modNames
+					.map(String::toLowerCase)
+					.map(SPACE_PATTERN::matcher)
+					.map(matcher -> matcher.replaceAll(""))
+					.distinct()
+					.toList();
 			},
 			LimitedStringStorage::new
 		));
@@ -110,35 +134,23 @@ public class ElementPrefixParser {
 		return Optional.of(new TokenInfo(token.substring(1), prefixInfo));
 	}
 
-	private static Set<String> convertModNameToSortId(String modName) {
-		//spilt modName by UpperCase or _ or -.
-		List<String> words = new ArrayList<>(List.of(modName.split("(?=[A-Z_-])|\\s+")));
-        //if modName only have one word, we can't find its shortened form.
-		if (words.size() <= 1) return Collections.emptySet();
-		words.removeIf(s -> s.isEmpty() || s.isBlank() || s.equals("-") || s.equals("_"));
-
-		Set<String> sortIds = new HashSet<>();
-        sortIds.add(pickAndCombine(words, 1));
-        //some mod name only have two words, so they may have a special sortId,such as crafttweaker -> crt, Tinkers' Construct -> tic.
-		//For mods with single word names like Mekanism, we currently have no good way to find its shortened form.
-        if (words.size() == 2) sortIds.add(pickAndCombine(words, 2));
-        return sortIds;
+	private static Stream<String> getShortModNames(String modName) {
+		String[] words = MOD_NAME_SEPARATOR_PATTERN.split(modName);
+		if (words.length <= 1) {
+			return Stream.empty();
+		}
+		return Stream.of(
+			combineFirstLetters(words, 1),
+			combineFirstLetters(words, 2)
+		);
 	}
 
-    private static String pickAndCombine(List<String> words, int pickChar){
-        StringBuilder sb = new StringBuilder();
-        for (String word : words) {
-            word = word.toLowerCase();
-            word = word.strip();
-            if (word.isEmpty()) continue;
-
-            if (word.length() > pickChar) {
-                sb.append(word, 0, pickChar);
-            }else {
-                sb.append(word, 0, 1);
-            }
-        }
-        return sb.toString();
-    }
-
+	private static String combineFirstLetters(String[] words, final int count){
+		StringBuilder sb = new StringBuilder();
+		for (String word : words) {
+			int end = Math.min(count, word.length());
+			sb.append(word, 0, end);
+		}
+		return sb.toString();
+	}
 }

@@ -57,14 +57,6 @@ public class IngredientManagerBuilder implements IModIngredientRegistration {
 	}
 
 	@Override
-	public void registerModAliases(String modid, Collection<String> aliases) {
-		if (modAliases.containsKey(modid)) {
-			throw new IllegalArgumentException("Mod aliases have already been registered for modid: " + modid);
-		}
-		modAliases.put(modid, Set.copyOf(aliases));
-	}
-
-	@Override
 	public ISubtypeManager getSubtypeManager() {
 		return subtypeManager;
 	}
@@ -77,9 +69,5 @@ public class IngredientManagerBuilder implements IModIngredientRegistration {
 	public IIngredientManager build() {
 		RegisteredIngredients registeredIngredients = new RegisteredIngredients(ingredientInfos);
 		return new IngredientManager(registeredIngredients);
-	}
-
-	public Map<String, Set<String>> getModAliases() {
-		return modAliases;
 	}
 }

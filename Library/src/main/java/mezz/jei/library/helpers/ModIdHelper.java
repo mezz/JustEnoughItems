@@ -1,5 +1,6 @@
 package mezz.jei.library.helpers;
 
+import com.google.common.collect.ImmutableSetMultimap;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -19,17 +20,15 @@ import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public final class ModIdHelper implements IModIdHelper {
 	private final IModIdFormatConfig modIdFormattingConfig;
 	private final IIngredientManager ingredientManager;
-	private final Map<String, Set<String>> modAliases;
+	private final ImmutableSetMultimap<String, String> modAliases;
 
-	public ModIdHelper(IModIdFormatConfig modIdFormattingConfig, IIngredientManager ingredientManager, Map<String, Set<String>> modAliases) {
+	public ModIdHelper(IModIdFormatConfig modIdFormattingConfig, IIngredientManager ingredientManager, ImmutableSetMultimap<String, String> modAliases) {
 		this.modIdFormattingConfig = modIdFormattingConfig;
 		this.ingredientManager = ingredientManager;
 		this.modAliases = modAliases;
@@ -100,7 +99,7 @@ public final class ModIdHelper implements IModIdHelper {
 
 	@Override
 	public Set<String> getModAliases(String modId) {
-		return modAliases.getOrDefault(modId, Collections.emptySet());
+		return modAliases.get(modId);
 	}
 
 	@Override
