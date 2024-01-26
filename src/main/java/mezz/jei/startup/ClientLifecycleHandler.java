@@ -122,10 +122,10 @@ public class ClientLifecycleHandler {
 		if (Internal.getReloadListener() == null) {
 			JeiReloadListener reloadListener = new JeiReloadListener(this);
 			Internal.setReloadListener(reloadListener);
+			((IReloadableResourceManager) resourceManager).registerReloadListener(reloadListener);
 		} else {
 			Internal.getReloadListener().update(this);
 		}
-		((IReloadableResourceManager) resourceManager).registerReloadListener(Internal.getReloadListener());
 	}
 
 	public void setupJEI() {
