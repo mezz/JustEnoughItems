@@ -1,11 +1,11 @@
 [
 {
-  "modid": "jei",
-  "name": "Just Enough Items",
+  "modid": "${modId}",
+  "name": "${modName}",
   "description": "Simple recipe and item helper.",
   "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "https://github.com/mezz/JustEnoughItems",
+  "mcversion": "${minecraftVersion}",
+  "url": "${curseHomepageUrl}",
   "updateUrl": "",
   "authorList": ["mezz"],
   "logoFile": "",

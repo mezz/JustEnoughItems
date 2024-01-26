@@ -1,5 +1,6 @@
 package mezz.jei.config;
 
+import java.mezz.jei.config.Tags;
 import java.util.Locale;
 
 import net.minecraft.util.ResourceLocation;
@@ -10,7 +11,7 @@ public final class Constants {
 	// Mod info
 	public static final String MOD_ID = "jei";
 	public static final String NAME = "Just Enough Items";
-	public static final String VERSION = "@VERSION@";
+	public static final String VERSION = Tags.VERSION;
 
 	// Textures
 	public static final String RESOURCE_DOMAIN = MOD_ID.toLowerCase(Locale.ENGLISH);
