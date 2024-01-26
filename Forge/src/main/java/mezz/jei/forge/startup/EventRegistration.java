@@ -83,7 +83,7 @@ public class EventRegistration {
 		});
 	}
 
-	public static void registerGuiHandler(RuntimeEventSubscriptions subscriptions, GuiEventHandler guiEventHandler) {
+	private static void registerGuiHandler(RuntimeEventSubscriptions subscriptions, GuiEventHandler guiEventHandler) {
 		subscriptions.register(ScreenEvent.Init.Post.class, event -> {
 			Screen screen = event.getScreen();
 			guiEventHandler.onGuiInit(screen);

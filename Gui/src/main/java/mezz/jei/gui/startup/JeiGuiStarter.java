@@ -213,10 +213,15 @@ public class JeiGuiStarter {
 			dragRouter,
 			keyMappings
 		);
+		ResourceReloadHandler resourceReloadHandler = new ResourceReloadHandler(
+			ingredientListOverlay,
+			ingredientFilter
+		);
 
 		return new JeiEventHandlers(
 			guiEventHandler,
-			clientInputHandler
+			clientInputHandler,
+			resourceReloadHandler
 		);
 	}
 }

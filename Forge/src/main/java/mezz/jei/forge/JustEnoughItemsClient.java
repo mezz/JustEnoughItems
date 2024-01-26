@@ -8,12 +8,15 @@ import mezz.jei.common.network.ClientPacketRouter;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.forge.network.NetworkHandler;
+import mezz.jei.forge.plugins.forge.ForgeGuiPlugin;
 import mezz.jei.forge.startup.ForgePluginFinder;
 import mezz.jei.forge.startup.StartEventObserver;
 import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 
@@ -23,7 +26,6 @@ import java.util.Set;
 
 public class JustEnoughItemsClient {
 	private final PermanentEventSubscriptions subscriptions;
-	private final StartEventObserver startEventObserver;
 
 	public JustEnoughItemsClient(
 		NetworkHandler networkHandler,
@@ -50,8 +52,8 @@ public class JustEnoughItemsClient {
 
 		JeiStarter jeiStarter = new JeiStarter(startData);
 
-		this.startEventObserver = new StartEventObserver(jeiStarter::start, jeiStarter::stop);
-		this.startEventObserver.register(subscriptions);
+		StartEventObserver startEventObserver = new StartEventObserver(jeiStarter::start, jeiStarter::stop);
+		startEventObserver.register(subscriptions);
 	}
 
 	public void register() {
@@ -61,7 +63,14 @@ public class JustEnoughItemsClient {
 	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event) {
 		Textures textures = Internal.getTextures();
 		event.registerReloadListener(textures.getSpriteUploader());
-		event.registerReloadListener(startEventObserver);
+		event.registerReloadListener(createReloadListener());
+	}
+
+	private ResourceManagerReloadListener createReloadListener() {
+		return (ResourceManager resourceManager) -> {
+			ForgeGuiPlugin.getResourceReloadHandler()
+				.ifPresent(r -> r.onResourceManagerReload(resourceManager));
+		};
 	}
 
 	private static InternalKeyMappings createKeyMappings(PermanentEventSubscriptions subscriptions) {

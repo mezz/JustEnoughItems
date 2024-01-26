@@ -4,8 +4,6 @@ import mezz.jei.forge.events.PermanentEventSubscriptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -26,7 +24,7 @@ import java.util.Set;
  * Depending on the configuration (Integrated server, vanilla server, modded server),
  * these events might come in any order.
  */
-public class StartEventObserver implements ResourceManagerReloadListener {
+public class StartEventObserver {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<Class<? extends Event>> requiredEvents = Set.of(TagsUpdatedEvent.class, RecipesUpdatedEvent.class);
 
@@ -100,11 +98,6 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 				transitionState(State.JEI_STARTED);
 			}
 		}
-	}
-
-	@Override
-	public void onResourceManagerReload(ResourceManager pResourceManager) {
-		restart();
 	}
 
 	private void restart() {

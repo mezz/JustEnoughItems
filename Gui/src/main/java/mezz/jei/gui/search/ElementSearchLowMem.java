@@ -54,6 +54,11 @@ public class ElementSearchLowMem implements IElementSearch {
 	}
 
 	@Override
+	public void addAll(Collection<IListElementInfo<?>> infos) {
+		this.elementInfoList.addAll(infos);
+	}
+
+	@Override
 	public List<IListElementInfo<?>> getAllIngredients() {
 		return Collections.unmodifiableList(this.elementInfoList);
 	}

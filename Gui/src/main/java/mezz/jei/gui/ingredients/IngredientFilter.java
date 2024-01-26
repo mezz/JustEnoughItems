@@ -43,15 +43,16 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
+	private final IClientConfig clientConfig;
 	private final IFilterTextSource filterTextSource;
 	private final IIngredientManager ingredientManager;
 	private final IIngredientSorter sorter;
 	private final IModIdHelper modIdHelper;
 	private final IIngredientVisibility ingredientVisibility;
 
-	private final IElementSearch elementSearch;
 	private final ElementPrefixParser elementPrefixParser;
 	private final Set<String> modNamesForSorting = new HashSet<>();
+	private IElementSearch elementSearch;
 
 	@Nullable
 	private List<ITypedIngredient<?>> ingredientListCached;
@@ -69,17 +70,14 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		IColorHelper colorHelper
 	) {
 		this.filterTextSource = filterTextSource;
+		this.clientConfig = clientConfig;
 		this.ingredientManager = ingredientManager;
 		this.sorter = sorter;
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
 		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper);
 
-		if (clientConfig.isLowMemorySlowSearchEnabled()) {
-			this.elementSearch = new ElementSearchLowMem();
-		} else {
-			this.elementSearch = new ElementSearch(this.elementPrefixParser);
-		}
+		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
 		ingredients.stream()
@@ -92,6 +90,14 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			ingredientListCached = null;
 			notifyListenersOfChange();
 		});
+	}
+
+	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser) {
+		if (clientConfig.isLowMemorySlowSearchEnabled()) {
+			return new ElementSearchLowMem();
+		} else {
+			return new ElementSearch(elementPrefixParser);
+		}
 	}
 
 	public <V> void addIngredient(IListElementInfo<V> info) {
@@ -109,6 +115,13 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 	public void invalidateCache() {
 		ingredientListCached = null;
 		sorter.invalidateCache();
+	}
+
+	public void rebuildItemFilter() {
+		this.invalidateCache();
+		Collection<IListElementInfo<?>> ingredients = this.elementSearch.getAllIngredients();
+		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser);
+		this.elementSearch.addAll(ingredients);
 	}
 
 	public <V> Optional<IListElementInfo<V>> searchForMatchingElement(
