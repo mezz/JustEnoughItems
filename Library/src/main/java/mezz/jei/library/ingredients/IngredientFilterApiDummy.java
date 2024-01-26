@@ -26,9 +26,4 @@ public class IngredientFilterApiDummy implements IIngredientFilter {
 	public <T> List<T> getFilteredIngredients(IIngredientType<T> ingredientType) {
 		return List.of();
 	}
-
-	@Override
-	public void rebuildItemFilter() {
-
-	}
 }

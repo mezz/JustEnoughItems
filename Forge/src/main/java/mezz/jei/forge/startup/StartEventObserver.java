@@ -1,14 +1,9 @@
 package mezz.jei.forge.startup;
 
-import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
-import mezz.jei.forge.plugins.forge.ForgeGuiPlugin;
-import mezz.jei.gui.overlay.IngredientListOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -29,7 +24,7 @@ import java.util.Set;
  * Depending on the configuration (Integrated server, vanilla server, modded server),
  * these events might come in any order.
  */
-public class StartEventObserver implements ResourceManagerReloadListener {
+public class StartEventObserver {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<Class<? extends Event>> requiredEvents = Set.of(TagsUpdatedEvent.class, RecipesUpdatedEvent.class);
 
@@ -103,23 +98,6 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 				transitionState(State.JEI_STARTED);
 			}
 		}
-	}
-
-	@Override
-	public void onResourceManagerReload(ResourceManager pResourceManager) {
-		if (this.state == State.JEI_STARTED) {
-			reloadItemList();
-		}
-	}
-
-	private void reloadItemList() {
-		ForgeGuiPlugin.getRuntime().ifPresent(runtime -> {
-			LoggedTimer timer = new LoggedTimer();
-			timer.start("Updating ingredient filter");
-			runtime.getIngredientFilter().rebuildItemFilter();
-			timer.stop();
-			((IngredientListOverlay)runtime.getIngredientListOverlay()).updateScreen(Minecraft.getInstance().screen, null);
-		});
 	}
 
 	private void restart() {

@@ -51,9 +51,9 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 	private final IModIdHelper modIdHelper;
 	private final IIngredientVisibility ingredientVisibility;
 
-	private IElementSearch elementSearch;
 	private final ElementPrefixParser elementPrefixParser;
 	private final Set<String> modNamesForSorting = new HashSet<>();
+	private IElementSearch elementSearch;
 
 	@Nullable
 	private List<ITypedIngredient<?>> ingredientListCached;
@@ -78,7 +78,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		this.ingredientVisibility = ingredientVisibility;
 		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper);
 
-		this.createElementSearch();
+		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
 		ingredients.stream()
@@ -93,11 +93,11 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		});
 	}
 
-	private void createElementSearch() {
+	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser) {
 		if (clientConfig.isLowMemorySlowSearchEnabled()) {
-			this.elementSearch = new ElementSearchLowMem();
+			return new ElementSearchLowMem();
 		} else {
-			this.elementSearch = new ElementSearch(this.elementPrefixParser);
+			return new ElementSearch(elementPrefixParser);
 		}
 	}
 
@@ -120,10 +120,9 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 
 	public void rebuildItemFilter() {
 		this.invalidateCache();
-		List<IListElementInfo<?>> ingredients = new ArrayList<>(this.elementSearch.getAllIngredients());
-		ingredients.sort(sorter.getComparator(this, this.ingredientManager));
-		this.createElementSearch();
-		ingredients.forEach(this.elementSearch::add);
+		Collection<IListElementInfo<?>> ingredients = this.elementSearch.getAllIngredients();
+		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser);
+		this.elementSearch.addAll(ingredients);
 	}
 
 	public <V> Optional<IListElementInfo<V>> searchForMatchingElement(

@@ -31,9 +31,4 @@ public class IngredientFilterApi implements IIngredientFilter {
 	public <T> List<T> getFilteredIngredients(IIngredientType<T> ingredientType) {
 		return ingredientFilter.getFilteredIngredients(ingredientType);
 	}
-
-	@Override
-	public void rebuildItemFilter() {
-		this.ingredientFilter.rebuildItemFilter();
-	}
 }
