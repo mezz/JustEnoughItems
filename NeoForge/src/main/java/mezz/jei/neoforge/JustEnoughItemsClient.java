@@ -27,7 +27,7 @@ import java.util.Set;
 public class JustEnoughItemsClient {
 	private final PermanentEventSubscriptions subscriptions;
 
-    public JustEnoughItemsClient(
+	public JustEnoughItemsClient(
 		NetworkHandler networkHandler,
 		PermanentEventSubscriptions subscriptions,
 		IServerConfig serverConfig
@@ -52,7 +52,7 @@ public class JustEnoughItemsClient {
 
 		JeiStarter jeiStarter = new JeiStarter(startData);
 
-        StartEventObserver startEventObserver = new StartEventObserver(jeiStarter::start, jeiStarter::stop);
+		StartEventObserver startEventObserver = new StartEventObserver(jeiStarter::start, jeiStarter::stop);
 		startEventObserver.register(subscriptions);
 	}
 
