@@ -66,7 +66,7 @@ public final class ItemStackListFactory {
 
 			final @Unmodifiable Collection<ItemStack> creativeTabItemStacks;
 			try {
-				creativeTabItemStacks = itemGroup.getDisplayItems();
+				creativeTabItemStacks = itemGroup.getSearchTabDisplayItems();
 			} catch (RuntimeException | LinkageError e) {
 				LOGGER.error("Item Group crashed while getting display items." +
 					"Some items from this group will be missing from the JEI ingredient list. {}", itemGroup, e);
