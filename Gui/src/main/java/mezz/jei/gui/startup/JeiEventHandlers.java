@@ -5,6 +5,7 @@ import mezz.jei.gui.input.ClientInputHandler;
 
 public record JeiEventHandlers(
     GuiEventHandler guiEventHandler,
-    ClientInputHandler clientInputHandler
+    ClientInputHandler clientInputHandler,
+    ResourceReloadHandler resourceReloadHandler
 ) {
 }

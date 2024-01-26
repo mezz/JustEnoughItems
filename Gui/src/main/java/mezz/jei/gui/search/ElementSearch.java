@@ -60,9 +60,25 @@ public class ElementSearch implements IElementSearch {
 			SearchMode searchMode = prefixedSearchable.getMode();
 			if (searchMode != SearchMode.DISABLED) {
 				Collection<String> strings = prefixedSearchable.getStrings(info);
-				ISearchStorage<IListElementInfo<?>> searchable = prefixedSearchable.getSearchStorage();
+				ISearchStorage<IListElementInfo<?>> storage = prefixedSearchable.getSearchStorage();
 				for (String string : strings) {
-					searchable.put(string, info);
+					storage.put(string, info);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void addAll(Collection<IListElementInfo<?>> infos) {
+		for (PrefixedSearchable<IListElementInfo<?>> prefixedSearchable : this.prefixedSearchables.values()) {
+			SearchMode searchMode = prefixedSearchable.getMode();
+			if (searchMode != SearchMode.DISABLED) {
+				ISearchStorage<IListElementInfo<?>> storage = prefixedSearchable.getSearchStorage();
+				for (IListElementInfo<?> info : infos) {
+					Collection<String> strings = prefixedSearchable.getStrings(info);
+					for (String string : strings) {
+						storage.put(string, info);
+					}
 				}
 			}
 		}

@@ -8,6 +8,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.fabric.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
+import mezz.jei.gui.startup.ResourceReloadHandler;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class FabricGuiPlugin implements IModPlugin {
     private static final Logger LOGGER = LogManager.getLogger();
     private static @Nullable IJeiRuntime runtime;
+    private static @Nullable ResourceReloadHandler resourceReloadHandler;
 
     private final EventRegistration eventRegistration = new EventRegistration();
 
@@ -30,6 +32,7 @@ public class FabricGuiPlugin implements IModPlugin {
     @Override
     public void registerRuntime(IRuntimeRegistration registration) {
         JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
+        resourceReloadHandler = eventHandlers.resourceReloadHandler();
         eventRegistration.setEventHandlers(eventHandlers);
     }
 
@@ -41,11 +44,16 @@ public class FabricGuiPlugin implements IModPlugin {
     @Override
     public void onRuntimeUnavailable() {
         runtime = null;
+        resourceReloadHandler = null;
         LOGGER.info("Stopping JEI GUI");
         eventRegistration.clear();
     }
 
     public static Optional<IJeiRuntime> getRuntime() {
         return Optional.ofNullable(runtime);
+    }
+
+    public static Optional<ResourceReloadHandler> getResourceReloadHandler() {
+        return Optional.ofNullable(resourceReloadHandler);
     }
 }
