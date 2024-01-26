@@ -65,6 +65,22 @@ public class ElementSearch implements IElementSearch {
 	}
 
 	@Override
+	public void addAll(Collection<IIngredientListElementInfo<?>> infos) {
+		for (PrefixedSearchable<IIngredientListElementInfo<?>> prefixedSearchable : this.prefixedSearchables.values()) {
+			SearchMode searchMode = prefixedSearchable.getMode();
+			if (searchMode != SearchMode.DISABLED) {
+				for (IIngredientListElementInfo<?> info : infos) {
+					Collection<String> strings = prefixedSearchable.getStrings(info);
+					ISearchStorage<IIngredientListElementInfo<?>> searchable = prefixedSearchable.getSearchStorage();
+					for (String string : strings) {
+						searchable.put(string, info);
+					}
+				}
+			}
+		}
+	}
+
+	@Override
 	public Set<IIngredientListElementInfo<?>> getAllIngredients() {
 		Set<IIngredientListElementInfo<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
 		this.prefixedSearchables.get(ElementPrefixParser.NO_PREFIX).getAllElements(results);
