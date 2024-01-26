@@ -1,8 +1,10 @@
 package mezz.jei.plugins.vanilla.crafting;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import mezz.jei.Internal;
 import mezz.jei.startup.StackHelper;
@@ -21,22 +23,26 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.api.recipe.IRecipeWrapperFactory;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 public final class CraftingRecipeChecker {
 	private CraftingRecipeChecker() {
 	}
 
-	public static List<IRecipe> getValidRecipes(final IJeiHelpers jeiHelpers) {
+	public static Pair<List<IRecipe>, Set<Class<? extends IRecipe>>> getValidRecipes(final IJeiHelpers jeiHelpers) {
 		CraftingRecipeValidator<ShapedOreRecipe> shapedOreRecipeValidator = new CraftingRecipeValidator<>(recipe -> new ShapedOreRecipeWrapper(jeiHelpers, recipe));
 		CraftingRecipeValidator<ShapedRecipes> shapedRecipesValidator = new CraftingRecipeValidator<>(recipe -> new ShapedRecipesWrapper(jeiHelpers, recipe));
 		CraftingRecipeValidator<ShapelessOreRecipe> shapelessOreRecipeValidator = new CraftingRecipeValidator<>(recipe -> new ShapelessRecipeWrapper<>(jeiHelpers, recipe));
 		CraftingRecipeValidator<ShapelessRecipes> shapelessRecipesValidator = new CraftingRecipeValidator<>(recipe -> new ShapelessRecipeWrapper<>(jeiHelpers, recipe));
 
+		Set<Class<? extends IRecipe>> recipeTypes = new HashSet<>();
 		StackHelper stackHelper = Internal.getStackHelper();
 		Iterator<IRecipe> recipeIterator = CraftingManager.REGISTRY.iterator();
 		List<IRecipe> validRecipes = new ArrayList<>();
 		while (recipeIterator.hasNext()) {
 			IRecipe recipe = recipeIterator.next();
+			recipeTypes.add(recipe.getClass());
 			if (recipe instanceof ShapedOreRecipe) {
 				if (shapedOreRecipeValidator.isRecipeValid((ShapedOreRecipe) recipe, stackHelper)) {
 					validRecipes.add(recipe);
@@ -57,7 +63,7 @@ public final class CraftingRecipeChecker {
 				validRecipes.add(recipe);
 			}
 		}
-		return validRecipes;
+		return ImmutablePair.of(validRecipes, recipeTypes);
 	}
 
 	private static final class CraftingRecipeValidator<T extends IRecipe> {

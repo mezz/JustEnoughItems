@@ -3,7 +3,10 @@ package mezz.jei.plugins.vanilla;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.RecipeTippedArrow;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -78,6 +81,7 @@ import mezz.jei.plugins.vanilla.ingredients.item.ItemStackRenderer;
 import mezz.jei.runtime.JeiHelpers;
 import mezz.jei.startup.StackHelper;
 import mezz.jei.transfer.PlayerRecipeTransferHandler;
+import org.apache.commons.lang3.tuple.Pair;
 
 @JEIPlugin
 public class VanillaPlugin implements IModPlugin {
@@ -162,11 +166,17 @@ public class VanillaPlugin implements IModPlugin {
 		IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 		IVanillaRecipeFactory vanillaRecipeFactory = jeiHelpers.getVanillaRecipeFactory();
 
-		registry.addRecipes(CraftingRecipeChecker.getValidRecipes(jeiHelpers), VanillaRecipeCategoryUid.CRAFTING);
+		Pair<List<IRecipe>, Set<Class<? extends IRecipe>>> result = CraftingRecipeChecker.getValidRecipes(jeiHelpers);
+		List<IRecipe> validRecipes = result.getLeft();
+		Set<Class<? extends IRecipe>> recipeTypes = result.getRight();
+
+		registry.addRecipes(validRecipes, VanillaRecipeCategoryUid.CRAFTING);
 		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes(jeiHelpers), VanillaRecipeCategoryUid.SMELTING);
 		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientRegistry, jeiHelpers), VanillaRecipeCategoryUid.FUEL);
 		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientRegistry), VanillaRecipeCategoryUid.BREWING);
-		registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
+		if (recipeTypes.contains(RecipeTippedArrow.class)) {
+			registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
+		}
 		registry.addRecipes(AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientRegistry), VanillaRecipeCategoryUid.ANVIL);
 
 		registry.handleRecipes(ShapedOreRecipe.class, recipe -> new ShapedOreRecipeWrapper(jeiHelpers, recipe), VanillaRecipeCategoryUid.CRAFTING);
