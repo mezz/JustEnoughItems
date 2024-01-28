@@ -56,9 +56,9 @@ public class ElementSearch implements IElementSearch {
 			SearchMode searchMode = prefixedSearchable.getMode();
 			if (searchMode != SearchMode.DISABLED) {
 				Collection<String> strings = prefixedSearchable.getStrings(info);
-				ISearchStorage<IIngredientListElementInfo<?>> searchable = prefixedSearchable.getSearchStorage();
+				ISearchStorage<IIngredientListElementInfo<?>> storage = prefixedSearchable.getSearchStorage();
 				for (String string : strings) {
-					searchable.put(string, info);
+					storage.put(string, info);
 				}
 			}
 		}
@@ -69,11 +69,11 @@ public class ElementSearch implements IElementSearch {
 		for (PrefixedSearchable<IIngredientListElementInfo<?>> prefixedSearchable : this.prefixedSearchables.values()) {
 			SearchMode searchMode = prefixedSearchable.getMode();
 			if (searchMode != SearchMode.DISABLED) {
+				ISearchStorage<IIngredientListElementInfo<?>> storage = prefixedSearchable.getSearchStorage();
 				for (IIngredientListElementInfo<?> info : infos) {
 					Collection<String> strings = prefixedSearchable.getStrings(info);
-					ISearchStorage<IIngredientListElementInfo<?>> searchable = prefixedSearchable.getSearchStorage();
 					for (String string : strings) {
-						searchable.put(string, info);
+						storage.put(string, info);
 					}
 				}
 			}
