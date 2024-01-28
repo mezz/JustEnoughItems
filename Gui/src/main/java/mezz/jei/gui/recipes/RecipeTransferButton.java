@@ -90,6 +90,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 
 	@Override
 	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		super.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
 		if (this.recipeTransferError != null && this.recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
 			guiGraphics.fill(
 				RenderType.guiOverlay(),
