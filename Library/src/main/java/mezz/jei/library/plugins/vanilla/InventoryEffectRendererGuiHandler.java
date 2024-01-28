@@ -1,6 +1,7 @@
 package mezz.jei.library.plugins.vanilla;
 
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.common.Internal;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
@@ -23,6 +24,9 @@ public final class InventoryEffectRendererGuiHandler<T extends AbstractContainer
 	@SuppressWarnings("JavadocReference")
 	@Override
 	public List<Rect2i> getGuiExtraAreas(EffectRenderingInventoryScreen<T> containerScreen) {
+		if (!Internal.getJeiFeatures().getInventoryEffectRendererGuiHandlerEnabled()) {
+			return List.of();
+		}
 		Minecraft minecraft = Minecraft.getInstance();
 		LocalPlayer player = minecraft.player;
 		if (player == null) {
