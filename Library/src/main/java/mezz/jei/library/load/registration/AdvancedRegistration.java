@@ -6,6 +6,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.registration.IAdvancedRegistration;
+import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.collect.ListMultiMap;
 import org.apache.logging.log4j.LogManager;
@@ -21,9 +22,11 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	private final List<IRecipeManagerPlugin> recipeManagerPlugins = new ArrayList<>();
 	private final ListMultiMap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators = new ListMultiMap<>();
 	private final IJeiHelpers jeiHelpers;
+	private final IJeiFeatures jeiFeatures;
 
-	public AdvancedRegistration(IJeiHelpers jeiHelpers) {
+	public AdvancedRegistration(IJeiHelpers jeiHelpers, IJeiFeatures jeiFeatures) {
 		this.jeiHelpers = jeiHelpers;
+		this.jeiFeatures = jeiFeatures;
 	}
 
 	@Override
@@ -46,6 +49,11 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	@Override
 	public IJeiHelpers getJeiHelpers() {
 		return jeiHelpers;
+	}
+
+	@Override
+	public IJeiFeatures getJeiFeatures() {
+		return jeiFeatures;
 	}
 
 	@Unmodifiable

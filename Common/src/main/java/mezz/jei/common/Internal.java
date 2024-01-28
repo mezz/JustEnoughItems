@@ -45,6 +45,7 @@ public final class Internal {
 	@Nullable
 	private static ClientRecipes clientRecipes = null;
 	private static final DelayedExecutor delayedExecutor = new DelayedExecutor(Duration.ofSeconds(10));
+	private static final JeiFeatures jeiFeatures = new JeiFeatures();
 
 	private Internal() {
 
@@ -121,6 +122,10 @@ public final class Internal {
 
 	public static Optional<IJeiRuntime> getOptionalJeiRuntime() {
 		return Optional.ofNullable(jeiRuntime);
+	}
+
+	public static JeiFeatures getJeiFeatures() {
+		return jeiFeatures;
 	}
 
 	@Nullable
