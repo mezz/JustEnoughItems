@@ -8,6 +8,8 @@ import java.util.Set;
 public interface IElementSearch {
 	void add(IIngredientListElementInfo<?> info);
 
+	void addAll(Collection<IIngredientListElementInfo<?>> infos);
+
 	Collection<IIngredientListElementInfo<?>> getAllIngredients();
 
 	Set<IIngredientListElementInfo<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo);

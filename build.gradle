@@ -5,13 +5,6 @@ buildscript {
 		maven { url = 'https://files.minecraftforge.net/maven' }
 		mavenCentral()
 	}
-	// This is only here while FG is under active development
-	configurations.classpath {
-		resolutionStrategy {
-			cacheDynamicVersionsFor 10, 'seconds'
-			cacheChangingModulesFor 0, 'seconds'
-		}
-	}
 	dependencies {
 		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
 	}
@@ -23,7 +16,7 @@ plugins {
 	id 'idea'
 	id "maven-publish"
 	id 'com.matthewprenger.cursegradle' version '1.4.0'
-	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.71.4'
+	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.79.0'
 	id 'com.modrinth.minotaur' version '2.+'
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -125,7 +118,7 @@ javadoc {
 }
 
 task makeChangelog(type: GitChangelogTask) {
-	fromRepo = file("$projectDir")
+	fromRepo = file("${projectDir}")
 	file = file('changelog.html')
 	untaggedName = "Current release ${project.version}"
 	fromCommit = '2fe051cf727adce1be210a46f778aa8fe031331e'

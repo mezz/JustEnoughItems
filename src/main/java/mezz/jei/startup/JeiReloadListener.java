@@ -1,5 +1,8 @@
 package mezz.jei.startup;
 
+import mezz.jei.Internal;
+import mezz.jei.util.LoggedTimer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.IResourceManager;
 import net.minecraftforge.resource.IResourceType;
 import net.minecraftforge.resource.ISelectiveResourceReloadListener;
@@ -23,7 +26,13 @@ public final class JeiReloadListener implements ISelectiveResourceReloadListener
 		ClientLifecycleHandler handlerRef = handler.get();
 		// Only restart JEI on a reload after initial setup
 		if (handlerRef != null && handlerRef.starter.hasStarted()) {
-			handlerRef.startJEI();
+			LoggedTimer timer = new LoggedTimer();
+			timer.start("Rebuilding ingredient filter");
+			Internal.getIngredientFilter().rebuildItemFilter();
+			timer.stop();
+
+			Minecraft minecraft = Minecraft.getInstance();
+			Internal.getRuntime().getIngredientListOverlay().updateScreen(minecraft.screen, false);
 		}
 	}
 }

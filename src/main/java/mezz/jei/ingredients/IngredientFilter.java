@@ -45,6 +45,7 @@ public class IngredientFilter implements IIngredientGridSource {
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
+	private final IClientConfig clientConfig;
 	private final IngredientBlacklistInternal blacklist;
 	private final IWorldConfig worldConfig;
 	private final IEditModeConfig editModeConfig;
@@ -52,9 +53,9 @@ public class IngredientFilter implements IIngredientGridSource {
 	private final IIngredientSorter sorter;
 	private final boolean debugMode;
 
-	private final IElementSearch elementSearch;
 	private final ElementPrefixParser elementPrefixParser;
 	private final Set<String> modNamesForSorting = new HashSet<>();
+	private IElementSearch elementSearch;
 
 	@Nullable
 	private String filterCached;
@@ -74,16 +75,13 @@ public class IngredientFilter implements IIngredientGridSource {
 	) {
 		this.blacklist = blacklist;
 		this.worldConfig = worldConfig;
+		this.clientConfig = clientConfig;
 		this.editModeConfig = editModeConfig;
 		this.ingredientManager = ingredientManager;
 		this.sorter = sorter;
 		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config);
 
-		if (clientConfig.isLowMemorySlowSearchEnabled()) {
-			this.elementSearch = new ElementSearchLowMem();
-		} else {
-			this.elementSearch = new ElementSearch(elementPrefixParser);
-		}
+		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
 		this.debugMode = clientConfig.isDebugModeEnabled();
 
 		EventBusHelper.registerWeakListener(this, EditModeToggleEvent.class, (ingredientFilter, editModeToggleEvent) -> {
@@ -103,6 +101,14 @@ public class IngredientFilter implements IIngredientGridSource {
 		}
 	}
 
+	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser) {
+		if (clientConfig.isLowMemorySlowSearchEnabled()) {
+			return new ElementSearchLowMem();
+		} else {
+			return new ElementSearch(elementPrefixParser);
+		}
+	}
+
 	public <V> void addIngredient(IIngredientListElementInfo<V> info) {
 		IIngredientListElement<V> element = info.getElement();
 		updateHiddenState(element);
@@ -113,6 +119,13 @@ public class IngredientFilter implements IIngredientGridSource {
 		this.modNamesForSorting.add(modNameForSorting);
 
 		invalidateCache();
+	}
+
+	public void rebuildItemFilter() {
+		this.invalidateCache();
+		Collection<IIngredientListElementInfo<?>> ingredients = this.elementSearch.getAllIngredients();
+		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser);
+		this.elementSearch.addAll(ingredients);
 	}
 
 	public void invalidateCache() {
