@@ -16,13 +16,14 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
-import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.common.util.StackHelper;
+import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.focus.FocusFactory;
@@ -122,7 +123,8 @@ public class PluginLoader {
 		PluginCaller.callOnPlugins("Registering recipe catalysts", plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration));
 		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
 
-		AdvancedRegistration advancedRegistration = new AdvancedRegistration(jeiHelpers);
+		IJeiFeatures jeiFeatures = Internal.getJeiFeatures();
+		AdvancedRegistration advancedRegistration = new AdvancedRegistration(jeiHelpers, jeiFeatures);
 		PluginCaller.callOnPlugins("Registering advanced plugins", plugins, p -> p.registerAdvanced(advancedRegistration));
 		List<IRecipeManagerPlugin> recipeManagerPlugins = advancedRegistration.getRecipeManagerPlugins();
 		ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryExtensions = advancedRegistration.getRecipeCategoryDecorators();

@@ -5,6 +5,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
+import mezz.jei.api.runtime.IJeiFeatures;
 
 /**
  * The IAdvancedRegistration instance is passed to your mod plugin in {@link IModPlugin#registerAdvanced(IAdvancedRegistration)}.
@@ -26,4 +27,12 @@ public interface IAdvancedRegistration {
 	 * @since 15.1.0
 	 */
 	<T> void addRecipeCategoryDecorator(RecipeType<T> recipeType, IRecipeCategoryDecorator<T> decorator);
+
+	/**
+	 * Get access to disable various JEI features.
+	 * This may be needed by mods that substantially change hard-coded vanilla behaviors.
+	 *
+	 * @since 17.3.0
+	 */
+	IJeiFeatures getJeiFeatures();
 }

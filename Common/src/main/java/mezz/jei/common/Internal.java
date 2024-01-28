@@ -26,6 +26,7 @@ public final class Internal {
 	private static IClientToggleState toggleState;
 	@Nullable
 	private static IJeiClientConfigs jeiClientConfigs;
+	private static final JeiFeatures jeiFeatures = new JeiFeatures();
 
 	private Internal() {
 
@@ -73,5 +74,9 @@ public final class Internal {
 
 	public static void setJeiClientConfigs(IJeiClientConfigs jeiClientConfigs) {
 		Internal.jeiClientConfigs = jeiClientConfigs;
+	}
+
+	public static JeiFeatures getJeiFeatures() {
+		return jeiFeatures;
 	}
 }
