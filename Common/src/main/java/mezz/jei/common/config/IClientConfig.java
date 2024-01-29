@@ -17,7 +17,9 @@ public interface IClientConfig {
 
     boolean isLookupFluidContents();
 
-    GiveMode getGiveMode();
+	boolean isLookupBlockTags();
+
+	GiveMode getGiveMode();
 
 	int getMaxRecipeGuiHeight();
 

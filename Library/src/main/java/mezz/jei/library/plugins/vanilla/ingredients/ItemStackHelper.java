@@ -1,10 +1,14 @@
 package mezz.jei.library.plugins.vanilla.ingredients;
 
+import com.google.common.collect.Streams;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
@@ -16,6 +20,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -126,8 +131,21 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public Stream<ResourceLocation> getTagStream(ItemStack ingredient) {
-		return ingredient.getTags()
+		Stream<ResourceLocation> itemTagStream = ingredient.getTags()
 			.map(TagKey::location);
+
+		if (ingredient.getItem() instanceof BlockItem blockItem) {
+			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+			if (clientConfig.isLookupBlockTags()) {
+				Stream<ResourceLocation> blockTagStream = blockItem.getBlock()
+					.defaultBlockState()
+					.getTags()
+					.map(TagKey::location);
+				return Streams.concat(itemTagStream, blockTagStream);
+			}
+		}
+		return itemTagStream;
 	}
 
 	@Override
