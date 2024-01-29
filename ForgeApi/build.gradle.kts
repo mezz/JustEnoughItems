@@ -1,7 +1,7 @@
 plugins {
 	java
 	`maven-publish`
-	id("net.minecraftforge.gradle") version ("5.1.+")
+	id("net.minecraftforge.gradle") version("[6.0,6.2)")
 	id("org.parchmentmc.librarian.forgegradle") version ("1.+")
 }
 

@@ -1,7 +1,7 @@
 import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
 
 plugins {
-	id("se.bjurr.gitchangelog.git-changelog-gradle-plugin") version("1.71.4")
+	id("se.bjurr.gitchangelog.git-changelog-gradle-plugin") version("1.77.2")
 }
 
 // gradle.properties
