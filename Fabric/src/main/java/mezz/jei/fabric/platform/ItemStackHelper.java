@@ -1,9 +1,8 @@
 package mezz.jei.fabric.platform;
 
 import mezz.jei.common.platform.IPlatformItemStackHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -47,10 +46,8 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
     }
 
     @Override
-    public List<Component> getTestTooltip(ItemStack itemStack) {
+    public List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
         try {
-            Minecraft minecraft = Minecraft.getInstance();
-            LocalPlayer player = minecraft.player;
             return itemStack.getTooltipLines(player, TooltipFlag.Default.NORMAL);
         } catch (LinkageError | RuntimeException e) {
             LOGGER.error("Error while Testing for mod name formatting", e);

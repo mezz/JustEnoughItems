@@ -3,19 +3,22 @@ package mezz.jei.forge.platform;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
+import mezz.jei.core.util.function.LazySupplier;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 
+import java.util.function.Supplier;
+
 public class PlatformHelper implements IPlatformHelper {
-    private final ItemStackHelper itemStackHelper = new ItemStackHelper();
-    private final FluidHelper fluidHelper = new FluidHelper();
-    private final RenderHelper renderHelper = new RenderHelper();
-    private final RecipeHelper recipeHelper = new RecipeHelper();
-    private final ConfigHelper configHelper = new ConfigHelper();
-    private final InputHelper inputHelper = new InputHelper();
-    private final ScreenHelper screenHelper = new ScreenHelper();
-    private final IngredientHelper ingredientHelper = new IngredientHelper();
-    private final ModHelper modHelper = new ModHelper();
+    private final Supplier<ItemStackHelper> itemStackHelper = new LazySupplier<>(ItemStackHelper::new);
+    private final Supplier<FluidHelper> fluidHelper = new LazySupplier<>(FluidHelper::new);
+    private final Supplier<RenderHelper> renderHelper = new LazySupplier<>(RenderHelper::new);
+    private final Supplier<RecipeHelper> recipeHelper = new LazySupplier<>(RecipeHelper::new);
+    private final Supplier<ConfigHelper> configHelper = new LazySupplier<>(ConfigHelper::new);
+    private final Supplier<InputHelper> inputHelper = new LazySupplier<>(InputHelper::new);
+    private final Supplier<ScreenHelper> screenHelper = new LazySupplier<>(ScreenHelper::new);
+    private final Supplier<IngredientHelper> ingredientHelper = new LazySupplier<>(IngredientHelper::new);
+    private final Supplier<ModHelper> modHelper = new LazySupplier<>(ModHelper::new);
 
     @Override
     public <T> IPlatformRegistry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
@@ -24,46 +27,46 @@ public class PlatformHelper implements IPlatformHelper {
 
     @Override
     public ItemStackHelper getItemStackHelper() {
-        return itemStackHelper;
+        return itemStackHelper.get();
     }
 
     @Override
     public IPlatformFluidHelperInternal<?> getFluidHelper() {
-        return fluidHelper;
+        return fluidHelper.get();
     }
 
     @Override
     public RenderHelper getRenderHelper() {
-        return renderHelper;
+        return renderHelper.get();
     }
 
     @Override
     public RecipeHelper getRecipeHelper() {
-        return recipeHelper;
+        return recipeHelper.get();
     }
 
     @Override
     public ConfigHelper getConfigHelper() {
-        return configHelper;
+        return configHelper.get();
     }
 
     @Override
     public InputHelper getInputHelper() {
-        return inputHelper;
+        return inputHelper.get();
     }
 
     @Override
     public ScreenHelper getScreenHelper() {
-        return screenHelper;
+        return screenHelper.get();
     }
 
     @Override
     public IngredientHelper getIngredientHelper() {
-        return ingredientHelper;
+        return ingredientHelper.get();
     }
 
     @Override
     public ModHelper getModHelper() {
-        return modHelper;
+        return modHelper.get();
     }
 }
