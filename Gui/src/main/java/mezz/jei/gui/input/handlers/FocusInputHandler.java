@@ -73,7 +73,7 @@ public class FocusInputHandler implements IUserInputHandler {
 	private List<IFocus<?>> createFocuses(ITypedIngredient<?> ingredient, List<RecipeIngredientRole> roles) {
 		List<ITypedIngredient<?>> ingredients = new ArrayList<>();
 		ingredients.add(ingredient);
-		if (clientConfig.isLookupFluidContents()) {
+		if (clientConfig.isLookupFluidContentsEnabled()) {
 			IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 			getContainedFluid(fluidHelper, ingredient)
 				.ifPresent(ingredients::add);

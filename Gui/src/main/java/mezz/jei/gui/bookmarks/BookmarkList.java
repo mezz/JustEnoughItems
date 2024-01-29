@@ -31,7 +31,7 @@ public class BookmarkList implements IIngredientGridSource {
 		if (contains(value)) {
 			return false;
 		}
-		addToList(value, clientConfig.isAddingBookmarksToFront());
+		addToList(value, clientConfig.isAddingBookmarksToFrontEnabled());
 		notifyListenersOfChange();
 		bookmarkConfig.saveBookmarks(ingredientManager, list);
 		return true;

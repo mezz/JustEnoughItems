@@ -29,12 +29,17 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isAddingBookmarksToFront() {
+	public boolean isAddingBookmarksToFrontEnabled() {
 		return false;
 	}
 
 	@Override
-	public boolean isLookupFluidContents() {
+	public boolean isLookupFluidContentsEnabled() {
+		return false;
+	}
+
+	@Override
+	public boolean isLookupBlockTagsEnabled() {
 		return false;
 	}
 

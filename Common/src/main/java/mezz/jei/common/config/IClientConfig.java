@@ -13,11 +13,13 @@ public interface IClientConfig {
 
 	boolean isCheatToHotbarUsingHotkeysEnabled();
 
-	boolean isAddingBookmarksToFront();
+	boolean isAddingBookmarksToFrontEnabled();
 
-    boolean isLookupFluidContents();
+    boolean isLookupFluidContentsEnabled();
 
-    GiveMode getGiveMode();
+	boolean isLookupBlockTagsEnabled();
+
+	GiveMode getGiveMode();
 
 	int getMaxRecipeGuiHeight();
 
