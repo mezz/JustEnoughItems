@@ -3,6 +3,7 @@ package mezz.jei.plugins.vanilla.ingredients.item;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -185,7 +186,13 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public Collection<ResourceLocation> getTags(ItemStack ingredient) {
-		return ingredient.getItem().getTags();
+		Item item = ingredient.getItem();
+		Collection<ResourceLocation> tags = new LinkedHashSet<>(item.getTags());
+		if (item instanceof BlockItem) {
+			Block block = ((BlockItem) item).getBlock();
+			tags.addAll(block.getTags());
+		}
+		return tags;
 	}
 
 	@Override
