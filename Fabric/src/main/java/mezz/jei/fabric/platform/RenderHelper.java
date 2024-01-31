@@ -19,55 +19,55 @@ import java.util.List;
 import java.util.Optional;
 
 public class RenderHelper implements IPlatformRenderHelper {
-    @Override
-    public Font getFontRenderer(Minecraft minecraft, ItemStack itemStack) {
-        return minecraft.font;
-    }
+	@Override
+	public Font getFontRenderer(Minecraft minecraft, ItemStack itemStack) {
+		return minecraft.font;
+	}
 
-    @Override
-    public boolean shouldRender(MobEffectInstance potionEffect) {
-        return true;
-    }
+	@Override
+	public boolean shouldRender(MobEffectInstance potionEffect) {
+		return true;
+	}
 
-    @Override
-    public TextureAtlasSprite getParticleIcon(BakedModel bakedModel) {
-        return bakedModel.getParticleIcon();
-    }
+	@Override
+	public TextureAtlasSprite getParticleIcon(BakedModel bakedModel) {
+		return bakedModel.getParticleIcon();
+	}
 
-    @Override
-    public ItemColors getItemColors() {
-        Minecraft minecraft = Minecraft.getInstance();
-        return minecraft.itemColors;
-    }
+	@Override
+	public ItemColors getItemColors() {
+		Minecraft minecraft = Minecraft.getInstance();
+		return minecraft.itemColors;
+	}
 
-    @Override
-    public Optional<NativeImage> getMainImage(TextureAtlasSprite sprite) {
-        SpriteContents contents = sprite.contents();
-        NativeImage[] frames = contents.byMipLevel;
-        if (frames.length == 0) {
-            return Optional.empty();
-        }
-        NativeImage frame = frames[0];
-        return Optional.ofNullable(frame);
-    }
+	@Override
+	public Optional<NativeImage> getMainImage(TextureAtlasSprite sprite) {
+		SpriteContents contents = sprite.contents();
+		NativeImage[] frames = contents.byMipLevel;
+		if (frames.length == 0) {
+			return Optional.empty();
+		}
+		NativeImage frame = frames[0];
+		return Optional.ofNullable(frame);
+	}
 
-    @Override
-    public void renderTooltip(
-        Screen screen,
-        GuiGraphics guiGraphics,
-        List<Component> textComponents,
-        Optional<TooltipComponent> tooltipComponent,
-        int x,
-        int y,
-        Font font,
-        ItemStack stack
-    ) {
-        guiGraphics.renderTooltip(
-            font,
-            textComponents,
-            tooltipComponent,
-            x,
-            y
-        );
-    }
+	@Override
+	public void renderTooltip(
+		Screen screen,
+		GuiGraphics guiGraphics,
+		List<Component> textComponents,
+		Optional<TooltipComponent> tooltipComponent,
+		int x,
+		int y,
+		Font font,
+		ItemStack stack
+	) {
+		guiGraphics.renderTooltip(
+			font,
+			textComponents,
+			tooltipComponent,
+			x,
+			y
+		);
+	}
 }

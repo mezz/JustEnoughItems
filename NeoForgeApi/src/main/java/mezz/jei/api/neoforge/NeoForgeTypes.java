@@ -11,25 +11,25 @@ import net.neoforged.neoforge.fluids.FluidStack;
  * @since 17.0.0
  */
 public final class NeoForgeTypes {
-    /**
-     * @since 17.0.0
-     */
-    public static final IIngredientTypeWithSubtypes<Fluid, FluidStack> FLUID_STACK = new IIngredientTypeWithSubtypes<>() {
-        @Override
-        public Class<? extends FluidStack> getIngredientClass() {
-            return FluidStack.class;
-        }
+	/**
+	 * @since 17.0.0
+	 */
+	public static final IIngredientTypeWithSubtypes<Fluid, FluidStack> FLUID_STACK = new IIngredientTypeWithSubtypes<>() {
+		@Override
+		public Class<? extends FluidStack> getIngredientClass() {
+			return FluidStack.class;
+		}
 
-        @Override
-        public Class<? extends Fluid> getIngredientBaseClass() {
-            return Fluid.class;
-        }
+		@Override
+		public Class<? extends Fluid> getIngredientBaseClass() {
+			return Fluid.class;
+		}
 
-        @Override
-        public Fluid getBase(FluidStack ingredient) {
-            return ingredient.getFluid();
-        }
-    };
+		@Override
+		public Fluid getBase(FluidStack ingredient) {
+			return ingredient.getFluid();
+		}
+	};
 
-    private NeoForgeTypes() {}
+	private NeoForgeTypes() {}
 }

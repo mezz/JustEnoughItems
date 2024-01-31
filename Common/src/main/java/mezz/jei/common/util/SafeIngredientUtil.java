@@ -45,7 +45,7 @@ public final class SafeIngredientUtil {
 		return getTooltip(ingredientManager, ingredientRenderer, typedIngredient, tooltipFlag);
 	}
 
-	public static <T> List<Component> getTooltip(IIngredientManager ingredientManager, IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> typedIngredient, TooltipFlag.Default tooltipFlag ) {
+	public static <T> List<Component> getTooltip(IIngredientManager ingredientManager, IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> typedIngredient, TooltipFlag.Default tooltipFlag) {
 		T ingredient = typedIngredient.getIngredient();
 		Class<?> ingredientClass = ingredient.getClass();
 		if (CRASHING_INGREDIENT_TOOLTIP_CLASSES.contains(ingredientClass)) {

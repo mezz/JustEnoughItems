@@ -14,12 +14,12 @@ import java.util.Collection;
  * @since 12.1.0
  */
 public interface IJeiConfigManager {
-    /**
-     * @return all of JEI's config files.
-     * @see IJeiConfigFile
-     *
-     * @since 12.1.0
-     */
-    @Unmodifiable
-    Collection<IJeiConfigFile> getConfigFiles();
+	/**
+	 * @return all of JEI's config files.
+	 * @see IJeiConfigFile
+	 *
+	 * @since 12.1.0
+	 */
+	@Unmodifiable
+	Collection<IJeiConfigFile> getConfigFiles();
 }

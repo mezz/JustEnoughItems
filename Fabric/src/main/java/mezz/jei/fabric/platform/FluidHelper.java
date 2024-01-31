@@ -30,117 +30,117 @@ import java.util.Optional;
 
 @SuppressWarnings("UnstableApiUsage")
 public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngredient> {
-    @Override
-    public IIngredientTypeWithSubtypes<Fluid, IJeiFluidIngredient> getFluidIngredientType() {
-        return FabricTypes.FLUID_STACK;
-    }
+	@Override
+	public IIngredientTypeWithSubtypes<Fluid, IJeiFluidIngredient> getFluidIngredientType() {
+		return FabricTypes.FLUID_STACK;
+	}
 
-    @Override
-    public IIngredientSubtypeInterpreter<IJeiFluidIngredient> getAllNbtSubtypeInterpreter() {
-        return AllFluidNbt.INSTANCE;
-    }
+	@Override
+	public IIngredientSubtypeInterpreter<IJeiFluidIngredient> getAllNbtSubtypeInterpreter() {
+		return AllFluidNbt.INSTANCE;
+	}
 
-    @Override
-    public IIngredientRenderer<IJeiFluidIngredient> createRenderer(long capacity, boolean showCapacity, int width, int height) {
-        return new FluidTankRenderer<>(this, capacity, showCapacity, width, height);
-    }
+	@Override
+	public IIngredientRenderer<IJeiFluidIngredient> createRenderer(long capacity, boolean showCapacity, int width, int height) {
+		return new FluidTankRenderer<>(this, capacity, showCapacity, width, height);
+	}
 
-    @Override
-    public Optional<TextureAtlasSprite> getStillFluidSprite(IJeiFluidIngredient ingredient) {
-        FluidVariant fluidVariant = getFluidVariant(ingredient);
-        TextureAtlasSprite sprite = FluidVariantRendering.getSprite(fluidVariant);
-        return Optional.ofNullable(sprite);
-    }
+	@Override
+	public Optional<TextureAtlasSprite> getStillFluidSprite(IJeiFluidIngredient ingredient) {
+		FluidVariant fluidVariant = getFluidVariant(ingredient);
+		TextureAtlasSprite sprite = FluidVariantRendering.getSprite(fluidVariant);
+		return Optional.ofNullable(sprite);
+	}
 
-    @Override
-    public Component getDisplayName(IJeiFluidIngredient ingredient) {
-        FluidVariant fluidVariant = getFluidVariant(ingredient);
-        return FluidVariantAttributes.getName(fluidVariant);
-    }
+	@Override
+	public Component getDisplayName(IJeiFluidIngredient ingredient) {
+		FluidVariant fluidVariant = getFluidVariant(ingredient);
+		return FluidVariantAttributes.getName(fluidVariant);
+	}
 
-    @Override
-    public int getColorTint(IJeiFluidIngredient ingredient) {
-        FluidVariant fluidVariant = getFluidVariant(ingredient);
-        int fluidColor = FluidVariantRendering.getColor(fluidVariant);
-        return fluidColor | 0xFF000000;
-    }
+	@Override
+	public int getColorTint(IJeiFluidIngredient ingredient) {
+		FluidVariant fluidVariant = getFluidVariant(ingredient);
+		int fluidColor = FluidVariantRendering.getColor(fluidVariant);
+		return fluidColor | 0xFF000000;
+	}
 
-    @Override
-    public List<Component> getTooltip(IJeiFluidIngredient ingredient, TooltipFlag tooltipFlag) {
-        FluidVariant fluidVariant = getFluidVariant(ingredient);
-        return FluidVariantRendering.getTooltip(fluidVariant, tooltipFlag);
-    }
+	@Override
+	public List<Component> getTooltip(IJeiFluidIngredient ingredient, TooltipFlag tooltipFlag) {
+		FluidVariant fluidVariant = getFluidVariant(ingredient);
+		return FluidVariantRendering.getTooltip(fluidVariant, tooltipFlag);
+	}
 
-    private FluidVariant getFluidVariant(IJeiFluidIngredient ingredient) {
-        Fluid fluid = ingredient.getFluid();
-        CompoundTag tag = ingredient.getTag().orElse(null);
-        return FluidVariant.of(fluid, tag);
-    }
+	private FluidVariant getFluidVariant(IJeiFluidIngredient ingredient) {
+		Fluid fluid = ingredient.getFluid();
+		CompoundTag tag = ingredient.getTag().orElse(null);
+		return FluidVariant.of(fluid, tag);
+	}
 
-    @Override
-    public long getAmount(IJeiFluidIngredient ingredient) {
-        return ingredient.getAmount();
-    }
+	@Override
+	public long getAmount(IJeiFluidIngredient ingredient) {
+		return ingredient.getAmount();
+	}
 
-    @Override
-    public Optional<CompoundTag> getTag(IJeiFluidIngredient ingredient) {
-        return ingredient.getTag();
-    }
+	@Override
+	public Optional<CompoundTag> getTag(IJeiFluidIngredient ingredient) {
+		return ingredient.getTag();
+	}
 
-    @SuppressWarnings("UnstableApiUsage")
-    @Override
-    public long bucketVolume() {
-        return FluidConstants.BUCKET;
-    }
+	@SuppressWarnings("UnstableApiUsage")
+	@Override
+	public long bucketVolume() {
+		return FluidConstants.BUCKET;
+	}
 
-    @Override
-    public IJeiFluidIngredient create(Fluid fluid, long amount, @Nullable CompoundTag tag) {
-        return new JeiFluidIngredient(fluid, amount, tag);
-    }
+	@Override
+	public IJeiFluidIngredient create(Fluid fluid, long amount, @Nullable CompoundTag tag) {
+		return new JeiFluidIngredient(fluid, amount, tag);
+	}
 
-    @Override
-    public IJeiFluidIngredient create(Fluid fluid, long amount) {
-        return new JeiFluidIngredient(fluid, amount);
-    }
+	@Override
+	public IJeiFluidIngredient create(Fluid fluid, long amount) {
+		return new JeiFluidIngredient(fluid, amount);
+	}
 
-    @Override
-    public IJeiFluidIngredient copy(IJeiFluidIngredient ingredient) {
-        CompoundTag tag = ingredient.getTag().orElse(null);
-        return new JeiFluidIngredient(ingredient.getFluid(), ingredient.getAmount(), tag);
-    }
+	@Override
+	public IJeiFluidIngredient copy(IJeiFluidIngredient ingredient) {
+		CompoundTag tag = ingredient.getTag().orElse(null);
+		return new JeiFluidIngredient(ingredient.getFluid(), ingredient.getAmount(), tag);
+	}
 
-    @Override
-    public IJeiFluidIngredient normalize(IJeiFluidIngredient ingredient) {
-        CompoundTag tag = ingredient.getTag().orElse(null);
-        return new JeiFluidIngredient(ingredient.getFluid(), bucketVolume(), tag);
-    }
+	@Override
+	public IJeiFluidIngredient normalize(IJeiFluidIngredient ingredient) {
+		CompoundTag tag = ingredient.getTag().orElse(null);
+		return new JeiFluidIngredient(ingredient.getFluid(), bucketVolume(), tag);
+	}
 
-    @Override
-    public Optional<IJeiFluidIngredient> getContainedFluid(ITypedIngredient<?> ingredient) {
-        return ingredient.getItemStack()
-            .map(ContainerItemContext::withConstant)
-            .map(c -> c.find(FluidStorage.ITEM))
-            .map(Storage::iterator)
-            .filter(Iterator::hasNext)
-            .map(Iterator::next)
-            .map(view -> {
-                FluidVariant resource = view.getResource();
-                return new JeiFluidIngredient(resource.getFluid(), bucketVolume(), resource.copyNbt());
-            });
-    }
+	@Override
+	public Optional<IJeiFluidIngredient> getContainedFluid(ITypedIngredient<?> ingredient) {
+		return ingredient.getItemStack()
+			.map(ContainerItemContext::withConstant)
+			.map(c -> c.find(FluidStorage.ITEM))
+			.map(Storage::iterator)
+			.filter(Iterator::hasNext)
+			.map(Iterator::next)
+			.map(view -> {
+				FluidVariant resource = view.getResource();
+				return new JeiFluidIngredient(resource.getFluid(), bucketVolume(), resource.copyNbt());
+			});
+	}
 
-    private static class AllFluidNbt implements IIngredientSubtypeInterpreter<IJeiFluidIngredient> {
-        public static final AllFluidNbt INSTANCE = new AllFluidNbt();
+	private static class AllFluidNbt implements IIngredientSubtypeInterpreter<IJeiFluidIngredient> {
+		public static final AllFluidNbt INSTANCE = new AllFluidNbt();
 
-        private AllFluidNbt() {
-        }
+		private AllFluidNbt() {
+		}
 
-        @Override
-        public String apply(IJeiFluidIngredient storage, UidContext context) {
-            return storage.getTag()
-                .filter(tag -> !tag.isEmpty())
-                .map(CompoundTag::toString)
-                .orElse(IIngredientSubtypeInterpreter.NONE);
-        }
-    }
+		@Override
+		public String apply(IJeiFluidIngredient storage, UidContext context) {
+			return storage.getTag()
+				.filter(tag -> !tag.isEmpty())
+				.map(CompoundTag::toString)
+				.orElse(IIngredientSubtypeInterpreter.NONE);
+		}
+	}
 }

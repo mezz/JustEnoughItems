@@ -3,9 +3,9 @@ package mezz.jei.common.config;
 import java.util.List;
 
 public interface IClientConfig {
-    int minRecipeGuiHeight = 175;
-    int defaultRecipeGuiHeight = 350;
-    boolean defaultCenterSearchBar = false;
+	int minRecipeGuiHeight = 175;
+	int defaultRecipeGuiHeight = 350;
+	boolean defaultCenterSearchBar = false;
 
 	boolean isCenterSearchBarEnabled();
 
@@ -19,7 +19,7 @@ public interface IClientConfig {
 
 	boolean isAddingBookmarksToFrontEnabled();
 
-    boolean isLookupFluidContentsEnabled();
+	boolean isLookupFluidContentsEnabled();
 
 	boolean isLookupBlockTagsEnabled();
 

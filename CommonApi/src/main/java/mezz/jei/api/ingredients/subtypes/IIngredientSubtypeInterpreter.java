@@ -13,16 +13,16 @@ package mezz.jei.api.ingredients.subtypes;
  */
 @FunctionalInterface
 public interface IIngredientSubtypeInterpreter<T> {
-    String NONE = "";
+	String NONE = "";
 
-    /**
-     * Get the data from an ingredient that is relevant to telling subtypes apart in the given context.
-     * This should account for nbt, and anything else that's relevant.
-     *
-     * {@link UidContext} can be used to give different subtype information depending on the given context.
-     * Most cases will return the same value for all contexts and it can usually be ignored.
-     *
-     * Return {@link #NONE} if there is no data used for subtypes.
-     */
-    String apply(T ingredient, UidContext context);
+	/**
+	 * Get the data from an ingredient that is relevant to telling subtypes apart in the given context.
+	 * This should account for nbt, and anything else that's relevant.
+	 *
+	 * {@link UidContext} can be used to give different subtype information depending on the given context.
+	 * Most cases will return the same value for all contexts and it can usually be ignored.
+	 *
+	 * Return {@link #NONE} if there is no data used for subtypes.
+	 */
+	String apply(T ingredient, UidContext context);
 }

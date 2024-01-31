@@ -120,20 +120,20 @@ public class RecipeManagerInternal {
 
 	private <T> boolean addRecipe(IRecipeCategory<T> recipeCategory, T recipe, Set<T> hiddenRecipes) {
 		RecipeType<T> recipeType = recipeCategory.getRecipeType();
-        if (hiddenRecipes.contains(recipe)) {
+		if (hiddenRecipes.contains(recipe)) {
 			if (LOGGER.isDebugEnabled()) {
 				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);
 				LOGGER.debug("Recipe not added because it is hidden: {}", recipeInfo);
 			}
-            return false;
-        }
+			return false;
+		}
 		if (!recipeCategory.isHandled(recipe)) {
 			if (LOGGER.isDebugEnabled()) {
 				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);
 				LOGGER.debug("Recipe not added because the recipe category cannot handle it: {}", recipeInfo);
 			}
-            return false;
-        }
+			return false;
+		}
 		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
 		if (ingredientSupplier == null) {
 			return false;

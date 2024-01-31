@@ -7,18 +7,18 @@ import net.fabricmc.loader.api.metadata.ModMetadata;
 import org.apache.commons.lang3.StringUtils;
 
 public class ModHelper implements IPlatformModHelper {
-    @Override
-    public String getModNameForModId(String modId) {
-        FabricLoader loader = FabricLoader.getInstance();
-        return loader.getModContainer(modId)
-            .map(ModContainer::getMetadata)
-            .map(ModMetadata::getName)
-            .orElseGet(() -> StringUtils.capitalize(modId));
-    }
+	@Override
+	public String getModNameForModId(String modId) {
+		FabricLoader loader = FabricLoader.getInstance();
+		return loader.getModContainer(modId)
+			.map(ModContainer::getMetadata)
+			.map(ModMetadata::getName)
+			.orElseGet(() -> StringUtils.capitalize(modId));
+	}
 
-    @Override
-    public boolean isInDev() {
-        FabricLoader loader = FabricLoader.getInstance();
-        return loader.isDevelopmentEnvironment();
-    }
+	@Override
+	public boolean isInDev() {
+		FabricLoader loader = FabricLoader.getInstance();
+		return loader.isDevelopmentEnvironment();
+	}
 }

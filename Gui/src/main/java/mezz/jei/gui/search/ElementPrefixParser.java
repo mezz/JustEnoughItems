@@ -65,7 +65,7 @@ public class ElementPrefixParser {
 					modNames = Stream.concat(modNames, shortModNames);
 				}
 
-                return modNames
+				return modNames
 					.map(String::toLowerCase)
 					.map(SPACE_PATTERN::matcher)
 					.map(matcher -> matcher.replaceAll(""))

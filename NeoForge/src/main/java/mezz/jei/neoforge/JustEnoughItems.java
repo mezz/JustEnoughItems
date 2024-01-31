@@ -19,7 +19,7 @@ public class JustEnoughItems {
 
 	public JustEnoughItems(IEventBus modEventBus, Dist dist) {
 		Translator.setLocaleSupplier(new MinecraftLocaleSupplier());
-        IEventBus eventBus = NeoForge.EVENT_BUS;
+		IEventBus eventBus = NeoForge.EVENT_BUS;
 		PermanentEventSubscriptions subscriptions = new PermanentEventSubscriptions(eventBus, modEventBus);
 
 		ModLoadingContext modLoadingContext = ModLoadingContext.get();

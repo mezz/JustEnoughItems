@@ -12,27 +12,27 @@ import net.minecraft.network.chat.Component;
  * @since 11.0.1
  */
 public interface IJeiKeyMapping {
-    /**
-     * Returns true if the key mapping matches the key,
-     * and the current key modifiers match any pressed key modifiers.
-     *
-     * This works for a mouse click or for a keyboard key, depending on what is bound.
-     *
-     * @since 11.0.1
-     */
-    boolean isActiveAndMatches(InputConstants.Key key);
+	/**
+	 * Returns true if the key mapping matches the key,
+	 * and the current key modifiers match any pressed key modifiers.
+	 *
+	 * This works for a mouse click or for a keyboard key, depending on what is bound.
+	 *
+	 * @since 11.0.1
+	 */
+	boolean isActiveAndMatches(InputConstants.Key key);
 
-    /**
-     * @return true if there is no key bound to this mapping.
-     *
-     * @since 11.0.1
-     */
-    boolean isUnbound();
+	/**
+	 * @return true if there is no key bound to this mapping.
+	 *
+	 * @since 11.0.1
+	 */
+	boolean isUnbound();
 
-    /**
-     * @return the name of the key that is bound.
-     *
-     * @since 11.0.1
-     */
-    Component getTranslatedKeyMessage();
+	/**
+	 * @return the name of the key that is bound.
+	 *
+	 * @since 11.0.1
+	 */
+	Component getTranslatedKeyMessage();
 }

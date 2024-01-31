@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 public class TestModIdHelper implements IModIdHelper {
-    @Override
+	@Override
 	public String getModNameForModId(String modId) {
 		return "ModName(" + modId + ")";
 	}

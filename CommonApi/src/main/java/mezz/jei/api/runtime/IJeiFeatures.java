@@ -12,12 +12,12 @@ import mezz.jei.api.registration.IAdvancedRegistration;
  * @since 17.3.0
  */
 public interface IJeiFeatures {
-    /**
-     * Disable JEI's Inventory Effect Renderer {@link IGuiContainerHandler}.
-     * This is used by JEI in order to move out of the way of potion effects shown next to the inventory.
-     * It can be disabled by mods that remove this behavior or substitute their own.
-     *
-     * @since 17.3.0
-     */
-    void disableInventoryEffectRendererGuiHandler();
+	/**
+	 * Disable JEI's Inventory Effect Renderer {@link IGuiContainerHandler}.
+	 * This is used by JEI in order to move out of the way of potion effects shown next to the inventory.
+	 * It can be disabled by mods that remove this behavior or substitute their own.
+	 *
+	 * @since 17.3.0
+	 */
+	void disableInventoryEffectRendererGuiHandler();
 }

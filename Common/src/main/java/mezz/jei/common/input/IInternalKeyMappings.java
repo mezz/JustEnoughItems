@@ -4,48 +4,48 @@ import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.api.runtime.IJeiKeyMappings;
 
 public interface IInternalKeyMappings extends IJeiKeyMappings {
-    IJeiKeyMapping getToggleOverlay();
-    IJeiKeyMapping getFocusSearch();
-    IJeiKeyMapping getToggleCheatMode();
-    IJeiKeyMapping getToggleEditMode();
+	IJeiKeyMapping getToggleOverlay();
+	IJeiKeyMapping getFocusSearch();
+	IJeiKeyMapping getToggleCheatMode();
+	IJeiKeyMapping getToggleEditMode();
 
-    IJeiKeyMapping getToggleCheatModeConfigButton();
+	IJeiKeyMapping getToggleCheatModeConfigButton();
 
-    IJeiKeyMapping getRecipeBack();
-    IJeiKeyMapping getPreviousCategory();
-    IJeiKeyMapping getNextCategory();
-    IJeiKeyMapping getPreviousRecipePage();
-    IJeiKeyMapping getNextRecipePage();
+	IJeiKeyMapping getRecipeBack();
+	IJeiKeyMapping getPreviousCategory();
+	IJeiKeyMapping getNextCategory();
+	IJeiKeyMapping getPreviousRecipePage();
+	IJeiKeyMapping getNextRecipePage();
 
-    IJeiKeyMapping getPreviousPage();
-    IJeiKeyMapping getNextPage();
+	IJeiKeyMapping getPreviousPage();
+	IJeiKeyMapping getNextPage();
 
-    IJeiKeyMapping getCloseRecipeGui();
+	IJeiKeyMapping getCloseRecipeGui();
 
-    IJeiKeyMapping getBookmark();
-    IJeiKeyMapping getToggleBookmarkOverlay();
+	IJeiKeyMapping getBookmark();
+	IJeiKeyMapping getToggleBookmarkOverlay();
 
-    @Override
-    IJeiKeyMapping getShowRecipe();
+	@Override
+	IJeiKeyMapping getShowRecipe();
 
-    @Override
-    IJeiKeyMapping getShowUses();
+	@Override
+	IJeiKeyMapping getShowUses();
 
-    IJeiKeyMapping getCheatOneItem();
-    IJeiKeyMapping getCheatItemStack();
+	IJeiKeyMapping getCheatOneItem();
+	IJeiKeyMapping getCheatItemStack();
 
-    IJeiKeyMapping getToggleHideIngredient();
-    IJeiKeyMapping getToggleWildcardHideIngredient();
+	IJeiKeyMapping getToggleHideIngredient();
+	IJeiKeyMapping getToggleWildcardHideIngredient();
 
-    IJeiKeyMapping getHoveredClearSearchBar();
-    IJeiKeyMapping getPreviousSearch();
-    IJeiKeyMapping getNextSearch();
+	IJeiKeyMapping getHoveredClearSearchBar();
+	IJeiKeyMapping getPreviousSearch();
+	IJeiKeyMapping getNextSearch();
 
-    IJeiKeyMapping getCopyRecipeId();
+	IJeiKeyMapping getCopyRecipeId();
 
-    // internal only, unregistered and can't be changed because they match vanilla Minecraft hard-coded keys:
-    IJeiKeyMapping getEscapeKey();
-    IJeiKeyMapping getLeftClick();
-    IJeiKeyMapping getRightClick();
-    IJeiKeyMapping getEnterKey();
+	// internal only, unregistered and can't be changed because they match vanilla Minecraft hard-coded keys:
+	IJeiKeyMapping getEscapeKey();
+	IJeiKeyMapping getLeftClick();
+	IJeiKeyMapping getRightClick();
+	IJeiKeyMapping getEnterKey();
 }

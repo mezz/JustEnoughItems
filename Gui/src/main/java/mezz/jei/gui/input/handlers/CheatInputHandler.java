@@ -18,56 +18,56 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Optional;
 
 public class CheatInputHandler implements IUserInputHandler {
-    private final IRecipeFocusSource showsRecipeFocuses;
-    private final IClientToggleState toggleState;
-    private final CommandUtil commandUtil;
-    private final CheatUtil cheatUtil;
+	private final IRecipeFocusSource showsRecipeFocuses;
+	private final IClientToggleState toggleState;
+	private final CommandUtil commandUtil;
+	private final CheatUtil cheatUtil;
 
-    public CheatInputHandler(
-        IRecipeFocusSource showsRecipeFocuses,
-        IClientToggleState toggleState,
-        IClientConfig clientConfig,
-        IConnectionToServer serverConnection,
-        CheatUtil cheatUtil
-    ) {
-        this.showsRecipeFocuses = showsRecipeFocuses;
-        this.toggleState = toggleState;
-        this.cheatUtil = cheatUtil;
-        this.commandUtil = new CommandUtil(clientConfig, serverConnection);
-    }
+	public CheatInputHandler(
+		IRecipeFocusSource showsRecipeFocuses,
+		IClientToggleState toggleState,
+		IClientConfig clientConfig,
+		IConnectionToServer serverConnection,
+		CheatUtil cheatUtil
+	) {
+		this.showsRecipeFocuses = showsRecipeFocuses;
+		this.toggleState = toggleState;
+		this.cheatUtil = cheatUtil;
+		this.commandUtil = new CommandUtil(clientConfig, serverConnection);
+	}
 
-    @Override
-    public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-        if (!toggleState.isCheatItemsEnabled() ||
-            screen instanceof IRecipesGui
-        ) {
-            return Optional.empty();
-        }
+	@Override
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+		if (!toggleState.isCheatItemsEnabled() ||
+			screen instanceof IRecipesGui
+		) {
+			return Optional.empty();
+		}
 
-        if (input.is(keyBindings.getCheatItemStack())) {
-            return handleGive(input, GiveAmount.MAX);
-        }
+		if (input.is(keyBindings.getCheatItemStack())) {
+			return handleGive(input, GiveAmount.MAX);
+		}
 
-        if (input.is(keyBindings.getCheatOneItem())) {
-            return handleGive(input, GiveAmount.ONE);
-        }
+		if (input.is(keyBindings.getCheatOneItem())) {
+			return handleGive(input, GiveAmount.ONE);
+		}
 
-        return Optional.empty();
-    }
+		return Optional.empty();
+	}
 
-    private Optional<IUserInputHandler> handleGive(UserInput input, GiveAmount giveAmount) {
-        return showsRecipeFocuses.getIngredientUnderMouse(input.getMouseX(), input.getMouseY())
-            .findFirst()
-            .map(clicked -> {
-                if (!input.isSimulate()) {
-                    ItemStack itemStack = cheatUtil.getCheatItemStack(clicked);
-                    if (!itemStack.isEmpty()) {
-                        commandUtil.giveStack(itemStack, giveAmount);
-                    }
-                }
-                ImmutableRect2i area = clicked.getArea();
-                return LimitedAreaInputHandler.create(this, area);
-            });
-    }
+	private Optional<IUserInputHandler> handleGive(UserInput input, GiveAmount giveAmount) {
+		return showsRecipeFocuses.getIngredientUnderMouse(input.getMouseX(), input.getMouseY())
+			.findFirst()
+			.map(clicked -> {
+				if (!input.isSimulate()) {
+					ItemStack itemStack = cheatUtil.getCheatItemStack(clicked);
+					if (!itemStack.isEmpty()) {
+						commandUtil.giveStack(itemStack, giveAmount);
+					}
+				}
+				ImmutableRect2i area = clicked.getArea();
+				return LimitedAreaInputHandler.create(this, area);
+			});
+	}
 
 }

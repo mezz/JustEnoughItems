@@ -14,27 +14,27 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(EffectRenderingInventoryScreen.class)
 public abstract class EffectRenderingInventoryScreenMixin extends AbstractContainerScreen<AbstractContainerMenu> {
-    public EffectRenderingInventoryScreenMixin(AbstractContainerMenu menu, Inventory inventory, Component component) {
-        super(menu, inventory, component);
-    }
+	public EffectRenderingInventoryScreenMixin(AbstractContainerMenu menu, Inventory inventory, Component component) {
+		super(menu, inventory, component);
+	}
 
-    @ModifyVariable(
-        method = "renderEffects(Lnet/minecraft/client/gui/GuiGraphics;II)V",
-        index = 7,
-        name = "bl",
-        at = @At("STORE")
-    )
-    public boolean modifyHasRoom(boolean bl) {
-        boolean ingredientListDisplayed = FabricGuiPlugin.getRuntime()
-            .map(IJeiRuntime::getIngredientListOverlay)
-            .map(IIngredientListOverlay::isListDisplayed)
-            .orElse(false);
+	@ModifyVariable(
+		method = "renderEffects(Lnet/minecraft/client/gui/GuiGraphics;II)V",
+		index = 7,
+		name = "bl",
+		at = @At("STORE")
+	)
+	public boolean modifyHasRoom(boolean bl) {
+		boolean ingredientListDisplayed = FabricGuiPlugin.getRuntime()
+			.map(IJeiRuntime::getIngredientListOverlay)
+			.map(IIngredientListOverlay::isListDisplayed)
+			.orElse(false);
 
-        if (ingredientListDisplayed) {
-            // make the potion effects think that there is not enough room,
-            // so they render in compact mode.
-            return false;
-        }
-        return bl;
-    }
+		if (ingredientListDisplayed) {
+			// make the potion effects think that there is not enough room,
+			// so they render in compact mode.
+			return false;
+		}
+		return bl;
+	}
 }

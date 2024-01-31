@@ -11,18 +11,18 @@ import java.util.Collection;
  * @since 12.1.0
  */
 public interface IJeiConfigCategory {
-    /**
-     * The name of the category.
-     *
-     * @since 12.1.0
-     */
-    String getName();
+	/**
+	 * The name of the category.
+	 *
+	 * @since 12.1.0
+	 */
+	String getName();
 
-    /**
-     * The config values in the category.
-     *
-     * @since 12.1.0
-     */
-    @Unmodifiable
-    Collection<? extends IJeiConfigValue<?>> getConfigValues();
+	/**
+	 * The config values in the category.
+	 *
+	 * @since 12.1.0
+	 */
+	@Unmodifiable
+	Collection<? extends IJeiConfigValue<?>> getConfigValues();
 }

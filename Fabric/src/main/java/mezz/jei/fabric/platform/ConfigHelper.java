@@ -8,14 +8,14 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 public class ConfigHelper implements IPlatformConfigHelper {
-    @Override
-    public Path getModConfigDir() {
-        return FabricLoader.getInstance()
-            .getConfigDir();
-    }
+	@Override
+	public Path getModConfigDir() {
+		return FabricLoader.getInstance()
+			.getConfigDir();
+	}
 
-    @Override
-    public Optional<Screen> getConfigScreen() {
-        return Optional.empty();
-    }
+	@Override
+	public Optional<Screen> getConfigScreen() {
+		return Optional.empty();
+	}
 }

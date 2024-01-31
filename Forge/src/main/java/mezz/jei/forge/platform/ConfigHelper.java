@@ -14,18 +14,18 @@ import java.util.Optional;
 
 public class ConfigHelper implements IPlatformConfigHelper {
 
-    @Override
-    public Path getModConfigDir() {
-        return FMLPaths.CONFIGDIR.get();
-    }
+	@Override
+	public Path getModConfigDir() {
+		return FMLPaths.CONFIGDIR.get();
+	}
 
-    @Override
-    public Optional<Screen> getConfigScreen() {
-        Minecraft minecraft = Minecraft.getInstance();
-        return ModList.get()
-            .getModContainerById(ModIds.JEI_ID)
-            .map(ModContainer::getModInfo)
-            .flatMap(ConfigScreenHandler::getScreenFactoryFor)
-            .map(f -> f.apply(minecraft, minecraft.screen));
-    }
+	@Override
+	public Optional<Screen> getConfigScreen() {
+		Minecraft minecraft = Minecraft.getInstance();
+		return ModList.get()
+			.getModContainerById(ModIds.JEI_ID)
+			.map(ModContainer::getModInfo)
+			.flatMap(ConfigScreenHandler::getScreenFactoryFor)
+			.map(f -> f.apply(minecraft, minecraft.screen));
+	}
 }

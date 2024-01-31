@@ -30,110 +30,110 @@ import java.util.Objects;
 import java.util.Set;
 
 public class BrewingRecipeMakerCommon {
-    private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
-    public static Set<IJeiBrewingRecipe> getVanillaBrewingRecipes(
-        IVanillaRecipeFactory recipeFactory,
-        IIngredientManager ingredientManager,
-        IVanillaPotionOutputSupplier vanillaOutputSupplier
-    ) {
-        Set<IJeiBrewingRecipe> recipes = new HashSet<>();
-        IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registries.POTION);
-        IngredientSet<ItemStack> knownPotions = getBaseKnownPotions(ingredientManager, potionRegistry);
+	public static Set<IJeiBrewingRecipe> getVanillaBrewingRecipes(
+		IVanillaRecipeFactory recipeFactory,
+		IIngredientManager ingredientManager,
+		IVanillaPotionOutputSupplier vanillaOutputSupplier
+	) {
+		Set<IJeiBrewingRecipe> recipes = new HashSet<>();
+		IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registries.POTION);
+		IngredientSet<ItemStack> knownPotions = getBaseKnownPotions(ingredientManager, potionRegistry);
 
-        List<ItemStack> potionReagents = ingredientManager.getAllItemStacks().stream()
-            .filter(BrewingRecipeMakerCommon::isIngredient)
-            .toList();
+		List<ItemStack> potionReagents = ingredientManager.getAllItemStacks().stream()
+			.filter(BrewingRecipeMakerCommon::isIngredient)
+			.toList();
 
-        boolean foundNewPotions;
-        do {
-            List<ItemStack> newPotions = getNewPotions(
-                recipeFactory,
-                potionRegistry,
-                knownPotions,
-                potionReagents,
-                vanillaOutputSupplier,
-                recipes
-            );
-            foundNewPotions = !newPotions.isEmpty();
-            knownPotions.addAll(newPotions);
-        } while (foundNewPotions);
+		boolean foundNewPotions;
+		do {
+			List<ItemStack> newPotions = getNewPotions(
+				recipeFactory,
+				potionRegistry,
+				knownPotions,
+				potionReagents,
+				vanillaOutputSupplier,
+				recipes
+			);
+			foundNewPotions = !newPotions.isEmpty();
+			knownPotions.addAll(newPotions);
+		} while (foundNewPotions);
 
-        return recipes;
-    }
+		return recipes;
+	}
 
-    private static boolean isIngredient(ItemStack itemStack) {
-        try {
-            return PotionBrewing.isIngredient(itemStack);
-        } catch (RuntimeException | LinkageError e) {
-            String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
-            LOGGER.error("Failed to check if item is a potion reagent {}.", itemStackInfo, e);
-            return false;
-        }
-    }
+	private static boolean isIngredient(ItemStack itemStack) {
+		try {
+			return PotionBrewing.isIngredient(itemStack);
+		} catch (RuntimeException | LinkageError e) {
+			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			LOGGER.error("Failed to check if item is a potion reagent {}.", itemStackInfo, e);
+			return false;
+		}
+	}
 
-    private static IngredientSet<ItemStack> getBaseKnownPotions(IIngredientManager ingredientManager, IPlatformRegistry<Potion> potionRegistry) {
-        IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
-        List<ItemStack> potionContainers = ingredientHelper.getPotionContainers().stream()
-            .flatMap(potionItem -> Arrays.stream(potionItem.getItems()))
-            .toList();
+	private static IngredientSet<ItemStack> getBaseKnownPotions(IIngredientManager ingredientManager, IPlatformRegistry<Potion> potionRegistry) {
+		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
+		List<ItemStack> potionContainers = ingredientHelper.getPotionContainers().stream()
+			.flatMap(potionItem -> Arrays.stream(potionItem.getItems()))
+			.toList();
 
-        IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
-        IngredientSet<ItemStack> knownPotions = IngredientSet.create(itemStackHelper, UidContext.Ingredient);
+		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
+		IngredientSet<ItemStack> knownPotions = IngredientSet.create(itemStackHelper, UidContext.Ingredient);
 
-        potionRegistry.getValues()
-            .filter(potion -> potion != Potions.EMPTY) // skip the "un-craft-able" vanilla potions
-            .forEach(potion -> {
-                for (ItemStack potionContainer : potionContainers) {
-                    ItemStack result = PotionUtils.setPotion(potionContainer.copy(), potion);
-                    knownPotions.add(result);
-                }
-            });
-        return knownPotions;
-    }
+		potionRegistry.getValues()
+			.filter(potion -> potion != Potions.EMPTY) // skip the "un-craft-able" vanilla potions
+			.forEach(potion -> {
+				for (ItemStack potionContainer : potionContainers) {
+					ItemStack result = PotionUtils.setPotion(potionContainer.copy(), potion);
+					knownPotions.add(result);
+				}
+			});
+		return knownPotions;
+	}
 
-    private static List<ItemStack> getNewPotions(
-        IVanillaRecipeFactory recipeFactory,
-        IPlatformRegistry<Potion> potionRegistry,
-        Collection<ItemStack> knownPotions,
-        List<ItemStack> potionReagents,
-        IVanillaPotionOutputSupplier vanillaOutputSupplier,
-        Collection<IJeiBrewingRecipe> recipes
-    ) {
-        List<ItemStack> newPotions = new ArrayList<>();
-        for (ItemStack potionInput : knownPotions) {
-            for (ItemStack potionReagent : potionReagents) {
-                ItemStack potionOutput = vanillaOutputSupplier.getOutput(potionInput.copy(), potionReagent);
-                if (potionOutput.isEmpty()) {
-                    continue;
-                }
+	private static List<ItemStack> getNewPotions(
+		IVanillaRecipeFactory recipeFactory,
+		IPlatformRegistry<Potion> potionRegistry,
+		Collection<ItemStack> knownPotions,
+		List<ItemStack> potionReagents,
+		IVanillaPotionOutputSupplier vanillaOutputSupplier,
+		Collection<IJeiBrewingRecipe> recipes
+	) {
+		List<ItemStack> newPotions = new ArrayList<>();
+		for (ItemStack potionInput : knownPotions) {
+			for (ItemStack potionReagent : potionReagents) {
+				ItemStack potionOutput = vanillaOutputSupplier.getOutput(potionInput.copy(), potionReagent);
+				if (potionOutput.isEmpty()) {
+					continue;
+				}
 
-                if (potionInput.getItem() == potionOutput.getItem()) {
-                    Potion potionOutputType = PotionUtils.getPotion(potionOutput);
-                    if (potionOutputType == Potions.WATER) {
-                        continue;
-                    }
+				if (potionInput.getItem() == potionOutput.getItem()) {
+					Potion potionOutputType = PotionUtils.getPotion(potionOutput);
+					if (potionOutputType == Potions.WATER) {
+						continue;
+					}
 
-                    Potion potionInputType = PotionUtils.getPotion(potionInput);
-                    ResourceLocation inputId = potionRegistry.getRegistryName(potionInputType).orElse(null);
-                    ResourceLocation outputId = potionRegistry.getRegistryName(potionOutputType).orElse(null);
-                    if (Objects.equals(inputId, outputId)) {
-                        continue;
-                    }
-                }
+					Potion potionInputType = PotionUtils.getPotion(potionInput);
+					ResourceLocation inputId = potionRegistry.getRegistryName(potionInputType).orElse(null);
+					ResourceLocation outputId = potionRegistry.getRegistryName(potionOutputType).orElse(null);
+					if (Objects.equals(inputId, outputId)) {
+						continue;
+					}
+				}
 
-                IJeiBrewingRecipe recipe = recipeFactory.createBrewingRecipe(List.of(potionReagent), potionInput.copy(), potionOutput);
-                if (!recipes.contains(recipe)) {
-                    recipes.add(recipe);
-                    newPotions.add(potionOutput);
-                }
-            }
-        }
-        return newPotions;
-    }
+				IJeiBrewingRecipe recipe = recipeFactory.createBrewingRecipe(List.of(potionReagent), potionInput.copy(), potionOutput);
+				if (!recipes.contains(recipe)) {
+					recipes.add(recipe);
+					newPotions.add(potionOutput);
+				}
+			}
+		}
+		return newPotions;
+	}
 
-    @FunctionalInterface
-    public interface IVanillaPotionOutputSupplier {
-        ItemStack getOutput(ItemStack input, ItemStack ingredient);
-    }
+	@FunctionalInterface
+	public interface IVanillaPotionOutputSupplier {
+		ItemStack getOutput(ItemStack input, ItemStack ingredient);
+	}
 }

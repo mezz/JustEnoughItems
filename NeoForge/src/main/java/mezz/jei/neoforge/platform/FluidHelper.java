@@ -33,128 +33,128 @@ import java.util.List;
 import java.util.Optional;
 
 public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
-    @Override
-    public IIngredientTypeWithSubtypes<Fluid, FluidStack> getFluidIngredientType() {
-        return NeoForgeTypes.FLUID_STACK;
-    }
+	@Override
+	public IIngredientTypeWithSubtypes<Fluid, FluidStack> getFluidIngredientType() {
+		return NeoForgeTypes.FLUID_STACK;
+	}
 
-    @Override
-    public IIngredientSubtypeInterpreter<FluidStack> getAllNbtSubtypeInterpreter() {
-        return AllFluidNbt.INSTANCE;
-    }
+	@Override
+	public IIngredientSubtypeInterpreter<FluidStack> getAllNbtSubtypeInterpreter() {
+		return AllFluidNbt.INSTANCE;
+	}
 
-    @Override
-    public IIngredientRenderer<FluidStack> createRenderer(long capacity, boolean showCapacity, int width, int height) {
-        return new FluidTankRenderer<>(this, capacity, showCapacity, width, height);
-    }
+	@Override
+	public IIngredientRenderer<FluidStack> createRenderer(long capacity, boolean showCapacity, int width, int height) {
+		return new FluidTankRenderer<>(this, capacity, showCapacity, width, height);
+	}
 
-    @Override
-    public int getColorTint(FluidStack ingredient) {
-        Fluid fluid = ingredient.getFluid();
-        IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
-        return renderProperties.getTintColor(ingredient);
-    }
+	@Override
+	public int getColorTint(FluidStack ingredient) {
+		Fluid fluid = ingredient.getFluid();
+		IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
+		return renderProperties.getTintColor(ingredient);
+	}
 
-    @Override
-    public long getAmount(FluidStack ingredient) {
-        return ingredient.getAmount();
-    }
+	@Override
+	public long getAmount(FluidStack ingredient) {
+		return ingredient.getAmount();
+	}
 
-    @Override
-    public Optional<CompoundTag> getTag(FluidStack ingredient) {
-        return Optional.ofNullable(ingredient.getTag());
-    }
+	@Override
+	public Optional<CompoundTag> getTag(FluidStack ingredient) {
+		return Optional.ofNullable(ingredient.getTag());
+	}
 
-    @Override
-    public List<Component> getTooltip(FluidStack ingredient, TooltipFlag tooltipFlag) {
-        List<Component> tooltip = new ArrayList<>();
-        Fluid fluid = ingredient.getFluid();
-        if (fluid.isSame(Fluids.EMPTY)) {
-            return tooltip;
-        }
+	@Override
+	public List<Component> getTooltip(FluidStack ingredient, TooltipFlag tooltipFlag) {
+		List<Component> tooltip = new ArrayList<>();
+		Fluid fluid = ingredient.getFluid();
+		if (fluid.isSame(Fluids.EMPTY)) {
+			return tooltip;
+		}
 
-        Component displayName = getDisplayName(ingredient);
-        tooltip.add(displayName);
+		Component displayName = getDisplayName(ingredient);
+		tooltip.add(displayName);
 
-        if (tooltipFlag.isAdvanced()) {
-            ResourceLocation resourceLocation = BuiltInRegistries.FLUID.getKey(fluid);
-            if (!resourceLocation.equals(BuiltInRegistries.FLUID.getDefaultKey())) {
-                MutableComponent advancedId = Component.literal(resourceLocation.toString())
-                    .withStyle(ChatFormatting.DARK_GRAY);
-                tooltip.add(advancedId);
-            }
-        }
+		if (tooltipFlag.isAdvanced()) {
+			ResourceLocation resourceLocation = BuiltInRegistries.FLUID.getKey(fluid);
+			if (!resourceLocation.equals(BuiltInRegistries.FLUID.getDefaultKey())) {
+				MutableComponent advancedId = Component.literal(resourceLocation.toString())
+					.withStyle(ChatFormatting.DARK_GRAY);
+				tooltip.add(advancedId);
+			}
+		}
 
-        return tooltip;
-    }
+		return tooltip;
+	}
 
-    @Override
-    public long bucketVolume() {
-        return FluidType.BUCKET_VOLUME;
-    }
+	@Override
+	public long bucketVolume() {
+		return FluidType.BUCKET_VOLUME;
+	}
 
-    @Override
-    public Optional<TextureAtlasSprite> getStillFluidSprite(FluidStack fluidStack) {
-        Fluid fluid = fluidStack.getFluid();
-        IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
-        ResourceLocation fluidStill = renderProperties.getStillTexture(fluidStack);
+	@Override
+	public Optional<TextureAtlasSprite> getStillFluidSprite(FluidStack fluidStack) {
+		Fluid fluid = fluidStack.getFluid();
+		IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
+		ResourceLocation fluidStill = renderProperties.getStillTexture(fluidStack);
 
-        TextureAtlasSprite sprite = Minecraft.getInstance()
-            .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
-            .apply(fluidStill);
-        return Optional.of(sprite)
-            .filter(s -> s.atlasLocation() != MissingTextureAtlasSprite.getLocation());
-    }
+		TextureAtlasSprite sprite = Minecraft.getInstance()
+			.getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+			.apply(fluidStill);
+		return Optional.of(sprite)
+			.filter(s -> s.atlasLocation() != MissingTextureAtlasSprite.getLocation());
+	}
 
-    @Override
-    public Component getDisplayName(FluidStack ingredient) {
-        return ingredient.getDisplayName();
-    }
+	@Override
+	public Component getDisplayName(FluidStack ingredient) {
+		return ingredient.getDisplayName();
+	}
 
-    private static class AllFluidNbt implements IIngredientSubtypeInterpreter<FluidStack> {
-        public static final AllFluidNbt INSTANCE = new AllFluidNbt();
+	private static class AllFluidNbt implements IIngredientSubtypeInterpreter<FluidStack> {
+		public static final AllFluidNbt INSTANCE = new AllFluidNbt();
 
-        private AllFluidNbt() {
-        }
+		private AllFluidNbt() {
+		}
 
-        @Override
-        public String apply(FluidStack fluidStack, UidContext context) {
-            CompoundTag nbtTagCompound = fluidStack.getTag();
-            if (nbtTagCompound == null || nbtTagCompound.isEmpty()) {
-                return IIngredientSubtypeInterpreter.NONE;
-            }
-            return nbtTagCompound.toString();
-        }
-    }
+		@Override
+		public String apply(FluidStack fluidStack, UidContext context) {
+			CompoundTag nbtTagCompound = fluidStack.getTag();
+			if (nbtTagCompound == null || nbtTagCompound.isEmpty()) {
+				return IIngredientSubtypeInterpreter.NONE;
+			}
+			return nbtTagCompound.toString();
+		}
+	}
 
-    @Override
-    public FluidStack create(Fluid fluid, long amount, @Nullable CompoundTag tag) {
-        int intAmount = (int) Math.min(amount, Integer.MAX_VALUE);
-        return new FluidStack(fluid, intAmount, tag);
-    }
+	@Override
+	public FluidStack create(Fluid fluid, long amount, @Nullable CompoundTag tag) {
+		int intAmount = (int) Math.min(amount, Integer.MAX_VALUE);
+		return new FluidStack(fluid, intAmount, tag);
+	}
 
-    @Override
-    public FluidStack create(Fluid fluid, long amount) {
-        int intAmount = (int) Math.min(amount, Integer.MAX_VALUE);
-        return new FluidStack(fluid, intAmount);
-    }
+	@Override
+	public FluidStack create(Fluid fluid, long amount) {
+		int intAmount = (int) Math.min(amount, Integer.MAX_VALUE);
+		return new FluidStack(fluid, intAmount);
+	}
 
-    @Override
-    public FluidStack copy(FluidStack ingredient) {
-        return ingredient.copy();
-    }
+	@Override
+	public FluidStack copy(FluidStack ingredient) {
+		return ingredient.copy();
+	}
 
-    @Override
-    public FluidStack normalize(FluidStack ingredient) {
-        FluidStack copy = this.copy(ingredient);
-        copy.setAmount(FluidType.BUCKET_VOLUME);
-        return copy;
-    }
+	@Override
+	public FluidStack normalize(FluidStack ingredient) {
+		FluidStack copy = this.copy(ingredient);
+		copy.setAmount(FluidType.BUCKET_VOLUME);
+		return copy;
+	}
 
-    @Override
-    public Optional<FluidStack> getContainedFluid(ITypedIngredient<?> ingredient) {
-        return ingredient.getItemStack()
-            .flatMap(i -> Optional.ofNullable(i.getCapability(Capabilities.FluidHandler.ITEM)))
-            .map(c -> c.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE));
-    }
+	@Override
+	public Optional<FluidStack> getContainedFluid(ITypedIngredient<?> ingredient) {
+		return ingredient.getItemStack()
+			.flatMap(i -> Optional.ofNullable(i.getCapability(Capabilities.FluidHandler.ITEM)))
+			.map(c -> c.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE));
+	}
 }

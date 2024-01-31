@@ -19,37 +19,37 @@ import java.util.Optional;
 
 @JeiPlugin
 public class ForgeGuiPlugin implements IModPlugin {
-    private static final Logger LOGGER = LogManager.getLogger();
-    private static @Nullable ResourceReloadHandler resourceReloadHandler;
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static @Nullable ResourceReloadHandler resourceReloadHandler;
 
-    private final RuntimeEventSubscriptions runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
+	private final RuntimeEventSubscriptions runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
 
-    @Override
-    public ResourceLocation getPluginUid() {
-        return new ResourceLocation(ModIds.JEI_ID, "forge_gui");
-    }
+	@Override
+	public ResourceLocation getPluginUid() {
+		return new ResourceLocation(ModIds.JEI_ID, "forge_gui");
+	}
 
-    @Override
-    public void registerRuntime(IRuntimeRegistration registration) {
-        if (!runtimeSubscriptions.isEmpty()) {
-            LOGGER.error("JEI GUI is already running.");
-            runtimeSubscriptions.clear();
-        }
+	@Override
+	public void registerRuntime(IRuntimeRegistration registration) {
+		if (!runtimeSubscriptions.isEmpty()) {
+			LOGGER.error("JEI GUI is already running.");
+			runtimeSubscriptions.clear();
+		}
 
-        JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
-        resourceReloadHandler = eventHandlers.resourceReloadHandler();
+		JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
+		resourceReloadHandler = eventHandlers.resourceReloadHandler();
 
-        EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
-    }
+		EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
+	}
 
-    @Override
-    public void onRuntimeUnavailable() {
-        LOGGER.info("Stopping JEI GUI");
-        runtimeSubscriptions.clear();
-        resourceReloadHandler = null;
-    }
+	@Override
+	public void onRuntimeUnavailable() {
+		LOGGER.info("Stopping JEI GUI");
+		runtimeSubscriptions.clear();
+		resourceReloadHandler = null;
+	}
 
-    public static Optional<ResourceReloadHandler> getResourceReloadHandler() {
-        return Optional.ofNullable(resourceReloadHandler);
-    }
+	public static Optional<ResourceReloadHandler> getResourceReloadHandler() {
+		return Optional.ofNullable(resourceReloadHandler);
+	}
 }

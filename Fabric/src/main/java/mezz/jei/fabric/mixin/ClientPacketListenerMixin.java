@@ -11,21 +11,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPacketListener.class)
 public class ClientPacketListenerMixin {
-    @Inject(method = "handleUpdateRecipes", at = @At("RETURN"))
-    private void handleUpdateRecipes(ClientboundUpdateRecipesPacket packet, CallbackInfo ci) {
-        JeiLifecycleEvents.AFTER_RECIPE_SYNC.invoker().run();
-    }
+	@Inject(method = "handleUpdateRecipes", at = @At("RETURN"))
+	private void handleUpdateRecipes(ClientboundUpdateRecipesPacket packet, CallbackInfo ci) {
+		JeiLifecycleEvents.AFTER_RECIPE_SYNC.invoker().run();
+	}
 
-    @Inject(
-        method = "handleLogin(Lnet/minecraft/network/protocol/game/ClientboundLoginPacket;)V",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/player/LocalPlayer;resetPos()V",
-            shift = At.Shift.AFTER,
-            ordinal = 0
-        )
-    )
-    public void handleLogin(ClientboundLoginPacket packet, CallbackInfo ci) {
-        JeiLifecycleEvents.GAME_START.invoker().run();
-    }
+	@Inject(
+		method = "handleLogin(Lnet/minecraft/network/protocol/game/ClientboundLoginPacket;)V",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/player/LocalPlayer;resetPos()V",
+			shift = At.Shift.AFTER,
+			ordinal = 0
+		)
+	)
+	public void handleLogin(ClientboundLoginPacket packet, CallbackInfo ci) {
+		JeiLifecycleEvents.GAME_START.invoker().run();
+	}
 }
