@@ -13,11 +13,11 @@ public interface IClientConfig {
 
 	boolean isCheatToHotbarUsingHotkeysEnabled();
 
-	boolean isAddingBookmarksToFront();
+	boolean isAddingBookmarksToFrontEnabled();
 
-    boolean isLookupFluidContents();
+    boolean isLookupFluidContentsEnabled();
 
-	boolean isLookupBlockTags();
+	boolean isLookupBlockTagsEnabled();
 
 	GiveMode getGiveMode();
 

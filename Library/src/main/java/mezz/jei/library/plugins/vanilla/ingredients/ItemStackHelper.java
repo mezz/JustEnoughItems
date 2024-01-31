@@ -137,7 +137,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		if (ingredient.getItem() instanceof BlockItem blockItem) {
 			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-			if (clientConfig.isLookupBlockTags()) {
+			if (clientConfig.isLookupBlockTagsEnabled()) {
 				Stream<ResourceLocation> blockTagStream = blockItem.getBlock()
 					.defaultBlockState()
 					.getTags()
