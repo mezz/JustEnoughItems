@@ -2,6 +2,8 @@ package mezz.jei.gui.ghost;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.util.SafeIngredientUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
@@ -26,6 +28,7 @@ public class GhostIngredientDrag<T> {
 	private final IGhostIngredientHandler<?> handler;
 	private final List<Target<T>> targets;
 	private final List<Rect2i> targetAreas;
+	private final IIngredientManager ingredientManager;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final ITypedIngredient<T> ingredient;
 	private final double mouseStartX;
@@ -35,6 +38,7 @@ public class GhostIngredientDrag<T> {
 	public GhostIngredientDrag(
 		IGhostIngredientHandler<?> handler,
 		List<Target<T>> targets,
+		IIngredientManager ingredientManager,
 		IIngredientRenderer<T> ingredientRenderer,
 		ITypedIngredient<T> ingredient,
 		double mouseX,
@@ -46,6 +50,7 @@ public class GhostIngredientDrag<T> {
 		this.targetAreas = targets.stream()
 			.map(Target::getArea)
 			.toList();
+		this.ingredientManager = ingredientManager;
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredient = ingredient;
 		this.origin = origin;
@@ -115,7 +120,7 @@ public class GhostIngredientDrag<T> {
 		poseStack.pushPose();
 		{
 			poseStack.translate(mouseX - 8, mouseY - 8, 0);
-			ingredientRenderer.render(guiGraphics, ingredient.getIngredient());
+			SafeIngredientUtil.render(ingredientManager, ingredientRenderer, guiGraphics, ingredient);
 		}
 		poseStack.popPose();
 	}
@@ -172,5 +177,9 @@ public class GhostIngredientDrag<T> {
 
 	public ImmutableRect2i getOrigin() {
 		return origin;
+	}
+
+	public IIngredientManager getIngredientManager() {
+		return ingredientManager;
 	}
 }

@@ -12,17 +12,14 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.IngredientTooltipHelper;
+import mezz.jei.common.util.SafeIngredientUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -33,7 +30,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
-	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int MAX_DISPLAYED_INGREDIENTS = 100;
 
 	private final IIngredientManager ingredientManager;
@@ -140,20 +136,9 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	private <T> List<Component> getTooltip(ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
-		T value = typedIngredient.getIngredient();
-
-		try {
-			IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
-			return getTooltip(value, ingredientType, ingredientRenderer);
-		} catch (RuntimeException e) {
-			LOGGER.error("Exception when rendering tooltip on {}.", value, e);
-			return List.of();
-		}
-	}
-
-	private <T> List<Component> getTooltip(T value, IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer) {
+		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		List<Component> tooltip = IngredientTooltipHelper.getMutableIngredientTooltipSafe(value, ingredientRenderer);
+		List<Component> tooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, typedIngredient);
 		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onTooltip(this, tooltip);
 		}
@@ -257,14 +242,9 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	private <T> void drawIngredient(GuiGraphics guiGraphics, ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
-		T ingredient = typedIngredient.getIngredient();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 
-		try {
-			ingredientRenderer.render(guiGraphics, ingredient);
-		} catch (RuntimeException | LinkageError e) {
-			throw ErrorUtil.createRenderIngredientException(e, ingredient, ingredientManager);
-		}
+		SafeIngredientUtil.render(ingredientManager, ingredientRenderer, guiGraphics, typedIngredient);
 	}
 
 	@Override

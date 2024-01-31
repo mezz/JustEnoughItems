@@ -9,6 +9,7 @@ import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableAnimated;
@@ -57,7 +58,12 @@ public class GuiHelper implements IGuiHelper {
 		ErrorUtil.checkNotNull(type, "type");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
-		return new DrawableIngredient<>(ingredient, ingredientRenderer);
+		ITypedIngredient<V> typedIngredient = ingredientManager.createTypedIngredient(type, ingredient)
+			.orElseThrow(() -> {
+				String info = ErrorUtil.getIngredientInfo(ingredient, type, ingredientManager);
+				return new IllegalArgumentException(String.format("Ingredient is invalid and cannot be used as a drawable ingredient: %s", info));
+			});
+		return new DrawableIngredient<>(ingredientManager, typedIngredient, ingredientRenderer);
 	}
 
 	@Override

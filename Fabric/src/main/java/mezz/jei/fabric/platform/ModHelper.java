@@ -15,4 +15,10 @@ public class ModHelper implements IPlatformModHelper {
             .map(ModMetadata::getName)
             .orElseGet(() -> StringUtils.capitalize(modId));
     }
+
+    @Override
+    public boolean isInDev() {
+        FabricLoader loader = FabricLoader.getInstance();
+        return loader.isDevelopmentEnvironment();
+    }
 }

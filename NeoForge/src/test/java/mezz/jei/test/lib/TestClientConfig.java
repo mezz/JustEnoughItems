@@ -24,6 +24,16 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isCatchRenderErrorsEnabled() {
+		return false;
+	}
+
+	@Override
+	public boolean isCatchTooltipRenderErrorsEnabled() {
+		return false;
+	}
+
+	@Override
 	public boolean isCheatToHotbarUsingHotkeysEnabled() {
 		return false;
 	}

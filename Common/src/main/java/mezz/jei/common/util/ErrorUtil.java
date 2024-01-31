@@ -2,15 +2,10 @@ package mezz.jei.common.util;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
-import net.minecraft.CrashReport;
-import net.minecraft.CrashReportCategory;
-import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.Registries;
@@ -147,37 +142,6 @@ public final class ErrorUtil {
 					"It must be called on the main thread by using Minecraft.addScheduledTask."
 			);
 		}
-	}
-
-	public static <T> ReportedException createRenderIngredientException(Throwable throwable, final T ingredient, IIngredientManager ingredientManager) {
-		CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering ingredient");
-		CrashReportCategory ingredientCategory = crashreport.addCategory("Ingredient being rendered");
-		ingredientCategory.setDetail("String Name", ingredient::toString);
-		ingredientCategory.setDetail("Class Name", () -> ingredient.getClass().toString());
-
-		IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
-
-		ingredientManager.getIngredientTypeChecked(ingredient)
-			.ifPresentOrElse(ingredientType -> {
-				IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-
-				ingredientCategory.setDetail("Mod Name", () -> {
-					String modId = ingredientHelper.getDisplayModId(ingredient);
-					return modHelper.getModNameForModId(modId);
-				});
-				ingredientCategory.setDetail("Registry Name", () -> ingredientHelper.getResourceLocation(ingredient).toString());
-				ingredientCategory.setDetail("Display Name", () -> ingredientHelper.getDisplayName(ingredient));
-
-				CrashReportCategory jeiCategory = crashreport.addCategory("JEI render details");
-				jeiCategory.setDetail("Unique Id (for Blacklist)", () -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
-				jeiCategory.setDetail("Ingredient Type", () -> ingredientType.getIngredientClass().toString());
-				jeiCategory.setDetail("Error Info", () -> ingredientHelper.getErrorInfo(ingredient));
-			}, () -> {
-				CrashReportCategory jeiCategory = crashreport.addCategory("JEI render details");
-				jeiCategory.setDetail("Ingredient Type", "Error, Unknown Ingredient Type");
-			});
-
-		throw new ReportedException(crashreport);
 	}
 
 	public static <T> void validateRecipes(RecipeType<T> recipeType, Iterable<? extends T> recipes) {

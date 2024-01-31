@@ -26,7 +26,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Constants;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.library.plugins.jei.ingredients.DebugIngredient;
+import mezz.jei.library.plugins.debug.ingredients.DebugIngredient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;

@@ -1,29 +1,21 @@
 package mezz.jei.library.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.ErrorUtil;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
-	private static final Logger LOGGER = LogManager.getLogger();
-
 	@Override
 	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient) {
 		if (ingredient != null) {
@@ -41,16 +33,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	public List<Component> getTooltip(ItemStack ingredient, TooltipFlag tooltipFlag) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Player player = minecraft.player;
-		try {
-			return ingredient.getTooltipLines(player, tooltipFlag);
-		} catch (RuntimeException | LinkageError e) {
-			String itemStackInfo = ErrorUtil.getItemStackInfo(ingredient);
-			LOGGER.error("Failed to get tooltip: {}", itemStackInfo, e);
-			List<Component> list = new ArrayList<>();
-			MutableComponent crash = Component.translatable("jei.tooltip.error.crash");
-			list.add(crash.withStyle(ChatFormatting.RED));
-			return list;
-		}
+		return ingredient.getTooltipLines(player, tooltipFlag);
 	}
 
 	@Override
