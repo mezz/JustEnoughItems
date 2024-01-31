@@ -2,8 +2,10 @@ package mezz.jei.gui.ghost;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.common.util.SafeIngredientUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -16,6 +18,7 @@ import java.util.Optional;
  */
 public class GhostIngredientReturning<T> {
 	private static final long DURATION_PER_SCREEN_WIDTH = 500; // milliseconds to move across a full screen
+	private final IIngredientManager ingredientManager;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final ITypedIngredient<T> ingredient;
 	private final Vec2 start;
@@ -29,15 +32,17 @@ public class GhostIngredientReturning<T> {
 			return Optional.empty();
 		}
 
+		IIngredientManager ingredientManager = ghostIngredientDrag.getIngredientManager();
 		IIngredientRenderer<T> ingredientRenderer = ghostIngredientDrag.getIngredientRenderer();
 		ITypedIngredient<T> ingredient = ghostIngredientDrag.getIngredient();
 		Vec2 end = new Vec2(origin.getX(), origin.getY());
 		Vec2 start = new Vec2((float) mouseX - 8, (float) mouseY - 8);
-		GhostIngredientReturning<T> returning = new GhostIngredientReturning<>(ingredientRenderer, ingredient, start, end);
+		GhostIngredientReturning<T> returning = new GhostIngredientReturning<>(ingredientManager, ingredientRenderer, ingredient, start, end);
 		return Optional.of(returning);
 	}
 
-	private GhostIngredientReturning(IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> ingredient, Vec2 start, Vec2 end) {
+	private GhostIngredientReturning(IIngredientManager ingredientManager, IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> ingredient, Vec2 start, Vec2 end) {
+		this.ingredientManager = ingredientManager;
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredient = ingredient;
 		this.start = start;
@@ -66,7 +71,7 @@ public class GhostIngredientReturning<T> {
 		poseStack.pushPose();
 		{
 			poseStack.translate(x, y, 0);
-			ingredientRenderer.render(guiGraphics, ingredient.getIngredient());
+			SafeIngredientUtil.render(ingredientManager, ingredientRenderer, guiGraphics, ingredient);
 		}
 		poseStack.popPose();
 	}

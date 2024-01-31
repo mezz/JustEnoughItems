@@ -4,14 +4,13 @@ import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import net.minecraft.client.gui.GuiGraphics;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import org.joml.Matrix4f;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
@@ -20,16 +19,13 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.joml.Matrix4f;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
-	private static final Logger LOGGER = LogManager.getLogger();
-
 	private static final NumberFormat nf = NumberFormat.getIntegerInstance();
 	private static final int TEXTURE_SIZE = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
@@ -161,30 +157,23 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	public List<Component> getTooltip(T fluidStack, TooltipFlag tooltipFlag) {
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluidType = type.getBase(fluidStack);
-		try {
-			if (fluidType.isSame(Fluids.EMPTY)) {
-				return new ArrayList<>();
-			}
-
-			List<Component> tooltip = fluidHelper.getTooltip(fluidStack, tooltipFlag);
-
-			long amount = fluidHelper.getAmount(fluidStack);
-			long milliBuckets = (amount * 1000) / fluidHelper.bucketVolume();
-
-			if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
-				MutableComponent amountString = Component.translatable("jei.tooltip.liquid.amount.with.capacity", nf.format(milliBuckets), nf.format(capacity));
-				tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
-			} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
-				MutableComponent amountString = Component.translatable("jei.tooltip.liquid.amount", nf.format(milliBuckets));
-				tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
-			}
-			return tooltip;
-		} catch (RuntimeException e) {
-			Component displayName = fluidHelper.getDisplayName(fluidStack);
-			LOGGER.error("Failed to get tooltip for fluid: " + displayName, e);
+		if (fluidType.isSame(Fluids.EMPTY)) {
+			return new ArrayList<>();
 		}
 
-		return new ArrayList<>();
+		List<Component> tooltip = fluidHelper.getTooltip(fluidStack, tooltipFlag);
+
+		long amount = fluidHelper.getAmount(fluidStack);
+		long milliBuckets = (amount * 1000) / fluidHelper.bucketVolume();
+
+		if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
+			MutableComponent amountString = Component.translatable("jei.tooltip.liquid.amount.with.capacity", nf.format(milliBuckets), nf.format(capacity));
+			tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
+		} else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
+			MutableComponent amountString = Component.translatable("jei.tooltip.liquid.amount", nf.format(milliBuckets));
+			tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
+		}
+		return tooltip;
 	}
 
 	@Override

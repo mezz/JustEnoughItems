@@ -107,7 +107,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(value.getType());
 		ImmutableSet<String> toRemove = ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceLocation.getPath());
-		return IngredientInformationUtil.getTooltipStrings(value.getIngredient(), ingredientRenderer, toRemove, config);
+		return IngredientInformationUtil.getTooltipStrings(ingredientManager, value, ingredientRenderer, toRemove, config);
 	}
 
 	@Override

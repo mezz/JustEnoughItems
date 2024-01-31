@@ -11,6 +11,10 @@ public interface IClientConfig {
 
 	boolean isLowMemorySlowSearchEnabled();
 
+	boolean isCatchRenderErrorsEnabled();
+
+	boolean isCatchTooltipRenderErrorsEnabled();
+
 	boolean isCheatToHotbarUsingHotkeysEnabled();
 
 	boolean isAddingBookmarksToFrontEnabled();

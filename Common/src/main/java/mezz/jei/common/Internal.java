@@ -12,6 +12,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 /**
  * For JEI internal use only, these are normally accessed from the API.
  */
@@ -70,6 +72,10 @@ public final class Internal {
 	public static IJeiClientConfigs getJeiClientConfigs() {
 		Preconditions.checkState(jeiClientConfigs != null, "Jei Client Configs have not been created yet.");
 		return jeiClientConfigs;
+	}
+
+	public static Optional<IJeiClientConfigs> getOptionalJeiClientConfigs() {
+		return Optional.ofNullable(jeiClientConfigs);
 	}
 
 	public static void setJeiClientConfigs(IJeiClientConfigs jeiClientConfigs) {

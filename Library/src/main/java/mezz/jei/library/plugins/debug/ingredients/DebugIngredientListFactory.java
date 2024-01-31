@@ -1,4 +1,4 @@
-package mezz.jei.library.plugins.jei.ingredients;
+package mezz.jei.library.plugins.debug.ingredients;
 
 import java.util.ArrayList;
 import java.util.Collection;

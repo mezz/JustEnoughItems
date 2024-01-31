@@ -1,4 +1,4 @@
-package mezz.jei.library.plugins.jei.ingredients;
+package mezz.jei.library.plugins.debug.ingredients;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;

@@ -5,6 +5,7 @@ import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
+import mezz.jei.common.platform.Services;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -16,6 +17,8 @@ public final class ClientConfig implements IClientConfig {
 
 	private final Supplier<Boolean> centerSearchBarEnabled;
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
+	private final Supplier<Boolean> catchRenderErrorsEnabled;
+	private final Supplier<Boolean> catchTooltipRenderErrorsEnabled;
 	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
 	private final Supplier<Boolean> addBookmarksToFrontEnabled;
 	private final Supplier<Boolean> lookupFluidContentsEnabled;
@@ -27,6 +30,8 @@ public final class ClientConfig implements IClientConfig {
 	public ClientConfig(IConfigSchemaBuilder schema) {
 		instance = this;
 
+		boolean isDev = Services.PLATFORM.getModHelper().isInDev();
+
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
 		centerSearchBarEnabled = advanced.addBoolean(
 			"CenterSearch",
@@ -37,6 +42,16 @@ public final class ClientConfig implements IClientConfig {
 			"LowMemorySlowSearchEnabled",
 			false,
 			"Set low-memory mode (makes search very slow, but uses less RAM)"
+		);
+		catchRenderErrorsEnabled = advanced.addBoolean(
+			"CatchRenderErrorsEnabled",
+			!isDev,
+			"Catch render errors from ingredients and attempt to recover from them instead of crashing."
+		);
+		catchTooltipRenderErrorsEnabled = advanced.addBoolean(
+			"CatchTooltipErrorsEnabled",
+			!isDev,
+			"Catch render errors from tooltips and attempt to recover from them instead of crashing."
 		);
 		cheatToHotbarUsingHotkeysEnabled = advanced.addBoolean(
 			"CheatToHotbarUsingHotkeysEnabled",
@@ -97,6 +112,16 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isLowMemorySlowSearchEnabled() {
 		return lowMemorySlowSearchEnabled.get();
+	}
+
+	@Override
+	public boolean isCatchRenderErrorsEnabled() {
+		return catchRenderErrorsEnabled.get();
+	}
+
+	@Override
+	public boolean isCatchTooltipRenderErrorsEnabled() {
+		return catchTooltipRenderErrorsEnabled.get();
 	}
 
 	@Override

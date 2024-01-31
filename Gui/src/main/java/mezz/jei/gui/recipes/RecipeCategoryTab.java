@@ -9,6 +9,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
@@ -93,7 +94,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		{
 			poseStack.translate(iconX, iconY, 0);
 			RenderSystem.enableDepthTest();
-			ingredientRenderer.render(guiGraphics, ingredient.getIngredient());
+			SafeIngredientUtil.render(ingredientManager, ingredientRenderer, guiGraphics, ingredient);
 			RenderSystem.disableDepthTest();
 		}
 		poseStack.popPose();

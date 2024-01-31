@@ -125,7 +125,7 @@ public class GhostIngredientDragManager {
 				}
 				IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
 				ImmutableRect2i clickedArea = clicked.getArea();
-				this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, input.getMouseX(), input.getMouseY(), clickedArea);
+				this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientManager, ingredientRenderer, ingredient, input.getMouseX(), input.getMouseY(), clickedArea);
 				return true;
 			})
 			.orElse(false);

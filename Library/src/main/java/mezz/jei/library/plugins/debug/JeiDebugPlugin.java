@@ -26,10 +26,14 @@ import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.MathUtil;
-import mezz.jei.library.plugins.jei.ingredients.DebugIngredient;
-import mezz.jei.library.plugins.jei.ingredients.DebugIngredientHelper;
-import mezz.jei.library.plugins.jei.ingredients.DebugIngredientListFactory;
-import mezz.jei.library.plugins.jei.ingredients.DebugIngredientRenderer;
+import mezz.jei.library.plugins.debug.ingredients.DebugIngredient;
+import mezz.jei.library.plugins.debug.ingredients.DebugIngredientHelper;
+import mezz.jei.library.plugins.debug.ingredients.DebugIngredientListFactory;
+import mezz.jei.library.plugins.debug.ingredients.DebugIngredientRenderer;
+import mezz.jei.library.plugins.debug.ingredients.ErrorIngredient;
+import mezz.jei.library.plugins.debug.ingredients.ErrorIngredientHelper;
+import mezz.jei.library.plugins.debug.ingredients.ErrorIngredientListFactory;
+import mezz.jei.library.plugins.debug.ingredients.ErrorIngredientRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -44,6 +48,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -63,6 +68,13 @@ public class JeiDebugPlugin implements IModPlugin {
 			DebugIngredientHelper ingredientHelper = new DebugIngredientHelper();
 			DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer(ingredientHelper);
 			registration.register(DebugIngredient.TYPE, Collections.emptyList(), ingredientHelper, ingredientRenderer);
+
+			if (DebugConfig.isCrashingTestIngredientsEnabled()) {
+				ErrorIngredientHelper errorIngredientHelper = new ErrorIngredientHelper();
+				ErrorIngredientRenderer errorIngredientRenderer = new ErrorIngredientRenderer(errorIngredientHelper);
+				Collection<ErrorIngredient> errorIngredients = ErrorIngredientListFactory.create();
+				registration.register(ErrorIngredient.TYPE, errorIngredients, errorIngredientHelper, errorIngredientRenderer);
+			}
 		}
 	}
 

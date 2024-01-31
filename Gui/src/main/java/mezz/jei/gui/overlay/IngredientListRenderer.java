@@ -1,15 +1,15 @@
 package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.SafeIngredientUtil;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 
 import java.util.ArrayList;
@@ -104,20 +104,15 @@ public class IngredientListRenderer {
 			RenderSystem.enableBlend();
 		}
 
-		T ingredient = typedIngredient.getIngredient();
-		try {
-			int xPosition = area.getX() + slotPadding;
-			int yPosition = area.getY() + slotPadding;
-			var poseStack = guiGraphics.pose();
-			poseStack.pushPose();
-			{
-				poseStack.translate(xPosition, yPosition, 0);
-				ingredientRenderer.render(guiGraphics, ingredient);
-			}
-			poseStack.popPose();
-		} catch (RuntimeException | LinkageError e) {
-			throw ErrorUtil.createRenderIngredientException(e, ingredient, ingredientManager);
+		int xPosition = area.getX() + slotPadding;
+		int yPosition = area.getY() + slotPadding;
+		var poseStack = guiGraphics.pose();
+		poseStack.pushPose();
+		{
+			poseStack.translate(xPosition, yPosition, 0);
+			SafeIngredientUtil.render(ingredientManager, ingredientRenderer, guiGraphics, typedIngredient);
 		}
+		poseStack.popPose();
 	}
 
 	private static <T> void renderEditMode(GuiGraphics guiGraphics, ImmutableRect2i area, int padding, IEditModeConfig editModeConfig, ITypedIngredient<T> typedIngredient) {

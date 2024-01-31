@@ -2,7 +2,10 @@ package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.common.util.Translator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -23,9 +26,9 @@ public final class IngredientInformationUtil {
 	}
 
 	@Unmodifiable
-	public static <T> List<String> getTooltipStrings(T ingredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove, IIngredientFilterConfig config) {
+	public static <T> List<String> getTooltipStrings(IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient, IIngredientRenderer<T> ingredientRenderer, Set<String> toRemove, IIngredientFilterConfig config) {
 		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
-		List<Component> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
+		List<Component> tooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, typedIngredient, tooltipFlag);
 		return tooltip.stream()
 			.map(Component::getString)
 			.map(IngredientInformationUtil::removeChatFormatting)

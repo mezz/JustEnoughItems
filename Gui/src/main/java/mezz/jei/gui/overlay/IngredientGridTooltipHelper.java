@@ -1,6 +1,5 @@
 package mezz.jei.gui.overlay;
 
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -8,13 +7,14 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.util.IngredientTooltipHelper;
-import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.core.search.SearchMode;
-import mezz.jei.common.config.IIngredientFilterConfig;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
@@ -52,16 +52,16 @@ public final class IngredientGridTooltipHelper {
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
-		List<Component> tooltip = getTooltip(ingredient, ingredientRenderer, ingredientHelper);
+		List<Component> tooltip = getTooltip(value, ingredientRenderer, ingredientHelper);
 		TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY, ingredient, ingredientRenderer);
 	}
 
-	public <T> List<Component> getTooltip(T ingredient, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
-		List<Component> ingredientTooltipSafe = IngredientTooltipHelper.getMutableIngredientTooltipSafe(ingredient, ingredientRenderer);
-		List<Component> tooltip = modIdHelper.addModNameToIngredientTooltip(ingredientTooltipSafe, ingredient, ingredientHelper);
+	public <T> List<Component> getTooltip(ITypedIngredient<T> typedIngredient, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
+		List<Component> tooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, typedIngredient);
+		tooltip = modIdHelper.addModNameToIngredientTooltip(tooltip, typedIngredient.getIngredient(), ingredientHelper);
 
 		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
-			addColorSearchInfoToTooltip(tooltip, ingredient, ingredientHelper);
+			addColorSearchInfoToTooltip(tooltip, typedIngredient, ingredientHelper);
 		}
 
 		if (toggleState.isEditModeEnabled()) {
@@ -71,8 +71,8 @@ public final class IngredientGridTooltipHelper {
 		return tooltip;
 	}
 
-	private <T> void addColorSearchInfoToTooltip(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
-		Iterable<Integer> colors = ingredientHelper.getColors(ingredient);
+	private <T> void addColorSearchInfoToTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
+		Iterable<Integer> colors = ingredientHelper.getColors(typedIngredient.getIngredient());
 		String colorNamesString = StreamSupport.stream(colors.spliterator(), false)
 			.map(colorHelper::getClosestColorName)
 			.collect(Collectors.joining(", "));
