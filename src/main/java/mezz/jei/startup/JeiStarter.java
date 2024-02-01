@@ -106,10 +106,10 @@ public class JeiStarter {
 		InputHandler inputHandler = new InputHandler(recipesGui, ingredientFilter, ingredientManager, ingredientListOverlay, editModeConfig, worldConfig, guiScreenHelper, leftAreaDispatcher, bookmarkList);
 		Internal.setInputHandler(inputHandler);
 
-		started = true;
-
 		//This needs to be run after all of the "Ingredients are being added at runtime" items.
 		ingredientSorter.doPreSort(ingredientFilter, ingredientManager);
+
+		started = true;
 
 		totalTime.stop();
 	}

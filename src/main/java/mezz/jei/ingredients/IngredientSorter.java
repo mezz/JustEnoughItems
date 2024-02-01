@@ -4,6 +4,7 @@ import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.config.IClientConfig;
+import mezz.jei.config.sorting.IngredientTreeSortingConfig;
 import mezz.jei.config.sorting.IngredientTypeSortingConfig;
 import mezz.jei.config.sorting.ModNameSortingConfig;
 import mezz.jei.gui.ingredients.IIngredientListElement;
@@ -12,14 +13,11 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
-import net.minecraft.item.FishingRodItem;
-import net.minecraft.item.HoeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ShearsItem;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.util.registry.Registry;
 
 import com.google.common.collect.Multimap;
 
@@ -30,7 +28,6 @@ import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public final class IngredientSorter implements IIngredientSorter {
@@ -53,13 +50,15 @@ public final class IngredientSorter implements IIngredientSorter {
 	private final IClientConfig clientConfig;
 	private final ModNameSortingConfig modNameSortingConfig;
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
+	private final IngredientTreeSortingConfig ingredientTreeSortingConfig;
 
 	private boolean isCacheValid;
 
-	public IngredientSorter(IClientConfig clientConfig, ModNameSortingConfig modNameSortingConfig, IngredientTypeSortingConfig ingredientTypeSortingConfig) {
+	public IngredientSorter(IClientConfig clientConfig, ModNameSortingConfig modNameSortingConfig, IngredientTypeSortingConfig ingredientTypeSortingConfig, IngredientTreeSortingConfig ingredientTreeSortingConfig) {
 		this.clientConfig = clientConfig;
 		this.modNameSortingConfig = modNameSortingConfig;
 		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
+		this.ingredientTreeSortingConfig = ingredientTreeSortingConfig;
 		this.isCacheValid = false;
 	}
 
@@ -71,6 +70,7 @@ public final class IngredientSorter implements IIngredientSorter {
 
 		Comparator<IIngredientListElementInfo<?>> modName = createModNameComparator(modNames);
 		Comparator<IIngredientListElementInfo<?>> ingredientType = createIngredientTypeComparator(ingredientTypes);
+		Comparator<IIngredientListElementInfo<?>> ingredientTree = ingredientTreeSortingConfig.getComparator();
 		
 
 		EnumMap<IngredientSortStage, Comparator<IIngredientListElementInfo<?>>> comparatorsForStages = new EnumMap<>(IngredientSortStage.class);
@@ -83,6 +83,7 @@ public final class IngredientSorter implements IIngredientSorter {
 		comparatorsForStages.put(IngredientSortStage.WEAPON_DAMAGE, createAttackComparator());
 		comparatorsForStages.put(IngredientSortStage.ARMOR, createArmorComparator());
 		comparatorsForStages.put(IngredientSortStage.MAX_DURABILITY, createMaxDurabilityComparator());
+		comparatorsForStages.put(IngredientSortStage.ITEM_TREE, ingredientTree);
 
 		
 		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
@@ -102,13 +103,14 @@ public final class IngredientSorter implements IIngredientSorter {
 			index++;
 		}
 		this.isCacheValid = true;
+		//Don't need to hang on to this any more.
+		ingredientTreeSortingConfig.reset();
 	}
-
 
 	@Override
 	public Comparator<IIngredientListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
-		if (!this.isCacheValid) {
-			doPreSort(ingredientFilter, ingredientManager);
+		if (!this.isCacheValid || ingredientTreeSortingConfig.hasFileChanged()) {
+			this.doPreSort(ingredientFilter, ingredientManager);
 		}
 		//Now the comparator just uses that index value to order everything.
 		return PRE_SORTED;
@@ -133,7 +135,7 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	private Comparator<IIngredientListElementInfo<?>> createMaxDurabilityComparator() {
 		Comparator<IIngredientListElementInfo<?>> maxDamage = 
-			Comparator.comparing(o -> getMaxDamage(getItemStack(o)));
+			Comparator.comparing(o -> getMaxDamage(IngredientUtils.getItemStack(o)));
 		return maxDamage.reversed();
 	}
 
@@ -147,39 +149,39 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	private Comparator<IIngredientListElementInfo<?>> createToolsComparator() {
 		Comparator<IIngredientListElementInfo<?>> isToolComp = 
-			Comparator.comparing(o -> isTool(getItemStack(o)));
+			Comparator.comparing(o -> isTool(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> toolType = 
-			Comparator.comparing(o -> getToolClass(getItemStack(o)));
+			Comparator.comparing(o -> getToolClass(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> harvestLevel = 
-			Comparator.comparing(o -> getHarvestLevel(getItemStack(o)));
+			Comparator.comparing(o -> getHarvestLevel(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> maxDamage = 
-			Comparator.comparing(o -> getToolDurability(getItemStack(o)));
+			Comparator.comparing(o -> getToolDurability(IngredientUtils.getItemStack(o)));
 		return isToolComp.reversed().thenComparing(toolType).thenComparing(harvestLevel.reversed()).thenComparing(maxDamage.reversed());
 	}
 
 	private Comparator<IIngredientListElementInfo<?>> createAttackComparator() {
 		Comparator<IIngredientListElementInfo<?>> isWeaponComp = 
-			Comparator.comparing(o -> isWeapon(getItemStack(o)));
+			Comparator.comparing(o -> isWeapon(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> attackDamage = 
-			Comparator.comparing(o -> getAttackDamage(getItemStack(o)));
+			Comparator.comparing(o -> getAttackDamage(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> attackSpeed = 
-			Comparator.comparing(o -> getAttackSpeed(getItemStack(o)));
+			Comparator.comparing(o -> getAttackSpeed(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> maxDamage = 
-			Comparator.comparing(o -> getWeaponDurability(getItemStack(o)));
+			Comparator.comparing(o -> getWeaponDurability(IngredientUtils.getItemStack(o)));
 		return isWeaponComp.reversed().thenComparing(attackDamage.reversed()).thenComparing(attackSpeed.reversed()).thenComparing(maxDamage.reversed());
 	}
 
 	private Comparator<IIngredientListElementInfo<?>> createArmorComparator() {
 		Comparator<IIngredientListElementInfo<?>> isArmorComp = 
-			Comparator.comparing(o -> isArmor(getItemStack(o)));
+			Comparator.comparing(o -> isArmor(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> armorSlot = 
-			Comparator.comparing(o -> getArmorSlotIndex(getItemStack(o)));
+			Comparator.comparing(o -> getArmorSlotIndex(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> armorDamage = 
-			Comparator.comparing(o -> getArmorDamageReduce(getItemStack(o)));
+			Comparator.comparing(o -> getArmorDamageReduce(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> armorToughness = 
-			Comparator.comparing(o -> getArmorToughness(getItemStack(o)));
+			Comparator.comparing(o -> getArmorToughness(IngredientUtils.getItemStack(o)));
 		Comparator<IIngredientListElementInfo<?>> maxDamage = 
-			Comparator.comparing(o -> getArmorDurability(getItemStack(o)));
+			Comparator.comparing(o -> getArmorDurability(IngredientUtils.getItemStack(o)));
 		return isArmorComp.reversed().thenComparing(armorSlot.reversed()).thenComparing(armorDamage.reversed()).thenComparing(armorToughness.reversed()).thenComparing(maxDamage.reversed());
 	}
 
@@ -265,7 +267,7 @@ public final class IngredientSorter implements IIngredientSorter {
 		Item item = itemStack.getItem();	
 		if (item instanceof ArmorItem) {
 			ArmorItem armorItem = (ArmorItem) item;				
-			return armorItem.getSlot().getFilterFlag();
+			return armorItem.getSlot().getIndex();
 		}
 		return 0;
 	};
@@ -303,6 +305,7 @@ public final class IngredientSorter implements IIngredientSorter {
 			//Group things by the most popular tag it has.
 			for (ResourceLocation tag : tags) {			
 				//TODO: make a tag blacklist.
+				//ItemTags.getAllTags().
 				if (!tag.toString().equals("itemfilters:check_nbt")) {
 					int thisTagSize = ItemTags.getAllTags().getTagOrEmpty(tag).getValues().size();
 					if (thisTagSize > maxTagSize) {
@@ -324,61 +327,8 @@ public final class IngredientSorter implements IIngredientSorter {
 	private static Boolean nullToolClassWarned = false;
 
 	private static String getToolClass(ItemStack itemStack)
-	{
-		//I think I should find a way to cache this.
-		if (itemStack == null || itemStack == ItemStack.EMPTY) {
-			return "";
-		}
-		Item item = itemStack.getItem();
-		Set<ToolType> toolTypeSet = item.getToolTypes(itemStack);
-		
-		Set<String> toolClassSet = new HashSet<String>();
-
-		for (ToolType toolClass: toolTypeSet) {
-			if (toolClass == null) {
-				//What kind of monster puts a null ToolClass instance into the toolTypes list?
-				if (!nullToolClassWarned) {
-					nullToolClassWarned = true;
-					LogManager.getLogger().warn("Item '" + item.getRegistryName() + "' has a null tool class entry.");
-				}
-			} else if (toolClass.getName() != "sword") {
-				//Swords are not "tools".
-				toolClassSet.add(toolClass.getName());
-			}
-		}
-
-		//Minecraft hoes, shears, and fishing rods don't have tool class names.
-		if (toolClassSet.isEmpty()) {
-			if (item instanceof HoeItem) return "hoe";
-			if (item instanceof ShearsItem) return "shears";
-			if (item instanceof FishingRodItem) return "fishingrod";
-			return "";
-		}
-		
-		//Get the only thing.
-		if (toolClassSet.size() == 1) {
-			return (String) toolClassSet.toArray()[0];
-		}
-		
-		//We have a preferred type to list tools under, primarily the pickaxe for harvest level.
-		String[] prefOrder = {"pickaxe", "axe", "shovel", "hoe", "shears", "wrench"};
-		for (int i = 0; i < prefOrder.length; i++) {
-			if (toolClassSet.contains(prefOrder[i])) {
-				return prefOrder[i];
-			}
-		}
-		
-		//Whatever happens to be the first thing:
-		return (String) toolClassSet.toArray()[0];
-	}
-
-	public static <V> ItemStack getItemStack(IIngredientListElementInfo<V> ingredientInfo) {
-		IIngredientListElement<V> element = ingredientInfo.getElement();
-		V ingredient = element.getIngredient();
-		if (ingredient instanceof ItemStack) {
-			return (ItemStack) ingredient;
-		}
-		return ItemStack.EMPTY;
-	}
+    {		
+        return IngredientUtils.getToolClass(itemStack);
+    }
 
 }
