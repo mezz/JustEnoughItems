@@ -9,6 +9,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.library.recipes.collect.RecipeTypeData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.stream.Stream;
 public class PluginManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final List<IRecipeManagerPlugin> plugins = new ArrayList<>();
+	private @Unmodifiable List<IRecipeManagerPlugin> plugins = new ArrayList<>();
 
 	public PluginManager(IRecipeManagerPlugin internalRecipeManagerPlugin, List<IRecipeManagerPlugin> plugins) {
 		this.plugins.add(internalRecipeManagerPlugin);
@@ -100,6 +101,8 @@ public class PluginManager {
 			return result;
 		} catch (RuntimeException | LinkageError e) {
 			LOGGER.error("Recipe registry plugin crashed, it is being disabled: {}", plugin.getClass(), e);
+			// make a copy, in order to avoid modifying the current stream
+			this.plugins = new ArrayList<>(this.plugins);
 			this.plugins.remove(plugin);
 			return defaultValue;
 		}
