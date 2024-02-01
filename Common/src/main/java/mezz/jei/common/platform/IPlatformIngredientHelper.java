@@ -8,9 +8,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import java.util.List;
 
 public interface IPlatformIngredientHelper {
-    Ingredient createShulkerDyeIngredient(DyeColor color);
+	Ingredient createShulkerDyeIngredient(DyeColor color);
 
-    Ingredient createNbtIngredient(ItemStack stack, IStackHelper stackHelper);
+	Ingredient createNbtIngredient(ItemStack stack, IStackHelper stackHelper);
 
-    List<Ingredient> getPotionContainers();
+	List<Ingredient> getPotionContainers();
 }

@@ -11,27 +11,27 @@ import org.jetbrains.annotations.Nullable;
  * @since 10.1.0
  */
 public interface IPlatformFluidHelper<T> {
-    /**
-     * Returns the type of Fluid ingredients on the current platform.
-     * @since 10.1.0
-     */
-    IIngredientTypeWithSubtypes<Fluid, T> getFluidIngredientType();
+	/**
+	 * Returns the type of Fluid ingredients on the current platform.
+	 * @since 10.1.0
+	 */
+	IIngredientTypeWithSubtypes<Fluid, T> getFluidIngredientType();
 
-    /**
-     * Creates a new fluid ingredient for the current platform.
-     * @since 10.1.0
-     */
-    T create(Fluid fluid, long amount, @Nullable CompoundTag tag);
+	/**
+	 * Creates a new fluid ingredient for the current platform.
+	 * @since 10.1.0
+	 */
+	T create(Fluid fluid, long amount, @Nullable CompoundTag tag);
 
-    /**
-     * Creates a new fluid ingredient for the current platform.
-     * @since 10.1.0
-     */
-    T create(Fluid fluid, long amount);
+	/**
+	 * Creates a new fluid ingredient for the current platform.
+	 * @since 10.1.0
+	 */
+	T create(Fluid fluid, long amount);
 
-    /**
-     * Returns amount of Fluid in one bucket on the current platform.
-     * @since 10.1.0
-     */
-    long bucketVolume();
+	/**
+	 * Returns amount of Fluid in one bucket on the current platform.
+	 * @since 10.1.0
+	 */
+	long bucketVolume();
 }

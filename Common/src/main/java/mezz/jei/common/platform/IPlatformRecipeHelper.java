@@ -13,15 +13,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IPlatformRecipeHelper {
-    <T extends CraftingRecipe> int getWidth(T recipe);
-    <T extends CraftingRecipe> int getHeight(T recipe);
+	<T extends CraftingRecipe> int getWidth(T recipe);
+	<T extends CraftingRecipe> int getHeight(T recipe);
 
-    Ingredient getBase(SmithingRecipe recipe);
-    Ingredient getAddition(SmithingRecipe recipe);
-    Ingredient getTemplate(SmithingRecipe recipe);
-    boolean isHandled(SmithingRecipe recipe);
+	Ingredient getBase(SmithingRecipe recipe);
+	Ingredient getAddition(SmithingRecipe recipe);
+	Ingredient getTemplate(SmithingRecipe recipe);
+	boolean isHandled(SmithingRecipe recipe);
 
-    Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe);
+	Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe);
 
-    List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory);
+	List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory);
 }

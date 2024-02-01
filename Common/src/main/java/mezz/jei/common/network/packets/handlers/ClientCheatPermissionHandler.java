@@ -15,35 +15,35 @@ import java.util.List;
  * Client-side-only functions related to cheat permissions
  */
 public class ClientCheatPermissionHandler {
-    public static void handleHasCheatPermission(ClientPacketContext context, boolean hasPermission) {
-        if (!hasPermission) {
-            LocalPlayer player = context.player();
-            ChatUtil.writeChatMessage(player, "jei.chat.error.no.cheat.permission.1", ChatFormatting.RED);
+	public static void handleHasCheatPermission(ClientPacketContext context, boolean hasPermission) {
+		if (!hasPermission) {
+			LocalPlayer player = context.player();
+			ChatUtil.writeChatMessage(player, "jei.chat.error.no.cheat.permission.1", ChatFormatting.RED);
 
-            IServerConfig serverConfig = context.serverConfig();
-            List<String> allowedCheatingMethods = new ArrayList<>();
-            if (serverConfig.isCheatModeEnabledForOp()) {
-                allowedCheatingMethods.add("jei.chat.error.no.cheat.permission.op");
-            }
-            if (serverConfig.isCheatModeEnabledForCreative()) {
-                allowedCheatingMethods.add("jei.chat.error.no.cheat.permission.creative");
-            }
-            if (serverConfig.isCheatModeEnabledForGive()) {
-                allowedCheatingMethods.add("jei.chat.error.no.cheat.permission.give");
-            }
+			IServerConfig serverConfig = context.serverConfig();
+			List<String> allowedCheatingMethods = new ArrayList<>();
+			if (serverConfig.isCheatModeEnabledForOp()) {
+				allowedCheatingMethods.add("jei.chat.error.no.cheat.permission.op");
+			}
+			if (serverConfig.isCheatModeEnabledForCreative()) {
+				allowedCheatingMethods.add("jei.chat.error.no.cheat.permission.creative");
+			}
+			if (serverConfig.isCheatModeEnabledForGive()) {
+				allowedCheatingMethods.add("jei.chat.error.no.cheat.permission.give");
+			}
 
-            if (allowedCheatingMethods.isEmpty()) {
-                ChatUtil.writeChatMessage(player, "jei.chat.error.no.cheat.permission.disabled", ChatFormatting.RED);
-            } else {
-                ChatUtil.writeChatMessage(player, "jei.chat.error.no.cheat.permission.enabled", ChatFormatting.RED);
-                for (String allowedCheatingMethod : allowedCheatingMethods) {
-                    ChatUtil.writeChatMessage(player, allowedCheatingMethod, ChatFormatting.RED);
-                }
-            }
+			if (allowedCheatingMethods.isEmpty()) {
+				ChatUtil.writeChatMessage(player, "jei.chat.error.no.cheat.permission.disabled", ChatFormatting.RED);
+			} else {
+				ChatUtil.writeChatMessage(player, "jei.chat.error.no.cheat.permission.enabled", ChatFormatting.RED);
+				for (String allowedCheatingMethod : allowedCheatingMethods) {
+					ChatUtil.writeChatMessage(player, allowedCheatingMethod, ChatFormatting.RED);
+				}
+			}
 
-            IClientToggleState toggleState = Internal.getClientToggleState();
-            toggleState.setCheatItemsEnabled(false);
-            player.closeContainer();
-        }
-    }
+			IClientToggleState toggleState = Internal.getClientToggleState();
+			toggleState.setCheatItemsEnabled(false);
+			player.closeContainer();
+		}
+	}
 }

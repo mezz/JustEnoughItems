@@ -37,7 +37,7 @@ public class ErrorIngredientRenderer implements IIngredientRenderer<ErrorIngredi
 	public void render(GuiGraphics guiGraphics, ErrorIngredient ingredient) {
 		Minecraft minecraft = Minecraft.getInstance();
 		switch (ingredient.getCrashType()) {
-            case RenderBreakVertexBufferCrash -> {
+			case RenderBreakVertexBufferCrash -> {
 				MultiBufferSource.BufferSource bufferSource = guiGraphics.bufferSource();
 				for (RenderType renderType : RENDER_TYPES) {
 					VertexConsumer buffer = bufferSource.getBuffer(renderType);
@@ -46,13 +46,13 @@ public class ErrorIngredientRenderer implements IIngredientRenderer<ErrorIngredi
 				}
 				throw new RuntimeException("intentional render crash for testing");
 			}
-            case TooltipCrash -> {
+			case TooltipCrash -> {
 				Font font = getFontRenderer(minecraft, ingredient);
 				guiGraphics.drawString(font, "JEI", 0, 0, 0xFFFF0000, false);
 				guiGraphics.drawString(font, "TEST", 0, 8, 0xFFFF0000, false);
 				RenderSystem.setShaderColor(1, 1, 1, 1);
-            }
-        }
+			}
+		}
 	}
 
 	@Override

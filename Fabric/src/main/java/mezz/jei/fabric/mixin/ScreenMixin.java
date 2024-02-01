@@ -10,17 +10,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Screen.class)
 public class ScreenMixin {
-    @Inject(
-        method = "renderBackground(Lnet/minecraft/client/gui/GuiGraphics;)V",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/GuiGraphics;fillGradient(IIIIII)V",
-            shift = At.Shift.AFTER,
-            ordinal = 0
-        )
-    )
-    private void afterRenderBackground(GuiGraphics guiGraphics, CallbackInfo ci) {
-        Screen screen = (Screen) (Object) this;
-        JeiScreenEvents.AFTER_RENDER_BACKGROUND.invoker().afterRenderBackground(screen, guiGraphics);
-    }
+	@Inject(
+		method = "renderBackground(Lnet/minecraft/client/gui/GuiGraphics;)V",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/gui/GuiGraphics;fillGradient(IIIIII)V",
+			shift = At.Shift.AFTER,
+			ordinal = 0
+		)
+	)
+	private void afterRenderBackground(GuiGraphics guiGraphics, CallbackInfo ci) {
+		Screen screen = (Screen) (Object) this;
+		JeiScreenEvents.AFTER_RENDER_BACKGROUND.invoker().afterRenderBackground(screen, guiGraphics);
+	}
 }

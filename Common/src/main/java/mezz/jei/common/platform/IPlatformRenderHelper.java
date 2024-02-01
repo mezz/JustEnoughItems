@@ -18,16 +18,16 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IPlatformRenderHelper {
-    Font getFontRenderer(Minecraft minecraft, ItemStack itemStack);
+	Font getFontRenderer(Minecraft minecraft, ItemStack itemStack);
 
-    boolean shouldRender(MobEffectInstance potionEffect);
+	boolean shouldRender(MobEffectInstance potionEffect);
 
-    TextureAtlasSprite getParticleIcon(BakedModel bakedModel);
+	TextureAtlasSprite getParticleIcon(BakedModel bakedModel);
 
-    ItemColors getItemColors();
+	ItemColors getItemColors();
 
-    Optional<NativeImage> getMainImage(TextureAtlasSprite sprite);
+	Optional<NativeImage> getMainImage(TextureAtlasSprite sprite);
 
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, int x, int y, @Nullable Font font, ItemStack stack);
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, int x, int y, @Nullable Font font, ItemStack stack);
 }

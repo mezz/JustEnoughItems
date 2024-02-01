@@ -7,26 +7,26 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 
 class DebugCategoryDecorator<T> implements IRecipeCategoryDecorator<T> {
-    private static final DebugCategoryDecorator<?> INSTANCE = new DebugCategoryDecorator<>();
+	private static final DebugCategoryDecorator<?> INSTANCE = new DebugCategoryDecorator<>();
 
-    @SuppressWarnings("unchecked")
-    public static <T> DebugCategoryDecorator<T> getInstance() {
-        return (DebugCategoryDecorator<T>) INSTANCE;
-    }
+	@SuppressWarnings("unchecked")
+	public static <T> DebugCategoryDecorator<T> getInstance() {
+		return (DebugCategoryDecorator<T>) INSTANCE;
+	}
 
-    @Override
-    public void draw(
-        T recipe, IRecipeCategory<T> recipeCategory, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics,
-        double mouseX, double mouseY
-    ) {
-        var id = recipeCategory.getRegistryName(recipe);
-        if (id == null) {
-            return;
-        }
+	@Override
+	public void draw(
+		T recipe, IRecipeCategory<T> recipeCategory, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics,
+		double mouseX, double mouseY
+	) {
+		var id = recipeCategory.getRegistryName(recipe);
+		if (id == null) {
+			return;
+		}
 
-        var posX = recipeCategory.getWidth() / 2;
-        var posY = recipeCategory.getHeight();
-        Minecraft minecraft = Minecraft.getInstance();
-        guiGraphics.drawCenteredString(minecraft.font, "Decorator: " + id, posX, posY, 0xFF_FFFF);
-    }
+		var posX = recipeCategory.getWidth() / 2;
+		var posY = recipeCategory.getHeight();
+		Minecraft minecraft = Minecraft.getInstance();
+		guiGraphics.drawCenteredString(minecraft.font, "Decorator: " + id, posX, posY, 0xFF_FFFF);
+	}
 }

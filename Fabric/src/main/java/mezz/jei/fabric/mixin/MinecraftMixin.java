@@ -15,37 +15,37 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
-    @Shadow
-    @Final
-    private ReloadableResourceManager resourceManager;
+	@Shadow
+	@Final
+	private ReloadableResourceManager resourceManager;
 
-    @Shadow
-    @Final
-    private TextureManager textureManager;
+	@Shadow
+	@Final
+	private TextureManager textureManager;
 
-    @Inject(
-        method = "<init>(Lnet/minecraft/client/main/GameConfig;)V",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/ResourceLoadStateTracker;startReload(Lnet/minecraft/client/ResourceLoadStateTracker$ReloadReason;Ljava/util/List;)V",
-            ordinal = 0
-        )
-    )
-    public void beforeInitialResourceReload(GameConfig gameConfig, CallbackInfo ci) {
-        JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.invoker()
-                .registerResourceReloadListener(resourceManager, textureManager);
-    }
+	@Inject(
+		method = "<init>(Lnet/minecraft/client/main/GameConfig;)V",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/ResourceLoadStateTracker;startReload(Lnet/minecraft/client/ResourceLoadStateTracker$ReloadReason;Ljava/util/List;)V",
+			ordinal = 0
+		)
+	)
+	public void beforeInitialResourceReload(GameConfig gameConfig, CallbackInfo ci) {
+		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.invoker()
+				.registerResourceReloadListener(resourceManager, textureManager);
+	}
 
-    @Inject(
-        method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/GameRenderer;resetData()V",
-            ordinal = 0,
-            shift = At.Shift.AFTER
-        )
-    )
-    public void clearLevel(Screen screen, CallbackInfo ci) {
-        JeiLifecycleEvents.GAME_STOP.invoker().run();
-    }
+	@Inject(
+		method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/renderer/GameRenderer;resetData()V",
+			ordinal = 0,
+			shift = At.Shift.AFTER
+		)
+	)
+	public void clearLevel(Screen screen, CallbackInfo ci) {
+		JeiLifecycleEvents.GAME_STOP.invoker().run();
+	}
 }

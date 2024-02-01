@@ -23,150 +23,150 @@ import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.util.CheatUtil;
 
 public final class OverlayHelper {
-    private OverlayHelper() {}
+	private OverlayHelper() {}
 
-    public static IngredientGridWithNavigation createIngredientGridWithNavigation(
-        IIngredientGridSource ingredientFilter,
-        IIngredientManager ingredientManager,
-        IIngredientGridConfig ingredientGridConfig,
-        IModIdHelper modIdHelper,
-        DrawableNineSliceTexture background,
-        DrawableNineSliceTexture slotBackground,
-        IInternalKeyMappings keyMappings,
-        IEditModeConfig editModeConfig,
-        IIngredientFilterConfig ingredientFilterConfig,
-        IClientConfig clientConfig,
-        IClientToggleState toggleState,
-        IConnectionToServer serverConnection,
-        Textures textures,
-        IColorHelper colorHelper,
-        CheatUtil cheatUtil,
-        IScreenHelper screenHelper
-    ) {
-        IngredientGrid ingredientListGrid = new IngredientGrid(
-            ingredientManager,
-            ingredientGridConfig,
-            editModeConfig,
-            ingredientFilterConfig,
-            clientConfig,
-            toggleState,
-            modIdHelper,
-            serverConnection,
-            keyMappings,
-            colorHelper,
-            cheatUtil
-        );
+	public static IngredientGridWithNavigation createIngredientGridWithNavigation(
+		IIngredientGridSource ingredientFilter,
+		IIngredientManager ingredientManager,
+		IIngredientGridConfig ingredientGridConfig,
+		IModIdHelper modIdHelper,
+		DrawableNineSliceTexture background,
+		DrawableNineSliceTexture slotBackground,
+		IInternalKeyMappings keyMappings,
+		IEditModeConfig editModeConfig,
+		IIngredientFilterConfig ingredientFilterConfig,
+		IClientConfig clientConfig,
+		IClientToggleState toggleState,
+		IConnectionToServer serverConnection,
+		Textures textures,
+		IColorHelper colorHelper,
+		CheatUtil cheatUtil,
+		IScreenHelper screenHelper
+	) {
+		IngredientGrid ingredientListGrid = new IngredientGrid(
+			ingredientManager,
+			ingredientGridConfig,
+			editModeConfig,
+			ingredientFilterConfig,
+			clientConfig,
+			toggleState,
+			modIdHelper,
+			serverConnection,
+			keyMappings,
+			colorHelper,
+			cheatUtil
+		);
 
-        return new IngredientGridWithNavigation(
-            ingredientFilter,
-            ingredientListGrid,
-            toggleState,
-            clientConfig,
-            serverConnection,
-            ingredientGridConfig,
-            background,
-            slotBackground,
-            textures,
-            cheatUtil,
-            screenHelper,
-            ingredientManager
-        );
-    }
+		return new IngredientGridWithNavigation(
+			ingredientFilter,
+			ingredientListGrid,
+			toggleState,
+			clientConfig,
+			serverConnection,
+			ingredientGridConfig,
+			background,
+			slotBackground,
+			textures,
+			cheatUtil,
+			screenHelper,
+			ingredientManager
+		);
+	}
 
-    public static IngredientListOverlay createIngredientListOverlay(
-        IIngredientManager ingredientManager,
-        IScreenHelper screenHelper,
-        IIngredientGridSource ingredientFilter,
-        IFilterTextSource filterTextSource,
-        IModIdHelper modIdHelper,
-        IInternalKeyMappings keyMappings,
-        IIngredientGridConfig ingredientGridConfig,
-        IClientConfig clientConfig,
-        IClientToggleState toggleState,
-        IEditModeConfig editModeConfig,
-        IConnectionToServer serverConnection,
-        IIngredientFilterConfig ingredientFilterConfig,
-        Textures textures,
-        IColorHelper colorHelper,
-        CheatUtil cheatUtil
-    ) {
-        IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
-            ingredientFilter,
-            ingredientManager,
-            ingredientGridConfig,
-            modIdHelper,
-            textures.getIngredientListBackground(),
-            textures.getIngredientListSlotBackground(),
-            keyMappings,
-            editModeConfig,
-            ingredientFilterConfig,
-            clientConfig,
-            toggleState,
-            serverConnection,
-            textures,
-            colorHelper,
-            cheatUtil,
-            screenHelper
-        );
+	public static IngredientListOverlay createIngredientListOverlay(
+		IIngredientManager ingredientManager,
+		IScreenHelper screenHelper,
+		IIngredientGridSource ingredientFilter,
+		IFilterTextSource filterTextSource,
+		IModIdHelper modIdHelper,
+		IInternalKeyMappings keyMappings,
+		IIngredientGridConfig ingredientGridConfig,
+		IClientConfig clientConfig,
+		IClientToggleState toggleState,
+		IEditModeConfig editModeConfig,
+		IConnectionToServer serverConnection,
+		IIngredientFilterConfig ingredientFilterConfig,
+		Textures textures,
+		IColorHelper colorHelper,
+		CheatUtil cheatUtil
+	) {
+		IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
+			ingredientFilter,
+			ingredientManager,
+			ingredientGridConfig,
+			modIdHelper,
+			textures.getIngredientListBackground(),
+			textures.getIngredientListSlotBackground(),
+			keyMappings,
+			editModeConfig,
+			ingredientFilterConfig,
+			clientConfig,
+			toggleState,
+			serverConnection,
+			textures,
+			colorHelper,
+			cheatUtil,
+			screenHelper
+		);
 
-        return new IngredientListOverlay(
-            ingredientFilter,
-            filterTextSource,
-            screenHelper,
-            ingredientListGridNavigation,
-            clientConfig,
-            toggleState,
-            serverConnection,
-            textures,
-            keyMappings,
-            cheatUtil
-        );
-    }
+		return new IngredientListOverlay(
+			ingredientFilter,
+			filterTextSource,
+			screenHelper,
+			ingredientListGridNavigation,
+			clientConfig,
+			toggleState,
+			serverConnection,
+			textures,
+			keyMappings,
+			cheatUtil
+		);
+	}
 
-    public static BookmarkOverlay createBookmarkOverlay(
-        IIngredientManager ingredientManager,
-        IScreenHelper screenHelper,
-        BookmarkList bookmarkList,
-        IModIdHelper modIdHelper,
-        IInternalKeyMappings keyMappings,
-        IIngredientGridConfig bookmarkListConfig,
-        IEditModeConfig editModeConfig,
-        IIngredientFilterConfig ingredientFilterConfig,
-        IClientConfig clientConfig,
-        IClientToggleState toggleState,
-        IConnectionToServer serverConnection,
-        Textures textures,
-        IColorHelper colorHelper,
-        CheatUtil cheatUtil
-    ) {
-        IngredientGridWithNavigation bookmarkListGridNavigation = createIngredientGridWithNavigation(
-            bookmarkList,
-            ingredientManager,
-            bookmarkListConfig,
-            modIdHelper,
-            textures.getBookmarkListBackground(),
-            textures.getBookmarkListSlotBackground(),
-            keyMappings,
-            editModeConfig,
-            ingredientFilterConfig,
-            clientConfig,
-            toggleState,
-            serverConnection,
-            textures,
-            colorHelper,
-            cheatUtil,
-            screenHelper);
+	public static BookmarkOverlay createBookmarkOverlay(
+		IIngredientManager ingredientManager,
+		IScreenHelper screenHelper,
+		BookmarkList bookmarkList,
+		IModIdHelper modIdHelper,
+		IInternalKeyMappings keyMappings,
+		IIngredientGridConfig bookmarkListConfig,
+		IEditModeConfig editModeConfig,
+		IIngredientFilterConfig ingredientFilterConfig,
+		IClientConfig clientConfig,
+		IClientToggleState toggleState,
+		IConnectionToServer serverConnection,
+		Textures textures,
+		IColorHelper colorHelper,
+		CheatUtil cheatUtil
+	) {
+		IngredientGridWithNavigation bookmarkListGridNavigation = createIngredientGridWithNavigation(
+			bookmarkList,
+			ingredientManager,
+			bookmarkListConfig,
+			modIdHelper,
+			textures.getBookmarkListBackground(),
+			textures.getBookmarkListSlotBackground(),
+			keyMappings,
+			editModeConfig,
+			ingredientFilterConfig,
+			clientConfig,
+			toggleState,
+			serverConnection,
+			textures,
+			colorHelper,
+			cheatUtil,
+			screenHelper);
 
-        return new BookmarkOverlay(
-            bookmarkList,
-            textures,
-            bookmarkListGridNavigation,
-            clientConfig,
-            toggleState,
-            screenHelper,
-            serverConnection,
-            keyMappings,
-            cheatUtil
-        );
-    }
+		return new BookmarkOverlay(
+			bookmarkList,
+			textures,
+			bookmarkListGridNavigation,
+			clientConfig,
+			toggleState,
+			screenHelper,
+			serverConnection,
+			keyMappings,
+			cheatUtil
+		);
+	}
 }

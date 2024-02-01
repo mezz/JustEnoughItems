@@ -11,18 +11,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigManager implements IJeiConfigManager {
-    private final Map<Path, IJeiConfigFile> configFiles = new HashMap<>();
+	private final Map<Path, IJeiConfigFile> configFiles = new HashMap<>();
 
-    public ConfigManager() {
+	public ConfigManager() {
 
-    }
+	}
 
-    public void registerConfigFile(IJeiConfigFile configFile) {
-        this.configFiles.put(configFile.getPath(), configFile);
-    }
+	public void registerConfigFile(IJeiConfigFile configFile) {
+		this.configFiles.put(configFile.getPath(), configFile);
+	}
 
-    @Override
-    public @Unmodifiable Collection<IJeiConfigFile> getConfigFiles() {
-        return Collections.unmodifiableCollection(configFiles.values());
-    }
+	@Override
+	public @Unmodifiable Collection<IJeiConfigFile> getConfigFiles() {
+		return Collections.unmodifiableCollection(configFiles.values());
+	}
 }

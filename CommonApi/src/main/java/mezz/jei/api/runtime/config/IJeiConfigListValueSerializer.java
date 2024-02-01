@@ -8,10 +8,10 @@ import java.util.List;
  * @since 12.1.1
  */
 public interface IJeiConfigListValueSerializer<T> extends IJeiConfigValueSerializer<List<T>> {
-    /**
-     * Get the serializer for each value in the list.
-     *
-     * @since 12.1.1
-     */
-    IJeiConfigValueSerializer<T> getListValueSerializer();
+	/**
+	 * Get the serializer for each value in the list.
+	 *
+	 * @since 12.1.1
+	 */
+	IJeiConfigValueSerializer<T> getListValueSerializer();
 }

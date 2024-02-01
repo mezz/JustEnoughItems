@@ -15,30 +15,30 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class ItemStackHelper implements IPlatformItemStackHelper {
-    private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
-    @Override
-    public int getBurnTime(ItemStack itemStack) {
-        return Objects.requireNonNullElse(FuelRegistry.INSTANCE.get(itemStack.getItem()), 0);
-    }
+	@Override
+	public int getBurnTime(ItemStack itemStack) {
+		return Objects.requireNonNullElse(FuelRegistry.INSTANCE.get(itemStack.getItem()), 0);
+	}
 
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return true;
-    }
+	@Override
+	public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+		return true;
+	}
 
-    @Override
-    public Optional<String> getCreatorModId(ItemStack stack) {
-        return Optional.empty();
-    }
+	@Override
+	public Optional<String> getCreatorModId(ItemStack stack) {
+		return Optional.empty();
+	}
 
-    @Override
-    public List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
-        try {
-            return itemStack.getTooltipLines(player, TooltipFlag.Default.NORMAL);
-        } catch (LinkageError | RuntimeException e) {
-            LOGGER.error("Error while Testing for mod name formatting", e);
-        }
-        return List.of();
-    }
+	@Override
+	public List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
+		try {
+			return itemStack.getTooltipLines(player, TooltipFlag.Default.NORMAL);
+		} catch (LinkageError | RuntimeException e) {
+			LOGGER.error("Error while Testing for mod name formatting", e);
+		}
+		return List.of();
+	}
 }

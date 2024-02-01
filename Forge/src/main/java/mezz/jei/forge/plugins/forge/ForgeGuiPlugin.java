@@ -15,30 +15,30 @@ import org.apache.logging.log4j.Logger;
 
 @JeiPlugin
 public class ForgeGuiPlugin implements IModPlugin {
-    private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
-    private final RuntimeEventSubscriptions runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
+	private final RuntimeEventSubscriptions runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
 
-    @Override
-    public ResourceLocation getPluginUid() {
-        return new ResourceLocation(ModIds.JEI_ID, "forge_gui");
-    }
+	@Override
+	public ResourceLocation getPluginUid() {
+		return new ResourceLocation(ModIds.JEI_ID, "forge_gui");
+	}
 
-    @Override
-    public void registerRuntime(IRuntimeRegistration registration) {
-        if (!runtimeSubscriptions.isEmpty()) {
-            LOGGER.error("JEI GUI is already running.");
-            runtimeSubscriptions.clear();
-        }
+	@Override
+	public void registerRuntime(IRuntimeRegistration registration) {
+		if (!runtimeSubscriptions.isEmpty()) {
+			LOGGER.error("JEI GUI is already running.");
+			runtimeSubscriptions.clear();
+		}
 
-        JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
+		JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
 
-        EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
-    }
+		EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
+	}
 
-    @Override
-    public void onRuntimeUnavailable() {
-        LOGGER.info("Stopping JEI GUI");
-        runtimeSubscriptions.clear();
-    }
+	@Override
+	public void onRuntimeUnavailable() {
+		LOGGER.info("Stopping JEI GUI");
+		runtimeSubscriptions.clear();
+	}
 }
