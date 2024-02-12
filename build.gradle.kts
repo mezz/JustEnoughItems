@@ -219,20 +219,11 @@ artifacts {
 
 publishing {
 	publications {
-		register<MavenPublication>("jar") {
+		register<MavenPublication>("jars") {
 			artifactId = baseArchivesName
 			artifact(tasks.reobfJar.get())
-		}
-		register<MavenPublication>("sourcesJar") {
-			artifactId = "${baseArchivesName}-sources"
 			artifact(sourcesJarTask.get())
-		}
-		register<MavenPublication>("apiJar") {
-			artifactId = "${baseArchivesName}-api"
 			artifact(apiJarTask.get())
-		}
-		register<MavenPublication>("javadocJar") {
-			artifactId = "${baseArchivesName}-javadoc"
 			artifact(javadocJarTask.get())
 		}
 	}
