@@ -1,9 +1,12 @@
 plugins {
-	id("com.diffplug.spotless") version("5.14.3")
+	id("com.diffplug.spotless") version("6.25.0")
     id("com.dorongold.task-tree") version("2.1.0")
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
+}
+repositories {
+    mavenCentral()
 }
 
 // gradle.properties
