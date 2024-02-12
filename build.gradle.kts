@@ -155,6 +155,7 @@ modrinth {
 	versionNumber.set("${project.version}")
 	versionName.set("${project.version} for Forge $minecraftVersion")
 	loaders.add("forge")
+	gameVersions.add(minecraftVersion)
 	versionType.set("beta")
 	uploadFile.set(tasks.reobfJar.get())
 	changelog.set(provider { file("changelog.md").readText() })
