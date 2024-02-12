@@ -1,11 +1,14 @@
 plugins {
-	id("com.diffplug.spotless") version("5.14.3")
+	id("com.diffplug.spotless") version("6.25.0")
     id("com.dorongold.task-tree") version("2.1.0")
     id("fabric-loom") version("1.1.+") apply(false)
     id("net.neoforged.gradle.userdev") version("7.0.80") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
+}
+repositories {
+    mavenCentral()
 }
 
 // gradle.properties
