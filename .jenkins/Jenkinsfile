@@ -5,7 +5,8 @@ pipeline {
     }
 
     environment {
-      ORG_GRADLE_PROJECT_curseforge_apikey = credentials('jei-curseforge-key')
+      ORG_GRADLE_PROJECT_curseforge_apikey = credentials("jei-curseforge-key")
+      ORG_GRADLE_PROJECT_modrinthToken = credentials("modrinth-auth-token")
       ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
     }
     stages {
@@ -36,14 +37,19 @@ pipeline {
 
         stage('Publish Maven') {
             steps {
-                sh "./gradlew uploadJars -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh "./gradlew publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
             }
         }
 
         stage('Publish CurseForge') {
             steps {
-                sh "./gradlew makeChangelog --no-daemon"
                 sh "./gradlew curseforge --no-daemon"
+            }
+        }
+
+        stage('Publish Modrinth') {
+            steps {
+                sh "./gradlew modrinth --no-daemon"
             }
         }
     }
