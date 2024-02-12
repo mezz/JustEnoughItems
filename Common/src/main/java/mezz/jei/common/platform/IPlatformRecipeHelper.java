@@ -10,13 +10,13 @@ import net.minecraft.world.item.crafting.SmithingRecipe;
 import java.util.List;
 
 public interface IPlatformRecipeHelper {
-    <T extends CraftingRecipe> int getWidth(T recipe);
-    <T extends CraftingRecipe> int getHeight(T recipe);
+	<T extends CraftingRecipe> int getWidth(T recipe);
+	<T extends CraftingRecipe> int getHeight(T recipe);
 
-    Ingredient getBase(SmithingRecipe recipe);
-    Ingredient getAddition(SmithingRecipe recipe);
-    Ingredient getTemplate(SmithingRecipe recipe);
-    boolean isHandled(SmithingRecipe recipe);
+	Ingredient getBase(SmithingRecipe recipe);
+	Ingredient getAddition(SmithingRecipe recipe);
+	Ingredient getTemplate(SmithingRecipe recipe);
+	boolean isHandled(SmithingRecipe recipe);
 
-    List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory);
+	List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory);
 }

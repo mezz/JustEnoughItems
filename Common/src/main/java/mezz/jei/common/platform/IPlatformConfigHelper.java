@@ -9,19 +9,19 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 public interface IPlatformConfigHelper {
-    Path getModConfigDir();
+	Path getModConfigDir();
 
-    Optional<Screen> getConfigScreen();
+	Optional<Screen> getConfigScreen();
 
-    default Path createJeiConfigDir() {
-        Path configDir = getModConfigDir()
-            .resolve(ModIds.JEI_ID);
+	default Path createJeiConfigDir() {
+		Path configDir = getModConfigDir()
+			.resolve(ModIds.JEI_ID);
 
-        try {
-            Files.createDirectories(configDir);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to create JEI config directory: " + configDir, e);
-        }
-        return configDir;
-    }
+		try {
+			Files.createDirectories(configDir);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to create JEI config directory: " + configDir, e);
+		}
+		return configDir;
+	}
 }

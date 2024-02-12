@@ -1,11 +1,11 @@
 package mezz.jei.common.config;
 
 public interface IJeiClientConfigs {
-    IClientConfig getClientConfig();
+	IClientConfig getClientConfig();
 
-    IIngredientFilterConfig getIngredientFilterConfig();
+	IIngredientFilterConfig getIngredientFilterConfig();
 
-    IIngredientGridConfig getIngredientListConfig();
+	IIngredientGridConfig getIngredientListConfig();
 
-    IIngredientGridConfig getBookmarkListConfig();
+	IIngredientGridConfig getBookmarkListConfig();
 }

@@ -14,67 +14,67 @@ import java.util.Optional;
  * @since 12.1.1
  */
 public interface IJeiConfigValueSerializer<T> {
-    /**
-     * Serialize the config value to a string.
-     *
-     * @since 12.1.1
-     */
-    String serialize(T value);
+	/**
+	 * Serialize the config value to a string.
+	 *
+	 * @since 12.1.1
+	 */
+	String serialize(T value);
 
-    /**
-     * Deserialize the config value from a string.
-     *
-     * @since 12.1.1
-     */
-    IDeserializeResult<T> deserialize(String string);
+	/**
+	 * Deserialize the config value from a string.
+	 *
+	 * @since 12.1.1
+	 */
+	IDeserializeResult<T> deserialize(String string);
 
-    /**
-     * Check if a given value is valid for this config value.
-     *
-     * @since 12.1.1
-     */
-    boolean isValid(T value);
+	/**
+	 * Check if a given value is valid for this config value.
+	 *
+	 * @since 12.1.1
+	 */
+	boolean isValid(T value);
 
-    /**
-     * If this config value only has a limited number of valid values,
-     * this returns them all.
-     *
-     * If there are many or unlimited valid values, this will return
-     * {@link Optional#empty()}
-     *
-     * @since 12.1.1
-     */
-    Optional<Collection<T>> getAllValidValues();
+	/**
+	 * If this config value only has a limited number of valid values,
+	 * this returns them all.
+	 *
+	 * If there are many or unlimited valid values, this will return
+	 * {@link Optional#empty()}
+	 *
+	 * @since 12.1.1
+	 */
+	Optional<Collection<T>> getAllValidValues();
 
-    /**
-     * Get the description of what values are valid for this config value.
-     *
-     * @since 12.1.1
-     */
-    String getValidValuesDescription();
+	/**
+	 * Get the description of what values are valid for this config value.
+	 *
+	 * @since 12.1.1
+	 */
+	String getValidValuesDescription();
 
-    /**
-     * The result of {@link #deserialize}.
-     * If deserialization is successful, {@link #getResult()} will return a value.
-     * Otherwise, a list of errors can be fetched from {@link #getErrors()}.
-     *
-     * @since 12.1.1
-     */
-    interface IDeserializeResult<T> {
-        /**
-         * The successful deserialization result,
-         * or {@link Optional#empty()} if deserialzation failed.
-         *
-         * @since 12.1.1
-         */
-        Optional<T> getResult();
+	/**
+	 * The result of {@link #deserialize}.
+	 * If deserialization is successful, {@link #getResult()} will return a value.
+	 * Otherwise, a list of errors can be fetched from {@link #getErrors()}.
+	 *
+	 * @since 12.1.1
+	 */
+	interface IDeserializeResult<T> {
+		/**
+		 * The successful deserialization result,
+		 * or {@link Optional#empty()} if deserialzation failed.
+		 *
+		 * @since 12.1.1
+		 */
+		Optional<T> getResult();
 
-        /**
-         * A list of errors during deserialization, if it failed.
-         * On successful deserialization this will be an empty list.
-         *
-         * @since 12.1.1
-         */
-        List<String> getErrors();
-    }
+		/**
+		 * A list of errors during deserialization, if it failed.
+		 * On successful deserialization this will be an empty list.
+		 *
+		 * @since 12.1.1
+		 */
+		List<String> getErrors();
+	}
 }

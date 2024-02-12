@@ -14,24 +14,24 @@ import java.util.List;
  * @since 12.1.0
  */
 public interface IJeiConfigFile {
-    /**
-     * Get the path of this config file.
-     * Used for differentiating between config files.
-     *
-     * Note that config values will read from this file automatically,
-     * and updating config values will save the file automatically,
-     * so you should not read or write this file yourself.
-     *
-     * @since 12.1.0
-     */
-    Path getPath();
+	/**
+	 * Get the path of this config file.
+	 * Used for differentiating between config files.
+	 *
+	 * Note that config values will read from this file automatically,
+	 * and updating config values will save the file automatically,
+	 * so you should not read or write this file yourself.
+	 *
+	 * @since 12.1.0
+	 */
+	Path getPath();
 
-    /**
-     * Get all the categories in this file.
-     * Each category contains values that can be read or edited.
-     *
-     * @since 12.1.0
-     */
-    @Unmodifiable
-    List<? extends IJeiConfigCategory> getCategories();
+	/**
+	 * Get all the categories in this file.
+	 * Each category contains values that can be read or edited.
+	 *
+	 * @since 12.1.0
+	 */
+	@Unmodifiable
+	List<? extends IJeiConfigCategory> getCategories();
 }

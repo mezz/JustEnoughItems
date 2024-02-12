@@ -11,21 +11,21 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class JeiIdentifiableResourceReloadListener implements IdentifiableResourceReloadListener {
-    private final ResourceLocation fabricId;
-    private final PreparableReloadListener listener;
+	private final ResourceLocation fabricId;
+	private final PreparableReloadListener listener;
 
-    public JeiIdentifiableResourceReloadListener(String id, PreparableReloadListener listener) {
-        this.fabricId = new ResourceLocation(ModIds.JEI_ID, id);
-        this.listener = listener;
-    }
+	public JeiIdentifiableResourceReloadListener(String id, PreparableReloadListener listener) {
+		this.fabricId = new ResourceLocation(ModIds.JEI_ID, id);
+		this.listener = listener;
+	}
 
-    @Override
-    public ResourceLocation getFabricId() {
-        return this.fabricId;
-    }
+	@Override
+	public ResourceLocation getFabricId() {
+		return this.fabricId;
+	}
 
-    @Override
-    public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller profilerFiller, ProfilerFiller profilerFiller2, Executor executor, Executor executor2) {
-        return listener.reload(preparationBarrier, resourceManager, profilerFiller, profilerFiller2, executor, executor2);
-    }
+	@Override
+	public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller profilerFiller, ProfilerFiller profilerFiller2, Executor executor, Executor executor2) {
+		return listener.reload(preparationBarrier, resourceManager, profilerFiller, profilerFiller2, executor, executor2);
+	}
 }

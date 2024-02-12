@@ -9,22 +9,22 @@ import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
 public class JeiIngredient extends Ingredient {
-    private final ItemStack stack;
-    private final IStackHelper stackHelper;
+	private final ItemStack stack;
+	private final IStackHelper stackHelper;
 
-    public JeiIngredient(ItemStack stack, IStackHelper stackHelper) {
-        super(Stream.of(new Ingredient.ItemValue(stack)));
-        this.stack = stack;
-        this.stackHelper = stackHelper;
-    }
+	public JeiIngredient(ItemStack stack, IStackHelper stackHelper) {
+		super(Stream.of(new Ingredient.ItemValue(stack)));
+		this.stack = stack;
+		this.stackHelper = stackHelper;
+	}
 
-    @Override
-    public boolean test(@Nullable ItemStack input) {
-        return stackHelper.isEquivalent(input, this.stack, UidContext.Ingredient);
-    }
+	@Override
+	public boolean test(@Nullable ItemStack input) {
+		return stackHelper.isEquivalent(input, this.stack, UidContext.Ingredient);
+	}
 
-    @Override
-    public boolean isSimple() {
-        return false;
-    }
+	@Override
+	public boolean isSimple() {
+		return false;
+	}
 }
