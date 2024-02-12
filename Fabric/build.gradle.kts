@@ -104,10 +104,10 @@ loom {
             it.dependencyProject.tasks.jar.get().archiveFile.get().asFile
         }
         val classPaths = sourceSets.main.get().output.classesDirs
-        val resourcesPaths = listOf(
+        val resourcesPaths = listOfNotNull(
             sourceSets.main.get().output.resourcesDir
         )
-        val classPathGroups = listOf(dependencyJarPaths, classPaths, resourcesPaths).flatten().filterNotNull()
+        val classPathGroups = listOf(dependencyJarPaths, classPaths, resourcesPaths).flatten()
         val classPathGroupsString = classPathGroups.joinToString(separator = File.pathSeparator) {
             it.absoluteFile.toString()
         }
