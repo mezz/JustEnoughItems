@@ -19,54 +19,54 @@ import java.util.List;
 import java.util.Optional;
 
 public class RenderHelper implements IPlatformRenderHelper {
-    @Override
-    public Font getFontRenderer(Minecraft minecraft, ItemStack itemStack) {
-        return minecraft.font;
-    }
+	@Override
+	public Font getFontRenderer(Minecraft minecraft, ItemStack itemStack) {
+		return minecraft.font;
+	}
 
-    @Override
-    public boolean shouldRender(MobEffectInstance potionEffect) {
-        return true;
-    }
+	@Override
+	public boolean shouldRender(MobEffectInstance potionEffect) {
+		return true;
+	}
 
-    @Override
-    public TextureAtlasSprite getParticleIcon(BakedModel bakedModel) {
-        return bakedModel.getParticleIcon();
-    }
+	@Override
+	public TextureAtlasSprite getParticleIcon(BakedModel bakedModel) {
+		return bakedModel.getParticleIcon();
+	}
 
-    @Override
-    public ItemColors getItemColors() {
-        Minecraft minecraft = Minecraft.getInstance();
-        return minecraft.itemColors;
-    }
+	@Override
+	public ItemColors getItemColors() {
+		Minecraft minecraft = Minecraft.getInstance();
+		return minecraft.itemColors;
+	}
 
-    @Override
-    public Optional<NativeImage> getMainImage(TextureAtlasSprite sprite) {
-        NativeImage[] frames = sprite.mainImage;
-        if (frames.length == 0) {
-            return Optional.empty();
-        }
-        NativeImage frame = frames[0];
-        return Optional.ofNullable(frame);
-    }
+	@Override
+	public Optional<NativeImage> getMainImage(TextureAtlasSprite sprite) {
+		NativeImage[] frames = sprite.mainImage;
+		if (frames.length == 0) {
+			return Optional.empty();
+		}
+		NativeImage frame = frames[0];
+		return Optional.ofNullable(frame);
+	}
 
-    @Override
-    public void renderTooltip(
-        Screen screen,
-        PoseStack poseStack,
-        List<Component> textComponents,
-        Optional<TooltipComponent> tooltipComponent,
-        int x,
-        int y,
-        @Nullable Font font,
-        ItemStack stack
-    ) {
-        screen.renderTooltip(
-            poseStack,
-            textComponents,
-            tooltipComponent,
-            x,
-            y
-        );
-    }
+	@Override
+	public void renderTooltip(
+		Screen screen,
+		PoseStack poseStack,
+		List<Component> textComponents,
+		Optional<TooltipComponent> tooltipComponent,
+		int x,
+		int y,
+		@Nullable Font font,
+		ItemStack stack
+	) {
+		screen.renderTooltip(
+			poseStack,
+			textComponents,
+			tooltipComponent,
+			x,
+			y
+		);
+	}
 }

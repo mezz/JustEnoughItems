@@ -1,7 +1,7 @@
 package mezz.jei.library.config;
 
 public interface IModIdFormatConfig {
-    String getModNameFormat();
+	String getModNameFormat();
 
-    boolean isModNameFormatOverrideActive();
+	boolean isModNameFormatOverrideActive();
 }

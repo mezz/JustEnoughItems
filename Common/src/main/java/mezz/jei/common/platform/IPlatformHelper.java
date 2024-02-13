@@ -4,23 +4,23 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 
 public interface IPlatformHelper {
-    <T> IPlatformRegistry<T> getRegistry(ResourceKey<? extends Registry<T>> key);
+	<T> IPlatformRegistry<T> getRegistry(ResourceKey<? extends Registry<T>> key);
 
-    IPlatformItemStackHelper getItemStackHelper();
+	IPlatformItemStackHelper getItemStackHelper();
 
-    IPlatformFluidHelperInternal<?> getFluidHelper();
+	IPlatformFluidHelperInternal<?> getFluidHelper();
 
-    IPlatformRenderHelper getRenderHelper();
+	IPlatformRenderHelper getRenderHelper();
 
-    IPlatformRecipeHelper getRecipeHelper();
+	IPlatformRecipeHelper getRecipeHelper();
 
-    IPlatformConfigHelper getConfigHelper();
+	IPlatformConfigHelper getConfigHelper();
 
-    IPlatformInputHelper getInputHelper();
+	IPlatformInputHelper getInputHelper();
 
-    IPlatformScreenHelper getScreenHelper();
+	IPlatformScreenHelper getScreenHelper();
 
-    IPlatformIngredientHelper getIngredientHelper();
+	IPlatformIngredientHelper getIngredientHelper();
 
-    IPlatformModHelper getModHelper();
+	IPlatformModHelper getModHelper();
 }

@@ -15,43 +15,43 @@ import java.util.List;
 import java.util.Optional;
 
 public class RecipeHelper implements IPlatformRecipeHelper {
-    @Override
-    public <T extends CraftingRecipe> int getWidth(T recipe) {
-        if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
-            return shapedRecipe.getRecipeWidth();
-        }
-        return 0;
-    }
+	@Override
+	public <T extends CraftingRecipe> int getWidth(T recipe) {
+		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
+			return shapedRecipe.getRecipeWidth();
+		}
+		return 0;
+	}
 
-    @Override
-    public <T extends CraftingRecipe> int getHeight(T recipe) {
-        if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
-            return shapedRecipe.getRecipeHeight();
-        }
-        return 0;
-    }
+	@Override
+	public <T extends CraftingRecipe> int getHeight(T recipe) {
+		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
+			return shapedRecipe.getRecipeHeight();
+		}
+		return 0;
+	}
 
-    @Override
-    public Ingredient getBase(UpgradeRecipe recipe) {
-        return recipe.base;
-    }
+	@Override
+	public Ingredient getBase(UpgradeRecipe recipe) {
+		return recipe.base;
+	}
 
-    @Override
-    public Ingredient getAddition(UpgradeRecipe recipe) {
-        return recipe.addition;
-    }
+	@Override
+	public Ingredient getAddition(UpgradeRecipe recipe) {
+		return recipe.addition;
+	}
 
-    @Override
-    public Optional<ResourceLocation> getRegistryNameForRecipe(Object object) {
-        if (object instanceof Recipe<?> recipe) {
-            ResourceLocation id = recipe.getId();
-            return Optional.of(id);
-        }
-        return Optional.empty();
-    }
+	@Override
+	public Optional<ResourceLocation> getRegistryNameForRecipe(Object object) {
+		if (object instanceof Recipe<?> recipe) {
+			ResourceLocation id = recipe.getId();
+			return Optional.of(id);
+		}
+		return Optional.empty();
+	}
 
-    @Override
-    public List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory) {
-        return BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory);
-    }
+	@Override
+	public List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory) {
+		return BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory);
+	}
 }

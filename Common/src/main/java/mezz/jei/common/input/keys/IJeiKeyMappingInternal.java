@@ -8,14 +8,14 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 
 public interface IJeiKeyMappingInternal extends IJeiKeyMapping {
-    @Override
-    boolean isActiveAndMatches(InputConstants.Key key);
+	@Override
+	boolean isActiveAndMatches(InputConstants.Key key);
 
-    @Override
-    boolean isUnbound();
+	@Override
+	boolean isUnbound();
 
-    @Override
-    Component getTranslatedKeyMessage();
+	@Override
+	Component getTranslatedKeyMessage();
 
-    IJeiKeyMapping register(Consumer<KeyMapping> registerMethod);
+	IJeiKeyMapping register(Consumer<KeyMapping> registerMethod);
 }

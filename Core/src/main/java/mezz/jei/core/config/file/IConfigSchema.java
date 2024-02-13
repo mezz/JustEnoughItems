@@ -1,7 +1,7 @@
 package mezz.jei.core.config.file;
 
 public interface IConfigSchema {
-    void loadIfNeeded();
+	void loadIfNeeded();
 
-    void register(FileWatcher fileWatcher);
+	void register(FileWatcher fileWatcher);
 }

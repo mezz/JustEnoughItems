@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IPlatformRecipeHelper {
-    <T extends CraftingRecipe> int getWidth(T recipe);
-    <T extends CraftingRecipe> int getHeight(T recipe);
+	<T extends CraftingRecipe> int getWidth(T recipe);
+	<T extends CraftingRecipe> int getHeight(T recipe);
 
-    Ingredient getBase(UpgradeRecipe recipe);
-    Ingredient getAddition(UpgradeRecipe recipe);
+	Ingredient getBase(UpgradeRecipe recipe);
+	Ingredient getAddition(UpgradeRecipe recipe);
 
-    Optional<ResourceLocation> getRegistryNameForRecipe(Object object);
+	Optional<ResourceLocation> getRegistryNameForRecipe(Object object);
 
-    List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory);
+	List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory);
 }
