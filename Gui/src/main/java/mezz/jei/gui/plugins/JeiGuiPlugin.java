@@ -11,14 +11,14 @@ import net.minecraft.resources.ResourceLocation;
 
 @JeiPlugin
 public class JeiGuiPlugin implements IModPlugin {
-    @Override
-    public ResourceLocation getPluginUid() {
-        return new ResourceLocation(ModIds.JEI_ID, "gui");
-    }
+	@Override
+	public ResourceLocation getPluginUid() {
+		return new ResourceLocation(ModIds.JEI_ID, "gui");
+	}
 
-    @Override
-    public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        registration.addGuiScreenHandler(AbstractContainerScreen.class, GuiProperties::create);
-        registration.addGuiScreenHandler(RecipesGui.class, RecipesGui::getProperties);
-    }
+	@Override
+	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+		registration.addGuiScreenHandler(AbstractContainerScreen.class, GuiProperties::create);
+		registration.addGuiScreenHandler(RecipesGui.class, RecipesGui::getProperties);
+	}
 }

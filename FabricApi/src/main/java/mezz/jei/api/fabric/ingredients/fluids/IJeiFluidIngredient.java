@@ -11,24 +11,24 @@ import java.util.Optional;
  * @since 10.1.0
  */
 public interface IJeiFluidIngredient {
-    /**
-     * @return the fluid represented by this ingredient.
-     *
-     * @since 10.1.0
-     */
-    Fluid getFluid();
+	/**
+	 * @return the fluid represented by this ingredient.
+	 *
+	 * @since 10.1.0
+	 */
+	Fluid getFluid();
 
-    /**
-     * @return the amount of fluid.
-     *
-     * @since 10.1.0
-     */
-    long getAmount();
+	/**
+	 * @return the amount of fluid.
+	 *
+	 * @since 10.1.0
+	 */
+	long getAmount();
 
-    /**
-     * @return optionally any {@link CompoundTag} extra data for this fluid ingredient.
-     *
-     * @since 10.1.0
-     */
-    Optional<CompoundTag> getTag();
+	/**
+	 * @return optionally any {@link CompoundTag} extra data for this fluid ingredient.
+	 *
+	 * @since 10.1.0
+	 */
+	Optional<CompoundTag> getTag();
 }

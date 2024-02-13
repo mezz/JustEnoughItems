@@ -6,9 +6,9 @@ import mezz.jei.core.config.IngredientSortStage;
 import java.util.List;
 
 public interface IClientConfig {
-    int minRecipeGuiHeight = 175;
-    int defaultRecipeGuiHeight = 350;
-    boolean defaultCenterSearchBar = false;
+	int minRecipeGuiHeight = 175;
+	int defaultRecipeGuiHeight = 350;
+	boolean defaultCenterSearchBar = false;
 
 	boolean isCenterSearchBarEnabled();
 

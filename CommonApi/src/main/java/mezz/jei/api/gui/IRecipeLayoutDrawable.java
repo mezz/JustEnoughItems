@@ -61,7 +61,7 @@ public interface IRecipeLayoutDrawable<R> {
 	 * Get the recipe slot currently under the mouse, if there is one.
 	 * @since 11.5.0
 	 */
-    Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY);
+	Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY);
 
 	/**
 	 * Get position and size for the recipe in absolute screen coordinates.

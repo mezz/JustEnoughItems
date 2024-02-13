@@ -12,25 +12,25 @@ import mezz.jei.gui.config.JeiClientConfigs;
 import java.nio.file.Path;
 
 public record GuiConfigData(
-    IJeiClientConfigs jeiClientConfigs,
-    IBookmarkConfig bookmarkConfig,
-    ModNameSortingConfig modNameSortingConfig,
-    IngredientTypeSortingConfig ingredientTypeSortingConfig
+	IJeiClientConfigs jeiClientConfigs,
+	IBookmarkConfig bookmarkConfig,
+	ModNameSortingConfig modNameSortingConfig,
+	IngredientTypeSortingConfig ingredientTypeSortingConfig
 ) {
-    public static GuiConfigData create(FileWatcher fileWatcher) {
-        Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
-        JeiClientConfigs jeiClientConfigs = new JeiClientConfigs(configDir.resolve("jei-client.ini"));
-        jeiClientConfigs.register(fileWatcher);
+	public static GuiConfigData create(FileWatcher fileWatcher) {
+		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
+		JeiClientConfigs jeiClientConfigs = new JeiClientConfigs(configDir.resolve("jei-client.ini"));
+		jeiClientConfigs.register(fileWatcher);
 
-        IBookmarkConfig bookmarkConfig = new BookmarkConfig(configDir);
-        ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(configDir.resolve("ingredient-list-mod-sort-order.ini"));
-        IngredientTypeSortingConfig ingredientTypeSortingConfig = new IngredientTypeSortingConfig(configDir.resolve("ingredient-list-type-sort-order.ini"));
+		IBookmarkConfig bookmarkConfig = new BookmarkConfig(configDir);
+		ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(configDir.resolve("ingredient-list-mod-sort-order.ini"));
+		IngredientTypeSortingConfig ingredientTypeSortingConfig = new IngredientTypeSortingConfig(configDir.resolve("ingredient-list-type-sort-order.ini"));
 
-        return new GuiConfigData(
-            jeiClientConfigs,
-            bookmarkConfig,
-            ingredientModNameSortingConfig,
-            ingredientTypeSortingConfig
-        );
-    }
+		return new GuiConfigData(
+			jeiClientConfigs,
+			bookmarkConfig,
+			ingredientModNameSortingConfig,
+			ingredientTypeSortingConfig
+		);
+	}
 }

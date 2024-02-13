@@ -8,18 +8,18 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
 
 public class InputHelper implements IPlatformInputHelper {
-    @Override
-    public boolean isActiveAndMatches(KeyMapping keyMapping, InputConstants.Key key) {
-        return keyMapping.isActiveAndMatches(key);
-    }
+	@Override
+	public boolean isActiveAndMatches(KeyMapping keyMapping, InputConstants.Key key) {
+		return keyMapping.isActiveAndMatches(key);
+	}
 
-    @Override
-    public boolean isSendRepeatsToGui(KeyboardHandler keyboardHandler) {
-        return keyboardHandler.sendRepeatsToGui;
-    }
+	@Override
+	public boolean isSendRepeatsToGui(KeyboardHandler keyboardHandler) {
+		return keyboardHandler.sendRepeatsToGui;
+	}
 
-    @Override
-    public IJeiKeyMappingCategoryBuilder createKeyMappingCategoryBuilder(String name) {
-        return new ForgeJeiKeyMappingCategoryBuilder(name);
-    }
+	@Override
+	public IJeiKeyMappingCategoryBuilder createKeyMappingCategoryBuilder(String name) {
+		return new ForgeJeiKeyMappingCategoryBuilder(name);
+	}
 }

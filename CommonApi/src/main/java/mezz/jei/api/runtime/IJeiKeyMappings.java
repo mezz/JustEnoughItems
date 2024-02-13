@@ -9,19 +9,19 @@ package mezz.jei.api.runtime;
  * @since 11.0.1
  */
 public interface IJeiKeyMappings {
-    /**
-     * @return the key mapping to show recipes.
-     * The default bindings are 'Left Click' and 'R'.
-     *
-     * @since 11.0.1
-     */
-    IJeiKeyMapping getShowRecipe();
+	/**
+	 * @return the key mapping to show recipes.
+	 * The default bindings are 'Left Click' and 'R'.
+	 *
+	 * @since 11.0.1
+	 */
+	IJeiKeyMapping getShowRecipe();
 
-    /**
-     * @return the key mapping to show recipes.
-     * The default bindings are 'Right Click' and 'U'.
-     *
-     * @since 11.0.1
-     */
-    IJeiKeyMapping getShowUses();
+	/**
+	 * @return the key mapping to show recipes.
+	 * The default bindings are 'Right Click' and 'U'.
+	 *
+	 * @since 11.0.1
+	 */
+	IJeiKeyMapping getShowUses();
 }

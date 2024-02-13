@@ -10,16 +10,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Screen.class)
 public class ScreenMixin {
-    @Inject(
-        method = "renderBackground(Lcom/mojang/blaze3d/vertex/PoseStack;I)V",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screens/Screen;fillGradient(Lcom/mojang/blaze3d/vertex/PoseStack;IIIIII)V",
-            shift = At.Shift.AFTER
-        )
-    )
-    private void afterRenderBackground(PoseStack poseStack, int i, CallbackInfo ci) {
-        Screen screen = (Screen) (Object) this;
-        JeiScreenEvents.AFTER_RENDER_BACKGROUND.invoker().afterRenderBackground(screen, poseStack);
-    }
+	@Inject(
+		method = "renderBackground(Lcom/mojang/blaze3d/vertex/PoseStack;I)V",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/gui/screens/Screen;fillGradient(Lcom/mojang/blaze3d/vertex/PoseStack;IIIIII)V",
+			shift = At.Shift.AFTER
+		)
+	)
+	private void afterRenderBackground(PoseStack poseStack, int i, CallbackInfo ci) {
+		Screen screen = (Screen) (Object) this;
+		JeiScreenEvents.AFTER_RENDER_BACKGROUND.invoker().afterRenderBackground(screen, poseStack);
+	}
 }

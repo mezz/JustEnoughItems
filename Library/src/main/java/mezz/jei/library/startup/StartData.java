@@ -8,9 +8,9 @@ import mezz.jei.common.network.IConnectionToServer;
 import java.util.List;
 
 public record StartData(
-    List<IModPlugin> plugins,
-    Textures textures,
-    IConnectionToServer serverConnection,
-    IInternalKeyMappings keyBindings
+	List<IModPlugin> plugins,
+	Textures textures,
+	IConnectionToServer serverConnection,
+	IInternalKeyMappings keyBindings
 ) {
 }

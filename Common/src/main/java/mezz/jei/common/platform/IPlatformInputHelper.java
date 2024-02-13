@@ -6,9 +6,9 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
 
 public interface IPlatformInputHelper {
-    boolean isActiveAndMatches(KeyMapping keyMapping, InputConstants.Key key);
+	boolean isActiveAndMatches(KeyMapping keyMapping, InputConstants.Key key);
 
-    boolean isSendRepeatsToGui(KeyboardHandler keyboardHandler);
+	boolean isSendRepeatsToGui(KeyboardHandler keyboardHandler);
 
-    IJeiKeyMappingCategoryBuilder createKeyMappingCategoryBuilder(String name);
+	IJeiKeyMappingCategoryBuilder createKeyMappingCategoryBuilder(String name);
 }

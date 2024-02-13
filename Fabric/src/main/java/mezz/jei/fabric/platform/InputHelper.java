@@ -8,24 +8,24 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
 
 public class InputHelper implements IPlatformInputHelper {
-    @Override
-    public boolean isActiveAndMatches(KeyMapping keyMapping, InputConstants.Key key) {
-        if (keyMapping.isUnbound()) {
-            return false;
-        }
-        if (key.getType().equals(InputConstants.Type.MOUSE)) {
-            return keyMapping.matchesMouse(key.getValue());
-        }
-        return keyMapping.matches(key.getValue(), 0);
-    }
+	@Override
+	public boolean isActiveAndMatches(KeyMapping keyMapping, InputConstants.Key key) {
+		if (keyMapping.isUnbound()) {
+			return false;
+		}
+		if (key.getType().equals(InputConstants.Type.MOUSE)) {
+			return keyMapping.matchesMouse(key.getValue());
+		}
+		return keyMapping.matches(key.getValue(), 0);
+	}
 
-    @Override
-    public boolean isSendRepeatsToGui(KeyboardHandler keyboardHandler) {
-        return keyboardHandler.sendRepeatsToGui;
-    }
+	@Override
+	public boolean isSendRepeatsToGui(KeyboardHandler keyboardHandler) {
+		return keyboardHandler.sendRepeatsToGui;
+	}
 
-    @Override
-    public IJeiKeyMappingCategoryBuilder createKeyMappingCategoryBuilder(String name) {
-        return new FabricJeiKeyMappingCategoryBuilder(name);
-    }
+	@Override
+	public IJeiKeyMappingCategoryBuilder createKeyMappingCategoryBuilder(String name) {
+		return new FabricJeiKeyMappingCategoryBuilder(name);
+	}
 }

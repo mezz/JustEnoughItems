@@ -2,7 +2,7 @@ package mezz.jei.core.config.file;
 
 public interface IConfigSchemaBuilder {
 
-    IConfigCategoryBuilder addCategory(String name);
+	IConfigCategoryBuilder addCategory(String name);
 
-    IConfigSchema build();
+	IConfigSchema build();
 }
