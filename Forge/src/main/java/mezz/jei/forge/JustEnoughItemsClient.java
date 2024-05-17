@@ -2,11 +2,9 @@ package mezz.jei.forge;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
-import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.network.ClientPacketRouter;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
-import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.forge.network.NetworkHandler;
 import mezz.jei.forge.plugins.forge.ForgeGuiPlugin;
 import mezz.jei.forge.startup.ForgePluginFinder;
@@ -29,19 +27,14 @@ public class JustEnoughItemsClient {
 
 	public JustEnoughItemsClient(
 		NetworkHandler networkHandler,
-		PermanentEventSubscriptions subscriptions,
-		IServerConfig serverConfig
+		PermanentEventSubscriptions subscriptions
 	) {
 		this.subscriptions = subscriptions;
 
-		ConnectionToServer serverConnection = new ConnectionToServer(networkHandler);
-		Internal.setServerConnection(serverConnection);
+		IConnectionToServer serverConnection = networkHandler.getConnectionToServer();
 
 		InternalKeyMappings keyMappings = createKeyMappings(subscriptions);
 		Internal.setKeyMappings(keyMappings);
-
-		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig);
-		networkHandler.registerClientPacketHandler(packetRouter);
 
 		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
 		StartData startData = new StartData(

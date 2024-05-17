@@ -5,8 +5,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.util.StringUtil;
 
 import java.util.Optional;
 
@@ -83,7 +83,7 @@ public class UserInput {
 	}
 
 	public boolean isAllowedChatCharacter() {
-		return isKeyboard() && SharedConstants.isAllowedChatCharacter((char) this.key.getValue());
+		return isKeyboard() && StringUtil.isAllowedChatCharacter((char) this.key.getValue());
 	}
 
 	public boolean is(IJeiKeyMapping keyMapping) {

@@ -1,15 +1,28 @@
 package mezz.jei.common.network.packets;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.common.network.PacketIdServer;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.network.ServerPacketContext;
-import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.common.util.ErrorUtil;
-import net.minecraft.network.FriendlyByteBuf;
+import mezz.jei.common.util.ServerCommandUtil;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
-public class PacketSetHotbarItemStack extends PacketJeiToServer {
+public class PacketSetHotbarItemStack extends PlayToServerPacket<PacketSetHotbarItemStack> {
+	public static final CustomPacketPayload.Type<PacketSetHotbarItemStack> TYPE = new CustomPacketPayload.Type<>(new ResourceLocation(ModIds.JEI_ID, "set_hotbar_item_stack"));
+	public static final StreamCodec<RegistryFriendlyByteBuf, PacketSetHotbarItemStack> STREAM_CODEC = StreamCodec.composite(
+		ItemStack.STREAM_CODEC,
+		p -> p.itemStack,
+		ByteBufCodecs.VAR_INT,
+		p -> p.hotbarSlot,
+		PacketSetHotbarItemStack::new
+	);
+
 	private final ItemStack itemStack;
 	private final int hotbarSlot;
 
@@ -21,24 +34,17 @@ public class PacketSetHotbarItemStack extends PacketJeiToServer {
 	}
 
 	@Override
-	public PacketIdServer getPacketId() {
-		return PacketIdServer.SET_HOTBAR_ITEM;
-	}
-
-	@Override
-	public void writePacketData(FriendlyByteBuf buf) {
-		buf.writeItem(itemStack);
-		buf.writeVarInt(hotbarSlot);
-	}
-
-	@Override
-	public void processOnServerThread(ServerPacketContext context) {
+	public void process(ServerPacketContext context) {
 		ServerCommandUtil.setHotbarSlot(context, itemStack, hotbarSlot);
 	}
 
-	public static PacketSetHotbarItemStack readPacketData(FriendlyByteBuf buf) {
-		ItemStack itemStack = buf.readItem();
-		int hotbarSlot = buf.readVarInt();
-		return new PacketSetHotbarItemStack(itemStack, hotbarSlot);
+	@Override
+	public Type<PacketSetHotbarItemStack> type() {
+		return TYPE;
+	}
+
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, PacketSetHotbarItemStack> streamCodec() {
+		return STREAM_CODEC;
 	}
 }

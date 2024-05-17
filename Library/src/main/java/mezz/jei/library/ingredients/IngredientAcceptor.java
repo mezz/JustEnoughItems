@@ -16,7 +16,8 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -79,19 +80,21 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 		return this;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public IngredientAcceptor addFluidStack(Fluid fluid, long amount) {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
-		return addFluidInternal(fluidHelper, fluid, amount, null);
+		return addFluidInternal(fluidHelper, fluid.builtInRegistryHolder(), amount, DataComponentPatch.EMPTY);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public IngredientAcceptor addFluidStack(Fluid fluid, long amount, CompoundTag tag) {
+	public IngredientAcceptor addFluidStack(Fluid fluid, long amount, DataComponentPatch componentPatch) {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
-		return addFluidInternal(fluidHelper, fluid, amount, tag);
+		return addFluidInternal(fluidHelper, fluid.builtInRegistryHolder(), amount, componentPatch);
 	}
 
-	private <T> IngredientAcceptor addFluidInternal(IPlatformFluidHelperInternal<T> fluidHelper, Fluid fluid, long amount, @Nullable CompoundTag tag) {
+	private <T> IngredientAcceptor addFluidInternal(IPlatformFluidHelperInternal<T> fluidHelper, Holder<Fluid> fluid, long amount, DataComponentPatch tag) {
 		T fluidStack = fluidHelper.create(fluid, amount, tag);
 		IIngredientTypeWithSubtypes<Fluid, T> fluidIngredientType = fluidHelper.getFluidIngredientType();
 		addIngredientInternal(fluidIngredientType, fluidStack);

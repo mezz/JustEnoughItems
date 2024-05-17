@@ -1,27 +1,22 @@
 package mezz.jei.common.network.packets.handlers;
 
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.network.ClientPacketContext;
 import mezz.jei.common.util.ChatUtil;
-import mezz.jei.common.config.IServerConfig;
-import mezz.jei.common.config.IClientToggleState;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Client-side-only functions related to cheat permissions
  */
 public class ClientCheatPermissionHandler {
-	public static void handleHasCheatPermission(ClientPacketContext context, boolean hasPermission) {
+	public static void handleHasCheatPermission(ClientPacketContext context, boolean hasPermission, List<String> allowedCheatingMethods) {
 		if (!hasPermission) {
 			LocalPlayer player = context.player();
 			ChatUtil.writeChatMessage(player, "jei.chat.error.no.cheat.permission.1", ChatFormatting.RED);
-
-			List<String> allowedCheatingMethods = getAllowedCheatingMethods(context);
 
 			if (allowedCheatingMethods.isEmpty()) {
 				ChatUtil.writeChatMessage(player, "jei.chat.error.no.cheat.permission.disabled", ChatFormatting.RED);
@@ -36,21 +31,5 @@ public class ClientCheatPermissionHandler {
 			toggleState.setCheatItemsEnabled(false);
 			player.closeContainer();
 		}
-	}
-
-	@NotNull
-	private static List<String> getAllowedCheatingMethods(ClientPacketContext context) {
-		IServerConfig serverConfig = context.serverConfig();
-		List<String> allowedCheatingMethods = new ArrayList<>();
-		if (serverConfig.isCheatModeEnabledForOp()) {
-			allowedCheatingMethods.add("jei.chat.error.no.cheat.permission.op");
-		}
-		if (serverConfig.isCheatModeEnabledForCreative()) {
-			allowedCheatingMethods.add("jei.chat.error.no.cheat.permission.creative");
-		}
-		if (serverConfig.isCheatModeEnabledForGive()) {
-			allowedCheatingMethods.add("jei.chat.error.no.cheat.permission.give");
-		}
-		return allowedCheatingMethods;
 	}
 }

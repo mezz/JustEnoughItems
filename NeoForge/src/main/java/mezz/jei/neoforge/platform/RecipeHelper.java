@@ -4,6 +4,7 @@ import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
+import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingRecipe;
@@ -17,7 +18,7 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 	@Override
 	public <T extends CraftingRecipe> int getWidth(T recipe) {
 		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
-			return shapedRecipe.getRecipeWidth();
+			return shapedRecipe.getWidth();
 		}
 		return 0;
 	}
@@ -25,7 +26,7 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 	@Override
 	public <T extends CraftingRecipe> int getHeight(T recipe) {
 		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
-			return shapedRecipe.getRecipeHeight();
+			return shapedRecipe.getHeight();
 		}
 		return 0;
 	}
@@ -72,7 +73,7 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 	}
 
 	@Override
-	public List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory) {
-		return BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory);
+	public List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory, PotionBrewing potionBrewing) {
+		return BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, potionBrewing);
 	}
 }

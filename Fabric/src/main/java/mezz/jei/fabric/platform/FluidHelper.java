@@ -5,8 +5,6 @@ import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.fabric.ingredients.fluid.JeiFluidIngredient;
 import mezz.jei.library.render.FluidTankRenderer;
@@ -18,26 +16,20 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-@SuppressWarnings("UnstableApiUsage")
 public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngredient> {
 	@Override
 	public IIngredientTypeWithSubtypes<Fluid, IJeiFluidIngredient> getFluidIngredientType() {
 		return FabricTypes.FLUID_STACK;
-	}
-
-	@Override
-	public IIngredientSubtypeInterpreter<IJeiFluidIngredient> getAllNbtSubtypeInterpreter() {
-		return AllFluidNbt.INSTANCE;
 	}
 
 	@Override
@@ -47,34 +39,28 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 
 	@Override
 	public Optional<TextureAtlasSprite> getStillFluidSprite(IJeiFluidIngredient ingredient) {
-		FluidVariant fluidVariant = getFluidVariant(ingredient);
+		FluidVariant fluidVariant = ingredient.getFluidVariant();
 		TextureAtlasSprite sprite = FluidVariantRendering.getSprite(fluidVariant);
 		return Optional.ofNullable(sprite);
 	}
 
 	@Override
 	public Component getDisplayName(IJeiFluidIngredient ingredient) {
-		FluidVariant fluidVariant = getFluidVariant(ingredient);
+		FluidVariant fluidVariant = ingredient.getFluidVariant();
 		return FluidVariantAttributes.getName(fluidVariant);
 	}
 
 	@Override
 	public int getColorTint(IJeiFluidIngredient ingredient) {
-		FluidVariant fluidVariant = getFluidVariant(ingredient);
+		FluidVariant fluidVariant = ingredient.getFluidVariant();
 		int fluidColor = FluidVariantRendering.getColor(fluidVariant);
 		return fluidColor | 0xFF000000;
 	}
 
 	@Override
 	public List<Component> getTooltip(IJeiFluidIngredient ingredient, TooltipFlag tooltipFlag) {
-		FluidVariant fluidVariant = getFluidVariant(ingredient);
+		FluidVariant fluidVariant = ingredient.getFluidVariant();
 		return FluidVariantRendering.getTooltip(fluidVariant, tooltipFlag);
-	}
-
-	private FluidVariant getFluidVariant(IJeiFluidIngredient ingredient) {
-		Fluid fluid = ingredient.getFluid();
-		CompoundTag tag = ingredient.getTag().orElse(null);
-		return FluidVariant.of(fluid, tag);
 	}
 
 	@Override
@@ -83,36 +69,36 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	}
 
 	@Override
-	public Optional<CompoundTag> getTag(IJeiFluidIngredient ingredient) {
-		return ingredient.getTag();
+	public DataComponentPatch getComponentsPatch(IJeiFluidIngredient ingredient) {
+		FluidVariant fluid = ingredient.getFluidVariant();
+		return fluid.getComponents();
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
 	@Override
 	public long bucketVolume() {
 		return FluidConstants.BUCKET;
 	}
 
 	@Override
-	public IJeiFluidIngredient create(Fluid fluid, long amount, @Nullable CompoundTag tag) {
-		return new JeiFluidIngredient(fluid, amount, tag);
+	public IJeiFluidIngredient create(Holder<Fluid> fluid, long amount, DataComponentPatch patch) {
+		FluidVariant fluidVariant = FluidVariant.of(fluid.value(), patch);
+		return new JeiFluidIngredient(fluidVariant, amount);
 	}
 
 	@Override
-	public IJeiFluidIngredient create(Fluid fluid, long amount) {
-		return new JeiFluidIngredient(fluid, amount);
+	public IJeiFluidIngredient create(Holder<Fluid> fluid, long amount) {
+		FluidVariant fluidVariant = FluidVariant.of(fluid.value());
+		return new JeiFluidIngredient(fluidVariant, amount);
 	}
 
 	@Override
 	public IJeiFluidIngredient copy(IJeiFluidIngredient ingredient) {
-		CompoundTag tag = ingredient.getTag().orElse(null);
-		return new JeiFluidIngredient(ingredient.getFluid(), ingredient.getAmount(), tag);
+		return new JeiFluidIngredient(ingredient.getFluidVariant(), ingredient.getAmount());
 	}
 
 	@Override
 	public IJeiFluidIngredient normalize(IJeiFluidIngredient ingredient) {
-		CompoundTag tag = ingredient.getTag().orElse(null);
-		return new JeiFluidIngredient(ingredient.getFluid(), bucketVolume(), tag);
+		return new JeiFluidIngredient(ingredient.getFluidVariant(), bucketVolume());
 	}
 
 	@Override
@@ -125,22 +111,8 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 			.map(Iterator::next)
 			.map(view -> {
 				FluidVariant resource = view.getResource();
-				return new JeiFluidIngredient(resource.getFluid(), bucketVolume(), resource.copyNbt());
+				return new JeiFluidIngredient(resource, view.getAmount());
 			});
 	}
 
-	private static class AllFluidNbt implements IIngredientSubtypeInterpreter<IJeiFluidIngredient> {
-		public static final AllFluidNbt INSTANCE = new AllFluidNbt();
-
-		private AllFluidNbt() {
-		}
-
-		@Override
-		public String apply(IJeiFluidIngredient storage, UidContext context) {
-			return storage.getTag()
-				.filter(tag -> !tag.isEmpty())
-				.map(CompoundTag::toString)
-				.orElse(IIngredientSubtypeInterpreter.NONE);
-		}
-	}
 }

@@ -1,20 +1,19 @@
 package mezz.jei.gui.input.handlers;
 
-import mezz.jei.common.network.packets.PacketJeiToServer;
-import net.minecraft.client.gui.GuiGraphics;
-import mezz.jei.common.gui.TooltipRenderer;
-import mezz.jei.gui.overlay.IIngredientGrid;
-import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.UserInput;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.network.packets.PacketDeletePlayerItem;
-import mezz.jei.gui.util.CheatUtil;
-import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.gui.TooltipRenderer;
+import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.network.packets.PacketDeletePlayerItem;
+import mezz.jei.common.util.ServerCommandUtil;
+import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.gui.input.UserInput;
+import mezz.jei.gui.overlay.IIngredientGrid;
+import mezz.jei.gui.util.CheatUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -69,7 +68,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 		}
 		if (!userInput.isSimulate()) {
 			player.containerMenu.setCarried(ItemStack.EMPTY);
-			PacketJeiToServer packet = new PacketDeletePlayerItem(itemStack.getItem());
+			var packet = new PacketDeletePlayerItem(itemStack);
 			serverConnection.sendPacketToServer(packet);
 		}
 		return Optional.of(this);

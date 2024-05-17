@@ -74,8 +74,8 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 20, 0)
 			.addItemStack(ItemStack.EMPTY)
 			.addIngredients(platformFluidHelper.getFluidIngredientType(), List.of(
-				platformFluidHelper.create(Fluids.WATER, bucketVolume),
-				platformFluidHelper.create(Fluids.LAVA, bucketVolume)
+				platformFluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume),
+				platformFluidHelper.create(Fluids.LAVA.defaultFluidState().holder(), bucketVolume)
 			))
 			.addItemStacks(List.of(
 				new ItemStack(Items.SNOW_BLOCK),

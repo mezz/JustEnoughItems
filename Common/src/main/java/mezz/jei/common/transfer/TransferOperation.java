@@ -1,6 +1,8 @@
 package mezz.jei.common.transfer;
 
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 
@@ -8,16 +10,13 @@ import net.minecraft.world.inventory.Slot;
  * Represents transferring an ItemStack from inventorySlot to craftingSlot.
  */
 public record TransferOperation(int inventorySlotId, int craftingSlotId) {
-	public static TransferOperation readPacketData(FriendlyByteBuf buf) {
-		int inventorySlotIndex = buf.readVarInt();
-		int craftingSlotIndex = buf.readVarInt();
-		return new TransferOperation(inventorySlotIndex, craftingSlotIndex);
-	}
-
-	public void writePacketData(FriendlyByteBuf buf) {
-		buf.writeVarInt(inventorySlotId);
-		buf.writeVarInt(craftingSlotId);
-	}
+	public static final StreamCodec<ByteBuf, TransferOperation> STREAM_CODEC = StreamCodec.composite(
+		ByteBufCodecs.VAR_INT,
+		p -> p.inventorySlotId,
+		ByteBufCodecs.VAR_INT,
+		p -> p.craftingSlotId,
+		TransferOperation::new
+	);
 
 	public Slot inventorySlot(AbstractContainerMenu container) {
 		return container.getSlot(inventorySlotId);

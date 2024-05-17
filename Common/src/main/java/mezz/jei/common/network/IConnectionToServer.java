@@ -1,9 +1,9 @@
 package mezz.jei.common.network;
 
-import mezz.jei.common.network.packets.PacketJeiToServer;
+import mezz.jei.common.network.packets.PlayToServerPacket;
 
 public interface IConnectionToServer {
 	boolean isJeiOnServer();
 
-	void sendPacketToServer(PacketJeiToServer packet);
+	<T extends PlayToServerPacket<T>> void sendPacketToServer(T packet);
 }

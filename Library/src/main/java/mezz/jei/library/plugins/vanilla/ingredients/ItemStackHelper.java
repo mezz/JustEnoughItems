@@ -10,9 +10,9 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
-import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.RegistryWrapper;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.common.util.TagUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -70,7 +70,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
 		return itemStackHelper.getCreatorModId(ingredient)
 			.or(() ->
-				Services.PLATFORM
+				RegistryWrapper
 				.getRegistry(Registries.ITEM)
 				.getRegistryName(ingredient.getItem())
 				.map(ResourceLocation::getNamespace)
@@ -91,7 +91,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		ErrorUtil.checkNotEmpty(ingredient);
 
 		Item item = ingredient.getItem();
-		return Services.PLATFORM
+		return RegistryWrapper
 			.getRegistry(Registries.ITEM)
 			.getRegistryName(item)
 			.orElseThrow(() -> {
@@ -125,7 +125,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public boolean isIngredientOnServer(ItemStack ingredient) {
 		Item item = ingredient.getItem();
-		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registries.ITEM);
+		RegistryWrapper<Item> registry = RegistryWrapper.getRegistry(Registries.ITEM);
 		return registry.contains(item);
 	}
 

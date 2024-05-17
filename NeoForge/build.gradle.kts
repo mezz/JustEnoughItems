@@ -1,4 +1,6 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
+import net.neoforged.gradle.common.extensions.MinecraftExtension
+import net.neoforged.gradle.dsl.common.extensions.RunnableSourceSet
 import net.neoforged.gradle.dsl.common.runs.run.Run
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -80,7 +82,7 @@ dependencies {
 	implementation(
 		group = "net.neoforged",
 		name = "neoforge",
-		version = "${neoforgeVersion}"
+		version = neoforgeVersion
 	)
 	dependencyProjects.forEach {
 		implementation(it)
@@ -104,14 +106,13 @@ minecraft {
 }
 
 fun commonRunProperties(run: Run) {
-	run.modSources(sourceSets.main.get())
 	for (dependencyProject in dependencyProjects) {
-		run.modSources(dependencyProject.sourceSets.main.get())
+		run.modSources.add(project.name, dependencyProject.sourceSets.main.get())
 	}
 }
 
 runs {
-	create("client") {
+	named("client") {
 		systemProperty("forge.logging.console.level", "debug")
 		workingDirectory(file("run/client/Dev"))
 		commonRunProperties(this)
@@ -128,7 +129,7 @@ runs {
 		programArguments("--username", "Player02")
 		commonRunProperties(this)
 	}
-	create("server") {
+	named("server") {
 		systemProperty("forge.logging.console.level", "debug")
 		workingDirectory(file("run/server"))
 		commonRunProperties(this)

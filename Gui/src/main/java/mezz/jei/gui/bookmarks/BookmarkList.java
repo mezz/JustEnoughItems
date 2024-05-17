@@ -7,6 +7,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.overlay.IIngredientGridSource;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -17,12 +18,14 @@ import java.util.Optional;
 public class BookmarkList implements IIngredientGridSource {
 	private final List<ITypedIngredient<?>> list = new LinkedList<>();
 	private final IIngredientManager ingredientManager;
+	private final RegistryAccess registryAccess;
 	private final IBookmarkConfig bookmarkConfig;
 	private final IClientConfig clientConfig;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 
-	public BookmarkList(IIngredientManager ingredientManager, IBookmarkConfig bookmarkConfig, IClientConfig clientConfig) {
+	public BookmarkList(IIngredientManager ingredientManager, RegistryAccess registryAccess, IBookmarkConfig bookmarkConfig, IClientConfig clientConfig) {
 		this.ingredientManager = ingredientManager;
+		this.registryAccess = registryAccess;
 		this.bookmarkConfig = bookmarkConfig;
 		this.clientConfig = clientConfig;
 	}
@@ -33,7 +36,7 @@ public class BookmarkList implements IIngredientGridSource {
 		}
 		addToList(value, clientConfig.isAddingBookmarksToFrontEnabled());
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(ingredientManager, list);
+		bookmarkConfig.saveBookmarks(ingredientManager, registryAccess, list);
 		return true;
 	}
 
@@ -94,7 +97,7 @@ public class BookmarkList implements IIngredientGridSource {
 
 		list.remove(index);
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(ingredientManager, list);
+		bookmarkConfig.saveBookmarks(ingredientManager, registryAccess, list);
 		return true;
 	}
 

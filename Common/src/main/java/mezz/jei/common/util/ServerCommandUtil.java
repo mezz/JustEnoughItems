@@ -36,7 +36,7 @@ public final class ServerCommandUtil {
 	private ServerCommandUtil() {
 	}
 
-	public static boolean hasPermissionForCheatMode(ServerPlayer sender, IServerConfig serverConfig) {
+	public static boolean hasPermissionForCheatMode(Player sender, IServerConfig serverConfig) {
 		if (serverConfig.isCheatModeEnabledForCreative() &&
 			sender.isCreative()) {
 			return true;
@@ -87,7 +87,7 @@ public final class ServerCommandUtil {
 				LOGGER.debug("Player '{} ({})' tried to cheat an ItemStack '{}' but does not have permission.", sender.getName(), sender.getUUID(), itemStack.getDisplayName());
 			}
 			IConnectionToClient connection = context.connection();
-			connection.sendPacketToClient(new PacketCheatPermission(false), sender);
+			connection.sendPacketToClient(new PacketCheatPermission(false, serverConfig), sender);
 		}
 	}
 
@@ -125,7 +125,7 @@ public final class ServerCommandUtil {
 				LOGGER.debug("Player '{} ({})' tried to cheat an item '{}' to their hotbar but does not have permission.", sender.getName(), sender.getUUID(), itemStack.getDisplayName());
 			}
 			IConnectionToClient connection = context.connection();
-			connection.sendPacketToClient(new PacketCheatPermission(false), sender);
+			connection.sendPacketToClient(new PacketCheatPermission(false, serverConfig), sender);
 		}
 	}
 

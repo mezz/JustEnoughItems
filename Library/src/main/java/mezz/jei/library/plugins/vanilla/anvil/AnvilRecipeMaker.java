@@ -4,9 +4,9 @@ import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
-import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.RegistryWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.ItemTags;
@@ -20,11 +20,11 @@ import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -73,7 +73,9 @@ public final class AnvilRecipeMaker {
 			return IntStream.rangeClosed(1, enchantment.getMaxLevel())
 				.mapToObj(level -> {
 					ItemStack bookEnchant = ENCHANTED_BOOK.copy();
-					EnchantmentHelper.setEnchantments(Map.of(enchantment, level), bookEnchant);
+					ItemEnchantments.Mutable itemEnchantments = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(bookEnchant));
+					itemEnchantments.set(enchantment, level);
+					EnchantmentHelper.setEnchantments(bookEnchant, itemEnchantments.toImmutable());
 					return bookEnchant;
 				})
 				.toList();
@@ -84,7 +86,7 @@ public final class AnvilRecipeMaker {
 		IVanillaRecipeFactory vanillaRecipeFactory,
 		IIngredientManager ingredientManager
 	) {
-		IPlatformRegistry<Enchantment> registry = Services.PLATFORM.getRegistry(Registries.ENCHANTMENT);
+		RegistryWrapper<Enchantment> registry = RegistryWrapper.getRegistry(Registries.ENCHANTMENT);
 		List<EnchantmentData> enchantmentDatas = registry.getValues()
 			.map(EnchantmentData::new)
 			.toList();
@@ -118,8 +120,8 @@ public final class AnvilRecipeMaker {
 
 	private static ItemStack getEnchantedIngredient(ItemStack ingredient, ItemStack enchantedBook) {
 		ItemStack enchantedIngredient = ingredient.copy();
-		Map<Enchantment, Integer> bookEnchantments = EnchantmentHelper.getEnchantments(enchantedBook);
-		EnchantmentHelper.setEnchantments(bookEnchantments, enchantedIngredient);
+		ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(enchantedBook);
+		EnchantmentHelper.setEnchantments(enchantedIngredient, enchantments);
 		return enchantedIngredient;
 	}
 
@@ -160,7 +162,7 @@ public final class AnvilRecipeMaker {
 				new ItemStack(Items.STONE_SHOVEL),
 				new ItemStack(Items.STONE_HOE)
 			),
-			new RepairData(ArmorMaterials.LEATHER.getRepairIngredient(),
+			new RepairData(ArmorMaterials.LEATHER.value().repairIngredient().get(),
 				new ItemStack(Items.LEATHER_HELMET),
 				new ItemStack(Items.LEATHER_CHESTPLATE),
 				new ItemStack(Items.LEATHER_LEGGINGS),
@@ -173,13 +175,13 @@ public final class AnvilRecipeMaker {
 				new ItemStack(Items.IRON_SHOVEL),
 				new ItemStack(Items.IRON_HOE)
 			),
-			new RepairData(ArmorMaterials.IRON.getRepairIngredient(),
+			new RepairData(ArmorMaterials.IRON.value().repairIngredient().get(),
 				new ItemStack(Items.IRON_HELMET),
 				new ItemStack(Items.IRON_CHESTPLATE),
 				new ItemStack(Items.IRON_LEGGINGS),
 				new ItemStack(Items.IRON_BOOTS)
 			),
-			new RepairData(ArmorMaterials.CHAIN.getRepairIngredient(),
+			new RepairData(ArmorMaterials.CHAIN.value().repairIngredient().get(),
 				new ItemStack(Items.CHAINMAIL_HELMET),
 				new ItemStack(Items.CHAINMAIL_CHESTPLATE),
 				new ItemStack(Items.CHAINMAIL_LEGGINGS),
@@ -192,7 +194,7 @@ public final class AnvilRecipeMaker {
 				new ItemStack(Items.GOLDEN_SHOVEL),
 				new ItemStack(Items.GOLDEN_HOE)
 			),
-			new RepairData(ArmorMaterials.GOLD.getRepairIngredient(),
+			new RepairData(ArmorMaterials.GOLD.value().repairIngredient().get(),
 				new ItemStack(Items.GOLDEN_HELMET),
 				new ItemStack(Items.GOLDEN_CHESTPLATE),
 				new ItemStack(Items.GOLDEN_LEGGINGS),
@@ -205,7 +207,7 @@ public final class AnvilRecipeMaker {
 				new ItemStack(Items.DIAMOND_SHOVEL),
 				new ItemStack(Items.DIAMOND_HOE)
 			),
-			new RepairData(ArmorMaterials.DIAMOND.getRepairIngredient(),
+			new RepairData(ArmorMaterials.DIAMOND.value().repairIngredient().get(),
 				new ItemStack(Items.DIAMOND_HELMET),
 				new ItemStack(Items.DIAMOND_CHESTPLATE),
 				new ItemStack(Items.DIAMOND_LEGGINGS),
@@ -218,7 +220,7 @@ public final class AnvilRecipeMaker {
 				new ItemStack(Items.NETHERITE_SHOVEL),
 				new ItemStack(Items.NETHERITE_PICKAXE)
 			),
-			new RepairData(ArmorMaterials.NETHERITE.getRepairIngredient(),
+			new RepairData(ArmorMaterials.NETHERITE.value().repairIngredient().get(),
 				new ItemStack(Items.NETHERITE_BOOTS),
 				new ItemStack(Items.NETHERITE_HELMET),
 				new ItemStack(Items.NETHERITE_LEGGINGS),
@@ -227,7 +229,7 @@ public final class AnvilRecipeMaker {
 			new RepairData(Ingredient.of(Items.PHANTOM_MEMBRANE),
 				new ItemStack(Items.ELYTRA)
 			),
-			new RepairData(ArmorMaterials.TURTLE.getRepairIngredient(),
+			new RepairData(ArmorMaterials.TURTLE.value().repairIngredient().get(),
 				new ItemStack(Items.TURTLE_HELMET)
 			)
 		);

@@ -1,16 +1,14 @@
 package mezz.jei.forge.network;
 
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.network.packets.PacketJeiToServer;
+import mezz.jei.common.network.packets.PlayToServerPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
-import net.minecraftforge.network.EventNetworkChannel;
-import net.minecraftforge.network.ICustomPacket;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraftforge.network.Channel;
 import net.minecraftforge.network.NetworkDirection;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -36,20 +34,20 @@ public final class ConnectionToServer implements IConnectionToServer {
 		if (!id.equals(jeiOnServerCacheUuid)) {
 			jeiOnServerCacheUuid = id;
 			Connection connection = clientPacketListener.getConnection();
-			EventNetworkChannel networkChannel = networkHandler.getChannel();
-			jeiOnServerCacheValue = networkChannel.isRemotePresent(connection);
+			Channel<CustomPacketPayload> channel = networkHandler.getChannel();
+			jeiOnServerCacheValue = channel.isRemotePresent(connection);
 		}
 		return jeiOnServerCacheValue;
 	}
 
 	@Override
-	public void sendPacketToServer(PacketJeiToServer packet) {
+	public <T extends PlayToServerPacket<T>> void sendPacketToServer(T packet) {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPacketListener netHandler = minecraft.getConnection();
 		if (netHandler != null && isJeiOnServer()) {
-			Pair<FriendlyByteBuf, Integer> packetData = packet.getPacketData();
-			ICustomPacket<Packet<?>> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(packetData.getKey(), networkHandler.getChannelId());
-			netHandler.send(payload.getThis());
+			Channel<CustomPacketPayload> channel = networkHandler.getChannel();
+			Packet<?> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(channel, packet);
+			netHandler.send(payload);
 		}
 	}
 }

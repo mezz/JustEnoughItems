@@ -1,24 +1,20 @@
 package mezz.jei.fabric.network;
 
-import mezz.jei.common.Constants;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.network.packets.PacketJeiToServer;
+import mezz.jei.common.network.packets.PacketDeletePlayerItem;
+import mezz.jei.common.network.packets.PlayToServerPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.network.FriendlyByteBuf;
-import org.apache.commons.lang3.tuple.Pair;
 
 public final class ConnectionToServer implements IConnectionToServer {
 	@Override
 	public boolean isJeiOnServer() {
-		return ClientPlayNetworking.canSend(Constants.NETWORK_CHANNEL_ID);
+		return ClientPlayNetworking.canSend(PacketDeletePlayerItem.TYPE);
 	}
 
 	@Override
-	public void sendPacketToServer(PacketJeiToServer packet) {
+	public <T extends PlayToServerPacket<T>> void sendPacketToServer(T packet) {
 		if (isJeiOnServer()) {
-			Pair<FriendlyByteBuf, Integer> packetData = packet.getPacketData();
-			FriendlyByteBuf buf = packetData.getLeft();
-			ClientPlayNetworking.send(Constants.NETWORK_CHANNEL_ID, buf);
+			ClientPlayNetworking.send(packet);
 		}
 	}
 }

@@ -3,7 +3,7 @@ package mezz.jei.library.plugins.debug;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.RegistryWrapper;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
@@ -18,7 +18,7 @@ public class FluidSubtypeHandlerTest<T> implements IIngredientSubtypeInterpreter
 	@Override
 	public String apply(T fluidStack, UidContext context) {
 		Fluid fluid = type.getBase(fluidStack);
-		return Services.PLATFORM
+		return RegistryWrapper
 			.getRegistry(Registries.FLUID)
 			.getRegistryName(fluid)
 			.map(ResourceLocation::toString)

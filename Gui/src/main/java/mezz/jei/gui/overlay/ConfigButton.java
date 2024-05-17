@@ -89,7 +89,7 @@ public class ConfigButton extends GuiIconToggleButton {
 					toggleState.toggleCheatItemsEnabled();
 					if (toggleState.isCheatItemsEnabled()) {
 						IConnectionToServer serverConnection = Internal.getServerConnection();
-						serverConnection.sendPacketToServer(new PacketRequestCheatPermission());
+						serverConnection.sendPacketToServer(PacketRequestCheatPermission.INSTANCE);
 					}
 				} else {
 					openSettings();

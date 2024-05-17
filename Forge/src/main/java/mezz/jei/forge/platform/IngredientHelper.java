@@ -35,7 +35,16 @@ public class IngredientHelper implements IPlatformIngredientHelper {
 	}
 
 	@Override
-	public List<Ingredient> getPotionContainers() {
-		return PotionBrewing.ALLOWED_CONTAINERS;
+	public Stream<Ingredient> getPotionIngredients(PotionBrewing potionBrewing) {
+		return Stream.concat(
+				potionBrewing.containerMixes.stream(),
+				potionBrewing.potionMixes.stream()
+			)
+			.map(PotionBrewing.Mix::ingredient);
+	}
+
+	@Override
+	public List<Ingredient> getPotionContainers(PotionBrewing potionBrewing) {
+		return potionBrewing.containers;
 	}
 }

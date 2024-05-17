@@ -24,4 +24,7 @@ accessible field net/minecraft/world/item/crafting/SmithingTrimRecipe base Lnet/
 accessible field net/minecraft/world/item/crafting/SmithingTrimRecipe addition Lnet/minecraft/world/item/crafting/Ingredient;
 accessible field net/minecraft/world/item/crafting/SmithingTrimRecipe template Lnet/minecraft/world/item/crafting/Ingredient;
 
-accessible field net/minecraft/world/item/alchemy/PotionBrewing ALLOWED_CONTAINERS Ljava/util/List;
+accessible field net/minecraft/world/item/alchemy/PotionBrewing containers Ljava/util/List;
+accessible field net/minecraft/world/item/alchemy/PotionBrewing potionMixes Ljava/util/List;
+accessible field net/minecraft/world/item/alchemy/PotionBrewing containerMixes Ljava/util/List;
+accessible method net/minecraft/world/item/alchemy/PotionBrewing$Mix ingredient ()Lnet/minecraft/world/item/crafting/Ingredient;

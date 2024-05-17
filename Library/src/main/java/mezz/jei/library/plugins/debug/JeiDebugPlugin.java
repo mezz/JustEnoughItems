@@ -22,11 +22,11 @@ import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.config.DebugConfig;
-import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.common.util.RegistryWrapper;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredient;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredientHelper;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredientListFactory;
@@ -160,7 +160,7 @@ public class JeiDebugPlugin implements IModPlugin {
 
 	private <T> void registerFluidRecipes(IRecipeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
 		long bucketVolume = platformFluidHelper.bucketVolume();
-		T fluidIngredient = platformFluidHelper.create(Fluids.WATER, bucketVolume, null);
+		T fluidIngredient = platformFluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume);
 		registration.addIngredientInfo(fluidIngredient, platformFluidHelper.getFluidIngredientType(), Component.literal("water"));
 	}
 
@@ -239,9 +239,9 @@ public class JeiDebugPlugin implements IModPlugin {
 		long bucketVolume = fluidHelper.bucketVolume();
 
 		registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
-		registration.addRecipeCatalyst(fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER, bucketVolume, null), DebugRecipeCategory.TYPE);
+		registration.addRecipeCatalyst(fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume), DebugRecipeCategory.TYPE);
 		registration.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
-		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registries.ITEM);
+		RegistryWrapper<Item> registry = RegistryWrapper.getRegistry(Registries.ITEM);
 		registry.getValues()
 			.limit(300)
 			.forEach(item -> {
