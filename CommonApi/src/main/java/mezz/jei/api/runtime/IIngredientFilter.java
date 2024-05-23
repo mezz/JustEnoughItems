@@ -4,6 +4,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -45,4 +46,19 @@ public interface IIngredientFilter {
 	 * to get all the ingredients known to JEI, not just ones currently shown by the filter
 	 */
 	<T> List<T> getFilteredIngredients(IIngredientType<T> ingredientType);
+
+	/**
+	 * Register your own sorting option here.
+	 * The ItemStack comparator needs to be able to handle isEmpty ItemStack inputs (Never Null.) 
+	 * (FluidStacks will be silently converted to bucket ItemStacks).
+	 * 
+	 * The Object comparator needs to be able to handle ItemStack, FluidStack, and unknown types 
+	 * (Mod specific stacks) inputs.  Examples of Mod specific ones are Mekanism's GasStack and 
+	 * EnderIO's EnergyIngredient
+	 *
+	 * @since JEI ?.?.?
+	 */
+	default void addIngredientListItemStackSorter(String name, Comparator<ItemStack> comparator) {
+	}
+
 }

@@ -3,7 +3,7 @@ package mezz.jei.common.config;
 import com.google.common.base.Preconditions;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
-import mezz.jei.common.config.file.serializers.EnumSerializer;
+import mezz.jei.common.config.file.serializers.IngredientSortStageSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
 import mezz.jei.common.platform.Services;
 import org.jetbrains.annotations.Nullable;
@@ -90,7 +90,7 @@ public final class ClientConfig implements IClientConfig {
 		ingredientSorterStages = sorting.addList(
 			"IngredientSortStages",
 			IngredientSortStage.defaultStages,
-			new ListSerializer<>(new EnumSerializer<>(IngredientSortStage.class)),
+			new ListSerializer<IngredientSortStage>(new IngredientSortStageSerializer()),
 			"Sorting order for the ingredient list"
 		);
 	}

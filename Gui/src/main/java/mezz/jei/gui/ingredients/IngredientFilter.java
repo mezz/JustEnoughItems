@@ -19,6 +19,7 @@ import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchLowMem;
 import mezz.jei.gui.search.IElementSearch;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -365,4 +366,15 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			listener.onSourceListChanged();
 		}
 	}
+
+	public void addIngredientListItemStackSorter(String name, Comparator<ItemStack> comparator) {
+		IngredientSorterComparators.AddCustomItemStackComparator(name, comparator);
+		invalidateCache();
+	}
+
+	public void addIngredientListElementSorter(String name, Comparator<IListElementInfo<?>> comparator) {
+		IngredientSorterComparators.AddCustomListElementComparator(name, comparator);
+		invalidateCache();
+	}
+
 }

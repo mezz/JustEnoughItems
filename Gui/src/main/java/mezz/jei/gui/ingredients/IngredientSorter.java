@@ -2,14 +2,17 @@ package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IngredientSortStage;
+import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class IngredientSorter implements IIngredientSorter {
+	//private static final Logger LOGGER = LogManager.getLogger();
 	private static final Comparator<IListElementInfo<?>> PRE_SORTED =
 		Comparator.comparing(IListElementInfo::getSortedIndex);
 
@@ -18,6 +21,7 @@ public final class IngredientSorter implements IIngredientSorter {
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
 
 	private boolean isCacheValid;
+	private String lastStageOrder = "";
 
 	public IngredientSorter(IClientConfig clientConfig, ModNameSortingConfig modNameSortingConfig, IngredientTypeSortingConfig ingredientTypeSortingConfig) {
 		this.clientConfig = clientConfig;
@@ -28,9 +32,16 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	@Override
 	public void doPreSort(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
+		LoggedTimer sortTime = new LoggedTimer();
+		sortTime.start("Sorting Items");
 		IngredientSorterComparators comparators = new IngredientSorterComparators(ingredientFilter, ingredientManager, this.modNameSortingConfig, this.ingredientTypeSortingConfig);
 
 		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
+
+		//Remember the stage order so we can tell if it changed later.
+		lastStageOrder = ingredientSorterStages.stream()
+			.map(o -> o.name)
+			.collect(Collectors.joining(", "));
 
 		Comparator<IListElementInfo<?>> completeComparator = comparators.getComparator(ingredientSorterStages);
 
@@ -43,11 +54,16 @@ public final class IngredientSorter implements IIngredientSorter {
 			element.setSortedIndex(i);
 		}
 		this.isCacheValid = true;
+		sortTime.stop();
 	}
 
 	@Override
 	public Comparator<IListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
-		if (!this.isCacheValid) {
+		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
+		String myStageOrderStr = ingredientSorterStages.stream()
+			.map(o -> o.name)
+			.collect(Collectors.joining(", "));
+		if (!this.isCacheValid || !lastStageOrder.equals(myStageOrderStr)) {
 			doPreSort(ingredientFilter, ingredientManager);
 		}
 		//Now the comparator just uses that index value to order everything.

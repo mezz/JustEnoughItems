@@ -9,6 +9,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.Translator;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,6 +33,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	private final List<String> modNames;
 	private final ResourceLocation resourceLocation;
 	private int sortedIndex = Integer.MAX_VALUE;
+	private final ItemStack itemStack;
 
 	public static <V> Optional<IListElementInfo<V>> create(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
@@ -67,6 +69,24 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 			.toList();
 		String displayName = IngredientInformationUtil.getDisplayName(ingredient, ingredientHelper);
 		this.displayNameLowercase = Translator.toLowercaseWithLocale(displayName);
+		ItemStack anItemStack = ItemStack.EMPTY;
+		try {
+			anItemStack = ingredientHelper.getCheatItemStack(ingredient);
+			if (anItemStack == ItemStack.EMPTY) {
+				String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
+				LOGGER.info("Ingredient creates Emtpy ItemStack when cheated. {}", ingredientInfo);	
+			}
+			if (anItemStack == null) {
+				String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
+				LOGGER.info("Ingredient creates Null ItemStack when cheated. {}", ingredientInfo);	
+				anItemStack = ItemStack.EMPTY;
+			}
+		} catch (RuntimeException e) {
+			anItemStack = ItemStack.EMPTY;
+			String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
+			LOGGER.warn("Ingredient throws error when cheated. {}", ingredientInfo, e);
+		}
+		this.itemStack = anItemStack;
 	}
 
 	@Override
@@ -157,6 +177,11 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	@Override
 	public int getSortedIndex() {
 		return sortedIndex;
+	}
+
+	@Override
+	public ItemStack getCheatItemStack() {
+		return itemStack;
 	}
 
 }

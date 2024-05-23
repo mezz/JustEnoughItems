@@ -17,15 +17,22 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 public class IngredientSorterComparators {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private final IngredientFilter ingredientFilter;
 	private final IIngredientManager ingredientManager;
 	private final ModNameSortingConfig modNameSortingConfig;
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
+	private static HashMap<String, Comparator<IListElementInfo<?>>> customComparators = new HashMap<String, Comparator<IListElementInfo<?>>>();
 
 	public IngredientSorterComparators(
 		IngredientFilter ingredientFilter,
@@ -47,21 +54,45 @@ public class IngredientSorterComparators {
 	}
 
 	public Comparator<IListElementInfo<?>> getComparator(IngredientSortStage ingredientSortStage) {
-		return switch (ingredientSortStage) {
-			case ALPHABETICAL -> getAlphabeticalComparator();
-			case CREATIVE_MENU -> getCreativeMenuComparator();
-			case INGREDIENT_TYPE -> getIngredientTypeComparator();
-			case MOD_NAME -> getModNameComparator();
-			case TAG -> getTagComparator();
-			case ARMOR -> getArmorComparator();
-			case MAX_DURABILITY -> getMaxDurabilityComparator();
+		//Just return one of the built-in sorts.
+		switch (ingredientSortStage.name) {
+			case "ALPHABETICAL":
+				return getAlphabeticalComparator();
+			case "CREATIVE_MENU":
+				return getCreativeMenuComparator();
+			case "INGREDIENT_TYPE":
+				return getIngredientTypeComparator();
+			case "MOD_NAME":
+				return getModNameComparator();
+			case "TAG":
+				return getTagComparator();
+			case "ARMOR":
+				return getArmorComparator();
+			case "MAX_DURABILITY":
+				return getMaxDurabilityComparator();
 		};
+		
+		//Find and use a custom sort.
+		var custom = customComparators.get(ingredientSortStage.name);
+		if (custom != null) {
+			return custom;
+		}
+
+		//Accept and ignore an unknown sort.  Mod that added it removed, bad spelling, tried to use it before it was registered, etc.
+		LOGGER.warn("Sorting option '" + ingredientSortStage.name + "' does not exist, skipping.");
+		return getNullComparator();
 	}
 
 	public Comparator<IListElementInfo<?>> getDefault() {
 		return getModNameComparator()
 			.thenComparing(getIngredientTypeComparator())
 			.thenComparing(getCreativeMenuComparator());
+	}
+
+	public Comparator<IListElementInfo<?>> getNullComparator() {
+		Comparator<IListElementInfo<?>> nullComparator =
+			Comparator.comparing(o -> 0);
+		return nullComparator;
 	}
 
 	private static Comparator<IListElementInfo<?>> getCreativeMenuComparator() {
@@ -184,6 +215,27 @@ public class IngredientSorterComparators {
 		if (ingredient.getIngredient() instanceof ItemStack itemStack) {
 			return itemStack;
 		}
-		return ItemStack.EMPTY;
+		return ingredientInfo.getCheatItemStack();
+	}
+
+	public static class GenericComparator implements Comparator<IListElementInfo<?>> {
+		final private Comparator<ItemStack> _itemStackComparator;
+		public GenericComparator(Comparator<ItemStack> comparator) {
+			this._itemStackComparator = comparator;
+		}
+		public int compare(IListElementInfo<?> left, IListElementInfo<?> right) {
+			return this._itemStackComparator.compare(getItemStack(left), getItemStack(right));
+		}
+	}
+
+	public static IngredientSortStage AddCustomListElementComparator(String comparatorName, Comparator<IListElementInfo<?>> complexComparator) {
+		comparatorName = comparatorName.toUpperCase().trim();
+		customComparators.put(comparatorName, complexComparator);
+		return IngredientSortStage.getOrCreateStage(comparatorName);
+	}
+
+	public static IngredientSortStage AddCustomItemStackComparator(String comparatorName, Comparator<ItemStack> itemStackComparator) {
+		var complexComparator = new GenericComparator(itemStackComparator);
+		return AddCustomListElementComparator(comparatorName, complexComparator);
 	}
 }

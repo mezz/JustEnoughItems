@@ -9,6 +9,8 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+
 import org.jetbrains.annotations.Unmodifiable;
 
 public interface IListElementInfo<V> {
@@ -37,5 +39,7 @@ public interface IListElementInfo<V> {
 	void setSortedIndex(int sortIndex);
 
 	int getSortedIndex();
+
+	ItemStack getCheatItemStack();
 
 }
