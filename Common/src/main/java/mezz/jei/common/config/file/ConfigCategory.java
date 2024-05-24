@@ -30,6 +30,8 @@ public class ConfigCategory implements IJeiConfigCategory {
 		return name;
 	}
 
+	@Override
+	@Unmodifiable
 	public Optional<ConfigValue<?>> getConfigValue(String configValueName) {
 		ConfigValue<?> configValue = valueMap.get(configValueName);
 		return Optional.ofNullable(configValue);
@@ -41,6 +43,7 @@ public class ConfigCategory implements IJeiConfigCategory {
 		return this.valueMap.values();
 	}
 
+	@Override
 	public Set<String> getValueNames() {
 		return this.valueMap.keySet();
 	}

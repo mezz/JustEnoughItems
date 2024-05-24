@@ -9,7 +9,7 @@ import mezz.jei.common.util.HorizontalAlignment;
 import java.nio.file.Path;
 
 public class JeiClientConfigs implements IJeiClientConfigs {
-	private final IClientConfig clientConfig;
+	private final ClientConfig clientConfig;
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IIngredientGridConfig ingredientListConfig;
 	private final IIngredientGridConfig bookmarkListConfig;
@@ -25,6 +25,7 @@ public class JeiClientConfigs implements IJeiClientConfigs {
 		bookmarkListConfig = new IngredientGridConfig("BookmarkList", builder, HorizontalAlignment.LEFT);
 
 		schema = builder.build();
+		clientConfig.setSchema(schema);
 	}
 
 	public void register(FileWatcher fileWatcher, ConfigManager configManager) {

@@ -3,6 +3,7 @@ package mezz.jei.gui.ingredients;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+//import mezz.jei.common.Internal;
 import mezz.jei.common.config.IngredientSortStage;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
@@ -234,8 +235,19 @@ public class IngredientSorterComparators {
 
 	public static IngredientSortStage AddCustomListElementComparator(String comparatorName, Comparator<IListElementInfo<?>> complexComparator) {
 		comparatorName = comparatorName.toUpperCase().trim();
+		var stage = IngredientSortStage.getOrCreateStage(comparatorName);
+		//Trying to decide if I want to do this automatically, it would keep coming
+		//back if the user removed it.  My current position is to let the addin do it.
+		// var stage = IngredientSortStage.getStage(comparatorName);
+		// if (stage == null) {
+		// 	var configs = Internal.getJeiClientConfigs();
+		// 	var stages = configs.getClientConfig().getIngredientSorterStages();
+		// 	stage = IngredientSortStage.getOrCreateStage(comparatorName);
+		// 	stages.add(stage);
+		// 	configs.getClientConfig().setIngredientSorterStages(stages);
+		// }
 		customComparators.put(comparatorName, complexComparator);
-		return IngredientSortStage.getOrCreateStage(comparatorName);
+		return stage;
 	}
 
 	public static IngredientSortStage AddCustomItemStackComparator(String comparatorName, Comparator<ItemStack> itemStackComparator) {

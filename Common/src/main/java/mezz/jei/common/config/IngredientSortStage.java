@@ -19,7 +19,11 @@ public class IngredientSortStage {
 		this.customStage = customStage;
 		var existingStage = getStage(name);
 		if (existingStage == null) {
-			LOGGER.info("Adding new Sort Stage: " + name);
+			if (customStage) {
+				LOGGER.info("Adding Custom Sort Stage: " + name);
+			} else {
+				LOGGER.info("Adding Built-in Sort Stage: " + name);
+			}
 			allStages.put(name, this);
 		} else if (existingStage.customStage) {
 			LOGGER.info("Replacing Sort Stage: " + name);

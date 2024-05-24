@@ -9,7 +9,6 @@ import mezz.jei.gui.config.ModNameSortingConfig;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class IngredientSorter implements IIngredientSorter {
 	//private static final Logger LOGGER = LogManager.getLogger();
@@ -39,9 +38,7 @@ public final class IngredientSorter implements IIngredientSorter {
 		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
 
 		//Remember the stage order so we can tell if it changed later.
-		lastStageOrder = ingredientSorterStages.stream()
-			.map(o -> o.name)
-			.collect(Collectors.joining(", "));
+		lastStageOrder = this.clientConfig.getSerializedIngredientSorterStages();
 
 		Comparator<IListElementInfo<?>> completeComparator = comparators.getComparator(ingredientSorterStages);
 
@@ -74,11 +71,8 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	@Override
 	public Boolean hasStageOrderChanged() {
-		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
-		String myStageOrderStr = ingredientSorterStages.stream()
-			.map(o -> o.name)
-			.collect(Collectors.joining(", "));
-		return !lastStageOrder.equals(myStageOrderStr);
+		String ingredientSorterStages = this.clientConfig.getSerializedIngredientSorterStages();
+		return !lastStageOrder.equals(ingredientSorterStages);
 	}
 
 }

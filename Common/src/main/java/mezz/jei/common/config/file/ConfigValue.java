@@ -46,6 +46,14 @@ public class ConfigValue<T> implements IJeiConfigValue<T> {
 		return defaultValue;
 	}
 
+	/*
+	 * Allows retreiving the default value without having to know the real data type of the value.
+	 */
+	@Override
+	public String getSerializedDefaultValue() {
+		return serializer.serialize(defaultValue);
+	}
+
 	@Override
 	public T getValue() {
 		if (schema != null) {
@@ -54,17 +62,55 @@ public class ConfigValue<T> implements IJeiConfigValue<T> {
 		return currentValue;
 	}
 
+	/*
+	 * Allows retreiving the value without having to know the real data type of the value.
+	 */
+	@Override
+	public String getSerializedValue() {
+		if (schema != null) {
+			schema.loadIfNeeded();
+		}
+		return serializer.serialize(currentValue);
+	}
+
 	@Override
 	public IJeiConfigValueSerializer<T> getSerializer() {
 		return serializer;
 	}
 
+	/*
+	 * This one is for internal loading.
+	 */
 	public List<String> setFromSerializedValue(String value) {
 		IJeiConfigValueSerializer.IDeserializeResult<T> deserializeResult = serializer.deserialize(value);
 		deserializeResult.getResult()
 			.ifPresent(t -> currentValue = t);
 		return deserializeResult.getErrors();
 	}
+
+	/*
+	 * Update the value without knowing the exact underlying type.
+	 */
+	@Override
+	public boolean setUsingSerializedValue(String value) {
+		IJeiConfigValueSerializer.IDeserializeResult<T> deserializeResult = serializer.deserialize(value);
+		if (!deserializeResult.getErrors().isEmpty()) {
+			LOGGER.error("Tried to set invalid value : {}\n{}", value,  serializer.getValidValuesDescription());
+			return false;
+		}
+		if (deserializeResult.getResult().isPresent()) {
+			T realValue = deserializeResult.getResult().get();
+			if (!currentValue.equals(realValue)) {
+				currentValue = realValue;
+				if (schema != null) {
+					schema.markDirty();
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 	@Override
 	public boolean set(T value) {

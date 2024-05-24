@@ -34,11 +34,27 @@ public interface IJeiConfigValue<T> {
 	T getValue();
 
 	/**
+	 * Get the serialized current value.
+	 * This will automatically update and load from the config file if there are changes.
+	 *
+	 * @since ?.?.?
+	 */
+	String getSerializedValue() ;
+
+	/**
 	 * Get the default value.
 	 *
 	 * @since 12.1.0
 	 */
 	T getDefaultValue();
+
+
+	/**
+	 * Get the serialized default value.
+	 *
+	 * @since ?.?.?
+	 */
+	String getSerializedDefaultValue();
 
 	/**
 	 * Set the config value to the given value.
@@ -47,6 +63,15 @@ public interface IJeiConfigValue<T> {
 	 * @since 12.1.0
 	 */
 	boolean set(T value);
+
+
+	/**
+	 * Set the config value to the given value using the serialized value.
+	 * This will automatically mark the config file as dirty so that it will save the new values.
+	 *
+	 * @since ?.?.?
+	 */
+	boolean setUsingSerializedValue(String value);
 
 	/**
 	 * Get the helper for serializing values to and from Strings, and validating values.

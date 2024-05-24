@@ -118,7 +118,6 @@ public class JeiGuiStarter {
 		);
 		ingredientManager.registerIngredientListener(ingredientFilter);
 		ingredientVisibility.registerListener(ingredientFilter::onIngredientVisibilityChanged);
-
 		timer.stop();
 
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);

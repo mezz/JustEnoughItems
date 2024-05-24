@@ -28,4 +28,10 @@ public interface IClientConfig {
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();
+
+	void setIngredientSorterStages(List<IngredientSortStage> ingredientSortStages);
+
+	String getSerializedIngredientSorterStages();
+
+	void setIngredientSorterStages(String ingredientSortStages);
 }
