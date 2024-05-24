@@ -29,7 +29,7 @@ public class IngredientSortStage {
 		}
 		//Don't replace our built-in stages.
 	}
-	
+
 	private IngredientSortStage(String name) {
 		this(name, true);
 	}
@@ -61,7 +61,7 @@ public class IngredientSortStage {
 		}
 		return stage;
 	}
-	
+
 	public static IngredientSortStage getStage(String needle) {
 		needle = needle.toUpperCase().trim();
 		LOGGER.debug("All Sort Stage Count: " + allStages.size());
@@ -90,7 +90,7 @@ public class IngredientSortStage {
 		}
 		return names;
 	}
-	
+
 	public IngredientSortStage getBestSelf() {
 		if (!customStage) {
 			LOGGER.debug(name + " is a standard sort option.");

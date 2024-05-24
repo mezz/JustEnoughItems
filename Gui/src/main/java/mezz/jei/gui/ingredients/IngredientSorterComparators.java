@@ -71,7 +71,7 @@ public class IngredientSorterComparators {
 			case "MAX_DURABILITY":
 				return getMaxDurabilityComparator();
 		};
-		
+
 		//Find and use a custom sort.
 		var custom = customComparators.get(ingredientSortStage.name);
 		if (custom != null) {

@@ -74,11 +74,11 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 			anItemStack = ingredientHelper.getCheatItemStack(ingredient);
 			if (anItemStack == ItemStack.EMPTY) {
 				String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
-				LOGGER.info("Ingredient creates Emtpy ItemStack when cheated. {}", ingredientInfo);	
+				LOGGER.info("Ingredient creates Emtpy ItemStack when cheated. {}", ingredientInfo);
 			}
 			if (anItemStack == null) {
 				String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
-				LOGGER.info("Ingredient creates Null ItemStack when cheated. {}", ingredientInfo);	
+				LOGGER.info("Ingredient creates Null ItemStack when cheated. {}", ingredientInfo);
 				anItemStack = ItemStack.EMPTY;
 			}
 		} catch (RuntimeException e) {
