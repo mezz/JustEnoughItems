@@ -1,5 +1,7 @@
 package mezz.jei.common.config.file;
 
+import mezz.jei.api.runtime.config.IJeiConfigCategory;
+import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.util.DeduplicatingRunner;
 import org.apache.logging.log4j.LogManager;
@@ -11,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ConfigSchema implements IConfigSchema {
@@ -77,6 +80,30 @@ public class ConfigSchema implements IConfigSchema {
 	@Unmodifiable
 	public List<ConfigCategory> getCategories() {
 		return categories;
+	}
+
+	@Override
+	public Optional<? extends IJeiConfigCategory> getCategory(String categoryName) {
+		ConfigCategory found = null;
+		for (ConfigCategory category : categories) {
+			if (category.getName().equals(categoryName)) {
+				found = category;
+				break;
+			}
+		}
+		return Optional.ofNullable(found);
+	}
+
+	@Override
+	public Optional<? extends IJeiConfigValue<?>> getConfigValue(String categoryName, String valueName) {
+		var cat = this.getCategory(categoryName);
+
+		if (cat.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
+
+		return cat.get().getConfigValue(valueName);
+
 	}
 
 	@Override

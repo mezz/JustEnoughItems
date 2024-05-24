@@ -1,19 +1,25 @@
 package mezz.jei.common.config;
 
 import com.google.common.base.Preconditions;
+
+import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
+import mezz.jei.common.config.file.IConfigSchema;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
-import mezz.jei.common.config.file.serializers.EnumSerializer;
+import mezz.jei.common.config.file.serializers.IngredientSortStageSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
 import mezz.jei.common.platform.Services;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public final class ClientConfig implements IClientConfig {
 	@Nullable
 	private static IClientConfig instance;
+	private Optional<IConfigSchema> configSchema = Optional.empty();
 
 	private final Supplier<Boolean> centerSearchBarEnabled;
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
@@ -90,9 +96,13 @@ public final class ClientConfig implements IClientConfig {
 		ingredientSorterStages = sorting.addList(
 			"IngredientSortStages",
 			IngredientSortStage.defaultStages,
-			new ListSerializer<>(new EnumSerializer<>(IngredientSortStage.class)),
+			new ListSerializer<IngredientSortStage>(new IngredientSortStageSerializer()),
 			"Sorting order for the ingredient list"
 		);
+	}
+
+	public void setSchema(IConfigSchema schema) {
+		this.configSchema = Optional.ofNullable(schema);
 	}
 
 	/**
@@ -157,5 +167,38 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public List<IngredientSortStage> getIngredientSorterStages() {
 		return ingredientSorterStages.get();
+	}
+
+	@Override
+	public void setIngredientSorterStages(List<IngredientSortStage> ingredientSortStages) {
+		if (configSchema.isEmpty()) {
+			return;
+		}
+		@SuppressWarnings("unchecked")
+		IJeiConfigValue<List<IngredientSortStage>> stages = (IJeiConfigValue<List<IngredientSortStage>>)configSchema.get().getConfigValue("sorting", "IngredientSortStages").orElseGet(null);
+		if (stages != null) {
+			stages.set(ingredientSortStages);
+		}
+
+	}
+
+	@Override
+	public String getSerializedIngredientSorterStages() {
+		return ingredientSorterStages.get().stream()
+			.map(o -> o.name)
+			.collect(Collectors.joining(", "));
+	}
+
+	@Override
+	public void setIngredientSorterStages(String ingredientSortStages) {
+		if (configSchema.isEmpty()) {
+			return;
+		}
+		@SuppressWarnings("unchecked")
+		IJeiConfigValue<List<IngredientSortStage>> stages = (IJeiConfigValue<List<IngredientSortStage>>)configSchema.get().getConfigValue("sorting", "IngredientSortStages").orElseGet(null);
+		if (stages != null) {
+			stages.setUsingSerializedValue(ingredientSortStages);
+		}
+
 	}
 }

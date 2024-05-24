@@ -3,6 +3,7 @@ package mezz.jei.gui.ingredients;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+//import mezz.jei.common.Internal;
 import mezz.jei.common.config.IngredientSortStage;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
@@ -17,15 +18,22 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 public class IngredientSorterComparators {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private final IngredientFilter ingredientFilter;
 	private final IIngredientManager ingredientManager;
 	private final ModNameSortingConfig modNameSortingConfig;
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
+	private static HashMap<String, Comparator<IListElementInfo<?>>> customComparators = new HashMap<String, Comparator<IListElementInfo<?>>>();
 
 	public IngredientSorterComparators(
 		IngredientFilter ingredientFilter,
@@ -47,21 +55,45 @@ public class IngredientSorterComparators {
 	}
 
 	public Comparator<IListElementInfo<?>> getComparator(IngredientSortStage ingredientSortStage) {
-		return switch (ingredientSortStage) {
-			case ALPHABETICAL -> getAlphabeticalComparator();
-			case CREATIVE_MENU -> getCreativeMenuComparator();
-			case INGREDIENT_TYPE -> getIngredientTypeComparator();
-			case MOD_NAME -> getModNameComparator();
-			case TAG -> getTagComparator();
-			case ARMOR -> getArmorComparator();
-			case MAX_DURABILITY -> getMaxDurabilityComparator();
+		//Just return one of the built-in sorts.
+		switch (ingredientSortStage.name) {
+			case "ALPHABETICAL":
+				return getAlphabeticalComparator();
+			case "CREATIVE_MENU":
+				return getCreativeMenuComparator();
+			case "INGREDIENT_TYPE":
+				return getIngredientTypeComparator();
+			case "MOD_NAME":
+				return getModNameComparator();
+			case "TAG":
+				return getTagComparator();
+			case "ARMOR":
+				return getArmorComparator();
+			case "MAX_DURABILITY":
+				return getMaxDurabilityComparator();
 		};
+
+		//Find and use a custom sort.
+		var custom = customComparators.get(ingredientSortStage.name);
+		if (custom != null) {
+			return custom;
+		}
+
+		//Accept and ignore an unknown sort.  Mod that added it removed, bad spelling, tried to use it before it was registered, etc.
+		LOGGER.warn("Sorting option '" + ingredientSortStage.name + "' does not exist, skipping.");
+		return getNullComparator();
 	}
 
 	public Comparator<IListElementInfo<?>> getDefault() {
 		return getModNameComparator()
 			.thenComparing(getIngredientTypeComparator())
 			.thenComparing(getCreativeMenuComparator());
+	}
+
+	public Comparator<IListElementInfo<?>> getNullComparator() {
+		Comparator<IListElementInfo<?>> nullComparator =
+			Comparator.comparing(o -> 0);
+		return nullComparator;
 	}
 
 	private static Comparator<IListElementInfo<?>> getCreativeMenuComparator() {
@@ -184,6 +216,42 @@ public class IngredientSorterComparators {
 		if (ingredient.getIngredient() instanceof ItemStack itemStack) {
 			return itemStack;
 		}
-		return ItemStack.EMPTY;
+		ItemStack aStack = ingredientInfo.getCheatItemStack();
+		if (aStack == null) {
+			aStack = ItemStack.EMPTY;
+		}
+		return aStack;
+	}
+
+	public static class GenericComparator implements Comparator<IListElementInfo<?>> {
+		final private Comparator<ItemStack> _itemStackComparator;
+		public GenericComparator(Comparator<ItemStack> comparator) {
+			this._itemStackComparator = comparator;
+		}
+		public int compare(IListElementInfo<?> left, IListElementInfo<?> right) {
+			return this._itemStackComparator.compare(getItemStack(left), getItemStack(right));
+		}
+	}
+
+	public static IngredientSortStage AddCustomListElementComparator(String comparatorName, Comparator<IListElementInfo<?>> complexComparator) {
+		comparatorName = comparatorName.toUpperCase().trim();
+		var stage = IngredientSortStage.getOrCreateStage(comparatorName);
+		//Trying to decide if I want to do this automatically, it would keep coming
+		//back if the user removed it.  My current position is to let the addin do it.
+		// var stage = IngredientSortStage.getStage(comparatorName);
+		// if (stage == null) {
+		// 	var configs = Internal.getJeiClientConfigs();
+		// 	var stages = configs.getClientConfig().getIngredientSorterStages();
+		// 	stage = IngredientSortStage.getOrCreateStage(comparatorName);
+		// 	stages.add(stage);
+		// 	configs.getClientConfig().setIngredientSorterStages(stages);
+		// }
+		customComparators.put(comparatorName, complexComparator);
+		return stage;
+	}
+
+	public static IngredientSortStage AddCustomItemStackComparator(String comparatorName, Comparator<ItemStack> itemStackComparator) {
+		var complexComparator = new GenericComparator(itemStackComparator);
+		return AddCustomListElementComparator(comparatorName, complexComparator);
 	}
 }

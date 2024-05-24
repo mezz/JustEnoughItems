@@ -3,6 +3,8 @@ package mezz.jei.api.runtime.config;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Categories organize {@link IJeiConfigValue}s into groups.
@@ -25,4 +27,19 @@ public interface IJeiConfigCategory {
 	 */
 	@Unmodifiable
 	Collection<? extends IJeiConfigValue<?>> getConfigValues();
+
+	/**
+	 * Get a specific Config Value from this category.
+	 *
+	 * @since ?.?.?
+	 */
+	@Unmodifiable
+	Optional<? extends IJeiConfigValue<?>> getConfigValue(String configValueName);
+
+	/**
+	 * Get a list of Config Value names in this category.
+	 *
+	 * @since ?.?.?
+	 */
+	Set<String> getValueNames();
 }

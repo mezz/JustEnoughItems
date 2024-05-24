@@ -67,4 +67,18 @@ public class TestClientConfig implements IClientConfig {
 	public List<IngredientSortStage> getIngredientSorterStages() {
 		return List.of();
 	}
+
+	@Override
+	public void setIngredientSorterStages(List<IngredientSortStage> ingredientSortStages) {
+	}
+
+	@Override
+	public String getSerializedIngredientSorterStages() {
+		return "";
+	}
+
+	@Override
+	public void setIngredientSorterStages(String ingredientSortStages) {
+	}
+
 }

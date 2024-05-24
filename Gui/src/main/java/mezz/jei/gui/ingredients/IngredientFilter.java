@@ -19,6 +19,7 @@ import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchLowMem;
 import mezz.jei.gui.search.IElementSearch;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -168,10 +169,13 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 
 	@Override
 	public List<ITypedIngredient<?>> getIngredientList() {
-		String filterText = this.filterTextSource.getFilterText();
-		filterText = filterText.toLowerCase();
+		if (sorter.hasStageOrderChanged()) {
+			invalidateCache();
+		}
 		if (ingredientListCached == null) {
-			ingredientListCached = getIngredientListUncached(filterText);
+				String filterText = this.filterTextSource.getFilterText();
+				filterText = filterText.toLowerCase();
+				ingredientListCached = getIngredientListUncached(filterText);
 		}
 		return ingredientListCached;
 	}
@@ -365,4 +369,17 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			listener.onSourceListChanged();
 		}
 	}
+
+	public void addIngredientListItemStackSorter(String name, Comparator<ItemStack> comparator) {
+		IngredientSorterComparators.AddCustomItemStackComparator(name, comparator);
+		invalidateCache();
+		notifyListenersOfChange();
+	}
+
+	public void addIngredientListElementSorter(String name, Comparator<IListElementInfo<?>> comparator) {
+		IngredientSorterComparators.AddCustomListElementComparator(name, comparator);
+		invalidateCache();
+		notifyListenersOfChange();
+	}
+
 }

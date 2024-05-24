@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents one Config file used by JEI.
@@ -34,4 +35,20 @@ public interface IJeiConfigFile {
 	 */
 	@Unmodifiable
 	List<? extends IJeiConfigCategory> getCategories();
+
+	/**
+	 * Get a specific category from this file.
+	 *
+	 * @since ?.?.?
+	 */
+	Optional<? extends IJeiConfigCategory> getCategory(String categoryName);
+
+
+	/**
+	 * Get a specific Config Value from a category.
+	 *
+	 * @since ?.?.?
+	 */
+	Optional<? extends IJeiConfigValue<?>> getConfigValue(String categoryName, String valueName) ;
+
 }
