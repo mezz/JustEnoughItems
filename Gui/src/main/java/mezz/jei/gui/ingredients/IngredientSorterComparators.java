@@ -215,7 +215,11 @@ public class IngredientSorterComparators {
 		if (ingredient.getIngredient() instanceof ItemStack itemStack) {
 			return itemStack;
 		}
-		return ingredientInfo.getCheatItemStack();
+		ItemStack aStack = ingredientInfo.getCheatItemStack();
+		if (aStack == null) {
+			aStack = ItemStack.EMPTY;
+		}
+		return aStack;
 	}
 
 	public static class GenericComparator implements Comparator<IListElementInfo<?>> {

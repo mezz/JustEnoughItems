@@ -74,7 +74,7 @@ public interface IIngredientHelper<V> {
 	 * @return an ItemStack for JEI to give the player, or an empty stack if there is nothing that can be given.
 	 */
 	default ItemStack getCheatItemStack(V ingredient) {
-		return ItemStack.EMPTY;
+		return null;
 	}
 
 	/**

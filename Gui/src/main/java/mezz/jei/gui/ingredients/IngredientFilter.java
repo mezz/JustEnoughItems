@@ -169,10 +169,13 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 
 	@Override
 	public List<ITypedIngredient<?>> getIngredientList() {
-		String filterText = this.filterTextSource.getFilterText();
-		filterText = filterText.toLowerCase();
+		if (sorter.hasStageOrderChanged()) {
+			invalidateCache();
+		}
 		if (ingredientListCached == null) {
-			ingredientListCached = getIngredientListUncached(filterText);
+				String filterText = this.filterTextSource.getFilterText();
+				filterText = filterText.toLowerCase();
+				ingredientListCached = getIngredientListUncached(filterText);
 		}
 		return ingredientListCached;
 	}
@@ -370,11 +373,13 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 	public void addIngredientListItemStackSorter(String name, Comparator<ItemStack> comparator) {
 		IngredientSorterComparators.AddCustomItemStackComparator(name, comparator);
 		invalidateCache();
+		notifyListenersOfChange();
 	}
 
 	public void addIngredientListElementSorter(String name, Comparator<IListElementInfo<?>> comparator) {
 		IngredientSorterComparators.AddCustomListElementComparator(name, comparator);
 		invalidateCache();
+		notifyListenersOfChange();
 	}
 
 }

@@ -1,7 +1,9 @@
 package mezz.jei.common.config;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,12 +20,11 @@ public class IngredientSortStage {
 		var existingStage = getStage(name);
 		if (existingStage == null) {
 			LOGGER.info("Adding new Sort Stage: " + name);
-			allStages.add(this);
+			allStages.put(name, this);
 		} else if (existingStage.customStage) {
 			LOGGER.info("Replacing Sort Stage: " + name);
-			//Replace the existing one, maybe the comparator is somehow different.
-			allStages.remove(existingStage);
-			allStages.add(this);
+			//Replace the existing one, maybe the new one is an internal comparator.
+			allStages.put(name, this);
 		} else {
 			LOGGER.debug("Ignoring Duplicate Sort Stage: " + name);
 		}
@@ -34,7 +35,7 @@ public class IngredientSortStage {
 		this(name, true);
 	}
 
-	private static List<IngredientSortStage> allStages = new ArrayList<IngredientSortStage>(10);
+	private static Map<String, IngredientSortStage> allStages = new HashMap<String, IngredientSortStage>(10);
 
 	public static final IngredientSortStage MOD_NAME = new IngredientSortStage("MOD_NAME", false);
 	public static final IngredientSortStage INGREDIENT_TYPE = new IngredientSortStage("INGREDIENT_TYPE", false);
@@ -50,8 +51,8 @@ public class IngredientSortStage {
 		IngredientSortStage.CREATIVE_MENU
 	);
 
-	public static List<IngredientSortStage> getAllStages() {
-		return new ArrayList<IngredientSortStage>(allStages);
+	public static Collection<IngredientSortStage> getAllStages() {
+		return allStages.values();
 	}
 
 	public static IngredientSortStage getOrCreateStage(String name) {
@@ -64,17 +65,7 @@ public class IngredientSortStage {
 
 	public static IngredientSortStage getStage(String needle) {
 		needle = needle.toUpperCase().trim();
-		LOGGER.debug("All Sort Stage Count: " + allStages.size());
-		LOGGER.debug("Searching for Sort Stage: " + needle);
-		for (IngredientSortStage stage : allStages) {
-			LOGGER.debug("- Checking Existing Sort Stage: " + stage.name);
-			if (stage.name.equals(needle)) {
-				LOGGER.debug("- Matched Existing Sort Stage: " + stage.name);
-				return stage;
-			}
-		}
-		LOGGER.debug("- Matched No Existing Sort Stage: ");
-		return null;
+		return allStages.get(needle);
 	}
 
 	public static final List<String> defaultStageNames = List.of(
@@ -83,24 +74,7 @@ public class IngredientSortStage {
 		IngredientSortStage.CREATIVE_MENU.name
 	);
 
-	public static List<String> getAllStageNames() {
-		var names = new ArrayList<String>(allStages.size());
-		for(IngredientSortStage stage: allStages) {
-			names.add(stage.name);
-		}
-		return names;
-	}
-
-	public IngredientSortStage getBestSelf() {
-		if (!customStage) {
-			LOGGER.debug(name + " is a standard sort option.");
-			return this;
-		}
-		var otherSelf = getStage(name);
-		if (otherSelf != null) {
-			LOGGER.debug("Real Sort Stage exists for " + name);
-			return otherSelf;
-		}
-		return this;
+	public static Collection<String> getAllStageNames() {
+		return allStages.keySet();
 	}
 }

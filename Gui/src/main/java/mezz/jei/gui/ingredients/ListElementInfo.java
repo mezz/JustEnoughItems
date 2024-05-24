@@ -69,20 +69,19 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 			.toList();
 		String displayName = IngredientInformationUtil.getDisplayName(ingredient, ingredientHelper);
 		this.displayNameLowercase = Translator.toLowercaseWithLocale(displayName);
-		ItemStack anItemStack = ItemStack.EMPTY;
+		ItemStack anItemStack = null;
 		try {
 			anItemStack = ingredientHelper.getCheatItemStack(ingredient);
-			if (anItemStack == ItemStack.EMPTY) {
+			if (anItemStack != null && anItemStack.isEmpty()) {
 				String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
 				LOGGER.info("Ingredient creates Emtpy ItemStack when cheated. {}", ingredientInfo);
 			}
 			if (anItemStack == null) {
 				String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
 				LOGGER.info("Ingredient creates Null ItemStack when cheated. {}", ingredientInfo);
-				anItemStack = ItemStack.EMPTY;
 			}
 		} catch (RuntimeException e) {
-			anItemStack = ItemStack.EMPTY;
+			anItemStack = null;
 			String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
 			LOGGER.warn("Ingredient throws error when cheated. {}", ingredientInfo, e);
 		}

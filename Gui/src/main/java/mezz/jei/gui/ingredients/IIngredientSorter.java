@@ -13,4 +13,8 @@ public interface IIngredientSorter {
 
 	default void invalidateCache() {
 	}
+
+	default Boolean hasStageOrderChanged() {
+		return false;
+	}
 }

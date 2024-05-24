@@ -59,11 +59,8 @@ public final class IngredientSorter implements IIngredientSorter {
 
 	@Override
 	public Comparator<IListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
-		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
-		String myStageOrderStr = ingredientSorterStages.stream()
-			.map(o -> o.name)
-			.collect(Collectors.joining(", "));
-		if (!this.isCacheValid || !lastStageOrder.equals(myStageOrderStr)) {
+		if (!this.isCacheValid || hasStageOrderChanged()) {
+			ingredientFilter.invalidateCache();
 			doPreSort(ingredientFilter, ingredientManager);
 		}
 		//Now the comparator just uses that index value to order everything.
@@ -73,6 +70,15 @@ public final class IngredientSorter implements IIngredientSorter {
 	@Override
 	public void invalidateCache() {
 		this.isCacheValid = false;
+	}
+
+	@Override
+	public Boolean hasStageOrderChanged() {
+		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
+		String myStageOrderStr = ingredientSorterStages.stream()
+			.map(o -> o.name)
+			.collect(Collectors.joining(", "));
+		return !lastStageOrder.equals(myStageOrderStr);
 	}
 
 }
