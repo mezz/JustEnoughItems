@@ -8,6 +8,7 @@ import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.CrashReport;
+import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -45,6 +46,17 @@ public final class TooltipRenderer {
 			drawHoveringText(guiGraphics, textLines, x, y, itemStack, font);
 		} catch (RuntimeException e) {
 			CrashReport crashReport = ErrorUtil.createIngredientCrashReport(e, "Rendering ingredient tooltip", ingredientManager, typedIngredient);
+			CrashReportCategory reportCategory = crashReport.addCategory("Tooltip");
+            for (int i = 0; i < textLines.size(); i++) {
+                Component line = textLines.get(i);
+                reportCategory.setDetail("line #" + i + " getString", line.getString());
+				reportCategory.setDetail("line #" + i + " getClass", line.getClass());
+				try {
+					drawHoveringText(guiGraphics, List.of(line), x, y, itemStack, font);
+				} catch (RuntimeException ignored) {
+					reportCategory.setDetail("line #" + i + " CRASHED", true);
+				}
+            }
 			throw new ReportedException(crashReport);
 		}
 	}
