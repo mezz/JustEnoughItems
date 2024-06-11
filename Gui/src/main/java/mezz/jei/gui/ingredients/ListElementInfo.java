@@ -6,11 +6,16 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.util.SafeIngredientUtil;
+import mezz.jei.common.util.StringUtil;
 import mezz.jei.common.util.Translator;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.TooltipFlag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.List;
@@ -58,8 +63,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		this.modNames = this.modIds.stream()
 			.map(modIdHelper::getModNameForModId)
 			.toList();
-		String displayName = IngredientInformationUtil.getDisplayName(ingredient, ingredientHelper);
-		this.displayNameLowercase = Translator.toLowercaseWithLocale(displayName);
+		this.displayNameLowercase = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
 	}
 
 	@Override
@@ -83,6 +87,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
+	@Unmodifiable
 	public final List<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager) {
 		String modName = this.modNames.get(0);
 		String modId = this.modIds.get(0);
@@ -90,7 +95,20 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(value.getType());
 		ImmutableSet<String> toRemove = ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceLocation.getPath());
-		return IngredientInformationUtil.getTooltipStrings(ingredientManager, value, ingredientRenderer, toRemove, config);
+		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
+		List<Component> tooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, value, tooltipFlag);
+		return tooltip.stream()
+			.map(Component::getString)
+			.map(StringUtil::removeChatFormatting)
+			.map(Translator::toLowercaseWithLocale)
+			.map(line -> {
+				for (String excludeWord : toRemove) {
+					line = line.replace(excludeWord, "");
+				}
+				return line;
+			})
+			.filter(line -> !line.isEmpty())
+			.toList();
 	}
 
 	@Override

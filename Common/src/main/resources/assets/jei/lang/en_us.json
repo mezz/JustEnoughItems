@@ -30,7 +30,8 @@
   "jei.tooltip.error.recipe.transfer.no.server": "The server must have JEI installed",
   "jei.tooltip.error.recipe.transfer.disabled": "The server config has disabled JEI recipe transfer",
   "jei.tooltip.error.recipe.transfer.too.large.player.inventory": "Recipe is too large to craft in the 2x2 player crafting grid.",
-  "jei.tooltip.error.crash": "Tooltip error, see logs",
+  "jei.tooltip.error.crash": "This ingredient crashed when getting its tooltip. Please see the client logs for detailed information.",
+  "jei.tooltip.error.render.crash": "This ingredient crashed when being rendered. Please see the client logs for detailed information.",
 
   "_comment": "Error Messages",
   "jei.chat.error.no.cheat.permission.1": "You do not have permission to use JEI's Cheat Mode.",

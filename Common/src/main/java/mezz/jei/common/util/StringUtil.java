@@ -1,5 +1,6 @@
 package mezz.jei.common.util;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
@@ -24,6 +25,11 @@ public final class StringUtil {
 			text.append(stripStyling(sibling));
 		}
 		return text;
+	}
+
+	public static String removeChatFormatting(String string) {
+		String withoutFormattingCodes = ChatFormatting.stripFormatting(string);
+		return (withoutFormattingCodes == null) ? "" : withoutFormattingCodes;
 	}
 
 	public static Component truncateStringToWidth(Component text, int width, Font fontRenderer) {

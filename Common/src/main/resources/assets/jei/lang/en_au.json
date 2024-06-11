@@ -25,7 +25,7 @@
   "jei.tooltip.error.recipe.transfer.unknown": "Unknown Error, see logs",
   "jei.tooltip.error.recipe.transfer.no.server": "The server must have JEI installed",
   "jei.tooltip.error.recipe.transfer.too.large.player.inventory": "Recipe is too large to craft in the 2x2 player crafting grid.",
-  "jei.tooltip.error.crash": "Tooltip error, see log",
+  "jei.tooltip.error.crash": "This item crashed when getting its tooltip. Please see the client logs for detailed information.",
 
   "_comment": "Error Messages",
   "jei.chat.error.no.cheat.permission.1": "You do not have permission to use JEI's Cheat Mode.",

@@ -9,7 +9,6 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.DebugConfig;
-import mezz.jei.common.util.Translator;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
@@ -133,8 +132,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		IIngredientType<V> type = typedIngredient.getType();
 		Function<ITypedIngredient<V>, String> uidFunction = (i) -> ingredientHelper.getUniqueId(i.getIngredient(), UidContext.Ingredient);
 		String ingredientUid = uidFunction.apply(typedIngredient);
-		String displayName = IngredientInformationUtil.getDisplayName(ingredient, ingredientHelper);
-		String lowercaseDisplayName = Translator.toLowercaseWithLocale(displayName);
+		String lowercaseDisplayName = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
 
 		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, ElementPrefixParser.NO_PREFIX);
 		return this.elementSearch.getSearchResults(tokenInfo)
