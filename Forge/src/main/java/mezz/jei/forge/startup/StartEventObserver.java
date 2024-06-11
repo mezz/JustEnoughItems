@@ -26,7 +26,8 @@ import java.util.Set;
  */
 public class StartEventObserver {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Set<Class<? extends Event>> requiredEvents = Set.of(TagsUpdatedEvent.class, RecipesUpdatedEvent.class);
+	// note: JEI requires TagsUpdatedEvent as well, but Forge fires it before the LoggingIn event.
+	private static final Set<Class<? extends Event>> requiredEvents = Set.of(RecipesUpdatedEvent.class);
 
 	private enum State {
 		DISABLED, ENABLED, JEI_STARTED
