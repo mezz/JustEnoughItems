@@ -114,7 +114,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			craftingSlots
 		);
 
-		if (transferOperations.missingItems.size() > 0) {
+		if (!transferOperations.missingItems.isEmpty()) {
 			Component message = Component.translatable("jei.tooltip.error.recipe.transfer.missing");
 			return handlerHelper.createUserErrorForMissingSlots(message, transferOperations.missingItems);
 		}

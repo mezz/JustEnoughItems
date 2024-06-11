@@ -112,7 +112,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		T recipe = recipeHolder.value();
 
 		builder.addSlot(INPUT, 1, 1)
-			.addIngredients(recipe.getIngredients().get(0));
+			.addIngredients(recipe.getIngredients().getFirst());
 
 		builder.addSlot(OUTPUT, 61, 19)
 			.addItemStack(RecipeUtil.getResultItem(recipe));

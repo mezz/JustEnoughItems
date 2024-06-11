@@ -237,7 +237,7 @@ public class Node<T> {
 	}
 
 	private void printLeaves(PrintWriter out) {
-		if (edges.size() == 0) {
+		if (edges.isEmpty()) {
 			out.println("\t" + nodeId(this) + " [label=\"" + data + "\",shape=point,style=filled,fillcolor=lightgrey,shape=circle,width=.07,height=.07]");
 		} else {
 			for (Edge<T> edge : edges.values()) {
@@ -247,7 +247,7 @@ public class Node<T> {
 	}
 
 	private void printInternalNodes(Node<T> root, PrintWriter out) {
-		if (this != root && edges.size() > 0) {
+		if (this != root && !edges.isEmpty()) {
 			out.println("\t" + nodeId(this) + " [label=\"" + data + "\",style=filled,fillcolor=lightgrey,shape=circle,width=.07,height=.07]");
 		}
 

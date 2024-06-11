@@ -370,7 +370,7 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 	}
 
 	private static SubString safeCutLastChar(SubString subString) {
-		if (subString.length() == 0) {
+		if (subString.isEmpty()) {
 			return subString;
 		}
 		return subString.shorten(1);

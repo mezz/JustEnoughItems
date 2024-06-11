@@ -14,11 +14,11 @@ public class TextHistory {
 	private final List<String> history = new LinkedList<>();
 
 	public boolean add(String currentText) {
-		if (currentText.length() > 0) {
+		if (!currentText.isEmpty()) {
 			history.remove(currentText);
 			history.add(currentText);
 			if (history.size() > MAX_HISTORY) {
-				history.remove(0);
+				history.removeFirst();
 			}
 			return true;
 		}

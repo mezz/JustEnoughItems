@@ -1,6 +1,4 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
-import net.neoforged.gradle.common.extensions.MinecraftExtension
-import net.neoforged.gradle.dsl.common.extensions.RunnableSourceSet
 import net.neoforged.gradle.dsl.common.runs.run.Run
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -57,17 +55,17 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(":Changelog")
 
-val notNeoTask = { it: Task -> !it.name.startsWith("neo") };
+val notNeoTask = { it: Task -> !it.name.startsWith("neo") }
 
 tasks.withType<JavaCompile>().matching(notNeoTask).configureEach {
     dependencyProjects.forEach {
-        source(it.sourceSets.main.get().getAllSource())
+        source(it.sourceSets.main.get().allSource)
     }
 }
 
 tasks.withType<ProcessResources>().matching(notNeoTask).configureEach {
     dependencyProjects.forEach {
-        from(it.sourceSets.main.get().getResources())
+        from(it.sourceSets.main.get().resources)
     }
 }
 

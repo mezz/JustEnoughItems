@@ -20,7 +20,7 @@ public class EventSubscription<T extends Event> {
 	@SuppressWarnings({"FieldCanBeLocal", "unused"})
 	private final Consumer<T> listener;
 	/**
-	 * Workaround for https://github.com/MinecraftForge/EventBus/issues/39
+	 * Workaround for <a href="https://github.com/MinecraftForge/EventBus/issues/39">...</a>
 	 * "Listeners are not cleaned up immediately when calling EventBus#unregister"
 	 *
 	 * We create a weak reference here so that the listeners retained by the Forge EventBus do not cause a memory leak.

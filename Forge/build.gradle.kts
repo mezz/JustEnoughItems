@@ -144,13 +144,13 @@ minecraft {
 
 tasks.withType<JavaCompile>().configureEach {
     dependencyProjects.forEach {
-        source(it.sourceSets.main.get().getAllSource())
+        source(it.sourceSets.main.get().allSource)
     }
 }
 
 tasks.processResources {
     dependencyProjects.forEach {
-        from(it.sourceSets.main.get().getResources())
+        from(it.sourceSets.main.get().resources)
     }
 }
 
@@ -251,7 +251,7 @@ idea {
 }
 // Required because FG, copied from the MDK
 sourceSets.forEach {
-    val outputDir = layout.buildDirectory.file("sourcesSets/${it.name}").get().getAsFile()
+    val outputDir = layout.buildDirectory.file("sourcesSets/${it.name}").get().asFile
     it.output.setResourcesDir(outputDir)
     it.java.destinationDirectory.set(outputDir)
 }

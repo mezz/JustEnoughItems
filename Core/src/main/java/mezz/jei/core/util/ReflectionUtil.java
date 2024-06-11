@@ -27,7 +27,7 @@ public final class ReflectionUtil {
 		try {
 			fieldValue = field.get(object);
 		} catch (IllegalAccessException e) {
-			LOGGER.error("Failed to access field '" + field.getName() + "' for class " + object.getClass(), e);
+			LOGGER.error("Failed to access field '{}' for class {}", field.getName(), object.getClass(), e);
 			return Optional.empty();
 		}
 		if (fieldClass.isInstance(fieldValue)) {
@@ -50,7 +50,7 @@ public final class ReflectionUtil {
 					field.setAccessible(true);
 					mapper.accept(field);
 				} catch (InaccessibleObjectException | SecurityException e) {
-					LOGGER.error("Failed to access field '" + field.getName() + "' for class " + object.getClass(), e);
+					LOGGER.error("Failed to access field '{}' for class {}", field.getName(), object.getClass(), e);
 				}
 			});
 	}
@@ -69,7 +69,7 @@ public final class ReflectionUtil {
 					Field[] fields = c.getDeclaredFields();
 					return Arrays.stream(fields);
 				} catch (SecurityException e) {
-					LOGGER.error("Failed to access fields for class " + object.getClass(), e);
+					LOGGER.error("Failed to access fields for class {}", object.getClass(), e);
 					return Stream.of();
 				}
 			});

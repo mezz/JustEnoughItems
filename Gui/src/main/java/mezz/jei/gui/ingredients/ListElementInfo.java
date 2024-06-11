@@ -73,7 +73,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 
 	@Override
 	public String getModNameForSorting() {
-		return modNames.get(0);
+		return modNames.getFirst();
 	}
 
 	@Override
@@ -89,8 +89,8 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	@Override
 	@Unmodifiable
 	public final List<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager) {
-		String modName = this.modNames.get(0);
-		String modId = this.modIds.get(0);
+		String modName = this.modNames.getFirst();
+		String modId = this.modIds.getFirst();
 		String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(value.getType());

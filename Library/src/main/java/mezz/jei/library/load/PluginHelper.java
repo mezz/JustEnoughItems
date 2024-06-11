@@ -11,7 +11,7 @@ import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 public class PluginHelper {
 	public static void sortPlugins(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin, @Nullable JeiInternalPlugin jeiInternalPlugin) {
 		plugins.remove(vanillaPlugin);
-		plugins.add(0, vanillaPlugin);
+		plugins.addFirst(vanillaPlugin);
 
 		if (jeiInternalPlugin != null) {
 			plugins.remove(jeiInternalPlugin);

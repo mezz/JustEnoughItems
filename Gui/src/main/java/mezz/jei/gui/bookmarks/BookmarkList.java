@@ -109,7 +109,7 @@ public class BookmarkList implements IIngredientGridSource {
 		value = result.get();
 
 		if (addToFront) {
-			list.add(0, value);
+			list.addFirst(value);
 		} else {
 			list.add(value);
 		}

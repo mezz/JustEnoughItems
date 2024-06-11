@@ -103,7 +103,7 @@ public class RecipeManagerInternal {
 	}
 
 	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
-		LOGGER.debug("Adding recipes: " + recipeType.getUid());
+		LOGGER.debug("Adding recipes: {}", recipeType.getUid());
 		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipeType);
 		IRecipeCategory<T> recipeCategory = recipeTypeData.getRecipeCategory();
 		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();

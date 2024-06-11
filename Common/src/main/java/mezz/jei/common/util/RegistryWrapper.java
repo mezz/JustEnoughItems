@@ -36,20 +36,6 @@ public class RegistryWrapper<T> {
 		return this.registry.holders();
 	}
 
-	public Optional<T> getValue(ResourceLocation resourceLocation) {
-		T t = this.registry.get(resourceLocation);
-		return Optional.ofNullable(t);
-	}
-
-	public int getId(T entry) {
-		return this.registry.getId(entry);
-	}
-
-	public Optional<T> getValue(int id) {
-		return this.registry.getHolder(id)
-			.map(Holder::value);
-	}
-
 	public boolean contains(T entry) {
 		return this.registry.getKey(entry) != null;
 	}

@@ -58,7 +58,7 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<RecipeHolder<
 		StonecutterRecipe recipe = recipeHolder.value();
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 9)
-			.addIngredients(recipe.getIngredients().get(0));
+			.addIngredients(recipe.getIngredients().getFirst());
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 61,  9)
 			.addItemStack(RecipeUtil.getResultItem(recipe));
