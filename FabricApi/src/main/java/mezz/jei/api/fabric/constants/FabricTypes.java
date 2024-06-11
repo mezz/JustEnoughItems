@@ -27,7 +27,7 @@ public final class FabricTypes {
 
 		@Override
 		public Fluid getBase(IJeiFluidIngredient ingredient) {
-			return ingredient.getFluid();
+			return ingredient.getFluidVariant().getFluid();
 		}
 	};
 

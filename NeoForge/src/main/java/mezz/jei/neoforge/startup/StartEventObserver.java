@@ -146,7 +146,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	}
 
 	private void transitionState(State newState) {
-		LOGGER.info("JEI StartEventObserver transitioning state from " + this.state + " to " + newState);
+		LOGGER.info("JEI StartEventObserver transitioning state from {} to {}", this.state, newState);
 
 		switch (newState) {
 			case LISTENING -> {

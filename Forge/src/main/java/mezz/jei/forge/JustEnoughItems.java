@@ -1,13 +1,13 @@
 package mezz.jei.forge;
 
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.common.Constants;
 import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.util.MinecraftLocaleSupplier;
 import mezz.jei.common.util.Translator;
 import mezz.jei.forge.config.ServerConfig;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.NetworkHandler;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -27,11 +27,8 @@ public class JustEnoughItems {
 		ModLoadingContext modLoadingContext = ModLoadingContext.get();
 		IServerConfig serverConfig = ServerConfig.register(modLoadingContext);
 
-		NetworkHandler networkHandler = new NetworkHandler(Constants.NETWORK_CHANNEL_ID, 2);
-		JustEnoughItemsCommon jeiCommon = new JustEnoughItemsCommon(networkHandler, serverConfig);
-		jeiCommon.register(subscriptions);
-
-		JustEnoughItemsClientSafeRunner clientSafeRunner = new JustEnoughItemsClientSafeRunner(networkHandler, subscriptions, serverConfig);
+		NetworkHandler networkHandler = new NetworkHandler(serverConfig, new ResourceLocation(ModIds.JEI_ID, "channel"), 3);
+		JustEnoughItemsClientSafeRunner clientSafeRunner = new JustEnoughItemsClientSafeRunner(networkHandler, subscriptions);
 		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> clientSafeRunner::registerClient);
 	}
 }

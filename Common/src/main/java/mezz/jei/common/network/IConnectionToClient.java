@@ -1,8 +1,8 @@
 package mezz.jei.common.network;
 
-import mezz.jei.common.network.packets.PacketJeiToClient;
+import mezz.jei.common.network.packets.PlayToClientPacket;
 import net.minecraft.server.level.ServerPlayer;
 
 public interface IConnectionToClient {
-	void sendPacketToClient(PacketJeiToClient packet, ServerPlayer player);
+	<T extends PlayToClientPacket<T>> void sendPacketToClient(T packet, ServerPlayer player);
 }

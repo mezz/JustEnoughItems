@@ -1,16 +1,35 @@
 package mezz.jei.common.network.packets;
 
-import mezz.jei.common.network.PacketIdServer;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.transfer.BasicRecipeTransferHandlerServer;
 import mezz.jei.common.transfer.TransferOperation;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 
 import java.util.List;
 
-public class PacketRecipeTransfer extends PacketJeiToServer {
+public class PacketRecipeTransfer extends PlayToServerPacket<PacketRecipeTransfer> {
+	public static final CustomPacketPayload.Type<PacketRecipeTransfer> TYPE = new CustomPacketPayload.Type<>(new ResourceLocation(ModIds.JEI_ID, "recipe_transfer"));
+	public static final StreamCodec<RegistryFriendlyByteBuf, PacketRecipeTransfer> STREAM_CODEC = StreamCodec.composite(
+		TransferOperation.STREAM_CODEC.apply(ByteBufCodecs.list()),
+		p -> p.transferOperations,
+		ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()),
+		p -> p.craftingSlots,
+		ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()),
+		p -> p.inventorySlots,
+		ByteBufCodecs.BOOL,
+		p -> p.maxTransfer,
+		ByteBufCodecs.BOOL,
+		p -> p.requireCompleteSets,
+		PacketRecipeTransfer::new
+	);
+
 	public final List<TransferOperation> transferOperations;
 	public final List<Integer> craftingSlots;
 	public final List<Integer> inventorySlots;
@@ -48,21 +67,17 @@ public class PacketRecipeTransfer extends PacketJeiToServer {
 	}
 
 	@Override
-	public PacketIdServer getPacketId() {
-		return PacketIdServer.RECIPE_TRANSFER;
+	public Type<PacketRecipeTransfer> type() {
+		return TYPE;
 	}
 
 	@Override
-	public void writePacketData(FriendlyByteBuf buf) {
-		buf.writeCollection(transferOperations, (b, op) -> op.writePacketData(b));
-		buf.writeCollection(craftingSlots, FriendlyByteBuf::writeVarInt);
-		buf.writeCollection(inventorySlots, FriendlyByteBuf::writeVarInt);
-		buf.writeBoolean(maxTransfer);
-		buf.writeBoolean(requireCompleteSets);
+	public StreamCodec<RegistryFriendlyByteBuf, PacketRecipeTransfer> streamCodec() {
+		return STREAM_CODEC;
 	}
 
 	@Override
-	public void processOnServerThread(ServerPacketContext context) {
+	public void process(ServerPacketContext context) {
 		AbstractContainerMenu container = context.player().containerMenu;
 		BasicRecipeTransferHandlerServer.setItems(
 				context.player(),
@@ -71,18 +86,6 @@ public class PacketRecipeTransfer extends PacketJeiToServer {
 				inventorySlots.stream().map(container::getSlot).toList(),
 				maxTransfer,
 				requireCompleteSets
-		);
-	}
-
-	public static PacketRecipeTransfer readPacketData(FriendlyByteBuf buf) {
-		List<TransferOperation> transferOperations = buf.readList(TransferOperation::readPacketData);
-		List<Integer> craftingSlots = buf.readList(FriendlyByteBuf::readVarInt);
-		List<Integer> inventorySlots = buf.readList(FriendlyByteBuf::readVarInt);
-		boolean maxTransfer = buf.readBoolean();
-		boolean requireCompleteSets = buf.readBoolean();
-
-		return new PacketRecipeTransfer(
-				transferOperations, craftingSlots, inventorySlots, maxTransfer, requireCompleteSets
 		);
 	}
 

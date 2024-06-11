@@ -8,7 +8,7 @@ plugins {
 	id("idea")
 	id("eclipse")
 	id("maven-publish")
-	id("net.minecraftforge.gradle") version("[6.0,6.2)")
+	id("net.minecraftforge.gradle") version("[6.0.24,6.2)")
 	id("org.parchmentmc.librarian.forgegradle") version("1.+")
 	id("net.darkhax.curseforgegradle") version("1.0.8")
 	id("com.modrinth.minotaur") version("2.+")
@@ -63,6 +63,11 @@ java {
 	withSourcesJar()
 }
 
+// Hack fix: FG can't resolve deps like lwjgl-freetype-3.3.3-natives-macos-patch.jar without this
+repositories {
+	maven("https://libraries.minecraft.net")
+}
+
 dependencies {
 	"minecraft"(
 		group = "net.minecraftforge",
@@ -82,10 +87,20 @@ dependencies {
 		name = "junit-jupiter-engine",
 		version = jUnitVersion
 	)
+
+	// Hack fix for now, force jopt-simple to be exactly 5.0.4 because Mojang ships that version, but some transitive dependencies request 6.0+
+	implementation("net.sf.jopt-simple:jopt-simple:5.0.4") {
+		version {
+			strictly("5.0.4")
+		}
+	}
 }
 
 minecraft {
 	mappings("parchment", parchmentVersionForge)
+
+	// use Official mappings at runtime
+	reobf = false
 
 	copyIdeResources.set(true)
 
@@ -129,13 +144,13 @@ minecraft {
 
 tasks.withType<JavaCompile>().configureEach {
     dependencyProjects.forEach {
-        source(it.sourceSets.main.get().getAllSource())
+        source(it.sourceSets.main.get().allSource)
     }
 }
 
 tasks.processResources {
     dependencyProjects.forEach {
-        from(it.sourceSets.main.get().getResources())
+        from(it.sourceSets.main.get().resources)
     }
 }
 
@@ -143,7 +158,6 @@ tasks.jar {
 	from(sourceSets.main.get().output)
 
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	finalizedBy("reobfJar")
 }
 
 val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
@@ -237,7 +251,7 @@ idea {
 }
 // Required because FG, copied from the MDK
 sourceSets.forEach {
-    val outputDir = layout.buildDirectory.file("sourcesSets/${it.name}").get().getAsFile()
+    val outputDir = layout.buildDirectory.file("sourcesSets/${it.name}").get().asFile
     it.output.setResourcesDir(outputDir)
     it.java.destinationDirectory.set(outputDir)
 }

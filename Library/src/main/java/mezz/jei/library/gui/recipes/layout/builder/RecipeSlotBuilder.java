@@ -14,13 +14,13 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.elements.OffsetDrawable;
-import mezz.jei.library.gui.ingredients.RecipeSlot;
-import mezz.jei.library.gui.ingredients.RecipeSlots;
-import mezz.jei.library.ingredients.IngredientAcceptor;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
-import net.minecraft.nbt.CompoundTag;
+import mezz.jei.library.gui.ingredients.RecipeSlot;
+import mezz.jei.library.gui.ingredients.RecipeSlots;
+import mezz.jei.library.ingredients.IngredientAcceptor;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,8 +56,8 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	}
 
 	@Override
-	public IRecipeSlotBuilder addFluidStack(Fluid fluid, long amount, CompoundTag tag) {
-		this.ingredients.addFluidStack(fluid, amount, tag);
+	public IRecipeSlotBuilder addFluidStack(Fluid fluid, long amount, DataComponentPatch componentPatch) {
+		this.ingredients.addFluidStack(fluid, amount, componentPatch);
 		return this;
 	}
 

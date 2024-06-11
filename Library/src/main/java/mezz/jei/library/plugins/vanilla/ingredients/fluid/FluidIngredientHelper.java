@@ -8,10 +8,10 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
-import mezz.jei.common.platform.IPlatformRegistry;
-import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.RegistryWrapper;
 import mezz.jei.common.util.TagUtil;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -31,14 +31,14 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
 	private final IPlatformFluidHelperInternal<T> platformFluidHelper;
-	private final IPlatformRegistry<Fluid> registry;
+	private final RegistryWrapper<Fluid> registry;
 	private final IIngredientTypeWithSubtypes<Fluid, T> fluidType;
 
 	public FluidIngredientHelper(ISubtypeManager subtypeManager, IColorHelper colorHelper, IPlatformFluidHelperInternal<T> platformFluidHelper) {
 		this.subtypeManager = subtypeManager;
 		this.colorHelper = colorHelper;
 		this.platformFluidHelper = platformFluidHelper;
-		this.registry = Services.PLATFORM.getRegistry(Registries.FLUID);
+		this.registry = RegistryWrapper.getRegistry(Registries.FLUID);
 		this.fluidType = platformFluidHelper.getFluidIngredientType();
 	}
 
@@ -147,8 +147,10 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 
 		toStringHelper.add("Amount", platformFluidHelper.getAmount(ingredient));
 
-		platformFluidHelper.getTag(ingredient)
-			.ifPresent(tag -> toStringHelper.add("Tag", tag));
+		DataComponentPatch components = platformFluidHelper.getComponentsPatch(ingredient);
+		if (!components.isEmpty()) {
+			toStringHelper.add("Components", components.toString());
+		}
 
 		return toStringHelper.toString();
 	}

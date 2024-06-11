@@ -30,9 +30,9 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
-import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.RegistryWrapper;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
@@ -62,6 +62,7 @@ import mezz.jei.library.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.library.render.ItemStackRenderer;
 import mezz.jei.library.transfer.PlayerRecipeTransferHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;
@@ -72,9 +73,9 @@ import net.minecraft.client.gui.screens.inventory.FurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.BlastFurnaceMenu;
@@ -84,9 +85,9 @@ import net.minecraft.world.inventory.FurnaceMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.inventory.SmokerMenu;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -99,14 +100,13 @@ import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.SuspiciousStewRecipe;
 import net.minecraft.world.item.crafting.TippedArrowRecipe;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -146,21 +146,13 @@ public class VanillaPlugin implements IModPlugin {
 		registration.registerSubtypeInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, (itemStack, context) -> {
-			List<String> enchantmentNames = new ArrayList<>();
-			ListTag enchantments = EnchantedBookItem.getEnchantments(itemStack);
-			for (int i = 0; i < enchantments.size(); ++i) {
-				CompoundTag compoundnbt = enchantments.getCompound(i);
-				String id = compoundnbt.getString("id");
-				IPlatformRegistry<Enchantment> enchantmentRegistry = Services.PLATFORM.getRegistry(Registries.ENCHANTMENT);
-				ResourceLocation resourceLocation = ResourceLocation.tryParse(id);
-				if (resourceLocation != null) {
-					enchantmentRegistry.getValue(resourceLocation)
-						.map(enchantment -> enchantment.getDescriptionId() + ".lvl" + compoundnbt.getShort("lvl"))
-						.ifPresent(enchantmentNames::add);
-				}
-			}
-			enchantmentNames.sort(null);
-			return enchantmentNames.toString();
+			ItemEnchantments enchantments = itemStack.getEnchantments();
+			return enchantments.keySet()
+				.stream()
+				.map(Holder::value)
+				.map(e -> e.getDescriptionId() + ".lvl" + enchantments.getLevel(e))
+				.sorted()
+				.toString();
 		});
 	}
 
@@ -188,7 +180,7 @@ public class VanillaPlugin implements IModPlugin {
 		ISubtypeManager subtypeManager = registration.getSubtypeManager();
 		IColorHelper colorHelper = registration.getColorHelper();
 
-		IPlatformRegistry<Fluid> registry = Services.PLATFORM.getRegistry(Registries.FLUID);
+		RegistryWrapper<Fluid> registry = RegistryWrapper.getRegistry(Registries.FLUID);
 		List<T> fluidIngredients = FluidStackListFactory.create(registry, platformFluidHelper);
 		FluidIngredientHelper<T> fluidIngredientHelper = new FluidIngredientHelper<>(subtypeManager, colorHelper, platformFluidHelper);
 		FluidTankRenderer<T> fluidTankRenderer = new FluidTankRenderer<>(platformFluidHelper);
@@ -256,8 +248,12 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(RecipeTypes.SMITHING, vanillaRecipes.getSmithingRecipes(smithingCategory));
 		registration.addRecipes(RecipeTypes.COMPOSTING, CompostingRecipeMaker.getRecipes(ingredientManager));
 
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientLevel level = minecraft.level;
+		ErrorUtil.checkNotNull(level, "minecraft.level");
+		PotionBrewing potionBrewing = level.potionBrewing();
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
-		List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(ingredientManager, vanillaRecipeFactory);
+		List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, potionBrewing);
 		brewingRecipes.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
 		registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
 	}

@@ -48,7 +48,7 @@ public class CampfireCookingCategory extends AbstractCookingCategory<CampfireCoo
 	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<CampfireCookingRecipe> recipeHolder, IFocusGroup focuses) {
 		CampfireCookingRecipe recipe = recipeHolder.value();
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
-			.addIngredients(recipe.getIngredients().get(0));
+			.addIngredients(recipe.getIngredients().getFirst());
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 61, 9)
 			.addItemStack(RecipeUtil.getResultItem(recipe));

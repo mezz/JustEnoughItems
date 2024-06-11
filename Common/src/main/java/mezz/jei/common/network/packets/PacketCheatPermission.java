@@ -1,35 +1,67 @@
 package mezz.jei.common.network.packets;
 
+import mezz.jei.api.constants.ModIds;
+import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.network.ClientPacketContext;
-import mezz.jei.common.network.PacketIdClient;
 import mezz.jei.common.network.packets.handlers.ClientCheatPermissionHandler;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class PacketCheatPermission extends PacketJeiToClient {
+public class PacketCheatPermission extends PlayToClientPacket<PacketCheatPermission> {
+	public static final Type<PacketCheatPermission> TYPE = new Type<>(new ResourceLocation(ModIds.JEI_ID, "cheat_permission"));
+	public static final StreamCodec<RegistryFriendlyByteBuf, PacketCheatPermission> STREAM_CODEC = StreamCodec.composite(
+		ByteBufCodecs.BOOL,
+		p -> p.hasPermission,
+		ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()),
+		p -> p.allowedCheatingMethods,
+		PacketCheatPermission::new
+	);
+
 	private final boolean hasPermission;
+	private final List<String> allowedCheatingMethods;
 
-	public PacketCheatPermission(boolean hasPermission) {
+	public PacketCheatPermission(boolean hasPermission, IServerConfig serverConfig) {
+		this(hasPermission, getAllowedCheatingMethods(serverConfig));
+	}
+
+	public PacketCheatPermission(boolean hasPermission, List<String> allowedCheatingMethods) {
 		this.hasPermission = hasPermission;
+		this.allowedCheatingMethods = allowedCheatingMethods;
 	}
 
 	@Override
-	public PacketIdClient getPacketId() {
-		return PacketIdClient.CHEAT_PERMISSION;
+	public Type<PacketCheatPermission> type() {
+		return TYPE;
 	}
 
 	@Override
-	public void writePacketData(FriendlyByteBuf buf) {
-		buf.writeBoolean(hasPermission);
+	public StreamCodec<RegistryFriendlyByteBuf, PacketCheatPermission> streamCodec() {
+		return STREAM_CODEC;
 	}
 
 	@Override
-	public void processOnClientThread(ClientPacketContext context) {
-		ClientCheatPermissionHandler.handleHasCheatPermission(context, hasPermission);
+	public void process(ClientPacketContext context) {
+		ClientCheatPermissionHandler.handleHasCheatPermission(context, hasPermission, allowedCheatingMethods);
 	}
 
-	public static PacketCheatPermission readPacketData(FriendlyByteBuf buf) {
-		boolean hasPermission = buf.readBoolean();
-		return new PacketCheatPermission(hasPermission);
+	@NotNull
+	private static List<String> getAllowedCheatingMethods(IServerConfig serverConfig) {
+		List<String> allowedCheatingMethods = new ArrayList<>();
+		if (serverConfig.isCheatModeEnabledForOp()) {
+			allowedCheatingMethods.add("jei.chat.error.no.cheat.permission.op");
+		}
+		if (serverConfig.isCheatModeEnabledForCreative()) {
+			allowedCheatingMethods.add("jei.chat.error.no.cheat.permission.creative");
+		}
+		if (serverConfig.isCheatModeEnabledForGive()) {
+			allowedCheatingMethods.add("jei.chat.error.no.cheat.permission.give");
+		}
+		return allowedCheatingMethods;
 	}
 }

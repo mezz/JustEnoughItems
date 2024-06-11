@@ -90,7 +90,7 @@ public class CraftingExtensionHelper {
 			return Optional.empty();
 		}
 		if (assignableHandlers.size() == 1) {
-			return Optional.of(assignableHandlers.get(0));
+			return Optional.of(assignableHandlers.getFirst());
 		}
 
 		// try super classes to get the closest match
@@ -108,7 +108,7 @@ public class CraftingExtensionHelper {
 			.<Class<? extends CraftingRecipe>>map(Handler::getRecipeClass)
 			.toList();
 		LOGGER.warn("Found multiple matching recipe handlers for {}: {}", recipeClass, assignableClasses);
-		return Optional.of(assignableHandlers.get(0));
+		return Optional.of(assignableHandlers.getFirst());
 	}
 
 	private static class Handler<T extends CraftingRecipe> {

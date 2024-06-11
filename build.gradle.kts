@@ -1,8 +1,8 @@
 plugins {
 	id("com.diffplug.spotless") version("6.25.0")
     id("com.dorongold.task-tree") version("2.1.0")
-    id("fabric-loom") version("1.1.+") apply(false)
-    id("net.neoforged.gradle.userdev") version("7.0.80") apply(false)
+    id("fabric-loom") version("1.6.12") apply(false)
+    id("net.neoforged.gradle.userdev") version("7.0.142") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
@@ -85,7 +85,7 @@ subprojects {
         // this will ensure that this task is redone when the versions change.
         inputs.property("version", version)
 
-        filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta", "fabric.mod.json")) {
+        filesMatching(listOf("META-INF/mods.toml", "META-INF/neoforge.mods.toml", "pack.mcmeta", "fabric.mod.json")) {
             expand(mapOf(
                 "curseHomepageUrl" to curseHomepageUrl,
                 "fabricApiVersion" to fabricApiVersion,

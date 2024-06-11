@@ -5,7 +5,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.core.collect.SetMultiMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 
 import java.util.Collection;
@@ -17,7 +17,7 @@ import java.util.Set;
 
 public class BrewingRecipeUtil {
 	public static final ItemStack POTION = new ItemStack(Items.POTION);
-	public static final ItemStack WATER_BOTTLE = PotionUtils.setPotion(POTION.copy(), Potions.WATER);
+	public static final ItemStack WATER_BOTTLE = PotionContents.createItemStack(POTION.getItem(), Potions.WATER);
 
 	private final Map<String, Integer> brewingStepCache = new HashMap<>(); // output potion -> brewing steps
 	private final SetMultiMap<String, String> potionMap = new SetMultiMap<>(); // output potion -> input potions

@@ -2,7 +2,7 @@ package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
@@ -75,18 +75,18 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 *
 	 * To add multiple Fluid ingredients, you can call this multiple times.
 	 *
-	 * @see #addFluidStack(Fluid, long, CompoundTag) to add a Fluid with a {@link CompoundTag}.
+	 * @see #addFluidStack(Fluid, long, DataComponentPatch) to add a Fluid with a {@link DataComponentPatch}.
 	 * @since 11.1.0
 	 */
 	THIS addFluidStack(Fluid fluid, long amount);
 
 	/**
-	 * Convenience helper to add one Fluid ingredient with a {@link CompoundTag}.
+	 * Convenience helper to add one Fluid ingredient with a {@link DataComponentPatch}.
 	 *
 	 * To add multiple Fluid ingredients, you can call this multiple times.
 	 *
-	 * @see #addFluidStack(Fluid, long) to add a Fluid without a {@link CompoundTag}.
-	 * @since 11.1.0
+	 * @see #addFluidStack(Fluid, long) to add a Fluid without a {@link DataComponentPatch}.
+	 * @since 18.0.0
 	 */
-	THIS addFluidStack(Fluid fluid, long amount, CompoundTag tag);
+	THIS addFluidStack(Fluid fluid, long amount, DataComponentPatch component);
 }

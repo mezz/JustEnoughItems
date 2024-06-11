@@ -25,7 +25,7 @@ dependencyProjects.forEach {
 }
 
 sourceSets {
-	named("main") {
+	main {
 		resources {
 			//The API has no resources
 			setSrcDirs(emptyList<String>())
@@ -50,7 +50,7 @@ dependencies {
 	implementation(
 		group = "net.neoforged",
 		name = "neoforge",
-		version = "${neoforgeVersion}"
+		version = neoforgeVersion
 	)
 	dependencyProjects.forEach {
 		implementation(it)

@@ -7,7 +7,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +23,7 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 	@Override
 	public int getBurnTime(ItemStack itemStack) {
 		try {
-			return CommonHooks.getBurnTime(itemStack, null);
+			return itemStack.getBurnTime(null);
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
 			LOGGER.error("Failed to check if item is fuel {}.", itemStackInfo, e);
@@ -50,7 +49,7 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 		try {
 			List<Component> tooltip = new ArrayList<>();
 			tooltip.add(Component.literal("JEI Tooltip Testing for mod name formatting"));
-			ItemTooltipEvent tooltipEvent = EventHooks.onItemTooltip(itemStack, player, tooltip, TooltipFlag.Default.NORMAL);
+			ItemTooltipEvent tooltipEvent = EventHooks.onItemTooltip(itemStack, player, tooltip, TooltipFlag.Default.NORMAL, Item.TooltipContext.EMPTY);
 			return tooltipEvent.getToolTip();
 		} catch (LinkageError | RuntimeException e) {
 			LOGGER.error("Error while Testing for mod name formatting", e);

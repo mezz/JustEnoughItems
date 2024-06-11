@@ -4,6 +4,7 @@ import mezz.jei.common.platform.IPlatformItemStackHelper;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.apache.logging.log4j.LogManager;
@@ -35,7 +36,7 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 	@Override
 	public List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
 		try {
-			return itemStack.getTooltipLines(player, TooltipFlag.Default.NORMAL);
+			return itemStack.getTooltipLines(Item.TooltipContext.EMPTY, player, TooltipFlag.Default.NORMAL);
 		} catch (LinkageError | RuntimeException e) {
 			LOGGER.error("Error while Testing for mod name formatting", e);
 		}

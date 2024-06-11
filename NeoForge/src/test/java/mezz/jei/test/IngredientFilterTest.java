@@ -133,7 +133,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(filterTextSource);
 
 		List<TestIngredient> ingredients = createIngredients();
-		TestIngredient testIngredient = ingredients.get(0);
+		TestIngredient testIngredient = ingredients.getFirst();
 		IIngredientRenderer<TestIngredient> ingredientRenderer = ingredientManager.getIngredientRenderer(TestIngredient.TYPE);
 		List<String> tooltipStrings = getTooltipStrings(ingredientRenderer, testIngredient);
 
@@ -165,7 +165,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(baseList);
 		Assertions.assertNotNull(editModeConfig);
 
-		IListElement<?> element = baseList.get(0);
+		IListElement<?> element = baseList.getFirst();
 		ITypedIngredient<?> typedIngredient = element.getTypedIngredient();
 		@SuppressWarnings("unchecked")
 		ITypedIngredient<TestIngredient> blacklistedIngredient = (ITypedIngredient<TestIngredient>) typedIngredient;

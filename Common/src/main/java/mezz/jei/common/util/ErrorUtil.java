@@ -7,14 +7,12 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
-import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -44,7 +42,7 @@ public final class ErrorUtil {
 			return "null";
 		}
 		Item item = itemStack.getItem();
-		IPlatformRegistry<Item> itemRegistry = Services.PLATFORM.getRegistry(Registries.ITEM);
+		RegistryWrapper<Item> itemRegistry = RegistryWrapper.getRegistry(Registries.ITEM);
 
 		final String itemName = itemRegistry.getRegistryName(item)
 			.map(ResourceLocation::toString)
@@ -55,7 +53,7 @@ public final class ErrorUtil {
 					if (block == null) {
 						blockName = "null";
 					} else {
-						IPlatformRegistry<Block> blockRegistry = Services.PLATFORM.getRegistry(Registries.BLOCK);
+						RegistryWrapper<Block> blockRegistry = RegistryWrapper.getRegistry(Registries.BLOCK);
 						blockName = blockRegistry.getRegistryName(block)
 							.map(ResourceLocation::toString)
 							.orElseGet(() -> block.getClass().getName());
@@ -66,11 +64,8 @@ public final class ErrorUtil {
 				}
 			});
 
-		CompoundTag nbt = itemStack.getTag();
-		if (nbt != null) {
-			return itemStack + " " + itemName + " nbt:" + nbt;
-		}
-		return itemStack + " " + itemName;
+		String components = itemStack.getComponentsPatch().toString();
+		return itemStack + " " + itemName + " nbt:" + components;
 	}
 
 	@SuppressWarnings("ConstantConditions")

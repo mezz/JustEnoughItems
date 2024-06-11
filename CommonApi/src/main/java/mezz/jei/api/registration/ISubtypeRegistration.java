@@ -5,20 +5,19 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.Item;
 
 /**
- * Tell JEI how to interpret NBT tags and capabilities when comparing and looking up ingredients.
+ * Tell JEI how to interpret Components and capabilities when comparing and looking up ingredients.
  *
- * If your ingredient has subtypes that depend on NBT or capabilities,
+ * If your ingredient has subtypes that depend on Components or capabilities,
  * use this so JEI can tell those subtypes apart.
  */
 public interface ISubtypeRegistration {
 
 	/**
 	 * Add an interpreter to allow JEI to understand the differences between ingredient subtypes.
-	 * This interpreter should account for nbt and anything else
+	 * This interpreter should account for Components and anything else
 	 * that's relevant to differentiating the ingredient's subtypes.
 	 *
 	 * @param type        the ingredient type (for example {@link VanillaTypes#ITEM_STACK}
@@ -32,7 +31,7 @@ public interface ISubtypeRegistration {
 
 	/**
 	 * Add an interpreter to allow JEI to understand the differences between ingredient subtypes.
-	 * This interpreter should account for nbt and anything else
+	 * This interpreter should account for Components and anything else
 	 * that's relevant to differentiating the ingredient's subtypes.
 	 *
 	 * @param item        the item base of the ItemStack that has subtypes (for example, {@link Items#ENCHANTED_BOOK}).
@@ -45,13 +44,4 @@ public interface ISubtypeRegistration {
 		registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, interpreter);
 	}
 
-	/**
-	 * Tells JEI to treat all NBT as relevant to these items' subtypes.
-	 */
-	void useNbtForSubtypes(Item... items);
-
-	/**
-	 * Tells JEI to treat all NBT as relevant to these fluids' subtypes.
-	 */
-	void useNbtForSubtypes(Fluid... fluids);
 }

@@ -2,10 +2,7 @@ package mezz.jei.neoforge.platform;
 
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformHelper;
-import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.core.util.function.LazySupplier;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 
 import java.util.function.Supplier;
 
@@ -19,11 +16,6 @@ public class PlatformHelper implements IPlatformHelper {
 	private final Supplier<ScreenHelper> screenHelper = new LazySupplier<>(ScreenHelper::new);
 	private final Supplier<IngredientHelper> ingredientHelper = new LazySupplier<>(IngredientHelper::new);
 	private final Supplier<ModHelper> modHelper = new LazySupplier<>(ModHelper::new);
-
-	@Override
-	public <T> IPlatformRegistry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
-		return RegistryWrapper.getRegistry(key);
-	}
 
 	@Override
 	public ItemStackHelper getItemStackHelper() {

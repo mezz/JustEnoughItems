@@ -1,6 +1,7 @@
 package mezz.jei.neoforge.config;
 
 import mezz.jei.common.config.IServerConfig;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
@@ -17,7 +18,8 @@ public final class ServerConfig implements IServerConfig {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 		ServerConfig instance = new ServerConfig(builder);
 		ModConfigSpec config = builder.build();
-		modLoadingContext.registerConfig(ModConfig.Type.SERVER, config);
+		ModContainer activeContainer = modLoadingContext.getActiveContainer();
+		activeContainer.registerConfig(ModConfig.Type.SERVER, config);
 		return instance;
 	}
 

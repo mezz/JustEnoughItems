@@ -2,9 +2,7 @@ package mezz.jei.neoforge;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
-import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.network.ClientPacketRouter;
 import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
@@ -29,8 +27,7 @@ public class JustEnoughItemsClient {
 
 	public JustEnoughItemsClient(
 		NetworkHandler networkHandler,
-		PermanentEventSubscriptions subscriptions,
-		IServerConfig serverConfig
+		PermanentEventSubscriptions subscriptions
 	) {
 		this.subscriptions = subscriptions;
 
@@ -40,8 +37,7 @@ public class JustEnoughItemsClient {
 		InternalKeyMappings keyMappings = createKeyMappings(subscriptions);
 		Internal.setKeyMappings(keyMappings);
 
-		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig);
-		networkHandler.registerClientPacketHandler(packetRouter, serverConnection, subscriptions);
+		networkHandler.registerClientPacketHandler(serverConnection, subscriptions);
 
 		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
 		StartData startData = new StartData(

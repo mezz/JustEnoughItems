@@ -2,77 +2,81 @@ package mezz.jei.neoforge.network;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.config.IServerConfig;
-import mezz.jei.common.network.*;
+import mezz.jei.common.network.ClientPacketContext;
+import mezz.jei.common.network.IConnectionToClient;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.network.ServerPacketContext;
+import mezz.jei.common.network.packets.PacketCheatPermission;
+import mezz.jei.common.network.packets.PacketDeletePlayerItem;
+import mezz.jei.common.network.packets.PacketGiveItemStack;
+import mezz.jei.common.network.packets.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.PacketRequestCheatPermission;
+import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
+import mezz.jei.common.network.packets.PlayToClientPacket;
+import mezz.jei.common.network.packets.PlayToServerPacket;
 import mezz.jei.neoforge.events.PermanentEventSubscriptions;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.IPayloadHandler;
+import net.neoforged.neoforge.network.registration.HandlerThread;
 
-import java.util.Locale;
+import java.util.function.BiConsumer;
 
 public class NetworkHandler {
 	private static final String TO_CLIENT_NAMESPACE = ModIds.JEI_ID + "_to_client";
 	private static final String TO_SERVER_NAMESPACE = ModIds.JEI_ID + "_to_server";
 
-	private final ResourceLocation channelId;
 	private final String protocolVersion;
 	private final IServerConfig serverConfig;
 
-	public NetworkHandler(ResourceLocation channelId, String protocolVersion, IServerConfig serverConfig) {
-		this.channelId = channelId;
+	public NetworkHandler(String protocolVersion, IServerConfig serverConfig) {
 		this.protocolVersion = protocolVersion;
 		this.serverConfig = serverConfig;
 	}
 
-	public ResourceLocation getChannelId() {
-		return channelId;
-	}
+	public void registerServerPacketHandler(IConnectionToClient connection, PermanentEventSubscriptions subscriptions) {
+		subscriptions.register(RegisterPayloadHandlersEvent.class, ev -> {
+			var registrar = ev.registrar(TO_CLIENT_NAMESPACE)
+				.executesOn(HandlerThread.MAIN)
+				.versioned(this.protocolVersion)
+				.optional();
 
-	public void registerServerPacketHandler(
-			ServerPacketRouter packetRouter, IConnectionToClient connection, PermanentEventSubscriptions subscriptions
-	) {
-		subscriptions.register(RegisterPayloadHandlerEvent.class, ev -> {
-			var registrar = ev.registrar(TO_SERVER_NAMESPACE)
-					.versioned(this.protocolVersion)
-					.optional();
-			// TODO use configuration phase?
-			packetRouter.handlers.forEach((key, value) -> {
-				ResourceLocation name = toServerID(key);
-				registrar.play(
-						name,
-						buf -> new WrappingPayload<>(value.readPacketData(buf), name),
-						(packet, context) -> WrappingPayload.processToServer(packet, context, connection, serverConfig)
-				);
-			});
+			registrar.playToServer(PacketDeletePlayerItem.TYPE, PacketDeletePlayerItem.STREAM_CODEC, wrapServerHandler(connection, PacketDeletePlayerItem::process));
+			registrar.playToServer(PacketGiveItemStack.TYPE, PacketGiveItemStack.STREAM_CODEC, wrapServerHandler(connection, PacketGiveItemStack::process));
+			registrar.playToServer(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC, wrapServerHandler(connection, PacketRecipeTransfer::process));
+			registrar.playToServer(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC, wrapServerHandler(connection, PacketSetHotbarItemStack::process));
+			registrar.playToServer(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC, wrapServerHandler(connection, PacketRequestCheatPermission::process));
 		});
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public void registerClientPacketHandler(
-			ClientPacketRouter packetRouter, IConnectionToServer connection, PermanentEventSubscriptions subscriptions
-	) {
-		subscriptions.register(RegisterPayloadHandlerEvent.class, ev -> {
-			var registrar = ev.registrar(TO_CLIENT_NAMESPACE)
-					.versioned(this.protocolVersion)
-					.optional();
-			// TODO use configuration phase?
-			packetRouter.clientHandlers.forEach((key, value) -> {
-				ResourceLocation name = toClientID(key);
-				registrar.play(
-						name,
-						buf -> new WrappingPayload<>(value.readPacketData(buf), name),
-						(packet, context) -> WrappingPayload.processToClient(packet, context, connection, serverConfig)
-				);
-			});
+	public void registerClientPacketHandler(IConnectionToServer connection, PermanentEventSubscriptions subscriptions) {
+		subscriptions.register(RegisterPayloadHandlersEvent.class, ev -> {
+			var registrar = ev.registrar(TO_SERVER_NAMESPACE)
+				.executesOn(HandlerThread.MAIN)
+				.versioned(this.protocolVersion)
+				.optional();
+
+			registrar.playToClient(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC, wrapClientHandler(connection, PacketCheatPermission::process));
 		});
 	}
 
-	public static ResourceLocation toServerID(PacketIdServer id) {
-		return new ResourceLocation(TO_SERVER_NAMESPACE, id.name().toLowerCase(Locale.ROOT));
+	private <T extends PlayToClientPacket<T>> IPayloadHandler<T> wrapClientHandler(IConnectionToServer connection, BiConsumer<T, ClientPacketContext> consumer) {
+		return (t, payloadContext) -> {
+			LocalPlayer player = (LocalPlayer) payloadContext.player();
+			var clientPacketContext = new ClientPacketContext(player, connection);
+			consumer.accept(t, clientPacketContext);
+		};
 	}
 
-	public static ResourceLocation toClientID(PacketIdClient id) {
-		return new ResourceLocation(TO_CLIENT_NAMESPACE, id.name().toLowerCase(Locale.ROOT));
+	private <T extends PlayToServerPacket<T>> IPayloadHandler<T> wrapServerHandler(IConnectionToClient connection, BiConsumer<T, ServerPacketContext> consumer) {
+		return (t, payloadContext) -> {
+			ServerPlayer player = (ServerPlayer) payloadContext.player();
+			var serverPacketContext = new ServerPacketContext(player, serverConfig, connection);
+			consumer.accept(t, serverPacketContext);
+		};
 	}
 }

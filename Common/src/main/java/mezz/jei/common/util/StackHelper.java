@@ -3,7 +3,6 @@ package mezz.jei.common.util;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.platform.Services;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -51,7 +50,7 @@ public class StackHelper implements IStackHelper {
 		ErrorUtil.checkNotEmpty(stack, "stack");
 
 		Item item = stack.getItem();
-		return Services.PLATFORM
+		return RegistryWrapper
 			.getRegistry(Registries.ITEM)
 			.getRegistryName(item)
 			.map(ResourceLocation::toString)

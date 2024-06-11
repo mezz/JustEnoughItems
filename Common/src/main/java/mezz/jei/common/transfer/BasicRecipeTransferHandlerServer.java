@@ -272,7 +272,7 @@ public final class BasicRecipeTransferHandlerServer {
 				resultItemStack = itemStack;
 				result.put(slot, resultItemStack);
 			} else {
-				assert ItemStack.isSameItemSameTags(resultItemStack, itemStack);
+				assert ItemStack.isSameItemSameComponents(resultItemStack, itemStack);
 				resultItemStack.grow(itemStack.getCount());
 			}
 			if (resultItemStack.getCount() == slot.getMaxStackSize(resultItemStack)) {
@@ -292,7 +292,7 @@ public final class BasicRecipeTransferHandlerServer {
 	private static Optional<Slot> getValidatedHintSlot(Player player, ItemStack stack, Slot hint) {
 		if (hint.mayPickup(player) &&
 			!hint.getItem().isEmpty() &&
-			ItemStack.isSameItemSameTags(stack, hint.getItem())
+			ItemStack.isSameItemSameComponents(stack, hint.getItem())
 		) {
 			return Optional.of(hint);
 		}
@@ -353,7 +353,7 @@ public final class BasicRecipeTransferHandlerServer {
 		return slots.stream()
 			.filter(slot -> {
 				ItemStack slotStack = slot.getItem();
-				return ItemStack.isSameItemSameTags(itemStack, slotStack) &&
+				return ItemStack.isSameItemSameComponents(itemStack, slotStack) &&
 					slot.mayPickup(player);
 			})
 			.findFirst();

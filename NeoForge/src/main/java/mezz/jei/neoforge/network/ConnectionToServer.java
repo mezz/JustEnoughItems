@@ -1,11 +1,10 @@
 package mezz.jei.neoforge.network;
 
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.network.PacketIdServer;
-import mezz.jei.common.network.packets.PacketJeiToServer;
+import mezz.jei.common.network.packets.PacketDeletePlayerItem;
+import mezz.jei.common.network.packets.PlayToServerPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,24 +19,23 @@ public final class ConnectionToServer implements IConnectionToServer {
 	public boolean isJeiOnServer() {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPacketListener clientPacketListener = minecraft.getConnection();
-		if (clientPacketListener == null) {
+		if (clientPacketListener == null || !clientPacketListener.getConnection().isConnected()) {
 			return false;
 		}
 		UUID id = clientPacketListener.getId();
 		if (!id.equals(jeiOnServerCacheUuid)) {
 			jeiOnServerCacheUuid = id;
-			jeiOnServerCacheValue = clientPacketListener.isConnected(NetworkHandler.toServerID(PacketIdServer.DELETE_ITEM));
+			jeiOnServerCacheValue = clientPacketListener.hasChannel(PacketDeletePlayerItem.TYPE);
 		}
 		return jeiOnServerCacheValue;
 	}
 
 	@Override
-	public void sendPacketToServer(PacketJeiToServer packet) {
+	public <T extends PlayToServerPacket<T>> void sendPacketToServer(T packet) {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPacketListener netHandler = minecraft.getConnection();
 		if (netHandler != null && isJeiOnServer()) {
-			ResourceLocation id = NetworkHandler.toServerID(packet.getPacketId());
-			PacketDistributor.SERVER.noArg().send(new WrappingPayload<>(packet, id));
+			PacketDistributor.sendToServer(packet);
 		}
 	}
 }

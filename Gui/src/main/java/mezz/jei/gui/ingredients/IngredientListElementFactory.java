@@ -43,7 +43,7 @@ public final class IngredientListElementFactory {
 
 	private static <V> void addToBaseList(NonNullList<IListElement<?>> baseList, IIngredientManager ingredientManager, IIngredientType<V> ingredientType) {
 		Collection<V> ingredients = ingredientManager.getAllIngredients(ingredientType);
-		LOGGER.debug("Registering ingredients: " + ingredientType.getIngredientClass().getSimpleName());
+		LOGGER.debug("Registering ingredients: {}", ingredientType.getIngredientClass().getSimpleName());
 		ingredients.stream()
 			.map(i -> ingredientManager.createTypedIngredient(ingredientType, i))
 			.flatMap(Optional::stream)

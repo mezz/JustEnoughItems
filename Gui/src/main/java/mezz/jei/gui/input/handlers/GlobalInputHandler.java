@@ -39,7 +39,7 @@ public class GlobalInputHandler implements IUserInputHandler {
 				toggleState.toggleCheatItemsEnabled();
 				if (toggleState.isCheatItemsEnabled()) {
 					IConnectionToServer serverConnection = Internal.getServerConnection();
-					serverConnection.sendPacketToServer(new PacketRequestCheatPermission());
+					serverConnection.sendPacketToServer(PacketRequestCheatPermission.INSTANCE);
 				}
 			}
 			return Optional.of(this);

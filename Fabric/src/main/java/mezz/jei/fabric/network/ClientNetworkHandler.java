@@ -1,28 +1,28 @@
 package mezz.jei.fabric.network;
 
-import mezz.jei.common.Constants;
-import mezz.jei.common.network.ClientPacketRouter;
+import mezz.jei.common.network.ClientPacketContext;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.network.packets.PacketCheatPermission;
+import mezz.jei.common.network.packets.PlayToClientPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.player.LocalPlayer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+
+import java.util.function.BiConsumer;
 
 public final class ClientNetworkHandler {
-	private static final Logger LOGGER = LogManager.getLogger();
-
 	private ClientNetworkHandler() {}
 
-	public static void registerClientPacketHandler(ClientPacketRouter packetRouter) {
-		ClientPlayNetworking.registerGlobalReceiver(
-			Constants.NETWORK_CHANNEL_ID,
-			(client, handler, buf, responseSender) -> {
-				LocalPlayer player = client.player;
-				if (player == null) {
-					LOGGER.error("Packet error, the local player is missing.");
-					return;
-				}
-				packetRouter.onPacket(buf, player);
-			}
-		);
+	public static void registerClientPacketHandler(IConnectionToServer connection) {
+		PayloadTypeRegistry.playC2S().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
+
+		ClientPlayNetworking.registerGlobalReceiver(PacketCheatPermission.TYPE, wrapClientHandler(connection, PacketCheatPermission::process));
+	}
+
+	private static <T extends PlayToClientPacket<T>> ClientPlayNetworking.PlayPayloadHandler<T> wrapClientHandler(IConnectionToServer connection, BiConsumer<T, ClientPacketContext> consumer) {
+		return (t, payloadContext) -> {
+			var clientPacketContext = new ClientPacketContext(payloadContext.player(), connection);
+			consumer.accept(t, clientPacketContext);
+		};
 	}
 }

@@ -9,6 +9,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
@@ -48,13 +49,13 @@ public class BookmarkConfig implements IBookmarkConfig {
 	}
 
 	@Override
-	public void saveBookmarks(IIngredientManager ingredientManager, List<ITypedIngredient<?>> ingredientList) {
+	public void saveBookmarks(IIngredientManager ingredientManager, RegistryAccess registryAccess, List<ITypedIngredient<?>> ingredientList) {
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				List<String> strings = new ArrayList<>();
 				for (ITypedIngredient<?> typedIngredient : ingredientList) {
 					if (typedIngredient.getIngredient() instanceof ItemStack stack) {
-						strings.add(MARKER_STACK + stack.save(new CompoundTag()));
+						strings.add(MARKER_STACK + stack.save(registryAccess));
 					} else {
 						strings.add(MARKER_OTHER + getUid(ingredientManager, typedIngredient));
 					}
@@ -69,7 +70,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 	}
 
 	@Override
-	public void loadBookmarks(IIngredientManager ingredientManager, BookmarkList bookmarkList) {
+	public void loadBookmarks(IIngredientManager ingredientManager, RegistryAccess registryAccess, BookmarkList bookmarkList) {
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				if (!Files.exists(path)) {
@@ -95,7 +96,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 						String itemStackAsJson = ingredientJsonString.substring(MARKER_STACK.length());
 						try {
 							CompoundTag itemStackAsNbt = TagParser.parseTag(itemStackAsJson);
-							ItemStack itemStack = ItemStack.of(itemStackAsNbt);
+							ItemStack itemStack = ItemStack.parseOptional(registryAccess, itemStackAsNbt);
 							if (!itemStack.isEmpty()) {
 								ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);
 								Optional<ITypedIngredient<ItemStack>> typedIngredient = ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, normalized);

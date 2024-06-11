@@ -55,17 +55,17 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(":Changelog")
 
-val notNeoTask = { it: Task -> !it.name.startsWith("neo") };
+val notNeoTask = { it: Task -> !it.name.startsWith("neo") }
 
 tasks.withType<JavaCompile>().matching(notNeoTask).configureEach {
     dependencyProjects.forEach {
-        source(it.sourceSets.main.get().getAllSource())
+        source(it.sourceSets.main.get().allSource)
     }
 }
 
 tasks.withType<ProcessResources>().matching(notNeoTask).configureEach {
     dependencyProjects.forEach {
-        from(it.sourceSets.main.get().getResources())
+        from(it.sourceSets.main.get().resources)
     }
 }
 
@@ -80,7 +80,7 @@ dependencies {
 	implementation(
 		group = "net.neoforged",
 		name = "neoforge",
-		version = "${neoforgeVersion}"
+		version = neoforgeVersion
 	)
 	dependencyProjects.forEach {
 		implementation(it)
@@ -104,14 +104,13 @@ minecraft {
 }
 
 fun commonRunProperties(run: Run) {
-	run.modSources(sourceSets.main.get())
 	for (dependencyProject in dependencyProjects) {
-		run.modSources(dependencyProject.sourceSets.main.get())
+		run.modSources.add(project.name, dependencyProject.sourceSets.main.get())
 	}
 }
 
 runs {
-	create("client") {
+	named("client") {
 		systemProperty("forge.logging.console.level", "debug")
 		workingDirectory(file("run/client/Dev"))
 		commonRunProperties(this)
@@ -128,7 +127,7 @@ runs {
 		programArguments("--username", "Player02")
 		commonRunProperties(this)
 	}
-	create("server") {
+	named("server") {
 		systemProperty("forge.logging.console.level", "debug")
 		workingDirectory(file("run/server"))
 		commonRunProperties(this)

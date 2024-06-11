@@ -3,16 +3,21 @@ package mezz.jei.library.plugins.vanilla.crafting.replacers;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
-import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.RegistryWrapper;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,12 +29,13 @@ public final class TippedArrowRecipeMaker {
 		ItemStack arrowStack = new ItemStack(Items.ARROW);
 		Ingredient arrowIngredient = Ingredient.of(arrowStack);
 
-		IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registries.POTION);
+		RegistryWrapper<Potion> potionRegistry = RegistryWrapper.getRegistry(Registries.POTION);
 		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
-		return potionRegistry.getValues()
+		return potionRegistry.getHolderStream()
 			.map(potion -> {
-				ItemStack input = PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), potion);
-				ItemStack output = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, 8), potion);
+				ItemStack input = PotionContents.createItemStack(Items.LINGERING_POTION, potion);
+				ItemStack output = PotionContents.createItemStack(Items.TIPPED_ARROW, potion);
+				output.setCount(8);
 
 				Ingredient potionIngredient = ingredientHelper.createNbtIngredient(input, stackHelper);
 				NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY,
