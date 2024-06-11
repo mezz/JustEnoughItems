@@ -62,6 +62,9 @@ public final class SafeIngredientUtil {
 		tooltip.setIngredient(typedIngredient);
 		try {
 			tooltip.addAll(ingredientRenderer.getTooltip(ingredient, tooltipFlag));
+			if (CRASHING_INGREDIENT_RENDERERS.contains(ingredient)) {
+				getRenderErrorTooltip(tooltip);
+			}
 		} catch (RuntimeException | LinkageError e) {
 			CRASHING_INGREDIENT_TOOLTIPS.add(ingredient);
 			ErrorUtil.logIngredientCrash(e, "Caught an error getting an Ingredient's tooltip", ingredientManager, typedIngredient.getType(), ingredient);
@@ -71,6 +74,11 @@ public final class SafeIngredientUtil {
 
 	private static void getTooltipErrorTooltip(ITooltipBuilder tooltip) {
 		MutableComponent crash = new TranslatableComponent("jei.tooltip.error.crash");
+		tooltip.add(crash.withStyle(ChatFormatting.RED));
+	}
+
+	private static void getRenderErrorTooltip(ITooltipBuilder tooltip) {
+		MutableComponent crash = Component.translatable("jei.tooltip.error.render.crash");
 		tooltip.add(crash.withStyle(ChatFormatting.RED));
 	}
 
