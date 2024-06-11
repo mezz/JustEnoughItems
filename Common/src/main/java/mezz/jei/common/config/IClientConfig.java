@@ -13,8 +13,6 @@ public interface IClientConfig {
 
 	boolean isCatchRenderErrorsEnabled();
 
-	boolean isCatchTooltipRenderErrorsEnabled();
-
 	boolean isCheatToHotbarUsingHotkeysEnabled();
 
 	boolean isAddingBookmarksToFrontEnabled();

@@ -18,7 +18,6 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> centerSearchBarEnabled;
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> catchRenderErrorsEnabled;
-	private final Supplier<Boolean> catchTooltipRenderErrorsEnabled;
 	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
 	private final Supplier<Boolean> addBookmarksToFrontEnabled;
 	private final Supplier<Boolean> lookupFluidContentsEnabled;
@@ -47,11 +46,6 @@ public final class ClientConfig implements IClientConfig {
 			"CatchRenderErrorsEnabled",
 			!isDev,
 			"Catch render errors from ingredients and attempt to recover from them instead of crashing."
-		);
-		catchTooltipRenderErrorsEnabled = advanced.addBoolean(
-			"CatchTooltipErrorsEnabled",
-			!isDev,
-			"Catch render errors from tooltips and attempt to recover from them instead of crashing."
 		);
 		cheatToHotbarUsingHotkeysEnabled = advanced.addBoolean(
 			"CheatToHotbarUsingHotkeysEnabled",
@@ -117,11 +111,6 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isCatchRenderErrorsEnabled() {
 		return catchRenderErrorsEnabled.get();
-	}
-
-	@Override
-	public boolean isCatchTooltipRenderErrorsEnabled() {
-		return catchTooltipRenderErrorsEnabled.get();
 	}
 
 	@Override

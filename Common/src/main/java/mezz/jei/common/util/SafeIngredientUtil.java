@@ -1,5 +1,7 @@
 package mezz.jei.common.util;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -27,14 +29,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public final class SafeIngredientUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Set<Class<?>> CRASHING_INGREDIENT_RENDER_CLASSES = new HashSet<>();
-	private static final Set<Class<?>> CRASHING_INGREDIENT_TOOLTIP_CLASSES = new HashSet<>();
+	private static final Cache<ITypedIngredient<?>, Boolean> CRASHING_INGREDIENT_RENDER_CACHE =
+		CacheBuilder.newBuilder()
+			.expireAfterAccess(10, TimeUnit.SECONDS)
+			.build();
+	private static final Cache<ITypedIngredient<?>, Boolean> CRASHING_INGREDIENT_TOOLTIP_CACHE =
+		CacheBuilder.newBuilder()
+			.expireAfterAccess(10, TimeUnit.SECONDS)
+			.build();
 
 	private SafeIngredientUtil() {
 	}
@@ -45,47 +52,56 @@ public final class SafeIngredientUtil {
 		return getTooltip(ingredientManager, ingredientRenderer, typedIngredient, tooltipFlag);
 	}
 
-	public static <T> List<Component> getTooltip(IIngredientManager ingredientManager, IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> typedIngredient, TooltipFlag.Default tooltipFlag ) {
-		T ingredient = typedIngredient.getIngredient();
-		Class<?> ingredientClass = ingredient.getClass();
-		if (CRASHING_INGREDIENT_TOOLTIP_CLASSES.contains(ingredientClass)) {
-			return getErrorTooltip();
+	public static <T> List<Component> getTooltip(
+		IIngredientManager ingredientManager,
+		IIngredientRenderer<T> ingredientRenderer,
+		ITypedIngredient<T> typedIngredient,
+		TooltipFlag.Default tooltipFlag
+	) {
+		if (CRASHING_INGREDIENT_TOOLTIP_CACHE.getIfPresent(typedIngredient) == Boolean.TRUE) {
+			return getTooltipErrorTooltip();
 		}
 
+		T ingredient = typedIngredient.getIngredient();
 		try {
 			List<Component> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
-			return new ArrayList<>(tooltip);
-		} catch (RuntimeException | LinkageError e) {
-			CRASHING_INGREDIENT_TOOLTIP_CLASSES.add(ingredientClass);
-			if (shouldCatchTooltipErrors()) {
-				logIngredientCrash(e, "Caught an error rendering an Ingredient's tooltip", ingredientManager, typedIngredient);
-				return getErrorTooltip();
-			} else {
-				CrashReport crashReport = createIngredientCrashReport(e, "Rendering ingredient tooltip", ingredientManager, typedIngredient);
-				throw new ReportedException(crashReport);
+			List<Component> tooltipCopy = new ArrayList<>(tooltip);
+			if (CRASHING_INGREDIENT_RENDER_CACHE.getIfPresent(typedIngredient) == Boolean.TRUE) {
+				tooltipCopy.addAll(getRenderErrorTooltip());
 			}
+			return tooltipCopy;
+		} catch (RuntimeException | LinkageError e) {
+			CRASHING_INGREDIENT_TOOLTIP_CACHE.put(typedIngredient, Boolean.TRUE);
+			logIngredientCrash(e, "Caught an error rendering an Ingredient's tooltip", ingredientManager, typedIngredient);
+			return getTooltipErrorTooltip();
 		}
 	}
 
-	private static List<Component> getErrorTooltip() {
+	private static List<Component> getTooltipErrorTooltip() {
 		List<Component> list = new ArrayList<>();
 		MutableComponent crash = Component.translatable("jei.tooltip.error.crash");
 		list.add(crash.withStyle(ChatFormatting.RED));
 		return list;
 	}
 
+	private static List<Component> getRenderErrorTooltip() {
+		List<Component> list = new ArrayList<>();
+		MutableComponent crash = Component.translatable("jei.tooltip.error.render.crash");
+		list.add(crash.withStyle(ChatFormatting.RED));
+		return list;
+	}
+
 	public static <T> void render(IIngredientManager ingredientManager, IIngredientRenderer<T> ingredientRenderer, GuiGraphics guiGraphics, ITypedIngredient<T> typedIngredient) {
-		T ingredient = typedIngredient.getIngredient();
-		Class<?> ingredientClass = ingredient.getClass();
-		if (CRASHING_INGREDIENT_RENDER_CLASSES.contains(ingredientClass)) {
+		if (CRASHING_INGREDIENT_RENDER_CACHE.getIfPresent(typedIngredient) == Boolean.TRUE) {
 			renderError(guiGraphics);
 			return;
 		}
 
+		T ingredient = typedIngredient.getIngredient();
 		try {
 			ingredientRenderer.render(guiGraphics, ingredient);
 		} catch (RuntimeException | LinkageError e) {
-			CRASHING_INGREDIENT_RENDER_CLASSES.add(ingredientClass);
+			CRASHING_INGREDIENT_RENDER_CACHE.put(typedIngredient, Boolean.TRUE);
 
 			if (shouldCatchRenderErrors()) {
 				logIngredientCrash(e, "Caught an error rendering an Ingredient", ingredientManager, typedIngredient);
@@ -101,13 +117,6 @@ public final class SafeIngredientUtil {
 		return Internal.getOptionalJeiClientConfigs()
 			.map(IJeiClientConfigs::getClientConfig)
 			.map(IClientConfig::isCatchRenderErrorsEnabled)
-			.orElse(false);
-	}
-
-	private static boolean shouldCatchTooltipErrors() {
-		return Internal.getOptionalJeiClientConfigs()
-			.map(IJeiClientConfigs::getClientConfig)
-			.map(IClientConfig::isCatchTooltipRenderErrorsEnabled)
 			.orElse(false);
 	}
 
