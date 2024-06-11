@@ -30,4 +30,5 @@ changelog.html
 *.launch
 /**/build/
 /**/logs
+/**/runs/
 Changelog/changelog.md

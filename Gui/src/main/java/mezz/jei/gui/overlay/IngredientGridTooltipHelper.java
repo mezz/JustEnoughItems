@@ -48,12 +48,11 @@ public final class IngredientGridTooltipHelper {
 
 	public <T> void drawTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY, ITypedIngredient<T> value) {
 		IIngredientType<T> ingredientType = value.getType();
-		T ingredient = value.getIngredient();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
 		List<Component> tooltip = getTooltip(value, ingredientRenderer, ingredientHelper);
-		TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY, ingredient, ingredientRenderer);
+		TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY, value, ingredientRenderer, ingredientManager);
 	}
 
 	public <T> List<Component> getTooltip(ITypedIngredient<T> typedIngredient, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
