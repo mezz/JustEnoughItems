@@ -1,14 +1,17 @@
 package mezz.jei.common.gui;
 
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.ErrorUtil;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -29,16 +32,21 @@ public final class TooltipRenderer {
 
 	public static <T> void drawHoveringText(GuiGraphics guiGraphics, List<Component> textLines, int x, int y, ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
-		T ingredient = typedIngredient.getIngredient();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
-		drawHoveringText(guiGraphics, textLines, x, y, ingredient, ingredientRenderer);
+		drawHoveringText(guiGraphics, textLines, x, y, typedIngredient, ingredientRenderer, ingredientManager);
 	}
 
-	public static <T> void drawHoveringText(GuiGraphics guiGraphics, List<Component> textLines, int x, int y, T ingredient, IIngredientRenderer<T> ingredientRenderer) {
+	public static <T> void drawHoveringText(GuiGraphics guiGraphics, List<Component> textLines, int x, int y, ITypedIngredient<T> typedIngredient, IIngredientRenderer<T> ingredientRenderer, IIngredientManager ingredientManager) {
 		Minecraft minecraft = Minecraft.getInstance();
+		T ingredient = typedIngredient.getIngredient();
 		Font font = ingredientRenderer.getFontRenderer(minecraft, ingredient);
-		ItemStack itemStack = ingredient instanceof ItemStack ? (ItemStack) ingredient : ItemStack.EMPTY;
-		drawHoveringText(guiGraphics, textLines, x, y, itemStack, font);
+		ItemStack itemStack = ingredient instanceof ItemStack i ? i : ItemStack.EMPTY;
+		try {
+			drawHoveringText(guiGraphics, textLines, x, y, itemStack, font);
+		} catch (RuntimeException e) {
+			CrashReport crashReport = ErrorUtil.createIngredientCrashReport(e, "Rendering ingredient tooltip", ingredientManager, typedIngredient);
+			throw new ReportedException(crashReport);
+		}
 	}
 
 	private static void drawHoveringText(GuiGraphics guiGraphics, List<Component> textLines, int x, int y, ItemStack itemStack, Font font) {
