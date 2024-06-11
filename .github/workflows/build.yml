@@ -27,7 +27,16 @@ jobs:
           cache-read-only: false
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: |
+          ./gradlew :Core:build --no-daemon
+          ./gradlew :Forge:build --no-daemon
+          ./gradlew :Fabric:build --no-daemon
+          ./gradlew :NeoForge:build --no-daemon
+          ./gradlew :Common:build --no-daemon
+          ./gradlew :CommonApi:build --no-daemon
+          ./gradlew :ForgeApi:build --no-daemon
+          ./gradlew :FabricApi:build --no-daemon
+          ./gradlew :NeoForgeApi:build --no-daemon
 
       - name: Copy together artifacts
         shell: bash
