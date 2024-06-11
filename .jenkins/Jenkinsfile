@@ -20,7 +20,15 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh "./gradlew test --no-daemon"
+                sh "./gradlew :Core:test --no-daemon"
+                sh "./gradlew :Forge:test --no-daemon"
+                sh "./gradlew :Fabric:test --no-daemon"
+                sh "./gradlew :NeoForge:test --no-daemon"
+                sh "./gradlew :Common:test --no-daemon"
+                sh "./gradlew :CommonApi:test --no-daemon"
+                sh "./gradlew :ForgeApi:test --no-daemon"
+                sh "./gradlew :FabricApi:test --no-daemon"
+                sh "./gradlew :NeoForgeApi:test --no-daemon"
             }
         }
 
