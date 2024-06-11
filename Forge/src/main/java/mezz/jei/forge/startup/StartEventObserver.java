@@ -67,10 +67,16 @@ public class StartEventObserver {
 				Screen screen = event.getScreen();
 				Minecraft minecraft = screen.getMinecraft();
 				if (screen instanceof AbstractContainerScreen && minecraft != null && minecraft.player != null) {
+					var missingEvents = requiredEvents.stream()
+						.filter(e -> !observedEvents.contains(e))
+						.sorted()
+						.toList();
+
 					LOGGER.error("""
 							A Screen is opening but JEI hasn't started yet.
 							Normally, JEI is started after ClientPlayerNetworkEvent.LoggedInEvent, TagsUpdatedEvent, and RecipesUpdatedEvent.
-							Something has caused one or more of these events to fail, so JEI is starting very late.""");
+							Something has caused one or more of these events to fail, so JEI is starting very late.
+							Missing events: {}""", missingEvents);
 					transitionState(State.DISABLED);
 					transitionState(State.ENABLED);
 					transitionState(State.JEI_STARTED);
