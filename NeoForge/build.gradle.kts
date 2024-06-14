@@ -161,9 +161,6 @@ tasks.modrinth.get().dependsOn(fatJarTask)
 tasks.modrinth.get().dependsOn(":Changelog:makeMarkdownChangelog")
 
 tasks.named<Test>("test") {
-	// disable the JUnit tests for now, there is an issue running them with NeoGradle
-	// TODO: re-enable tests when https://github.com/neoforged/NeoGradle/issues/208 is resolved
-	isEnabled = false
 	useJUnitPlatform()
 	include("mezz/jei/test/**")
 	exclude("mezz/jei/test/lib/**")
