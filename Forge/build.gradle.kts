@@ -222,16 +222,6 @@ publishing {
 			artifactId = baseArchivesName
 			artifact(tasks.jar.get())
 			artifact(sourcesJarTask.get())
-
-			pom.withXml {
-				val dependenciesNode = asNode().appendNode("dependencies")
-				dependencyProjects.forEach {
-					val dependencyNode = dependenciesNode.appendNode("dependency")
-					dependencyNode.appendNode("groupId", it.group)
-					dependencyNode.appendNode("artifactId", it.base.archivesName.get())
-					dependencyNode.appendNode("version", it.version)
-				}
-			}
 		}
 	}
 	repositories {
