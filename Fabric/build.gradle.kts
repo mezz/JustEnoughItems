@@ -246,6 +246,8 @@ publishing {
 
 idea {
     module {
+        isDownloadJavadoc = true
+        isDownloadSources = true
         for (fileName in listOf("run", "out", "logs")) {
             excludeDirs.add(file(fileName))
         }
