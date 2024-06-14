@@ -142,20 +142,40 @@ minecraft {
 	}
 }
 
-val sourcesJarTask = tasks.named<Jar>("sourcesJar")
-val fatJarTask = tasks.create<Jar>("fatJar") {
-	dependencyProjects.forEach {
-		from(it.sourceSets.main.get().output)
+tasks.withType<JavaCompile>().configureEach {
+    dependencyProjects.forEach {
+        source(it.sourceSets.main.get().allSource)
+    }
+}
+
+tasks.processResources {
+    dependencyProjects.forEach {
+        from(it.sourceSets.main.get().resources)
+    }
+}
+
+tasks.jar {
+	from(sourceSets.main.get().output)
+
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
+	from(sourceSets.main.get().allJava)
+	for (p in dependencyProjects) {
+		from(p.sourceSets.main.get().allJava)
 	}
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	archiveClassifier.set("sources")
 }
 
 tasks.register<TaskPublishCurseForge>("publishCurseForge") {
-	dependsOn(fatJarTask)
+	dependsOn(tasks.jar)
 	dependsOn(":Changelog:makeChangelog")
 
 	apiToken = project.findProperty("curseforge_apikey") ?: "0"
 
-	val mainFile = upload(curseProjectId, fatJarTask.archiveFile)
+	val mainFile = upload(curseProjectId, tasks.jar.get().archiveFile)
 	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
 	mainFile.changelog = file("../Changelog/changelog.html")
 	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
@@ -174,10 +194,10 @@ modrinth {
 	versionNumber.set("${project.version}")
 	versionName.set("${project.version} for Forge $minecraftVersion")
 	versionType.set("beta")
-	uploadFile.set(fatJarTask)
+	uploadFile.set(tasks.jar.get())
 	changelog.set(provider { file("../Changelog/changelog.md").readText() })
 }
-tasks.modrinth.get().dependsOn(fatJarTask)
+tasks.modrinth.get().dependsOn(tasks.jar)
 tasks.modrinth.get().dependsOn(":Changelog:makeMarkdownChangelog")
 
 tasks.named<Test>("test") {
@@ -194,7 +214,6 @@ tasks.named<Test>("test") {
 artifacts {
 	archives(tasks.jar.get())
 	archives(sourcesJarTask.get())
-	archives(fatJarTask)
 }
 
 publishing {
@@ -225,10 +244,14 @@ publishing {
 
 idea {
 	module {
-		isDownloadJavadoc = true
-		isDownloadSources = true
 		for (fileName in listOf("run", "out", "logs")) {
 			excludeDirs.add(file(fileName))
 		}
 	}
+}
+// Required because FG, copied from the MDK
+sourceSets.forEach {
+    val outputDir = layout.buildDirectory.file("sourcesSets/${it.name}").get().asFile
+    it.output.setResourcesDir(outputDir)
+    it.java.destinationDirectory.set(outputDir)
 }
