@@ -144,9 +144,11 @@ minecraft {
 
 val sourcesJarTask = tasks.named<Jar>("sourcesJar")
 val fatJarTask = tasks.create<Jar>("fatJar") {
+	from(sourceSets.main.get().output)
 	dependencyProjects.forEach {
 		from(it.sourceSets.main.get().output)
 	}
+	archiveClassifier.set("all")
 }
 
 tasks.register<TaskPublishCurseForge>("publishCurseForge") {
