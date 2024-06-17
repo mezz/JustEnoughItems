@@ -20,7 +20,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
  */
 public final class RecipeType<T> {
 	public static <T> RecipeType<T> create(String nameSpace, String path, Class<? extends T> recipeClass) {
-		ResourceLocation uid = new ResourceLocation(nameSpace, path);
+		ResourceLocation uid = ResourceLocation.fromNamespaceAndPath(nameSpace, path);
 		return new RecipeType<>(uid, recipeClass);
 	}
 

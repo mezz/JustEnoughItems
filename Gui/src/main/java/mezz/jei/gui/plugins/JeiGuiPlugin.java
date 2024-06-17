@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 public class JeiGuiPlugin implements IModPlugin {
 	@Override
 	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "gui");
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "gui");
 	}
 
 	@Override

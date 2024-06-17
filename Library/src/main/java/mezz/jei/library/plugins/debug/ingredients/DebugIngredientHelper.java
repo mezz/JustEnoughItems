@@ -25,7 +25,7 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 
 	@Override
 	public ResourceLocation getResourceLocation(DebugIngredient ingredient) {
-		return new ResourceLocation(ModIds.JEI_ID, "debug_" + ingredient.getNumber());
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "debug_" + ingredient.getNumber());
 	}
 
 	@Override

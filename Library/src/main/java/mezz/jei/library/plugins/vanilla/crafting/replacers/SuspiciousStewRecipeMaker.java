@@ -1,6 +1,5 @@
 package mezz.jei.library.plugins.vanilla.crafting.replacers;
 
-import mezz.jei.api.constants.ModIds;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet.ListBacked;
 import net.minecraft.core.NonNullList;
@@ -43,7 +42,7 @@ public final class SuspiciousStewRecipeMaker {
 				ItemStack output = new ItemStack(Items.SUSPICIOUS_STEW, 1);
 				var effects = flowerBlock.getSuspiciousEffects();
 				output.set(DataComponents.SUSPICIOUS_STEW_EFFECTS, effects);
-				ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.suspicious.stew." + flowerBlock.getDescriptionId());
+				ResourceLocation id = ResourceLocation.withDefaultNamespace("jei.suspicious.stew." + flowerBlock.getDescriptionId());
 				CraftingRecipe recipe = new ShapelessRecipe(group, CraftingBookCategory.MISC, output, inputs);
 				return new RecipeHolder<>(id, recipe);
 			})

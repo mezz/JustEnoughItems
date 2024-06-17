@@ -1,11 +1,8 @@
 package mezz.jei.common.gui.elements;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.gui.GuiGraphics;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 
@@ -71,14 +68,13 @@ public class DrawableResource implements IDrawableStatic {
 		int height = this.height - maskBottom - maskTop;
 		float f = 1.0F / this.textureWidth;
 		float f1 = 1.0F / this.textureHeight;
-		Tesselator tessellator = Tesselator.getInstance();
-		BufferBuilder bufferbuilder = tessellator.getBuilder();
-		bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		Tesselator tesselator = Tesselator.getInstance();
+		BufferBuilder bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
-		bufferbuilder.vertex(matrix, x, y + height, 0).uv(u * f, (v + (float) height) * f1).endVertex();
-		bufferbuilder.vertex(matrix, x + width, y + height, 0).uv((u + (float) width) * f, (v + (float) height) * f1).endVertex();
-		bufferbuilder.vertex(matrix, x + width, y, 0).uv((u + (float) width) * f, v * f1).endVertex();
-		bufferbuilder.vertex(matrix, x, y, 0).uv(u * f, v * f1).endVertex();
-		tessellator.end();
+		bufferbuilder.addVertex(matrix, x, y + height, 0).setUv(u * f, (v + (float) height) * f1);
+		bufferbuilder.addVertex(matrix, x + width, y + height, 0).setUv((u + (float) width) * f, (v + (float) height) * f1);
+		bufferbuilder.addVertex(matrix, x + width, y, 0).setUv((u + (float) width) * f, v * f1);
+		bufferbuilder.addVertex(matrix, x, y, 0).setUv(u * f, v * f1);
+		BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
 	}
 }

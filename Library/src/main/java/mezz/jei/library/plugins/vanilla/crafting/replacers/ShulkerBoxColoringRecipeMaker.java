@@ -1,6 +1,5 @@
 package mezz.jei.library.plugins.vanilla.crafting.replacers;
 
-import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.core.NonNullList;
@@ -36,7 +35,7 @@ public final class ShulkerBoxColoringRecipeMaker {
 		NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY, baseShulkerIngredient, colorIngredient);
 		Block coloredShulkerBox = ShulkerBoxBlock.getBlockByColor(color);
 		ItemStack output = new ItemStack(coloredShulkerBox);
-		ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, group + "." + output.getDescriptionId());
+		ResourceLocation id = ResourceLocation.withDefaultNamespace(group + "." + output.getDescriptionId());
 		CraftingRecipe recipe = new ShapelessRecipe(group, CraftingBookCategory.MISC, output, inputs);
 		return new RecipeHolder<>(id, recipe);
 	}

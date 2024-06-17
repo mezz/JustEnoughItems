@@ -15,7 +15,7 @@ public class JeiIdentifiableResourceReloadListener implements IdentifiableResour
 	private final PreparableReloadListener listener;
 
 	public JeiIdentifiableResourceReloadListener(String id, PreparableReloadListener listener) {
-		this.fabricId = new ResourceLocation(ModIds.JEI_ID, id);
+		this.fabricId = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, id);
 		this.listener = listener;
 	}
 

@@ -72,8 +72,8 @@ public class GuiEventHandler {
 		drawnOnBackground = true;
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
-		ingredientListOverlay.drawScreen(minecraft, guiGraphics, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
-		bookmarkOverlay.drawScreen(minecraft, guiGraphics, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
+		ingredientListOverlay.drawScreen(minecraft, guiGraphics, (int) mouseX, (int) mouseY, minecraft.getTimer().getGameTimeDeltaPartialTick(true));
+		bookmarkOverlay.drawScreen(minecraft, guiGraphics, (int) mouseX, (int) mouseY, minecraft.getTimer().getGameTimeDeltaPartialTick(true));
 	}
 
 	/**
@@ -103,8 +103,8 @@ public class GuiEventHandler {
 				String guiName = screen.getClass().getName();
 				missingBackgroundLogger.log(Level.WARN, guiName, "GUI did not draw the dark background layer behind itself, this may result in display issues: {}", guiName);
 			}
-			ingredientListOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, minecraft.getFrameTime());
-			bookmarkOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, minecraft.getFrameTime());
+			ingredientListOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, minecraft.getTimer().getGameTimeDeltaPartialTick(true));
+			bookmarkOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, minecraft.getTimer().getGameTimeDeltaPartialTick(true));
 		}
 		drawnOnBackground = false;
 

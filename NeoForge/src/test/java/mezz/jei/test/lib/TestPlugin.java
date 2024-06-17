@@ -15,7 +15,7 @@ public class TestPlugin implements IModPlugin {
 
 	@Override
 	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "test");
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "test");
 	}
 
 	@Override

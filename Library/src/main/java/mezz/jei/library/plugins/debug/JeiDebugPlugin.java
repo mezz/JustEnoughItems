@@ -60,7 +60,7 @@ public class JeiDebugPlugin implements IModPlugin {
 
 	@Override
 	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "debug");
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "debug");
 	}
 
 	@Override

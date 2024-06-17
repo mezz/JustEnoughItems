@@ -1,6 +1,5 @@
 package mezz.jei.library.plugins.vanilla.crafting.replacers;
 
-import mezz.jei.api.constants.ModIds;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -50,7 +49,7 @@ public final class ShieldDecorationRecipeMaker {
 
 		ItemStack output = createOutput(banner);
 
-		ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.shield.decoration." + output.getDescriptionId());
+		ResourceLocation id = ResourceLocation.withDefaultNamespace("jei.shield.decoration." + output.getDescriptionId());
 		CraftingRecipe recipe = new ShapelessRecipe("jei.shield.decoration", CraftingBookCategory.MISC, output, inputs);
 		return new RecipeHolder<>(id, recipe);
 	}

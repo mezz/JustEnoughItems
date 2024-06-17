@@ -1,15 +1,12 @@
 package mezz.jei.common.gui.elements;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.gui.GuiGraphics;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
 import mezz.jei.common.Constants;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -82,22 +79,17 @@ public class DrawableSprite implements IDrawableStatic {
 		float maxU = sprite.getU1() - uSize * (maskRight / (float) textureWidth);
 		float maxV = sprite.getV1() - vSize * (maskBottom / (float) textureHeight);
 
-		Tesselator tessellator = Tesselator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuilder();
-		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		Tesselator tesselator = Tesselator.getInstance();
+		BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
-		bufferBuilder.vertex(matrix, x, y + height, 0)
-			.uv(minU, maxV)
-			.endVertex();
-		bufferBuilder.vertex(matrix, x + width, y + height, 0)
-			.uv(maxU, maxV)
-			.endVertex();
-		bufferBuilder.vertex(matrix, x + width, y, 0)
-			.uv(maxU, minV)
-			.endVertex();
-		bufferBuilder.vertex(matrix, x, y, 0)
-			.uv(minU, minV)
-			.endVertex();
-		tessellator.end();
+		bufferBuilder.addVertex(matrix, x, y + height, 0)
+				.setUv(minU, maxV);
+		bufferBuilder.addVertex(matrix, x + width, y + height, 0)
+				.setUv(maxU, maxV);
+		bufferBuilder.addVertex(matrix, x + width, y, 0)
+				.setUv(maxU, minV);
+		bufferBuilder.addVertex(matrix, x, y, 0)
+				.setUv(minU, minV);
+		BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
 	}
 }

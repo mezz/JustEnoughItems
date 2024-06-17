@@ -26,7 +26,7 @@ public class FabricGuiPlugin implements IModPlugin {
 
 	@Override
 	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "fabric_gui");
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "fabric_gui");
 	}
 
 	@Override

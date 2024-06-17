@@ -5,18 +5,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.world.Container;
-import net.minecraft.world.item.crafting.BlastingRecipe;
-import net.minecraft.world.item.crafting.CampfireCookingRecipe;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.SmeltingRecipe;
-import net.minecraft.world.item.crafting.SmithingRecipe;
-import net.minecraft.world.item.crafting.SmokingRecipe;
-import net.minecraft.world.item.crafting.StonecutterRecipe;
+import net.minecraft.world.item.crafting.*;
 
 import java.util.List;
 import java.util.Map;
@@ -73,7 +62,7 @@ public final class VanillaRecipes {
 		return getValidHandledRecipes(recipeManager, RecipeType.SMITHING, validator);
 	}
 
-	private static <C extends Container, T extends Recipe<C>> List<RecipeHolder<T>> getValidHandledRecipes(
+	private static <C extends RecipeInput, T extends Recipe<C>> List<RecipeHolder<T>> getValidHandledRecipes(
 		RecipeManager recipeManager,
 		RecipeType<T> recipeType,
 		CategoryRecipeValidator<T> validator

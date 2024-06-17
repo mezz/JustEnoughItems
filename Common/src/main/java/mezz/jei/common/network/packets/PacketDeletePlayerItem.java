@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 public class PacketDeletePlayerItem extends PlayToServerPacket<PacketDeletePlayerItem> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static final CustomPacketPayload.Type<PacketDeletePlayerItem> TYPE = new CustomPacketPayload.Type<>(new ResourceLocation(ModIds.JEI_ID, "delete_player_item"));
+	public static final CustomPacketPayload.Type<PacketDeletePlayerItem> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "delete_player_item"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, PacketDeletePlayerItem> STREAM_CODEC = StreamCodec.composite(
 		ItemStack.STREAM_CODEC,
 		p -> p.itemStack,

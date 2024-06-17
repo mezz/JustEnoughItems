@@ -127,7 +127,7 @@ public class RecipeGuiTabs implements IPaged {
 		}
 		RenderSystem.enableDepthTest();
 
-		pageNavigation.draw(minecraft, guiGraphics, mouseX, mouseY, minecraft.getFrameTime());
+		pageNavigation.draw(minecraft, guiGraphics, mouseX, mouseY, minecraft.getTimer().getGameTimeDeltaPartialTick(true));
 
 		if (hovered != null) {
 			List<Component> tooltip = hovered.getTooltip(modIdHelper);

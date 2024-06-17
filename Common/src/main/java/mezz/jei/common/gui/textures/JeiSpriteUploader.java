@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class JeiSpriteUploader extends TextureAtlasHolder {
 	public JeiSpriteUploader(TextureManager textureManager) {
-		super(textureManager, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS, new ResourceLocation(ModIds.JEI_ID, "gui"));
+		super(textureManager, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS, ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "gui"));
 	}
 
 	/**

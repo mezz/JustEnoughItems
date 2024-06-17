@@ -74,7 +74,6 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -136,7 +135,7 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "minecraft");
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "minecraft");
 	}
 
 	@Override
@@ -149,8 +148,7 @@ public class VanillaPlugin implements IModPlugin {
 			ItemEnchantments enchantments = itemStack.getEnchantments();
 			return enchantments.keySet()
 				.stream()
-				.map(Holder::value)
-				.map(e -> e.getDescriptionId() + ".lvl" + enchantments.getLevel(e))
+				.map(e -> e.value().description().getString() + ".lvl" + enchantments.getLevel(e))
 				.sorted()
 				.toString();
 		});

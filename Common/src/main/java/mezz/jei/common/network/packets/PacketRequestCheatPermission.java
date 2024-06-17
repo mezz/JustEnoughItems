@@ -13,7 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class PacketRequestCheatPermission extends PlayToServerPacket<PacketRequestCheatPermission> {
 	public static final PacketRequestCheatPermission INSTANCE = new PacketRequestCheatPermission();
-	public static final CustomPacketPayload.Type<PacketRequestCheatPermission> TYPE = new CustomPacketPayload.Type<>(new ResourceLocation(ModIds.JEI_ID, "request_cheat_permission"));
+	public static final CustomPacketPayload.Type<PacketRequestCheatPermission> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "request_cheat_permission"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, PacketRequestCheatPermission> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
 	private PacketRequestCheatPermission() {

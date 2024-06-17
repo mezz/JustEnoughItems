@@ -41,8 +41,8 @@ public class ErrorIngredientRenderer implements IIngredientRenderer<ErrorIngredi
 				MultiBufferSource.BufferSource bufferSource = guiGraphics.bufferSource();
 				for (RenderType renderType : RENDER_TYPES) {
 					VertexConsumer buffer = bufferSource.getBuffer(renderType);
-					buffer.vertex(0, 0, 0);
-					buffer.color(100);
+					buffer.addVertex(0, 0, 0);
+					buffer.setColor(100);
 				}
 				throw new RuntimeException("intentional render crash for testing");
 			}

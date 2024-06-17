@@ -27,7 +27,7 @@ public class ErrorIngredientHelper implements IIngredientHelper<ErrorIngredient>
 
 	@Override
 	public ResourceLocation getResourceLocation(ErrorIngredient ingredient) {
-		return new ResourceLocation(ModIds.JEI_ID, "error_" + ingredient.getCrashType().toString().toLowerCase(Locale.ROOT));
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "error_" + ingredient.getCrashType().toString().toLowerCase(Locale.ROOT));
 	}
 
 	@Override

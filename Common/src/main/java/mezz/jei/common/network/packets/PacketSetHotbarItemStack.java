@@ -14,7 +14,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
 public class PacketSetHotbarItemStack extends PlayToServerPacket<PacketSetHotbarItemStack> {
-	public static final CustomPacketPayload.Type<PacketSetHotbarItemStack> TYPE = new CustomPacketPayload.Type<>(new ResourceLocation(ModIds.JEI_ID, "set_hotbar_item_stack"));
+	public static final CustomPacketPayload.Type<PacketSetHotbarItemStack> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "set_hotbar_item_stack"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, PacketSetHotbarItemStack> STREAM_CODEC = StreamCodec.composite(
 		ItemStack.STREAM_CODEC,
 		p -> p.itemStack,

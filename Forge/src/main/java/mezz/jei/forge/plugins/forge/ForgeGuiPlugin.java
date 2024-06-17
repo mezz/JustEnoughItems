@@ -26,7 +26,7 @@ public class ForgeGuiPlugin implements IModPlugin {
 
 	@Override
 	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "forge_gui");
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "forge_gui");
 	}
 
 	@Override

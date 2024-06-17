@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 public class JeiInternalPlugin implements IModPlugin {
 	@Override
 	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "internal");
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "internal");
 	}
 
 	@Override

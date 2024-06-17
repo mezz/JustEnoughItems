@@ -50,8 +50,10 @@ public class RenderHelper implements IPlatformRenderHelper {
 
 	@Override
 	public Optional<NativeImage> getMainImage(TextureAtlasSprite sprite) {
-		SpriteContents contents = sprite.contents();
-		NativeImage[] frames = contents.byMipLevel;
+		NativeImage[] frames;
+		try (SpriteContents contents = sprite.contents()) {
+			frames = contents.byMipLevel;
+		}
 		if (frames.length == 0) {
 			return Optional.empty();
 		}

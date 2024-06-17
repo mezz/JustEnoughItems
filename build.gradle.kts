@@ -2,7 +2,7 @@ plugins {
 	id("com.diffplug.spotless") version("6.25.0")
     id("com.dorongold.task-tree") version("2.1.0")
     id("fabric-loom") version("1.6.12") apply(false)
-    id("net.neoforged.gradle.userdev") version("7.0.142") apply(false)
+    id("net.neoforged.gradle.userdev") version("7.0.145") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")

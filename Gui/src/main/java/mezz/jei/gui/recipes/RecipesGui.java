@@ -299,7 +299,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 
 		Minecraft minecraft = Minecraft.getInstance();
-		float partialTicks = minecraft.getFrameTime();
+		float partialTicks = minecraft.getTimer().getGameTimeDeltaPartialTick(true);
 		for (RecipeTransferButton button : recipeTransferButtons) {
 			button.render(guiGraphics, mouseX, mouseY, partialTicks);
 		}
