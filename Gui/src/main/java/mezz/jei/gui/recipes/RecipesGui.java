@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -263,7 +264,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		Optional<IRecipeLayoutDrawable<?>> hoveredRecipeLayout = drawLayouts(guiGraphics, mouseX, mouseY);
 		Optional<IRecipeSlotDrawable> hoveredRecipeCatalyst = recipeCatalysts.draw(guiGraphics, mouseX, mouseY);
 
-		recipeGuiTabs.draw(minecraft, guiGraphics, mouseX, mouseY, modIdHelper);
+		recipeGuiTabs.draw(minecraft, guiGraphics, mouseX, mouseY, modIdHelper, partialTicks);
 
 		for (RecipeTransferButton button : recipeTransferButtons) {
 			button.drawToolTip(guiGraphics, mouseX, mouseY);
@@ -299,7 +300,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 
 		Minecraft minecraft = Minecraft.getInstance();
-		float partialTicks = minecraft.getFrameTime();
+		DeltaTracker deltaTracker = minecraft.getTimer();
+		float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
 		for (RecipeTransferButton button : recipeTransferButtons) {
 			button.render(guiGraphics, mouseX, mouseY, partialTicks);
 		}

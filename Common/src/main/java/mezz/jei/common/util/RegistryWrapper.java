@@ -1,8 +1,10 @@
 package mezz.jei.common.util;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
@@ -11,15 +13,14 @@ import java.util.stream.Stream;
 
 public class RegistryWrapper<T> {
 	public static <T> RegistryWrapper<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
-		Registry<? extends Registry<?>> rootRegistry = BuiltInRegistries.REGISTRY;
-		Registry<?> registry = rootRegistry.get(key.location());
-		if (registry == null) {
-			throw new NullPointerException("Could not find registry for key: " + key);
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientLevel level = minecraft.level;
+		if (level == null) {
+			throw new IllegalStateException("Could not get registry, registry access is unavailable because the level is currently null");
 		}
-		RegistryWrapper<?> registryWrapper = new RegistryWrapper<>(registry);
-		@SuppressWarnings("unchecked")
-		RegistryWrapper<T> castPlatformRegistry = (RegistryWrapper<T>) registryWrapper;
-		return castPlatformRegistry;
+		RegistryAccess registryAccess = level.registryAccess();
+		Registry<T> registry = registryAccess.registryOrThrow(key);
+		return new RegistryWrapper<>(registry);
 	}
 
 	private final Registry<T> registry;

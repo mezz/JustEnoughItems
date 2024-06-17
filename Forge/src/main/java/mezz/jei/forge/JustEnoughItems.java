@@ -27,7 +27,7 @@ public class JustEnoughItems {
 		ModLoadingContext modLoadingContext = ModLoadingContext.get();
 		IServerConfig serverConfig = ServerConfig.register(modLoadingContext);
 
-		NetworkHandler networkHandler = new NetworkHandler(serverConfig, new ResourceLocation(ModIds.JEI_ID, "channel"), 3);
+		NetworkHandler networkHandler = new NetworkHandler(serverConfig, ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "channel"), 3);
 		JustEnoughItemsClientSafeRunner clientSafeRunner = new JustEnoughItemsClientSafeRunner(networkHandler, subscriptions);
 		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> clientSafeRunner::registerClient);
 	}

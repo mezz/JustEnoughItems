@@ -43,7 +43,7 @@ public final class TippedArrowRecipeMaker {
 					arrowIngredient, potionIngredient, arrowIngredient,
 					arrowIngredient, arrowIngredient, arrowIngredient
 				);
-				ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + output.getDescriptionId());
+				ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + output.getDescriptionId());
 				ShapedRecipePattern pattern = new ShapedRecipePattern(3, 3, inputs, Optional.empty());
 				CraftingRecipe recipe = new ShapedRecipe(group, CraftingBookCategory.MISC, pattern, output);
 				return new RecipeHolder<>(id, recipe);

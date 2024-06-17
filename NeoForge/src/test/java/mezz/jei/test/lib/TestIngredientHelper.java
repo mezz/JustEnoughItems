@@ -36,7 +36,7 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 
 	@Override
 	public ResourceLocation getResourceLocation(TestIngredient ingredient) {
-		return new ResourceLocation("jei_test_mod", "test_ingredient_" + ingredient.getNumber());
+		return ResourceLocation.fromNamespaceAndPath("jei_test_mod", "test_ingredient_" + ingredient.getNumber());
 	}
 
 	@Override

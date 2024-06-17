@@ -2,7 +2,9 @@ plugins {
 	id("com.diffplug.spotless") version("6.25.0")
     id("com.dorongold.task-tree") version("2.1.0")
     id("fabric-loom") version("1.6.12") apply(false)
-    id("net.neoforged.gradle.userdev") version("7.0.142") apply(false)
+    id("net.neoforged.gradle.userdev") version("7.0.143") apply(false)
+    // https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/gradle/vanilla/org.spongepowered.gradle.vanilla.gradle.plugin/
+    id("org.spongepowered.gradle.vanilla") version("0.2.1-SNAPSHOT") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
@@ -19,7 +21,7 @@ val fabricLoaderVersion: String by extra
 val forgeVersion: String by extra
 val forgeVersionRange: String by extra
 val githubUrl: String by extra
-val loaderVersionRange: String by extra
+val forgeLoaderVersionRange: String by extra
 val neoforgeVersionRange: String by extra
 val neoforgeLoaderVersionRange: String by extra
 val parchmentVersionForge: String by extra
@@ -92,7 +94,7 @@ subprojects {
                 "fabricLoaderVersion" to fabricLoaderVersion,
                 "forgeVersionRange" to forgeVersionRange,
                 "githubUrl" to githubUrl,
-                "loaderVersionRange" to loaderVersionRange,
+                "forgeLoaderVersionRange" to forgeLoaderVersionRange,
                 "neoforgeVersionRange" to neoforgeVersionRange,
                 "neoforgeLoaderVersionRange" to neoforgeLoaderVersionRange,
                 "minecraftVersion" to minecraftVersion,

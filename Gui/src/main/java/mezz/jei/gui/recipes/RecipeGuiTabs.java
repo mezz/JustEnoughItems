@@ -108,7 +108,7 @@ public class RecipeGuiTabs implements IPaged {
 		pageNavigation.updatePageNumber();
 	}
 
-	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, IModIdHelper modIdHelper) {
+	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, IModIdHelper modIdHelper, float partialTicks) {
 		IRecipeCategory<?> selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -127,7 +127,7 @@ public class RecipeGuiTabs implements IPaged {
 		}
 		RenderSystem.enableDepthTest();
 
-		pageNavigation.draw(minecraft, guiGraphics, mouseX, mouseY, minecraft.getFrameTime());
+		pageNavigation.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 
 		if (hovered != null) {
 			List<Component> tooltip = hovered.getTooltip(modIdHelper);

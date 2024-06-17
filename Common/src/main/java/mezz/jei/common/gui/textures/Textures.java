@@ -75,7 +75,7 @@ public class Textures {
 	}
 
 	private ResourceLocation createSprite(String name) {
-		return new ResourceLocation(ModIds.JEI_ID, name);
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, name);
 	}
 
 	private DrawableSprite createGuiSprite(String name, int width, int height) {

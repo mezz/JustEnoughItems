@@ -10,6 +10,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.IExtendableCraftingRecipeCategory;
@@ -74,7 +75,6 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -100,6 +100,7 @@ import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.SuspiciousStewRecipe;
 import net.minecraft.world.item.crafting.TippedArrowRecipe;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
@@ -113,6 +114,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @JeiPlugin
@@ -136,7 +138,7 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "minecraft");
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "minecraft");
 	}
 
 	@Override
@@ -146,13 +148,16 @@ public class VanillaPlugin implements IModPlugin {
 		registration.registerSubtypeInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, (itemStack, context) -> {
-			ItemEnchantments enchantments = itemStack.getEnchantments();
+			ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(itemStack);
+			if (enchantments.isEmpty()) {
+				return IIngredientSubtypeInterpreter.NONE;
+			}
 			return enchantments.keySet()
 				.stream()
-				.map(Holder::value)
-				.map(e -> e.getDescriptionId() + ".lvl" + enchantments.getLevel(e))
+				.filter(e -> e.unwrapKey().isPresent())
+				.map(e -> e.unwrapKey().orElseThrow().location() + ".lvl" + enchantments.getLevel(e))
 				.sorted()
-				.toString();
+				.collect(Collectors.joining(",", "[", "]"));
 		});
 	}
 

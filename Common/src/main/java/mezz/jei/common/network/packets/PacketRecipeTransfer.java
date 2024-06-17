@@ -15,7 +15,7 @@ import net.minecraft.world.inventory.Slot;
 import java.util.List;
 
 public class PacketRecipeTransfer extends PlayToServerPacket<PacketRecipeTransfer> {
-	public static final CustomPacketPayload.Type<PacketRecipeTransfer> TYPE = new CustomPacketPayload.Type<>(new ResourceLocation(ModIds.JEI_ID, "recipe_transfer"));
+	public static final CustomPacketPayload.Type<PacketRecipeTransfer> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "recipe_transfer"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, PacketRecipeTransfer> STREAM_CODEC = StreamCodec.composite(
 		TransferOperation.STREAM_CODEC.apply(ByteBufCodecs.list()),
 		p -> p.transferOperations,

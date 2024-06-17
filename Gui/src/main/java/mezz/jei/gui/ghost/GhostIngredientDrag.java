@@ -1,6 +1,7 @@
 package mezz.jei.gui.ghost;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.SafeIngredientUtil;
@@ -101,15 +102,14 @@ public class GhostIngredientDrag<T> {
 			GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
 
 			var tesselator = RenderSystem.renderThreadTesselator();
-			var builder = tesselator.getBuilder();
-			builder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+			var builder = tesselator.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
 			float red = (targetColor >> 24 & 255) / 255.0F;
 			float green = (targetColor >> 16 & 255) / 255.0F;
 			float blue = (targetColor >> 8 & 255) / 255.0F;
 			float alpha = (targetColor & 255) / 255.0F;
-			builder.vertex(mouseX, mouseY, 150).color(red, green, blue, alpha).endVertex();
-			builder.vertex(originX, originY, 150).color(red, green, blue, alpha).endVertex();
-			tesselator.end();
+			builder.addVertex(mouseX, mouseY, 150).setColor(red, green, blue, alpha);
+			builder.addVertex(originX, originY, 150).setColor(red, green, blue, alpha);
+			BufferUploader.drawWithShader(builder.buildOrThrow());
 
 			RenderSystem.setShader(() -> oldShader);
 			RenderSystem.enableDepthTest();

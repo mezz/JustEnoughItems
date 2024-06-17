@@ -26,7 +26,7 @@ public class NeoForgeGuiPlugin implements IModPlugin {
 
 	@Override
 	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "neoforge_gui");
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "neoforge_gui");
 	}
 
 	@Override

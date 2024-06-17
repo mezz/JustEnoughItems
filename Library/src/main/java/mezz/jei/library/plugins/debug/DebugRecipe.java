@@ -15,7 +15,7 @@ public class DebugRecipe {
 		this.button = Button.builder(Component.literal("test"), b -> {})
 			.bounds(0, 0, 40, 20)
 			.build();
-		this.registryName = new ResourceLocation(ModIds.JEI_ID, "debug_recipe_" + NEXT_ID);
+		this.registryName = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "debug_recipe_" + NEXT_ID);
 		NEXT_ID++;
 	}
 

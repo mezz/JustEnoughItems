@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PacketCheatPermission extends PlayToClientPacket<PacketCheatPermission> {
-	public static final Type<PacketCheatPermission> TYPE = new Type<>(new ResourceLocation(ModIds.JEI_ID, "cheat_permission"));
+	public static final Type<PacketCheatPermission> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "cheat_permission"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, PacketCheatPermission> STREAM_CODEC = StreamCodec.composite(
 		ByteBufCodecs.BOOL,
 		p -> p.hasPermission,

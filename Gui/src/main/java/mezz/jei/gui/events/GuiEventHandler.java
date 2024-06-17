@@ -13,6 +13,7 @@ import mezz.jei.core.util.LimitedLogger;
 import mezz.jei.gui.input.MouseUtil;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -72,8 +73,10 @@ public class GuiEventHandler {
 		drawnOnBackground = true;
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
-		ingredientListOverlay.drawScreen(minecraft, guiGraphics, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
-		bookmarkOverlay.drawScreen(minecraft, guiGraphics, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
+		DeltaTracker deltaTracker = minecraft.getTimer();
+		float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
+		ingredientListOverlay.drawScreen(minecraft, guiGraphics, (int) mouseX, (int) mouseY, partialTicks);
+		bookmarkOverlay.drawScreen(minecraft, guiGraphics, (int) mouseX, (int) mouseY, partialTicks);
 	}
 
 	/**
@@ -103,8 +106,10 @@ public class GuiEventHandler {
 				String guiName = screen.getClass().getName();
 				missingBackgroundLogger.log(Level.WARN, guiName, "GUI did not draw the dark background layer behind itself, this may result in display issues: {}", guiName);
 			}
-			ingredientListOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, minecraft.getFrameTime());
-			bookmarkOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, minecraft.getFrameTime());
+			DeltaTracker deltaTracker = minecraft.getTimer();
+			float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
+			ingredientListOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			bookmarkOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		drawnOnBackground = false;
 

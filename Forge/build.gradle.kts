@@ -97,7 +97,7 @@ dependencies {
 }
 
 minecraft {
-	mappings("parchment", parchmentVersionForge)
+	mappings("official", minecraftVersion)
 
 	// use Official mappings at runtime
 	reobf = false

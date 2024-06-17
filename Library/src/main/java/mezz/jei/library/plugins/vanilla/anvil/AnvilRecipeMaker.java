@@ -8,6 +8,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryWrapper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Inventory;
@@ -44,10 +45,10 @@ public final class AnvilRecipeMaker {
 	}
 
 	private static final class EnchantmentData {
-		private final Enchantment enchantment;
+		private final Holder<Enchantment> enchantment;
 		private final List<ItemStack> enchantedBooks;
 
-		private EnchantmentData(Enchantment enchantment) {
+		private EnchantmentData(Holder<Enchantment> enchantment) {
 			this.enchantment = enchantment;
 			this.enchantedBooks = getEnchantedBooks(enchantment);
 		}
@@ -61,7 +62,7 @@ public final class AnvilRecipeMaker {
 
 		private boolean canEnchant(ItemStack ingredient) {
 			try {
-				return enchantment.canEnchant(ingredient);
+				return enchantment.value().canEnchant(ingredient);
 			} catch (RuntimeException e) {
 				String stackInfo = ErrorUtil.getItemStackInfo(ingredient);
 				LOGGER.error("Failed to check if ingredient can be enchanted: {}", stackInfo, e);
@@ -69,8 +70,8 @@ public final class AnvilRecipeMaker {
 			}
 		}
 
-		private static List<ItemStack> getEnchantedBooks(Enchantment enchantment) {
-			return IntStream.rangeClosed(1, enchantment.getMaxLevel())
+		private static List<ItemStack> getEnchantedBooks(Holder<Enchantment> enchantment) {
+			return IntStream.rangeClosed(1, enchantment.value().getMaxLevel())
 				.mapToObj(level -> {
 					ItemStack bookEnchant = ENCHANTED_BOOK.copy();
 					ItemEnchantments.Mutable itemEnchantments = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(bookEnchant));
@@ -87,7 +88,7 @@ public final class AnvilRecipeMaker {
 		IIngredientManager ingredientManager
 	) {
 		RegistryWrapper<Enchantment> registry = RegistryWrapper.getRegistry(Registries.ENCHANTMENT);
-		List<EnchantmentData> enchantmentDatas = registry.getValues()
+		List<EnchantmentData> enchantmentDatas = registry.getHolderStream()
 			.map(EnchantmentData::new)
 			.toList();
 
