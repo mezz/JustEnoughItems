@@ -9,9 +9,9 @@ plugins {
     java
     idea
     `maven-publish`
-    id("fabric-loom") version("0.12-SNAPSHOT")
-    id("net.darkhax.curseforgegradle") version("1.0.8")
-    id("com.modrinth.minotaur") version("2.+")
+    id("fabric-loom")
+    id("net.darkhax.curseforgegradle")
+    id("com.modrinth.minotaur")
 }
 
 // gradle.properties

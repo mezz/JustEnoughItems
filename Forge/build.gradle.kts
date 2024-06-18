@@ -6,10 +6,10 @@ plugins {
 	idea
 	eclipse
 	`maven-publish`
-	id("net.minecraftforge.gradle") version("5.1.+")
-	id("org.parchmentmc.librarian.forgegradle") version("1.+")
-	id("net.darkhax.curseforgegradle") version("1.0.8")
-	id("com.modrinth.minotaur") version("2.+")
+	id("net.minecraftforge.gradle")
+	id("org.parchmentmc.librarian.forgegradle")
+	id("net.darkhax.curseforgegradle")
+	id("com.modrinth.minotaur")
 }
 
 // gradle.properties
