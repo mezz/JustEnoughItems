@@ -2,7 +2,7 @@ plugins {
     java
     idea
     `maven-publish`
-    id("fabric-loom") version("0.12-SNAPSHOT")
+    id("fabric-loom")
 }
 
 repositories {

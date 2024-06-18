@@ -1,6 +1,12 @@
 plugins {
 	id("com.diffplug.spotless") version("5.14.3")
     id("com.dorongold.task-tree") version("2.1.0")
+    id("org.spongepowered.gradle.vanilla") version("0.2.1-SNAPSHOT") apply(false)
+    id("net.minecraftforge.gradle") version("6.0.25") apply(false)
+    id("org.parchmentmc.librarian.forgegradle") version ("1.2.0") apply(false)
+    id("net.darkhax.curseforgegradle") version("1.0.8") apply(false)
+    id("com.modrinth.minotaur") version("2.8.7") apply(false)
+    id("fabric-loom") version("0.12-SNAPSHOT") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
