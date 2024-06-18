@@ -500,7 +500,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 		String recipeId = registryName.toString();
 		minecraft.keyboardHandler.setClipboard(recipeId);
-		MutableComponent message = Component.translatable("jei.message.copy.recipe.id.success", recipeId);
+		MutableComponent message = Component.translatable("jei.message.copy.recipe.id.success", Component.literal(recipeId));
 		if (player != null) {
 			player.displayClientMessage(message, false);
 		}

@@ -146,7 +146,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		List<T> ingredients = getIngredients(ingredientType).toList();
 		ingredientHelper.getTagEquivalent(ingredients)
 			.ifPresent(tagEquivalent -> {
-				final MutableComponent acceptsAny = Component.translatable("jei.tooltip.recipe.tag", tagEquivalent);
+				final MutableComponent acceptsAny = Component.translatable("jei.tooltip.recipe.tag", Component.literal(tagEquivalent.toString()));
 				tooltip.add(acceptsAny.withStyle(ChatFormatting.GRAY));
 			});
 
