@@ -1,7 +1,10 @@
 plugins {
 	id("com.diffplug.spotless") version("6.25.0")
     id("com.dorongold.task-tree") version("2.1.0")
-    id("fabric-loom") version("1.1.+") apply(false)
+    id("org.spongepowered.gradle.vanilla") version("0.2.1-SNAPSHOT") apply(false)
+    id("net.darkhax.curseforgegradle") version("1.0.8") apply(false)
+    id("com.modrinth.minotaur") version("2.8.7") apply(false)
+    id("fabric-loom") version("0.12-SNAPSHOT") apply(false)
     id("net.neoforged.gradle.userdev") version("7.0.80") apply(false)
 }
 apply {
