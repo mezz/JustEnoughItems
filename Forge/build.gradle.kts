@@ -8,10 +8,10 @@ plugins {
 	id("idea")
 	id("eclipse")
 	id("maven-publish")
-	id("net.minecraftforge.gradle") version("[6.0.24,6.2)")
-	id("org.parchmentmc.librarian.forgegradle") version("1.+")
-	id("net.darkhax.curseforgegradle") version("1.0.8")
-	id("com.modrinth.minotaur") version("2.+")
+	id("net.minecraftforge.gradle") version("6.0.25")
+	id("org.parchmentmc.librarian.forgegradle") version ("1.2.0")
+	id("net.darkhax.curseforgegradle")
+	id("com.modrinth.minotaur")
 }
 
 // gradle.properties
