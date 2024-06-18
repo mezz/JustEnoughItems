@@ -76,7 +76,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			)
 			.orElseThrow(() -> {
 				String stackInfo = getErrorInfo(ingredient);
-                return new IllegalStateException("null registryName for: " + stackInfo);
+				return new IllegalStateException("null registryName for: " + stackInfo);
 			});
 	}
 
@@ -95,7 +95,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			.getRegistryName(item)
 			.orElseThrow(() -> {
 				String stackInfo = getErrorInfo(ingredient);
-                return new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
+				return new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
 			});
 	}
 
