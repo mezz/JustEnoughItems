@@ -57,7 +57,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 		Minecraft minecraft = Minecraft.getInstance();
 		boolean showAdvanced = minecraft.options.advancedItemTooltips || Screen.hasShiftDown();
 		if (showAdvanced) {
-			MutableComponent recipeId = Component.translatable("jei.tooltip.recipe.id", recipeName.toString());
+			MutableComponent recipeId = Component.translatable("jei.tooltip.recipe.id", Component.literal(recipeName.toString()));
 			tooltip.add(recipeId.withStyle(ChatFormatting.DARK_GRAY));
 		}
 	}
