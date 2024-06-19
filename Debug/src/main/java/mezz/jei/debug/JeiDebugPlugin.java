@@ -203,6 +203,9 @@ public class JeiDebugPlugin implements IModPlugin {
 		long bucketVolume = platformFluidHelper.bucketVolume();
 		T fluidIngredient = platformFluidHelper.create(Fluids.WATER, bucketVolume, null);
 		registration.addIngredientInfo(fluidIngredient, platformFluidHelper.getFluidIngredientType(), new TextComponent("water"));
+
+		fluidIngredient = platformFluidHelper.create(Fluids.LAVA.defaultFluidState().getType(), 1);
+		registration.addIngredientInfo(fluidIngredient, platformFluidHelper.getFluidIngredientType(), new TextComponent("small amount of lava that should still show as 1 bucket"));
 	}
 
 	@Override
