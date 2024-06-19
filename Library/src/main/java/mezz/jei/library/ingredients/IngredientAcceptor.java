@@ -50,7 +50,7 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		for (Object ingredient : ingredients) {
-			Optional<ITypedIngredient<?>> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient);
+			Optional<ITypedIngredient<?>> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
 			typedIngredient.ifPresent(i -> this.types.add(i.getType()));
 
 			this.ingredients.add(typedIngredient);
@@ -102,7 +102,7 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	}
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
-		Optional<ITypedIngredient<T>> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient);
+		Optional<ITypedIngredient<T>> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, false);
 		typedIngredient.ifPresent(i -> this.types.add(i.getType()));
 		this.ingredients.add(typedIngredient.map(Function.identity()));
 	}
