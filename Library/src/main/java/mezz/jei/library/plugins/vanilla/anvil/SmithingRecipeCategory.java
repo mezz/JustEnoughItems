@@ -23,7 +23,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<RecipeHolder<Smit
 	private final IDrawable icon;
 
 	public SmithingRecipeCategory(IGuiHelper guiHelper) {
-		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 168, 108, 18);
+		background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 128, 0, 108, 18);
 		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.SMITHING_TABLE));
 	}
 
