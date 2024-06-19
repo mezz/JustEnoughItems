@@ -1,11 +1,12 @@
 package mezz.jei.library.plugins.vanilla.crafting.replacers;
 
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet.ListBacked;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.BlockItem;
@@ -29,7 +30,8 @@ public final class SuspiciousStewRecipeMaker {
 		Ingredient redMushroom = Ingredient.of(Blocks.RED_MUSHROOM.asItem());
 		Ingredient bowl = Ingredient.of(Items.BOWL);
 
-		return BuiltInRegistries.ITEM.getTag(ItemTags.SMALL_FLOWERS)
+		return RegistryUtil.getRegistry(Registries.ITEM)
+			.getTag(ItemTags.SMALL_FLOWERS)
 			.stream()
 			.flatMap(ListBacked::stream)
 			.map(Holder::value)

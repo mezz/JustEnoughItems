@@ -12,6 +12,7 @@ import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -42,31 +43,38 @@ public final class ErrorUtil {
 			return "null";
 		}
 		Item item = itemStack.getItem();
-		RegistryWrapper<Item> itemRegistry = RegistryWrapper.getRegistry(Registries.ITEM);
-
-		final String itemName = itemRegistry.getRegistryName(item)
-			.map(ResourceLocation::toString)
-			.orElseGet(() -> {
-				if (item instanceof BlockItem) {
-					final String blockName;
-					Block block = ((BlockItem) item).getBlock();
-					if (block == null) {
-						blockName = "null";
-					} else {
-						RegistryWrapper<Block> blockRegistry = RegistryWrapper.getRegistry(Registries.BLOCK);
-						blockName = blockRegistry.getRegistryName(block)
-							.map(ResourceLocation::toString)
-							.orElseGet(() -> block.getClass().getName());
-					}
-					return "BlockItem(" + blockName + ")";
-				} else {
-					return item.getClass().getName();
-				}
-			});
-
+		String itemName = getItemName(item);
 		String components = itemStack.getComponentsPatch().toString();
-		return itemStack + " " + itemName + " nbt:" + components;
+		return itemStack + " " + itemName + " components:" + components;
 	}
+
+	private static String getItemName(Item item) {
+		Registry<Item> itemRegistry = RegistryUtil.getRegistry(Registries.ITEM);
+		ResourceLocation key = itemRegistry.getKey(item);
+
+		if (key != null) {
+			return key.toString();
+		} else if (item instanceof BlockItem blockItem) {
+			final String blockName = getBlockName(blockItem);
+			return "BlockItem(" + blockName + ")";
+		}
+		return item.getClass().getName();
+	}
+
+	private static String getBlockName(BlockItem blockItem) {
+		Block block = blockItem.getBlock();
+		//noinspection ConstantValue
+		if (block == null) {
+			return "null";
+		}
+		Registry<Block> blockRegistry = RegistryUtil.getRegistry(Registries.BLOCK);
+		ResourceLocation key = blockRegistry.getKey(block);
+		if (key != null) {
+			return key.toString();
+		}
+		return block.getClass().getName();
+	}
+
 
 	@SuppressWarnings("ConstantConditions")
 	public static void checkNotEmpty(ItemStack itemStack) {

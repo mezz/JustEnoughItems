@@ -26,7 +26,7 @@ import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.MathUtil;
-import mezz.jei.common.util.RegistryWrapper;
+import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredient;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredientHelper;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredientListFactory;
@@ -38,6 +38,7 @@ import mezz.jei.library.plugins.debug.ingredients.ErrorIngredientRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -241,8 +242,9 @@ public class JeiDebugPlugin implements IModPlugin {
 		registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
 		registration.addRecipeCatalyst(fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume), DebugRecipeCategory.TYPE);
 		registration.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
-		RegistryWrapper<Item> registry = RegistryWrapper.getRegistry(Registries.ITEM);
-		registry.getValues()
+
+		RegistryUtil.getRegistry(Registries.ITEM)
+			.stream()
 			.limit(300)
 			.forEach(item -> {
 				ItemStack catalystIngredient = new ItemStack(item);

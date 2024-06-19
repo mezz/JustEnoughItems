@@ -33,7 +33,7 @@ import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.RegistryWrapper;
+import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
@@ -75,6 +75,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -185,7 +186,7 @@ public class VanillaPlugin implements IModPlugin {
 		ISubtypeManager subtypeManager = registration.getSubtypeManager();
 		IColorHelper colorHelper = registration.getColorHelper();
 
-		RegistryWrapper<Fluid> registry = RegistryWrapper.getRegistry(Registries.FLUID);
+		Registry<Fluid> registry = RegistryUtil.getRegistry(Registries.FLUID);
 		List<T> fluidIngredients = FluidStackListFactory.create(registry, platformFluidHelper);
 		FluidIngredientHelper<T> fluidIngredientHelper = new FluidIngredientHelper<>(subtypeManager, colorHelper, platformFluidHelper);
 		FluidTankRenderer<T> fluidTankRenderer = new FluidTankRenderer<>(platformFluidHelper);

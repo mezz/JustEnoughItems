@@ -8,10 +8,11 @@ import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.RegistryWrapper;
+import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.ingredients.IngredientSet;
 import mezz.jei.library.plugins.vanilla.brewing.PotionSubtypeInterpreter;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ItemStack;
@@ -37,7 +38,7 @@ public class BrewingRecipeMakerCommon {
 		PotionBrewing potionBrewing
 	) {
 		Set<IJeiBrewingRecipe> recipes = new HashSet<>();
-		RegistryWrapper<Potion> potionRegistry = RegistryWrapper.getRegistry(Registries.POTION);
+		Registry<Potion> potionRegistry = RegistryUtil.getRegistry(Registries.POTION);
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 
 		IngredientSet<ItemStack> knownPotions = getBaseKnownPotions(ingredientManager, potionRegistry, potionBrewing);
@@ -63,7 +64,7 @@ public class BrewingRecipeMakerCommon {
 		return recipes;
 	}
 
-	private static IngredientSet<ItemStack> getBaseKnownPotions(IIngredientManager ingredientManager, RegistryWrapper<Potion> potionRegistry, PotionBrewing potionBrewing) {
+	private static IngredientSet<ItemStack> getBaseKnownPotions(IIngredientManager ingredientManager, Registry<Potion> potionRegistry, PotionBrewing potionBrewing) {
 		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 
@@ -74,7 +75,7 @@ public class BrewingRecipeMakerCommon {
 		IngredientSet<ItemStack> knownPotions = IngredientSet.create(itemStackHelper, UidContext.Ingredient);
 		knownPotions.addAll(potionContainers);
 
-		potionRegistry.getHolderStream()
+		potionRegistry.holders()
 			.forEach(potion -> {
 				for (ItemStack potionContainer : potionContainers) {
 					ItemStack result = PotionContents.createItemStack(potionContainer.getItem(), potion);

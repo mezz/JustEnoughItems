@@ -8,11 +8,11 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
-import mezz.jei.common.util.RegistryWrapper;
+import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.TagUtil;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -31,14 +31,14 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
 	private final IPlatformFluidHelperInternal<T> platformFluidHelper;
-	private final RegistryWrapper<Fluid> registry;
+	private final Registry<Fluid> registry;
 	private final IIngredientTypeWithSubtypes<Fluid, T> fluidType;
 
 	public FluidIngredientHelper(ISubtypeManager subtypeManager, IColorHelper colorHelper, IPlatformFluidHelperInternal<T> platformFluidHelper) {
 		this.subtypeManager = subtypeManager;
 		this.colorHelper = colorHelper;
 		this.platformFluidHelper = platformFluidHelper;
-		this.registry = RegistryWrapper.getRegistry(Registries.FLUID);
+		this.registry = RegistryUtil.getRegistry(Registries.FLUID);
 		this.fluidType = platformFluidHelper.getFluidIngredientType();
 	}
 
@@ -95,11 +95,12 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	private ResourceLocation getRegistryName(T ingredient, Fluid fluid) {
-		return registry.getRegistryName(fluid)
-			.orElseThrow(() -> {
-				String ingredientInfo = getErrorInfo(ingredient);
-				return new IllegalStateException("null registry name for: " + ingredientInfo);
-			});
+		ResourceLocation key = registry.getKey(fluid);
+		if (key == null) {
+			String ingredientInfo = getErrorInfo(ingredient);
+			throw new IllegalStateException("null registry name for: " + ingredientInfo);
+		}
+		return key;
 	}
 
 	@Override
@@ -123,8 +124,8 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	public Stream<ResourceLocation> getTagStream(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
 
-		return BuiltInRegistries.FLUID.getResourceKey(fluid)
-			.flatMap(BuiltInRegistries.FLUID::getHolder)
+		return registry.getResourceKey(fluid)
+			.flatMap(registry::getHolder)
 			.map(Holder::tags)
 			.orElse(Stream.of())
 			.map(TagKey::location);
@@ -157,6 +158,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 
 	@Override
 	public Optional<ResourceLocation> getTagEquivalent(Collection<T> ingredients) {
-		return TagUtil.getTagEquivalent(ingredients, fluidType::getBase, BuiltInRegistries.FLUID::getTags);
+		Registry<Fluid> fluidRegistry = RegistryUtil.getRegistry(Registries.FLUID);
+		return TagUtil.getTagEquivalent(ingredients, fluidType::getBase, fluidRegistry::getTags);
 	}
 }

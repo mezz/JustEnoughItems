@@ -6,9 +6,10 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.RegistryWrapper;
+import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Inventory;
@@ -87,8 +88,8 @@ public final class AnvilRecipeMaker {
 		IVanillaRecipeFactory vanillaRecipeFactory,
 		IIngredientManager ingredientManager
 	) {
-		RegistryWrapper<Enchantment> registry = RegistryWrapper.getRegistry(Registries.ENCHANTMENT);
-		List<EnchantmentData> enchantmentDatas = registry.getHolderStream()
+		Registry<Enchantment> registry = RegistryUtil.getRegistry(Registries.ENCHANTMENT);
+		List<EnchantmentData> enchantmentDatas = registry.holders()
 			.map(EnchantmentData::new)
 			.toList();
 

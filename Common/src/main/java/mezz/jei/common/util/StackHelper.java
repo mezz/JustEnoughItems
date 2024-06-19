@@ -50,13 +50,14 @@ public class StackHelper implements IStackHelper {
 		ErrorUtil.checkNotEmpty(stack, "stack");
 
 		Item item = stack.getItem();
-		return RegistryWrapper
+		ResourceLocation key = RegistryUtil
 			.getRegistry(Registries.ITEM)
-			.getRegistryName(item)
-			.map(ResourceLocation::toString)
-			.orElseThrow(() -> {
-				String stackInfo = ErrorUtil.getItemStackInfo(stack);
-				return new IllegalStateException("Item has no registry name: " + stackInfo);
-			});
+			.getKey(item);
+
+		if (key == null) {
+			String stackInfo = ErrorUtil.getItemStackInfo(stack);
+			throw new IllegalStateException("Item has no registry key: " + stackInfo);
+		}
+		return key.toString();
 	}
 }

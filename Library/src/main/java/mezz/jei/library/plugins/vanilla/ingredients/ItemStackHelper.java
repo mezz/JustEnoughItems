@@ -12,10 +12,10 @@ import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.RegistryWrapper;
+import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.common.util.TagUtil;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -69,16 +69,19 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
 		return itemStackHelper.getCreatorModId(ingredient)
-			.or(() ->
-				RegistryWrapper
-				.getRegistry(Registries.ITEM)
-				.getRegistryName(ingredient.getItem())
-				.map(ResourceLocation::getNamespace)
-			)
+			.or(() -> getNamespace(ingredient))
 			.orElseThrow(() -> {
 				String stackInfo = getErrorInfo(ingredient);
 				return new IllegalStateException("null registryName for: " + stackInfo);
 			});
+	}
+
+	private static Optional<String> getNamespace(ItemStack ingredient) {
+		ResourceLocation key = RegistryUtil
+			.getRegistry(Registries.ITEM)
+			.getKey(ingredient.getItem());
+		return Optional.ofNullable(key)
+			.map(ResourceLocation::getNamespace);
 	}
 
 	@Override
@@ -91,13 +94,15 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		ErrorUtil.checkNotEmpty(ingredient);
 
 		Item item = ingredient.getItem();
-		return RegistryWrapper
+		ResourceLocation key = RegistryUtil
 			.getRegistry(Registries.ITEM)
-			.getRegistryName(item)
-			.orElseThrow(() -> {
-				String stackInfo = getErrorInfo(ingredient);
-				return new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
-			});
+			.getKey(item);
+
+		if (key == null) {
+			String stackInfo = getErrorInfo(ingredient);
+			throw new IllegalStateException("item has no key in the Item registry: " + stackInfo);
+		}
+		return key;
 	}
 
 	@Override
@@ -125,8 +130,8 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public boolean isIngredientOnServer(ItemStack ingredient) {
 		Item item = ingredient.getItem();
-		RegistryWrapper<Item> registry = RegistryWrapper.getRegistry(Registries.ITEM);
-		return registry.contains(item);
+		Registry<Item> registry = RegistryUtil.getRegistry(Registries.ITEM);
+		return registry.getKey(item) != null;
 	}
 
 	@Override
@@ -155,6 +160,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public Optional<ResourceLocation> getTagEquivalent(Collection<ItemStack> ingredients) {
-		return TagUtil.getTagEquivalent(ingredients, ItemStack::getItem, BuiltInRegistries.ITEM::getTags);
+		Registry<Item> itemRegistry = RegistryUtil.getRegistry(Registries.ITEM);
+		return TagUtil.getTagEquivalent(ingredients, ItemStack::getItem, itemRegistry::getTags);
 	}
 }

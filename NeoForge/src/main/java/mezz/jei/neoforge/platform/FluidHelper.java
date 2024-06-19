@@ -5,14 +5,17 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
+import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.render.FluidTankRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -70,8 +73,9 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 		tooltip.add(displayName);
 
 		if (tooltipFlag.isAdvanced()) {
-			ResourceLocation resourceLocation = BuiltInRegistries.FLUID.getKey(fluid);
-			if (!resourceLocation.equals(BuiltInRegistries.FLUID.getDefaultKey())) {
+			Registry<Fluid> fluidRegistry = RegistryUtil.getRegistry(Registries.FLUID);
+			ResourceLocation resourceLocation = fluidRegistry.getKey(fluid);
+			if (resourceLocation != null &&  resourceLocation != BuiltInRegistries.FLUID.getDefaultKey()) {
 				MutableComponent advancedId = Component.literal(resourceLocation.toString())
 					.withStyle(ChatFormatting.DARK_GRAY);
 				tooltip.add(advancedId);

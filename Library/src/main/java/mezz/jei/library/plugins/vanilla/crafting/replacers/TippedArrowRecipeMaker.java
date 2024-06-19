@@ -4,8 +4,9 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.RegistryWrapper;
+import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -29,9 +30,9 @@ public final class TippedArrowRecipeMaker {
 		ItemStack arrowStack = new ItemStack(Items.ARROW);
 		Ingredient arrowIngredient = Ingredient.of(arrowStack);
 
-		RegistryWrapper<Potion> potionRegistry = RegistryWrapper.getRegistry(Registries.POTION);
+		Registry<Potion> potionRegistry = RegistryUtil.getRegistry(Registries.POTION);
 		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
-		return potionRegistry.getHolderStream()
+		return potionRegistry.holders()
 			.map(potion -> {
 				ItemStack input = PotionContents.createItemStack(Items.LINGERING_POTION, potion);
 				ItemStack output = PotionContents.createItemStack(Items.TIPPED_ARROW, potion);

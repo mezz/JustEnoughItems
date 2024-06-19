@@ -1,9 +1,10 @@
 package mezz.jei.library.plugins.vanilla.crafting.replacers;
 
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
@@ -27,7 +28,7 @@ import java.util.stream.StreamSupport;
 
 public final class ShieldDecorationRecipeMaker {
 	public static List<RecipeHolder<CraftingRecipe>> createRecipes() {
-		Iterable<Holder<Item>> banners = BuiltInRegistries.ITEM.getTagOrEmpty(ItemTags.BANNERS);
+		Iterable<Holder<Item>> banners = RegistryUtil.getRegistry(Registries.ITEM).getTagOrEmpty(ItemTags.BANNERS);
 
 		Set<DyeColor> colors = EnumSet.noneOf(DyeColor.class);
 
