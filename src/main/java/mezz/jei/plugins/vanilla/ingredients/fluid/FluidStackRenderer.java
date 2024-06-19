@@ -98,6 +98,9 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 			}
 
 			TextureAtlasSprite fluidStillSprite = getStillFluidSprite(fluidStack);
+			if (fluidStillSprite == null) {
+				return;
+			}
 
 			FluidAttributes attributes = fluid.getAttributes();
 			int fluidColor = attributes.getColor(fluidStack);
@@ -147,11 +150,15 @@ public class FluidStackRenderer implements IIngredientRenderer<FluidStack> {
 		}
 	}
 
+	@Nullable
 	private static TextureAtlasSprite getStillFluidSprite(FluidStack fluidStack) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Fluid fluid = fluidStack.getFluid();
 		FluidAttributes attributes = fluid.getAttributes();
 		ResourceLocation fluidStill = attributes.getStillTexture(fluidStack);
+		if (fluidStill == null) {
+			return null;
+		}
 		return minecraft.getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(fluidStill);
 	}
 
