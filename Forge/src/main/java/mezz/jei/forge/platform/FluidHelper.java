@@ -91,11 +91,11 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 		Fluid fluid = fluidStack.getFluid();
 		FluidAttributes attributes = fluid.getAttributes();
 		ResourceLocation fluidStill = attributes.getStillTexture(fluidStack);
-
-		TextureAtlasSprite sprite = Minecraft.getInstance()
-			.getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
-			.apply(fluidStill);
-		return Optional.of(sprite)
+		return Optional.ofNullable(fluidStill)
+			.map(f -> Minecraft.getInstance()
+				.getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+				.apply(f)
+			)
 			.filter(s -> s.getName() != MissingTextureAtlasSprite.getLocation());
 	}
 
