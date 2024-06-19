@@ -159,7 +159,7 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public <V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient) {
-		return TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient);
+		return TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, false);
 	}
 
 	@Override

@@ -119,7 +119,7 @@ public class ScreenHelper implements IScreenHelper {
 
 	private Optional<IClickableIngredient<?>> getClickedIngredient(Slot slot, AbstractContainerScreen<?> guiContainer) {
 		ItemStack stack = slot.getItem();
-		return TypedIngredient.createAndFilterInvalid(ingredientManager, VanillaTypes.ITEM_STACK, stack)
+		return TypedIngredient.createAndFilterInvalid(ingredientManager, VanillaTypes.ITEM_STACK, stack, false)
 			.map(typedIngredient -> {
 				IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 				ImmutableRect2i slotArea = new ImmutableRect2i(

@@ -27,31 +27,23 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return new TypedIngredient<>(ingredientType, ingredient);
 	}
 
-	public static <T> Optional<ITypedIngredient<?>> createAndFilterInvalid(IIngredientManager ingredientManager, @Nullable T ingredient) {
-		return createAndFilterInvalid(ingredientManager, ingredient, false);
-	}
-
-	public static <T> Optional<ITypedIngredient<T>> createAndFilterInvalid(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, @Nullable T ingredient) {
-		return createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false);
-	}
-
 	public static <T> Optional<ITypedIngredient<?>> createAndFilterInvalid(
-			IIngredientManager ingredientManager,
-			@Nullable T ingredient,
-			boolean normalize
+		IIngredientManager ingredientManager,
+		@Nullable T ingredient,
+		boolean normalize
 	) {
 		if (ingredient == null) {
 			return Optional.empty();
 		}
 		return ingredientManager.getIngredientTypeChecked(ingredient)
-				.flatMap(ingredientType -> createAndFilterInvalid(ingredientManager, ingredientType, ingredient, normalize));
+			.flatMap(ingredientType -> createAndFilterInvalid(ingredientManager, ingredientType, ingredient, normalize));
 	}
 
 	public static <T> Optional<ITypedIngredient<T>> createAndFilterInvalid(
-			IIngredientManager ingredientManager,
-			IIngredientType<T> ingredientType,
-			@Nullable T ingredient,
-			boolean normalize
+		IIngredientManager ingredientManager,
+		IIngredientType<T> ingredientType,
+		@Nullable T ingredient,
+		boolean normalize
 	) {
 		if (ingredient == null) {
 			return Optional.empty();
@@ -78,7 +70,7 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	public static <T> Optional<ITypedIngredient<T>> deepCopy(IIngredientManager ingredientManager, ITypedIngredient<T> value) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		T ingredient = ingredientHelper.copyIngredient(value.getIngredient());
-		return TypedIngredient.createAndFilterInvalid(ingredientManager, value.getType(), ingredient);
+		return TypedIngredient.createAndFilterInvalid(ingredientManager, value.getType(), ingredient, false);
 	}
 
 	private final IIngredientType<T> ingredientType;
