@@ -3,6 +3,7 @@ package mezz.jei.library.plugins.debug;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -44,6 +45,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SmithingRecipe;
+import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -154,6 +159,14 @@ public class JeiDebugPlugin implements IModPlugin {
 
 			registration.addRecipes(DebugFocusRecipeCategory.TYPE, List.of(
 				new DebugRecipe()
+			));
+
+			RecipeHolder<SmithingRecipe> testRecipeWithoutTemplate = new RecipeHolder<>(
+				new ResourceLocation(ModIds.JEI_ID, "test_recipe_without_template"),
+				new SmithingTrimRecipe(Ingredient.EMPTY, Ingredient.of(new ItemStack(Items.APPLE)), Ingredient.of(new ItemStack(Items.BAKED_POTATO)))
+			);
+			registration.addRecipes(RecipeTypes.SMITHING, List.of(
+				testRecipeWithoutTemplate
 			));
 		}
 	}
