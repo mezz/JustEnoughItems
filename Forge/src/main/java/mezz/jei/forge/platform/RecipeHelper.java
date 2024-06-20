@@ -69,9 +69,6 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 	@SuppressWarnings("removal")
 	@Override
 	public boolean isHandled(SmithingRecipe recipe) {
-		if (recipe.isIncomplete()) {
-			return false;
-		}
 		return recipe instanceof SmithingTransformRecipe || recipe instanceof SmithingTrimRecipe;
 	}
 
