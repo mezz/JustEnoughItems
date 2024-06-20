@@ -25,8 +25,7 @@ public class JustEnoughItems {
 		IServerConfig serverConfig = ServerConfig.register(modLoadingContext);
 
 		NetworkHandler networkHandler = new NetworkHandler("3", serverConfig);
-		JustEnoughItemsCommon jeiCommon = new JustEnoughItemsCommon(networkHandler);
-		jeiCommon.register(subscriptions);
+		networkHandler.registerPacketHandlers(subscriptions);
 
 		JustEnoughItemsClientSafeRunner clientSafeRunner = new JustEnoughItemsClientSafeRunner(networkHandler, subscriptions);
 		if (dist.isClient()) {

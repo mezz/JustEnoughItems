@@ -3,11 +3,11 @@ package mezz.jei.neoforge;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import mezz.jei.neoforge.events.PermanentEventSubscriptions;
-import mezz.jei.neoforge.network.ConnectionToServer;
 import mezz.jei.neoforge.network.NetworkHandler;
 import mezz.jei.neoforge.plugins.neoforge.NeoForgeGuiPlugin;
 import mezz.jei.neoforge.startup.ForgePluginFinder;
@@ -31,13 +31,10 @@ public class JustEnoughItemsClient {
 	) {
 		this.subscriptions = subscriptions;
 
-		ConnectionToServer serverConnection = new ConnectionToServer();
-		Internal.setServerConnection(serverConnection);
-
 		InternalKeyMappings keyMappings = createKeyMappings(subscriptions);
 		Internal.setKeyMappings(keyMappings);
 
-		networkHandler.registerClientPacketHandler(serverConnection, subscriptions);
+		IConnectionToServer serverConnection = networkHandler.getConnectionToServer();
 
 		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
 		StartData startData = new StartData(
