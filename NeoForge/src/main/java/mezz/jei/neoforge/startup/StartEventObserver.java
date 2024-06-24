@@ -118,7 +118,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPacketListener packetListener = minecraft.getConnection();
 		if (packetListener != null) {
-			return packetListener.connection;
+			return packetListener.getConnection();
 		} else if (minecraft.pendingConnection != null) {
 			// TagsUpdatedEvent is fired very early in the connection process,
 			// so packetListener is not yet initialized.
