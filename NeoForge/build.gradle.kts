@@ -110,7 +110,8 @@ fun commonRunProperties(run: Run) {
 }
 
 runs {
-	named("client") {
+	create("client") {
+		configure("client")
 		systemProperty("forge.logging.console.level", "debug")
 		workingDirectory(file("run/client/Dev"))
 		commonRunProperties(this)
@@ -127,9 +128,11 @@ runs {
 		programArguments("--username", "Player02")
 		commonRunProperties(this)
 	}
-	named("server") {
+	create("server") {
+		configure("server")
 		systemProperty("forge.logging.console.level", "debug")
 		workingDirectory(file("run/server"))
+		programArguments("nogui")
 		commonRunProperties(this)
 	}
 }
