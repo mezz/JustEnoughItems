@@ -98,18 +98,24 @@ public class GuiEventHandler {
 	public void onDrawScreenPost(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
 
-		ingredientListOverlay.updateScreen(screen, null);
-		bookmarkOverlay.updateScreen(screen, null);
-
 		if (!drawnOnBackground) {
 			if (screen instanceof AbstractContainerScreen) {
 				String guiName = screen.getClass().getName();
 				missingBackgroundLogger.log(Level.WARN, guiName, "GUI did not draw the dark background layer behind itself, this may result in display issues: {}", guiName);
 			}
+			Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
+				.map(ImmutableRect2i::new)
+				.collect(Collectors.toUnmodifiableSet());
+			ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
+			bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
+
 			DeltaTracker deltaTracker = minecraft.getTimer();
 			float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
 			ingredientListOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 			bookmarkOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+		} else {
+			ingredientListOverlay.updateScreen(screen, null);
+			bookmarkOverlay.updateScreen(screen, null);
 		}
 		drawnOnBackground = false;
 
