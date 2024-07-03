@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 /**
