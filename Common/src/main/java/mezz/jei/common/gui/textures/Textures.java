@@ -37,6 +37,7 @@ public class Textures {
 	private final IDrawableStatic infoIcon;
 	private final DrawableNineSliceTexture catalystTab;
 	private final IDrawableStatic flameIcon;
+	private final IDrawableStatic recipeArrow;
 
 	public Textures(JeiSpriteUploader spriteUploader) {
 		this.spriteUploader = spriteUploader;
@@ -56,6 +57,7 @@ public class Textures {
 		this.recipeBackground = registerNineSliceGuiSprite("single_recipe_background", 64, 64, 16, 16, 16, 16);
 		this.searchBackground = registerNineSliceGuiSprite("search_background", 20, 20, 6, 6, 6, 6);
 		this.catalystTab = registerNineSliceGuiSprite("catalyst_tab", 28, 28, 8, 9, 8, 8);
+		this.recipeArrow = registerGuiSprite("recipe_arrow", 22, 15);
 
 		DrawableSprite rawShapelessIcon = registerGuiSprite("icons/shapeless_icon", 36, 36)
 			.trim(1, 2, 1, 1);
@@ -170,6 +172,10 @@ public class Textures {
 
 	public DrawableNineSliceTexture getCatalystTab() {
 		return catalystTab;
+	}
+
+	public IDrawableStatic getRecipeArrow() {
+		return recipeArrow;
 	}
 
 	public DrawableNineSliceTexture getRecipeCatalystSlotBackground() {
