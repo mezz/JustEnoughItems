@@ -14,9 +14,11 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -102,4 +104,8 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 		builder.createFocusLink(inputSlot, outputSlot, invisibleSlot);
 	}
 
+	@Override
+	public @Nullable ResourceLocation getRegistryName(DebugRecipe recipe) {
+		return null;
+	}
 }

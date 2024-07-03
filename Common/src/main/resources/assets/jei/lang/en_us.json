@@ -22,6 +22,9 @@
   "jei.tooltip.bookmarks.usage.nokey": "Add a key binding for JEI bookmarks in your Controls settings.",
   "jei.tooltip.bookmarks.usage.key": "Hover over an ingredient and press \"%s\" to bookmark it.",
   "jei.tooltip.bookmarks.not.enough.space": "There is not enough space to display the JEI bookmark list overlay here.",
+  "jei.tooltip.bookmarks.recipe": "%s Recipe Bookmark",
+  "jei.tooltip.bookmarks.recipe.add": "Bookmark this recipe.",
+  "jei.tooltip.bookmarks.recipe.remove": "Remove the bookmark for this recipe.",
 
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "Missing Items",

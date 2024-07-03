@@ -6,7 +6,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.input.IDragHandler;

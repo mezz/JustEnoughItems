@@ -150,6 +150,8 @@ public interface IRecipeCategory<T> {
 	 * This will also show the modId when the recipe modId and output item modId do not match.
 	 * This lets the player know where the recipe came from.
 	 *
+	 * Since 19.1.0, this is also used for bookmarking recipes.
+	 *
 	 * @return the registry name of the recipe, or null if there is none
 	 *
 	 * @since 9.3.0

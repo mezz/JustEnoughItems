@@ -2,7 +2,7 @@ package mezz.jei.gui.input.handlers;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
-import mezz.jei.common.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.config.IClientToggleState;
@@ -54,7 +54,7 @@ public class EditInputHandler implements IUserInputHandler {
 	}
 
 	private <V> void execute(IClickableIngredientInternal<V> clicked, IEditModeConfig.HideMode hideMode) {
-		ITypedIngredient<V> typedIngredient = clicked.getTypedIngredient();
+		ITypedIngredient<?> typedIngredient = clicked.getTypedIngredient();
 		if (editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient)) {
 			editModeConfig.showIngredientUsingConfigFile(typedIngredient, hideMode);
 		} else {

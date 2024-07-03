@@ -10,11 +10,11 @@ import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.ingredients.IngredientSet;
-import mezz.jei.library.plugins.vanilla.brewing.PotionSubtypeInterpreter;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.alchemy.Potion;
@@ -53,6 +53,7 @@ public class BrewingRecipeMakerCommon {
 			List<ItemStack> newPotions = getNewPotions(
 				potionBrewing,
 				recipeFactory,
+				itemStackHelper,
 				knownPotions,
 				potionReagents,
 				recipes
@@ -88,12 +89,16 @@ public class BrewingRecipeMakerCommon {
 	private static List<ItemStack> getNewPotions(
 		PotionBrewing potionBrewing,
 		IVanillaRecipeFactory recipeFactory,
+		IIngredientHelper<ItemStack> itemStackHelper,
 		Collection<ItemStack> knownPotions,
 		Collection<ItemStack> potionReagents,
 		Collection<IJeiBrewingRecipe> recipes
 	) {
 		List<ItemStack> newPotions = new ArrayList<>();
 		for (ItemStack potionInput : knownPotions) {
+			String inputId = itemStackHelper.getUniqueId(potionInput, UidContext.Recipe);
+			String inputPathId = ResourceLocationUtil.sanitizePath(inputId);
+
 			for (ItemStack potionReagent : potionReagents) {
 				ItemStack potionOutput = getOutput(potionBrewing, potionInput.copy(), potionReagent);
 				if (potionOutput.isEmpty()) {
@@ -105,15 +110,21 @@ public class BrewingRecipeMakerCommon {
 					if (potionOutputType.isEmpty()) {
 						continue;
 					}
-
-					String inputId = PotionSubtypeInterpreter.INSTANCE.apply(potionInput, UidContext.Recipe);
-					String outputId = PotionSubtypeInterpreter.INSTANCE.apply(potionOutput, UidContext.Recipe);
-					if (Objects.equals(inputId, outputId)) {
-						continue;
-					}
 				}
 
-				IJeiBrewingRecipe recipe = recipeFactory.createBrewingRecipe(List.of(potionReagent), potionInput.copy(), potionOutput);
+				String outputId = itemStackHelper.getUniqueId(potionOutput, UidContext.Recipe);
+				if (Objects.equals(inputId, outputId)) {
+					continue;
+				}
+
+				String outputModId = itemStackHelper.getResourceLocation(potionOutput).getNamespace();
+				String uidPath = inputPathId + ".to." + ResourceLocationUtil.sanitizePath(outputId);
+				IJeiBrewingRecipe recipe = recipeFactory.createBrewingRecipe(
+					List.of(potionReagent),
+					potionInput.copy(),
+					potionOutput,
+					ResourceLocation.fromNamespaceAndPath(outputModId, uidPath)
+				);
 				if (!recipes.contains(recipe)) {
 					recipes.add(recipe);
 					newPotions.add(potionOutput);

@@ -20,7 +20,6 @@ import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
-import mezz.jei.gui.util.CheatUtil;
 
 public final class OverlayHelper {
 	private OverlayHelper() {}
@@ -40,7 +39,6 @@ public final class OverlayHelper {
 		IConnectionToServer serverConnection,
 		Textures textures,
 		IColorHelper colorHelper,
-		CheatUtil cheatUtil,
 		IScreenHelper screenHelper
 	) {
 		IngredientGrid ingredientListGrid = new IngredientGrid(
@@ -53,8 +51,7 @@ public final class OverlayHelper {
 			modIdHelper,
 			serverConnection,
 			keyMappings,
-			colorHelper,
-			cheatUtil
+			colorHelper
 		);
 
 		return new IngredientGridWithNavigation(
@@ -67,7 +64,6 @@ public final class OverlayHelper {
 			background,
 			slotBackground,
 			textures,
-			cheatUtil,
 			screenHelper,
 			ingredientManager
 		);
@@ -87,8 +83,7 @@ public final class OverlayHelper {
 		IConnectionToServer serverConnection,
 		IIngredientFilterConfig ingredientFilterConfig,
 		Textures textures,
-		IColorHelper colorHelper,
-		CheatUtil cheatUtil
+		IColorHelper colorHelper
 	) {
 		IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
 			ingredientFilter,
@@ -105,7 +100,6 @@ public final class OverlayHelper {
 			serverConnection,
 			textures,
 			colorHelper,
-			cheatUtil,
 			screenHelper
 		);
 
@@ -119,7 +113,7 @@ public final class OverlayHelper {
 			serverConnection,
 			textures,
 			keyMappings,
-			cheatUtil
+			ingredientManager
 		);
 	}
 
@@ -136,8 +130,7 @@ public final class OverlayHelper {
 		IClientToggleState toggleState,
 		IConnectionToServer serverConnection,
 		Textures textures,
-		IColorHelper colorHelper,
-		CheatUtil cheatUtil
+		IColorHelper colorHelper
 	) {
 		IngredientGridWithNavigation bookmarkListGridNavigation = createIngredientGridWithNavigation(
 			bookmarkList,
@@ -154,7 +147,6 @@ public final class OverlayHelper {
 			serverConnection,
 			textures,
 			colorHelper,
-			cheatUtil,
 			screenHelper);
 
 		return new BookmarkOverlay(
@@ -166,7 +158,7 @@ public final class OverlayHelper {
 			screenHelper,
 			serverConnection,
 			keyMappings,
-			cheatUtil
+			ingredientManager
 		);
 	}
 }

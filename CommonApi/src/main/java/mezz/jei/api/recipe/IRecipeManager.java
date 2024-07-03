@@ -39,6 +39,15 @@ public interface IRecipeManager {
 	IRecipeCategoriesLookup createRecipeCategoryLookup();
 
 	/**
+	 * Get a recipe category for the given recipe type.
+	 *
+	 * For more complex queries, use {@link #createRecipeCategoryLookup()}
+	 *
+	 * @since 19.1.0
+	 */
+	<T> Optional<IRecipeCategory<T>> getRecipeCategory(RecipeType<T> recipeType);
+
+	/**
 	 * Create a recipe catalyst lookup for the given recipe type.
 	 *
 	 * {@link IRecipeCatalystLookup} is a helper class that lets you choose

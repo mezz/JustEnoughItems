@@ -2,9 +2,9 @@ package mezz.jei.gui.input;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.input.ClickableIngredientInternal;
-import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.overlay.elements.IngredientElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -27,7 +27,8 @@ public class GuiContainerWrapper implements IRecipeFocusSource {
 			.map(clickableSlot -> {
 				ITypedIngredient<?> typedIngredient = clickableSlot.getTypedIngredient();
 				ImmutableRect2i area = new ImmutableRect2i(clickableSlot.getArea());
-				return new ClickableIngredientInternal<>(typedIngredient, area, false, false);
+				IElement<?> element = new IngredientElement<>(typedIngredient);
+				return new ClickableIngredientInternal<>(element, area, false, false);
 			});
 	}
 }

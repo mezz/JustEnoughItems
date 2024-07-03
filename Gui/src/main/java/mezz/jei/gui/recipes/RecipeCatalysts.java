@@ -1,6 +1,8 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.overlay.elements.IngredientElement;
 import net.minecraft.client.gui.GuiGraphics;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
@@ -9,8 +11,8 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.ClickableIngredientInternal;
-import mezz.jei.common.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.ClickableIngredientInternal;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.input.IRecipeFocusSource;
@@ -137,7 +139,8 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 				recipeSlot.getDisplayedIngredient()
 					.map(i -> {
 						Rect2i rect = recipeSlot.getRect();
-						return new ClickableIngredientInternal<>(i, new ImmutableRect2i(rect), false, true);
+						IElement<?> element = new IngredientElement<>(i);
+						return new ClickableIngredientInternal<>(element, new ImmutableRect2i(rect), false, true);
 					}))
 			.flatMap(Optional::stream);
 	}

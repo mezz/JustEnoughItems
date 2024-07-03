@@ -16,6 +16,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
@@ -88,5 +89,10 @@ public class SmithingRecipeCategory implements IRecipeCategory<RecipeHolder<Smit
 		SmithingRecipe recipe = recipeHolder.value();
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		return recipeHelper.isHandled(recipe);
+	}
+
+	@Override
+	public ResourceLocation getRegistryName(RecipeHolder<SmithingRecipe> recipe) {
+		return recipe.id();
 	}
 }

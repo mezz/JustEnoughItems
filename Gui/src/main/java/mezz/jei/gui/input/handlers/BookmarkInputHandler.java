@@ -32,8 +32,7 @@ public class BookmarkInputHandler implements IUserInputHandler {
 			.findFirst()
 			.flatMap(clicked -> {
 				if (input.isSimulate() ||
-					bookmarkList.remove(clicked.getTypedIngredient()) ||
-					bookmarkList.add(clicked.getTypedIngredient())
+					bookmarkList.toggleBookmark(clicked.getElement())
 				) {
 					ImmutableRect2i area = clicked.getArea();
 					IUserInputHandler handler = LimitedAreaInputHandler.create(this, area);

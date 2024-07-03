@@ -39,6 +39,7 @@ import mezz.jei.library.plugins.debug.ingredients.ErrorIngredientRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -48,6 +49,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -282,6 +285,9 @@ public class JeiDebugPlugin implements IModPlugin {
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 		if (DebugConfig.isDebugModeEnabled()) {
 			ErrorUtil.assertMainThread();
+			Registry<Enchantment> registry = RegistryUtil.getRegistry(Registries.ENCHANTMENT);
+			Enchantment enchantment = registry.get(Enchantments.FIRE_ASPECT);
+			assert enchantment != null;
 			if (debugRecipeCategory != null) {
 				debugRecipeCategory.setRuntime(jeiRuntime);
 			}

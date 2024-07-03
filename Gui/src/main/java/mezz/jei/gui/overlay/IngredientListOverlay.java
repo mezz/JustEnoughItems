@@ -4,15 +4,16 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.GuiProperties;
-import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.input.GuiTextFieldFilter;
@@ -27,7 +28,6 @@ import mezz.jei.gui.input.handlers.NullDragHandler;
 import mezz.jei.gui.input.handlers.NullInputHandler;
 import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
-import mezz.jei.gui.util.CheatUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -52,7 +52,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IConnectionToServer serverConnection;
 	private final GuiTextFieldFilter searchField;
 	private final IInternalKeyMappings keyBindings;
-	private final CheatUtil cheatUtil;
+	private final IIngredientManager ingredientManager;
 	private final ScreenPropertiesCache screenPropertiesCache;
 	private final IFilterTextSource filterTextSource;
 
@@ -66,7 +66,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IConnectionToServer serverConnection,
 		Textures textures,
 		IInternalKeyMappings keyBindings,
-		CheatUtil cheatUtil
+		IIngredientManager ingredientManager
 	) {
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		this.contents = contents;
@@ -76,7 +76,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 		this.searchField = new GuiTextFieldFilter(textures, contents::isEmpty);
 		this.keyBindings = keyBindings;
-		this.cheatUtil = cheatUtil;
+		this.ingredientManager = ingredientManager;
 		this.filterTextSource = filterTextSource;
 		this.searchField.setValue(filterTextSource.getFilterText());
 		this.searchField.setFocused(false);
@@ -206,7 +206,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			this.searchField.createInputHandler(),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler(),
-			new CheatInputHandler(this.contents, toggleState, clientConfig, serverConnection, cheatUtil)
+			new CheatInputHandler(this.contents, toggleState, clientConfig, serverConnection, ingredientManager)
 		);
 
 		final IUserInputHandler configButtonInputHandler = this.configButton.createInputHandler();

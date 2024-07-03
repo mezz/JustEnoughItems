@@ -69,4 +69,9 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<RecipeHolder<
 		StonecutterRecipe recipe = recipeHolder.value();
 		return !recipe.isSpecial();
 	}
+
+	@Override
+	public ResourceLocation getRegistryName(RecipeHolder<StonecutterRecipe> recipe) {
+		return recipe.id();
+	}
 }
