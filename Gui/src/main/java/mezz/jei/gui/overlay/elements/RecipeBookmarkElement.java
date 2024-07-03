@@ -39,18 +39,20 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	public void renderExtras(GuiGraphics guiGraphics) {
 		IRecipeCategory<T> recipeCategory = recipeBookmark.getRecipeCategory();
 		IDrawable icon = recipeCategory.getIcon();
-
-		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
-		{
-			// this z level seems to be the sweet spot so that
-			// 2D icons draw above the items, and
-			// 3D icons draw still draw under tooltips.
-			poseStack.translate(8, 8, 200);
-			poseStack.scale(0.5f, 0.5f, 0.5f);
-			icon.draw(guiGraphics);
+		//noinspection ConstantValue
+		if (icon != null) {
+			var poseStack = guiGraphics.pose();
+			poseStack.pushPose();
+			{
+				// this z level seems to be the sweet spot so that
+				// 2D icons draw above the items, and
+				// 3D icons draw still draw under tooltips.
+				poseStack.translate(8, 8, 200);
+				poseStack.scale(0.5f, 0.5f, 0.5f);
+				icon.draw(guiGraphics);
+			}
+			poseStack.popPose();
 		}
-		poseStack.popPose();
 	}
 
 	@Override
