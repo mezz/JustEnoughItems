@@ -128,6 +128,15 @@ public interface IIngredientManager {
 	}
 
 	/**
+	 * Normalize a typed ingredient.
+	 *
+	 * @see IIngredientHelper#normalizeIngredient
+	 *
+	 * @since 19.1.0
+	 */
+	<V> ITypedIngredient<V> normalizeTypedIngredient(ITypedIngredient<V> typedIngredient);
+
+	/**
 	 * Get an ingredient by the given unique id.
 	 * This uses the uids from {@link IIngredientHelper#getUniqueId(Object, UidContext)}
 	 *

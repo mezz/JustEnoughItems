@@ -676,7 +676,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				this.recipeTransferButtons.add(button);
 			}
 			{
-				RecipeBookmarkButton.create(recipeLayout, bookmarks, textures)
+				RecipeBookmarkButton.create(recipeLayout, ingredientManager, bookmarks, textures)
 					.ifPresent(button -> {
 						addRenderableWidget(button);
 						this.recipeBookmarkButtons.add(button);

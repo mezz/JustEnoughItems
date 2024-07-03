@@ -14,6 +14,7 @@ public class IngredientBookmark<T> implements IBookmark {
 
 	public static <T> IngredientBookmark<T> create(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
+		typedIngredient = ingredientManager.normalizeTypedIngredient(typedIngredient);
 		String uniqueId = ingredientHelper.getUniqueId(typedIngredient.getIngredient(), UidContext.Ingredient);
 		return new IngredientBookmark<>(typedIngredient, uniqueId);
 	}

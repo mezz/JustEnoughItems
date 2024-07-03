@@ -162,6 +162,15 @@ public class IngredientManager implements IIngredientManager {
 		return TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, false);
 	}
 
+	@Override
+	public <V> ITypedIngredient<V> normalizeTypedIngredient(ITypedIngredient<V> typedIngredient) {
+		IIngredientType<V> type = typedIngredient.getType();
+		IIngredientHelper<V> ingredientHelper = getIngredientHelper(type);
+		V ingredient = typedIngredient.getIngredient();
+		V normalized = ingredientHelper.normalizeIngredient(ingredient);
+		return TypedIngredient.createUnvalidated(type, normalized);
+	}
+
 	@SuppressWarnings("removal")
 	@Override
 	@Deprecated

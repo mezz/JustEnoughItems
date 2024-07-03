@@ -2,6 +2,7 @@ package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.bookmarks.BookmarkList;
@@ -20,8 +21,8 @@ public class RecipeBookmarkButton extends GuiIconButtonSmall {
 	private final RecipeBookmark<?, ?> recipeBookmark;
 	private final IOnClickHandler onClickHandler;
 
-	public static Optional<RecipeBookmarkButton> create(IRecipeLayoutDrawable<?> recipeLayout, BookmarkList bookmarks, Textures textures) {
-		return RecipeBookmark.create(recipeLayout)
+	public static Optional<RecipeBookmarkButton> create(IRecipeLayoutDrawable<?> recipeLayout, IIngredientManager ingredientManager, BookmarkList bookmarks, Textures textures) {
+		return RecipeBookmark.create(recipeLayout, ingredientManager)
 			.map(recipeBookmark -> {
 				IDrawable icon = textures.getRecipeBookmark();
 				Rect2i area = recipeLayout.getRecipeBookmarkButtonArea();
