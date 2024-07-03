@@ -36,6 +36,7 @@ public class AnvilRecipe implements IJeiAnvilRecipe {
 	}
 
 	@Override
+	@Nullable
 	public ResourceLocation getUid() {
 		return uid;
 	}

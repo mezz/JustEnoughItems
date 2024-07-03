@@ -22,7 +22,7 @@ public class ElementRenderers {
 
 	public <T> ElementRenderer<T> get(IIngredientType<T> ingredientType) {
 		@SuppressWarnings("unchecked")
-		ElementRenderer<T> result = (ElementRenderer<T>) (Object) this.map.get(ingredientType);
+		ElementRenderer<T> result = (ElementRenderer<T>) this.map.get(ingredientType);
 		if (result == null) {
 			result = new ElementRenderer<>(ingredientType, toggleState, editModeConfig, ingredientManager);
 			this.map.put(ingredientType, result);

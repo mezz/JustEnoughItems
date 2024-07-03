@@ -15,14 +15,6 @@ public interface IClickableIngredientInternal<T> {
 	ImmutableRect2i getArea();
 
 	/**
-	 * Returns true if this clickable slot allows players to cheat ingredients from it
-	 * (when the server has granted them permission to cheat).
-	 *
-	 * This is generally only true in the JEI ingredient list and bookmark list.
-	 */
-	boolean allowsCheating();
-
-	/**
 	 * Returns an ItemStack if this clickable slot allows players to cheat ingredients from it
 	 * (when the server has granted them permission to cheat).
 	 *

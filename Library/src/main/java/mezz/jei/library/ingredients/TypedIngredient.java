@@ -67,19 +67,6 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return Optional.of(typedIngredient);
 	}
 
-	public static <T> ITypedIngredient<T> normalize(
-		IIngredientManager ingredientManager,
-		ITypedIngredient<T> typedIngredient
-	) {
-		IIngredientType<T> ingredientType = typedIngredient.getType();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-
-		T ingredient = typedIngredient.getIngredient();
-		ingredient = ingredientHelper.normalizeIngredient(ingredient);
-
-		return new TypedIngredient<>(ingredientType, ingredient);
-	}
-
 	public static <T> Optional<ITypedIngredient<T>> deepCopy(IIngredientManager ingredientManager, ITypedIngredient<T> value) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		T ingredient = ingredientHelper.copyIngredient(value.getIngredient());

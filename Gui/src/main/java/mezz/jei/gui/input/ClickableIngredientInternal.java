@@ -43,11 +43,6 @@ public class ClickableIngredientInternal<V> implements IClickableIngredientInter
 	}
 
 	@Override
-	public boolean allowsCheating() {
-		return allowsCheating;
-	}
-
-	@Override
 	public ItemStack getCheatItemStack(IIngredientManager ingredientManager) {
 		if (allowsCheating) {
 			ITypedIngredient<V> value = element.getTypedIngredient();

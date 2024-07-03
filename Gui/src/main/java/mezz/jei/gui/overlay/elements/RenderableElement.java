@@ -21,10 +21,6 @@ public class RenderableElement<T> {
 		renderer.drawTooltip(guiGraphics, mouseX, mouseY, tooltipHelper, element);
 	}
 
-	public IElementRenderer<T> getRenderer() {
-		return renderer;
-	}
-
 	public IElement<T> getElement() {
 		return element;
 	}

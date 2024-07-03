@@ -76,12 +76,7 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 		ITypedIngredient<?> output = outputResult.get();
 		RecipeType<?> recipeType = recipeTypeResult.get();
 
-		Optional<? extends IRecipeCategory<?>> recipeCategoryResult = recipeManager.getRecipeCategory(recipeType);
-		if (recipeCategoryResult.isEmpty()) {
-			String error = "could not find a recipe category for this recipe type: %s".formatted(recipeType.getUid());
-			return new DeserializeResult<>(null, error);
-		}
-		IRecipeCategory<?> recipeCategory = recipeCategoryResult.get();
+		IRecipeCategory<?> recipeCategory = recipeManager.getRecipeCategory(recipeType);
 		return createBookmark(string, recipeCategory, recipeUid, output);
 	}
 

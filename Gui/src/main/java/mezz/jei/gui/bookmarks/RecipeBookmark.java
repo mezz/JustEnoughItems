@@ -5,7 +5,6 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
@@ -14,7 +13,6 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Optional;
 
 public class RecipeBookmark<T, R> implements IBookmark {
-	private final RecipeType<T> recipeType;
 	private final IElement<R> element;
 	private final IRecipeCategory<T> recipeCategory;
 	private final T recipe;
@@ -37,7 +35,6 @@ public class RecipeBookmark<T, R> implements IBookmark {
 	}
 
 	public RecipeBookmark(IRecipeCategory<T> recipeCategory, T recipe, ResourceLocation recipeUid, ITypedIngredient<R> recipeOutput) {
-		this.recipeType = recipeCategory.getRecipeType();
 		this.recipeCategory = recipeCategory;
 		this.recipe = recipe;
 		this.recipeUid = recipeUid;
