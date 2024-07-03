@@ -30,6 +30,7 @@ public class Textures {
 	private final IDrawableStatic arrowPrevious;
 	private final IDrawableStatic arrowNext;
 	private final IDrawableStatic recipeTransfer;
+	private final IDrawableStatic recipeBookmark;
 	private final IDrawableStatic configButtonIcon;
 	private final IDrawableStatic configButtonCheatIcon;
 	private final IDrawableStatic bookmarkButtonDisabledIcon;
@@ -37,6 +38,7 @@ public class Textures {
 	private final IDrawableStatic infoIcon;
 	private final DrawableNineSliceTexture catalystTab;
 	private final IDrawableStatic flameIcon;
+	private final IDrawableStatic recipeArrow;
 
 	public Textures(JeiSpriteUploader spriteUploader) {
 		this.spriteUploader = spriteUploader;
@@ -56,6 +58,7 @@ public class Textures {
 		this.recipeBackground = createNineSliceGuiSprite("single_recipe_background", 64, 64, 16, 16, 16, 16);
 		this.searchBackground = createNineSliceGuiSprite("search_background", 20, 20, 6, 6, 6, 6);
 		this.catalystTab = createNineSliceGuiSprite("catalyst_tab", 28, 28, 8, 9, 8, 8);
+		this.recipeArrow = createGuiSprite("recipe_arrow", 22, 15);
 
 		DrawableSprite rawShapelessIcon = createGuiSprite("icons/shapeless_icon", 36, 36)
 			.trim(1, 2, 1, 1);
@@ -66,6 +69,7 @@ public class Textures {
 		this.arrowNext = createGuiSprite("icons/arrow_next", 9, 9)
 			.trim(0, 0, 1, 1);
 		this.recipeTransfer = createGuiSprite("icons/recipe_transfer", 7, 7);
+		this.recipeBookmark = createGuiSprite("icons/recipe_bookmark", 9, 9);
 		this.configButtonIcon = createGuiSprite("icons/config_button", 16, 16);
 		this.configButtonCheatIcon = createGuiSprite("icons/config_button_cheat", 16, 16);
 		this.bookmarkButtonDisabledIcon = createGuiSprite("icons/bookmark_button_disabled", 16, 16);
@@ -114,6 +118,10 @@ public class Textures {
 
 	public IDrawableStatic getRecipeTransfer() {
 		return recipeTransfer;
+	}
+
+	public IDrawableStatic getRecipeBookmark() {
+		return recipeBookmark;
 	}
 
 	public IDrawableStatic getConfigButtonIcon() {
@@ -168,6 +176,10 @@ public class Textures {
 
 	public DrawableNineSliceTexture getCatalystTab() {
 		return catalystTab;
+	}
+
+	public IDrawableStatic getRecipeArrow() {
+		return recipeArrow;
 	}
 
 	public DrawableNineSliceTexture getRecipeCatalystSlotBackground() {
