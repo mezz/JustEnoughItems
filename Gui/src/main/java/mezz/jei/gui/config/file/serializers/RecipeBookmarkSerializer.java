@@ -11,6 +11,7 @@ import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.common.config.file.serializers.DeserializeResult;
 import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
+import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
@@ -33,10 +34,13 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 
 	@Override
 	public String serialize(RecipeBookmark<?, ?> value) {
-		RecipeType<?> recipeType = value.getRecipeCategory().getRecipeType();
+		IRecipeCategory<?> recipeCategory = value.getRecipeCategory();
+		RecipeType<?> recipeType = recipeCategory.getRecipeType();
 		ResourceLocation recipeTypeUid = recipeType.getUid();
 		ResourceLocation recipeUid = value.getRecipeUid();
-		String outputSerialized = ingredientSerializer.serialize(value.getElement().getTypedIngredient());
+		IElement<?> element = value.getElement();
+		ITypedIngredient<?> typedIngredient = element.getTypedIngredient();
+		String outputSerialized = ingredientSerializer.serialize(typedIngredient);
 		return recipeTypeUid + SEPARATOR + recipeUid + SEPARATOR + outputSerialized;
 	}
 
