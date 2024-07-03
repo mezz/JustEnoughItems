@@ -179,11 +179,9 @@ public class RecipeManagerInternal {
 		return getRecipeCategoriesCached(recipeCategories, focuses, includeHidden);
 	}
 
-	public <T> Optional<IRecipeCategory<T>> getRecipeCategory(RecipeType<T> recipeType) {
+	public <T> IRecipeCategory<T> getRecipeCategory(RecipeType<T> recipeType) {
 		RecipeTypeData<T> value = this.recipeTypeDataMap.get(recipeType);
-		//noinspection OptionalOfNullableMisuse
-		return Optional.ofNullable(value)
-			.map(RecipeTypeData::getRecipeCategory);
+		return value.getRecipeCategory();
 	}
 
 	private Stream<IRecipeCategory<?>> getRecipeCategoriesCached(Collection<IRecipeCategory<?>> recipeCategories, IFocusGroup focuses, boolean includeHidden) {

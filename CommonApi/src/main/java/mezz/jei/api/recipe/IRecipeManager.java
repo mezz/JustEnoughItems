@@ -45,7 +45,7 @@ public interface IRecipeManager {
 	 *
 	 * @since 19.1.0
 	 */
-	<T> Optional<IRecipeCategory<T>> getRecipeCategory(RecipeType<T> recipeType);
+	<T> IRecipeCategory<T> getRecipeCategory(RecipeType<T> recipeType);
 
 	/**
 	 * Create a recipe catalyst lookup for the given recipe type.

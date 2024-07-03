@@ -53,7 +53,7 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <T> Optional<IRecipeCategory<T>> getRecipeCategory(RecipeType<T> recipeType) {
+	public <T> IRecipeCategory<T> getRecipeCategory(RecipeType<T> recipeType) {
 		return internal.getRecipeCategory(recipeType);
 	}
 
