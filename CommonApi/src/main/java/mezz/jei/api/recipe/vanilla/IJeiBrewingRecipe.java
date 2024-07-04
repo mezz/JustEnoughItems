@@ -1,6 +1,8 @@
 package mezz.jei.api.recipe.vanilla;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
@@ -45,4 +47,11 @@ public interface IJeiBrewingRecipe {
 	 * then this will return {@link Integer#MAX_VALUE}.
 	 */
 	int getBrewingSteps();
+
+	/**
+	 * Unique ID for this recipe.
+	 * @since 19.1.0
+	 */
+	@Nullable
+	ResourceLocation getUid();
 }

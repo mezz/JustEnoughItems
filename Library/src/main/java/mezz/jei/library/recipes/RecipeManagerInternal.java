@@ -179,6 +179,11 @@ public class RecipeManagerInternal {
 		return getRecipeCategoriesCached(recipeCategories, focuses, includeHidden);
 	}
 
+	public <T> IRecipeCategory<T> getRecipeCategory(RecipeType<T> recipeType) {
+		RecipeTypeData<T> value = this.recipeTypeDataMap.get(recipeType);
+		return value.getRecipeCategory();
+	}
+
 	private Stream<IRecipeCategory<?>> getRecipeCategoriesCached(Collection<IRecipeCategory<?>> recipeCategories, IFocusGroup focuses, boolean includeHidden) {
 		if (recipeCategories.isEmpty() && focuses.isEmpty() && !includeHidden) {
 			if (this.recipeCategoriesVisibleCache == null) {

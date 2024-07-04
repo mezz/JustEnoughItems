@@ -53,6 +53,11 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
+	public <T> IRecipeCategory<T> getRecipeCategory(RecipeType<T> recipeType) {
+		return internal.getRecipeCategory(recipeType);
+	}
+
+	@Override
 	public IRecipeCatalystLookup createRecipeCatalystLookup(RecipeType<?> recipeType) {
 		return new RecipeCatalystLookup(recipeType, internal);
 	}

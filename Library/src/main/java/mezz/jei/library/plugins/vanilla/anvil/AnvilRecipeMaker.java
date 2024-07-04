@@ -1,5 +1,9 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
+import mezz.jei.api.constants.ModIds;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -7,10 +11,12 @@ import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
+import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -38,9 +44,10 @@ public final class AnvilRecipeMaker {
 	}
 
 	public static List<IJeiAnvilRecipe> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientManager ingredientManager) {
+		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 		return Stream.concat(
-				getRepairRecipes(vanillaRecipeFactory),
-				getBookEnchantmentRecipes(vanillaRecipeFactory, ingredientManager)
+				getRepairRecipes(vanillaRecipeFactory, ingredientHelper),
+				getBookEnchantmentRecipes(vanillaRecipeFactory, ingredientManager, ingredientHelper)
 			)
 			.toList();
 	}
@@ -86,7 +93,8 @@ public final class AnvilRecipeMaker {
 
 	private static Stream<IJeiAnvilRecipe> getBookEnchantmentRecipes(
 		IVanillaRecipeFactory vanillaRecipeFactory,
-		IIngredientManager ingredientManager
+		IIngredientManager ingredientManager,
+		IIngredientHelper<ItemStack> ingredientHelper
 	) {
 		Registry<Enchantment> registry = RegistryUtil.getRegistry(Registries.ENCHANTMENT);
 		List<EnchantmentData> enchantmentDatas = registry.holders()
@@ -96,12 +104,13 @@ public final class AnvilRecipeMaker {
 		return ingredientManager.getAllItemStacks()
 			.stream()
 			.filter(ItemStack::isEnchantable)
-			.flatMap(ingredient -> getBookEnchantmentRecipes(vanillaRecipeFactory, enchantmentDatas, ingredient));
+			.flatMap(ingredient -> getBookEnchantmentRecipes(vanillaRecipeFactory, enchantmentDatas, ingredientHelper, ingredient));
 	}
 
 	private static Stream<IJeiAnvilRecipe> getBookEnchantmentRecipes(
 		IVanillaRecipeFactory vanillaRecipeFactory,
 		List<EnchantmentData> enchantmentDatas,
+		IIngredientHelper<ItemStack> ingredientHelper,
 		ItemStack ingredient
 	) {
 		return enchantmentDatas.stream()
@@ -110,7 +119,11 @@ public final class AnvilRecipeMaker {
 			.filter(enchantedBooks -> !enchantedBooks.isEmpty())
 			.map(enchantedBooks -> {
 				List<ItemStack> outputs = getEnchantedIngredients(ingredient, enchantedBooks);
-				return vanillaRecipeFactory.createAnvilRecipe(ingredient, enchantedBooks, outputs);
+				String ingredientId = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
+				String ingredientIdPath = ResourceLocationUtil.sanitizePath(ingredientId);
+				String id = "enchantment." + ingredientIdPath;
+				ResourceLocation uid = ResourceLocation.fromNamespaceAndPath(ModIds.MINECRAFT_ID, id);
+				return vanillaRecipeFactory.createAnvilRecipe(ingredient, enchantedBooks, outputs, uid);
 			});
 	}
 
@@ -237,12 +250,16 @@ public final class AnvilRecipeMaker {
 		);
 	}
 
-	private static Stream<IJeiAnvilRecipe> getRepairRecipes(IVanillaRecipeFactory vanillaRecipeFactory) {
+	private static Stream<IJeiAnvilRecipe> getRepairRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientHelper<ItemStack> ingredientHelper) {
 		return getRepairData()
-			.flatMap(repairData -> getRepairRecipes(repairData, vanillaRecipeFactory));
+			.flatMap(repairData -> getRepairRecipes(repairData, vanillaRecipeFactory, ingredientHelper));
 	}
 
-	private static Stream<IJeiAnvilRecipe> getRepairRecipes(RepairData repairData, IVanillaRecipeFactory vanillaRecipeFactory) {
+	private static Stream<IJeiAnvilRecipe> getRepairRecipes(
+		RepairData repairData,
+		IVanillaRecipeFactory vanillaRecipeFactory,
+		IIngredientHelper<ItemStack> ingredientHelper
+	) {
 		Ingredient repairIngredient = repairData.getRepairIngredient();
 		List<ItemStack> repairables = repairData.getRepairables();
 
@@ -250,18 +267,31 @@ public final class AnvilRecipeMaker {
 
 		return repairables.stream()
 			.mapMulti((itemStack, consumer) -> {
+				String ingredientIdPath = ResourceLocationUtil.sanitizePath(ingredientHelper.getUniqueId(itemStack, UidContext.Recipe));
+				String itemModId = ingredientHelper.getResourceLocation(itemStack).getNamespace();
+
 				ItemStack damagedThreeQuarters = itemStack.copy();
 				damagedThreeQuarters.setDamageValue(damagedThreeQuarters.getMaxDamage() * 3 / 4);
 				ItemStack damagedHalf = itemStack.copy();
 				damagedHalf.setDamageValue(damagedHalf.getMaxDamage() / 2);
 
-				IJeiAnvilRecipe repairWithSame = vanillaRecipeFactory.createAnvilRecipe(List.of(damagedThreeQuarters), List.of(damagedThreeQuarters), List.of(damagedHalf));
+				IJeiAnvilRecipe repairWithSame = vanillaRecipeFactory.createAnvilRecipe(
+					List.of(damagedThreeQuarters),
+					List.of(damagedThreeQuarters),
+					List.of(damagedHalf),
+					ResourceLocation.fromNamespaceAndPath(itemModId, "self_repair." + ingredientIdPath)
+				);
 				consumer.accept(repairWithSame);
 
 				if (!repairMaterials.isEmpty()) {
 					ItemStack damagedFully = itemStack.copy();
 					damagedFully.setDamageValue(damagedFully.getMaxDamage());
-					IJeiAnvilRecipe repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(List.of(damagedFully), repairMaterials, List.of(damagedThreeQuarters));
+					IJeiAnvilRecipe repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(
+						List.of(damagedFully),
+						repairMaterials,
+						List.of(damagedThreeQuarters),
+						ResourceLocation.fromNamespaceAndPath(itemModId, "materials_repair." + ingredientIdPath)
+					);
 					consumer.accept(repairWithMaterial);
 				}
 			});

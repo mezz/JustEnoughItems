@@ -3,7 +3,17 @@ package mezz.jei.test.lib;
 import mezz.jei.api.ingredients.IIngredientType;
 
 public class TestIngredient {
-	public static final IIngredientType<TestIngredient> TYPE = () -> TestIngredient.class;
+	public static final IIngredientType<TestIngredient> TYPE = new IIngredientType<>() {
+		@Override
+		public String getUid() {
+			return "test";
+		}
+
+		@Override
+		public Class<? extends TestIngredient> getIngredientClass() {
+			return TestIngredient.class;
+		}
+	};
 
 	private final int number;
 

@@ -1,9 +1,14 @@
 package mezz.jei.neoforge.platform;
 
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.util.BrewingRecipeMakerCommon;
+import mezz.jei.library.util.ResourceLocationUtil;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -36,8 +41,11 @@ public class BrewingRecipeMaker {
 			potionBrewing
 		);
 
+		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
+
 		addModdedBrewingRecipes(
 			vanillaRecipeFactory,
+			itemStackHelper,
 			brewingRecipes,
 			recipes
 		);
@@ -50,6 +58,7 @@ public class BrewingRecipeMaker {
 
 	private static void addModdedBrewingRecipes(
 		IVanillaRecipeFactory vanillaRecipeFactory,
+		IIngredientHelper<ItemStack> itemStackHelper,
 		Collection<IBrewingRecipe> brewingRecipes,
 		Collection<IJeiBrewingRecipe> recipes
 	) {
@@ -64,7 +73,15 @@ public class BrewingRecipeMaker {
 						.filter(i -> !i.isEmpty())
 						.toList();
 					if (!output.isEmpty() && !inputs.isEmpty()) {
-						IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(List.of(ingredients), inputs, output);
+						String outputModId = itemStackHelper.getResourceLocation(output).getNamespace();
+						String outputUid = itemStackHelper.getUniqueId(output, UidContext.Recipe);
+						String uidPath = ResourceLocationUtil.sanitizePath(outputUid);
+						IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(
+							List.of(ingredients),
+							inputs,
+							output,
+							ResourceLocation.fromNamespaceAndPath(outputModId, uidPath)
+						);
 						recipes.add(recipe);
 					}
 				}

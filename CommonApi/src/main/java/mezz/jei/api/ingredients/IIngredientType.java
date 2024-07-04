@@ -1,11 +1,11 @@
 package mezz.jei.api.ingredients;
 
-import java.util.Collection;
-import java.util.Optional;
-
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * A type of ingredient (i.e. ItemStack, FluidStack, etc) handled by JEI.
@@ -19,6 +19,15 @@ public interface IIngredientType<T> {
 	 * @return The class of the ingredient for this type.
 	 */
 	Class<? extends T> getIngredientClass();
+
+	/**
+	 * @return The unique ID for this type, used for serialization to and from disk.
+	 * @since 19.1.0
+	 */
+	default String getUid() {
+		Class<? extends T> ingredientClass = getIngredientClass();
+		return ingredientClass.getName();
+	}
 
 	/**
 	 * Helper to cast an unknown ingredient to this type if it matches.

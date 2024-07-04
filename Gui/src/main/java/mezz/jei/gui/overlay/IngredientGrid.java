@@ -1,30 +1,29 @@
 package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.input.IClickableIngredientInternal;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
-import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.DeleteItemInputHandler;
+import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.util.AlignmentUtil;
-import mezz.jei.gui.util.CheatUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderType;
 
@@ -59,13 +58,12 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		IModIdHelper modIdHelper,
 		IConnectionToServer serverConnection,
 		IInternalKeyMappings keyBindings,
-		IColorHelper colorHelper,
-		CheatUtil cheatUtil
+		IColorHelper colorHelper
 	) {
 		this.gridConfig = gridConfig;
 		this.ingredientListRenderer = new IngredientListRenderer(editModeConfig, toggleState, ingredientManager);
 		this.tooltipHelper = new IngredientGridTooltipHelper(ingredientManager, ingredientFilterConfig, toggleState, modIdHelper, keyBindings, colorHelper);
-		this.deleteItemHandler = new DeleteItemInputHandler(this, toggleState, clientConfig, serverConnection, cheatUtil);
+		this.deleteItemHandler = new DeleteItemInputHandler(this, toggleState, clientConfig, serverConnection, ingredientManager);
 	}
 
 	public IUserInputHandler getInputHandler() {
@@ -147,7 +145,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 			if (!this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				ingredientListRenderer.getSlots()
 					.filter(s -> s.getArea().contains(mouseX, mouseY))
-					.filter(s -> s.getIngredientRenderer().isPresent())
+					.filter(s -> s.getElement().isPresent())
 					.findFirst()
 					.ifPresent(s -> drawHighlight(guiGraphics, s.getArea()));
 			}
@@ -178,10 +176,9 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 			} else {
 				ingredientListRenderer.getSlots()
 					.filter(s -> s.isMouseOver(mouseX, mouseY))
-					.map(IngredientListSlot::getTypedIngredient)
-					.flatMap(Optional::stream)
+					.filter(s -> s.getElement().isPresent())
 					.findFirst()
-					.ifPresent(ingredient -> tooltipHelper.drawTooltip(guiGraphics, mouseX, mouseY, ingredient));
+					.ifPresent(s -> s.drawTooltip(guiGraphics, mouseX, mouseY, tooltipHelper));
 			}
 		}
 	}
@@ -197,19 +194,20 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return ingredientListRenderer.getSlots()
 			.filter(s -> s.isMouseOver(mouseX, mouseY))
-			.map(IngredientListSlot::getIngredientRenderer)
+			.map(IngredientListSlot::getClickableIngredient)
 			.flatMap(Optional::stream);
 	}
 
 	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
 		return this.ingredientListRenderer.getSlots()
-			.map(IngredientListSlot::getTypedIngredient)
+			.map(IngredientListSlot::getElement)
 			.flatMap(Optional::stream)
+			.map(IElement::getTypedIngredient)
 			.map(i -> i.getIngredient(ingredientType))
 			.flatMap(Optional::stream);
 	}
 
-	public void set(int firstItemIndex, List<ITypedIngredient<?>> ingredientList) {
+	public void set(int firstItemIndex, List<IElement<?>> ingredientList) {
 		this.ingredientListRenderer.set(firstItemIndex, ingredientList);
 	}
 

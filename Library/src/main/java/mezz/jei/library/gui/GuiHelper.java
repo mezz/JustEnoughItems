@@ -67,6 +67,14 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
+	public <V> IDrawable createDrawableIngredient(ITypedIngredient<V> ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		IIngredientType<V> type = ingredient.getType();
+		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
+		return new DrawableIngredient<>(ingredientManager, ingredient, ingredientRenderer);
+	}
+
+	@Override
 	public ICraftingGridHelper createCraftingGridHelper() {
 		return new CraftingGridHelper();
 	}

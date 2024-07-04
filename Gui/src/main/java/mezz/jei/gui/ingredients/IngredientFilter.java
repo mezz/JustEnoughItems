@@ -12,7 +12,9 @@ import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
+import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
+import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchLowMem;
@@ -55,7 +57,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 	private IElementSearch elementSearch;
 
 	@Nullable
-	private List<ITypedIngredient<?>> ingredientListCached;
+	private List<IElement<?>> ingredientListCached;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 
 	public IngredientFilter(
@@ -178,11 +180,13 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 	}
 
 	@Override
-	public List<ITypedIngredient<?>> getIngredientList() {
+	public List<IElement<?>> getElements() {
 		String filterText = this.filterTextSource.getFilterText();
 		filterText = filterText.toLowerCase();
 		if (ingredientListCached == null) {
-			ingredientListCached = getIngredientListUncached(filterText);
+			ingredientListCached = getIngredientListUncached(filterText)
+				.<IElement<?>>map(IngredientElement::new)
+				.toList();
 		}
 		return ingredientListCached;
 	}
@@ -201,13 +205,15 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 	}
 
 	public <T> List<T> getFilteredIngredients(IIngredientType<T> ingredientType) {
-		return getIngredientList().stream()
+		return getElements()
+			.stream()
+			.map(IElement::getTypedIngredient)
 			.map(i -> i.getIngredient(ingredientType))
 			.flatMap(Optional::stream)
 			.toList();
 	}
 
-	private List<ITypedIngredient<?>> getIngredientListUncached(String filterText) {
+	private Stream<ITypedIngredient<?>> getIngredientListUncached(String filterText) {
 		String[] filters = filterText.split("\\|");
 		List<SearchTokens> searchTokens = Arrays.stream(filters)
 			.map(this::parseSearchTokens)
@@ -228,8 +234,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		return elementInfoStream
 			.filter(info -> info.getElement().isVisible())
 			.sorted(sorter.getComparator(this, this.ingredientManager))
-			.<ITypedIngredient<?>>map(IListElementInfo::getTypedIngredient)
-			.toList();
+			.map(IListElementInfo::getTypedIngredient);
 	}
 
 	private static <T> Optional<IListElementInfo<T>> checkForMatch(IListElementInfo<?> info, IIngredientType<T> ingredientType, String uid, Function<ITypedIngredient<T>, String> uidFunction) {

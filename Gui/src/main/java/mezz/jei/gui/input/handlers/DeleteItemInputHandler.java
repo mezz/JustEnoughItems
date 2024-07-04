@@ -1,5 +1,6 @@
 package mezz.jei.gui.input.handlers;
 
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
@@ -11,7 +12,6 @@ import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.IIngredientGrid;
-import mezz.jei.gui.util.CheatUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -28,20 +28,20 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 	private final IClientToggleState toggleState;
 	private final IClientConfig clientConfig;
 	private final IConnectionToServer serverConnection;
-	private final CheatUtil cheatUtil;
+	private final IIngredientManager ingredientManager;
 
 	public DeleteItemInputHandler(
 		IIngredientGrid ingredientGrid,
 		IClientToggleState toggleState,
 		IClientConfig clientConfig,
 		IConnectionToServer serverConnection,
-		CheatUtil cheatUtil
+		IIngredientManager ingredientManager
 	) {
 		this.ingredientGrid = ingredientGrid;
 		this.toggleState = toggleState;
 		this.clientConfig = clientConfig;
 		this.serverConnection = serverConnection;
-		this.cheatUtil = cheatUtil;
+		this.ingredientManager = ingredientManager;
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 		if (giveMode == GiveMode.MOUSE_PICKUP) {
 			return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY)
 				.findFirst()
-				.map(cheatUtil::getCheatItemStack)
+				.map(c -> c.getCheatItemStack(ingredientManager))
 				.map(i -> !ServerCommandUtil.canStack(itemStack, i))
 				.orElse(true);
 		}

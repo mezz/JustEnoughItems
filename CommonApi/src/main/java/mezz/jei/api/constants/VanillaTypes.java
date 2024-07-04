@@ -15,6 +15,11 @@ public final class VanillaTypes {
 	 */
 	public static final IIngredientTypeWithSubtypes<Item, ItemStack> ITEM_STACK = new IIngredientTypeWithSubtypes<>() {
 		@Override
+		public String getUid() {
+			return "item_stack";
+		}
+
+		@Override
 		public Class<? extends ItemStack> getIngredientClass() {
 			return ItemStack.class;
 		}

@@ -20,6 +20,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -104,6 +105,11 @@ public class BrewingRecipeCategory implements IRecipeCategory<IJeiBrewingRecipe>
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 81, 3)
 			.addItemStack(recipe.getPotionOutput())
 			.setBackground(slotDrawable, -1, -1);
+	}
+
+	@Override
+	public @Nullable ResourceLocation getRegistryName(IJeiBrewingRecipe recipe) {
+		return recipe.getUid();
 	}
 
 	private static class BrewingBubblesTickTimer implements ITickTimer {

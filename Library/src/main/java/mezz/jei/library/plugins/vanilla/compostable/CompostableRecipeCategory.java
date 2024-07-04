@@ -15,6 +15,7 @@ import mezz.jei.common.util.Translator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 
@@ -71,5 +72,10 @@ public class CompostableRecipeCategory implements IRecipeCategory<IJeiComposting
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = minecraft.font;
 		guiGraphics.drawString(font, text, 24, 5, 0xFF808080, false);
+	}
+
+	@Override
+	public ResourceLocation getRegistryName(IJeiCompostingRecipe recipe) {
+		return recipe.getUid();
 	}
 }

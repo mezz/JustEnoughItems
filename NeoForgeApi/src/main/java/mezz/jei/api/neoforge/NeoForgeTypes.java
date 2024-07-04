@@ -16,6 +16,11 @@ public final class NeoForgeTypes {
 	 */
 	public static final IIngredientTypeWithSubtypes<Fluid, FluidStack> FLUID_STACK = new IIngredientTypeWithSubtypes<>() {
 		@Override
+		public String getUid() {
+			return "fluid_stack";
+		}
+
+		@Override
 		public Class<? extends FluidStack> getIngredientClass() {
 			return FluidStack.class;
 		}

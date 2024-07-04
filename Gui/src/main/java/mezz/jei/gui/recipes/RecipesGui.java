@@ -1,6 +1,12 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.overlay.elements.IngredientElement;
+import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
+import mezz.jei.gui.recipes.lookups.StaticFocusedRecipes;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
@@ -23,8 +29,8 @@ import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.ClickableIngredientInternal;
-import mezz.jei.common.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.ClickableIngredientInternal;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -69,7 +75,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final IModIdHelper modIdHelper;
 	private final IClientConfig clientConfig;
 	private final IInternalKeyMappings keyBindings;
+	private final IRecipeManager recipeManager;
 	private final Textures textures;
+	private final BookmarkList bookmarks;
+	private final IGuiHelper guiHelper;
 	private final IFocusFactory focusFactory;
 	private final IIngredientManager ingredientManager;
 
@@ -89,6 +98,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final RecipeGuiTabs recipeGuiTabs;
 
 	private final List<RecipeTransferButton> recipeTransferButtons;
+	private final List<RecipeBookmarkButton> recipeBookmarkButtons;
 
 	private final GuiIconButtonSmall nextRecipeCategory;
 	private final GuiIconButtonSmall previousRecipeCategory;
@@ -111,11 +121,17 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IClientConfig clientConfig,
 		Textures textures,
 		IInternalKeyMappings keyBindings,
-		IFocusFactory focusFactory
+		IFocusFactory focusFactory,
+		BookmarkList bookmarks,
+		IGuiHelper guiHelper
 	) {
 		super(Component.literal("Recipes"));
+		this.recipeManager = recipeManager;
 		this.textures = textures;
+		this.bookmarks = bookmarks;
+		this.guiHelper = guiHelper;
 		this.recipeTransferButtons = new ArrayList<>();
+		this.recipeBookmarkButtons = new ArrayList<>();
 		this.recipeTransferManager = recipeTransferManager;
 		this.ingredientManager = ingredientManager;
 		this.modIdHelper = modIdHelper;
@@ -123,7 +139,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.keyBindings = keyBindings;
 		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, focusFactory);
 		this.recipeCatalysts = new RecipeCatalysts(textures, recipeManager);
-		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures, ingredientManager);
+		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures, recipeManager, guiHelper);
 		this.focusFactory = focusFactory;
 		this.minecraft = Minecraft.getInstance();
 
@@ -269,6 +285,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		for (RecipeTransferButton button : recipeTransferButtons) {
 			button.drawToolTip(guiGraphics, mouseX, mouseY);
 		}
+		for (RecipeBookmarkButton button : recipeBookmarkButtons) {
+			button.drawToolTip(guiGraphics, mouseX, mouseY);
+		}
 		RenderSystem.disableBlend();
 
 		hoveredRecipeLayout.ifPresent(l -> l.drawOverlays(guiGraphics, mouseX, mouseY));
@@ -303,6 +322,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		DeltaTracker deltaTracker = minecraft.getTimer();
 		float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
 		for (RecipeTransferButton button : recipeTransferButtons) {
+			button.render(guiGraphics, mouseX, mouseY, partialTicks);
+		}
+		for (RecipeBookmarkButton button : recipeBookmarkButtons) {
 			button.render(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		RenderSystem.disableBlend();
@@ -368,7 +390,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		return recipeSlot.getDisplayedIngredient()
 			.map(displayedIngredient -> {
 				ImmutableRect2i area = absoluteClickedArea(recipeLayout, recipeSlot.getRect());
-				return new ClickableIngredientInternal<>(displayedIngredient, area, false, true);
+				IElement<?> element = new IngredientElement<>(displayedIngredient);
+				return new ClickableIngredientInternal<>(element, area, false, true);
 			});
 	}
 
@@ -425,7 +448,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		double mouseY = input.getMouseY();
 		if (isMouseOver(mouseX, mouseY)) {
 			if (titleStringArea.contains(mouseX, mouseY)) {
-				if (input.is(keyBindings.getLeftClick()) && logic.setCategoryFocus()) {
+				if (input.is(keyBindings.getLeftClick()) && logic.showAllRecipes()) {
 					return true;
 				}
 			} else {
@@ -534,7 +557,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	@Override
 	public void show(List<IFocus<?>> focuses) {
 		IFocusGroup checkedFocuses = focusFactory.createFocusGroup(focuses);
-		if (logic.setFocus(checkedFocuses)) {
+		if (logic.showFocus(checkedFocuses)) {
 			open();
 		}
 	}
@@ -543,7 +566,19 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public void showTypes(List<RecipeType<?>> recipeTypes) {
 		ErrorUtil.checkNotEmpty(recipeTypes, "recipeTypes");
 
-		if (logic.setCategoryFocus(recipeTypes)) {
+		if (logic.showCategories(recipeTypes)) {
+			open();
+		}
+	}
+
+	@Override
+	public <T> void showRecipes(IRecipeCategory<T> recipeCategory, List<T> recipes, List<IFocus<?>> focuses) {
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+		ErrorUtil.checkNotEmpty(recipes, "recipes");
+		IFocusGroup checkedFocuses = focusFactory.createFocusGroup(focuses);
+
+		IFocusedRecipes<T> focusedRecipes = new StaticFocusedRecipes<>(recipeCategory, recipes);
+		if (logic.showRecipes(focusedRecipes, checkedFocuses)) {
 			open();
 		}
 	}
@@ -604,7 +639,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			recipeLayouts.add(recipeLayout);
 		}
 
-		addRecipeTransferButtons(recipeLayouts);
+		addRecipeButtons(recipeLayouts);
 
 		nextPage.active = previousPage.active = logic.hasMultiplePages();
 		nextRecipeCategory.active = previousRecipeCategory.active = logic.hasMultipleCategories();
@@ -616,7 +651,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		recipeGuiTabs.initLayout(this.area);
 	}
 
-	private void addRecipeTransferButtons(List<IRecipeLayoutDrawable<?>> recipeLayouts) {
+	private void addRecipeButtons(List<IRecipeLayoutDrawable<?>> recipeLayouts) {
 		if (minecraft == null) {
 			return;
 		}
@@ -630,9 +665,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 		this.recipeTransferButtons.clear();
 
+		for (GuiEventListener button : this.recipeBookmarkButtons) {
+			removeWidget(button);
+		}
+		this.recipeBookmarkButtons.clear();
+
 		AbstractContainerMenu container = getParentContainer().orElse(null);
 
-		recipeLayouts.forEach(recipeLayout ->
+		for (IRecipeLayoutDrawable<?> recipeLayout : recipeLayouts) {
 			{
 				Rect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
 				IDrawable icon = textures.getRecipeTransfer();
@@ -641,7 +681,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				addRenderableWidget(button);
 				this.recipeTransferButtons.add(button);
 			}
-		);
+			{
+				RecipeBookmarkButton.create(recipeLayout, ingredientManager, bookmarks, textures, recipeManager, guiHelper)
+					.ifPresent(button -> {
+						addRenderableWidget(button);
+						this.recipeBookmarkButtons.add(button);
+					});
+			}
+		}
 	}
 
 	private Optional<AbstractContainerMenu> getParentContainer() {

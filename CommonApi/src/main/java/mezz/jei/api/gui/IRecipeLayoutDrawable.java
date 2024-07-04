@@ -76,6 +76,12 @@ public interface IRecipeLayoutDrawable<R> {
 	Rect2i getRecipeTransferButtonArea();
 
 	/**
+	 * Get the position of the recipe bookmark button area, relative to the recipe layout drawable.
+	 * @since 19.1.0
+	 */
+	Rect2i getRecipeBookmarkButtonArea();
+
+	/**
 	 * Get a view of the recipe slots for this recipe layout.
 	 * @since 11.5.0
 	 */

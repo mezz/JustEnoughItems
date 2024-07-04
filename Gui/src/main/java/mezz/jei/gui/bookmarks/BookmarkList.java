@@ -1,127 +1,104 @@
 package mezz.jei.gui.bookmarks;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.IFocusFactory;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.gui.config.IBookmarkConfig;
+import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 public class BookmarkList implements IIngredientGridSource {
-	private final List<ITypedIngredient<?>> list = new LinkedList<>();
+	private final List<IBookmark> bookmarks = new LinkedList<>();
+	private final IRecipeManager recipeManager;
+	private final IFocusFactory focusFactory;
 	private final IIngredientManager ingredientManager;
 	private final RegistryAccess registryAccess;
 	private final IBookmarkConfig bookmarkConfig;
 	private final IClientConfig clientConfig;
+	private final IGuiHelper guiHelper;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 
-	public BookmarkList(IIngredientManager ingredientManager, RegistryAccess registryAccess, IBookmarkConfig bookmarkConfig, IClientConfig clientConfig) {
+	public BookmarkList(
+		IRecipeManager recipeManager,
+		IFocusFactory focusFactory,
+		IIngredientManager ingredientManager,
+		RegistryAccess registryAccess,
+		IBookmarkConfig bookmarkConfig,
+		IClientConfig clientConfig,
+		IGuiHelper guiHelper
+	) {
+		this.recipeManager = recipeManager;
+		this.focusFactory = focusFactory;
 		this.ingredientManager = ingredientManager;
 		this.registryAccess = registryAccess;
 		this.bookmarkConfig = bookmarkConfig;
 		this.clientConfig = clientConfig;
+		this.guiHelper = guiHelper;
 	}
 
-	public <T> boolean add(ITypedIngredient<T> value) {
+	public boolean add(IBookmark value) {
 		if (contains(value)) {
 			return false;
 		}
 		addToList(value, clientConfig.isAddingBookmarksToFrontEnabled());
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(ingredientManager, registryAccess, list);
+		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarks);
 		return true;
 	}
 
-	private <T> boolean contains(ITypedIngredient<T> value) {
-		return indexOf(value) >= 0;
+	public boolean contains(IBookmark value) {
+		return this.bookmarks.contains(value);
 	}
 
-	private <T> int indexOf(ITypedIngredient<T> value) {
-		// We cannot assume that ingredients have a working equals() implementation. Even ItemStack doesn't have one...
-		Optional<ITypedIngredient<T>> normalized = normalize(ingredientManager, value);
-		if (normalized.isEmpty()) {
-			return -1;
-		}
-		value = normalized.get();
-
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
-		String uniqueId = ingredientHelper.getUniqueId(value.getIngredient(), UidContext.Ingredient);
-
-		for (int i = 0; i < list.size(); i++) {
-			ITypedIngredient<?> existing = list.get(i);
-			if (equal(ingredientHelper, value, uniqueId, existing)) {
-				return i;
-			}
-		}
-		return -1;
+	public <T> boolean toggleBookmark(IElement<T> element) {
+		IBookmark bookmark = element.getBookmark()
+			.orElseGet(() -> {
+				ITypedIngredient<T> ingredient = element.getTypedIngredient();
+				return IngredientBookmark.create(ingredient, ingredientManager);
+			});
+		return toggleBookmark(bookmark);
 	}
 
-	public static <T> Optional<ITypedIngredient<T>> normalize(IIngredientManager ingredientManager, ITypedIngredient<T> value) {
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
-		T ingredient = ingredientHelper.normalizeIngredient(value.getIngredient());
-		return ingredientManager.createTypedIngredient(value.getType(), ingredient);
+	public boolean toggleBookmark(IBookmark bookmark) {
+		return remove(bookmark) ||
+			add(bookmark);
 	}
 
-	private static <T> boolean equal(IIngredientHelper<T> ingredientHelper, ITypedIngredient<T> a, String uidA, ITypedIngredient<?> b) {
-		if (a.getIngredient() == b.getIngredient()) {
-			return true;
-		}
-
-		if (a.getIngredient() instanceof ItemStack itemStackA && b.getIngredient() instanceof ItemStack itemStackB) {
-			return ItemStack.matches(itemStackA, itemStackB);
-		}
-
-		Optional<T> filteredB = b.getIngredient(a.getType());
-		if (filteredB.isPresent()) {
-			T ingredientB = filteredB.get();
-			String uidB = ingredientHelper.getUniqueId(ingredientB, UidContext.Ingredient);
-			return uidA.equals(uidB);
-		}
-
-		return false;
-	}
-
-	public <T> boolean remove(ITypedIngredient<T> ingredient) {
-		int index = indexOf(ingredient);
-		if (index < 0) {
+	public boolean remove(IBookmark ingredient) {
+		if (!bookmarks.remove(ingredient)) {
 			return false;
 		}
 
-		list.remove(index);
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(ingredientManager, registryAccess, list);
+		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarks);
 		return true;
 	}
 
-	public <T> void addToList(ITypedIngredient<T> value, boolean addToFront) {
-		Optional<ITypedIngredient<T>> result = normalize(ingredientManager, value);
-		if (result.isEmpty()) {
-			return;
-		}
-		value = result.get();
-
+	public void addToList(IBookmark value, boolean addToFront) {
 		if (addToFront) {
-			list.addFirst(value);
+			bookmarks.addFirst(value);
 		} else {
-			list.add(value);
+			bookmarks.add(value);
 		}
 	}
 
 	@Override
-	public List<ITypedIngredient<?>> getIngredientList() {
-		return list;
+	public List<IElement<?>> getElements() {
+		return bookmarks.stream()
+			.<IElement<?>>map(IBookmark::getElement)
+			.toList();
 	}
 
 	public boolean isEmpty() {
-		return list.isEmpty();
+		return bookmarks.isEmpty();
 	}
 
 	@Override

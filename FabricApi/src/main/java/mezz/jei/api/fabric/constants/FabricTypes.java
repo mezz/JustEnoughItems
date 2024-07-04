@@ -1,8 +1,8 @@
 package mezz.jei.api.fabric.constants;
 
+import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
-import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
 import net.minecraft.world.level.material.Fluid;
 
 /**
@@ -15,6 +15,11 @@ public final class FabricTypes {
 	 * @since 10.1.0
 	 */
 	public static final IIngredientTypeWithSubtypes<Fluid, IJeiFluidIngredient> FLUID_STACK = new IIngredientTypeWithSubtypes<>() {
+		@Override
+		public String getUid() {
+			return "fluid_stack";
+		}
+
 		@Override
 		public Class<? extends IJeiFluidIngredient> getIngredientClass() {
 			return IJeiFluidIngredient.class;

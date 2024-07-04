@@ -2,7 +2,9 @@ package mezz.jei.library.plugins.vanilla.brewing;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,13 +13,21 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 	private final List<ItemStack> ingredients;
 	private final List<ItemStack> potionInputs;
 	private final ItemStack potionOutput;
+	private final @Nullable ResourceLocation uid;
 	private final BrewingRecipeUtil brewingRecipeUtil;
 	private final int hashCode;
 
-	public JeiBrewingRecipe(List<ItemStack> ingredients, List<ItemStack> potionInputs, ItemStack potionOutput, BrewingRecipeUtil brewingRecipeUtil) {
+	public JeiBrewingRecipe(
+		List<ItemStack> ingredients,
+		List<ItemStack> potionInputs,
+		ItemStack potionOutput,
+		@Nullable ResourceLocation uid,
+		BrewingRecipeUtil brewingRecipeUtil
+	) {
 		this.ingredients = List.copyOf(ingredients);
 		this.potionInputs = List.copyOf(potionInputs);
 		this.potionOutput = potionOutput;
+		this.uid = uid;
 		this.brewingRecipeUtil = brewingRecipeUtil;
 
 		brewingRecipeUtil.addRecipe(potionInputs, potionOutput);
@@ -42,6 +52,12 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 	@Override
 	public ItemStack getPotionOutput() {
 		return potionOutput;
+	}
+
+	@Nullable
+	@Override
+	public ResourceLocation getUid() {
+		return uid;
 	}
 
 	@Override
