@@ -4,11 +4,12 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -25,7 +26,6 @@ import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.ScreenPropertiesCache;
-import mezz.jei.gui.util.CheatUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -63,12 +63,12 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		IScreenHelper screenHelper,
 		IConnectionToServer serverConnection,
 		IInternalKeyMappings keyBindings,
-		CheatUtil cheatUtil
+		IIngredientManager ingredientManager
 	) {
 		this.bookmarkList = bookmarkList;
 		this.toggleState = toggleState;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, textures, toggleState, keyBindings);
-		this.cheatInputHandler = new CheatInputHandler(this, toggleState, clientConfig, serverConnection, cheatUtil);
+		this.cheatInputHandler = new CheatInputHandler(this, toggleState, clientConfig, serverConnection, ingredientManager);
 		this.contents = contents;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		bookmarkList.addSourceListChangedListener(() -> {

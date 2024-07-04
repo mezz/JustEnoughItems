@@ -1,5 +1,6 @@
 package mezz.jei.common.gui.textures;
 
+import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.gui.elements.HighResolutionDrawable;
 import net.minecraft.resources.ResourceLocation;
 
@@ -30,6 +31,7 @@ public class Textures {
 	private final IDrawableStatic arrowPrevious;
 	private final IDrawableStatic arrowNext;
 	private final IDrawableStatic recipeTransfer;
+	private final DrawableSprite recipeBookmark;
 	private final IDrawableStatic configButtonIcon;
 	private final IDrawableStatic configButtonCheatIcon;
 	private final IDrawableStatic bookmarkButtonDisabledIcon;
@@ -68,6 +70,7 @@ public class Textures {
 		this.arrowNext = createGuiSprite("icons/arrow_next", 9, 9)
 			.trim(0, 0, 1, 1);
 		this.recipeTransfer = createGuiSprite("icons/recipe_transfer", 7, 7);
+		this.recipeBookmark = createGuiSprite("icons/recipe_bookmark", 9, 9);
 		this.configButtonIcon = createGuiSprite("icons/config_button", 16, 16);
 		this.configButtonCheatIcon = createGuiSprite("icons/config_button_cheat", 16, 16);
 		this.bookmarkButtonDisabledIcon = createGuiSprite("icons/bookmark_button_disabled", 16, 16);
@@ -190,6 +193,10 @@ public class Textures {
 
 	public IDrawableStatic getFlameIcon() {
 		return flameIcon;
+	}
+
+	public IDrawable getRecipeBookmark() {
+		return recipeBookmark;
 	}
 
 	public JeiSpriteUploader getSpriteUploader() {

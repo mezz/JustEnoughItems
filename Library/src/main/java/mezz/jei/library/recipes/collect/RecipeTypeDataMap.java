@@ -35,7 +35,10 @@ public class RecipeTypeDataMap {
 	public <T> RecipeTypeData<T> get(RecipeType<T> recipeType) {
 		RecipeTypeData<?> data = this.uidMap.get(recipeType.getUid());
 		if (data == null) {
-			throw new IllegalStateException("There is no recipe type registered for: " + recipeType.getUid());
+			throw new IllegalStateException(
+				"There is no recipe category registered for: " + recipeType.getUid() +
+				"\nA recipe category must be registered in order to use this recipe type."
+			);
 		}
 		@SuppressWarnings("unchecked")
 		RecipeTypeData<T> recipeTypeData = (RecipeTypeData<T>) data;

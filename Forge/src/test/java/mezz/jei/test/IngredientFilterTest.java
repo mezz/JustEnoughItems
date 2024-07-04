@@ -107,7 +107,7 @@ public class IngredientFilterTest {
 	public void testSetup() {
 		Assertions.assertNotNull(ingredientFilter);
 
-		List<?> ingredientList = ingredientFilter.getIngredientList();
+		List<?> ingredientList = ingredientFilter.getElements();
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
 	}
 
@@ -174,7 +174,7 @@ public class IngredientFilterTest {
 
 		ingredientFilter.updateHidden();
 
-		List<?> ingredientList = ingredientFilter.getIngredientList();
+		List<?> ingredientList = ingredientFilter.getElements();
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientList.size());
 	}
 

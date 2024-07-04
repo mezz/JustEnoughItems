@@ -37,7 +37,6 @@ public final class ErrorUtil {
 		return ingredientHelper.getErrorInfo(ingredient);
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	public static String getItemStackInfo(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
 			return "null";

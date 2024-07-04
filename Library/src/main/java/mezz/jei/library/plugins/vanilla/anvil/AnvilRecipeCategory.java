@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
@@ -107,6 +108,11 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 		// Show red if the player doesn't have enough levels
 		int mainColor = playerHasEnoughLevels(player, cost) ? 0xFF80FF20 : 0xFFFF6060;
 		drawRepairCost(minecraft, guiGraphics, text, mainColor);
+	}
+
+	@Override
+	public @Nullable ResourceLocation getRegistryName(IJeiAnvilRecipe recipe) {
+		return recipe.getUid();
 	}
 
 	private static boolean playerHasEnoughLevels(@Nullable LocalPlayer player, int cost) {

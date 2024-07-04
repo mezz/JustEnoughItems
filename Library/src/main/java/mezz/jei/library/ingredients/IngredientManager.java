@@ -73,6 +73,16 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	@Override
+	public Optional<IIngredientType<?>> getIngredientTypeForUid(String ingredientTypeUid) {
+		ErrorUtil.checkNotNull(ingredientTypeUid, "ingredientTypeUid");
+
+		return this.registeredIngredients.getIngredientTypes()
+			.stream()
+			.filter(t -> ingredientTypeUid.equals(t.getUid()))
+			.findFirst();
+	}
+
+	@Override
 	public <V> void addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
 		ErrorUtil.assertMainThread();
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
@@ -153,9 +163,28 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	@Override
+	public <V> ITypedIngredient<V> normalizeTypedIngredient(ITypedIngredient<V> typedIngredient) {
+		IIngredientType<V> type = typedIngredient.getType();
+		IIngredientHelper<V> ingredientHelper = getIngredientHelper(type);
+		V ingredient = typedIngredient.getIngredient();
+		V normalized = ingredientHelper.normalizeIngredient(ingredient);
+		return TypedIngredient.createUnvalidated(type, normalized);
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	@Deprecated
 	public <V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
 		return registeredIngredients
 			.getIngredientInfo(ingredientType)
 			.getIngredientByUid(ingredientUuid);
+	}
+
+	@Override
+	public <V> Optional<ITypedIngredient<V>> getTypedIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
+		return registeredIngredients
+			.getIngredientInfo(ingredientType)
+			.getIngredientByUid(ingredientUuid)
+			.flatMap(i -> TypedIngredient.createAndFilterInvalid(this, ingredientType, i, true));
 	}
 }

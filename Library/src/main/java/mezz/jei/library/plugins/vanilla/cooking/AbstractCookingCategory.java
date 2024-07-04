@@ -3,7 +3,6 @@ package mezz.jei.library.plugins.vanilla.cooking;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -14,7 +13,9 @@ import mezz.jei.common.Constants;
 import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.level.block.Block;
@@ -115,5 +116,10 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	@Override
 	public boolean isHandled(T recipe) {
 		return !recipe.isSpecial();
+	}
+
+	@Override
+	public ResourceLocation getRegistryName(T recipe) {
+		return recipe.getId();
 	}
 }

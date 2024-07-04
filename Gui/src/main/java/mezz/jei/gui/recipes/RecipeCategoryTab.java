@@ -1,19 +1,15 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -29,13 +25,23 @@ import java.util.Optional;
 public class RecipeCategoryTab extends RecipeGuiTab {
 	private final IRecipeGuiLogic logic;
 	private final IRecipeCategory<?> category;
-	private final IIngredientManager ingredientManager;
+	private final IRecipeManager recipeManager;
+	private final IGuiHelper guiHelper;
 
-	public RecipeCategoryTab(IRecipeGuiLogic logic, IRecipeCategory<?> category, Textures textures, int x, int y, IIngredientManager ingredientManager) {
+	public RecipeCategoryTab(
+		IRecipeGuiLogic logic,
+		IRecipeCategory<?> category,
+		Textures textures,
+		int x,
+		int y,
+		IRecipeManager recipeManager,
+		IGuiHelper guiHelper
+	) {
 		super(textures, x, y);
 		this.logic = logic;
 		this.category = category;
-		this.ingredientManager = ingredientManager;
+		this.recipeManager = recipeManager;
+		this.guiHelper = guiHelper;
 	}
 
 	@Override
@@ -58,46 +64,10 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	public void draw(boolean selected, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		super.draw(selected, guiGraphics, mouseX, mouseY);
 
-		int iconX = x + 4;
-		int iconY = y + 4;
-
-		IDrawable icon = category.getIcon();
-		//noinspection ConstantConditions
-		if (icon != null) {
-			iconX += (16 - icon.getWidth()) / 2;
-			iconY += (16 - icon.getHeight()) / 2;
-			icon.draw(guiGraphics, iconX, iconY);
-		} else {
-			Optional<ITypedIngredient<?>> firstCatalyst = logic.getRecipeCatalysts(category)
-				.findFirst();
-			if (firstCatalyst.isPresent()) {
-				ITypedIngredient<?> ingredient = firstCatalyst.get();
-				renderIngredient(guiGraphics, iconX, iconY, ingredient, ingredientManager);
-			} else {
-				String text = category.getTitle().getString().substring(0, 2);
-				Minecraft minecraft = Minecraft.getInstance();
-				Font fontRenderer = minecraft.font;
-				int textCenterX = x + (TAB_WIDTH / 2);
-				int textCenterY = y + (TAB_HEIGHT / 2) - 3;
-				int color = isMouseOver(mouseX, mouseY) ? 0xFFFFA0 : 0xE0E0E0;
-				int stringCenter = fontRenderer.width(text) / 2;
-				guiGraphics.drawString(fontRenderer, text, textCenterX - stringCenter, textCenterY, color);
-				RenderSystem.setShaderColor(1, 1, 1, 1);
-			}
-		}
-	}
-
-	private static <T> void renderIngredient(GuiGraphics guiGraphics, int iconX, int iconY, ITypedIngredient<T> ingredient, IIngredientManager ingredientManager) {
-		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient.getType());
-		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
-		{
-			poseStack.translate(iconX, iconY, 0);
-			RenderSystem.enableDepthTest();
-			SafeIngredientUtil.render(ingredientManager, ingredientRenderer, guiGraphics, ingredient);
-			RenderSystem.disableDepthTest();
-		}
-		poseStack.popPose();
+		IDrawable icon = RecipeCategoryIconUtil.create(category, recipeManager, guiHelper);
+		int iconX = x + (TAB_WIDTH - icon.getWidth()) / 2;
+		int iconY = y + (TAB_HEIGHT - icon.getHeight()) / 2;
+		icon.draw(guiGraphics, iconX, iconY);
 	}
 
 	@Override

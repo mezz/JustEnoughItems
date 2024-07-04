@@ -5,6 +5,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
@@ -32,15 +33,17 @@ public interface IRecipeGuiLogic {
 
 	void nextPage();
 
-	boolean setFocus(IFocusGroup focuses);
+	boolean showFocus(IFocusGroup focuses);
+
+	boolean showRecipes(IFocusedRecipes<?> recipes, IFocusGroup focuses);
 
 	boolean back();
 
 	void clearHistory();
 
-	boolean setCategoryFocus();
+	boolean showAllRecipes();
 
-	boolean setCategoryFocus(List<RecipeType<?>> recipeTypes);
+	boolean showCategories(List<RecipeType<?>> recipeTypes);
 
 	IRecipeCategory<?> getSelectedRecipeCategory();
 

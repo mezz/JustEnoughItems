@@ -1,42 +1,32 @@
 package mezz.jei.gui.overlay;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.SafeIngredientUtil;
+import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.overlay.elements.ElementRenderer;
+import mezz.jei.gui.overlay.elements.ElementRenderers;
+import mezz.jei.gui.overlay.elements.RenderableElement;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class IngredientListRenderer {
-	private static final int BLACKLIST_COLOR = 0xFFFF0000;
-
 	private final List<IngredientListSlot> slots = new ArrayList<>();
-	private final ElementRenderersByType renderers = new ElementRenderersByType();
-	private final IEditModeConfig editModeConfig;
-	private final IClientToggleState toggleState;
-	private final IIngredientManager ingredientManager;
+	private final ElementRenderers elementRenderers;
 
 	private int blocked = 0;
 
 	public IngredientListRenderer(IEditModeConfig editModeConfig, IClientToggleState toggleState, IIngredientManager ingredientManager) {
-		this.editModeConfig = editModeConfig;
-		this.toggleState = toggleState;
-		this.ingredientManager = ingredientManager;
+		this.elementRenderers = new ElementRenderers(toggleState, editModeConfig, ingredientManager);
 	}
 
 	public void clear() {
 		slots.clear();
-		renderers.clear();
 		blocked = 0;
 	}
 
@@ -53,8 +43,7 @@ public class IngredientListRenderer {
 			.filter(s -> !s.isBlocked());
 	}
 
-	public void set(final int startIndex, List<ITypedIngredient<?>> ingredientList) {
-		renderers.clear();
+	public void set(final int startIndex, List<IElement<?>> ingredientList) {
 		blocked = 0;
 
 		int i = startIndex;
@@ -66,66 +55,25 @@ public class IngredientListRenderer {
 				if (i >= ingredientList.size()) {
 					ingredientListSlot.clear();
 				} else {
-					ITypedIngredient<?> ingredient = ingredientList.get(i);
-					set(ingredientListSlot, ingredient);
+					IElement<?> element = ingredientList.get(i);
+					RenderableElement<?> renderableElement = createRenderableElement(element);
+					ingredientListSlot.setElement(renderableElement);
 				}
 				i++;
 			}
 		}
 	}
 
-	private <V> void set(IngredientListSlot ingredientListSlot, ITypedIngredient<V> value) {
-		ElementRenderer<V> renderer = new ElementRenderer<>(value);
-		ingredientListSlot.setIngredientRenderer(renderer);
-		IIngredientType<V> ingredientType = value.getType();
-		renderers.put(ingredientType, renderer);
+	private <T> RenderableElement<T> createRenderableElement(IElement<T> element) {
+		ITypedIngredient<T> typedIngredient = element.getTypedIngredient();
+		IIngredientType<T> type = typedIngredient.getType();
+		ElementRenderer<T> renderer = elementRenderers.get(type);
+		return new RenderableElement<>(element, renderer);
 	}
 
 	public void render(GuiGraphics guiGraphics) {
-		for (IIngredientType<?> ingredientType : renderers.getTypes()) {
-			renderIngredientType(guiGraphics, ingredientType);
-		}
-	}
-
-	private <T> void renderIngredientType(GuiGraphics guiGraphics, IIngredientType<T> ingredientType) {
-		Collection<ElementRenderer<T>> slots = renderers.get(ingredientType);
-		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
-		for (ElementRenderer<T> slot : slots) {
-			renderIngredient(guiGraphics, slot, ingredientRenderer);
-		}
-	}
-
-	private <T> void renderIngredient(GuiGraphics guiGraphics, ElementRenderer<T> slot, IIngredientRenderer<T> ingredientRenderer) {
-		ITypedIngredient<T> typedIngredient = slot.getTypedIngredient();
-		ImmutableRect2i area = slot.getArea();
-		int slotPadding = slot.getPadding();
-		if (toggleState.isEditModeEnabled()) {
-			renderEditMode(guiGraphics, area, slotPadding, editModeConfig, typedIngredient);
-			RenderSystem.enableBlend();
-		}
-
-		int xPosition = area.getX() + slotPadding;
-		int yPosition = area.getY() + slotPadding;
-		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
-		{
-			poseStack.translate(xPosition, yPosition, 0);
-			SafeIngredientUtil.render(ingredientManager, ingredientRenderer, guiGraphics, typedIngredient);
-		}
-		poseStack.popPose();
-	}
-
-	private static <T> void renderEditMode(GuiGraphics guiGraphics, ImmutableRect2i area, int padding, IEditModeConfig editModeConfig, ITypedIngredient<T> typedIngredient) {
-		if (editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient)) {
-			guiGraphics.fill(
-				RenderType.guiOverlay(),
-				area.getX() + padding,
-				area.getY() + padding,
-				area.getX() + 16 + padding,
-				area.getY() + 16 + padding,
-				BLACKLIST_COLOR
-			);
-			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+		for (IngredientListSlot slot : slots) {
+			slot.render(guiGraphics);
 		}
 	}
 }

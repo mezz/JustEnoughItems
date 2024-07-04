@@ -1,10 +1,11 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.IRecipeManager;
 import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.common.gui.TooltipRenderer;
@@ -31,7 +32,8 @@ public class RecipeGuiTabs implements IPaged {
 	private final List<RecipeGuiTab> tabs = new ArrayList<>();
 	private final PageNavigation pageNavigation;
 	private final Textures textures;
-	private final IIngredientManager ingredientManager;
+	private final IRecipeManager recipeManager;
+	private final IGuiHelper guiHelper;
 	private IUserInputHandler inputHandler;
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
@@ -39,11 +41,12 @@ public class RecipeGuiTabs implements IPaged {
 	private int pageNumber = 0;
 	private int categoriesPerPage = 1;
 
-	public RecipeGuiTabs(IRecipeGuiLogic recipeGuiLogic, Textures textures, IIngredientManager ingredientManager) {
+	public RecipeGuiTabs(IRecipeGuiLogic recipeGuiLogic, Textures textures, IRecipeManager recipeManager, IGuiHelper guiHelper) {
 		this.recipeGuiLogic = recipeGuiLogic;
 		this.pageNavigation = new PageNavigation(this, true, textures);
 		this.textures = textures;
-		this.ingredientManager = ingredientManager;
+		this.recipeManager = recipeManager;
+		this.guiHelper = guiHelper;
 		this.inputHandler = this.pageNavigation.createInputHandler();
 	}
 
@@ -96,7 +99,15 @@ public class RecipeGuiTabs implements IPaged {
 				break;
 			}
 			IRecipeCategory<?> category = categories.get(index);
-			RecipeGuiTab tab = new RecipeCategoryTab(recipeGuiLogic, category, textures, tabX, area.getY(), ingredientManager);
+			RecipeGuiTab tab = new RecipeCategoryTab(
+				recipeGuiLogic,
+				category,
+				textures,
+				tabX,
+				area.getY(),
+				recipeManager,
+				guiHelper
+			);
 			this.tabs.add(tab);
 			inputHandlers.add(tab);
 			tabX += RecipeGuiTab.TAB_WIDTH;

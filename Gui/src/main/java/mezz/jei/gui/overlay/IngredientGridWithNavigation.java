@@ -1,20 +1,19 @@
 package mezz.jei.gui.overlay;
 
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
-import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.PageNavigation;
-import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IPaged;
@@ -23,8 +22,8 @@ import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.LimitedAreaInputHandler;
+import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.gui.util.CommandUtil;
 import mezz.jei.gui.util.MaximalRectangle;
 import net.minecraft.client.KeyMapping;
@@ -53,7 +52,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private final IngredientGridPaged pageDelegate;
 	private final PageNavigation navigation;
 	private final IIngredientGridConfig gridConfig;
-	private final CheatUtil cheatUtil;
+	private final IIngredientManager ingredientManager;
 	private final IClientToggleState toggleState;
 	private final IClientConfig clientConfig;
 	private final IngredientGrid ingredientGrid;
@@ -77,7 +76,6 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		DrawableNineSliceTexture background,
 		DrawableNineSliceTexture slotBackground,
 		Textures textures,
-		CheatUtil cheatUtil,
 		IScreenHelper screenHelper,
 		IIngredientManager ingredientManager
 	) {
@@ -86,7 +84,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.ingredientGrid = ingredientGrid;
 		this.ingredientSource = ingredientSource;
 		this.gridConfig = gridConfig;
-		this.cheatUtil = cheatUtil;
+		this.ingredientManager = ingredientManager;
 		this.pageDelegate = new IngredientGridPaged();
 		this.navigation = new PageNavigation(this.pageDelegate, false, textures);
 		this.background = background;
@@ -105,7 +103,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		if (resetToFirstPage) {
 			firstItemIndex = 0;
 		}
-		List<ITypedIngredient<?>> ingredientList = ingredientSource.getIngredientList();
+		List<IElement<?>> ingredientList = ingredientSource.getElements();
 		if (firstItemIndex >= ingredientList.size()) {
 			firstItemIndex = 0;
 		}
@@ -254,7 +252,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public IUserInputHandler createInputHandler() {
 		return new CombinedInputHandler(
-			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.toggleState, this.clientConfig, this.commandUtil, this.cheatUtil, this::isMouseOver),
+			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.toggleState, this.clientConfig, this.commandUtil, this.ingredientManager, this::isMouseOver),
 			this.ingredientGrid.getInputHandler(),
 			this.navigation.createInputHandler()
 		);
@@ -270,7 +268,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public boolean isEmpty() {
-		return this.ingredientSource.getIngredientList().isEmpty();
+		return this.ingredientSource.getElements().isEmpty();
 	}
 
 	public void close() {
@@ -288,7 +286,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private class IngredientGridPaged implements IPaged {
 		@Override
 		public boolean nextPage() {
-			final int itemsCount = ingredientSource.getIngredientList().size();
+			final int itemsCount = ingredientSource.getElements().size();
 			if (itemsCount > 0) {
 				firstItemIndex += ingredientGrid.size();
 				if (firstItemIndex >= itemsCount) {
@@ -311,7 +309,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 				updateLayout(false);
 				return false;
 			}
-			final int itemsCount = ingredientSource.getIngredientList().size();
+			final int itemsCount = ingredientSource.getElements().size();
 
 			int pageNum = firstItemIndex / itemsPerPage;
 			if (pageNum == 0) {
@@ -333,19 +331,19 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		public boolean hasNext() {
 			// true if there is more than one page because this wraps around
 			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientSource.getIngredientList().size() > itemsPerPage;
+			return itemsPerPage > 0 && ingredientSource.getElements().size() > itemsPerPage;
 		}
 
 		@Override
 		public boolean hasPrevious() {
 			// true if there is more than one page because this wraps around
 			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientSource.getIngredientList().size() > itemsPerPage;
+			return itemsPerPage > 0 && ingredientSource.getElements().size() > itemsPerPage;
 		}
 
 		@Override
 		public int getPageCount() {
-			final int itemCount = ingredientSource.getIngredientList().size();
+			final int itemCount = ingredientSource.getElements().size();
 			final int stacksPerPage = ingredientGrid.size();
 			if (stacksPerPage == 0) {
 				return 1;
@@ -372,7 +370,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		private final IClientConfig clientConfig;
 		private final UserInput.MouseOverable mouseOverable;
 		private final CommandUtil commandUtil;
-		private final CheatUtil cheatUtil;
+		private final IIngredientManager ingredientManager;
 
 		private UserInputHandler(
 			IngredientGridPaged paged,
@@ -380,7 +378,8 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			IClientToggleState toggleState,
 			IClientConfig clientConfig,
 			CommandUtil commandUtil,
-			CheatUtil cheatUtil, UserInput.MouseOverable mouseOverable
+			IIngredientManager ingredientManager,
+			UserInput.MouseOverable mouseOverable
 		) {
 			this.paged = paged;
 			this.focusSource = focusSource;
@@ -388,7 +387,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			this.clientConfig = clientConfig;
 			this.mouseOverable = mouseOverable;
 			this.commandUtil = commandUtil;
-			this.cheatUtil = cheatUtil;
+			this.ingredientManager = ingredientManager;
 		}
 
 		@Override
@@ -448,7 +447,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 			return this.focusSource.getIngredientUnderMouse(mouseX, mouseY)
 				.flatMap(clickedIngredient -> {
-					ItemStack cheatItemStack = cheatUtil.getCheatItemStack(clickedIngredient);
+					ItemStack cheatItemStack = clickedIngredient.getCheatItemStack(ingredientManager);
 					if (!cheatItemStack.isEmpty()) {
 						commandUtil.setHotbarStack(cheatItemStack, hotbarSlot);
 						ImmutableRect2i area = clickedIngredient.getArea();

@@ -35,7 +35,8 @@ import java.util.Optional;
 public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int RECIPE_BORDER_PADDING = 4;
-	public static final int RECIPE_TRANSFER_BUTTON_SIZE = 13;
+	public static final int RECIPE_BUTTON_SIZE = 13;
+	public static final int RECIPE_BUTTON_SPACING = 2;
 
 	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);
 	private final IRecipeCategory<R> recipeCategory;
@@ -116,12 +117,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		int width = recipeCategory.getWidth();
 		int height = recipeCategory.getHeight();
 		int buttonX = width + RECIPE_BORDER_PADDING + 2;
-		int buttonY = height - RECIPE_TRANSFER_BUTTON_SIZE;
+		int buttonY = height - RECIPE_BUTTON_SIZE;
 		this.recipeTransferButtonArea = new ImmutableRect2i(
 			buttonX,
 			buttonY,
-			RECIPE_TRANSFER_BUTTON_SIZE,
-			RECIPE_TRANSFER_BUTTON_SIZE
+			RECIPE_BUTTON_SIZE,
+			RECIPE_BUTTON_SIZE
 		);
 
 		this.recipe = recipe;
@@ -293,6 +294,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	@Override
 	public Rect2i getRecipeTransferButtonArea() {
 		return recipeTransferButtonArea.toMutable();
+	}
+
+	@Override
+	public Rect2i getRecipeBookmarkButtonArea() {
+		Rect2i area = getRecipeTransferButtonArea();
+		area.setPosition(area.getX(), area.getY() - area.getHeight() - RECIPE_BUTTON_SPACING);
+		return area;
 	}
 
 	@Override

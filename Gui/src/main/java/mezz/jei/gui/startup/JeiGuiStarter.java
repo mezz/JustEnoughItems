@@ -1,6 +1,7 @@
 package mezz.jei.gui.startup;
 
 import mezz.jei.api.helpers.IColorHelper;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IFocusFactory;
@@ -21,6 +22,7 @@ import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.config.IBookmarkConfig;
@@ -49,8 +51,10 @@ import mezz.jei.gui.input.handlers.UserInputRouter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
-import mezz.jei.gui.util.CheatUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -78,8 +82,14 @@ public class JeiGuiStarter {
 		IColorHelper colorHelper = jeiHelpers.getColorHelper();
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 		IFocusFactory focusFactory = jeiHelpers.getFocusFactory();
+		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 
 		IFilterTextSource filterTextSource = new FilterTextSource();
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientLevel level = minecraft.level;
+		ErrorUtil.checkNotNull(level, "minecraft.level");
+
+		RegistryAccess registryAccess = level.registryAccess();
 
 		timer.start("Building ingredient list");
 		NonNullList<IListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager);
@@ -123,7 +133,6 @@ public class JeiGuiStarter {
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
 		registration.setIngredientFilter(ingredientFilterApi);
 
-		CheatUtil cheatUtil = new CheatUtil(ingredientManager);
 		IngredientListOverlay ingredientListOverlay = OverlayHelper.createIngredientListOverlay(
 			ingredientManager,
 			screenHelper,
@@ -138,13 +147,12 @@ public class JeiGuiStarter {
 			serverConnection,
 			ingredientFilterConfig,
 			textures,
-			colorHelper,
-			cheatUtil
+			colorHelper
 		);
 		registration.setIngredientListOverlay(ingredientListOverlay);
 
-		BookmarkList bookmarkList = new BookmarkList(ingredientManager, bookmarkConfig, clientConfig);
-		bookmarkConfig.loadBookmarks(ingredientManager, bookmarkList);
+		BookmarkList bookmarkList = new BookmarkList(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkConfig, clientConfig, guiHelper);
+		bookmarkConfig.loadBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarkList);
 
 		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
 			ingredientManager,
@@ -159,8 +167,7 @@ public class JeiGuiStarter {
 			toggleState,
 			serverConnection,
 			textures,
-			colorHelper,
-			cheatUtil
+			colorHelper
 		);
 		registration.setBookmarkOverlay(bookmarkOverlay);
 
@@ -178,7 +185,9 @@ public class JeiGuiStarter {
 			clientConfig,
 			textures,
 			keyMappings,
-			focusFactory
+			focusFactory,
+			bookmarkList,
+			guiHelper
 		);
 		registration.setRecipesGui(recipesGui);
 

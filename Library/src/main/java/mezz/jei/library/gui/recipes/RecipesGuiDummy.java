@@ -3,6 +3,7 @@ package mezz.jei.library.gui.recipes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IRecipesGui;
 
 import java.util.List;
@@ -22,6 +23,11 @@ public class RecipesGuiDummy implements IRecipesGui {
 
 	@Override
 	public void showTypes(List<RecipeType<?>> recipeTypes) {
+
+	}
+
+	@Override
+	public <T> void showRecipes(IRecipeCategory<T> recipeCategory, List<T> recipes, List<IFocus<?>> focuses) {
 
 	}
 

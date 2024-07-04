@@ -28,14 +28,31 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	}
 
 	public static <T> Optional<ITypedIngredient<?>> createAndFilterInvalid(IIngredientManager ingredientManager, @Nullable T ingredient) {
+		return createAndFilterInvalid(ingredientManager, ingredient, false);
+	}
+
+	public static <T> Optional<ITypedIngredient<T>> createAndFilterInvalid(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, @Nullable T ingredient) {
+		return createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false);
+	}
+
+	public static <T> Optional<ITypedIngredient<?>> createAndFilterInvalid(
+			IIngredientManager ingredientManager,
+			@Nullable T ingredient,
+			boolean normalize
+	) {
 		if (ingredient == null) {
 			return Optional.empty();
 		}
 		return ingredientManager.getIngredientTypeChecked(ingredient)
-			.flatMap(ingredientType -> createAndFilterInvalid(ingredientManager, ingredientType, ingredient));
+				.flatMap(ingredientType -> createAndFilterInvalid(ingredientManager, ingredientType, ingredient, normalize));
 	}
 
-	public static <T> Optional<ITypedIngredient<T>> createAndFilterInvalid(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, @Nullable T ingredient) {
+	public static <T> Optional<ITypedIngredient<T>> createAndFilterInvalid(
+			IIngredientManager ingredientManager,
+			IIngredientType<T> ingredientType,
+			@Nullable T ingredient,
+			boolean normalize
+	) {
 		if (ingredient == null) {
 			return Optional.empty();
 		}
@@ -43,6 +60,9 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		try {
+			if (normalize) {
+				ingredient = ingredientHelper.normalizeIngredient(ingredient);
+			}
 			if (!ingredientHelper.isValidIngredient(ingredient)) {
 				return Optional.empty();
 			}

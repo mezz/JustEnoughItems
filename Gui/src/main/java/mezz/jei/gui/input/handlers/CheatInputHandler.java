@@ -1,15 +1,15 @@
 package mezz.jei.gui.input.handlers;
 
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.gui.util.CommandUtil;
 import mezz.jei.gui.util.GiveAmount;
 import net.minecraft.client.gui.screens.Screen;
@@ -21,18 +21,18 @@ public class CheatInputHandler implements IUserInputHandler {
 	private final IRecipeFocusSource showsRecipeFocuses;
 	private final IClientToggleState toggleState;
 	private final CommandUtil commandUtil;
-	private final CheatUtil cheatUtil;
+	private final IIngredientManager ingredientManager;
 
 	public CheatInputHandler(
 		IRecipeFocusSource showsRecipeFocuses,
 		IClientToggleState toggleState,
 		IClientConfig clientConfig,
 		IConnectionToServer serverConnection,
-		CheatUtil cheatUtil
+		IIngredientManager ingredientManager
 	) {
 		this.showsRecipeFocuses = showsRecipeFocuses;
 		this.toggleState = toggleState;
-		this.cheatUtil = cheatUtil;
+		this.ingredientManager = ingredientManager;
 		this.commandUtil = new CommandUtil(clientConfig, serverConnection);
 	}
 
@@ -60,7 +60,7 @@ public class CheatInputHandler implements IUserInputHandler {
 			.findFirst()
 			.map(clicked -> {
 				if (!input.isSimulate()) {
-					ItemStack itemStack = cheatUtil.getCheatItemStack(clicked);
+					ItemStack itemStack = clicked.getCheatItemStack(ingredientManager);
 					if (!itemStack.isEmpty()) {
 						commandUtil.giveStack(itemStack, giveAmount);
 					}

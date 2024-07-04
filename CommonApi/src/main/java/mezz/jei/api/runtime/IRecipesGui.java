@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
  * JEI's gui for displaying recipes. Use this interface to open recipes.
@@ -42,6 +43,16 @@ public interface IRecipesGui {
 	 * @param recipeTypes a list of recipe types to display, in order. Must not be empty.
 	 */
 	void showTypes(List<RecipeType<?>> recipeTypes);
+
+	/**
+	 * Show specific recipes for one recipe category, with multiple {@link IFocus}.
+	 * Opens the {@link IRecipesGui} if recipes are valid and the gui is closed.
+	 *
+	 * @see IFocusFactory#createFocus(RecipeIngredientRole, IIngredientType, Object)
+	 *
+	 * @since 15.5.0
+	 */
+	<T> void showRecipes(IRecipeCategory<T> recipeCategory, List<T> recipes, List<IFocus<?>> focuses);
 
 	/**
 	 * @return the ingredient that's currently under the mouse in this gui
