@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
@@ -74,8 +75,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final IModIdHelper modIdHelper;
 	private final IClientConfig clientConfig;
 	private final IInternalKeyMappings keyBindings;
+	private final IRecipeManager recipeManager;
 	private final Textures textures;
 	private final BookmarkList bookmarks;
+	private final IGuiHelper guiHelper;
 	private final IFocusFactory focusFactory;
 	private final IIngredientManager ingredientManager;
 
@@ -119,11 +122,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		Textures textures,
 		IInternalKeyMappings keyBindings,
 		IFocusFactory focusFactory,
-		BookmarkList bookmarks
+		BookmarkList bookmarks,
+		IGuiHelper guiHelper
 	) {
 		super(Component.literal("Recipes"));
+		this.recipeManager = recipeManager;
 		this.textures = textures;
 		this.bookmarks = bookmarks;
+		this.guiHelper = guiHelper;
 		this.recipeTransferButtons = new ArrayList<>();
 		this.recipeBookmarkButtons = new ArrayList<>();
 		this.recipeTransferManager = recipeTransferManager;
@@ -133,7 +139,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.keyBindings = keyBindings;
 		this.logic = new RecipeGuiLogic(recipeManager, recipeTransferManager, this, focusFactory);
 		this.recipeCatalysts = new RecipeCatalysts(textures, recipeManager);
-		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures, ingredientManager);
+		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, textures, recipeManager, guiHelper);
 		this.focusFactory = focusFactory;
 		this.minecraft = Minecraft.getInstance();
 
@@ -676,7 +682,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				this.recipeTransferButtons.add(button);
 			}
 			{
-				RecipeBookmarkButton.create(recipeLayout, ingredientManager, bookmarks, textures)
+				RecipeBookmarkButton.create(recipeLayout, ingredientManager, bookmarks, textures, recipeManager, guiHelper)
 					.ifPresent(button -> {
 						addRenderableWidget(button);
 						this.recipeBookmarkButtons.add(button);

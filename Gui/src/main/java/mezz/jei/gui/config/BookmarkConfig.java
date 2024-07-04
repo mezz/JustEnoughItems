@@ -2,6 +2,7 @@ package mezz.jei.gui.config;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -64,6 +65,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 	public void saveBookmarks(
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
+		IGuiHelper guiHelper,
 		IIngredientManager ingredientManager,
 		RegistryAccess registryAccess,
 		List<IBookmark> bookmarks
@@ -71,7 +73,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer);
+				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper);
 
 				List<String> strings = new ArrayList<>();
 				for (IBookmark bookmark : bookmarks) {
@@ -98,7 +100,14 @@ public class BookmarkConfig implements IBookmarkConfig {
 	}
 
 	@Override
-	public void loadBookmarks(IRecipeManager recipeManager, IFocusFactory focusFactory, IIngredientManager ingredientManager, RegistryAccess registryAccess, BookmarkList bookmarkList) {
+	public void loadBookmarks(
+		IRecipeManager recipeManager,
+		IFocusFactory focusFactory,
+		IGuiHelper guiHelper,
+		IIngredientManager ingredientManager,
+		RegistryAccess registryAccess,
+		BookmarkList bookmarkList
+	) {
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				if (!Files.exists(path)) {
@@ -113,7 +122,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 				}
 
 				TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer);
+				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper);
 
 				Collection<IIngredientType<?>> otherIngredientTypes = ingredientManager.getRegisteredIngredientTypes()
 						.stream()

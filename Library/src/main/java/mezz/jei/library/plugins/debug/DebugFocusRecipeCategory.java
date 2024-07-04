@@ -11,14 +11,11 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.Internal;
-import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -53,8 +50,7 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 
 	@Override
 	public IDrawable getIcon() {
-		Textures textures = Internal.getTextures();
-		return textures.getConfigButtonIcon();
+		return null;
 	}
 
 	@Override
@@ -105,7 +101,7 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 	}
 
 	@Override
-	public @Nullable ResourceLocation getRegistryName(DebugRecipe recipe) {
-		return null;
+	public ResourceLocation getRegistryName(DebugRecipe recipe) {
+		return recipe.getRegistryName();
 	}
 }

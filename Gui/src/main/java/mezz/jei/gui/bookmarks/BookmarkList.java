@@ -1,5 +1,6 @@
 package mezz.jei.gui.bookmarks;
 
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
@@ -22,6 +23,7 @@ public class BookmarkList implements IIngredientGridSource {
 	private final RegistryAccess registryAccess;
 	private final IBookmarkConfig bookmarkConfig;
 	private final IClientConfig clientConfig;
+	private final IGuiHelper guiHelper;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 
 	public BookmarkList(
@@ -30,7 +32,8 @@ public class BookmarkList implements IIngredientGridSource {
 		IIngredientManager ingredientManager,
 		RegistryAccess registryAccess,
 		IBookmarkConfig bookmarkConfig,
-		IClientConfig clientConfig
+		IClientConfig clientConfig,
+		IGuiHelper guiHelper
 	) {
 		this.recipeManager = recipeManager;
 		this.focusFactory = focusFactory;
@@ -38,6 +41,7 @@ public class BookmarkList implements IIngredientGridSource {
 		this.registryAccess = registryAccess;
 		this.bookmarkConfig = bookmarkConfig;
 		this.clientConfig = clientConfig;
+		this.guiHelper = guiHelper;
 	}
 
 	public boolean add(IBookmark value) {
@@ -46,7 +50,7 @@ public class BookmarkList implements IIngredientGridSource {
 		}
 		addToList(value, clientConfig.isAddingBookmarksToFrontEnabled());
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarks);
+		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarks);
 		return true;
 	}
 
@@ -74,7 +78,7 @@ public class BookmarkList implements IIngredientGridSource {
 		}
 
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarks);
+		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarks);
 		return true;
 	}
 

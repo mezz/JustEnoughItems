@@ -1,6 +1,7 @@
 package mezz.jei.gui.startup;
 
 import mezz.jei.api.helpers.IColorHelper;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IFocusFactory;
@@ -81,6 +82,7 @@ public class JeiGuiStarter {
 		IColorHelper colorHelper = jeiHelpers.getColorHelper();
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 		IFocusFactory focusFactory = jeiHelpers.getFocusFactory();
+		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 
 		IFilterTextSource filterTextSource = new FilterTextSource();
 		Minecraft minecraft = Minecraft.getInstance();
@@ -149,8 +151,8 @@ public class JeiGuiStarter {
 		);
 		registration.setIngredientListOverlay(ingredientListOverlay);
 
-		BookmarkList bookmarkList = new BookmarkList(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkConfig, clientConfig);
-		bookmarkConfig.loadBookmarks(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkList);
+		BookmarkList bookmarkList = new BookmarkList(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkConfig, clientConfig, guiHelper);
+		bookmarkConfig.loadBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarkList);
 
 		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
 			ingredientManager,
@@ -184,7 +186,8 @@ public class JeiGuiStarter {
 			textures,
 			keyMappings,
 			focusFactory,
-			bookmarkList
+			bookmarkList,
+			guiHelper
 		);
 		registration.setRecipesGui(recipesGui);
 

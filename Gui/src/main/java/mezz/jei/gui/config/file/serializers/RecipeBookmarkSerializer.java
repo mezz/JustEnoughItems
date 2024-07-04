@@ -1,5 +1,7 @@
 package mezz.jei.gui.config.file.serializers;
 
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
@@ -12,6 +14,7 @@ import mezz.jei.common.config.file.serializers.DeserializeResult;
 import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.recipes.RecipeCategoryIconUtil;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
@@ -25,11 +28,18 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 	private final IRecipeManager recipeManager;
 	private final IFocusFactory focusFactory;
 	private final TypedIngredientSerializer ingredientSerializer;
+	private final IGuiHelper guiHelper;
 
-	public RecipeBookmarkSerializer(IRecipeManager recipeManager, IFocusFactory focusFactory, TypedIngredientSerializer ingredientSerializer) {
+	public RecipeBookmarkSerializer(
+		IRecipeManager recipeManager,
+		IFocusFactory focusFactory,
+		TypedIngredientSerializer ingredientSerializer,
+		IGuiHelper guiHelper
+	) {
 		this.recipeManager = recipeManager;
 		this.focusFactory = focusFactory;
 		this.ingredientSerializer = ingredientSerializer;
+		this.guiHelper = guiHelper;
 	}
 
 	@Override
@@ -94,7 +104,12 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 		}
 
 		T recipe = recipeResult.get();
-		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output);
+		IDrawable icon = RecipeCategoryIconUtil.create(
+			recipeCategory,
+			recipeManager,
+			guiHelper
+		);
+		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon);
 		return new DeserializeResult<>(recipeBookmark);
 	}
 

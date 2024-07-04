@@ -68,8 +68,11 @@ public interface IRecipeCategory<T> {
 	 * You can use {@link IGuiHelper#createDrawableIngredient(IIngredientType, Object)}
 	 * to create a drawable from an ingredient.
 	 *
+	 * If null is returned here, JEI will try to use the first recipe catalyst as the icon.
+	 *
 	 * @return icon to draw on the category tab, max size is 16x16 pixels.
 	 */
+	@Nullable
 	IDrawable getIcon();
 
 	/**
