@@ -1,5 +1,6 @@
 package mezz.jei.api.recipe.vanilla;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ComposterBlock;
 import org.jetbrains.annotations.ApiStatus;
@@ -31,4 +32,10 @@ public interface IJeiCompostingRecipe {
 	 */
 	@Nonnegative
 	float getChance();
+
+	/**
+	 * Unique ID for this recipe.
+	 * @since 11.26.0
+	 */
+	ResourceLocation getUid();
 }

@@ -114,6 +114,11 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 	}
 
 	@Override
+	public Rect2i getRecipeBookmarkButtonArea() {
+		return new Rect2i(0, 0, 0, 0);
+	}
+
+	@Override
 	public IRecipeSlotsView getRecipeSlotsView() {
 		return List::of;
 	}

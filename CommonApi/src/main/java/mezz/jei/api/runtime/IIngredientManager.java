@@ -70,6 +70,13 @@ public interface IIngredientManager {
 	Collection<IIngredientType<?>> getRegisteredIngredientTypes();
 
 	/**
+	 * @return the ingredient type that has the given uid.
+	 * @see IIngredientType#getUid()
+	 * @since 11.26.0
+	 */
+	Optional<IIngredientType<?>> getIngredientTypeForUid(String ingredientTypeUid);
+
+	/**
 	 * Add new ingredients to JEI at runtime.
 	 * Used by mods that have items created while the game is running, or use the server to define items.
 	 *
@@ -148,8 +155,18 @@ public interface IIngredientManager {
 	 * This uses the uids from {@link IIngredientHelper#getUniqueId(Object, UidContext)}
 	 *
 	 * @since 11.5.0
+	 * @deprecated Use {@link #getTypedIngredientByUid(IIngredientType, String)} instead.
 	 */
+	@Deprecated(since = "11.26.0")
 	<V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid);
+
+	/**
+	 * Get an ingredient by the given type and unique id.
+	 * This uses the uids from {@link IIngredientHelper#getUniqueId(Object, UidContext)}
+	 *
+	 * @since 11.26.0
+	 */
+	<V> Optional<ITypedIngredient<V>> getTypedIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid);
 
 	/**
 	 * Get localized search aliases for ingredients.

@@ -15,6 +15,7 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraft.world.level.block.Blocks;
@@ -78,5 +79,10 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe> {
 	@Override
 	public boolean isHandled(UpgradeRecipe recipe) {
 		return !recipe.isSpecial();
+	}
+
+	@Override
+	public ResourceLocation getRegistryName(UpgradeRecipe recipe) {
+		return recipe.getId();
 	}
 }

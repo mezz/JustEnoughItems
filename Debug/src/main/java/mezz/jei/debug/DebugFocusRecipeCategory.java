@@ -1,6 +1,7 @@
 package mezz.jei.debug;
 
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -11,6 +12,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
@@ -84,7 +86,7 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 				new ItemStack(Items.TROPICAL_FISH)
 			));
 
-		builder.addInvisibleIngredients(RecipeIngredientRole.INPUT)
+		IIngredientAcceptor<?> invisibleSlot = builder.addInvisibleIngredients(RecipeIngredientRole.INPUT)
 			.addItemStacks(List.of(
 				new ItemStack(Items.ACACIA_BOAT),
 				new ItemStack(Items.ACACIA_BUTTON),
@@ -97,6 +99,11 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 				new ItemStack(Items.ACACIA_PRESSURE_PLATE)
 			));
 
-		builder.createFocusLink(inputSlot, outputSlot);
+		builder.createFocusLink(inputSlot, outputSlot, invisibleSlot);
+	}
+
+	@Override
+	public ResourceLocation getRegistryName(DebugRecipe recipe) {
+		return recipe.getRegistryName();
 	}
 }

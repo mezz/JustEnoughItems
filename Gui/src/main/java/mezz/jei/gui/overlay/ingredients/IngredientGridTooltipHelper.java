@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IIngredientFilterConfig;
@@ -19,6 +20,7 @@ import mezz.jei.core.search.SearchMode;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
 import java.util.List;
@@ -142,5 +144,36 @@ public final class IngredientGridTooltipHelper {
 		if (worldConfig.isEditModeEnabled()) {
 			addEditModeInfoToTooltip(tooltip, keyBindings);
 		}
+	}
+
+	public <T, R> void getRecipeTooltip(
+		JeiTooltip tooltip,
+		IRecipeCategory<T> recipeCategory,
+		T recipe,
+		ITypedIngredient<R> recipeOutput,
+		IIngredientRenderer<R> ingredientRenderer,
+		IIngredientHelper<R> ingredientHelper
+	) {
+		tooltip.add(Component.translatable("jei.tooltip.bookmarks.recipe", recipeCategory.getTitle()));
+
+		IModIdHelper modIdHelper = Internal.getJeiRuntime().getJeiHelpers().getModIdHelper();
+		ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
+		if (recipeName != null) {
+			String recipeModId = recipeName.getNamespace();
+			ResourceLocation ingredientName = ingredientHelper.getResourceLocation(recipeOutput.getIngredient());
+			String ingredientModId = ingredientName.getNamespace();
+			if (!recipeModId.equals(ingredientModId)) {
+				String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
+				tooltip.add(
+					Component.translatable("jei.tooltip.recipe.by", modName)
+						.withStyle(ChatFormatting.GRAY)
+				);
+			}
+		}
+
+		tooltip.add(Component.empty());
+		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
+		modIdHelper.getModNameForTooltip(recipeOutput)
+			.ifPresent(tooltip::add);
 	}
 }

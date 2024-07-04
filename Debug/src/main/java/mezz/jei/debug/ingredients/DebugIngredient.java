@@ -3,7 +3,17 @@ package mezz.jei.debug.ingredients;
 import mezz.jei.api.ingredients.IIngredientType;
 
 public class DebugIngredient {
-	public static final IIngredientType<DebugIngredient> TYPE = () -> DebugIngredient.class;
+	public static final IIngredientType<DebugIngredient> TYPE = new IIngredientType<>() {
+		@Override
+		public String getUid() {
+			return "debug";
+		}
+
+		@Override
+		public Class<? extends DebugIngredient> getIngredientClass() {
+			return DebugIngredient.class;
+		}
+	};
 
 	private final int number;
 

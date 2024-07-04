@@ -55,6 +55,7 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.RegistryAccess;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -90,6 +91,7 @@ public class JeiGuiStarter {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientLevel level = minecraft.level;
 		ErrorUtil.checkNotNull(level, "minecraft.level");
+		RegistryAccess registryAccess = level.registryAccess();
 
 		timer.start("Building ingredient list");
 		List<IListElementInfo<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper);
@@ -153,8 +155,23 @@ public class JeiGuiStarter {
 		);
 		registration.setIngredientListOverlay(ingredientListOverlay);
 
-		BookmarkList bookmarkList = new BookmarkList(ingredientManager, bookmarkConfig, clientConfig);
-		bookmarkConfig.loadBookmarks(ingredientManager, bookmarkList);
+		BookmarkList bookmarkList = new BookmarkList(
+			recipeManager,
+			focusFactory,
+			ingredientManager,
+			registryAccess,
+			bookmarkConfig,
+			clientConfig,
+			guiHelper
+		);
+		bookmarkConfig.loadBookmarks(
+			recipeManager,
+			focusFactory,
+			guiHelper,
+			ingredientManager,
+			registryAccess,
+			bookmarkList
+		);
 
 		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
 			ingredientManager,
@@ -179,9 +196,11 @@ public class JeiGuiStarter {
 
 		RecipesGui recipesGui = new RecipesGui(
 			recipeManager,
+			ingredientManager,
 			keyMappings,
 			focusFactory,
-			guiHelper
+			guiHelper,
+			bookmarkList
 		);
 		registration.setRecipesGui(recipesGui);
 

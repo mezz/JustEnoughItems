@@ -24,12 +24,16 @@ import java.util.Optional;
 
 public record RecipeLayoutWithButtons<R>(
 	IRecipeLayoutDrawable<R> recipeLayout,
-	RecipeTransferButton transferButton
+	RecipeTransferButton transferButton,
+	@Nullable RecipeBookmarkButton bookmarkButton
 ) implements IRecipeLayoutWithButtons<R> {
 	@Override
 	public void draw(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		recipeLayout.drawRecipe(poseStack, mouseX, mouseY);
 		transferButton.draw(poseStack, mouseX, mouseY, partialTicks);
+		if (bookmarkButton != null) {
+			bookmarkButton.draw(poseStack, mouseX, mouseY, partialTicks);
+		}
 	}
 
 	@Override
@@ -46,6 +50,13 @@ public record RecipeLayoutWithButtons<R>(
 		buttonArea.setX(buttonArea.getX() + layoutArea.getX());
 		buttonArea.setY(buttonArea.getY() + layoutArea.getY());
 		transferButton.updateBounds(buttonArea);
+
+		if (bookmarkButton != null) {
+			Rect2i recipeBookmarkButtonArea = recipeLayout.getRecipeBookmarkButtonArea();
+			recipeBookmarkButtonArea.setX(recipeBookmarkButtonArea.getX() + layoutArea.getX());
+			recipeBookmarkButtonArea.setY(recipeBookmarkButtonArea.getY() + layoutArea.getY());
+			bookmarkButton.updateBounds(recipeBookmarkButtonArea);
+		}
 	}
 
 	@Override
@@ -60,16 +71,30 @@ public record RecipeLayoutWithButtons<R>(
 			int buttonRight = buttonArea.getX() + buttonArea.getWidth();
 			rightAreaWidth = Math.max(buttonRight, rightAreaWidth);
 		}
+		if (bookmarkButton != null && bookmarkButton.isVisible()) {
+			Rect2i buttonArea = recipeLayout.getRecipeBookmarkButtonArea();
+			int buttonRight = buttonArea.getX() + buttonArea.getWidth();
+			rightAreaWidth = Math.max(buttonRight, rightAreaWidth);
+		}
 
 		return leftBorderWidth + rightAreaWidth;
 	}
 
 	@Override
 	public IUserInputHandler createUserInputHandler() {
+		IUserInputHandler recipeLayoutInputHandler = new RecipeLayoutUserInputHandler<>(recipeLayout);
+		if (bookmarkButton == null) {
+			return new CombinedInputHandler(
+				"RecipeLayoutWithButtons",
+				transferButton.createInputHandler(),
+				recipeLayoutInputHandler
+			);
+		}
 		return new CombinedInputHandler(
 			"RecipeLayoutWithButtons",
 			transferButton.createInputHandler(),
-			new RecipeLayoutUserInputHandler<>(recipeLayout)
+			bookmarkButton.createInputHandler(),
+			recipeLayoutInputHandler
 		);
 	}
 
@@ -92,6 +117,9 @@ public record RecipeLayoutWithButtons<R>(
 	@Override
 	public void drawTooltips(PoseStack poseStack, int mouseX, int mouseY) {
 		transferButton.drawTooltips(poseStack, mouseX, mouseY);
+		if (bookmarkButton != null) {
+			bookmarkButton.drawTooltips(poseStack, mouseX, mouseY);
+		}
 	}
 
 	@Override

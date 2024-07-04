@@ -30,6 +30,7 @@ public class Textures {
 	private final IDrawableStatic arrowPrevious;
 	private final IDrawableStatic arrowNext;
 	private final IDrawableStatic recipeTransfer;
+	private final IDrawableStatic recipeBookmark;
 	private final IDrawableStatic configButtonIcon;
 	private final IDrawableStatic configButtonCheatIcon;
 	private final IDrawableStatic bookmarkButtonDisabledIcon;
@@ -68,6 +69,7 @@ public class Textures {
 		this.arrowNext = registerGuiSprite("icons/arrow_next", 9, 9)
 			.trim(0, 0, 1, 1);
 		this.recipeTransfer = registerGuiSprite("icons/recipe_transfer", 7, 7);
+		this.recipeBookmark = registerGuiSprite("icons/recipe_bookmark", 9, 9);
 		this.configButtonIcon = registerGuiSprite("icons/config_button", 16, 16);
 		this.configButtonCheatIcon = registerGuiSprite("icons/config_button_cheat", 16, 16);
 		this.bookmarkButtonDisabledIcon = registerGuiSprite("icons/bookmark_button_disabled", 16, 16);
@@ -118,6 +120,10 @@ public class Textures {
 
 	public IDrawableStatic getRecipeTransfer() {
 		return recipeTransfer;
+	}
+
+	public IDrawableStatic getRecipeBookmark() {
+		return recipeBookmark;
 	}
 
 	public IDrawableStatic getConfigButtonIcon() {

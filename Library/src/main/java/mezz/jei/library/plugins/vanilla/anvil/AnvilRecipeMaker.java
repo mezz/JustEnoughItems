@@ -1,5 +1,9 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
+import mezz.jei.api.constants.ModIds;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -7,7 +11,9 @@ import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.ArmorMaterials;
@@ -31,6 +37,7 @@ public final class AnvilRecipeMaker {
 
 	private final IVanillaRecipeFactory vanillaRecipeFactory;
 	private final IIngredientManager ingredientManager;
+	private final IIngredientHelper<ItemStack> ingredientHelper;
 	private final IPlatformItemStackHelper itemStackHelper;
 	private final AnvilMenu anvilMenu;
 
@@ -51,6 +58,7 @@ public final class AnvilRecipeMaker {
 	) {
 		this.vanillaRecipeFactory = vanillaRecipeFactory;
 		this.ingredientManager = ingredientManager;
+		this.ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 		this.itemStackHelper = Services.PLATFORM.getItemStackHelper();
 		this.anvilMenu = anvilMenu;
 	}
@@ -124,7 +132,11 @@ public final class AnvilRecipeMaker {
 				if (outputs.isEmpty()) {
 					return Stream.empty();
 				}
-				IJeiAnvilRecipe recipe = vanillaRecipeFactory.createAnvilRecipe(ingredient, enchantedBooks, outputs);
+				String ingredientId = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
+				String ingredientIdPath = ResourceLocationUtil.sanitizePath(ingredientId);
+				String id = "enchantment." + ingredientIdPath;
+				ResourceLocation uid = new ResourceLocation(ModIds.MINECRAFT_ID, id);
+				IJeiAnvilRecipe recipe = vanillaRecipeFactory.createAnvilRecipe(ingredient, enchantedBooks, outputs, uid);
 				return Stream.of(recipe);
 			});
 	}
@@ -259,6 +271,9 @@ public final class AnvilRecipeMaker {
 
 		return repairables.stream()
 			.mapMulti((itemStack, consumer) -> {
+				String ingredientIdPath = ResourceLocationUtil.sanitizePath(ingredientHelper.getUniqueId(itemStack, UidContext.Recipe));
+				String itemModId = ingredientHelper.getResourceLocation(itemStack).getNamespace();
+
 				ItemStack damagedThreeQuarters = itemStack.copy();
 				damagedThreeQuarters.setDamageValue(damagedThreeQuarters.getMaxDamage() * 3 / 4);
 				ItemStack sameItemOutput = getAnvilOutput(damagedThreeQuarters, damagedThreeQuarters);
@@ -269,7 +284,8 @@ public final class AnvilRecipeMaker {
 					IJeiAnvilRecipe repairWithSame = vanillaRecipeFactory.createAnvilRecipe(
 						damagedThreeQuartersSingletonList,
 						damagedThreeQuartersSingletonList,
-						List.of(sameItemOutput)
+						List.of(sameItemOutput),
+						new ResourceLocation(itemModId, "self_repair." + ingredientIdPath)
 					);
 					consumer.accept(repairWithSame);
 				}
@@ -282,7 +298,8 @@ public final class AnvilRecipeMaker {
 						IJeiAnvilRecipe repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(
 							List.of(damagedFully),
 							repairMaterials,
-							List.of(materialOutput)
+							List.of(materialOutput),
+							new ResourceLocation(itemModId, "materials_repair." + ingredientIdPath)
 						);
 						consumer.accept(repairWithMaterial);
 					}

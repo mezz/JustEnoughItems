@@ -14,6 +14,7 @@ import mezz.jei.common.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.level.block.Block;
@@ -114,5 +115,10 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	@Override
 	public boolean isHandled(T recipe) {
 		return !recipe.isSpecial();
+	}
+
+	@Override
+	public ResourceLocation getRegistryName(T recipe) {
+		return recipe.getId();
 	}
 }

@@ -20,6 +20,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 public class IngredientInfoRecipeCategory implements IRecipeCategory<IJeiIngredientInfoRecipe> {
 	private final IDrawable background;
@@ -79,6 +81,11 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IJeiIngredi
 			addIngredient(typedIngredient, inputSlotBuilder);
 			addIngredient(typedIngredient, outputSlotBuilder);
 		}
+	}
+
+	@Override
+	public @Nullable ResourceLocation getRegistryName(IJeiIngredientInfoRecipe recipe) {
+		return null;
 	}
 
 	private static <T> void addIngredient(ITypedIngredient<T> typedIngredient, IIngredientAcceptor<?> slotBuilder) {
