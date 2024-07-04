@@ -122,6 +122,11 @@ public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayou
 	}
 
 	@Override
+	public Rect2i getRecipeBookmarkButtonArea() {
+		return this.recipeLayout.getRecipeBookmarkButtonArea();
+	}
+
+	@Override
 	public IRecipeSlotsView getRecipeSlotsView() {
 		return this.recipeLayout.getRecipeSlotsView();
 	}

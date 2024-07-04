@@ -78,7 +78,7 @@ public final class SafeIngredientUtil {
 	}
 
 	private static void getRenderErrorTooltip(ITooltipBuilder tooltip) {
-		MutableComponent crash = Component.translatable("jei.tooltip.error.render.crash");
+		MutableComponent crash = new TranslatableComponent("jei.tooltip.error.render.crash");
 		tooltip.add(crash.withStyle(ChatFormatting.RED));
 	}
 

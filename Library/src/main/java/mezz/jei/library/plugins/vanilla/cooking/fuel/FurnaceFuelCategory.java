@@ -24,6 +24,8 @@ import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
 
@@ -101,6 +103,11 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecip
 		Component smeltCountText = createSmeltCountText(recipe.getBurnTime());
 		ImmutableRect2i centerArea = MathUtil.centerTextArea(this.textArea, font, smeltCountText);
 		font.draw(poseStack, smeltCountText, centerArea.getX(), centerArea.getY(), 0xFF808080);
+	}
+
+	@Override
+	public @Nullable ResourceLocation getRegistryName(IJeiFuelingRecipe recipe) {
+		return null;
 	}
 
 	private static Component createSmeltCountText(int burnTime) {

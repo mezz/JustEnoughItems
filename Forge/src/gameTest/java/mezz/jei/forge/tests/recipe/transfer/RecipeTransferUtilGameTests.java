@@ -288,6 +288,11 @@ public final class RecipeTransferUtilGameTests {
 		}
 
 		@Override
+		public Rect2i getRecipeBookmarkButtonArea() {
+			return new Rect2i(0, 0, 13, 13);
+		}
+
+		@Override
 		public IRecipeSlotsView getRecipeSlotsView() {
 			return new TestRecipeSlotsView(java.util.List.of());
 		}

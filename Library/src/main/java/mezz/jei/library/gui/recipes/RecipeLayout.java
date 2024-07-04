@@ -320,6 +320,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 	}
 
 	@Override
+	public Rect2i getRecipeBookmarkButtonArea() {
+		Rect2i area = getRecipeTransferButtonArea();
+		area.setY(area.getY() - area.getHeight() - RECIPE_BUTTON_SPACING);
+		return area;
+	}
+
+	@Override
 	public IRecipeSlotsView getRecipeSlotsView() {
 		return new RecipeSlotsView(recipeCategorySlots);
 	}

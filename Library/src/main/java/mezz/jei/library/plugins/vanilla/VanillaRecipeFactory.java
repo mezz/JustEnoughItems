@@ -1,6 +1,7 @@
 package mezz.jei.library.plugins.vanilla;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.common.util.ErrorUtil;
@@ -21,12 +22,32 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	}
 
 	@Override
+	public IJeiAnvilRecipe createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs, ResourceLocation uid) {
+		ErrorUtil.checkNotEmpty(leftInput, "leftInput");
+		ErrorUtil.checkNotNull(rightInputs, "rightInputs");
+		ErrorUtil.checkNotEmpty(outputs, "outputs");
+		ErrorUtil.checkNotNull(uid, "uid");
+
+		return new AnvilRecipe(List.of(leftInput), rightInputs, outputs, uid);
+	}
+
+	@Override
 	public AnvilRecipe createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
 		ErrorUtil.checkNotEmpty(leftInput, "leftInput");
 		ErrorUtil.checkNotNull(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 
-		return new AnvilRecipe(List.of(leftInput), rightInputs, outputs);
+		return new AnvilRecipe(List.of(leftInput), rightInputs, outputs, null);
+	}
+
+	@Override
+	public IJeiAnvilRecipe createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs, ResourceLocation uid) {
+		ErrorUtil.checkNotEmpty(leftInputs, "leftInput");
+		ErrorUtil.checkNotNull(rightInputs, "rightInputs");
+		ErrorUtil.checkNotEmpty(outputs, "outputs");
+		ErrorUtil.checkNotNull(uid, "uid");
+
+		return new AnvilRecipe(leftInputs, rightInputs, outputs, uid);
 	}
 
 	@Override
@@ -35,7 +56,7 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotNull(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 
-		return new AnvilRecipe(leftInputs, rightInputs, outputs);
+		return new AnvilRecipe(leftInputs, rightInputs, outputs, null);
 	}
 
 	@Override
@@ -49,13 +70,34 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	}
 
 	@Override
+	public IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput, ResourceLocation uid) {
+		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
+		ErrorUtil.checkNotEmpty(potionInput, "potionInput");
+		ErrorUtil.checkNotEmpty(potionOutput, "potionOutput");
+		ErrorUtil.checkNotNull(uid, "uid");
+
+		List<ItemStack> potionInputs = List.of(potionInput);
+		return new JeiBrewingRecipe(ingredients, potionInputs, potionOutput, uid, brewingRecipeUtil);
+	}
+
+	@Override
 	public IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput) {
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 		ErrorUtil.checkNotEmpty(potionInput, "potionInput");
 		ErrorUtil.checkNotEmpty(potionOutput, "potionOutput");
 
 		List<ItemStack> potionInputs = List.of(potionInput);
-		return new JeiBrewingRecipe(ingredients, potionInputs, potionOutput, brewingRecipeUtil);
+		return new JeiBrewingRecipe(ingredients, potionInputs, potionOutput, null, brewingRecipeUtil);
+	}
+
+	@Override
+	public IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, List<ItemStack> potionInputs, ItemStack potionOutput, ResourceLocation uid) {
+		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
+		ErrorUtil.checkNotEmpty(potionInputs, "potionInputs");
+		ErrorUtil.checkNotEmpty(potionOutput, "potionOutput");
+		ErrorUtil.checkNotNull(uid, "uid");
+
+		return new JeiBrewingRecipe(ingredients, potionInputs, potionOutput, uid, brewingRecipeUtil);
 	}
 
 	@Override
@@ -64,6 +106,6 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotEmpty(potionInputs, "potionInputs");
 		ErrorUtil.checkNotEmpty(potionOutput, "potionOutput");
 
-		return new JeiBrewingRecipe(ingredients, potionInputs, potionOutput, brewingRecipeUtil);
+		return new JeiBrewingRecipe(ingredients, potionInputs, potionOutput, null, brewingRecipeUtil);
 	}
 }

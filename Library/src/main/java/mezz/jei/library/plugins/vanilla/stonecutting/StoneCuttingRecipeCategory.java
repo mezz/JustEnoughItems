@@ -65,4 +65,9 @@ public class StoneCuttingRecipeCategory implements RecipeCategoryWithType<Stonec
 	public boolean isHandled(StonecutterRecipe recipe) {
 		return !recipe.isSpecial();
 	}
+
+	@Override
+	public ResourceLocation getRegistryName(StonecutterRecipe recipe) {
+		return recipe.getId();
+	}
 }

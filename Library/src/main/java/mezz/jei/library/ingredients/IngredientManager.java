@@ -74,6 +74,16 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	@Override
+	public Optional<IIngredientType<?>> getIngredientTypeForUid(String ingredientTypeUid) {
+		ErrorUtil.checkNotNull(ingredientTypeUid, "ingredientTypeUid");
+
+		return this.registeredIngredients.getIngredientTypes()
+			.stream()
+			.filter(t -> ingredientTypeUid.equals(t.getUid()))
+			.findFirst();
+	}
+
+	@Override
 	public <V> void addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
 		ErrorUtil.assertMainThread();
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
@@ -191,6 +201,14 @@ public class IngredientManager implements IIngredientManager {
 		return registeredIngredients
 			.getIngredientInfo(ingredientType)
 			.getIngredientByUid(ingredientUuid);
+	}
+
+	@Override
+	public <V> Optional<ITypedIngredient<V>> getTypedIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
+		return registeredIngredients
+			.getIngredientInfo(ingredientType)
+			.getIngredientByUid(ingredientUuid)
+			.flatMap(i -> TypedIngredient.createAndFilterInvalid(this, ingredientType, i, true));
 	}
 
 	@Override

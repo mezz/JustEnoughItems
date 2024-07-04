@@ -16,6 +16,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
@@ -29,6 +30,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.gui.GuiProperties;
+import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.elements.GuiIconButton;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
@@ -65,6 +67,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final IRecipeManager recipeManager;
 	private final IInternalKeyMappings keyBindings;
 	private final IFocusFactory focusFactory;
+	private final IIngredientManager ingredientManager;
+	private final IGuiHelper guiHelper;
+	private final BookmarkList bookmarkList;
 
 	private int headerHeight;
 
@@ -106,13 +111,18 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	public RecipesGui(
 		IRecipeManager recipeManager,
+		IIngredientManager ingredientManager,
 		IInternalKeyMappings keyBindings,
 		IFocusFactory focusFactory,
-		IGuiHelper guiHelper
+		IGuiHelper guiHelper,
+		BookmarkList bookmarkList
 	) {
 		super(new TextComponent("Recipes"));
 		this.recipeManager = recipeManager;
 		this.keyBindings = keyBindings;
+		this.ingredientManager = ingredientManager;
+		this.guiHelper = guiHelper;
+		this.bookmarkList = bookmarkList;
 		this.logic = new RecipeGuiLogic(
 			recipeManager,
 			this::updateLayout,
@@ -561,8 +571,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			recipeLayoutDrawable,
 			this::onClose
 		);
+		RecipeBookmarkButton bookmarkButton = RecipeBookmarkButton.create(recipeLayoutDrawable, ingredientManager, bookmarkList, recipeManager, guiHelper)
+			.orElse(null);
 
-		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton);
+		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, bookmarkButton);
 	}
 
 	@Nullable

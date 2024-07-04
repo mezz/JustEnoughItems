@@ -132,10 +132,12 @@ public class BrewingRecipeMakerCommon {
 					continue;
 				}
 
+				ResourceLocation uid = createBrewingRecipeUid(itemStackHelper, inputId, outputId, potionOutput);
 				IJeiBrewingRecipe recipe = recipeFactory.createBrewingRecipe(
 					List.of(potionReagent),
 					potionInputCopy,
-					potionOutput
+					potionOutput,
+					uid
 				);
 				IJeiBrewingRecipe existingRecipe = recipes.stream()
 					.filter(existing -> hasSameInputAndOutput(itemStackHelper, existing, inputId, outputId))
@@ -155,7 +157,8 @@ public class BrewingRecipeMakerCommon {
 						IJeiBrewingRecipe replacementRecipe = recipeFactory.createBrewingRecipe(
 							List.copyOf(reagents),
 							existingRecipe.getPotionInputs(),
-							existingRecipe.getPotionOutput()
+							existingRecipe.getPotionOutput(),
+							Objects.requireNonNullElse(existingRecipe.getUid(), uid)
 						);
 						recipes.remove(existingRecipe);
 						recipes.add(replacementRecipe);
@@ -164,6 +167,17 @@ public class BrewingRecipeMakerCommon {
 			}
 		}
 		return newPotions;
+	}
+
+	private static ResourceLocation createBrewingRecipeUid(
+		IIngredientHelper<ItemStack> itemStackHelper,
+		String inputId,
+		String outputId,
+		ItemStack potionOutput
+	) {
+		String outputModId = itemStackHelper.getResourceLocation(potionOutput).getNamespace();
+		String uidPath = ResourceLocationUtil.sanitizePath(inputId) + ".to." + ResourceLocationUtil.sanitizePath(outputId);
+		return new ResourceLocation(outputModId, uidPath);
 	}
 
 	private static boolean hasSameInputAndOutput(
