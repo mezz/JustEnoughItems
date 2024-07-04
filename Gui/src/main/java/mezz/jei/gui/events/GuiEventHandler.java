@@ -127,7 +127,7 @@ public class GuiEventHandler {
 		ingredientListOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		bookmarkOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 
-		if (DebugConfig.isDebugModeEnabled()) {
+		if (DebugConfig.isDebugGuisEnabled()) {
 			drawDebugInfoForScreen(screen, guiGraphics);
 		}
 	}

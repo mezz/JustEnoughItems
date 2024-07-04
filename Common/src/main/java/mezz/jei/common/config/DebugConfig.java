@@ -15,6 +15,7 @@ public final class DebugConfig {
 	}
 
 	private final Supplier<Boolean> debugModeEnabled;
+	private final Supplier<Boolean> debugGuisEnabled;
 	private final Supplier<Boolean> debugInputsEnabled;
 	private final Supplier<Boolean> crashingTestIngredientsEnabled;
 
@@ -24,6 +25,11 @@ public final class DebugConfig {
 			"DebugMode",
 			false,
 			"Debug mode enabled"
+		);
+		debugGuisEnabled = advanced.addBoolean(
+			"DebugGuis",
+			false,
+			"Debug GUIs enabled"
 		);
 		debugInputsEnabled = advanced.addBoolean(
 			"DebugInputs",
@@ -42,6 +48,13 @@ public final class DebugConfig {
 			return false;
 		}
 		return instance.debugModeEnabled.get();
+	}
+
+	public static boolean isDebugGuisEnabled() {
+		if (instance == null) {
+			return false;
+		}
+		return instance.debugGuisEnabled.get();
 	}
 
 	public static boolean isDebugInputsEnabled() {

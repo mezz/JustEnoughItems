@@ -51,8 +51,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	@Nullable
 	private ShapelessIcon shapelessIcon;
 
-	private int posX;
-	private int posY;
+	private ImmutableRect2i area;
 
 	public static <T> Optional<IRecipeLayoutDrawable<T>> create(IRecipeCategory<T> recipeCategory, Collection<IRecipeCategoryDecorator<T>> decorators, T recipe, IFocusGroup focuses, IIngredientManager ingredientManager, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, Textures textures) {
 		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, decorators, recipe, ingredientManager, modIdHelper, textures);
@@ -113,14 +112,16 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		this.modIdHelper = modIdHelper;
 		this.textures = textures;
 		this.recipeSlots = new RecipeSlots();
+		this.area = new ImmutableRect2i(
+			0,
+			0,
+			recipeCategory.getWidth(),
+			recipeCategory.getHeight()
+		);
 
-		int width = recipeCategory.getWidth();
-		int height = recipeCategory.getHeight();
-		int buttonX = width + RECIPE_BORDER_PADDING + 2;
-		int buttonY = height - RECIPE_BUTTON_SIZE;
 		this.recipeTransferButtonArea = new ImmutableRect2i(
-			buttonX,
-			buttonY,
+			area.getWidth() + RECIPE_BORDER_PADDING + RECIPE_BUTTON_SPACING,
+			area.getHeight() + RECIPE_BORDER_PADDING - RECIPE_BUTTON_SIZE,
 			RECIPE_BUTTON_SIZE,
 			RECIPE_BUTTON_SIZE
 		);
@@ -131,17 +132,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	@Override
 	public void setPosition(int posX, int posY) {
-		int xDiff = posX - this.posX;
-		int yDiff = posY - this.posY;
-		this.recipeTransferButtonArea = new ImmutableRect2i(
-			recipeTransferButtonArea.getX() + xDiff,
-			recipeTransferButtonArea.getY() + yDiff,
-			recipeTransferButtonArea.getWidth(),
-			recipeTransferButtonArea.getHeight()
+		this.area = new ImmutableRect2i(
+			posX,
+			posY,
+			recipeCategory.getWidth(),
+			recipeCategory.getHeight()
 		);
-
-		this.posX = posX;
-		this.posY = posY;
 	}
 
 	@Override
@@ -149,18 +145,15 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		IDrawable background = recipeCategory.getBackground();
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		recipeBorder.draw(guiGraphics, getRectWithBorder());
 
-		final int recipeMouseX = mouseX - posX;
-		final int recipeMouseY = mouseY - posY;
+		final int recipeMouseX = mouseX - area.getX();
+		final int recipeMouseY = mouseY - area.getY();
 
 		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
-			poseStack.translate(posX, posY, 0);
-
-			int width = recipeCategory.getWidth() + (2 * RECIPE_BORDER_PADDING);
-			int height = recipeCategory.getHeight() + (2 * RECIPE_BORDER_PADDING);
-			recipeBorder.draw(guiGraphics, -RECIPE_BORDER_PADDING, -RECIPE_BORDER_PADDING, width, height);
+			poseStack.translate(area.getX(), area.getY(), 0);
 			background.draw(guiGraphics);
 
 			// defensive push/pop to protect against recipe categories changing the last pose
@@ -200,8 +193,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	public void drawOverlays(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-		final int recipeMouseX = mouseX - posX;
-		final int recipeMouseY = mouseY - posY;
+		final int recipeMouseX = mouseX - area.getX();
+		final int recipeMouseY = mouseY - area.getY();
 
 		IRecipeSlotDrawable hoveredSlot = this.recipeSlots.getHoveredSlot(recipeMouseX, recipeMouseY)
 			.orElse(null);
@@ -212,7 +205,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		if (hoveredSlot != null) {
 			poseStack.pushPose();
 			{
-				poseStack.translate(posX, posY, 0);
+				poseStack.translate(area.getX(), area.getY(), 0);
 				hoveredSlot.drawHoverOverlays(guiGraphics);
 			}
 			poseStack.popPose();
@@ -240,12 +233,17 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return MathUtil.contains(getRect(), mouseX, mouseY);
+		return MathUtil.contains(area, mouseX, mouseY);
 	}
 
 	@Override
 	public Rect2i getRect() {
-		return new Rect2i(posX, posY, recipeCategory.getWidth(), recipeCategory.getHeight());
+		return area.toMutable();
+	}
+
+	@Override
+	public Rect2i getRectWithBorder() {
+		return area.expandBy(RECIPE_BORDER_PADDING).toMutable();
 	}
 
 	@Override
@@ -256,29 +254,27 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	@Override
 	public Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY) {
-		final double recipeMouseX = mouseX - posX;
-		final double recipeMouseY = mouseY - posY;
+		final double recipeMouseX = mouseX - area.getX();
+		final double recipeMouseY = mouseY - area.getY();
 		return this.recipeSlots.getHoveredSlot(recipeMouseX, recipeMouseY)
 			.map(r -> r);
 	}
 
 	public void moveRecipeTransferButton(int posX, int posY) {
 		recipeTransferButtonArea = new ImmutableRect2i(
-			posX + this.posX,
-			posY + this.posY,
-			recipeTransferButtonArea.getWidth(),
-			recipeTransferButtonArea.getHeight()
+			posX,
+			posY,
+			RECIPE_BUTTON_SIZE,
+			RECIPE_BUTTON_SIZE
 		);
 	}
 
 	public void setShapeless() {
 		this.shapelessIcon = new ShapelessIcon(textures);
-		int categoryWidth = this.recipeCategory.getWidth();
 
 		// align to top-right
-		int x = categoryWidth - shapelessIcon.getIcon().getWidth();
-		int y = 0;
-		this.shapelessIcon.setPosition(x, y);
+		int x = area.getWidth() - shapelessIcon.getIcon().getWidth();
+		this.shapelessIcon.setPosition(x, 0);
 	}
 
 	public void setShapeless(int shapelessX, int shapelessY) {

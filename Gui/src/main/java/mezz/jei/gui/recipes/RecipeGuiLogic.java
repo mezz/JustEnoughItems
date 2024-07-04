@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.ILookupState;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import javax.annotation.Nonnegative;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Stack;
 import java.util.stream.Stream;
 
@@ -181,6 +183,23 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	@Override
 	public List<IRecipeLayoutDrawable<?>> getRecipeLayouts() {
 		return getRecipeLayouts(this.state.getFocusedRecipes());
+	}
+
+	@Override
+	public Optional<ImmutableRect2i> getRecipeLayoutSizeWithBorder() {
+		return getRecipeLayoutSizeWithBorder(this.state.getFocusedRecipes());
+	}
+
+	private <T> Optional<ImmutableRect2i> getRecipeLayoutSizeWithBorder(IFocusedRecipes<T> selectedRecipes) {
+		IRecipeCategory<T> recipeCategory = selectedRecipes.getRecipeCategory();
+
+		return selectedRecipes.getRecipes()
+			.stream()
+			.map(recipe -> recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses()))
+			.flatMap(Optional::stream)
+			.map(IRecipeLayoutDrawable::getRectWithBorder)
+			.map(ImmutableRect2i::new)
+			.findFirst();
 	}
 
 	private <T> List<IRecipeLayoutDrawable<?>> getRecipeLayouts(IFocusedRecipes<T> selectedRecipes) {

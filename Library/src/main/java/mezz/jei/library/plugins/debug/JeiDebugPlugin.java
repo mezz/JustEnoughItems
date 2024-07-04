@@ -41,10 +41,10 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import net.minecraft.world.level.block.Blocks;
@@ -154,9 +154,11 @@ public class JeiDebugPlugin implements IModPlugin {
 				new DebugRecipe()
 			));
 
-			RecipeHolder<SmithingRecipe> testRecipeWithoutTemplate = new RecipeHolder<>(
-				ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "test_recipe_without_template"),
-				new SmithingTrimRecipe(Ingredient.EMPTY, Ingredient.of(new ItemStack(Items.APPLE)), Ingredient.of(new ItemStack(Items.BAKED_POTATO)))
+			SmithingRecipe testRecipeWithoutTemplate = new SmithingTrimRecipe(
+				new ResourceLocation(ModIds.JEI_ID, "test_recipe_without_template"),
+				Ingredient.EMPTY,
+				Ingredient.of(new ItemStack(Items.APPLE)),
+				Ingredient.of(new ItemStack(Items.BAKED_POTATO))
 			);
 			registration.addRecipes(RecipeTypes.SMITHING, List.of(
 				testRecipeWithoutTemplate

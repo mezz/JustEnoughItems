@@ -22,6 +22,13 @@ public final class MathUtil {
 			.anyMatch(comparisonArea::intersects);
 	}
 
+	public static boolean contains(ImmutableRect2i rect, double x, double y) {
+		return x >= rect.getX() &&
+			y >= rect.getY() &&
+			x < rect.getX() + rect.getWidth() &&
+			y < rect.getY() + rect.getHeight();
+	}
+
 	public static boolean contains(Rect2i rect, double x, double y) {
 		return x >= rect.getX() &&
 			y >= rect.getY() &&

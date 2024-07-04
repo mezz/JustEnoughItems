@@ -35,12 +35,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 		this.onClose = onClose;
 	}
 
-	public void update(Rect2i area, IRecipeTransferManager recipeTransferManager, @Nullable AbstractContainerMenu container, Player player) {
-		this.setX(area.getX());
-		this.setY(area.getY());
-		this.width = area.getWidth();
-		this.height = area.getHeight();
-
+	public void update(IRecipeTransferManager recipeTransferManager, @Nullable AbstractContainerMenu container, Player player) {
 		if (container != null) {
 			this.recipeTransferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, container, recipeLayout, player)
 				.orElse(null);
