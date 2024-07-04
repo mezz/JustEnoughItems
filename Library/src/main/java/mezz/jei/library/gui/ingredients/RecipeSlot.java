@@ -267,4 +267,11 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	public void setSlotName(String slotName) {
 		this.slotName = slotName;
 	}
+
+	@Override
+	public String toString() {
+		return "RecipeSlot{" +
+			"rect=" + rect +
+			'}';
+	}
 }

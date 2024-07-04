@@ -7,6 +7,7 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.CommonComponents;
 
 /**
@@ -55,5 +56,12 @@ public class GuiIconButtonSmall extends Button {
 			this.icon.draw(guiGraphics);
 		}
 		poseStack.popPose();
+	}
+
+	public void setArea(Rect2i buttonArea) {
+		setX(buttonArea.getX());
+		setY(buttonArea.getY());
+		setWidth(buttonArea.getWidth());
+		setHeight(buttonArea.getHeight());
 	}
 }

@@ -5,10 +5,12 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface IRecipeGuiLogic {
@@ -54,4 +56,6 @@ public interface IRecipeGuiLogic {
 	Stream<ITypedIngredient<?>> getRecipeCatalysts(IRecipeCategory<?> recipeCategory);
 
 	List<IRecipeLayoutDrawable<?>> getRecipeLayouts();
+
+	Optional<ImmutableRect2i> getRecipeLayoutSizeWithBorder();
 }

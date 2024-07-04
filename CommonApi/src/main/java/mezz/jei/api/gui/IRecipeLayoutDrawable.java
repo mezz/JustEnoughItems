@@ -70,6 +70,12 @@ public interface IRecipeLayoutDrawable<R> {
 	Rect2i getRect();
 
 	/**
+	 * Get position and size for the recipe, including the border drawn around it, in absolute screen coordinates.
+	 * @since 19.1.1
+	 */
+	Rect2i getRectWithBorder();
+
+	/**
 	 * Get the position of the recipe transfer button area, relative to the recipe layout drawable.
 	 * @since 11.5.0
 	 */

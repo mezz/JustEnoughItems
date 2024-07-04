@@ -11,6 +11,7 @@ import mezz.jei.common.Constants;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
@@ -39,6 +40,10 @@ public class DrawableNineSliceTexture {
 		this.sliceRight = right;
 		this.sliceTop = top;
 		this.sliceBottom = bottom;
+	}
+
+	public void draw(GuiGraphics guiGraphics, Rect2i area) {
+		draw(guiGraphics, area.getX(), area.getY(), area.getWidth(), area.getHeight());
 	}
 
 	public void draw(GuiGraphics guiGraphics, ImmutableRect2i area) {

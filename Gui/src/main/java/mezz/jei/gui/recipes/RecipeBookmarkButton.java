@@ -35,6 +35,9 @@ public class RecipeBookmarkButton extends GuiIconButtonSmall {
 			.map(recipeBookmark -> {
 				IDrawable icon = textures.getRecipeBookmark();
 				Rect2i area = recipeLayout.getRecipeBookmarkButtonArea();
+				Rect2i layoutArea = recipeLayout.getRect();
+				area.setX(area.getX() + layoutArea.getX());
+				area.setY(area.getY() + layoutArea.getY());
 
 				return new RecipeBookmarkButton(icon, bookmarks, recipeBookmark, textures, area);
 			});
