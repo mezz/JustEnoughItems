@@ -18,7 +18,9 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 	@Override
 	public int getBurnTime(ItemStack itemStack) {
 		try {
-			return ForgeHooks.getBurnTime(itemStack, null);
+			@SuppressWarnings("UnstableApiUsage")
+			int burnTime = ForgeHooks.getBurnTime(itemStack, null);
+			return burnTime;
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
 			LOGGER.error("Failed to check if item is fuel {}.", itemStackInfo, e);
