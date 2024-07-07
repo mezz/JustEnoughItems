@@ -24,7 +24,9 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 	@Override
 	public int getBurnTime(ItemStack itemStack) {
 		try {
-			return ForgeHooks.getBurnTime(itemStack, null);
+			@SuppressWarnings("UnstableApiUsage")
+			int burnTime = ForgeHooks.getBurnTime(itemStack, null);
+			return burnTime;
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
 			LOGGER.error("Failed to check if item is fuel {}.", itemStackInfo, e);
@@ -50,6 +52,7 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 		try {
 			List<Component> tooltip = new ArrayList<>();
 			tooltip.add(Component.literal("JEI Tooltip Testing for mod name formatting"));
+			@SuppressWarnings("UnstableApiUsage")
 			ItemTooltipEvent tooltipEvent = ForgeEventFactory.onItemTooltip(itemStack, player, tooltip, TooltipFlag.Default.NORMAL);
 			return tooltipEvent.getToolTip();
 		} catch (LinkageError | RuntimeException e) {
