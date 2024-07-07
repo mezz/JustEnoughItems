@@ -30,4 +30,9 @@ public class RecipeTransferErrorMissingSlots extends RecipeTransferErrorTooltip 
 		}
 		poseStack.popPose();
 	}
+
+	@Override
+	public int getMissingCountHint() {
+		return this.slots.size();
+	}
 }

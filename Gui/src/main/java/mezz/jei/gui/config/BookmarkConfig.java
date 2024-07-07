@@ -67,7 +67,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 		IGuiHelper guiHelper,
 		IIngredientManager ingredientManager,
 		RegistryAccess registryAccess,
-		List<IBookmark> bookmarks
+		Collection<IBookmark> bookmarks
 	) {
 		List<IBookmark> bookmarksSnapshot = List.copyOf(bookmarks);
 		getPath(jeiConfigurationDir)

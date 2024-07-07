@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> implements IRecipeTransferHandler<C, R> {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -225,9 +224,11 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 	}
 
 	public static Set<Integer> slotIndexes(Collection<Slot> slots) {
-		return slots.stream()
-			.map(s -> s.index)
-			.collect(Collectors.toSet());
+		Set<Integer> set = new IntOpenHashSet(slots.size());
+		for (Slot s : slots) {
+			set.add(s.index);
+		}
+		return set;
 	}
 
 	@Nullable

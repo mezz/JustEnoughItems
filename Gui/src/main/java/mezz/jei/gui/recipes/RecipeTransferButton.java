@@ -24,6 +24,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 public class RecipeTransferButton extends GuiIconToggleButton {
 	public static RecipeTransferButton create(
 		IRecipeLayoutDrawable recipeLayout,
@@ -140,5 +142,9 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 		} finally {
 			poseStack.popPose();
 		}
+	}
+
+	public Optional<IRecipeTransferError> getRecipeTransferError() {
+		return Optional.ofNullable(recipeTransferError);
 	}
 }

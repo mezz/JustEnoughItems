@@ -9,7 +9,9 @@ import mezz.jei.common.config.file.serializers.ListSerializer;
 import mezz.jei.common.platform.Services;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -40,6 +42,7 @@ public final class ClientConfig implements IClientConfig {
 
 	// sorting
 	private final ConfigValue<List<IngredientSortStage>> ingredientSorterStages;
+	private final ConfigValue<List<RecipeSorterStage>> recipeSorterStages;
 
 	// tags
 	private final Supplier<Boolean> hideSingleIngredientTagsEnabled;
@@ -126,6 +129,12 @@ public final class ClientConfig implements IClientConfig {
 			IngredientSortStage.defaultStages,
 			new ListSerializer<>(new EnumSerializer<>(IngredientSortStage.class)),
 			"Sorting order for the ingredient list."
+		);
+		recipeSorterStages = sorting.addList(
+			"RecipeSorterStages",
+			RecipeSorterStage.defaultStages,
+			new ListSerializer<>(new EnumSerializer<>(RecipeSorterStage.class)),
+			"Sorting order for displayed recipes."
 		);
 
 		IConfigCategoryBuilder tags = schema.addCategory("tags");
@@ -223,6 +232,31 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public void addIngredientSorterStagesListener(Consumer<List<IngredientSortStage>> listener) {
 		ingredientSorterStages.addListener(listener);
+	}
+
+	@Override
+	public Set<RecipeSorterStage> getRecipeSorterStages() {
+		return Set.copyOf(recipeSorterStages.getValue());
+	}
+
+	@Override
+	public void enableRecipeSorterStage(RecipeSorterStage stage) {
+		List<RecipeSorterStage> recipeSorterStages = this.recipeSorterStages.get();
+		if (!recipeSorterStages.contains(stage)) {
+			recipeSorterStages = new ArrayList<>(recipeSorterStages);
+			recipeSorterStages.add(stage);
+			this.recipeSorterStages.set(recipeSorterStages);
+		}
+	}
+
+	@Override
+	public void disableRecipeSorterStage(RecipeSorterStage stage) {
+		List<RecipeSorterStage> recipeSorterStages = this.recipeSorterStages.get();
+		if (recipeSorterStages.contains(stage)) {
+			recipeSorterStages = new ArrayList<>(recipeSorterStages);
+			recipeSorterStages.remove(stage);
+			this.recipeSorterStages.set(recipeSorterStages);
+		}
 	}
 
 	@Override
