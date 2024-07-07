@@ -24,11 +24,6 @@ public class SingleCategoryLookupState implements ILookupState {
 	}
 
 	@Override
-	public void moveToRecipeCategoryIndex(int recipeCategoryIndex) {
-
-	}
-
-	@Override
 	public boolean moveToRecipeCategory(IRecipeCategory<?> recipeCategory) {
 		RecipeType<?> recipeType = focusedRecipes.getRecipeCategory().getRecipeType();
 		return recipeCategory.getRecipeType().equals(recipeType);
@@ -67,6 +62,11 @@ public class SingleCategoryLookupState implements ILookupState {
 	@Override
 	public void previousRecipeCategory() {
 
+	}
+
+	@Override
+	public void goToFirstPage() {
+		this.recipeIndex = 0;
 	}
 
 	@Override

@@ -4,19 +4,18 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.DeleteItemInputHandler;
@@ -51,7 +50,6 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	public IngredientGrid(
 		IIngredientManager ingredientManager,
 		IIngredientGridConfig gridConfig,
-		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
@@ -61,7 +59,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		IColorHelper colorHelper
 	) {
 		this.gridConfig = gridConfig;
-		this.ingredientListRenderer = new IngredientListRenderer(editModeConfig, toggleState, ingredientManager);
+		this.ingredientListRenderer = new IngredientListRenderer();
 		this.tooltipHelper = new IngredientGridTooltipHelper(ingredientManager, ingredientFilterConfig, toggleState, modIdHelper, keyBindings, colorHelper);
 		this.deleteItemHandler = new DeleteItemInputHandler(this, toggleState, clientConfig, serverConnection, ingredientManager);
 	}

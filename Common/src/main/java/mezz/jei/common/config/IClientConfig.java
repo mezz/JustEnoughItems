@@ -1,6 +1,7 @@
 package mezz.jei.common.config;
 
 import java.util.List;
+import java.util.Set;
 
 public interface IClientConfig {
 	int minRecipeGuiHeight = 175;
@@ -26,4 +27,10 @@ public interface IClientConfig {
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();
+
+	Set<RecipeSorterStage> getRecipeSorterStages();
+
+	void enableRecipeSorterStage(RecipeSorterStage stage);
+
+	void disableRecipeSorterStage(RecipeSorterStage stage);
 }

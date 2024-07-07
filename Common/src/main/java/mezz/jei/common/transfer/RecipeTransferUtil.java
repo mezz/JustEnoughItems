@@ -20,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
@@ -178,9 +179,23 @@ public final class RecipeTransferUtil {
 		// and also split them between "equal" groups
 		Map<IRecipeSlotView, Map<ItemStack, ArrayList<PhantomSlotState>>> relevantSlots = new IdentityHashMap<>();
 
+		Map<IRecipeSlotView, Set<String>> slotUidCache = new IdentityHashMap<>();
+		List<IRecipeSlotView> nonEmptyRequiredStacks = requiredItemStacks.stream()
+			.filter(r -> !r.isEmpty())
+			.toList();
+
 		for (Map.Entry<Slot, ItemStack> slotTuple : availableItemStacks.entrySet()) {
-			for (IRecipeSlotView ingredient : requiredItemStacks) {
-				if (!ingredient.isEmpty() && ingredient.getItemStacks().anyMatch(it -> stackhelper.isEquivalent(it, slotTuple.getValue(), UidContext.Ingredient))) {
+			ItemStack slotItemStack = slotTuple.getValue();
+			String slotItemStackUid = stackhelper.getUniqueIdentifierForStack(slotItemStack, UidContext.Ingredient);
+
+			for (IRecipeSlotView ingredient : nonEmptyRequiredStacks) {
+				Set<String> ingredientUids = slotUidCache.computeIfAbsent(ingredient, s ->
+					s.getItemStacks()
+					.map(i -> stackhelper.getUniqueIdentifierForStack(i, UidContext.Ingredient))
+					.collect(Collectors.toSet())
+				);
+
+				if (ingredientUids.contains(slotItemStackUid)) {
 					relevantSlots
 						.computeIfAbsent(ingredient, it -> new Object2ObjectOpenCustomHashMap<>(new Hash.Strategy<>() {
 							@Override
@@ -193,8 +208,8 @@ public final class RecipeTransferUtil {
 								return stackhelper.isEquivalent(a, b, UidContext.Ingredient);
 							}
 						}))
-						.computeIfAbsent(slotTuple.getValue(), it -> new ArrayList<>())
-						.add(new PhantomSlotState(slotTuple.getKey(), slotTuple.getValue()));
+						.computeIfAbsent(slotItemStack, it -> new ArrayList<>())
+						.add(new PhantomSlotState(slotTuple.getKey(), slotItemStack));
 				}
 			}
 		}
@@ -250,13 +265,6 @@ public final class RecipeTransferUtil {
 			bestMatches.put(entry.getKey(), countedAndSorted);
 		}
 
-		// Fill in empty lists for missing ingredients, to simplify logic later
-		for (IRecipeSlotView ingredient : requiredItemStacks) {
-			if (!ingredient.isEmpty()) {
-				bestMatches.computeIfAbsent(ingredient, it -> new ArrayList<>());
-			}
-		}
-
 		for (int i = 0; i < requiredItemStacks.size(); i++) {
 			IRecipeSlotView requiredItemStack = requiredItemStacks.get(i);
 
@@ -266,12 +274,17 @@ public final class RecipeTransferUtil {
 
 			Slot craftingSlot = craftingSlots.get(i);
 
-			PhantomSlotState matching = bestMatches
-				.get(requiredItemStack)
-				.stream()
-				.flatMap(PhantomSlotStateList::stream)
-				.findFirst()
-				.orElse(null);
+			PhantomSlotState matching = null;
+			List<PhantomSlotStateList> matches = bestMatches.get(requiredItemStack);
+			if (matches != null) {
+				for (PhantomSlotStateList phantomSlotStateList : matches) {
+					PhantomSlotState first = phantomSlotStateList.getFirstNonEmpty();
+					if (first != null) {
+						matching = first;
+						break;
+					}
+				}
+			}
 
 			if (matching == null) {
 				transferOperations.missingItems.add(requiredItemStack);
@@ -293,8 +306,14 @@ public final class RecipeTransferUtil {
 			this(states, states.stream().mapToLong(it -> it.itemStack.getCount()).sum());
 		}
 
-		public Stream<PhantomSlotState> stream() {
-			return this.stateList.stream().filter(it -> !it.itemStack.isEmpty());
+		@Nullable
+		public PhantomSlotState getFirstNonEmpty() {
+			for (PhantomSlotState state : this.stateList) {
+				if (!state.itemStack.isEmpty()) {
+					return state;
+				}
+			}
+			return null;
 		}
 	}
 }

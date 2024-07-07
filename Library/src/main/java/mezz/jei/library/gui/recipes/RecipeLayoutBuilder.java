@@ -9,11 +9,10 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.library.ingredients.IIngredientSupplier;
 import mezz.jei.library.gui.recipes.layout.builder.IRecipeLayoutSlotSource;
 import mezz.jei.library.gui.recipes.layout.builder.InvisibleRecipeLayoutSlotSource;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
+import mezz.jei.library.ingredients.IIngredientSupplier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,7 +100,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		return !this.slots.isEmpty() || !this.focusLinkedSlots.isEmpty();
 	}
 
-	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, IFocusGroup focuses, IIngredientVisibility ingredientVisibility) {
+	public <R> void setRecipeLayout(RecipeLayout<R> recipeLayout, IFocusGroup focuses) {
 		if (this.shapeless) {
 			if (this.shapelessX >= 0 && this.shapelessY >= 0) {
 				recipeLayout.setShapeless(this.shapelessX, this.shapelessY);
@@ -115,7 +114,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 
 		for (IRecipeLayoutSlotSource slot : this.slots) {
 			IntSet focusMatches = slot.getMatches(focuses);
-			slot.setRecipeSlots(recipeLayout.getRecipeSlots(), focusMatches, ingredientVisibility);
+			slot.setRecipeSlots(recipeLayout.getRecipeSlots(), focusMatches);
 		}
 
 		for (List<IRecipeLayoutSlotSource> slots : this.focusLinkedSlots) {
@@ -124,7 +123,7 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 				focusMatches.addAll(slot.getMatches(focuses));
 			}
 			for (IRecipeLayoutSlotSource slot : slots) {
-				slot.setRecipeSlots(recipeLayout.getRecipeSlots(), focusMatches, ingredientVisibility);
+				slot.setRecipeSlots(recipeLayout.getRecipeSlots(), focusMatches);
 			}
 		}
 	}

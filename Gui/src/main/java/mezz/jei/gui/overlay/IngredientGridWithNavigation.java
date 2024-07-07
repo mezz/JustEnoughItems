@@ -7,7 +7,6 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
@@ -75,7 +74,6 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		IIngredientGridConfig gridConfig,
 		DrawableNineSliceTexture background,
 		DrawableNineSliceTexture slotBackground,
-		Textures textures,
 		IScreenHelper screenHelper,
 		IIngredientManager ingredientManager
 	) {
@@ -86,7 +84,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.gridConfig = gridConfig;
 		this.ingredientManager = ingredientManager;
 		this.pageDelegate = new IngredientGridPaged();
-		this.navigation = new PageNavigation(this.pageDelegate, false, textures);
+		this.navigation = new PageNavigation(this.pageDelegate, false);
 		this.background = background;
 		this.slotBackground = slotBackground;
 		this.commandUtil = new CommandUtil(clientConfig, serverConnection);

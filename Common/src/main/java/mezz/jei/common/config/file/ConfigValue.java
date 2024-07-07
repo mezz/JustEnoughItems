@@ -1,14 +1,15 @@
 package mezz.jei.common.config.file;
 
-import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.api.runtime.config.IJeiConfigValue;
+import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Supplier;
 
-public class ConfigValue<T> implements IJeiConfigValue<T> {
+public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final String name;
@@ -52,6 +53,11 @@ public class ConfigValue<T> implements IJeiConfigValue<T> {
 			schema.loadIfNeeded();
 		}
 		return currentValue;
+	}
+
+	@Override
+	public T get() {
+		return getValue();
 	}
 
 	@Override

@@ -63,4 +63,19 @@ public interface IRecipeTransferError {
 	default void showError(GuiGraphics guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
 
 	}
+
+	/**
+	 * Get the estimated number of inputs of the recipe that cannot be found in the container.
+	 *
+	 * This is used to help sort recipes with more matches first, so that if a player
+	 * has many (or all) of the items required for a recipe in their inventory, it is shown first.
+	 *
+	 * @return the number of input recipes slots are missing ingredient's in the player's inventory.
+	 *         Return -1 by default to avoid sorting
+	 *
+	 * @since 19.2.0
+	 */
+	default int getMissingCountHint() {
+		return -1;
+	}
 }

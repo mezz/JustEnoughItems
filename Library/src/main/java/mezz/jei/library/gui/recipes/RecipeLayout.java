@@ -12,7 +12,8 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
@@ -41,9 +42,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);
 	private final IRecipeCategory<R> recipeCategory;
 	private final Collection<IRecipeCategoryDecorator<R>> recipeCategoryDecorators;
-	private final IIngredientManager ingredientManager;
-	private final IModIdHelper modIdHelper;
-	private final Textures textures;
 	private final RecipeSlots recipeSlots;
 	private final R recipe;
 	private final DrawableNineSliceTexture recipeBorder;
@@ -53,12 +51,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	private ImmutableRect2i area;
 
-	public static <T> Optional<IRecipeLayoutDrawable<T>> create(IRecipeCategory<T> recipeCategory, Collection<IRecipeCategoryDecorator<T>> decorators, T recipe, IFocusGroup focuses, IIngredientManager ingredientManager, IIngredientVisibility ingredientVisibility, IModIdHelper modIdHelper, Textures textures) {
-		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, decorators, recipe, ingredientManager, modIdHelper, textures);
-		if (recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses, ingredientVisibility)) {
+	public static <T> Optional<IRecipeLayoutDrawable<T>> create(IRecipeCategory<T> recipeCategory, Collection<IRecipeCategoryDecorator<T>> decorators, T recipe, IFocusGroup focuses, IIngredientManager ingredientManager) {
+		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, decorators, recipe);
+		if (recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses, ingredientManager)) {
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 			if (recipeName != null) {
-				addOutputSlotTooltip(recipeLayout, recipeName, modIdHelper);
+				addOutputSlotTooltip(recipeLayout, recipeName);
 			}
 			return Optional.of(recipeLayout);
 		}
@@ -69,13 +67,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		IRecipeCategory<R> recipeCategory,
 		R recipe,
 		IFocusGroup focuses,
-		IIngredientVisibility ingredientVisibility
+		IIngredientManager ingredientManager
 	) {
 		RecipeLayoutBuilder builder = new RecipeLayoutBuilder(ingredientManager, this.ingredientCycleOffset);
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
 			if (builder.isUsed()) {
-				builder.setRecipeLayout(this, focuses, ingredientVisibility);
+				builder.setRecipeLayout(this, focuses);
 				return true;
 			}
 		} catch (RuntimeException | LinkageError e) {
@@ -84,14 +82,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		return false;
 	}
 
-	private static void addOutputSlotTooltip(RecipeLayout<?> recipeLayout, ResourceLocation recipeName, IModIdHelper modIdHelper) {
+	private static void addOutputSlotTooltip(RecipeLayout<?> recipeLayout, ResourceLocation recipeName) {
 		RecipeSlots recipeSlots = recipeLayout.recipeSlots;
 		List<RecipeSlot> outputSlots = recipeSlots.getSlots().stream()
 			.filter(r -> r.getRole() == RecipeIngredientRole.OUTPUT)
 			.toList();
 
 		if (!outputSlots.isEmpty()) {
-			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName, modIdHelper, recipeLayout.ingredientManager);
+			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName);
 			for (RecipeSlot outputSlot : outputSlots) {
 				outputSlot.addTooltipCallback(callback);
 			}
@@ -101,16 +99,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	public RecipeLayout(
 		IRecipeCategory<R> recipeCategory,
 		Collection<IRecipeCategoryDecorator<R>> recipeCategoryDecorators,
-		R recipe,
-		IIngredientManager ingredientManager,
-		IModIdHelper modIdHelper,
-		Textures textures
+		R recipe
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
-		this.ingredientManager = ingredientManager;
-		this.modIdHelper = modIdHelper;
-		this.textures = textures;
 		this.recipeSlots = new RecipeSlots();
 		this.area = new ImmutableRect2i(
 			0,
@@ -127,6 +119,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		);
 
 		this.recipe = recipe;
+		Textures textures = Internal.getTextures();
 		this.recipeBorder = textures.getRecipeBackground();
 	}
 
@@ -210,11 +203,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			}
 			poseStack.popPose();
 
+			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+			IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
 			hoveredSlot.getDisplayedIngredient()
 				.ifPresent(i -> {
 					List<Component> tooltip = hoveredSlot.getTooltip();
 					tooltip = modIdHelper.addModNameToIngredientTooltip(tooltip, i);
-					TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY, i, ingredientManager);
+					TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY, i);
 				});
 		} else if (isMouseOver(mouseX, mouseY)) {
 			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeSlots.getView(), recipeMouseX, recipeMouseY);
@@ -270,7 +265,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	}
 
 	public void setShapeless() {
-		this.shapelessIcon = new ShapelessIcon(textures);
+		this.shapelessIcon = new ShapelessIcon();
 
 		// align to top-right
 		int x = area.getWidth() - shapelessIcon.getIcon().getWidth();
@@ -278,7 +273,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	}
 
 	public void setShapeless(int shapelessX, int shapelessY) {
-		this.shapelessIcon = new ShapelessIcon(textures);
+		this.shapelessIcon = new ShapelessIcon();
 		this.shapelessIcon.setPosition(shapelessX, shapelessY);
 	}
 

@@ -3,7 +3,6 @@ package mezz.jei.library.startup;
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
@@ -15,12 +14,12 @@ import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.JeiClientConfigs;
+import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.FileWatcher;
+import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.util.LoggedTimer;
-import mezz.jei.common.config.file.ConfigSchemaBuilder;
-import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.library.color.ColorHelper;
 import mezz.jei.library.config.ColorNameConfig;
 import mezz.jei.library.config.EditModeConfig;
@@ -112,7 +111,6 @@ public final class JeiStarter {
 
 		PluginLoader pluginLoader = new PluginLoader(data, modIdFormatConfig, colorHelper);
 		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
-		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 
 		IIngredientManager ingredientManager = pluginLoader.getIngredientManager();
 
@@ -133,7 +131,6 @@ public final class JeiStarter {
 			plugins,
 			vanillaPlugin,
 			recipeCategorySortingConfig,
-			modIdHelper,
 			ingredientVisibility
 		);
 		ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers =
@@ -173,6 +170,7 @@ public final class JeiStarter {
 		timer.stop();
 
 		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime));
+		Internal.setRuntime(jeiRuntime);
 
 		totalTime.stop();
 	}
@@ -181,5 +179,6 @@ public final class JeiStarter {
 		LOGGER.info("Stopping JEI");
 		List<IModPlugin> plugins = data.plugins();
 		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
+		Internal.setRuntime(null);
 	}
 }

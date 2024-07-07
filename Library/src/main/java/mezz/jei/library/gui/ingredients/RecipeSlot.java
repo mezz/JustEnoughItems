@@ -12,6 +12,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.Internal;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
 import net.minecraft.ChatFormatting;
@@ -32,7 +33,6 @@ import java.util.stream.Stream;
 public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private static final int MAX_DISPLAYED_INGREDIENTS = 100;
 
-	private final IIngredientManager ingredientManager;
 	private final RecipeIngredientRole role;
 	private final CycleTimer cycleTimer;
 	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
@@ -43,7 +43,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	 * {@link Optional#empty()} ingredients represent a "blank" drawn ingredient in the rotation.
 	 */
 	@Unmodifiable
-	private List<Optional<ITypedIngredient<?>>> displayIngredients = List.of();
+	@Nullable
+	private List<Optional<ITypedIngredient<?>>> displayIngredients = null;
 
 	/**
 	 * All ingredients, ignoring focus
@@ -61,13 +62,11 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private String slotName;
 
 	public RecipeSlot(
-		IIngredientManager ingredientManager,
 		RecipeIngredientRole role,
 		int xPos,
 		int yPos,
 		int ingredientCycleOffset
 	) {
-		this.ingredientManager = ingredientManager;
 		this.rendererOverrides = new RendererOverrides();
 		this.role = role;
 		this.rect = new ImmutableRect2i(xPos, yPos, 16, 16);
@@ -96,7 +95,20 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	@Override
 	public Optional<ITypedIngredient<?>> getDisplayedIngredient() {
-		return cycleTimer.getCycledItem(displayIngredients);
+		if (this.displayIngredients == null) {
+			IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getIngredientVisibility();
+			this.displayIngredients = this.allIngredients.stream()
+				.filter(i -> i.isEmpty() || ingredientVisibility.isIngredientVisible(i.get()))
+				.limit(MAX_DISPLAYED_INGREDIENTS)
+				.toList();
+
+			if (this.displayIngredients.isEmpty()) {
+				this.displayIngredients = this.allIngredients.stream()
+					.limit(MAX_DISPLAYED_INGREDIENTS)
+					.toList();
+			}
+		}
+		return cycleTimer.getCycledItem(this.displayIngredients);
 	}
 
 	@Override
@@ -135,6 +147,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	private <T> List<Component> getTooltip(ITypedIngredient<T> typedIngredient) {
+		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
@@ -161,7 +175,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		this.overlay = overlay;
 	}
 
-	public void set(List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusMatches, IIngredientVisibility ingredientVisibility) {
+	public void set(List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusMatches) {
 		this.allIngredients = List.copyOf(ingredients);
 
 		if (!focusMatches.isEmpty()) {
@@ -170,16 +184,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 				.map(i -> this.allIngredients.get(i))
 				.toList();
 		} else {
-			this.displayIngredients = this.allIngredients.stream()
-				.filter(i -> i.isEmpty() || ingredientVisibility.isIngredientVisible(i.get()))
-				.limit(MAX_DISPLAYED_INGREDIENTS)
-				.toList();
-
-			if (this.displayIngredients.isEmpty()) {
-				this.displayIngredients = this.allIngredients.stream()
-					.limit(MAX_DISPLAYED_INGREDIENTS)
-					.toList();
-			}
+			this.displayIngredients = null;
 		}
 	}
 
@@ -201,7 +206,10 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private <T> IIngredientRenderer<T> getIngredientRenderer(IIngredientType<T> ingredientType) {
 		return Optional.of(rendererOverrides)
 			.flatMap(r -> r.getIngredientRenderer(ingredientType))
-			.orElseGet(() -> ingredientManager.getIngredientRenderer(ingredientType));
+			.orElseGet(() -> {
+				IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+				return ingredientManager.getIngredientRenderer(ingredientType);
+			});
 	}
 
 	@Override
@@ -244,7 +252,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 
-		SafeIngredientUtil.render(ingredientManager, ingredientRenderer, guiGraphics, typedIngredient);
+		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, typedIngredient);
 	}
 
 	@Override

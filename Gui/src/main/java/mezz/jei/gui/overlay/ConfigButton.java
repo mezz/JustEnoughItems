@@ -26,15 +26,16 @@ import java.util.function.BooleanSupplier;
 public class ConfigButton extends GuiIconToggleButton {
 	private final IInternalKeyMappings keyBindings;
 
-	public static ConfigButton create(BooleanSupplier isListDisplayed, IClientToggleState toggleState, Textures textures, IInternalKeyMappings keyBindings) {
-		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), isListDisplayed, toggleState, textures, keyBindings);
+	public static ConfigButton create(BooleanSupplier isListDisplayed, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
+		Textures textures = Internal.getTextures();
+		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), isListDisplayed, toggleState, keyBindings);
 	}
 
 	private final BooleanSupplier isListDisplayed;
 	private final IClientToggleState toggleState;
 
-	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, BooleanSupplier isListDisplayed, IClientToggleState toggleState, Textures textures, IInternalKeyMappings keyBindings) {
-		super(disabledIcon, enabledIcon, textures);
+	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, BooleanSupplier isListDisplayed, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
+		super(disabledIcon, enabledIcon);
 		this.isListDisplayed = isListDisplayed;
 		this.toggleState = toggleState;
 		this.keyBindings = keyBindings;

@@ -20,6 +20,8 @@ public class Textures {
 	private final DrawableNineSliceTexture buttonDisabled;
 	private final DrawableNineSliceTexture buttonEnabled;
 	private final DrawableNineSliceTexture buttonHighlight;
+	private final DrawableNineSliceTexture buttonPressed;
+	private final DrawableNineSliceTexture buttonPressedHighlight;
 	private final DrawableNineSliceTexture recipeGuiBackground;
 	private final DrawableNineSliceTexture ingredientListBackground;
 	private final DrawableNineSliceTexture bookmarkListBackground;
@@ -37,8 +39,11 @@ public class Textures {
 	private final IDrawableStatic bookmarkButtonEnabledIcon;
 	private final IDrawableStatic infoIcon;
 	private final DrawableNineSliceTexture catalystTab;
+	private final DrawableNineSliceTexture recipeOptionsTab;
 	private final IDrawableStatic flameIcon;
 	private final IDrawableStatic recipeArrow;
+	private final IDrawableStatic bookmarksFirst;
+	private final IDrawableStatic craftableFirst;
 
 	public Textures(JeiSpriteUploader spriteUploader) {
 		this.spriteUploader = spriteUploader;
@@ -52,12 +57,15 @@ public class Textures {
 		this.buttonDisabled = createNineSliceGuiSprite("button_disabled", 20, 20, 6, 6, 6, 6);
 		this.buttonEnabled = createNineSliceGuiSprite("button_enabled", 20, 20, 6, 6, 6, 6);
 		this.buttonHighlight = createNineSliceGuiSprite("button_highlight", 20, 20, 6, 6, 6, 6);
+		this.buttonPressed = createNineSliceGuiSprite("button_pressed", 20, 20, 6, 6, 6, 6);
+		this.buttonPressedHighlight = createNineSliceGuiSprite("button_pressed_highlight", 20, 20, 6, 6, 6, 6);
 		this.recipeGuiBackground = createNineSliceGuiSprite("gui_background", 64, 64, 16, 16, 16, 16);
 		this.ingredientListBackground = createNineSliceGuiSprite("ingredient_list_background", 64, 64, 16, 16, 16, 16);
 		this.bookmarkListBackground = createNineSliceGuiSprite("bookmark_list_background", 64, 64, 16, 16, 16, 16);
 		this.recipeBackground = createNineSliceGuiSprite("single_recipe_background", 64, 64, 16, 16, 16, 16);
 		this.searchBackground = createNineSliceGuiSprite("search_background", 20, 20, 6, 6, 6, 6);
 		this.catalystTab = createNineSliceGuiSprite("catalyst_tab", 28, 28, 8, 9, 8, 8);
+		this.recipeOptionsTab = createNineSliceGuiSprite("recipe_options_tab", 28, 28, 8, 9, 8, 8);
 		this.recipeArrow = createGuiSprite("recipe_arrow", 22, 15);
 
 		DrawableSprite rawShapelessIcon = createGuiSprite("icons/shapeless_icon", 36, 36)
@@ -76,6 +84,8 @@ public class Textures {
 		this.bookmarkButtonEnabledIcon = createGuiSprite("icons/bookmark_button_enabled", 16, 16);
 		this.infoIcon = createGuiSprite("icons/info", 16, 16);
 		this.flameIcon = createGuiSprite("icons/flame", 14, 14);
+		this.bookmarksFirst = createGuiSprite("icons/bookmarks_first", 16, 16);
+		this.craftableFirst = createGuiSprite("icons/craftable_first", 16, 16);
 	}
 
 	private ResourceLocation createSprite(String name) {
@@ -124,6 +134,14 @@ public class Textures {
 		return recipeBookmark;
 	}
 
+	public IDrawableStatic getBookmarksFirst() {
+		return bookmarksFirst;
+	}
+
+	public IDrawableStatic getCraftableFirst() {
+		return craftableFirst;
+	}
+
 	public IDrawableStatic getConfigButtonIcon() {
 		return configButtonIcon;
 	}
@@ -140,13 +158,15 @@ public class Textures {
 		return bookmarkButtonEnabledIcon;
 	}
 
-	public DrawableNineSliceTexture getButtonForState(boolean enabled, boolean hovered) {
+	public DrawableNineSliceTexture getButtonForState(boolean pressed, boolean enabled, boolean hovered) {
 		if (!enabled) {
 			return buttonDisabled;
-		} else if (hovered) {
-			return buttonHighlight;
+		}
+
+		if (hovered) {
+			return pressed ? buttonPressedHighlight : buttonHighlight;
 		} else {
-			return buttonEnabled;
+			return pressed ? buttonPressed : buttonEnabled;
 		}
 	}
 
@@ -176,6 +196,10 @@ public class Textures {
 
 	public DrawableNineSliceTexture getCatalystTab() {
 		return catalystTab;
+	}
+
+	public DrawableNineSliceTexture getRecipeOptionsTab() {
+		return recipeOptionsTab;
 	}
 
 	public IDrawableStatic getRecipeArrow() {

@@ -7,16 +7,17 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.config.IBookmarkConfig;
-import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
+import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.core.RegistryAccess;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.SequencedCollection;
 
 public class BookmarkList implements IIngredientGridSource {
-	private final List<IBookmark> bookmarks = new LinkedList<>();
+	private final SequencedCollection<IBookmark> bookmarks = new LinkedHashSet<>();
 	private final IRecipeManager recipeManager;
 	private final IFocusFactory focusFactory;
 	private final IIngredientManager ingredientManager;

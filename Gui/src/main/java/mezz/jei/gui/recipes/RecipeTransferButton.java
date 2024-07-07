@@ -1,16 +1,18 @@
 package mezz.jei.gui.recipes;
 
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.TooltipRenderer;
-import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
+import mezz.jei.gui.elements.GuiIconToggleButton;
+import mezz.jei.gui.input.UserInput;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderType;
@@ -20,24 +22,44 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
-public class RecipeTransferButton extends GuiIconButtonSmall {
+public class RecipeTransferButton extends GuiIconToggleButton {
+	public static RecipeTransferButton create(
+		IRecipeLayoutDrawable<?> recipeLayout,
+		Runnable onClose
+	) {
+		Rect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
+		Rect2i layoutArea = recipeLayout.getRect();
+		buttonArea.setX(buttonArea.getX() + layoutArea.getX());
+		buttonArea.setY(buttonArea.getY() + layoutArea.getY());
+
+		Textures textures = Internal.getTextures();
+		IDrawable icon = textures.getRecipeTransfer();
+		RecipeTransferButton transferButton = new RecipeTransferButton(icon, recipeLayout, onClose);
+		transferButton.updateBounds(buttonArea);
+		return transferButton;
+	}
+
 	private final IRecipeLayoutDrawable<?> recipeLayout;
 	private final Runnable onClose;
-	@Nullable
-	private IRecipeTransferError recipeTransferError;
-	@Nullable
-	private IOnClickHandler onClickHandler;
+	private @Nullable IRecipeTransferError recipeTransferError;
+	private @Nullable AbstractContainerMenu parentContainer;
+	private @Nullable Player player;
 
-	public RecipeTransferButton(IDrawable icon, IRecipeLayoutDrawable<?> recipeLayout, Textures textures, Runnable onClose) {
-		super(0, 0, 0, 0, icon, b -> {}, textures);
+	private RecipeTransferButton(IDrawable icon, IRecipeLayoutDrawable<?> recipeLayout, Runnable onClose) {
+		super(icon, icon);
 		this.recipeLayout = recipeLayout;
 		this.onClose = onClose;
 	}
 
-	public void update(IRecipeTransferManager recipeTransferManager, @Nullable AbstractContainerMenu container, Player player) {
-		if (container != null) {
-			this.recipeTransferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, container, recipeLayout, player)
+	public void update(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
+		this.player = player;
+		this.parentContainer = parentContainer;
+
+		if (parentContainer != null && player != null) {
+			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
+			this.recipeTransferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, parentContainer, recipeLayout, player)
 				.orElse(null);
 		} else {
 			this.recipeTransferError = RecipeTransferErrorInternal.INSTANCE;
@@ -45,23 +67,29 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 
 		if (recipeTransferError == null ||
 			recipeTransferError.getType().allowsTransfer) {
-			this.active = true;
-			this.visible = true;
+			this.button.active = true;
+			this.button.visible = true;
 		} else {
-			this.active = false;
+			this.button.active = false;
 			IRecipeTransferError.Type type = this.recipeTransferError.getType();
-			this.visible = (type == IRecipeTransferError.Type.USER_FACING);
+			this.button.visible = (type == IRecipeTransferError.Type.USER_FACING);
 		}
-
-		this.onClickHandler = (mouseX, mouseY) -> {
-			boolean maxTransfer = Screen.hasShiftDown();
-			if (container != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer)) {
-				onClose.run();
-			}
-		};
 	}
 
-	public void drawToolTip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	@Override
+	protected boolean onMouseClicked(UserInput input) {
+		if (!input.isSimulate()) {
+			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
+			boolean maxTransfer = Screen.hasShiftDown();
+			if (parentContainer != null && player != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, parentContainer, recipeLayout, player, maxTransfer)) {
+				onClose.run();
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (recipeTransferError == null) {
 				Component tooltipTransfer = Component.translatable("jei.tooltip.transfer");
@@ -75,36 +103,31 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		return this.visible &&
-			mouseX >= this.getX() &&
-			mouseY >= this.getY() &&
-			mouseX < this.getX() + this.getWidth() &&
-			mouseY < this.getY() + this.getHeight();
+	protected void getTooltips(List<Component> tooltip) {
+
 	}
 
 	@Override
-	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		super.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
+	protected boolean isIconToggledOn() {
+		return false;
+	}
+
+	@Override
+	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		super.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		if (this.recipeTransferError != null && this.recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
 			guiGraphics.fill(
 				RenderType.guiOverlay(),
-				this.getX(),
-				this.getY(),
-				this.getX() + this.getWidth(),
-				this.getY() + this.getHeight(),
+				this.button.getX(),
+				this.button.getY(),
+				this.button.getX() + this.button.getWidth(),
+				this.button.getY() + this.button.getHeight(),
 				this.recipeTransferError.getButtonHighlightColor()
 			);
 		}
 	}
 
-	@Override
-	public void onRelease(double mouseX, double mouseY) {
-		if (!isMouseOver(mouseX, mouseY)) {
-			return;
-		}
-		if (onClickHandler != null) {
-			onClickHandler.onClick(mouseX, mouseY);
-		}
+	public Optional<IRecipeTransferError> getRecipeTransferError() {
+		return Optional.ofNullable(recipeTransferError);
 	}
 }

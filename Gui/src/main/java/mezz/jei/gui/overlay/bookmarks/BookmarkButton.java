@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay.bookmarks;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.runtime.IJeiKeyMapping;
+import mezz.jei.common.Internal;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.textures.Textures;
@@ -16,10 +17,11 @@ import net.minecraft.network.chat.MutableComponent;
 import java.util.List;
 
 public class BookmarkButton extends GuiIconToggleButton {
-	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, Textures textures, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
+	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
+		Textures textures = Internal.getTextures();
 		IDrawableStatic offIcon = textures.getBookmarkButtonDisabledIcon();
 		IDrawableStatic onIcon = textures.getBookmarkButtonEnabledIcon();
-		return new BookmarkButton(offIcon, onIcon, textures, bookmarkOverlay, bookmarkList, toggleState, keyBindings);
+		return new BookmarkButton(offIcon, onIcon, bookmarkOverlay, bookmarkList, toggleState, keyBindings);
 	}
 
 	private final BookmarkOverlay bookmarkOverlay;
@@ -27,8 +29,8 @@ public class BookmarkButton extends GuiIconToggleButton {
 	private final IClientToggleState toggleState;
 	private final IInternalKeyMappings keyBindings;
 
-	private BookmarkButton(IDrawable offIcon, IDrawable onIcon, Textures textures, BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
-		super(offIcon, onIcon, textures);
+	private BookmarkButton(IDrawable offIcon, IDrawable onIcon, BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
+		super(offIcon, onIcon);
 		this.bookmarkOverlay = bookmarkOverlay;
 		this.bookmarkList = bookmarkList;
 		this.toggleState = toggleState;

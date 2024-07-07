@@ -1,6 +1,7 @@
 package mezz.jei.gui.input;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformScreenHelper;
@@ -30,13 +31,14 @@ public class GuiTextFieldFilter extends EditBox {
 
 	private @Nullable AbstractWidget previouslyFocusedWidget;
 
-	public GuiTextFieldFilter(Textures textures, BooleanSupplier filterEmpty) {
+	public GuiTextFieldFilter(BooleanSupplier filterEmpty) {
 		// TODO narrator string
 		super(Minecraft.getInstance().font, 0, 0, 0, 0, CommonComponents.EMPTY);
 		this.filterEmpty = filterEmpty;
 
 		setMaxLength(maxSearchLength);
 		this.area = ImmutableRect2i.EMPTY;
+		Textures textures = Internal.getTextures();
 		this.background = textures.getSearchBackground();
 		this.backgroundBounds = ImmutableRect2i.EMPTY;
 		setBordered(false);

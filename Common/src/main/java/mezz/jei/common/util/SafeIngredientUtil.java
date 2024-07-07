@@ -81,7 +81,7 @@ public final class SafeIngredientUtil {
 		return list;
 	}
 
-	public static <T> void render(IIngredientManager ingredientManager, IIngredientRenderer<T> ingredientRenderer, GuiGraphics guiGraphics, ITypedIngredient<T> typedIngredient) {
+	public static <T> void render(GuiGraphics guiGraphics, IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> typedIngredient) {
 		if (CRASHING_INGREDIENT_RENDER_CACHE.getIfPresent(typedIngredient) == Boolean.TRUE) {
 			renderError(guiGraphics);
 			return;
@@ -93,6 +93,7 @@ public final class SafeIngredientUtil {
 		} catch (RuntimeException | LinkageError e) {
 			CRASHING_INGREDIENT_RENDER_CACHE.put(typedIngredient, Boolean.TRUE);
 
+			IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 			if (shouldCatchRenderErrors()) {
 				ErrorUtil.logIngredientCrash(e, "Caught an error rendering an Ingredient", ingredientManager, typedIngredient);
 				renderError(guiGraphics);

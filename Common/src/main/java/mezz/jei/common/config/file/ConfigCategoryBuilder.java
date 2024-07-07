@@ -7,7 +7,6 @@ import mezz.jei.common.config.file.serializers.IntegerSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class ConfigCategoryBuilder implements IConfigCategoryBuilder {
 	private final String name;
@@ -21,30 +20,30 @@ public class ConfigCategoryBuilder implements IConfigCategoryBuilder {
 		return name;
 	}
 
-	public <T> Supplier<T> addValue(ConfigValue<T> value) {
+	public <T> ConfigValue<T> addValue(ConfigValue<T> value) {
 		this.values.add(value);
-		return value::getValue;
+		return value;
 	}
 
 	@Override
-	public Supplier<Boolean> addBoolean(String name, boolean defaultValue, String description) {
+	public ConfigValue<Boolean> addBoolean(String name, boolean defaultValue, String description) {
 		return addValue(new ConfigValue<>(name, defaultValue, BooleanSerializer.INSTANCE, description));
 	}
 
 	@Override
-	public <T extends Enum<T>> Supplier<T> addEnum(String name, T defaultValue, String description) {
+	public <T extends Enum<T>> ConfigValue<T> addEnum(String name, T defaultValue, String description) {
 		EnumSerializer<T> serializer = new EnumSerializer<>(defaultValue.getDeclaringClass());
 		return addValue(new ConfigValue<>(name, defaultValue, serializer, description));
 	}
 
 	@Override
-	public Supplier<Integer> addInteger(String name, int defaultValue, int minValue, int maxValue, String description) {
+	public ConfigValue<Integer> addInteger(String name, int defaultValue, int minValue, int maxValue, String description) {
 		IntegerSerializer serializer = new IntegerSerializer(minValue, maxValue);
 		return addValue(new ConfigValue<>(name, defaultValue, serializer, description));
 	}
 
 	@Override
-	public <T> Supplier<List<T>> addList(String name, List<T> defaultValue, IJeiConfigValueSerializer<List<T>> listSerializer, String description) {
+	public <T> ConfigValue<List<T>> addList(String name, List<T> defaultValue, IJeiConfigValueSerializer<List<T>> listSerializer, String description) {
 		return addValue(new ConfigValue<>(name, defaultValue, listSerializer, description));
 	}
 
