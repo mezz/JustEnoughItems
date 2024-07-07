@@ -10,8 +10,7 @@
     "ClientPacketListenerMixin",
     "EffectRenderingInventoryScreenMixin",
     "KeyboardHandlerMixin",
-    "MinecraftMixin",
-    "ScreenMixin"
+    "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

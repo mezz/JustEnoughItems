@@ -9,8 +9,6 @@ import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.RectDebugger;
-import mezz.jei.core.util.LimitedLogger;
-import mezz.jei.gui.input.MouseUtil;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import net.minecraft.client.DeltaTracker;
@@ -21,23 +19,15 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GuiEventHandler {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static final LimitedLogger missingBackgroundLogger = new LimitedLogger(LOGGER, Duration.ofHours(1));
-
 	private final IngredientListOverlay ingredientListOverlay;
 	private final IScreenHelper screenHelper;
 	private final BookmarkOverlay bookmarkOverlay;
-	private boolean drawnOnBackground = false;
 
 	public GuiEventHandler(
 		IScreenHelper screenHelper,
@@ -62,23 +52,6 @@ public class GuiEventHandler {
 		bookmarkOverlay.updateScreen(screen, null);
 	}
 
-	public void onDrawBackgroundPost(Screen screen, GuiGraphics guiGraphics) {
-		Minecraft minecraft = Minecraft.getInstance();
-		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
-			.map(ImmutableRect2i::new)
-			.collect(Collectors.toUnmodifiableSet());
-		ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
-		bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
-
-		drawnOnBackground = true;
-		double mouseX = MouseUtil.getX();
-		double mouseY = MouseUtil.getY();
-		DeltaTracker deltaTracker = minecraft.getTimer();
-		float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
-		ingredientListOverlay.drawScreen(minecraft, guiGraphics, (int) mouseX, (int) mouseY, partialTicks);
-		bookmarkOverlay.drawScreen(minecraft, guiGraphics, (int) mouseX, (int) mouseY, partialTicks);
-	}
-
 	/**
 	 * Draws above most ContainerScreen elements, but below the tooltips.
 	 */
@@ -98,26 +71,16 @@ public class GuiEventHandler {
 	public void onDrawScreenPost(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
 
-		if (!drawnOnBackground) {
-			if (screen instanceof AbstractContainerScreen) {
-				String guiName = screen.getClass().getName();
-				missingBackgroundLogger.log(Level.WARN, guiName, "GUI did not draw the dark background layer behind itself, this may result in display issues: {}", guiName);
-			}
-			Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
-				.map(ImmutableRect2i::new)
-				.collect(Collectors.toUnmodifiableSet());
-			ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
-			bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
+		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
+			.map(ImmutableRect2i::new)
+			.collect(Collectors.toUnmodifiableSet());
+		ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
+		bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
 
-			DeltaTracker deltaTracker = minecraft.getTimer();
-			float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
-			ingredientListOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
-			bookmarkOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
-		} else {
-			ingredientListOverlay.updateScreen(screen, null);
-			bookmarkOverlay.updateScreen(screen, null);
-		}
-		drawnOnBackground = false;
+		DeltaTracker deltaTracker = minecraft.getTimer();
+		float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
+		ingredientListOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+		bookmarkOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 
 		if (screen instanceof AbstractContainerScreen<?> guiContainer) {
 			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
