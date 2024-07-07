@@ -10,21 +10,20 @@ public class CycleTimer {
 	/* the amount of time in ms to display one thing before cycling to the next one */
 	private static final int cycleTime = 1000;
 	private long startTime;
-	private long drawTime;
-	private long pausedDuration = 0;
+	private int drawDuration = 0;
+	private int pausedDuration = 0;
 
 	public CycleTimer(int offset) {
 		long time = System.currentTimeMillis();
 		this.startTime = time - ((long) offset * cycleTime);
-		this.drawTime = time;
 	}
 
 	public Optional<ITypedIngredient<?>> getCycledItem(List<Optional<ITypedIngredient<?>>> list) {
 		if (list.isEmpty()) {
 			return Optional.empty();
 		}
-		long index = ((drawTime - startTime) / cycleTime) % list.size();
-		return list.get(Math.toIntExact(index));
+		int index = (drawDuration / cycleTime) % list.size();
+		return list.get(index);
 	}
 
 	public void onDraw() {
@@ -33,9 +32,10 @@ public class CycleTimer {
 				startTime += pausedDuration;
 				pausedDuration = 0;
 			}
-			drawTime = System.currentTimeMillis();
+			drawDuration = Math.toIntExact(System.currentTimeMillis() - startTime);
 		} else {
-			pausedDuration = System.currentTimeMillis() - drawTime;
+			long drawTime = startTime + drawDuration;
+			pausedDuration = Math.toIntExact(System.currentTimeMillis() - drawTime);
 		}
 	}
 }
