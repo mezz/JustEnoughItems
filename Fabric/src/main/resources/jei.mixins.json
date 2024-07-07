@@ -12,8 +12,7 @@
     "EffectRenderingInventoryScreenMixin",
     "GuiGraphicsMixin",
     "KeyboardHandlerMixin",
-    "MinecraftMixin",
-    "ScreenMixin"
+    "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

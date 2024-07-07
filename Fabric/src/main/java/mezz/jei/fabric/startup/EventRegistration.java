@@ -40,7 +40,6 @@ public class EventRegistration {
 		);
 		JeiCharTypedEvents.BEFORE_CHAR_TYPED.register(this::beforeCharTyped);
 		ScreenEvents.AFTER_INIT.register(this::afterInit);
-		JeiScreenEvents.AFTER_RENDER_BACKGROUND.register(this::afterRenderBackground);
 		JeiScreenEvents.DRAW_FOREGROUND.register(this::drawForeground);
 		JeiScreenEvents.ALLOW_MOUSE_DRAG.register(this::allowMouseDrag);
 		ClientTickEvents.START_CLIENT_TICK.register(this::onStartTick);
@@ -122,12 +121,6 @@ public class EventRegistration {
 		if (guiEventHandler != null) {
 			guiEventHandler.onGuiInit(screen);
 			guiEventHandler.onGuiOpen(screen);
-		}
-	}
-
-	private void afterRenderBackground(Screen screen, GuiGraphics guiGraphics) {
-		if (guiEventHandler != null) {
-			guiEventHandler.onDrawBackgroundPost(screen, guiGraphics);
 		}
 	}
 
