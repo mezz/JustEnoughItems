@@ -62,8 +62,12 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	}
 
 	public void updateLayout(List<ITypedIngredient<?>> ingredients, ImmutableRect2i recipeArea) {
+		updateLayout(ingredients, recipeArea, ImmutableRect2i.EMPTY);
+	}
+
+	public void updateLayout(List<ITypedIngredient<?>> ingredients, ImmutableRect2i recipeArea, ImmutableRect2i optionButtonsArea) {
 		this.recipeSlots.clear();
-		Layout layout = calculateLayout(ingredients.size(), recipeArea, ImmutableRect2i.EMPTY);
+		Layout layout = calculateLayout(ingredients.size(), recipeArea, optionButtonsArea);
 		left = layout.left();
 		top = layout.top();
 		width = layout.width();

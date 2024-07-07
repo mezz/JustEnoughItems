@@ -8,6 +8,9 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.recipes.layouts.IRecipeLayoutList;
@@ -16,7 +19,9 @@ import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.ILookupState;
 import mezz.jei.gui.recipes.lookups.IngredientLookupState;
 import mezz.jei.gui.recipes.lookups.SingleCategoryLookupState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +30,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Stream;
 
@@ -41,6 +47,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeLayoutWithButtonsFactory recipeLayoutFactory;
 	private @Nullable IRecipeCategory<?> cachedRecipeCategory;
 	private @Nullable IRecipeLayoutList cachedRecipeLayoutsWithButtons;
+	private Set<RecipeSorterStage> cachedSorterStages = Set.of();
 	private int cachedContainerId = -1;
 
 	public RecipeGuiLogic(
@@ -55,6 +62,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		List<IRecipeCategory<?>> recipeCategories = recipeManager.createRecipeCategoryLookup()
 			.get()
 			.toList();
+		recipeCategories = RecipeSortUtil.sortRecipeCategories(recipeCategories);
 		this.state = IngredientLookupState.create(
 			recipeManager,
 			focusFactory.getEmptyFocusGroup(),
@@ -76,6 +84,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			.limitFocus(focuses.getAllFocuses())
 			.get()
 			.toList();
+		recipeCategories = RecipeSortUtil.sortRecipeCategories(recipeCategories);
 		ILookupState state = IngredientLookupState.create(
 			recipeManager,
 			focuses,
@@ -132,6 +141,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		List<IRecipeCategory<?>> recipeCategories = recipeManager.createRecipeCategoryLookup()
 			.get()
 			.toList();
+		recipeCategories = RecipeSortUtil.sortRecipeCategories(recipeCategories);
 		final ILookupState state = IngredientLookupState.create(
 			recipeManager,
 			focusFactory.getEmptyFocusGroup(),
@@ -149,6 +159,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			.limitTypes(recipeTypes)
 			.get()
 			.toList();
+		recipeCategories = RecipeSortUtil.sortRecipeCategories(recipeCategories);
 
 		final ILookupState state = IngredientLookupState.create(
 			recipeManager,
@@ -195,17 +206,24 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		@Nullable AbstractContainerMenu container
 	) {
 		IRecipeCategory<?> recipeCategory = getSelectedRecipeCategory();
+		Player player = Minecraft.getInstance().player;
 
 		int containerId = container == null ? -1 : container.containerId;
-		if (this.cachedRecipeLayoutsWithButtons == null ||
+		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+		Set<RecipeSorterStage> recipeSorterStages = clientConfig.getRecipeSorterStages();
+
+		if (!recipeSorterStages.equals(cachedSorterStages) ||
+			this.cachedRecipeLayoutsWithButtons == null ||
 			this.cachedRecipeCategory != recipeCategory ||
 			this.cachedContainerId != containerId
 		) {
 			IFocusedRecipes<?> focusedRecipes = this.state.getFocusedRecipes();
 
-			this.cachedRecipeLayoutsWithButtons = createRecipeLayoutsWithButtons(focusedRecipes);
+			this.cachedRecipeLayoutsWithButtons = createRecipeLayoutsWithButtons(recipeSorterStages, focusedRecipes, container, player);
 			this.cachedRecipeCategory = recipeCategory;
 			this.cachedContainerId = containerId;
+			this.cachedSorterStages = Set.copyOf(recipeSorterStages);
 		}
 
 		final int recipeHeight =
@@ -228,7 +246,10 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Unmodifiable
 	private <T> IRecipeLayoutList createRecipeLayoutsWithButtons(
-		IFocusedRecipes<T> selectedRecipes
+		Set<RecipeSorterStage> recipeSorterStages,
+		IFocusedRecipes<T> selectedRecipes,
+		@Nullable AbstractContainerMenu container,
+		@Nullable Player player
 	) {
 		IRecipeCategory<T> recipeCategory = selectedRecipes.getRecipeCategory();
 		List<T> recipes = selectedRecipes.getRecipes();
@@ -250,6 +271,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 				}
 			})
 			.map(recipeLayoutFactory::create)
+			.sorted(RecipeSortUtil.createRecipeComparator(recipeSorterStages, container, player))
 			.toList();
 
 		if (!brokenRecipes.isEmpty()) {

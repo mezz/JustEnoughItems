@@ -83,6 +83,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	private final RecipeCatalysts recipeCatalysts;
 	private final RecipeGuiTabs recipeGuiTabs;
+	private final RecipeOptionButtons optionButtons;
 	private final UserInputRouter inputHandler;
 
 	private final GuiIconButton nextRecipeCategory;
@@ -130,6 +131,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		);
 		this.recipeCatalysts = new RecipeCatalysts(recipeManager);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, recipeManager, guiHelper);
+		this.optionButtons = new RecipeOptionButtons(this.logic::goToFirstPage);
 		this.focusFactory = focusFactory;
 		this.minecraft = Minecraft.getInstance();
 		this.layouts = new RecipeGuiLayouts();
@@ -152,6 +154,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			"RecipesGui",
 			layouts.createInputHandler(),
 			new UserInputHandler(this),
+			optionButtons.createInputHandler(),
 			recipeGuiTabs.createInputHandler(),
 			nextRecipeCategory.createInputHandler(),
 			previousRecipeCategory.createInputHandler(),
@@ -166,9 +169,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	public int getLeftSideExtraWidth() {
 		if (recipeCatalysts.isEmpty()) {
-			return 0;
+			return optionButtons.getWidth();
 		}
-		return recipeCatalysts.getWidth();
+		return Math.max(recipeCatalysts.getWidth(), optionButtons.getWidth());
 	}
 
 	@Override
@@ -261,11 +264,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		previousPage.render(poseStack, mouseX, mouseY, partialTicks);
 
 		Optional<IRecipeLayoutDrawable<?>> hoveredRecipeLayout = this.layouts.draw(poseStack, mouseX, mouseY);
+		optionButtons.draw(poseStack, mouseX, mouseY, partialTicks);
 		Optional<IRecipeSlotDrawable> hoveredRecipeCatalyst = recipeCatalysts.draw(poseStack, mouseX, mouseY);
 
 		recipeGuiTabs.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
 
 		this.layouts.drawTooltips(poseStack, mouseX, mouseY);
+		optionButtons.drawTooltips(poseStack, mouseX, mouseY);
 
 		RenderSystem.disableBlend();
 
@@ -344,6 +349,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		AbstractContainerMenu container = getParentContainerMenu();
 		this.layouts.tick(container);
+		this.optionButtons.tick();
 
 		this.logic.tick(container);
 	}
@@ -534,7 +540,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		pageString = logic.getPageString();
 
 		List<ITypedIngredient<?>> recipeCatalystIngredients = logic.getRecipeCatalysts().toList();
-		recipeCatalysts.updateLayout(recipeCatalystIngredients, this.area);
+		optionButtons.updateLayout(this.area);
+		ImmutableRect2i optionButtonsArea = optionButtons.getArea();
+		recipeCatalysts.updateLayout(recipeCatalystIngredients, this.area, optionButtonsArea);
 		recipeGuiTabs.initLayout(this.idealArea);
 	}
 

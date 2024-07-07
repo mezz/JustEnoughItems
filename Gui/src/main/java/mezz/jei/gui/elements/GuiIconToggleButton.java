@@ -48,6 +48,10 @@ public abstract class GuiIconToggleButton {
 		this.button.render(poseStack, mouseX, mouseY, partialTicks);
 	}
 
+	public void tick() {
+
+	}
+
 	public final boolean isMouseOver(double mouseX, double mouseY) {
 		return this.button.visible && this.area.contains(mouseX, mouseY);
 	}

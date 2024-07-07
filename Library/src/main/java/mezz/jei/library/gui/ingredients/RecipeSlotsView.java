@@ -4,6 +4,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +23,13 @@ public class RecipeSlotsView implements IRecipeSlotsView {
 
 	@Override
 	public List<IRecipeSlotView> getSlotViews(RecipeIngredientRole role) {
-		return this.slots.stream()
-			.filter(slotView -> slotView.getRole() == role)
-			.toList();
+		List<IRecipeSlotView> list = new ArrayList<>();
+		for (IRecipeSlotView slotView : this.slots) {
+			if (slotView.getRole() == role) {
+				list.add(slotView);
+			}
+		}
+		return list;
 	}
 
 	@Override

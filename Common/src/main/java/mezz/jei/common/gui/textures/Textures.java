@@ -20,6 +20,8 @@ public class Textures {
 	private final DrawableNineSliceTexture buttonDisabled;
 	private final DrawableNineSliceTexture buttonEnabled;
 	private final DrawableNineSliceTexture buttonHighlight;
+	private final DrawableNineSliceTexture buttonPressed;
+	private final DrawableNineSliceTexture buttonPressedHighlight;
 	private final DrawableNineSliceTexture recipeGuiBackground;
 	private final DrawableNineSliceTexture ingredientListBackground;
 	private final DrawableNineSliceTexture bookmarkListBackground;
@@ -37,8 +39,11 @@ public class Textures {
 	private final IDrawableStatic bookmarkButtonEnabledIcon;
 	private final IDrawableStatic infoIcon;
 	private final DrawableNineSliceTexture catalystTab;
+	private final DrawableNineSliceTexture recipeOptionsTab;
 	private final IDrawableStatic flameIcon;
 	private final IDrawableStatic recipeArrow;
+	private final IDrawableStatic bookmarksFirst;
+	private final IDrawableStatic craftableFirst;
 
 	public Textures(JeiSpriteUploader spriteUploader) {
 		this.spriteUploader = spriteUploader;
@@ -52,12 +57,15 @@ public class Textures {
 		this.buttonDisabled = registerNineSliceGuiSprite("button_disabled", 20, 20, 6, 6, 6, 6);
 		this.buttonEnabled = registerNineSliceGuiSprite("button_enabled", 20, 20, 6, 6, 6, 6);
 		this.buttonHighlight = registerNineSliceGuiSprite("button_highlight", 20, 20, 6, 6, 6, 6);
+		this.buttonPressed = registerNineSliceGuiSprite("button_pressed", 20, 20, 6, 6, 6, 6);
+		this.buttonPressedHighlight = registerNineSliceGuiSprite("button_pressed_highlight", 20, 20, 6, 6, 6, 6);
 		this.recipeGuiBackground = registerNineSliceGuiSprite("gui_background", 64, 64, 16, 16, 16, 16);
 		this.ingredientListBackground = registerNineSliceGuiSprite("ingredient_list_background", 64, 64, 16, 16, 16, 16);
 		this.bookmarkListBackground = registerNineSliceGuiSprite("bookmark_list_background", 64, 64, 16, 16, 16, 16);
 		this.recipeBackground = registerNineSliceGuiSprite("single_recipe_background", 64, 64, 16, 16, 16, 16);
 		this.searchBackground = registerNineSliceGuiSprite("search_background", 20, 20, 6, 6, 6, 6);
 		this.catalystTab = registerNineSliceGuiSprite("catalyst_tab", 28, 28, 8, 9, 8, 8);
+		this.recipeOptionsTab = registerNineSliceGuiSprite("recipe_options_tab", 28, 28, 8, 9, 8, 8);
 		this.recipeArrow = registerGuiSprite("recipe_arrow", 22, 15);
 
 		DrawableSprite rawShapelessIcon = registerGuiSprite("icons/shapeless_icon", 36, 36)
@@ -76,6 +84,8 @@ public class Textures {
 		this.bookmarkButtonEnabledIcon = registerGuiSprite("icons/bookmark_button_enabled", 16, 16);
 		this.infoIcon = registerGuiSprite("icons/info", 16, 16);
 		this.flameIcon = registerGuiSprite("icons/flame", 14, 14);
+		this.bookmarksFirst = registerGuiSprite("icons/bookmarks_first", 16, 16);
+		this.craftableFirst = registerGuiSprite("icons/craftable_first", 16, 16);
 	}
 
 	private ResourceLocation registerSprite(String name) {
@@ -126,6 +136,14 @@ public class Textures {
 		return recipeBookmark;
 	}
 
+	public IDrawableStatic getBookmarksFirst() {
+		return bookmarksFirst;
+	}
+
+	public IDrawableStatic getCraftableFirst() {
+		return craftableFirst;
+	}
+
 	public IDrawableStatic getConfigButtonIcon() {
 		return configButtonIcon;
 	}
@@ -143,13 +161,18 @@ public class Textures {
 	}
 
 	public DrawableNineSliceTexture getButtonForState(boolean enabled, boolean hovered) {
+		return getButtonForState(false, enabled, hovered);
+	}
+
+	public DrawableNineSliceTexture getButtonForState(boolean pressed, boolean enabled, boolean hovered) {
 		if (!enabled) {
 			return buttonDisabled;
-		} else if (hovered) {
-			return buttonHighlight;
-		} else {
-			return buttonEnabled;
 		}
+
+		if (hovered) {
+			return pressed ? buttonPressedHighlight : buttonHighlight;
+		}
+		return pressed ? buttonPressed : buttonEnabled;
 	}
 
 	public DrawableNineSliceTexture getRecipeGuiBackground() {
@@ -178,6 +201,10 @@ public class Textures {
 
 	public DrawableNineSliceTexture getCatalystTab() {
 		return catalystTab;
+	}
+
+	public DrawableNineSliceTexture getRecipeOptionsTab() {
+		return recipeOptionsTab;
 	}
 
 	public IDrawableStatic getRecipeArrow() {

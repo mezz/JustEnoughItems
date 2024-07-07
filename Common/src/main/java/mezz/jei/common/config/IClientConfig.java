@@ -1,6 +1,7 @@
 package mezz.jei.common.config;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public interface IClientConfig {
@@ -35,6 +36,12 @@ public interface IClientConfig {
 	List<IngredientSortStage> getIngredientSorterStages();
 
 	void addIngredientSorterStagesListener(Consumer<List<IngredientSortStage>> listener);
+
+	Set<RecipeSorterStage> getRecipeSorterStages();
+
+	void enableRecipeSorterStage(RecipeSorterStage stage);
+
+	void disableRecipeSorterStage(RecipeSorterStage stage);
 
 	boolean isHideSingleIngredientTagsEnabled();
 

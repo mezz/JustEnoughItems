@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -123,8 +124,15 @@ public record RecipeLayoutWithButtons<R>(
 	}
 
 	@Override
+	public boolean isBookmarked() {
+		return bookmarkButton != null && bookmarkButton.isBookmarked();
+	}
+
+	@Override
 	public int getMissingCountHint() {
-		return -1;
+		return transferButton.getRecipeTransferError()
+			.map(IRecipeTransferError::getMissingCountHint)
+			.orElse(-1);
 	}
 
 	private record RecipeLayoutUserInputHandler<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IUserInputHandler {

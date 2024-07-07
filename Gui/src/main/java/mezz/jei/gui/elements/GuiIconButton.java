@@ -69,7 +69,7 @@ public class GuiIconButton extends Button {
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		Textures textures = Internal.getTextures();
 		boolean isPressed = this.pressed || this.forcePressed;
-		DrawableNineSliceTexture texture = textures.getButtonForState(this.active, hovered);
+		DrawableNineSliceTexture texture = textures.getButtonForState(isPressed, this.active, hovered);
 		texture.draw(poseStack, x, y, this.width, this.height);
 
 		int color = 0xFFE0E0E0;

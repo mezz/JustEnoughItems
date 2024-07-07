@@ -24,5 +24,9 @@ public interface IRecipeLayoutWithButtons<R> {
 
 	void drawTooltips(PoseStack poseStack, int mouseX, int mouseY);
 
+	default boolean isBookmarked() {
+		return false;
+	}
+
 	int getMissingCountHint();
 }

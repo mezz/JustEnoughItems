@@ -8,7 +8,7 @@ import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
 import net.minecraft.core.RegistryAccess;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface IBookmarkConfig {
 	void saveBookmarks(
@@ -17,7 +17,7 @@ public interface IBookmarkConfig {
 		IGuiHelper guiHelper,
 		IIngredientManager ingredientManager,
 		RegistryAccess registryAccess,
-		List<IBookmark> bookmarks
+		Collection<IBookmark> bookmarks
 	);
 
 	void loadBookmarks(
