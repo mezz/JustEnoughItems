@@ -85,6 +85,25 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	public boolean countable() {
+		return true;
+	}
+
+	@Override
+	public long getAmount(ItemStack ingredient) {
+		return ingredient.getCount();
+	}
+
+	@Override
+	public @Nullable ItemStack merge(ItemStack first, ItemStack second) {
+		if (first.isEmpty() || second.isEmpty()) return null;
+		if (!first.is(second.getItem())) return null;
+		ItemStack merged = first.copy();
+		merged.grow(second.getCount());
+		return merged;
+	}
+
+	@Override
 	public Iterable<Integer> getColors(ItemStack ingredient) {
 		return colorHelper.getColors(ingredient, 2);
 	}

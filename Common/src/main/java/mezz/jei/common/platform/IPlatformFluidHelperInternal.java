@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +23,9 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
 	int getColorTint(T ingredient);
 
 	long getAmount(T ingredient);
+
+	@Nullable
+	T merge(T first, T second);
 
 	DataComponentPatch getComponentsPatch(T ingredient);
 

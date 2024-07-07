@@ -26,6 +26,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> lookupFluidContentsEnabled;
 	private final Supplier<Boolean> lookupBlockTagsEnabled;
 	private final Supplier<GiveMode> giveMode;
+	private final Supplier<List<BookmarkFeature>> bookmarkFeatures;
 	private final Supplier<Integer> maxRecipeGuiHeight;
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
 	private final ConfigValue<List<RecipeSorterStage>> recipeSorterStages;
@@ -75,6 +76,12 @@ public final class ClientConfig implements IClientConfig {
 			"GiveMode",
 			GiveMode.defaultGiveMode,
 			"How items should be handed to you"
+		);
+		bookmarkFeatures = advanced.addList(
+		"BookmarkFeatures",
+		BookmarkFeature.defaultBookmarkFeatures,
+		new ListSerializer<>(new EnumSerializer<>(BookmarkFeature.class)),
+		"Features for bookmarks"
 		);
 		maxRecipeGuiHeight = advanced.addInteger(
 			"RecipeGuiHeight",
@@ -146,6 +153,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public GiveMode getGiveMode() {
 		return giveMode.get();
+	}
+
+	@Override
+	public List<BookmarkFeature> getBookmarkFeatures() {
+		return bookmarkFeatures.get();
 	}
 
 	@Override

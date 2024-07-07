@@ -24,6 +24,8 @@ public interface IClientConfig {
 
 	GiveMode getGiveMode();
 
+	List<BookmarkFeature> getBookmarkFeatures();
+
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();

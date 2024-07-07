@@ -79,6 +79,21 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
+	public boolean countable() {
+		return true;
+	}
+
+	@Override
+	public long getAmount(T ingredient) {
+		return platformFluidHelper.getAmount(ingredient);
+	}
+
+	@Override
+	public  @Nullable T merge(T first, T second) {
+		return platformFluidHelper.merge(first, second);
+	}
+
+	@Override
 	public Iterable<Integer> getColors(T ingredient) {
 		return platformFluidHelper.getStillFluidSprite(ingredient)
 			.map(fluidStillSprite -> {

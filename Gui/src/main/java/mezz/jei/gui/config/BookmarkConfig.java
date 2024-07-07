@@ -73,7 +73,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper);
+				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper, ingredientManager);
 
 				List<String> strings = new ArrayList<>();
 				for (IBookmark bookmark : bookmarks) {
@@ -122,7 +122,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 				}
 
 				TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper);
+				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper, ingredientManager);
 
 				Collection<IIngredientType<?>> otherIngredientTypes = ingredientManager.getRegisteredIngredientTypes()
 						.stream()

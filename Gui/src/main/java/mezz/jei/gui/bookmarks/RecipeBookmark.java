@@ -6,6 +6,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -23,12 +24,17 @@ public class RecipeBookmark<T, R> implements IBookmark {
 	private final T recipe;
 	private final ResourceLocation recipeUid;
 	private final ITypedIngredient<R> recipeOutput;
+	private final IRecipeManager recipeManager;
+	private final IFocusFactory focusFactory;
+
+	private IRecipeLayoutDrawable<T> recipeLayoutDrawable = null;
 
 	public static <T> Optional<RecipeBookmark<T, ?>> create(
 		IRecipeLayoutDrawable<T> recipeLayoutDrawable,
 		IIngredientManager ingredientManager,
 		IRecipeManager recipeManager,
-		IGuiHelper guiHelper
+		IGuiHelper guiHelper,
+		IFocusFactory focusFactory
 	) {
 		T recipe = recipeLayoutDrawable.getRecipe();
 		IRecipeCategory<T> recipeCategory = recipeLayoutDrawable.getRecipeCategory();
@@ -49,7 +55,7 @@ public class RecipeBookmark<T, R> implements IBookmark {
 					recipeManager,
 					guiHelper
 				);
-				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon);
+				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon, recipeManager, focusFactory, ingredientManager);
 			});
 	}
 
@@ -58,13 +64,18 @@ public class RecipeBookmark<T, R> implements IBookmark {
 		T recipe,
 		ResourceLocation recipeUid,
 		ITypedIngredient<R> recipeOutput,
-		IDrawable icon
+		IDrawable icon,
+		IRecipeManager recipeManager,
+		IFocusFactory focusFactory,
+		IIngredientManager ingredientManager
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipe = recipe;
 		this.recipeUid = recipeUid;
 		this.recipeOutput = recipeOutput;
-		this.element = new RecipeBookmarkElement<>(this, icon);
+		this.element = new RecipeBookmarkElement<>(this, icon, ingredientManager);
+		this.recipeManager = recipeManager;
+		this.focusFactory = focusFactory;
 	}
 
 	public IRecipeCategory<T> getRecipeCategory() {
@@ -81,6 +92,13 @@ public class RecipeBookmark<T, R> implements IBookmark {
 
 	public ITypedIngredient<R> getRecipeOutput() {
 		return recipeOutput;
+	}
+
+	public IRecipeLayoutDrawable<T> getRecipeLayoutDrawable() {
+		if (recipeLayoutDrawable == null) {
+			return recipeLayoutDrawable = recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, focusFactory.getEmptyFocusGroup(), true).orElseThrow();
+		}
+		return recipeLayoutDrawable;
 	}
 
 	@Override

@@ -2,11 +2,14 @@ package mezz.jei.neoforge.platform;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.neoforge.mixin.GuiGraphicsAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
@@ -78,5 +81,14 @@ public class RenderHelper implements IPlatformRenderHelper {
 			x,
 			y
 		);
+	}
+
+	@Override
+	public void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<ClientTooltipComponent> components, int x, int y, Font font, ItemStack stack) {
+		//neoform does support AT for neoforge patches
+		GuiGraphicsAccessor accessor = (GuiGraphicsAccessor) guiGraphics;
+		accessor.setTooltipStack(stack);
+		accessor.callRenderTooltipInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE);
+		accessor.setTooltipStack(ItemStack.EMPTY);
 	}
 }

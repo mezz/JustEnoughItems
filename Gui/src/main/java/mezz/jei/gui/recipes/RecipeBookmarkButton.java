@@ -3,6 +3,7 @@ package mezz.jei.gui.recipes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
@@ -29,9 +30,10 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 		IIngredientManager ingredientManager,
 		BookmarkList bookmarks,
 		IRecipeManager recipeManager,
-		IGuiHelper guiHelper
+		IGuiHelper guiHelper,
+		IFocusFactory focusFactory
 	) {
-		RecipeBookmark<?, ?> recipeBookmark = RecipeBookmark.create(recipeLayout, ingredientManager, recipeManager, guiHelper)
+		RecipeBookmark<?, ?> recipeBookmark = RecipeBookmark.create(recipeLayout, ingredientManager, recipeManager, guiHelper, focusFactory)
 			.orElse(null);
 
 		Textures textures = Internal.getTextures();

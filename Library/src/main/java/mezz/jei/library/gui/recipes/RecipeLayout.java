@@ -51,8 +51,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	private ImmutableRect2i area;
 
-	public static <T> Optional<IRecipeLayoutDrawable<T>> create(IRecipeCategory<T> recipeCategory, Collection<IRecipeCategoryDecorator<T>> decorators, T recipe, IFocusGroup focuses, IIngredientManager ingredientManager) {
-		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, decorators, recipe);
+	public static <T> Optional<IRecipeLayoutDrawable<T>> create(IRecipeCategory<T> recipeCategory, Collection<IRecipeCategoryDecorator<T>> decorators, T recipe, IFocusGroup focuses, IIngredientManager ingredientManager, boolean preview) {
+		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, decorators, recipe, preview);
 		if (recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses, ingredientManager)) {
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 			if (recipeName != null) {
@@ -99,7 +99,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	public RecipeLayout(
 		IRecipeCategory<R> recipeCategory,
 		Collection<IRecipeCategoryDecorator<R>> recipeCategoryDecorators,
-		R recipe
+		R recipe,
+		boolean preview
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
@@ -120,7 +121,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 		this.recipe = recipe;
 		Textures textures = Internal.getTextures();
-		this.recipeBorder = textures.getRecipeBackground();
+		this.recipeBorder = preview ? textures.getRecipePreviewBackground() : textures.getRecipeBackground();
 	}
 
 	@Override

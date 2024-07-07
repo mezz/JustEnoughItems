@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
@@ -29,4 +30,7 @@ public interface IPlatformRenderHelper {
 
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, int x, int y, Font font, ItemStack stack);
+
+	void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<ClientTooltipComponent> components,int x, int y, Font font, ItemStack stack);
+
 }

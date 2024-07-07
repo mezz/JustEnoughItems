@@ -21,6 +21,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
@@ -66,6 +67,19 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	@Override
 	public long getAmount(IJeiFluidIngredient ingredient) {
 		return ingredient.getAmount();
+	}
+
+	@Override
+	@Nullable
+	public IJeiFluidIngredient merge(IJeiFluidIngredient first, IJeiFluidIngredient second) {
+		var fv1 = first.getFluidVariant();
+		var fv2 = second.getFluidVariant();
+		if (fv1.getFluid() == fv2.getFluid()){
+			if (fv1.componentsMatch(fv2.getComponents())) {
+				return new JeiFluidIngredient(fv1, first.getAmount() + second.getAmount());
+			}
+		}
+		return null;
 	}
 
 	@Override

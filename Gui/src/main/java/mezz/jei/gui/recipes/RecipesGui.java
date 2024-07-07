@@ -548,7 +548,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			ingredientManager,
 			bookmarks,
 			recipeManager,
-			guiHelper
+			guiHelper,
+			focusFactory
 		);
 
 		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, bookmarkButton);

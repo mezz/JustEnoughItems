@@ -64,7 +64,7 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup) {
+	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup, boolean preview) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
@@ -76,7 +76,8 @@ public class RecipeManager implements IRecipeManager {
 			decorators,
 			recipe,
 			focusGroup,
-			ingredientManager
+			ingredientManager,
+			preview
 		);
 	}
 

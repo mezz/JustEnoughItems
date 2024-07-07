@@ -28,6 +28,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,15 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	@Override
 	public long getAmount(FluidStack ingredient) {
 		return ingredient.getAmount();
+	}
+
+	@Override
+	public @Nullable FluidStack merge(FluidStack first, FluidStack second) {
+		if (first.isEmpty() || second.isEmpty()) return null;
+		if (!FluidStack.isSameFluid(first, second)) return null;
+		FluidStack merged = first.copy();
+		merged.grow(second.getAmount());
+		return merged;
 	}
 
 	@Override

@@ -125,10 +125,19 @@ public interface IRecipeManager {
 	 *
 	 * @since 11.5.0
 	 */
-	<T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
+	default <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
 		IRecipeCategory<T> recipeCategory,
 		T recipe,
 		IFocusGroup focusGroup
+	){
+		return createRecipeLayoutDrawable(recipeCategory, recipe, focusGroup, false);
+	}
+
+	<T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
+			IRecipeCategory<T> recipeCategory,
+			T recipe,
+			IFocusGroup focusGroup,
+			boolean preview
 	);
 
 	/**

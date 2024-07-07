@@ -52,6 +52,18 @@ public interface IIngredientHelper<V> {
 		return getResourceLocation(ingredient).getNamespace();
 	}
 
+	default boolean countable(){
+		return false;
+	}
+
+	default long getAmount(V ingredient){
+		return 1;
+	}
+
+	default @Nullable V merge(V first, V second) {
+		return null;
+	}
+
 	/**
 	 * Get the main colors of this ingredient. Used for the color search.
 	 * If this is too difficult to implement for your ingredient, just return an empty collection.

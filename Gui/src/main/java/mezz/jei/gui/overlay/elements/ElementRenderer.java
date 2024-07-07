@@ -13,8 +13,8 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.overlay.IngredientGridTooltipHelper;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -72,8 +72,8 @@ public class ElementRenderer<T> implements IElementRenderer<T> {
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
-		List<Component> tooltip = element.getTooltip(tooltipHelper, ingredientRenderer, ingredientHelper);
+		List<ClientTooltipComponent> tooltip = element.getTooltipComponents(tooltipHelper, ingredientRenderer, ingredientHelper);
 
-		TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY, typedIngredient, ingredientRenderer);
+		TooltipRenderer.drawHoveringTooltip(guiGraphics, tooltip, mouseX, mouseY, typedIngredient, ingredientRenderer, ingredientManager);
 	}
 }
