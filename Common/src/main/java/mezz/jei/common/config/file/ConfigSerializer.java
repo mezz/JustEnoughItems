@@ -9,7 +9,9 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,7 @@ public final class ConfigSerializer {
 	private static final Pattern commentRegex = Pattern.compile("\\s*#.*");
 	private static final Pattern categoryRegex = Pattern.compile("\\[(?<category>\\w+)]\\s*");
 	private static final Pattern keyValueRegex = Pattern.compile("\\s*(?<key>\\w+)\\s*=\\s*(?<value>.*)");
+	private static final Map<Path, FileTime> saveTimes = new HashMap<>();
 
 	private static String getLineErrorString(Path path, int lineNumber, String line, String errorMessage) {
 		return """
@@ -31,6 +34,13 @@ public final class ConfigSerializer {
 	}
 
 	public static void load(Path path, @Unmodifiable List<ConfigCategory> categories) throws IOException {
+		FileTime lastModifiedTime = Files.getLastModifiedTime(path);
+		FileTime savedTime = saveTimes.get(path);
+		if (savedTime != null && savedTime.compareTo(lastModifiedTime) >= 0) {
+			LOGGER.debug("Skipping loading config file, it was just saved by us: {}", path);
+			return;
+		}
+
 		LOGGER.debug("Loading config file: {}", path);
 		List<String> lines = Files.readAllLines(path);
 
@@ -118,6 +128,8 @@ public final class ConfigSerializer {
 		});
 		LOGGER.debug("Saving config file: {}", path);
 		PathUtil.writeUsingTempFile(path, serialized);
+		FileTime lastModifiedTime = Files.getLastModifiedTime(path);
+		saveTimes.put(path, lastModifiedTime);
 	}
 
 	private static void serializeCategory(List<String> serialized, ConfigCategory category) {

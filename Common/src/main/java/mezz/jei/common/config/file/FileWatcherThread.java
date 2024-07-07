@@ -137,7 +137,7 @@ public class FileWatcherThread extends Thread {
 		if (changedPaths.isEmpty()) {
 			return;
 		}
-		LOGGER.info("Detected changes in files:\n{}", changedPaths.stream().map(Path::toString).collect(Collectors.joining("\n")));
+		LOGGER.debug("Detected changes in files:\n{}", changedPaths.stream().map(Path::toString).collect(Collectors.joining("\n")));
 
 		List<Runnable> runnables = changedPaths.stream()
 			.map(callbacks::get)
