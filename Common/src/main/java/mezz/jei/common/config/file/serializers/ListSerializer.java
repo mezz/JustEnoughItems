@@ -41,6 +41,7 @@ public class ListSerializer<T> implements IJeiConfigListValueSerializer<T> {
 		List<String> errors = new ArrayList<>();
 		List<T> results = Arrays.stream(split)
 			.map(String::trim)
+			.filter(s -> !s.isEmpty())
 			.map(valueSerializer::deserialize)
 			.<T>mapMulti((r, c) -> {
 				r.getResult().ifPresent(c);
