@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.common.Internal;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
 import net.minecraft.client.gui.GuiGraphics;
@@ -43,9 +44,10 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	private int width = 0;
 	private int height = 0;
 
-	public RecipeCatalysts(Textures textures, IRecipeManager recipeManager) {
+	public RecipeCatalysts(IRecipeManager recipeManager) {
 		this.recipeManager = recipeManager;
 		recipeSlots = new ArrayList<>();
+		Textures textures = Internal.getTextures();
 		backgroundTab = textures.getCatalystTab();
 		slotBackground = textures.getRecipeCatalystSlotBackground();
 	}
@@ -59,11 +61,11 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		return Math.max(0, width - overlapSize);
 	}
 
-	public void updateLayout(List<ITypedIngredient<?>> ingredients, ImmutableRect2i recipeArea) {
+	public void updateLayout(List<ITypedIngredient<?>> ingredients, ImmutableRect2i recipeArea, ImmutableRect2i optionButtonsArea) {
 		this.recipeSlots.clear();
 
 		if (!ingredients.isEmpty()) {
-			int availableHeight = recipeArea.getHeight() - 8;
+			int availableHeight = recipeArea.getHeight() - optionButtonsArea.getHeight() - 8;
 			int borderHeight = (2 * borderSize) + (2 * ingredientBorderSize);
 			int maxIngredientsPerColumn = (availableHeight - borderHeight) / ingredientSize;
 			int columnCount = MathUtil.divideCeil(ingredients.size(), maxIngredientsPerColumn);

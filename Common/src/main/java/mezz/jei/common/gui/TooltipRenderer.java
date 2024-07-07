@@ -4,6 +4,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.Internal;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
@@ -31,13 +32,14 @@ public final class TooltipRenderer {
 		drawHoveringText(guiGraphics, textLines, x, y, ItemStack.EMPTY, font);
 	}
 
-	public static <T> void drawHoveringText(GuiGraphics guiGraphics, List<Component> textLines, int x, int y, ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
+	public static <T> void drawHoveringText(GuiGraphics guiGraphics, List<Component> textLines, int x, int y, ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
+		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
-		drawHoveringText(guiGraphics, textLines, x, y, typedIngredient, ingredientRenderer, ingredientManager);
+		drawHoveringText(guiGraphics, textLines, x, y, typedIngredient, ingredientRenderer);
 	}
 
-	public static <T> void drawHoveringText(GuiGraphics guiGraphics, List<Component> textLines, int x, int y, ITypedIngredient<T> typedIngredient, IIngredientRenderer<T> ingredientRenderer, IIngredientManager ingredientManager) {
+	public static <T> void drawHoveringText(GuiGraphics guiGraphics, List<Component> textLines, int x, int y, ITypedIngredient<T> typedIngredient, IIngredientRenderer<T> ingredientRenderer) {
 		Minecraft minecraft = Minecraft.getInstance();
 		T ingredient = typedIngredient.getIngredient();
 		Font font = ingredientRenderer.getFontRenderer(minecraft, ingredient);
@@ -45,6 +47,7 @@ public final class TooltipRenderer {
 		try {
 			drawHoveringText(guiGraphics, textLines, x, y, itemStack, font);
 		} catch (RuntimeException e) {
+			IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 			CrashReport crashReport = ErrorUtil.createIngredientCrashReport(e, "Rendering ingredient tooltip", ingredientManager, typedIngredient);
 			CrashReportCategory reportCategory = crashReport.addCategory("Tooltip");
             for (int i = 0; i < textLines.size(); i++) {

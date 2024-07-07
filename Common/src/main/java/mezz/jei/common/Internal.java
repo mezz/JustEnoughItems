@@ -1,6 +1,7 @@
 package mezz.jei.common;
 
 import com.google.common.base.Preconditions;
+import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.ClientToggleState;
@@ -28,6 +29,8 @@ public final class Internal {
 	private static IClientToggleState toggleState;
 	@Nullable
 	private static IJeiClientConfigs jeiClientConfigs;
+	@Nullable
+	private static IJeiRuntime jeiRuntime;
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
 
 	private Internal() {
@@ -84,5 +87,15 @@ public final class Internal {
 
 	public static JeiFeatures getJeiFeatures() {
 		return jeiFeatures;
+	}
+
+	public static void setRuntime(@Nullable IJeiRuntime jeiRuntime) {
+		Internal.jeiRuntime = jeiRuntime;
+	}
+
+	public static IJeiRuntime getJeiRuntime() {
+		Preconditions.checkState(jeiRuntime != null, "Jei Client Configs have not been created yet.");
+
+		return jeiRuntime;
 	}
 }

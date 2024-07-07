@@ -1,5 +1,6 @@
 package mezz.jei.gui;
 
+import mezz.jei.common.Internal;
 import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.gui.elements.GuiIconButton;
 import mezz.jei.common.gui.textures.Textures;
@@ -20,10 +21,11 @@ public class PageNavigation {
 	private String pageNumDisplayString = "1/1";
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
-	public PageNavigation(IPaged paged, boolean hideOnSinglePage, Textures textures) {
+	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
 		this.paged = paged;
-		this.nextButton = new GuiIconButton(textures.getArrowNext(), b -> paged.nextPage(), textures);
-		this.backButton = new GuiIconButton(textures.getArrowPrevious(), b -> paged.previousPage(), textures);
+		Textures textures = Internal.getTextures();
+		this.nextButton = new GuiIconButton(textures.getArrowNext(), b -> paged.nextPage());
+		this.backButton = new GuiIconButton(textures.getArrowPrevious(), b -> paged.previousPage());
 		this.hideOnSinglePage = hideOnSinglePage;
 	}
 

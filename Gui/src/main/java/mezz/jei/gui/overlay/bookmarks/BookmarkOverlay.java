@@ -8,7 +8,6 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
@@ -56,7 +55,6 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	public BookmarkOverlay(
 		BookmarkList bookmarkList,
-		Textures textures,
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
@@ -67,7 +65,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	) {
 		this.bookmarkList = bookmarkList;
 		this.toggleState = toggleState;
-		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, textures, toggleState, keyBindings);
+		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, toggleState, keyBindings);
 		this.cheatInputHandler = new CheatInputHandler(this, toggleState, clientConfig, serverConnection, ingredientManager);
 		this.contents = contents;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);

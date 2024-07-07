@@ -5,7 +5,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
@@ -31,13 +31,12 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	public RecipeCategoryTab(
 		IRecipeGuiLogic logic,
 		IRecipeCategory<?> category,
-		Textures textures,
 		int x,
 		int y,
 		IRecipeManager recipeManager,
 		IGuiHelper guiHelper
 	) {
-		super(textures, x, y);
+		super(x, y);
 		this.logic = logic;
 		this.category = category;
 		this.recipeManager = recipeManager;
@@ -78,7 +77,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	@Override
-	public List<Component> getTooltip(IModIdHelper modIdHelper) {
+	public List<Component> getTooltip() {
 		List<Component> tooltip = new ArrayList<>();
 		Component title = category.getTitle();
 		//noinspection ConstantConditions
@@ -88,6 +87,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 
 		ResourceLocation uid = category.getRecipeType().getUid();
 		String modId = uid.getNamespace();
+		IModIdHelper modIdHelper = Internal.getJeiRuntime().getJeiHelpers().getModIdHelper();
 		if (modIdHelper.isDisplayingModNameEnabled()) {
 			String modName = modIdHelper.getFormattedModNameForModId(modId);
 			tooltip.add(Component.literal(modName));

@@ -12,7 +12,6 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RecipeSlots;
@@ -34,7 +33,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 
 	public RecipeSlotBuilder(IIngredientManager ingredientManager, RecipeIngredientRole role, int x, int y, int ingredientCycleOffset) {
 		this.ingredients = new IngredientAcceptor(ingredientManager);
-		this.recipeSlot = new RecipeSlot(ingredientManager, role, x, y, ingredientCycleOffset);
+		this.recipeSlot = new RecipeSlot(role, x, y, ingredientCycleOffset);
 	}
 
 	@Override
@@ -129,9 +128,9 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	}
 
 	@Override
-	public void setRecipeSlots(RecipeSlots recipeSlots, IntSet focusMatches, IIngredientVisibility ingredientVisibility) {
+	public void setRecipeSlots(RecipeSlots recipeSlots, IntSet focusMatches) {
 		List<Optional<ITypedIngredient<?>>> allIngredients = this.ingredients.getAllIngredients();
-		recipeSlot.set(allIngredients, focusMatches, ingredientVisibility);
+		recipeSlot.set(allIngredients, focusMatches);
 
 		recipeSlots.addSlot(recipeSlot);
 	}

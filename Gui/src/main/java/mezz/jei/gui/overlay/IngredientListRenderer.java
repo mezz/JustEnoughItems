@@ -2,12 +2,9 @@ package mezz.jei.gui.overlay;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IEditModeConfig;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.ElementRenderer;
 import mezz.jei.gui.overlay.elements.ElementRenderers;
+import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.RenderableElement;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -21,8 +18,8 @@ public class IngredientListRenderer {
 
 	private int blocked = 0;
 
-	public IngredientListRenderer(IEditModeConfig editModeConfig, IClientToggleState toggleState, IIngredientManager ingredientManager) {
-		this.elementRenderers = new ElementRenderers(toggleState, editModeConfig, ingredientManager);
+	public IngredientListRenderer() {
+		this.elementRenderers = new ElementRenderers();
 	}
 
 	public void clear() {

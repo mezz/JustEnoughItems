@@ -3,8 +3,10 @@ package mezz.jei.test.lib;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.IngredientSortStage;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.RecipeSorterStage;
 
 import java.util.List;
+import java.util.Set;
 
 public class TestClientConfig implements IClientConfig {
 	private final boolean lowMemorySlowSearchEnabled;
@@ -61,5 +63,20 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public List<IngredientSortStage> getIngredientSorterStages() {
 		return List.of();
+	}
+
+	@Override
+	public Set<RecipeSorterStage> getRecipeSorterStages() {
+		return Set.of();
+	}
+
+	@Override
+	public void enableRecipeSorterStage(RecipeSorterStage stage) {
+
+	}
+
+	@Override
+	public void disableRecipeSorterStage(RecipeSorterStage stage) {
+
 	}
 }

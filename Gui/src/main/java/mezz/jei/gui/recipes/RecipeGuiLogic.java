@@ -8,21 +8,25 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.ILookupState;
 import mezz.jei.gui.recipes.lookups.IngredientLookupState;
 import mezz.jei.gui.recipes.lookups.SingleCategoryLookupState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnegative;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Stream;
 
@@ -35,64 +39,53 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private ILookupState state;
 	private final Stack<ILookupState> history = new Stack<>();
 	private final IFocusFactory focusFactory;
+	private final IRecipeLayoutWithButtonsFactory recipeLayoutFactory;
+	private @Nullable IRecipeCategory<?> cachedRecipeCategory;
+	private @Nullable @Unmodifiable List<? extends RecipeLayoutWithButtons<?>> cachedRecipeLayoutsWithButtons;
+	private Set<RecipeSorterStage> cachedSorterStages = Set.of();
 
 	public RecipeGuiLogic(
 		IRecipeManager recipeManager,
 		IRecipeTransferManager recipeTransferManager,
 		IRecipeLogicStateListener stateListener,
-		IFocusFactory focusFactory
+		IFocusFactory focusFactory,
+		IRecipeLayoutWithButtonsFactory recipeLayoutFactory
 	) {
 		this.recipeManager = recipeManager;
 		this.recipeTransferManager = recipeTransferManager;
 		this.stateListener = stateListener;
-		this.state = IngredientLookupState.createWithFocus(recipeManager, focusFactory.getEmptyFocusGroup());
+		this.recipeLayoutFactory = recipeLayoutFactory;
+		List<IRecipeCategory<?>> recipeCategories = recipeManager.createRecipeCategoryLookup()
+			.get()
+			.toList();
+		this.state = IngredientLookupState.create(
+			recipeManager,
+			focusFactory.getEmptyFocusGroup(),
+			recipeCategories,
+			recipeTransferManager
+		);
 		this.focusFactory = focusFactory;
 	}
 
 	@Override
 	public boolean showFocus(IFocusGroup focuses) {
-		ILookupState state = IngredientLookupState.createWithFocus(recipeManager, focuses);
-		return showState(state);
+		List<IRecipeCategory<?>> recipeCategories = recipeManager.createRecipeCategoryLookup()
+			.limitFocus(focuses.getAllFocuses())
+			.get()
+			.toList();
+		ILookupState state = IngredientLookupState.create(
+			recipeManager,
+			focuses,
+			recipeCategories,
+			recipeTransferManager
+		);
+		return setState(state, true);
 	}
 
 	@Override
 	public boolean showRecipes(IFocusedRecipes<?> recipes, IFocusGroup focuses) {
 		ILookupState state = new SingleCategoryLookupState(recipes, focuses);
-		return showState(state);
-	}
-
-	private boolean showState(ILookupState state) {
-		List<IRecipeCategory<?>> recipeCategories = state.getRecipeCategories();
-		if (recipeCategories.isEmpty()) {
-			return false;
-		}
-
-		int recipeCategoryIndex = getRecipeCategoryIndexToShowFirst(recipeCategories, recipeTransferManager);
-		state.moveToRecipeCategoryIndex(recipeCategoryIndex);
-
-		setState(state, true);
-
-		return true;
-	}
-
-	@Nonnegative
-	private static int getRecipeCategoryIndexToShowFirst(List<IRecipeCategory<?>> recipeCategories, IRecipeTransferManager recipeTransferManager) {
-		Minecraft minecraft = Minecraft.getInstance();
-		LocalPlayer player = minecraft.player;
-		if (player != null) {
-			AbstractContainerMenu openContainer = player.containerMenu;
-			//noinspection ConstantConditions
-			if (openContainer != null) {
-				for (int i = 0; i < recipeCategories.size(); i++) {
-					IRecipeCategory<?> recipeCategory = recipeCategories.get(i);
-					var recipeTransferHandler = recipeTransferManager.getRecipeTransferHandler(openContainer, recipeCategory);
-					if (recipeTransferHandler.isPresent()) {
-						return i;
-					}
-				}
-			}
-		}
-		return 0;
+		return setState(state, true);
 	}
 
 	@Override
@@ -112,20 +105,36 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 	}
 
-	private void setState(ILookupState state, boolean saveHistory) {
+	private boolean setState(ILookupState state, boolean saveHistory) {
+		List<IRecipeCategory<?>> recipeCategories = state.getRecipeCategories();
+		if (recipeCategories.isEmpty()) {
+			return false;
+		}
+
 		if (saveHistory && !initialState) {
 			history.push(this.state);
 		}
 		this.state = state;
 		this.initialState = false;
+		this.cachedRecipeCategory = null;
+		this.cachedRecipeLayoutsWithButtons = null;
 		stateListener.onStateChange();
+		return true;
 	}
 
 	@Override
 	public boolean showAllRecipes() {
 		IRecipeCategory<?> recipeCategory = getSelectedRecipeCategory();
 
-		final ILookupState state = IngredientLookupState.createWithFocus(recipeManager, focusFactory.getEmptyFocusGroup());
+		List<IRecipeCategory<?>> recipeCategories = recipeManager.createRecipeCategoryLookup()
+			.get()
+			.toList();
+		final ILookupState state = IngredientLookupState.create(
+			recipeManager,
+			focusFactory.getEmptyFocusGroup(),
+			recipeCategories,
+			recipeTransferManager
+		);
 		state.moveToRecipeCategory(recipeCategory);
 		setState(state, true);
 
@@ -139,7 +148,12 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			.get()
 			.toList();
 
-		final ILookupState state = IngredientLookupState.createWithCategories(recipeManager, focusFactory, recipeCategories);
+		final ILookupState state = IngredientLookupState.create(
+			recipeManager,
+			focusFactory.getEmptyFocusGroup(),
+			recipeCategories,
+			recipeTransferManager
+		);
 		if (state.getRecipeCategories().isEmpty()) {
 			return false;
 		}
@@ -163,13 +177,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public void setRecipesPerPage(int recipesPerPage) {
-		if (state.getRecipesPerPage() != recipesPerPage) {
-			state.setRecipesPerPage(recipesPerPage);
-		}
-	}
-
-	@Override
 	public IRecipeCategory<?> getSelectedRecipeCategory() {
 		return state.getFocusedRecipes().getRecipeCategory();
 	}
@@ -181,47 +188,70 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public List<IRecipeLayoutDrawable<?>> getRecipeLayouts() {
-		return getRecipeLayouts(this.state.getFocusedRecipes());
+	public List<RecipeLayoutWithButtons<?>> getVisibleRecipeLayoutsWithButtons(
+		int availableHeight,
+		int minRecipePadding,
+		@Nullable AbstractContainerMenu container
+	) {
+		Player player = Minecraft.getInstance().player;
+
+		IRecipeCategory<?> recipeCategory = getSelectedRecipeCategory();
+
+		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+		Set<RecipeSorterStage> recipeSorterStages = clientConfig.getRecipeSorterStages();
+
+		if (!recipeSorterStages.equals(cachedSorterStages) ||
+			this.cachedRecipeLayoutsWithButtons == null ||
+			this.cachedRecipeCategory != recipeCategory
+		) {
+			IFocusedRecipes<?> focusedRecipes = this.state.getFocusedRecipes();
+
+			this.cachedRecipeLayoutsWithButtons = createRecipeLayoutsWithButtons(recipeSorterStages, focusedRecipes, container, player);
+			this.cachedRecipeCategory = recipeCategory;
+			this.cachedSorterStages = Set.copyOf(recipeSorterStages);
+		}
+
+		final int recipeHeight =
+			this.cachedRecipeLayoutsWithButtons.stream()
+				.findFirst()
+				.map(RecipeLayoutWithButtons::getRecipeLayout)
+				.map(IRecipeLayoutDrawable::getRectWithBorder)
+				.map(Rect2i::getHeight)
+				.orElseGet(recipeCategory::getHeight);
+
+		final int recipesPerPage = Math.max(1, 1 + ((availableHeight - recipeHeight) / (recipeHeight + minRecipePadding)));
+		this.state.setRecipesPerPage(recipesPerPage);
+
+		return this.state.getVisible(this.cachedRecipeLayoutsWithButtons);
 	}
 
-	@Override
-	public Optional<ImmutableRect2i> getRecipeLayoutSizeWithBorder() {
-		return getRecipeLayoutSizeWithBorder(this.state.getFocusedRecipes());
-	}
-
-	private <T> Optional<ImmutableRect2i> getRecipeLayoutSizeWithBorder(IFocusedRecipes<T> selectedRecipes) {
-		IRecipeCategory<T> recipeCategory = selectedRecipes.getRecipeCategory();
-
-		return selectedRecipes.getRecipes()
-			.stream()
-			.map(recipe -> recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses()))
-			.flatMap(Optional::stream)
-			.map(IRecipeLayoutDrawable::getRectWithBorder)
-			.map(ImmutableRect2i::new)
-			.findFirst();
-	}
-
-	private <T> List<IRecipeLayoutDrawable<?>> getRecipeLayouts(IFocusedRecipes<T> selectedRecipes) {
-		List<IRecipeLayoutDrawable<?>> recipeLayouts = new ArrayList<>();
-
+	@Unmodifiable
+	private <T> List<RecipeLayoutWithButtons<T>> createRecipeLayoutsWithButtons(
+		Set<RecipeSorterStage> recipeSorterStages,
+		IFocusedRecipes<T> selectedRecipes,
+		@Nullable AbstractContainerMenu container,
+		@Nullable Player player
+	) {
 		IRecipeCategory<T> recipeCategory = selectedRecipes.getRecipeCategory();
 		List<T> recipes = selectedRecipes.getRecipes();
 		List<T> brokenRecipes = new ArrayList<>();
 
-		final int firstRecipeIndex = state.getRecipeIndex() - (state.getRecipeIndex() % state.getRecipesPerPage());
-		for (int recipeIndex = firstRecipeIndex; recipeIndex < recipes.size() && recipeLayouts.size() < state.getRecipesPerPage(); recipeIndex++) {
-			T recipe = recipes.get(recipeIndex);
-			recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
-				.ifPresentOrElse(recipeLayouts::add, () -> brokenRecipes.add(recipe));
-		}
+		List<RecipeLayoutWithButtons<T>> results = recipes.stream()
+			.<IRecipeLayoutDrawable<T>>mapMulti((recipe, acceptor) ->
+				recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
+					.ifPresentOrElse(acceptor, () -> brokenRecipes.add(recipe))
+			)
+			.map(recipeLayoutFactory::create)
+			.sorted(RecipeSortUtil.createRecipeComparator(recipeSorterStages, container, player))
+			.toList();
 
 		if (!brokenRecipes.isEmpty()) {
 			RecipeType<T> recipeType = recipeCategory.getRecipeType();
 			recipeManager.hideRecipes(recipeType, brokenRecipes);
 		}
 
-		return recipeLayouts;
+		return results;
 	}
 
 	@Override
@@ -246,6 +276,12 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	@Override
 	public void previousRecipeCategory() {
 		state.previousRecipeCategory();
+		stateListener.onStateChange();
+	}
+
+	@Override
+	public void goToFirstPage() {
+		state.goToFirstPage();
 		stateListener.onStateChange();
 	}
 

@@ -1,14 +1,16 @@
 package mezz.jei.gui.recipes.lookups;
 
 import com.google.common.base.Preconditions;
-import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.gui.recipes.RecipeSortUtil;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.Collections;
 import java.util.List;
 
 public class IngredientLookupState implements ILookupState {
@@ -17,29 +19,26 @@ public class IngredientLookupState implements ILookupState {
 	@Unmodifiable
 	private final List<IRecipeCategory<?>> recipeCategories;
 
-	private int recipeCategoryIndex;
-	private int recipeIndex;
-	private int recipesPerPage;
+	private int recipeCategoryIndex = 0;
+	private int recipeIndex = 0;
+	private int recipesPerPage = 1;
 	@Nullable
 	private IFocusedRecipes<?> focusedRecipes;
 
-	public static ILookupState createWithFocus(IRecipeManager recipeManager, IFocusGroup focuses) {
-		List<IRecipeCategory<?>> recipeCategories = recipeManager.createRecipeCategoryLookup()
-			.limitFocus(focuses.getAllFocuses())
-			.get()
-			.toList();
-
-		return new IngredientLookupState(recipeManager, focuses, recipeCategories);
-	}
-
-	public static ILookupState createWithCategories(IRecipeManager recipeManager, IFocusFactory focusFactory, List<IRecipeCategory<?>> recipeCategories) {
-		return new IngredientLookupState(recipeManager, focusFactory.getEmptyFocusGroup(), recipeCategories);
+	public static ILookupState create(
+		IRecipeManager recipeManager,
+		IFocusGroup focusGroup,
+		List<IRecipeCategory<?>> recipeCategories,
+		IRecipeTransferManager recipeTransferManager
+	) {
+		recipeCategories = RecipeSortUtil.sortRecipeCategories(recipeCategories, recipeTransferManager);
+		return new IngredientLookupState(recipeManager, focusGroup, recipeCategories);
 	}
 
 	private IngredientLookupState(IRecipeManager recipeManager, IFocusGroup focuses, List<IRecipeCategory<?>> recipeCategories) {
 		this.recipeManager = recipeManager;
 		this.focuses = focuses;
-		this.recipeCategories = List.copyOf(recipeCategories);
+		this.recipeCategories = Collections.unmodifiableList(recipeCategories);
 	}
 
 	@Override
@@ -67,8 +66,7 @@ public class IngredientLookupState implements ILookupState {
 		return false;
 	}
 
-	@Override
-	public void moveToRecipeCategoryIndex(int recipeCategoryIndex) {
+	private void moveToRecipeCategoryIndex(int recipeCategoryIndex) {
 		Preconditions.checkArgument(recipeCategoryIndex >= 0, "Recipe category index cannot be negative.");
 		this.recipeCategoryIndex = recipeCategoryIndex;
 		this.recipeIndex = 0;
@@ -85,6 +83,11 @@ public class IngredientLookupState implements ILookupState {
 	public void previousRecipeCategory() {
 		final int recipesTypesCount = getRecipeCategories().size();
 		moveToRecipeCategoryIndex((recipesTypesCount + getRecipeCategoryIndex() - 1) % recipesTypesCount);
+	}
+
+	@Override
+	public void goToFirstPage() {
+		this.recipeIndex = 0;
 	}
 
 	@Override

@@ -2,18 +2,17 @@ package mezz.jei.gui.startup;
 
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.gui.overlay.IngredientGrid;
@@ -32,19 +31,16 @@ public final class OverlayHelper {
 		DrawableNineSliceTexture background,
 		DrawableNineSliceTexture slotBackground,
 		IInternalKeyMappings keyMappings,
-		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
 		IConnectionToServer serverConnection,
-		Textures textures,
 		IColorHelper colorHelper,
 		IScreenHelper screenHelper
 	) {
 		IngredientGrid ingredientListGrid = new IngredientGrid(
 			ingredientManager,
 			ingredientGridConfig,
-			editModeConfig,
 			ingredientFilterConfig,
 			clientConfig,
 			toggleState,
@@ -63,7 +59,6 @@ public final class OverlayHelper {
 			ingredientGridConfig,
 			background,
 			slotBackground,
-			textures,
 			screenHelper,
 			ingredientManager
 		);
@@ -79,7 +74,6 @@ public final class OverlayHelper {
 		IIngredientGridConfig ingredientGridConfig,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
-		IEditModeConfig editModeConfig,
 		IConnectionToServer serverConnection,
 		IIngredientFilterConfig ingredientFilterConfig,
 		Textures textures,
@@ -93,12 +87,10 @@ public final class OverlayHelper {
 			textures.getIngredientListBackground(),
 			textures.getIngredientListSlotBackground(),
 			keyMappings,
-			editModeConfig,
 			ingredientFilterConfig,
 			clientConfig,
 			toggleState,
 			serverConnection,
-			textures,
 			colorHelper,
 			screenHelper
 		);
@@ -111,7 +103,6 @@ public final class OverlayHelper {
 			clientConfig,
 			toggleState,
 			serverConnection,
-			textures,
 			keyMappings,
 			ingredientManager
 		);
@@ -124,7 +115,6 @@ public final class OverlayHelper {
 		IModIdHelper modIdHelper,
 		IInternalKeyMappings keyMappings,
 		IIngredientGridConfig bookmarkListConfig,
-		IEditModeConfig editModeConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
@@ -140,18 +130,15 @@ public final class OverlayHelper {
 			textures.getBookmarkListBackground(),
 			textures.getBookmarkListSlotBackground(),
 			keyMappings,
-			editModeConfig,
 			ingredientFilterConfig,
 			clientConfig,
 			toggleState,
 			serverConnection,
-			textures,
 			colorHelper,
 			screenHelper);
 
 		return new BookmarkOverlay(
 			bookmarkList,
-			textures,
 			bookmarkListGridNavigation,
 			clientConfig,
 			toggleState,

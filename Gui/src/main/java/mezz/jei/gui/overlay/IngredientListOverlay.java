@@ -8,8 +8,6 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -18,6 +16,7 @@ import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.input.ICharTypedHandler;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -64,7 +63,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
 		IConnectionToServer serverConnection,
-		Textures textures,
 		IInternalKeyMappings keyBindings,
 		IIngredientManager ingredientManager
 	) {
@@ -74,7 +72,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.toggleState = toggleState;
 		this.serverConnection = serverConnection;
 
-		this.searchField = new GuiTextFieldFilter(textures, contents::isEmpty);
+		this.searchField = new GuiTextFieldFilter(contents::isEmpty);
 		this.keyBindings = keyBindings;
 		this.ingredientManager = ingredientManager;
 		this.filterTextSource = filterTextSource;
@@ -89,7 +87,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			updateScreen(screen, null);
 		});
 
-		this.configButton = ConfigButton.create(this::isListDisplayed, toggleState, textures, keyBindings);
+		this.configButton = ConfigButton.create(this::isListDisplayed, toggleState, keyBindings);
 	}
 
 	@Override

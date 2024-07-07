@@ -5,97 +5,109 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.gui.TooltipRenderer;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
-import mezz.jei.gui.elements.GuiIconButtonSmall;
+import mezz.jei.gui.elements.GuiIconToggleButton;
+import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
-public class RecipeBookmarkButton extends GuiIconButtonSmall {
+public class RecipeBookmarkButton extends GuiIconToggleButton {
 	private final BookmarkList bookmarks;
-	private final RecipeBookmark<?, ?> recipeBookmark;
-	private final IOnClickHandler onClickHandler;
+	private final @Nullable RecipeBookmark<?, ?> recipeBookmark;
+	private boolean bookmarked;
 
-	public static Optional<RecipeBookmarkButton> create(
+	public static RecipeBookmarkButton create(
 		IRecipeLayoutDrawable<?> recipeLayout,
 		IIngredientManager ingredientManager,
 		BookmarkList bookmarks,
-		Textures textures,
 		IRecipeManager recipeManager,
 		IGuiHelper guiHelper
 	) {
-		return RecipeBookmark.create(recipeLayout, ingredientManager, recipeManager, guiHelper)
-			.map(recipeBookmark -> {
-				IDrawable icon = textures.getRecipeBookmark();
-				Rect2i area = recipeLayout.getRecipeBookmarkButtonArea();
-				Rect2i layoutArea = recipeLayout.getRect();
-				area.setX(area.getX() + layoutArea.getX());
-				area.setY(area.getY() + layoutArea.getY());
+		RecipeBookmark<?, ?> recipeBookmark = RecipeBookmark.create(recipeLayout, ingredientManager, recipeManager, guiHelper)
+			.orElse(null);
 
-				return new RecipeBookmarkButton(icon, bookmarks, recipeBookmark, textures, area);
-			});
+		Textures textures = Internal.getTextures();
+		IDrawable icon = textures.getRecipeBookmark();
+		Rect2i area = recipeLayout.getRecipeBookmarkButtonArea();
+		Rect2i layoutArea = recipeLayout.getRect();
+		area.setX(area.getX() + layoutArea.getX());
+		area.setY(area.getY() + layoutArea.getY());
+
+		RecipeBookmarkButton recipeBookmarkButton = new RecipeBookmarkButton(icon, bookmarks, recipeBookmark);
+		recipeBookmarkButton.updateBounds(area);
+		return recipeBookmarkButton;
 	}
 
-	private RecipeBookmarkButton(IDrawable icon, BookmarkList bookmarks, RecipeBookmark<?, ?> recipeBookmark, Textures textures, Rect2i area) {
-		super(area.getX(), area.getY(), area.getWidth(), area.getHeight(), icon, b -> {}, textures);
+	private RecipeBookmarkButton(IDrawable icon, BookmarkList bookmarks, @Nullable RecipeBookmark<?, ?> recipeBookmark) {
+		super(icon, icon);
+
 		this.bookmarks = bookmarks;
 		this.recipeBookmark = recipeBookmark;
 
-		this.onClickHandler = (mouseX, mouseY) -> {
-			bookmarks.toggleBookmark(recipeBookmark);
-		};
+		if (recipeBookmark == null) {
+			button.active = false;
+			button.visible = false;
+		}
+
+		tick();
 	}
 
-	public void drawToolTip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		if (isMouseOver(mouseX, mouseY)) {
-			Component tooltip;
+	@Override
+	protected void getTooltips(List<Component> tooltip) {
+		if (recipeBookmark != null) {
 			if (bookmarks.contains(recipeBookmark)) {
-				tooltip = Component.translatable("jei.tooltip.bookmarks.recipe.remove");
+				tooltip.add(Component.translatable("jei.tooltip.bookmarks.recipe.remove"));
 			} else {
-				tooltip = Component.translatable("jei.tooltip.bookmarks.recipe.add");
+				tooltip.add(Component.translatable("jei.tooltip.bookmarks.recipe.add"));
 			}
-			TooltipRenderer.drawHoveringText(guiGraphics, List.of(tooltip), mouseX, mouseY);
 		}
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		return mouseX >= this.getX() &&
-			mouseY >= this.getY() &&
-			mouseX < this.getX() + this.getWidth() &&
-			mouseY < this.getY() + this.getHeight();
+	public void tick() {
+		bookmarked = recipeBookmark != null && bookmarks.contains(recipeBookmark);
 	}
 
 	@Override
-	public void onRelease(double mouseX, double mouseY) {
-		if (!isMouseOver(mouseX, mouseY)) {
-			return;
-		}
-		if (onClickHandler != null) {
-			onClickHandler.onClick(mouseX, mouseY);
-		}
+	protected boolean isIconToggledOn() {
+		return bookmarked;
 	}
 
 	@Override
-	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		super.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
+	protected boolean onMouseClicked(UserInput input) {
+		if (recipeBookmark != null) {
+			if (!input.isSimulate()) {
+				bookmarks.toggleBookmark(recipeBookmark);
+			}
+			return true;
+		}
+		return false;
+	}
 
-		if (bookmarks.contains(recipeBookmark)) {
+	@Override
+	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		super.draw(guiGraphics, mouseX, mouseY, partialTicks);
+		if (bookmarked) {
 			guiGraphics.fill(
 				RenderType.gui(),
-				this.getX(),
-				this.getY(),
-				this.getX() + this.getWidth(),
-				this.getY() + this.getHeight(),
-				0x2200FF00
+				button.getX(),
+				button.getY(),
+				button.getX() + button.getWidth(),
+				button.getY() + button.getHeight(),
+				0x1100FF00
 			);
 		}
+	}
+
+	public boolean isBookmarked() {
+		return bookmarked;
 	}
 }

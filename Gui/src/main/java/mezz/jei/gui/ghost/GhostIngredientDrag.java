@@ -120,7 +120,7 @@ public class GhostIngredientDrag<T> {
 		poseStack.pushPose();
 		{
 			poseStack.translate(mouseX - 8, mouseY - 8, 0);
-			SafeIngredientUtil.render(ingredientManager, ingredientRenderer, guiGraphics, ingredient);
+			SafeIngredientUtil.render(guiGraphics, ingredientRenderer, ingredient);
 		}
 		poseStack.popPose();
 	}

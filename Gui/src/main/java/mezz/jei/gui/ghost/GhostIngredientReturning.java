@@ -71,7 +71,7 @@ public class GhostIngredientReturning<T> {
 		poseStack.pushPose();
 		{
 			poseStack.translate(x, y, 0);
-			SafeIngredientUtil.render(ingredientManager, ingredientRenderer, guiGraphics, ingredient);
+			SafeIngredientUtil.render(guiGraphics, ingredientRenderer, ingredient);
 		}
 		poseStack.popPose();
 	}

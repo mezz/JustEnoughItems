@@ -2,7 +2,6 @@ package mezz.jei.library.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeCatalystLookup;
@@ -14,8 +13,6 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.recipes.RecipeLayout;
@@ -28,17 +25,11 @@ import java.util.Set;
 
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
-	private final IModIdHelper modIdHelper;
 	private final IIngredientManager ingredientManager;
-	private final Textures textures;
-	private final IIngredientVisibility ingredientVisibility;
 
-	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, IIngredientManager ingredientManager, Textures textures, IIngredientVisibility ingredientVisibility) {
+	public RecipeManager(RecipeManagerInternal internal, IIngredientManager ingredientManager) {
 		this.internal = internal;
-		this.modIdHelper = modIdHelper;
 		this.ingredientManager = ingredientManager;
-		this.textures = textures;
-		this.ingredientVisibility = ingredientVisibility;
 	}
 
 	@Override
@@ -84,17 +75,14 @@ public class RecipeManager implements IRecipeManager {
 			decorators,
 			recipe,
 			focusGroup,
-			ingredientManager,
-			ingredientVisibility,
-			modIdHelper,
-			textures
+			ingredientManager
 		);
 	}
 
 	@Override
 	public IRecipeSlotDrawable createRecipeSlotDrawable(RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusedIngredients, int xPos, int yPos, int ingredientCycleOffset) {
-		RecipeSlot recipeSlot = new RecipeSlot(ingredientManager, role, xPos, yPos, ingredientCycleOffset);
-		recipeSlot.set(ingredients, focusedIngredients, ingredientVisibility);
+		RecipeSlot recipeSlot = new RecipeSlot(role, xPos, yPos, ingredientCycleOffset);
+		recipeSlot.set(ingredients, focusedIngredients);
 		return recipeSlot;
 	}
 
