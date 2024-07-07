@@ -35,10 +35,11 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, IBoo
                 .toList();
 
         for (ITypedIngredient ingredient : displayed) {
+            IIngredientHelper helper = ingredientManager.getIngredientHelper(ingredient.getType());
+            if (!helper.countable()) continue;
             String uid = getUid(ingredient, ingredientManager);
             var storage = summary.get(uid);
             if (storage != null) {
-                IIngredientHelper helper = ingredientManager.getIngredientHelper(ingredient.getType());
                 Object merged = helper.merge(storage.getIngredient(), ingredient.getIngredient());
                 if (merged != null) {
                     ingredientManager.createTypedIngredient(ingredient.getType(), merged).ifPresent(i -> summary.put(uid, (ITypedIngredient) i));
