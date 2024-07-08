@@ -1,10 +1,12 @@
 package mezz.jei.library.plugins.vanilla.ingredients;
 
 import com.google.common.collect.Streams;
+import mezz.jei.api.constants.Tags;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
@@ -15,6 +17,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.common.util.TagUtil;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -23,6 +26,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -30,12 +34,20 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
+	private final ISubtypeManager subtypeManager;
 	private final StackHelper stackHelper;
 	private final IColorHelper colorHelper;
+	private final TagKey<Item> itemHiddenFromRecipeViewers;
+	private final TagKey<Block> blockHiddenFromRecipeViewers;
 
-	public ItemStackHelper(StackHelper stackHelper, IColorHelper colorHelper) {
+	public ItemStackHelper(ISubtypeManager subtypeManager, StackHelper stackHelper, IColorHelper colorHelper) {
+		this.subtypeManager = subtypeManager;
 		this.stackHelper = stackHelper;
 		this.colorHelper = colorHelper;
+		//noinspection deprecation
+		this.itemHiddenFromRecipeViewers = new TagKey<>(Registries.ITEM, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
+		//noinspection deprecation
+		this.blockHiddenFromRecipeViewers = new TagKey<>(Registries.BLOCK, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
 	}
 
 	@Override
@@ -58,6 +70,12 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	public boolean hasSubtypes(ItemStack ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		return subtypeManager.hasSubtypes(VanillaTypes.ITEM_STACK, ingredient);
+	}
+
+	@Override
 	public String getWildcardId(ItemStack ingredient) {
 		ErrorUtil.checkNotEmpty(ingredient);
 		return StackHelper.getRegistryNameForStack(ingredient);
@@ -69,16 +87,17 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
 		return itemStackHelper.getCreatorModId(ingredient)
-			.or(() ->
-				Services.PLATFORM
-				.getRegistry(Registries.ITEM)
-				.getRegistryName(ingredient.getItem())
-				.map(ResourceLocation::getNamespace)
-			)
+			.or(() -> getNamespace(ingredient))
 			.orElseThrow(() -> {
 				String stackInfo = getErrorInfo(ingredient);
 				return new IllegalStateException("null registryName for: " + stackInfo);
 			});
+	}
+
+	private static Optional<String> getNamespace(ItemStack ingredient) {
+		return Services.PLATFORM.getRegistry(Registries.ITEM)
+			.getRegistryName(ingredient.getItem())
+			.map(ResourceLocation::getNamespace);
 	}
 
 	@Override
@@ -91,12 +110,11 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		ErrorUtil.checkNotEmpty(ingredient);
 
 		Item item = ingredient.getItem();
-		return Services.PLATFORM
-			.getRegistry(Registries.ITEM)
+		return Services.PLATFORM.getRegistry(Registries.ITEM)
 			.getRegistryName(item)
 			.orElseThrow(() -> {
 				String stackInfo = getErrorInfo(ingredient);
-				return new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
+				return new IllegalStateException("item has no key in the Item registry: " + stackInfo);
 			});
 	}
 
@@ -146,6 +164,24 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			}
 		}
 		return itemTagStream;
+	}
+
+	@Override
+	public boolean isHiddenFromRecipeViewersByTags(ItemStack ingredient) {
+		if (ingredient.is(itemHiddenFromRecipeViewers)) {
+			return true;
+		}
+		if (ingredient.getItem() instanceof BlockItem blockItem) {
+			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+			if (clientConfig.isLookupBlockTagsEnabled()) {
+				Block block = blockItem.getBlock();
+				@SuppressWarnings("deprecation")
+				Holder.Reference<Block> holder = block.builtInRegistryHolder();
+				return holder.is(blockHiddenFromRecipeViewers);
+			}
+		}
+		return false;
 	}
 
 	@Override

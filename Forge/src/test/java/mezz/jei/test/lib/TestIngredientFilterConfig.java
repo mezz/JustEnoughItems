@@ -34,4 +34,14 @@ public class TestIngredientFilterConfig implements IIngredientFilterConfig {
 	public boolean getSearchAdvancedTooltips() {
 		return false;
 	}
+
+	@Override
+	public boolean getSearchModIds() {
+		return false;
+	}
+
+	@Override
+	public boolean getSearchShortModNames() {
+		return false;
+	}
 }

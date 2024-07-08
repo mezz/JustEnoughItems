@@ -11,6 +11,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
+
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
@@ -111,6 +112,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -145,7 +147,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.registerSubtypeInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, (itemStack, context) -> {
-			List<String> enchantmentNames = new ArrayList<>();
+			List<String> strings = new ArrayList<>();
 			ListTag enchantments = EnchantedBookItem.getEnchantments(itemStack);
 			for (int i = 0; i < enchantments.size(); ++i) {
 				CompoundTag compoundnbt = enchantments.getCompound(i);
@@ -155,11 +157,16 @@ public class VanillaPlugin implements IModPlugin {
 				if (resourceLocation != null) {
 					enchantmentRegistry.getValue(resourceLocation)
 						.map(enchantment -> enchantment.getDescriptionId() + ".lvl" + compoundnbt.getShort("lvl"))
-						.ifPresent(enchantmentNames::add);
+						.ifPresent(strings::add);
 				}
 			}
-			enchantmentNames.sort(null);
-			return enchantmentNames.toString();
+
+			StringJoiner joiner = new StringJoiner(",", "[", "]");
+			strings.sort(null);
+			for (String s : strings) {
+				joiner.add(s);
+			}
+			return joiner.toString();
 		});
 	}
 
@@ -170,7 +177,7 @@ public class VanillaPlugin implements IModPlugin {
 
 		List<ItemStack> itemStacks = ItemStackListFactory.create(stackHelper);
 		IColorHelper colorHelper = registration.getColorHelper();
-		ItemStackHelper itemStackHelper = new ItemStackHelper(stackHelper, colorHelper);
+		ItemStackHelper itemStackHelper = new ItemStackHelper(subtypeManager, stackHelper, colorHelper);
 		ItemStackRenderer itemStackRenderer = new ItemStackRenderer();
 		registration.register(VanillaTypes.ITEM_STACK, itemStacks, itemStackHelper, itemStackRenderer);
 
@@ -332,10 +339,10 @@ public class VanillaPlugin implements IModPlugin {
 			// distinct + this limit will ensure we stop iterating early if we find all the recipes we're looking for.
 			.limit(replacers.size())
 			.flatMap(recipeClass -> {
-				Supplier<List<CraftingRecipe>> supplier = replacers.get(recipeClass);
+				var supplier = replacers.get(recipeClass);
 				try {
-					List<CraftingRecipe> results = supplier.get();
-					return results.stream();
+					return supplier.get()
+						.stream();
 				} catch (RuntimeException e) {
 					LOGGER.error("Failed to create JEI recipes for {}", recipeClass, e);
 					return Stream.of();

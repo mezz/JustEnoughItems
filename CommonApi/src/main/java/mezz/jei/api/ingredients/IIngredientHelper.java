@@ -1,5 +1,6 @@
 package mezz.jei.api.ingredients;
 
+import mezz.jei.api.constants.Tags;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import net.minecraft.resources.ResourceLocation;
@@ -34,6 +35,18 @@ public interface IIngredientHelper<V> {
 	 * @since 7.3.0
 	 */
 	String getUniqueId(V ingredient, UidContext context);
+
+	/**
+	 * Return true if the given ingredient can have subtypes.
+	 * For example in the vanilla game an enchanted book may have subtypes, but an apple does not.
+	 * <p>
+	 * This is used as an optimization to skip some processing for ingredients that never have subtypes.
+	 *
+	 * @since 15.6.0
+	 */
+	default boolean hasSubtypes(V ingredient) {
+		return getIngredientType() instanceof IIngredientTypeWithSubtypes<?,?>;
+	}
 
 	/**
 	 * Wildcard ID for use in comparing, blacklisting, and looking up ingredients.
@@ -127,6 +140,18 @@ public interface IIngredientHelper<V> {
 	 */
 	default Stream<ResourceLocation> getTagStream(V ingredient) {
 		return Stream.empty();
+	}
+
+	/**
+	 * Return true if the given ingredient is hidden from recipe viewers by its tags.
+	 *
+	 * @see Tags#HIDDEN_FROM_RECIPE_VIEWERS
+	 *
+	 * @since 15.6.0
+	 */
+	default boolean isHiddenFromRecipeViewersByTags(V ingredient) {
+		return getTagStream(ingredient)
+			.anyMatch(Tags.HIDDEN_FROM_RECIPE_VIEWERS::equals);
 	}
 
 	/**

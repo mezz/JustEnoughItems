@@ -73,7 +73,7 @@ public interface IRecipeTransferError {
 	 * @return the number of input recipes slots are missing ingredient's in the player's inventory.
 	 *         Return -1 by default to avoid sorting
 	 *
-	 * @since 19.2.0
+	 * @since 15.6.0
 	 */
 	default int getMissingCountHint() {
 		return -1;

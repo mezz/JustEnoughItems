@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * Gets subtype information from ingredients that have subtype interpreters.
- *
+ * <p>
  * Add subtypes for your ingredients with {@link ISubtypeRegistration#registerSubtypeInterpreter(IIngredientTypeWithSubtypes, Object, IIngredientSubtypeInterpreter)}.
  */
 public interface ISubtypeManager {
@@ -28,4 +28,15 @@ public interface ISubtypeManager {
 	 * @since 9.7.0
 	 */
 	<T> String getSubtypeInfo(IIngredientTypeWithSubtypes<?, T> ingredientType, T ingredient, UidContext context);
+
+	/**
+	 * Return true if the given ingredient can have subtypes.
+	 * For example in the vanilla game an enchanted book may have subtypes, but an apple does not.
+	 *
+	 * @see ISubtypeRegistration#registerSubtypeInterpreter
+	 * @see ISubtypeManager#getSubtypeInfo
+	 *
+	 * @since 15.6.0
+	 */
+	<T, B> boolean hasSubtypes(IIngredientTypeWithSubtypes<B, T> ingredientType, T ingredient);
 }

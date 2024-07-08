@@ -14,6 +14,7 @@ import mezz.jei.library.ingredients.IngredientSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.alchemy.PotionUtils;
@@ -28,14 +29,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BrewingRecipeMakerCommon {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static Set<IJeiBrewingRecipe> getVanillaBrewingRecipes(
 		IVanillaRecipeFactory recipeFactory,
-		IIngredientManager ingredientManager,
-		IVanillaPotionOutputSupplier vanillaOutputSupplier
+		IIngredientManager ingredientManager
 	) {
 		Set<IJeiBrewingRecipe> recipes = new HashSet<>();
 		IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registries.POTION);
@@ -43,9 +44,9 @@ public class BrewingRecipeMakerCommon {
 
 		IngredientSet<ItemStack> knownPotions = getBaseKnownPotions(ingredientManager, potionRegistry);
 
-		List<ItemStack> potionReagents = ingredientManager.getAllItemStacks().stream()
+		IngredientSet<ItemStack> potionReagents = ingredientManager.getAllItemStacks().stream()
 			.filter(BrewingRecipeMakerCommon::isIngredient)
-			.toList();
+			.collect(Collectors.toCollection(() -> new IngredientSet<>(itemStackHelper, UidContext.Ingredient)));
 
 		boolean foundNewPotions;
 		do {
@@ -54,7 +55,6 @@ public class BrewingRecipeMakerCommon {
 				itemStackHelper,
 				knownPotions,
 				potionReagents,
-				vanillaOutputSupplier,
 				recipes
 			);
 			foundNewPotions = !newPotions.isEmpty();
@@ -74,14 +74,17 @@ public class BrewingRecipeMakerCommon {
 		}
 	}
 
+
 	private static IngredientSet<ItemStack> getBaseKnownPotions(IIngredientManager ingredientManager, IPlatformRegistry<Potion> potionRegistry) {
 		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
-		List<ItemStack> potionContainers = ingredientHelper.getPotionContainers().stream()
-			.flatMap(potionItem -> Arrays.stream(potionItem.getItems()))
-			.toList();
-
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
-		IngredientSet<ItemStack> knownPotions = IngredientSet.create(itemStackHelper, UidContext.Ingredient);
+
+		IngredientSet<ItemStack> potionContainers = ingredientHelper.getPotionContainers().stream()
+			.flatMap(potionItem -> Arrays.stream(potionItem.getItems()))
+			.collect(Collectors.toCollection(() -> new IngredientSet<>(itemStackHelper, UidContext.Ingredient)));
+
+		IngredientSet<ItemStack> knownPotions = new IngredientSet<>(itemStackHelper, UidContext.Ingredient);
+		knownPotions.addAll(potionContainers);
 
 		potionRegistry.getValues()
 			.filter(potion -> potion != Potions.EMPTY) // skip the "un-craft-able" vanilla potions
@@ -98,8 +101,7 @@ public class BrewingRecipeMakerCommon {
 		IVanillaRecipeFactory recipeFactory,
 		IIngredientHelper<ItemStack> itemStackHelper,
 		Collection<ItemStack> knownPotions,
-		List<ItemStack> potionReagents,
-		IVanillaPotionOutputSupplier vanillaOutputSupplier,
+		Collection<ItemStack> potionReagents,
 		Collection<IJeiBrewingRecipe> recipes
 	) {
 		List<ItemStack> newPotions = new ArrayList<>();
@@ -108,12 +110,12 @@ public class BrewingRecipeMakerCommon {
 			String inputPathId = ResourceLocationUtil.sanitizePath(inputId);
 
 			for (ItemStack potionReagent : potionReagents) {
-				ItemStack potionOutput = vanillaOutputSupplier.getOutput(potionInput.copy(), potionReagent);
+				ItemStack potionOutput = getOutput(potionInput.copy(), potionReagent);
 				if (potionOutput.isEmpty()) {
 					continue;
 				}
 
-				if (potionInput.getItem() == potionOutput.getItem()) {
+				if (potionInput.getItem() instanceof PotionItem && potionOutput.getItem() instanceof PotionItem) {
 					Potion potionOutputType = PotionUtils.getPotion(potionOutput);
 					if (potionOutputType == Potions.WATER) {
 						continue;
@@ -142,8 +144,11 @@ public class BrewingRecipeMakerCommon {
 		return newPotions;
 	}
 
-	@FunctionalInterface
-	public interface IVanillaPotionOutputSupplier {
-		ItemStack getOutput(ItemStack input, ItemStack ingredient);
+	private static ItemStack getOutput(ItemStack potion, ItemStack itemStack) {
+		ItemStack result = PotionBrewing.mix(itemStack, potion);
+		if (result != itemStack) {
+			return result;
+		}
+		return ItemStack.EMPTY;
 	}
 }

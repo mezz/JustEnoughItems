@@ -38,8 +38,7 @@ public class BrewingRecipeMaker {
 			.map(vanillaBrewingRecipe ->
 				BrewingRecipeMakerCommon.getVanillaBrewingRecipes(
 					vanillaRecipeFactory,
-					ingredientManager,
-					vanillaBrewingRecipe::getOutput
+					ingredientManager
 				)
 			)
 			.orElseGet(HashSet::new);

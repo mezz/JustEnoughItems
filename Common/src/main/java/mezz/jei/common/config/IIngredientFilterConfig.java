@@ -14,4 +14,8 @@ public interface IIngredientFilterConfig {
 	SearchMode getResourceLocationSearchMode();
 
 	boolean getSearchAdvancedTooltips();
+
+	boolean getSearchModIds();
+
+	boolean getSearchShortModNames();
 }

@@ -50,16 +50,16 @@ public final class TooltipRenderer {
 			IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 			CrashReport crashReport = ErrorUtil.createIngredientCrashReport(e, "Rendering ingredient tooltip", ingredientManager, typedIngredient);
 			CrashReportCategory reportCategory = crashReport.addCategory("Tooltip");
-            for (int i = 0; i < textLines.size(); i++) {
-                Component line = textLines.get(i);
-                reportCategory.setDetail("line #" + i + " getString", line.getString());
+			for (int i = 0; i < textLines.size(); i++) {
+				Component line = textLines.get(i);
+				reportCategory.setDetail("line #" + i + " getString", line.getString());
 				reportCategory.setDetail("line #" + i + " getClass", line.getClass());
 				try {
 					drawHoveringText(guiGraphics, List.of(line), x, y, itemStack, font);
 				} catch (RuntimeException ignored) {
 					reportCategory.setDetail("line #" + i + " CRASHED", true);
 				}
-            }
+			}
 			throw new ReportedException(crashReport);
 		}
 	}

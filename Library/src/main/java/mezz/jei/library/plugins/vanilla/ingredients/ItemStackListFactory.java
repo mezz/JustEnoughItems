@@ -12,7 +12,6 @@ import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
@@ -29,11 +28,10 @@ public final class ItemStackListFactory {
 
 	public static List<ItemStack> create(StackHelper stackHelper) {
 		final List<ItemStack> itemList = new ArrayList<>();
-		final Set<String> itemNameSet = new HashSet<>();
+		final Set<Object> itemUidSet = new HashSet<>();
 
 		Minecraft minecraft = Minecraft.getInstance();
-		FeatureFlagSet features = Optional.of(minecraft)
-				.map(m -> m.player)
+		FeatureFlagSet features = Optional.ofNullable(minecraft.player)
 				.map(p -> p.connection)
 				.map(ClientPacketListener::enabledFeatures)
 				.orElse(FeatureFlagSet.of());
@@ -77,32 +75,30 @@ public final class ItemStackListFactory {
 				if (itemStack.isEmpty()) {
 					LOGGER.error("Found an empty itemStack from creative tab: {}", itemGroup);
 				} else {
-					addItemStack(stackHelper, itemStack, itemList, itemNameSet);
+					addItemStack(stackHelper, itemStack, itemList, itemUidSet);
 				}
 			}
 		}
 		return itemList;
 	}
 
-	private static void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<String> itemNameSet) {
-		//TODO: Test to make sure this is actually fixed in 1.17 and if so remove this check
-		// Game freezes when loading player skulls, see https://bugs.mojang.com/browse/MC-65587
-		if (stack.getItem() == Items.PLAYER_HEAD) {
-			return;
+	private static void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<Object> itemUidSet) {
+		final Object itemKey;
+
+		if (stackHelper.hasSubtypes(stack)) {
+			try {
+				itemKey = stackHelper.getUniqueIdentifierForStack(stack, UidContext.Ingredient);
+			} catch (RuntimeException | LinkageError e) {
+				String stackInfo = ErrorUtil.getItemStackInfo(stack);
+				LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);
+				return;
+			}
+		} else {
+			itemKey = stack.getItem();
 		}
 
-		final String itemKey;
-
-		try {
-			itemKey = stackHelper.getUniqueIdentifierForStack(stack, UidContext.Ingredient);
-		} catch (RuntimeException | LinkageError e) {
-			String stackInfo = ErrorUtil.getItemStackInfo(stack);
-			LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);
-			return;
-		}
-
-		if (!itemNameSet.contains(itemKey)) {
-			itemNameSet.add(itemKey);
+		if (!itemUidSet.contains(itemKey)) {
+			itemUidSet.add(itemKey);
 			itemList.add(stack);
 		}
 	}

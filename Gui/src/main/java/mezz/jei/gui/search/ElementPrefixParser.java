@@ -4,18 +4,21 @@ import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.util.Translator;
 import mezz.jei.core.search.LimitedStringStorage;
 import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.core.search.SearchMode;
 import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
-import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.gui.ingredients.IListElementInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
 public class ElementPrefixParser {
@@ -25,6 +28,8 @@ public class ElementPrefixParser {
 			i -> List.of(i.getName()),
 			GeneralizedSuffixTree::new
 	);
+	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
+	private static final Pattern MOD_NAME_SEPARATOR_PATTERN = Pattern.compile("(?=[A-Z_-])|\\s+");
 
 	private final Char2ObjectMap<PrefixInfo<IListElementInfo<?>>> map = new Char2ObjectOpenHashMap<>();
 
@@ -32,7 +37,29 @@ public class ElementPrefixParser {
 		addPrefix(new PrefixInfo<>(
 			'@',
 			config::getModNameSearchMode,
-			IListElementInfo::getModNameStrings,
+			info -> {
+				Set<String> modNames = new HashSet<>(info.getModNames());
+
+				if (config.getSearchModIds()) {
+					modNames.addAll(info.getModIds());
+				}
+
+				if (config.getSearchShortModNames()) {
+					for (String modName : info.getModNames()) {
+						List<String> shortModNames = getShortModNames(modName);
+						modNames.addAll(shortModNames);
+					}
+				}
+
+				Set<String> sanitizedModNames = new HashSet<>();
+				for (String modName : modNames) {
+					modName = modName.toLowerCase();
+					modName = SPACE_PATTERN.matcher(modName).replaceAll("");
+					sanitizedModNames.add(modName);
+				}
+
+				return sanitizedModNames;
+			},
 			LimitedStringStorage::new
 		));
 		addPrefix(new PrefixInfo<>(
@@ -93,5 +120,25 @@ public class ElementPrefixParser {
 			return Optional.empty();
 		}
 		return Optional.of(new TokenInfo(token.substring(1), prefixInfo));
+	}
+
+	private static List<String> getShortModNames(String modName) {
+		String[] words = MOD_NAME_SEPARATOR_PATTERN.split(modName);
+		if (words.length <= 1) {
+			return List.of();
+		}
+		return List.of(
+			combineFirstLetters(words, 1),
+			combineFirstLetters(words, 2)
+		);
+	}
+
+	private static String combineFirstLetters(String[] words, final int count){
+		StringBuilder sb = new StringBuilder();
+		for (String word : words) {
+			int end = Math.min(count, word.length());
+			sb.append(word, 0, end);
+		}
+		return sb.toString();
 	}
 }

@@ -6,6 +6,7 @@ import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSupplier {
@@ -135,6 +137,14 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		);
 	}
 
+	private Collection<IRecipeLayoutSlotSource> getSlots() {
+		List<IRecipeLayoutSlotSource> slots = new ArrayList<>(this.slots);
+		for (List<IRecipeLayoutSlotSource> focusLinkedSlots : this.focusLinkedSlots) {
+			slots.addAll(focusLinkedSlots);
+		}
+		return slots;
+	}
+
 	@Override
 	public Stream<? extends IIngredientType<?>> getIngredientTypes(RecipeIngredientRole role) {
 		return slotStream()
@@ -148,5 +158,21 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		return slotStream()
 			.filter(slot -> slot.getRole() == role)
 			.flatMap(slot -> slot.getIngredients(ingredientType));
+	}
+
+	@Override
+	public Collection<Optional<ITypedIngredient<?>>> getIngredients(RecipeIngredientRole role) {
+		List<Optional<ITypedIngredient<?>>> ingredients = new ArrayList<>();
+
+		Collection<IRecipeLayoutSlotSource> slots = getSlots();
+		for (IRecipeLayoutSlotSource slot : slots) {
+			if (slot.getRole() != role) {
+				continue;
+			}
+			Collection<Optional<ITypedIngredient<?>>> allIngredients = slot.getAllIngredients();
+			ingredients.addAll(allIngredients);
+		}
+
+		return ingredients;
 	}
 }

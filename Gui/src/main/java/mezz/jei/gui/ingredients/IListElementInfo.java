@@ -17,10 +17,12 @@ public interface IListElementInfo<V> {
 
 	String getModNameForSorting();
 
-	Set<String> getModNameStrings();
+	List<String> getModNames();
+
+	List<String> getModIds();
 
 	@Unmodifiable
-	List<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager);
+	Set<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager);
 
 	Collection<String> getTagStrings(IIngredientManager ingredientManager);
 

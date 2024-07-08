@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -103,27 +104,17 @@ public class RecipeManagerInternal {
 	}
 
 	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
-		LOGGER.debug("Adding recipes: " + recipeType.getUid());
-		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipes, recipeType);
-		addRecipes(recipeTypeData, recipes);
-	}
-
-	private <T> void addRecipes(RecipeTypeData<T> recipeTypeData, Collection<T> recipes) {
+		LOGGER.debug("Adding recipes: {}", recipeType.getUid());
+		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipeType);
 		IRecipeCategory<T> recipeCategory = recipeTypeData.getRecipeCategory();
 		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
 
-		List<T> addedRecipes = recipes.stream()
-			.filter(recipe -> {
-				if (hiddenRecipes.contains(recipe) || !recipeCategory.isHandled(recipe)) {
-					return false;
-				}
-				IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
-				if (ingredientSupplier == null) {
-					return false;
-				}
-				return addRecipe(recipeCategory, recipe, ingredientSupplier);
-			})
-			.toList();
+		List<T> addedRecipes = new ArrayList<>(recipes.size());
+		for (T recipe : recipes) {
+			if (addRecipe(recipeCategory, recipe, hiddenRecipes)) {
+				addedRecipes.add(recipe);
+			}
+		}
 
 		if (!addedRecipes.isEmpty()) {
 			recipeTypeData.addRecipes(addedRecipes);
@@ -131,8 +122,27 @@ public class RecipeManagerInternal {
 		}
 	}
 
-	private <T> boolean addRecipe(IRecipeCategory<T> recipeCategory, T recipe, IIngredientSupplier ingredientSupplier) {
+	private <T> boolean addRecipe(IRecipeCategory<T> recipeCategory, T recipe, Set<T> hiddenRecipes) {
 		RecipeType<T> recipeType = recipeCategory.getRecipeType();
+		if (hiddenRecipes.contains(recipe)) {
+			if (LOGGER.isDebugEnabled()) {
+				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);
+				LOGGER.debug("Recipe not added because it is hidden: {}", recipeInfo);
+			}
+			return false;
+		}
+		if (!recipeCategory.isHandled(recipe)) {
+			if (LOGGER.isDebugEnabled()) {
+				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);
+				LOGGER.debug("Recipe not added because the recipe category cannot handle it: {}", recipeInfo);
+			}
+			return false;
+		}
+		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
+		if (ingredientSupplier == null) {
+			return false;
+		}
+
 		try {
 			for (RecipeMap recipeMap : recipeMaps.values()) {
 				recipeMap.addRecipe(recipeType, recipe, ingredientSupplier);
@@ -236,14 +246,14 @@ public class RecipeManagerInternal {
 	}
 
 	public <T> void hideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {
-		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipes, recipeType);
+		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipeType);
 		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
 		hiddenRecipes.addAll(recipes);
 		recipeCategoriesVisibleCache = null;
 	}
 
 	public <T> void unhideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {
-		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipes, recipeType);
+		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipeType);
 		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
 		hiddenRecipes.removeAll(recipes);
 		recipeCategoriesVisibleCache = null;

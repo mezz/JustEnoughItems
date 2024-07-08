@@ -1,10 +1,10 @@
 package mezz.jei.api.helpers;
 
-import java.util.List;
-
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.network.chat.Component;
+
+import java.util.List;
 
 /**
  * Helper class for getting mod names from their modIds.
