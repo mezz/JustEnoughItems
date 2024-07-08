@@ -5,32 +5,14 @@ import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import net.minecraft.world.item.alchemy.PotionBrewing;
-import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
-import net.neoforged.neoforge.common.crafting.IShapedRecipe;
 
 import java.util.List;
 
 public class RecipeHelper implements IPlatformRecipeHelper {
-	@Override
-	public <T extends CraftingRecipe> int getWidth(T recipe) {
-		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
-			return shapedRecipe.getWidth();
-		}
-		return 0;
-	}
-
-	@Override
-	public <T extends CraftingRecipe> int getHeight(T recipe) {
-		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
-			return shapedRecipe.getHeight();
-		}
-		return 0;
-	}
-
 	@Override
 	public Ingredient getBase(SmithingRecipe recipe) {
 		if (recipe instanceof SmithingTransformRecipe transformRecipe) {

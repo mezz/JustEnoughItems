@@ -4,13 +4,12 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
-import mezz.jei.common.platform.IPlatformRecipeHelper;
-import mezz.jei.common.platform.Services;
 import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,15 +37,19 @@ public class CraftingCategoryExtension implements ICraftingCategoryExtension<Cra
 	@Override
 	public int getWidth(RecipeHolder<CraftingRecipe> recipeHolder) {
 		CraftingRecipe recipe = recipeHolder.value();
-		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
-		return recipeHelper.getWidth(recipe);
+		if (recipe instanceof ShapedRecipe shapedRecipe) {
+			return shapedRecipe.getWidth();
+		}
+		return 0;
 	}
 
 	@Override
 	public int getHeight(RecipeHolder<CraftingRecipe> recipeHolder) {
 		CraftingRecipe recipe = recipeHolder.value();
-		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
-		return recipeHelper.getHeight(recipe);
+		if (recipe instanceof ShapedRecipe shapedRecipe) {
+			return shapedRecipe.getHeight();
+		}
+		return 0;
 	}
 
 	@Override
