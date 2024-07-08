@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BrewingRecipeMakerCommon {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -42,9 +43,9 @@ public class BrewingRecipeMakerCommon {
 		IngredientSet<ItemStack> knownPotions = getBaseKnownPotions(ingredientManager, potionRegistry);
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 
-		List<ItemStack> potionReagents = ingredientManager.getAllItemStacks().stream()
+		IngredientSet<ItemStack> potionReagents = ingredientManager.getAllItemStacks().stream()
 			.filter(BrewingRecipeMakerCommon::isIngredient)
-			.toList();
+			.collect(Collectors.toCollection(() -> new IngredientSet<>(itemStackHelper, UidContext.Ingredient)));
 
 		boolean foundNewPotions;
 		do {
@@ -76,12 +77,14 @@ public class BrewingRecipeMakerCommon {
 
 	private static IngredientSet<ItemStack> getBaseKnownPotions(IIngredientManager ingredientManager, IPlatformRegistry<Potion> potionRegistry) {
 		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
-		List<ItemStack> potionContainers = ingredientHelper.getPotionContainers().stream()
-			.flatMap(potionItem -> Arrays.stream(potionItem.getItems()))
-			.toList();
-
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
-		IngredientSet<ItemStack> knownPotions = IngredientSet.create(itemStackHelper, UidContext.Ingredient);
+
+		IngredientSet<ItemStack> potionContainers = ingredientHelper.getPotionContainers().stream()
+			.flatMap(potionItem -> Arrays.stream(potionItem.getItems()))
+			.collect(Collectors.toCollection(() -> new IngredientSet<>(itemStackHelper, UidContext.Ingredient)));
+
+		IngredientSet<ItemStack> knownPotions = new IngredientSet<>(itemStackHelper, UidContext.Ingredient);
+		knownPotions.addAll(potionContainers);
 
 		potionRegistry.getValues()
 			.filter(potion -> potion != Potions.EMPTY) // skip the "un-craft-able" vanilla potions
@@ -99,7 +102,7 @@ public class BrewingRecipeMakerCommon {
 		IIngredientHelper<ItemStack> itemStackHelper,
 		IPlatformRegistry<Potion> potionRegistry,
 		Collection<ItemStack> knownPotions,
-		List<ItemStack> potionReagents,
+		Collection<ItemStack> potionReagents,
 		IVanillaPotionOutputSupplier vanillaOutputSupplier,
 		Collection<IJeiBrewingRecipe> recipes
 	) {
@@ -150,7 +153,7 @@ public class BrewingRecipeMakerCommon {
 					// This is a recipe with the same uid and output as an existing recipe,
 					// but it has a different reagent.
 					// Create a recipe that combines the two.
-					IngredientSet<ItemStack> reagents = IngredientSet.create(itemStackHelper, UidContext.Recipe);
+					IngredientSet<ItemStack> reagents = new IngredientSet<>(itemStackHelper, UidContext.Recipe);
 					reagents.addAll(existingRecipe.getIngredients());
 					reagents.add(potionReagent);
 					if (reagents.size() != existingRecipe.getIngredients().size()) {

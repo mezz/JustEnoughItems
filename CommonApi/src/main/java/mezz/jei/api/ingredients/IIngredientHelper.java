@@ -1,5 +1,6 @@
 package mezz.jei.api.ingredients;
 
+import mezz.jei.api.constants.Tags;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import net.minecraft.resources.ResourceLocation;
@@ -159,6 +160,18 @@ public interface IIngredientHelper<V> {
 	 */
 	default Collection<String> getCreativeTabNames(V ingredient) {
 		return Collections.emptyList();
+	}
+
+	/**
+	 * Return true if the given ingredient is hidden from recipe viewers by its tags.
+	 *
+	 * @see Tags#HIDDEN_FROM_RECIPE_VIEWERS
+	 *
+	 * @since 11.28.0
+	 */
+	default boolean isHiddenFromRecipeViewersByTags(V ingredient) {
+		return getTagStream(ingredient)
+			.anyMatch(Tags.HIDDEN_FROM_RECIPE_VIEWERS::equals);
 	}
 
 	/**

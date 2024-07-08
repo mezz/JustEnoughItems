@@ -52,6 +52,9 @@ public class IngredientVisibility implements IIngredientVisibility {
 		if (blacklist.isIngredientBlacklistedByApi(typedIngredient, ingredientHelper)) {
 			return false;
 		}
+		if (ingredientHelper.isHiddenFromRecipeViewersByTags(typedIngredient.getIngredient())) {
+			return false;
+		}
 		return worldConfig.isEditModeEnabled() || !editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient);
 	}
 

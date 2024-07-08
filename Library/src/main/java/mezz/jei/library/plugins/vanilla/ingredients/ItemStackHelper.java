@@ -1,6 +1,7 @@
 package mezz.jei.library.plugins.vanilla.ingredients;
 
 import com.google.common.collect.Streams;
+import mezz.jei.api.constants.Tags;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -21,6 +22,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -33,11 +35,15 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	private final ISubtypeManager subtypeManager;
 	private final StackHelper stackHelper;
 	private final IColorHelper colorHelper;
+	private final TagKey<Item> itemHiddenFromRecipeViewers;
+	private final TagKey<Block> blockHiddenFromRecipeViewers;
 
 	public ItemStackHelper(ISubtypeManager subtypeManager, StackHelper stackHelper, IColorHelper colorHelper) {
 		this.subtypeManager = subtypeManager;
 		this.stackHelper = stackHelper;
 		this.colorHelper = colorHelper;
+		this.itemHiddenFromRecipeViewers = TagKey.create(Registry.ITEM_REGISTRY, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
+		this.blockHiddenFromRecipeViewers = TagKey.create(Registry.BLOCK_REGISTRY, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
 	}
 
 	@Override
@@ -170,6 +176,18 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			}
 		}
 		return creativeTabsStrings;
+	}
+
+	@Override
+	public boolean isHiddenFromRecipeViewersByTags(ItemStack ingredient) {
+		if (ingredient.is(itemHiddenFromRecipeViewers)) {
+			return true;
+		}
+		if (ingredient.getItem() instanceof BlockItem blockItem) {
+			Block block = blockItem.getBlock();
+			return block.builtInRegistryHolder().is(blockHiddenFromRecipeViewers);
+		}
+		return false;
 	}
 
 	@Override

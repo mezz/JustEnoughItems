@@ -36,11 +36,15 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 
 		brewingRecipeUtil.addRecipe(potionInputs, potionOutput);
 
-		this.hashCode = Objects.hash(
-			ingredients.stream().map(ItemStack::getItem).toList(),
-			potionInputs.stream().map(ItemStack::getItem).toList(),
-			potionOutput.getItem()
-		);
+		if (uid != null) {
+			this.hashCode = uid.hashCode();
+		} else {
+			this.hashCode = Objects.hash(
+				ingredients.stream().map(ItemStack::getItem).toList(),
+				potionInputs.stream().map(ItemStack::getItem).toList(),
+				potionOutput.getItem()
+			);
+		}
 	}
 
 	@Override
@@ -68,6 +72,10 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 	public boolean equals(Object obj) {
 		if (!(obj instanceof JeiBrewingRecipe other)) {
 			return false;
+		}
+
+		if (uid != null) {
+			return uid.equals(other.uid);
 		}
 
 		for (int i = 0; i < potionInputs.size(); i++) {
