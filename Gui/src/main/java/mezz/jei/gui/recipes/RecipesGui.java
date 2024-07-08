@@ -514,7 +514,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		updateWidthToFitLayouts(this.layouts.getWidth());
 
-		this.layouts.updateLayout(recipeLayoutsArea);
+		int recipesPerPage = this.logic.getRecipesPerPage();
+		this.layouts.updateLayout(recipeLayoutsArea, recipesPerPage);
 
 		nextPage.active = previousPage.active = logic.hasMultiplePages();
 		nextRecipeCategory.active = previousRecipeCategory.active = logic.hasMultipleCategories();

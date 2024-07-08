@@ -226,6 +226,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		return this.state.getVisible(this.cachedRecipeLayoutsWithButtons);
 	}
 
+	@Override
+	public int getRecipesPerPage() {
+		return this.state.getRecipesPerPage();
+	}
+
 	@Unmodifiable
 	private <T> List<RecipeLayoutWithButtons<T>> createRecipeLayoutsWithButtons(
 		Set<RecipeSorterStage> recipeSorterStages,
