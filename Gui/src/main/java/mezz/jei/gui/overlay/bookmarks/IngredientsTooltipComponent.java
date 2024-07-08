@@ -3,8 +3,10 @@ package mezz.jei.gui.overlay.bookmarks;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -15,47 +17,56 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public class IngredientsTooltipComponent implements ClientTooltipComponent, IBookmarkTooltip {
+    private final List<Pair<IIngredientRenderer<?>, ITypedIngredient<?>>> ingredients = new ArrayList<>();
 
-    private final List<Pair<IIngredientRenderer, ITypedIngredient>> ingredients = new ArrayList<>();
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public IngredientsTooltipComponent(IRecipeLayoutDrawable<?> layout, IIngredientManager ingredientManager) {
-        List<IRecipeSlotView> slots = layout.getRecipeSlotsView().getSlotViews(RecipeIngredientRole.INPUT);
-        Map<String, ITypedIngredient> summary = new HashMap<>();
-        var displayed = slots.stream()
-                .map(IRecipeSlotView::getDisplayedIngredient)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
+        IRecipeSlotsView recipeSlotsView = layout.getRecipeSlotsView();
+        List<IRecipeSlotView> slots = recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT);
+        Map<String, ITypedIngredient<?>> summary = new HashMap<>();
+        List<ITypedIngredient<?>> displayed = slots.stream()
+            .map(IRecipeSlotView::getDisplayedIngredient)
+            .filter(Optional::isPresent)
+            .<ITypedIngredient<?>>map(Optional::get)
+            .toList();
 
-        for (ITypedIngredient ingredient : displayed) {
-            IIngredientHelper helper = ingredientManager.getIngredientHelper(ingredient.getType());
-            if (!helper.countable()) continue;
-            String uid = getUid(ingredient, ingredientManager);
-            var storage = summary.get(uid);
-            if (storage != null) {
-                Object merged = helper.merge(storage.getIngredient(), ingredient.getIngredient());
-                if (merged != null) {
-                    ingredientManager.createTypedIngredient(ingredient.getType(), merged).ifPresent(i -> summary.put(uid, (ITypedIngredient) i));
-                }
-            } else {
-                summary.put(uid, ingredient);
-            }
+        for (ITypedIngredient<?> ingredient : displayed) {
+            addToSummary(ingredient, ingredientManager, summary);
         }
-        for (ITypedIngredient value : summary.values()) {
-            IIngredientRenderer renderer = ingredientManager.getIngredientRenderer(value.getType());
+        for (ITypedIngredient<?> value : summary.values()) {
+            IIngredientRenderer<?> renderer = ingredientManager.getIngredientRenderer(value.getType());
             ingredients.add(Pair.of(renderer, value));
         }
-        ingredients.sort((o1, o2) -> {
-            long amount1 = getAmount(o1.getRight(), ingredientManager);
-            long amount2 = getAmount(o2.getRight(), ingredientManager);
-            return Long.compare(amount2, amount1);
+        ingredients.sort(Comparator.comparingLong(i -> getAmount(i.getRight(), ingredientManager)));
+    }
+
+    private static <T> void addToSummary(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager, Map<String, ITypedIngredient<?>> summary) {
+        IIngredientType<T> type = typedIngredient.getType();
+        IIngredientHelper<T> helper = ingredientManager.getIngredientHelper(type);
+        if (!helper.countable()) {
+            return;
+        }
+        String uid = getUid(typedIngredient, ingredientManager);
+        summary.compute(uid, (k, v) -> {
+            if (v == null) {
+                return typedIngredient;
+            } else {
+                return type.castIngredient(v)
+                    .flatMap(i -> {
+                        T merged = helper.merge(i, typedIngredient.getIngredient());
+                        if (merged != null) {
+                            return ingredientManager.createTypedIngredient(type, merged);
+                        }
+                        return Optional.empty();
+                    })
+                    .orElse(null);
+            }
         });
     }
 
@@ -83,7 +94,7 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, IBoo
     @Override
     public void renderImage(Font font, int x, int y, GuiGraphics guiGraphics) {
         for (int i = 0; i < ingredients.size(); i++) {
-            Pair<IIngredientRenderer, ITypedIngredient> pair = ingredients.get(i);
+            Pair<IIngredientRenderer<?>, ITypedIngredient<?>> pair = ingredients.get(i);
             IIngredientRenderer renderer = pair.getLeft();
             Object ingredient = pair.getRight().getIngredient();
             PoseStack pose = guiGraphics.pose();

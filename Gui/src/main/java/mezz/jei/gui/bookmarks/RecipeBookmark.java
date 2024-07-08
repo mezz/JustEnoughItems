@@ -97,11 +97,8 @@ public class RecipeBookmark<T, R> implements IBookmark {
 		return recipeOutput;
 	}
 
-	public IRecipeLayoutDrawable<T> getRecipeLayoutDrawable() {
-		if (recipeLayoutDrawable == null) {
-			return recipeLayoutDrawable = recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, focusFactory.getEmptyFocusGroup(), true).orElseThrow();
-		}
-		return recipeLayoutDrawable;
+	public IRecipeLayoutDrawable<T> createRecipeLayoutDrawable() {
+		return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, focusFactory.getEmptyFocusGroup(), true).orElseThrow();
 	}
 
 	@Override

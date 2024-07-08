@@ -1,6 +1,7 @@
 package mezz.jei.library.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -64,7 +65,7 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup, boolean preview) {
+	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
@@ -76,8 +77,33 @@ public class RecipeManager implements IRecipeManager {
 			decorators,
 			recipe,
 			focusGroup,
+			ingredientManager
+		);
+	}
+
+	@Override
+	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
+		IRecipeCategory<T> recipeCategory,
+		T recipe,
+		IFocusGroup focusGroup,
+		IScalableDrawable background,
+		int borderSize
+	) {
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
+		ErrorUtil.checkNotNull(background, "background");
+
+		RecipeType<T> recipeType = recipeCategory.getRecipeType();
+		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
+		return RecipeLayout.create(
+			recipeCategory,
+			decorators,
+			recipe,
+			focusGroup,
 			ingredientManager,
-			preview
+			background,
+			borderSize
 		);
 	}
 
