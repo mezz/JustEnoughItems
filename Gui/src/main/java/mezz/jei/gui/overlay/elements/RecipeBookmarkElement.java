@@ -10,7 +10,9 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.BookmarkFeature;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.overlay.IngredientGridTooltipHelper;
@@ -29,6 +31,7 @@ import java.util.Optional;
 public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	private final RecipeBookmark<T, R> recipeBookmark;
 	private final IDrawable icon;
+	private final IClientConfig clientConfig;
 	private final IIngredientManager ingredientManager;
 	private final IRecipeTransferManager recipeTransferManager;
 	private final EnumMap<BookmarkFeature, ClientTooltipComponent> longTermCache = new EnumMap<>(BookmarkFeature.class);
@@ -36,7 +39,8 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	public RecipeBookmarkElement(RecipeBookmark<T, R> recipeBookmark, IDrawable icon, IIngredientManager ingredientManager, IRecipeTransferManager recipeTransferManager) {
 		this.recipeBookmark = recipeBookmark;
 		this.icon = icon;
-		this.ingredientManager = ingredientManager;
+        this.clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+        this.ingredientManager = ingredientManager;
         this.recipeTransferManager = recipeTransferManager;
     }
 
@@ -91,7 +95,7 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	@Override
 	public List<ClientTooltipComponent> getTooltipComponents(IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<R> ingredientRenderer, IIngredientHelper<R> ingredientHelper) {
 		List<ClientTooltipComponent> components = IElement.super.getTooltipComponents(tooltipHelper, ingredientRenderer, ingredientHelper);
-		for (BookmarkFeature feature : BookmarkFeature.values()) {
+		for (BookmarkFeature feature : clientConfig.getBookmarkFeatures()) {
 			ClientTooltipComponent component = longTermCache.get(feature);
 			if (component == null || (component instanceof IBookmarkTooltip tooltip && !tooltip.longTerm())){
 				longTermCache.put(feature, component = createComponent(feature));
