@@ -48,6 +48,10 @@ public class StackHelper implements IStackHelper {
 		return result;
 	}
 
+	public boolean hasSubtypes(ItemStack stack) {
+		return subtypeManager.hasSubtypes(VanillaTypes.ITEM_STACK, stack);
+	}
+
 	public static String getRegistryNameForStack(ItemStack stack) {
 		ErrorUtil.checkNotEmpty(stack, "stack");
 

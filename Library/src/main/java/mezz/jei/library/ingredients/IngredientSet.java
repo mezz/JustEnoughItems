@@ -1,5 +1,10 @@
 package mezz.jei.library.ingredients;
 
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
@@ -7,35 +12,38 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
-
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 
 public class IngredientSet<V> extends AbstractSet<V> {
-	public static <V> IngredientSet<V> create(IIngredientHelper<V> ingredientHelper, UidContext context) {
-		final Function<V, String> uidGenerator = v -> ingredientHelper.getUniqueId(v, context);
-		return new IngredientSet<>(uidGenerator);
+	private final IIngredientHelper<V> ingredientHelper;
+	private final UidContext context;
+	private final Map<Object, V> ingredients;
+
+	public IngredientSet(IIngredientHelper<V> ingredientHelper, UidContext context) {
+		this.ingredientHelper = ingredientHelper;
+		this.context = context;
+		this.ingredients = new LinkedHashMap<>();
 	}
 
-	private final Function<V, String> uidGenerator;
-	private final Map<String, V> ingredients;
-
-	private IngredientSet(Function<V, String> uidGenerator) {
-		this.uidGenerator = uidGenerator;
-		this.ingredients = new LinkedHashMap<>();
+	private Object getUid(V ingredient) {
+		IIngredientType<V> ingredientType = ingredientHelper.getIngredientType();
+		if (ingredientType instanceof IIngredientTypeWithSubtypes<?,V> ingredientTypeWithSubtypes) {
+			if (!ingredientHelper.hasSubtypes(ingredient)) {
+				return ingredientTypeWithSubtypes.getBase(ingredient);
+			}
+		}
+		return ingredientHelper.getUniqueId(ingredient, context);
 	}
 
 	@Override
 	public boolean add(V v) {
-		String uid = uidGenerator.apply(v);
+		Object uid = getUid(v);
 		return ingredients.put(uid, v) == null;
 	}
 
 	@Override
 	public boolean remove(Object o) {
 		//noinspection unchecked
-		String uid = uidGenerator.apply((V) o);
+		Object uid = getUid((V) o);
 		return ingredients.remove(uid) != null;
 	}
 
@@ -55,7 +63,7 @@ public class IngredientSet<V> extends AbstractSet<V> {
 	@Override
 	public boolean contains(Object o) {
 		//noinspection unchecked
-		String uid = uidGenerator.apply((V) o);
+		Object uid = getUid((V) o);
 		return ingredients.containsKey(uid);
 	}
 

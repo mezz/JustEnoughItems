@@ -93,11 +93,16 @@ public final class ModIdHelper implements IModIdHelper {
 	private static <T> List<Component> addDebugInfo(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
 		tooltip = new ArrayList<>(tooltip);
 		MutableComponent jeiDebug = new TextComponent("JEI Debug:");
-		MutableComponent info = new TextComponent("info: " + ingredientHelper.getErrorInfo(ingredient));
+		MutableComponent type = new TextComponent("type: " + ingredientHelper.getIngredientType().getUid());
+		MutableComponent subtypes = new TextComponent("has subtypes: " + ingredientHelper.hasSubtypes(ingredient));
 		MutableComponent uid = new TextComponent("uid: " + ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
+		MutableComponent info = new TextComponent("extra info: " + ingredientHelper.getErrorInfo(ingredient));
 		tooltip.add(jeiDebug.withStyle(ChatFormatting.DARK_GRAY));
-		tooltip.add(info.withStyle(ChatFormatting.DARK_GRAY));
+		tooltip.add(type.withStyle(ChatFormatting.DARK_GRAY));
+		tooltip.add(subtypes.withStyle(ChatFormatting.DARK_GRAY));
 		tooltip.add(uid.withStyle(ChatFormatting.DARK_GRAY));
+		tooltip.add(new TextComponent(""));
+		tooltip.add(info.withStyle(ChatFormatting.DARK_GRAY));
 		return tooltip;
 	}
 

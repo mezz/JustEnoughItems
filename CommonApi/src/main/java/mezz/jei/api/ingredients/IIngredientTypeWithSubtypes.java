@@ -28,6 +28,7 @@ public interface IIngredientTypeWithSubtypes<B, I> extends IIngredientType<I> {
 	/**
 	 * @return the base ingredient for the given ingredient.
 	 * For example, the base of ItemStack returns an Item, and the base of FluidStack returns a Fluid.
+	 * Base ingredients must be unique, comparable using ==.
 	 *
 	 * @since 9.7.0
 	 */

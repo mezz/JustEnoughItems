@@ -28,7 +28,7 @@ public class IngredientInfo<T> {
 		this.ingredientHelper = ingredientHelper;
 		this.ingredientRenderer = ingredientRenderer;
 
-		this.ingredientSet = IngredientSet.create(ingredientHelper, UidContext.Ingredient);
+		this.ingredientSet = new IngredientSet<>(ingredientHelper, UidContext.Ingredient);
 		this.ingredientSet.addAll(ingredients);
 
 		this.aliases = new ListMultiMap<>();

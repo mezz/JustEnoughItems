@@ -114,6 +114,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringJoiner;
 
 @JeiPlugin
 public class VanillaPlugin implements IModPlugin {
@@ -146,7 +147,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.registerSubtypeInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, (itemStack, context) -> {
-			List<String> enchantmentNames = new ArrayList<>();
+			List<String> strings = new ArrayList<>();
 			ListTag enchantments = EnchantedBookItem.getEnchantments(itemStack);
 			for (int i = 0; i < enchantments.size(); ++i) {
 				CompoundTag compoundnbt = enchantments.getCompound(i);
@@ -156,11 +157,16 @@ public class VanillaPlugin implements IModPlugin {
 				if (resourceLocation != null) {
 					enchantmentRegistry.getValue(resourceLocation)
 						.map(enchantment -> enchantment.getDescriptionId() + ".lvl" + compoundnbt.getShort("lvl"))
-						.ifPresent(enchantmentNames::add);
+						.ifPresent(strings::add);
 				}
 			}
-			enchantmentNames.sort(null);
-			return enchantmentNames.toString();
+
+			StringJoiner joiner = new StringJoiner(",", "[", "]");
+			strings.sort(null);
+			for (String s : strings) {
+				joiner.add(s);
+			}
+			return joiner.toString();
 		});
 	}
 
