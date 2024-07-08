@@ -25,6 +25,6 @@ class DebugCategoryDecorator<T> implements IRecipeCategoryDecorator<T> {
 		var posX = recipeCategory.getWidth() / 2;
 		var posY = recipeCategory.getHeight();
 		Minecraft minecraft = Minecraft.getInstance();
-		Screen.drawCenteredString(poseStack, minecraft.font, "Decorator: " + id, posX, posY, 0xFF_FFFF);
+		Screen.drawCenteredString(poseStack, minecraft.font, "Debug Decorator: " + id, posX, posY, 0xFF_FFFF);
 	}
 }
