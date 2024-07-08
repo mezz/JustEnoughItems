@@ -33,7 +33,7 @@ public class RecipeGuiLayouts {
 		this.cachedInputHandler = NullInputHandler.INSTANCE;
 	}
 
-	public void updateLayout(ImmutableRect2i recipeLayoutsArea) {
+	public void updateLayout(ImmutableRect2i recipeLayoutsArea, final int recipesPerPage) {
 		ImmutableRect2i layoutAreaWithBorder = this.recipeLayoutsWithButtons.stream()
 			.findFirst()
 			.map(RecipeLayoutWithButtons::getRecipeLayout)
@@ -47,13 +47,12 @@ public class RecipeGuiLayouts {
 		int availableHeight = recipeLayoutsArea.getHeight();
 		availableHeight = Math.max(availableHeight, recipeHeight);
 
-		final int recipesPerPage = this.recipeLayoutsWithButtons.size();
 		final int recipeXOffset = getRecipeXOffset(layoutAreaWithBorder, recipeLayoutsArea);
-		final int recipeHeightTotal = recipesPerPage * layoutAreaWithBorder.getHeight();
+		final int recipeHeightTotal = recipesPerPage * recipeHeight;
 		final int remainingHeight = availableHeight - recipeHeightTotal;
 		final int recipeSpacing = remainingHeight / (recipesPerPage + 1);
 
-		final int spacingY = layoutAreaWithBorder.getHeight() + recipeSpacing;
+		final int spacingY = recipeHeight + recipeSpacing;
 		int recipeYOffset = recipeLayoutsArea.getY() + recipeSpacing;
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
 			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
