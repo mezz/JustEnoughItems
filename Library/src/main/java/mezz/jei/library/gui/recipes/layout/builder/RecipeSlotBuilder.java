@@ -23,6 +23,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -143,6 +144,11 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder, IRecipeLayoutSlotS
 	@Override
 	public <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
 		return this.ingredients.getIngredients(ingredientType);
+	}
+
+	@Override
+	public Collection<Optional<ITypedIngredient<?>>> getAllIngredients() {
+		return this.ingredients.getAllIngredients();
 	}
 
 	@Override

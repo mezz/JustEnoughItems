@@ -1,10 +1,12 @@
 package mezz.jei.library.plugins.vanilla.ingredients;
 
 import com.google.common.collect.Streams;
+import mezz.jei.api.constants.Tags;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
@@ -15,6 +17,7 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.common.util.TagUtil;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -23,6 +26,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -30,12 +34,20 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
+	private final ISubtypeManager subtypeManager;
 	private final StackHelper stackHelper;
 	private final IColorHelper colorHelper;
+	private final TagKey<Item> itemHiddenFromRecipeViewers;
+	private final TagKey<Block> blockHiddenFromRecipeViewers;
 
-	public ItemStackHelper(StackHelper stackHelper, IColorHelper colorHelper) {
+	public ItemStackHelper(ISubtypeManager subtypeManager, StackHelper stackHelper, IColorHelper colorHelper) {
+		this.subtypeManager = subtypeManager;
 		this.stackHelper = stackHelper;
 		this.colorHelper = colorHelper;
+		//noinspection deprecation
+		this.itemHiddenFromRecipeViewers = new TagKey<>(Registries.ITEM, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
+		//noinspection deprecation
+		this.blockHiddenFromRecipeViewers = new TagKey<>(Registries.BLOCK, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
 	}
 
 	@Override
@@ -55,6 +67,12 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	public String getUniqueId(ItemStack ingredient, UidContext context) {
 		ErrorUtil.checkNotEmpty(ingredient);
 		return stackHelper.getUniqueIdentifierForStack(ingredient, context);
+	}
+
+	@Override
+	public boolean hasSubtypes(ItemStack ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		return subtypeManager.hasSubtypes(VanillaTypes.ITEM_STACK, ingredient);
 	}
 
 	@Override
@@ -151,6 +169,24 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			}
 		}
 		return itemTagStream;
+	}
+
+	@Override
+	public boolean isHiddenFromRecipeViewersByTags(ItemStack ingredient) {
+		if (ingredient.is(itemHiddenFromRecipeViewers)) {
+			return true;
+		}
+		if (ingredient.getItem() instanceof BlockItem blockItem) {
+			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+			if (clientConfig.isLookupBlockTagsEnabled()) {
+				Block block = blockItem.getBlock();
+				@SuppressWarnings("deprecation")
+				Holder.Reference<Block> holder = block.builtInRegistryHolder();
+				return holder.is(blockHiddenFromRecipeViewers);
+			}
+		}
+		return false;
 	}
 
 	@Override

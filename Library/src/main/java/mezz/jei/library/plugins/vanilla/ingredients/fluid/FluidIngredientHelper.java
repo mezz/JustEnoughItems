@@ -1,6 +1,7 @@
 package mezz.jei.library.plugins.vanilla.ingredients.fluid;
 
 import com.google.common.base.MoreObjects;
+import mezz.jei.api.constants.Tags;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -33,6 +34,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	private final IPlatformFluidHelperInternal<T> platformFluidHelper;
 	private final Registry<Fluid> registry;
 	private final IIngredientTypeWithSubtypes<Fluid, T> fluidType;
+	private final TagKey<Fluid> hiddenFromRecipeViewers;
 
 	public FluidIngredientHelper(ISubtypeManager subtypeManager, IColorHelper colorHelper, IPlatformFluidHelperInternal<T> platformFluidHelper) {
 		this.subtypeManager = subtypeManager;
@@ -40,6 +42,8 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 		this.platformFluidHelper = platformFluidHelper;
 		this.registry = RegistryUtil.getRegistry(Registries.FLUID);
 		this.fluidType = platformFluidHelper.getFluidIngredientType();
+		//noinspection deprecation
+		this.hiddenFromRecipeViewers = new TagKey<>(Registries.FLUID, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
 	}
 
 	@Override
@@ -129,6 +133,15 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 			.map(Holder::tags)
 			.orElse(Stream.of())
 			.map(TagKey::location);
+	}
+
+	@Override
+	public boolean isHiddenFromRecipeViewersByTags(T ingredient) {
+		Fluid fluid = fluidType.getBase(ingredient);
+		return registry.getResourceKey(fluid)
+			.flatMap(registry::getHolder)
+			.map(holder -> holder.is(hiddenFromRecipeViewers))
+			.orElse(false);
 	}
 
 	@SuppressWarnings("ConstantConditions")

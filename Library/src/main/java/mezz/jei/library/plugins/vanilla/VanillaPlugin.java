@@ -75,8 +75,10 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.BlastFurnaceMenu;
@@ -101,6 +103,7 @@ import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.SuspiciousStewRecipe;
 import net.minecraft.world.item.crafting.TippedArrowRecipe;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.Blocks;
@@ -109,13 +112,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @JeiPlugin
@@ -153,12 +157,21 @@ public class VanillaPlugin implements IModPlugin {
 			if (enchantments.isEmpty()) {
 				return IIngredientSubtypeInterpreter.NONE;
 			}
-			return enchantments.keySet()
-				.stream()
-				.filter(e -> e.unwrapKey().isPresent())
-				.map(e -> e.unwrapKey().orElseThrow().location() + ".lvl" + enchantments.getLevel(e))
-				.sorted()
-				.collect(Collectors.joining(",", "[", "]"));
+			List<String> strings = new ArrayList<>();
+			for (Holder<Enchantment> e : enchantments.keySet()) {
+				Optional<ResourceKey<Enchantment>> enchantmentResourceKey = e.unwrapKey();
+				if (enchantmentResourceKey.isPresent()) {
+					String s = enchantmentResourceKey.orElseThrow().location() + ".lvl" + enchantments.getLevel(e);
+					strings.add(s);
+				}
+			}
+
+			StringJoiner joiner = new StringJoiner(",", "[", "]");
+			strings.sort(null);
+			for (String s : strings) {
+				joiner.add(s);
+			}
+			return joiner.toString();
 		});
 	}
 
@@ -169,7 +182,7 @@ public class VanillaPlugin implements IModPlugin {
 
 		List<ItemStack> itemStacks = ItemStackListFactory.create(stackHelper);
 		IColorHelper colorHelper = registration.getColorHelper();
-		ItemStackHelper itemStackHelper = new ItemStackHelper(stackHelper, colorHelper);
+		ItemStackHelper itemStackHelper = new ItemStackHelper(subtypeManager, stackHelper, colorHelper);
 		ItemStackRenderer itemStackRenderer = new ItemStackRenderer();
 		registration.register(VanillaTypes.ITEM_STACK, itemStacks, itemStackHelper, itemStackRenderer);
 
