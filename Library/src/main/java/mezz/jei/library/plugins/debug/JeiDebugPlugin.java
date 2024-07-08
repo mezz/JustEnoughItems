@@ -92,7 +92,8 @@ public class JeiDebugPlugin implements IModPlugin {
 			this.debugRecipeCategory = new DebugRecipeCategory<>(guiHelper, platformFluidHelper, ingredientManager);
 			registration.addRecipeCategories(
 				debugRecipeCategory,
-				new DebugFocusRecipeCategory<>(guiHelper, platformFluidHelper)
+				new DebugFocusRecipeCategory<>(guiHelper, platformFluidHelper),
+				new ObnoxiouslyLargeCategory(guiHelper, ingredientManager)
 			);
 		}
 	}
@@ -163,6 +164,8 @@ public class JeiDebugPlugin implements IModPlugin {
 			registration.addRecipes(RecipeTypes.SMITHING, List.of(
 				testRecipeWithoutTemplate
 			));
+
+			registration.addRecipes(ObnoxiouslyLargeCategory.TYPE, List.of(new ObnoxiouslyLargeRecipe()));
 		}
 	}
 

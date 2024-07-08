@@ -342,9 +342,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 	}
 
-	private void updateWidthToFitLayouts(int recipeWidth) {
+	private static ImmutableRect2i calculateAreaToFitLayouts(ImmutableRect2i idealArea, int screenWidth, int recipeWidth) {
 		if (recipeWidth == 0) {
-			return;
+			return idealArea;
 		}
 		final int padding = 2 * borderPadding;
 		int width = minGuiWidth - padding;
@@ -352,13 +352,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		width = Math.max(recipeWidth, width);
 
 		final int newWidth = width + padding;
-		final int newX = (this.width - newWidth) / 2;
+		final int newX = (screenWidth - newWidth) / 2;
 
-		this.area = new ImmutableRect2i(
+		return new ImmutableRect2i(
 			newX,
-			this.area.getY(),
+			idealArea.getY(),
 			newWidth,
-			this.area.getHeight()
+			idealArea.getHeight()
 		);
 	}
 
@@ -509,12 +509,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		AbstractContainerMenu containerMenu = getParentContainerMenu();
 		List<RecipeLayoutWithButtons<?>> recipeLayoutsWithButtons = logic.getVisibleRecipeLayoutsWithButtons(availableHeight, minRecipePadding, containerMenu);
+		int recipesPerPage = this.logic.getRecipesPerPage();
+
 		this.layouts.setRecipeLayoutsWithButtons(recipeLayoutsWithButtons);
 		this.layouts.tick(containerMenu);
+		this.area = calculateAreaToFitLayouts(this.idealArea, this.width, this.layouts.getWidth());
+		recipeLayoutsArea = getRecipeLayoutsArea();
 
-		updateWidthToFitLayouts(this.layouts.getWidth());
-
-		int recipesPerPage = this.logic.getRecipesPerPage();
 		this.layouts.updateLayout(recipeLayoutsArea, recipesPerPage);
 
 		nextPage.active = previousPage.active = logic.hasMultiplePages();
