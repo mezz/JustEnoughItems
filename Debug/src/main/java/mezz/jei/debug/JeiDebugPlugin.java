@@ -135,7 +135,8 @@ public class JeiDebugPlugin implements IModPlugin {
 		registration.addRecipeCategories(
 			debugRecipeCategory,
 			new DebugFocusRecipeCategory<>(guiHelper, platformFluidHelper),
-			new ErrorRecipeCategory(guiHelper)
+			new ErrorRecipeCategory(guiHelper),
+			new ObnoxiouslyLargeCategory(guiHelper, ingredientManager)
 		);
 	}
 
@@ -210,6 +211,8 @@ public class JeiDebugPlugin implements IModPlugin {
 		if (DebugConfig.isCrashingTestRecipesEnabled()) {
 			registration.addRecipes(ErrorRecipeCategory.TYPE, Arrays.stream(ErrorRecipe.CrashType.values()).map(ErrorRecipe::new).toList());
 		}
+
+		registration.addRecipes(ObnoxiouslyLargeCategory.TYPE, List.of(new ObnoxiouslyLargeRecipe()));
 	}
 
 	private <T> void registerFluidRecipes(IRecipeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
