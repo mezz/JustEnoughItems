@@ -72,6 +72,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final IGuiHelper guiHelper;
 	private final IFocusFactory focusFactory;
 	private final IIngredientManager ingredientManager;
+	private final IRecipeTransferManager recipeTransferManager;
 
 	private int headerHeight;
 
@@ -127,6 +128,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.bookmarks = bookmarks;
 		this.guiHelper = guiHelper;
 		this.ingredientManager = ingredientManager;
+		this.recipeTransferManager = recipeTransferManager;
 		this.keyBindings = keyBindings;
 		this.logic = new RecipeGuiLogic(
 			recipeManager,
@@ -546,6 +548,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		RecipeBookmarkButton bookmarkButton = RecipeBookmarkButton.create(
 			recipeLayoutDrawable,
 			ingredientManager,
+			recipeTransferManager,
 			bookmarks,
 			recipeManager,
 			guiHelper,

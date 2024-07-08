@@ -28,7 +28,7 @@ public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 	}
 
 	@Override
-	public void showError(GuiGraphics guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
+	public void drawTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
 		TooltipRenderer.drawHoveringText(guiGraphics, message, mouseX, mouseY);
 	}
 }

@@ -10,6 +10,7 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
@@ -32,6 +33,7 @@ public class RecipeBookmark<T, R> implements IBookmark {
 	public static <T> Optional<RecipeBookmark<T, ?>> create(
 		IRecipeLayoutDrawable<T> recipeLayoutDrawable,
 		IIngredientManager ingredientManager,
+		IRecipeTransferManager recipeTransferManager,
 		IRecipeManager recipeManager,
 		IGuiHelper guiHelper,
 		IFocusFactory focusFactory
@@ -55,7 +57,7 @@ public class RecipeBookmark<T, R> implements IBookmark {
 					recipeManager,
 					guiHelper
 				);
-				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon, recipeManager, focusFactory, ingredientManager);
+				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon, recipeManager, focusFactory, ingredientManager, recipeTransferManager);
 			});
 	}
 
@@ -67,13 +69,14 @@ public class RecipeBookmark<T, R> implements IBookmark {
 		IDrawable icon,
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
-		IIngredientManager ingredientManager
+		IIngredientManager ingredientManager,
+		IRecipeTransferManager recipeTransferManager
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipe = recipe;
 		this.recipeUid = recipeUid;
 		this.recipeOutput = recipeOutput;
-		this.element = new RecipeBookmarkElement<>(this, icon, ingredientManager);
+		this.element = new RecipeBookmarkElement<>(this, icon, ingredientManager, recipeTransferManager);
 		this.recipeManager = recipeManager;
 		this.focusFactory = focusFactory;
 	}

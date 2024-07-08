@@ -4,6 +4,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.config.IBookmarkConfig;
@@ -21,6 +22,7 @@ public class BookmarkList implements IIngredientGridSource {
 	private final IRecipeManager recipeManager;
 	private final IFocusFactory focusFactory;
 	private final IIngredientManager ingredientManager;
+	private final IRecipeTransferManager recipeTransferManager;
 	private final RegistryAccess registryAccess;
 	private final IBookmarkConfig bookmarkConfig;
 	private final IClientConfig clientConfig;
@@ -31,6 +33,7 @@ public class BookmarkList implements IIngredientGridSource {
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
 		IIngredientManager ingredientManager,
+		IRecipeTransferManager recipeTransferManager,
 		RegistryAccess registryAccess,
 		IBookmarkConfig bookmarkConfig,
 		IClientConfig clientConfig,
@@ -39,6 +42,7 @@ public class BookmarkList implements IIngredientGridSource {
 		this.recipeManager = recipeManager;
 		this.focusFactory = focusFactory;
 		this.ingredientManager = ingredientManager;
+		this.recipeTransferManager = recipeTransferManager;
 		this.registryAccess = registryAccess;
 		this.bookmarkConfig = bookmarkConfig;
 		this.clientConfig = clientConfig;
@@ -51,7 +55,7 @@ public class BookmarkList implements IIngredientGridSource {
 		}
 		addToList(value, clientConfig.isAddingBookmarksToFrontEnabled());
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarks);
+		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, recipeTransferManager, registryAccess, bookmarks);
 		return true;
 	}
 
@@ -79,7 +83,7 @@ public class BookmarkList implements IIngredientGridSource {
 		}
 
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarks);
+		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, recipeTransferManager, registryAccess, bookmarks);
 		return true;
 	}
 

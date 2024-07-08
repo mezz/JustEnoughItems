@@ -61,7 +61,14 @@ public interface IRecipeTransferError {
 	 * @since 9.3.0
 	 */
 	default void showError(GuiGraphics guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
+		drawHighlight(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeX, recipeY);
+		drawTooltip(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeX, recipeY);
+	}
 
+	default void drawHighlight(GuiGraphics guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
+	}
+
+	default void drawTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
 	}
 
 	/**

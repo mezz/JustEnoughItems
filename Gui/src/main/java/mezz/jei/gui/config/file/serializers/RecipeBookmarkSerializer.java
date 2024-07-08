@@ -9,6 +9,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.common.config.file.serializers.DeserializeResult;
@@ -31,19 +32,22 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 	private final TypedIngredientSerializer ingredientSerializer;
 	private final IGuiHelper guiHelper;
 	private final IIngredientManager ingredientManager;
+	private final IRecipeTransferManager recipeTransferManager;
 
 	public RecipeBookmarkSerializer(
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
 		TypedIngredientSerializer ingredientSerializer,
 		IGuiHelper guiHelper,
-		IIngredientManager ingredientManager
+		IIngredientManager ingredientManager,
+		IRecipeTransferManager recipeTransferManager
 	) {
 		this.recipeManager = recipeManager;
 		this.focusFactory = focusFactory;
 		this.ingredientSerializer = ingredientSerializer;
 		this.guiHelper = guiHelper;
 		this.ingredientManager = ingredientManager;
+		this.recipeTransferManager = recipeTransferManager;
 	}
 
 	@Override
@@ -113,7 +117,7 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 			recipeManager,
 			guiHelper
 		);
-		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon, recipeManager, focusFactory, ingredientManager);
+		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon, recipeManager, focusFactory, ingredientManager, recipeTransferManager);
 		return new DeserializeResult<>(recipeBookmark);
 	}
 
