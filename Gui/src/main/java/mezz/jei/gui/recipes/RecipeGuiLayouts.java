@@ -35,22 +35,16 @@ public class RecipeGuiLayouts {
 	}
 
 	public void updateLayout(ImmutableRect2i recipeLayoutsArea, final int recipesPerPage) {
-		ImmutableRect2i layoutAreaWithBorder = this.recipeLayoutsWithButtons.stream()
-			.findFirst()
-			.map(RecipeLayoutWithButtons::getRecipeLayout)
-			.map(IRecipeLayoutDrawable::getRectWithBorder)
-			.map(ImmutableRect2i::new)
-			.orElse(null);
-		if (layoutAreaWithBorder == null) {
+		RecipeLayoutWithButtons<?> firstLayout = this.recipeLayoutsWithButtons.getFirst();
+		if (firstLayout == null) {
 			return;
 		}
+		ImmutableRect2i layoutAreaWithBorder = new ImmutableRect2i(firstLayout.getRecipeLayout().getRectWithBorder());
 		final int recipeHeight = layoutAreaWithBorder.getHeight();
-		int availableHeight = recipeLayoutsArea.getHeight();
-		availableHeight = Math.max(availableHeight, recipeHeight);
+		final int availableHeight = Math.max(recipeLayoutsArea.getHeight(), recipeHeight);
 
 		final int recipeXOffset = getRecipeXOffset(layoutAreaWithBorder, recipeLayoutsArea);
-		final int recipeHeightTotal = recipesPerPage * recipeHeight;
-		final int remainingHeight = availableHeight - recipeHeightTotal;
+		final int remainingHeight = availableHeight - (recipesPerPage * recipeHeight);
 		final int recipeSpacing = remainingHeight / (recipesPerPage + 1);
 
 		final int spacingY = recipeHeight + recipeSpacing;
@@ -92,14 +86,12 @@ public class RecipeGuiLayouts {
 	}
 
 	private int getRecipeXOffset(ImmutableRect2i layoutRect, ImmutableRect2i layoutsArea) {
-		final int recipeWidth = layoutRect.getWidth();
-		final int recipeWidthWithButtons;
 		if (recipeLayoutsWithButtons.isEmpty()) {
-			recipeWidthWithButtons = layoutRect.getWidth();
-		} else {
-			recipeWidthWithButtons = recipeLayoutsWithButtons.getFirst().totalWidth();
+			return layoutsArea.getX();
 		}
 
+		final int recipeWidth = layoutRect.getWidth();
+		final int recipeWidthWithButtons = recipeLayoutsWithButtons.getFirst().totalWidth();
 		final int buttonSpace = recipeWidthWithButtons - recipeWidth;
 
 		final int availableArea = layoutsArea.getWidth();
