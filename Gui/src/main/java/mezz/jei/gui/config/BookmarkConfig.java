@@ -168,7 +168,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 					LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
 				} else {
 					IngredientBookmark<ItemStack> bookmark = IngredientBookmark.create(typedIngredient.get(), ingredientManager);
-					bookmarkList.addToList(bookmark, false);
+					bookmarkList.addToListWithoutNotifying(bookmark, false);
 				}
 			} else {
 				LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item is empty:\n{}", itemStackAsJson);
@@ -191,7 +191,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 			LOGGER.warn("Failed to load bookmarked ingredients from string: \n{}\n{}", serializedIngredient, String.join(", ", errors));
 		} else {
 			IngredientBookmark<?> bookmark = IngredientBookmark.create(result.get(), ingredientManager);
-			bookmarkList.addToList(bookmark, false);
+			bookmarkList.addToListWithoutNotifying(bookmark, false);
 		}
 	}
 
@@ -206,7 +206,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 			LOGGER.error("Failed to load unknown bookmarked ingredient with uid:\n{}", uid);
 		} else {
 			IngredientBookmark<?> bookmark = IngredientBookmark.create(typedIngredient.get(), ingredientManager);
-			bookmarkList.addToList(bookmark, false);
+			bookmarkList.addToListWithoutNotifying(bookmark, false);
 		}
 	}
 
@@ -221,7 +221,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 			List<String> errors = deserialized.getErrors();
 			LOGGER.warn("Failed to load bookmarked recipe from string: \n{}\n{}", serializedRecipe, String.join(", ", errors));
 		} else {
-			bookmarkList.addToList(result.get(), false);
+			bookmarkList.addToListWithoutNotifying(result.get(), false);
 		}
 	}
 

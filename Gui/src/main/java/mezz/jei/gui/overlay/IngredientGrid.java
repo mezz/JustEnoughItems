@@ -11,6 +11,7 @@ import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
@@ -25,6 +26,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -72,7 +74,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return this.ingredientListRenderer.size();
 	}
 
-	public void updateBounds(ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas) {
+	public void updateBounds(ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		this.ingredientListRenderer.clear();
 
 		this.area = calculateBounds(this.gridConfig, availableArea);
@@ -82,7 +84,8 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 			for (int x = this.area.getX(); x < this.area.getX() + this.area.getWidth(); x += INGREDIENT_WIDTH) {
 				IngredientListSlot ingredientListSlot = new IngredientListSlot(x, y, INGREDIENT_WIDTH, INGREDIENT_HEIGHT, INGREDIENT_PADDING);
 				ImmutableRect2i stackArea = ingredientListSlot.getArea();
-				final boolean blocked = MathUtil.intersects(guiExclusionAreas, stackArea.expandBy(2));
+				final boolean blocked = MathUtil.intersects(guiExclusionAreas, stackArea.expandBy(2)) ||
+					(mouseExclusionPoint != null && stackArea.contains(mouseExclusionPoint));
 				ingredientListSlot.setBlocked(blocked);
 				this.ingredientListRenderer.add(ingredientListSlot);
 			}
@@ -194,6 +197,10 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 			.filter(s -> s.isMouseOver(mouseX, mouseY))
 			.map(IngredientListSlot::getClickableIngredient)
 			.flatMap(Optional::stream);
+	}
+
+	public Stream<IngredientListSlot> getSlots() {
+		return ingredientListRenderer.getSlots();
 	}
 
 	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {

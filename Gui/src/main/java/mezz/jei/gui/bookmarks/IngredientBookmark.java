@@ -11,6 +11,7 @@ public class IngredientBookmark<T> implements IBookmark {
 	private final IElement<T> element;
 	private final String uid;
 	private final ITypedIngredient<T> typedIngredient;
+	private boolean visible = true;
 
 	public static <T> IngredientBookmark<T> create(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
@@ -32,6 +33,16 @@ public class IngredientBookmark<T> implements IBookmark {
 	@Override
 	public IElement<?> getElement() {
 		return element;
+	}
+
+	@Override
+	public boolean isVisible() {
+		return visible;
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 
 	@Override

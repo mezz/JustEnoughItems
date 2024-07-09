@@ -50,4 +50,9 @@ public class IngredientBookmarkElement<T> implements IElement<T> {
 		ITypedIngredient<T> ingredient = bookmark.getIngredient();
 		return tooltipHelper.getIngredientTooltip(ingredient, ingredientRenderer, ingredientHelper);
 	}
+
+	@Override
+	public boolean isVisible() {
+		return bookmark.isVisible();
+	}
 }

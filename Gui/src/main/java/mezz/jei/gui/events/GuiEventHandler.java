@@ -52,13 +52,23 @@ public class GuiEventHandler {
 		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
 			.map(ImmutableRect2i::new)
 			.collect(Collectors.toUnmodifiableSet());
-		ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
-		bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
+		ingredientListOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
+		bookmarkOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
 	}
 
 	public void onGuiOpen(Screen screen) {
-		ingredientListOverlay.updateScreen(screen, null);
-		bookmarkOverlay.updateScreen(screen, null);
+		ingredientListOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.update();
+		bookmarkOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.update();
 	}
 
 	public void onDrawBackgroundPost(Screen screen, GuiGraphics guiGraphics) {
@@ -66,8 +76,15 @@ public class GuiEventHandler {
 		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
 			.map(ImmutableRect2i::new)
 			.collect(Collectors.toUnmodifiableSet());
-		ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
-		bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
+
+		ingredientListOverlay.getScreenPropertiesUpdater()
+				.updateScreen(screen)
+				.updateExclusionAreas(guiExclusionAreas)
+				.update();
+		bookmarkOverlay.getScreenPropertiesUpdater()
+				.updateScreen(screen)
+				.updateExclusionAreas(guiExclusionAreas)
+				.update();
 
 		drawnOnBackground = true;
 		double mouseX = MouseUtil.getX();
@@ -95,8 +112,17 @@ public class GuiEventHandler {
 	public void onDrawScreenPost(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
 
-		ingredientListOverlay.updateScreen(screen, null);
-		bookmarkOverlay.updateScreen(screen, null);
+		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
+			.map(ImmutableRect2i::new)
+			.collect(Collectors.toUnmodifiableSet());
+		ingredientListOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
+		bookmarkOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
 
 		if (!drawnOnBackground) {
 			if (screen instanceof AbstractContainerScreen) {

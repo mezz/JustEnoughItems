@@ -23,6 +23,7 @@ public class RecipeBookmark<T, R> implements IBookmark {
 	private final T recipe;
 	private final ResourceLocation recipeUid;
 	private final ITypedIngredient<R> recipeOutput;
+	private boolean visible = true;
 
 	public static <T> Optional<RecipeBookmark<T, ?>> create(
 		IRecipeLayoutDrawable<T> recipeLayoutDrawable,
@@ -86,6 +87,16 @@ public class RecipeBookmark<T, R> implements IBookmark {
 	@Override
 	public IElement<?> getElement() {
 		return element;
+	}
+
+	@Override
+	public boolean isVisible() {
+		return visible;
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 
 	@Override

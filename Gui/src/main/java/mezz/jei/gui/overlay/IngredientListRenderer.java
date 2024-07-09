@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.stream.Stream;
 
 public class IngredientListRenderer {
@@ -43,20 +44,25 @@ public class IngredientListRenderer {
 	public void set(final int startIndex, List<IElement<?>> ingredientList) {
 		blocked = 0;
 
-		int i = startIndex;
+		ListIterator<IElement<?>> elementIterator = ingredientList.listIterator(startIndex);
+
 		for (IngredientListSlot ingredientListSlot : slots) {
 			if (ingredientListSlot.isBlocked()) {
 				ingredientListSlot.clear();
 				blocked++;
-			} else {
-				if (i >= ingredientList.size()) {
-					ingredientListSlot.clear();
-				} else {
-					IElement<?> element = ingredientList.get(i);
+			} else if (elementIterator.hasNext()) {
+				IElement<?> element = elementIterator.next();
+				while (!element.isVisible() && elementIterator.hasNext()) {
+					element = elementIterator.next();
+				}
+				if (element.isVisible()) {
 					RenderableElement<?> renderableElement = createRenderableElement(element);
 					ingredientListSlot.setElement(renderableElement);
+				} else {
+					ingredientListSlot.clear();
 				}
-				i++;
+			} else {
+				ingredientListSlot.clear();
 			}
 		}
 	}

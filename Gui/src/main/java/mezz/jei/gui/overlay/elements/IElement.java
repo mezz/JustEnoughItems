@@ -27,4 +27,6 @@ public interface IElement<T> {
 	void show(IRecipesGui recipesGui, FocusUtil focusUtil, List<RecipeIngredientRole> roles);
 
 	List<Component> getTooltip(IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper);
+
+	boolean isVisible();
 }

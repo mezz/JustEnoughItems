@@ -24,6 +24,8 @@ public class ResourceReloadHandler implements ResourceManagerReloadListener {
 		timer.stop();
 
 		Minecraft minecraft = Minecraft.getInstance();
-		ingredientListOverlay.updateScreen(minecraft.screen, null);
+		ingredientListOverlay.getScreenPropertiesUpdater()
+			.updateScreen(minecraft.screen)
+			.update();
 	}
 }

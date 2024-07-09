@@ -39,10 +39,10 @@ public class RecipeGuiLayouts {
 			return;
 		}
 		ImmutableRect2i layoutAreaWithBorder = new ImmutableRect2i(firstLayout.getRecipeLayout().getRectWithBorder());
+		final int recipeXOffset = getRecipeXOffset(layoutAreaWithBorder, recipeLayoutsArea);
+
 		final int recipeHeight = layoutAreaWithBorder.getHeight();
 		final int availableHeight = Math.max(recipeLayoutsArea.getHeight(), recipeHeight);
-
-		final int recipeXOffset = getRecipeXOffset(layoutAreaWithBorder, recipeLayoutsArea);
 		final int remainingHeight = availableHeight - (recipesPerPage * recipeHeight);
 		final int recipeSpacing = remainingHeight / (recipesPerPage + 1);
 

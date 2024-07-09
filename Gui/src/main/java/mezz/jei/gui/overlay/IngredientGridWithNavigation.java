@@ -7,13 +7,14 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IRecipeFocusSource;
@@ -31,6 +32,7 @@ import net.minecraft.client.Options;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.List;
@@ -90,7 +92,10 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.commandUtil = new CommandUtil(clientConfig, serverConnection);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this, screenHelper, ingredientManager, toggleState);
 
-		this.ingredientSource.addSourceListChangedListener(() -> updateLayout(true));
+		this.ingredientSource.addSourceListChangedListener(() -> {
+			boolean resetToFirstPage = clientConfig.isAddingBookmarksToFrontEnabled();
+			updateLayout(resetToFirstPage);
+		});
 	}
 
 	public boolean hasRoom() {
@@ -142,7 +147,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		}
 	}
 
-	private void updateGridBounds(final ImmutableRect2i availableArea, boolean navigationEnabled) {
+	private void updateGridBounds(final ImmutableRect2i availableArea, @Nullable ImmutablePoint2i mouseExclusionPoint, boolean navigationEnabled) {
 		ImmutableRect2i availableGridArea = availableArea.insetBy(BORDER_MARGIN);
 		if (gridConfig.drawBackground()) {
 			availableGridArea = availableGridArea
@@ -172,10 +177,10 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			}
 		}
 
-		this.ingredientGrid.updateBounds(availableGridArea, guiExclusionAreas);
+		this.ingredientGrid.updateBounds(availableGridArea, guiExclusionAreas, mouseExclusionPoint);
 	}
 
-	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas) {
+	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		this.guiExclusionAreas = guiExclusionAreas;
 
 		final boolean navigationEnabled =
@@ -183,12 +188,12 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 				case ENABLED -> true;
 				case DISABLED -> false;
 				case AUTO_HIDE -> {
-					updateGridBounds(availableArea, false);
+					updateGridBounds(availableArea, mouseExclusionPoint, false);
 					yield hasRoom() && this.pageDelegate.getPageCount() > 1;
 				}
 			};
 		if (navigationEnabled) {
-			updateGridBounds(availableArea, true);
+			updateGridBounds(availableArea, mouseExclusionPoint, true);
 		}
 		if (!hasRoom()) {
 			return;
@@ -225,6 +230,26 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public ImmutableRect2i getBackgroundArea() {
 		return this.backgroundArea;
+	}
+
+	public ImmutableRect2i getSlotBackgroundArea() {
+		return this.slotBackgroundArea;
+	}
+
+	public boolean hasMultiplePages() {
+		return this.navigation.hasMultiplePages();
+	}
+
+	public ImmutableRect2i getNextPageButtonArea() {
+		return this.navigation.getNextButtonArea();
+	}
+
+	public ImmutableRect2i getBackButtonArea() {
+		return this.navigation.getBackButtonArea();
+	}
+
+	public IPaged getPageDelegate() {
+		return pageDelegate;
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
@@ -279,6 +304,10 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public IDragHandler createDragHandler() {
 		return this.ghostIngredientDragManager.createDragHandler();
+	}
+
+	public Stream<IngredientListSlot> getSlots() {
+		return this.ingredientGrid.getSlots();
 	}
 
 	private class IngredientGridPaged implements IPaged {
