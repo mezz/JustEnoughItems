@@ -74,4 +74,9 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 			ingredientHelper
 		);
 	}
+
+	@Override
+	public boolean isVisible() {
+		return recipeBookmark.isVisible();
+	}
 }

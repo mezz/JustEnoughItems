@@ -23,10 +23,7 @@ public final class MathUtil {
 	}
 
 	public static boolean contains(ImmutableRect2i rect, double x, double y) {
-		return x >= rect.getX() &&
-			y >= rect.getY() &&
-			x < rect.getX() + rect.getWidth() &&
-			y < rect.getY() + rect.getHeight();
+		return rect.contains(x, y);
 	}
 
 	public static boolean contains(Rect2i rect, double x, double y) {
