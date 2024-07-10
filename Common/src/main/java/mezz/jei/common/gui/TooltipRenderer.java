@@ -53,6 +53,13 @@ public final class TooltipRenderer {
 		}
 	}
 
+	public static <T> void drawHoveringTooltip(GuiGraphics guiGraphics, List<ClientTooltipComponent> components, int x, int y, ITypedIngredient<T> typedIngredient){
+		IIngredientType<T> ingredientType = typedIngredient.getType();
+		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
+		drawHoveringTooltip(guiGraphics, components, x, y, typedIngredient, ingredientRenderer, ingredientManager);
+	}
+
 	public static <T> void drawHoveringTooltip(GuiGraphics guiGraphics, List<ClientTooltipComponent> components, int x, int y, ITypedIngredient<T> typedIngredient, IIngredientRenderer<T> ingredientRenderer, IIngredientManager ingredientManager){
 		Minecraft minecraft = Minecraft.getInstance();
 		T ingredient = typedIngredient.getIngredient();

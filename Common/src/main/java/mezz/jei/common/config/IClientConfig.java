@@ -28,6 +28,8 @@ public interface IClientConfig {
 
 	boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled();
 
+	boolean isTagContentTooltipEnabled();
+
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();

@@ -19,9 +19,6 @@ public class TagUtil {
 		Function<STACK, VALUE> stackToValue,
 		Supplier<Stream<Pair<TagKey<VALUE>, HolderSet.Named<VALUE>>>> tagSupplier
 	) {
-		if (stacks.size() < 2) {
-			return Optional.empty();
-		}
 
 		List<VALUE> values = stacks.stream()
 			.map(stackToValue)

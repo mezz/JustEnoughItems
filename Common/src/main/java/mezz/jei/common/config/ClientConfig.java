@@ -28,6 +28,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<GiveMode> giveMode;
 	private final Supplier<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures;
 	private final Supplier<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
+	private final Supplier<Boolean> tagContentTooltipEnabled;
 	private final Supplier<Integer> maxRecipeGuiHeight;
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
 	private final ConfigValue<List<RecipeSorterStage>> recipeSorterStages;
@@ -97,6 +98,11 @@ public final class ClientConfig implements IClientConfig {
 			"HoldShiftToShowBookmarkTooltipFeatures",
 			true,
 			"Hold shift to show bookmark tooltip features"
+		);
+		tagContentTooltipEnabled = bookmarkTooltips.addBoolean(
+			"TagContentTooltipEnabled",
+			true,
+			"Show tag content in tooltip"
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
@@ -171,6 +177,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled() {
 		return holdShiftToShowBookmarkTooltipFeaturesEnabled.get();
+	}
+
+	@Override
+	public boolean isTagContentTooltipEnabled() {
+		return tagContentTooltipEnabled.get();
 	}
 
 	@Override
