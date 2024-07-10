@@ -72,7 +72,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final IGuiHelper guiHelper;
 	private final IFocusFactory focusFactory;
 	private final IIngredientManager ingredientManager;
-	private final IRecipeTransferManager recipeTransferManager;
 
 	private int headerHeight;
 
@@ -128,7 +127,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.bookmarks = bookmarks;
 		this.guiHelper = guiHelper;
 		this.ingredientManager = ingredientManager;
-		this.recipeTransferManager = recipeTransferManager;
 		this.keyBindings = keyBindings;
 		this.logic = new RecipeGuiLogic(
 			recipeManager,
@@ -344,9 +342,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 	}
 
-	private void updateWidthToFitLayouts(int recipeWidth) {
+	private static ImmutableRect2i calculateAreaToFitLayouts(ImmutableRect2i idealArea, int screenWidth, int recipeWidth) {
 		if (recipeWidth == 0) {
-			return;
+			return idealArea;
 		}
 		final int padding = 2 * borderPadding;
 		int width = minGuiWidth - padding;
@@ -354,13 +352,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		width = Math.max(recipeWidth, width);
 
 		final int newWidth = width + padding;
-		final int newX = (this.width - newWidth) / 2;
+		final int newX = (screenWidth - newWidth) / 2;
 
-		this.area = new ImmutableRect2i(
+		return new ImmutableRect2i(
 			newX,
-			this.area.getY(),
+			idealArea.getY(),
 			newWidth,
-			this.area.getHeight()
+			idealArea.getHeight()
 		);
 	}
 
@@ -511,12 +509,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		AbstractContainerMenu containerMenu = getParentContainerMenu();
 		List<RecipeLayoutWithButtons<?>> recipeLayoutsWithButtons = logic.getVisibleRecipeLayoutsWithButtons(availableHeight, minRecipePadding, containerMenu);
+		int recipesPerPage = this.logic.getRecipesPerPage();
+
 		this.layouts.setRecipeLayoutsWithButtons(recipeLayoutsWithButtons);
 		this.layouts.tick(containerMenu);
+		this.area = calculateAreaToFitLayouts(this.idealArea, this.width, this.layouts.getWidth());
+		recipeLayoutsArea = getRecipeLayoutsArea();
 
-		updateWidthToFitLayouts(this.layouts.getWidth());
-
-		this.layouts.updateLayout(recipeLayoutsArea);
+		this.layouts.updateLayout(recipeLayoutsArea, recipesPerPage);
 
 		nextPage.active = previousPage.active = logic.hasMultiplePages();
 		nextRecipeCategory.active = previousRecipeCategory.active = logic.hasMultipleCategories();
@@ -548,11 +548,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		RecipeBookmarkButton bookmarkButton = RecipeBookmarkButton.create(
 			recipeLayoutDrawable,
 			ingredientManager,
-			recipeTransferManager,
 			bookmarks,
 			recipeManager,
-			guiHelper,
-			focusFactory
+			guiHelper
 		);
 
 		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, bookmarkButton);

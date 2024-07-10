@@ -3,6 +3,7 @@ package mezz.jei.library.gui.recipes.layout.builder;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -12,7 +13,9 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class InvisibleRecipeLayoutSlotSource implements IRecipeLayoutSlotSource, IIngredientAcceptor<InvisibleRecipeLayoutSlotSource> {
@@ -67,6 +70,11 @@ public class InvisibleRecipeLayoutSlotSource implements IRecipeLayoutSlotSource,
 	@Override
 	public <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
 		return this.ingredients.getIngredients(ingredientType);
+	}
+
+	@Override
+	public Collection<Optional<ITypedIngredient<?>>> getAllIngredients() {
+		return this.ingredients.getAllIngredients();
 	}
 
 	@Override

@@ -72,10 +72,22 @@ public class PageNavigation {
 		}
 	}
 
+	public ImmutableRect2i getNextButtonArea() {
+		return nextButton.getArea();
+	}
+
+	public ImmutableRect2i getBackButtonArea() {
+		return backButton.getArea();
+	}
+
 	public IUserInputHandler createInputHandler() {
 		return new CombinedInputHandler(
 			this.nextButton.createInputHandler(),
 			this.backButton.createInputHandler()
 		);
+	}
+
+	public boolean hasMultiplePages() {
+		return this.paged.getPageCount() > 1;
 	}
 }

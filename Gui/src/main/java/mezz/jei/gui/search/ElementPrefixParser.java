@@ -15,10 +15,11 @@ import mezz.jei.gui.ingredients.IListElementInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class ElementPrefixParser {
@@ -38,39 +39,34 @@ public class ElementPrefixParser {
 			'@',
 			config::getModNameSearchMode,
 			info -> {
-				Stream<String> modNames = info.getModNames()
-					.stream();
+				Set<String> modNames = new HashSet<>(info.getModNames());
 
 				if (config.getSearchModIds()) {
-					Stream<String> modIds = info.getModIds()
-						.stream();
-
-					modNames = Stream.concat(modNames, modIds);
+					modNames.addAll(info.getModIds());
 				}
 
 				if (config.getSearchModAliases()) {
-					Stream<String> modAliases = info.getModIds()
-						.stream()
-						.map(modIdHelper::getModAliases)
-						.flatMap(Collection::stream);
-
-					modNames = Stream.concat(modNames, modAliases);
+					for (String modId : info.getModIds()) {
+						Set<String> modAliases = modIdHelper.getModAliases(modId);
+						modNames.addAll(modAliases);
+					}
 				}
 
 				if (config.getSearchShortModNames()) {
-					Stream<String> shortModNames = info.getModNames()
-						.stream()
-						.flatMap(ElementPrefixParser::getShortModNames);
-
-					modNames = Stream.concat(modNames, shortModNames);
+					for (String modName : info.getModNames()) {
+						List<String> shortModNames = getShortModNames(modName);
+						modNames.addAll(shortModNames);
+					}
 				}
 
-				return modNames
-					.map(String::toLowerCase)
-					.map(SPACE_PATTERN::matcher)
-					.map(matcher -> matcher.replaceAll(""))
-					.distinct()
-					.toList();
+				Set<String> sanitizedModNames = new HashSet<>();
+				for (String modName : modNames) {
+					modName = modName.toLowerCase();
+					modName = SPACE_PATTERN.matcher(modName).replaceAll("");
+					sanitizedModNames.add(modName);
+				}
+
+				return sanitizedModNames;
 			},
 			LimitedStringStorage::new
 		));
@@ -134,12 +130,12 @@ public class ElementPrefixParser {
 		return Optional.of(new TokenInfo(token.substring(1), prefixInfo));
 	}
 
-	private static Stream<String> getShortModNames(String modName) {
+	private static List<String> getShortModNames(String modName) {
 		String[] words = MOD_NAME_SEPARATOR_PATTERN.split(modName);
 		if (words.length <= 1) {
-			return Stream.empty();
+			return List.of();
 		}
-		return Stream.of(
+		return List.of(
 			combineFirstLetters(words, 1),
 			combineFirstLetters(words, 2)
 		);

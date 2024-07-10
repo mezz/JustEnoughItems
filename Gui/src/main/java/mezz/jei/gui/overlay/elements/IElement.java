@@ -35,4 +35,6 @@ public interface IElement<T> {
 			.map(component -> ClientTooltipComponent.create(component.getVisualOrderText()))
 			.collect(Collectors.toList());
 	}
+
+	boolean isVisible();
 }

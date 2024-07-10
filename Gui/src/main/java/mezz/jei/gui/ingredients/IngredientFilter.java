@@ -82,10 +82,12 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
-		ingredients.stream()
-			.map(i -> ListElementInfo.create(i, ingredientManager, modIdHelper))
-			.flatMap(Optional::stream)
-			.forEach(this::addIngredient);
+		for (IListElement<?> ingredient : ingredients) {
+			IListElementInfo<?> info = ListElementInfo.create(ingredient, ingredientManager, modIdHelper);
+			if (info != null) {
+				addIngredient(info);
+			}
+		}
 		LOGGER.info("Added {} ingredients", ingredients.size());
 
 		this.filterTextSource.addListener(filterText -> {
@@ -268,13 +270,13 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 				}
 			} else {
 				IListElement<V> element = IngredientListElementFactory.createOrderedElement(value);
-				ListElementInfo.create(element, this.ingredientManager, modIdHelper)
-					.ifPresent(info -> {
-						addIngredient(info);
-						if (DebugConfig.isDebugModeEnabled()) {
-							LOGGER.debug("Added ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
-						}
-					});
+				IListElementInfo<V> listElementInfo = ListElementInfo.create(element, this.ingredientManager, modIdHelper);
+				if (listElementInfo != null) {
+					addIngredient(listElementInfo);
+					if (DebugConfig.isDebugModeEnabled()) {
+						LOGGER.debug("Added ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
+					}
+				}
 			}
 		}
 		invalidateCache();

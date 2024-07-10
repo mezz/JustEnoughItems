@@ -43,13 +43,23 @@ public class GuiEventHandler {
 		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
 			.map(ImmutableRect2i::new)
 			.collect(Collectors.toUnmodifiableSet());
-		ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
-		bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
+		ingredientListOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
+		bookmarkOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
 	}
 
 	public void onGuiOpen(Screen screen) {
-		ingredientListOverlay.updateScreen(screen, null);
-		bookmarkOverlay.updateScreen(screen, null);
+		ingredientListOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.update();
+		bookmarkOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.update();
 	}
 
 	/**
@@ -74,8 +84,14 @@ public class GuiEventHandler {
 		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
 			.map(ImmutableRect2i::new)
 			.collect(Collectors.toUnmodifiableSet());
-		ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
-		bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
+		ingredientListOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
+		bookmarkOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
 
 		DeltaTracker deltaTracker = minecraft.getTimer();
 		float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);

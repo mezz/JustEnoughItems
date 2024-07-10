@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -108,9 +109,12 @@ public class RecipeManagerInternal {
 		IRecipeCategory<T> recipeCategory = recipeTypeData.getRecipeCategory();
 		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
 
-		List<T> addedRecipes = recipes.stream()
-			.filter(recipe -> addRecipe(recipeCategory, recipe, hiddenRecipes))
-			.toList();
+		List<T> addedRecipes = new ArrayList<>(recipes.size());
+		for (T recipe : recipes) {
+			if (addRecipe(recipeCategory, recipe, hiddenRecipes)) {
+				addedRecipes.add(recipe);
+			}
+		}
 
 		if (!addedRecipes.isEmpty()) {
 			recipeTypeData.addRecipes(addedRecipes);

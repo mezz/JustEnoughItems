@@ -46,7 +46,7 @@ public class BrewingRecipeMakerCommon {
 		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
 		IngredientSet<ItemStack> potionReagents = ingredientHelper.getPotionIngredients(potionBrewing)
 			.flatMap(i -> Arrays.stream(i.getItems()))
-			.collect(Collectors.toCollection(() -> IngredientSet.create(itemStackHelper, UidContext.Ingredient)));
+			.collect(Collectors.toCollection(() -> new IngredientSet<>(itemStackHelper, UidContext.Ingredient)));
 
 		boolean foundNewPotions;
 		do {
@@ -71,9 +71,9 @@ public class BrewingRecipeMakerCommon {
 
 		IngredientSet<ItemStack> potionContainers = ingredientHelper.getPotionContainers(potionBrewing).stream()
 			.flatMap(potionItem -> Arrays.stream(potionItem.getItems()))
-			.collect(Collectors.toCollection(() -> IngredientSet.create(itemStackHelper, UidContext.Ingredient)));
+			.collect(Collectors.toCollection(() -> new IngredientSet<>(itemStackHelper, UidContext.Ingredient)));
 
-		IngredientSet<ItemStack> knownPotions = IngredientSet.create(itemStackHelper, UidContext.Ingredient);
+		IngredientSet<ItemStack> knownPotions = new IngredientSet<>(itemStackHelper, UidContext.Ingredient);
 		knownPotions.addAll(potionContainers);
 
 		potionRegistry.holders()

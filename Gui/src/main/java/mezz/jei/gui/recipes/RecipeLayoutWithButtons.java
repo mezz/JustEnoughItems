@@ -44,22 +44,24 @@ public class RecipeLayoutWithButtons<R> {
 	}
 
 	public int totalWidth() {
-		Rect2i area = recipeLayout.getRectWithBorder();
-		int width = area.getWidth();
+		Rect2i area = recipeLayout.getRect();
+		Rect2i areaWithBorder = recipeLayout.getRectWithBorder();
+		int leftBorderWidth = area.getX() - areaWithBorder.getX();
+		int rightAreaWidth = areaWithBorder.getWidth() - leftBorderWidth;
 
 		if (transferButton.isVisible()) {
 			Rect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
-			int buttonRight = buttonArea.getWidth() + buttonArea.getX();
-			width = Math.max(buttonRight - area.getX(), width);
+			int buttonRight = buttonArea.getX() + buttonArea.getWidth();
+			rightAreaWidth = Math.max(buttonRight, rightAreaWidth);
 		}
 
 		if (bookmarkButton.isVisible()) {
 			Rect2i buttonArea = recipeLayout.getRecipeBookmarkButtonArea();
-			int buttonRight = buttonArea.getWidth() + buttonArea.getX();
-			width = Math.max(buttonRight - area.getX(), width);
+			int buttonRight = buttonArea.getX() + buttonArea.getWidth();
+			rightAreaWidth = Math.max(buttonRight, rightAreaWidth);
 		}
 
-		return width;
+		return leftBorderWidth + rightAreaWidth;
 	}
 
 	public IUserInputHandler createUserInputHandler() {

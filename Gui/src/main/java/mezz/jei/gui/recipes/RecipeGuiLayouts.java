@@ -34,27 +34,20 @@ public class RecipeGuiLayouts {
 		this.cachedInputHandler = NullInputHandler.INSTANCE;
 	}
 
-	public void updateLayout(ImmutableRect2i recipeLayoutsArea) {
-		ImmutableRect2i layoutAreaWithBorder = this.recipeLayoutsWithButtons.stream()
-			.findFirst()
-			.map(RecipeLayoutWithButtons::getRecipeLayout)
-			.map(IRecipeLayoutDrawable::getRectWithBorder)
-			.map(ImmutableRect2i::new)
-			.orElse(null);
-		if (layoutAreaWithBorder == null) {
+	public void updateLayout(ImmutableRect2i recipeLayoutsArea, final int recipesPerPage) {
+		RecipeLayoutWithButtons<?> firstLayout = this.recipeLayoutsWithButtons.getFirst();
+		if (firstLayout == null) {
 			return;
 		}
-		final int recipeHeight = layoutAreaWithBorder.getHeight();
-		int availableHeight = recipeLayoutsArea.getHeight();
-		availableHeight = Math.max(availableHeight, recipeHeight);
-
-		final int recipesPerPage = this.recipeLayoutsWithButtons.size();
+		ImmutableRect2i layoutAreaWithBorder = new ImmutableRect2i(firstLayout.getRecipeLayout().getRectWithBorder());
 		final int recipeXOffset = getRecipeXOffset(layoutAreaWithBorder, recipeLayoutsArea);
-		final int recipeHeightTotal = recipesPerPage * layoutAreaWithBorder.getHeight();
-		final int remainingHeight = availableHeight - recipeHeightTotal;
+
+		final int recipeHeight = layoutAreaWithBorder.getHeight();
+		final int availableHeight = Math.max(recipeLayoutsArea.getHeight(), recipeHeight);
+		final int remainingHeight = availableHeight - (recipesPerPage * recipeHeight);
 		final int recipeSpacing = remainingHeight / (recipesPerPage + 1);
 
-		final int spacingY = layoutAreaWithBorder.getHeight() + recipeSpacing;
+		final int spacingY = recipeHeight + recipeSpacing;
 		int recipeYOffset = recipeLayoutsArea.getY() + recipeSpacing;
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
 			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
@@ -93,14 +86,12 @@ public class RecipeGuiLayouts {
 	}
 
 	private int getRecipeXOffset(ImmutableRect2i layoutRect, ImmutableRect2i layoutsArea) {
-		final int recipeWidth = layoutRect.getWidth();
-		final int recipeWidthWithButtons;
 		if (recipeLayoutsWithButtons.isEmpty()) {
-			recipeWidthWithButtons = layoutRect.getWidth();
-		} else {
-			recipeWidthWithButtons = recipeLayoutsWithButtons.getFirst().totalWidth();
+			return layoutsArea.getX();
 		}
 
+		final int recipeWidth = layoutRect.getWidth();
+		final int recipeWidthWithButtons = recipeLayoutsWithButtons.getFirst().totalWidth();
 		final int buttonSpace = recipeWidthWithButtons - recipeWidth;
 
 		final int availableArea = layoutsArea.getWidth();

@@ -18,9 +18,9 @@ import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public final class VanillaRecipes {
 	private final RecipeManager recipeManager;
@@ -37,10 +37,24 @@ public final class VanillaRecipes {
 
 	public Map<Boolean, List<RecipeHolder<CraftingRecipe>>> getCraftingRecipes(IRecipeCategory<RecipeHolder<CraftingRecipe>> craftingCategory) {
 		var validator = new CategoryRecipeValidator<>(craftingCategory, ingredientManager, 9);
-		return recipeManager.getAllRecipesFor(RecipeType.CRAFTING)
-			.stream()
-			.filter(validator::isRecipeValid)
-			.collect(Collectors.partitioningBy(validator::isRecipeHandled));
+
+		List<RecipeHolder<CraftingRecipe>> handled = new ArrayList<>();
+		List<RecipeHolder<CraftingRecipe>> unhandled = new ArrayList<>();
+
+		List<RecipeHolder<CraftingRecipe>> allRecipes = recipeManager.getAllRecipesFor(RecipeType.CRAFTING);
+		for (RecipeHolder<CraftingRecipe> recipe : allRecipes) {
+			if (validator.isRecipeValid(recipe)) {
+				if (validator.isRecipeHandled(recipe)) {
+					handled.add(recipe);
+				} else {
+					unhandled.add(recipe);
+				}
+			}
+		}
+		return Map.of(
+			true, handled,
+			false, unhandled
+		);
 	}
 
 	public List<RecipeHolder<StonecutterRecipe>> getStonecuttingRecipes(IRecipeCategory<RecipeHolder<StonecutterRecipe>> stonecuttingCategory) {

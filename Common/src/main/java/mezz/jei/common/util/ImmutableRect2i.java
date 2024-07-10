@@ -49,6 +49,10 @@ public class ImmutableRect2i {
 		return width == 0 || height == 0;
 	}
 
+	public boolean contains(ImmutablePoint2i point) {
+		return contains(point.getX(), point.getY());
+	}
+
 	public boolean contains(double x, double y) {
 		return x >= this.x &&
 			y >= this.y &&
@@ -207,6 +211,9 @@ public class ImmutableRect2i {
 
 	@Override
 	public boolean equals(Object obj){
+		if (this == obj) {
+			return true;
+		}
 		if (obj instanceof ImmutableRect2i other) {
 			return
 				x == other.x &&

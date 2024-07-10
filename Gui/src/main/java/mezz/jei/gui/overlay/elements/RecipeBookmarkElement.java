@@ -1,14 +1,15 @@
 package mezz.jei.gui.overlay.elements;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusFactory;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.BookmarkFeature;
@@ -32,16 +33,12 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	private final RecipeBookmark<T, R> recipeBookmark;
 	private final IDrawable icon;
 	private final IClientConfig clientConfig;
-	private final IIngredientManager ingredientManager;
-	private final IRecipeTransferManager recipeTransferManager;
 	private final EnumMap<BookmarkFeature, ClientTooltipComponent> longTermCache = new EnumMap<>(BookmarkFeature.class);
 
-	public RecipeBookmarkElement(RecipeBookmark<T, R> recipeBookmark, IDrawable icon, IIngredientManager ingredientManager, IRecipeTransferManager recipeTransferManager) {
+	public RecipeBookmarkElement(RecipeBookmark<T, R> recipeBookmark, IDrawable icon) {
 		this.recipeBookmark = recipeBookmark;
 		this.icon = icon;
 		this.clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		this.ingredientManager = ingredientManager;
-		this.recipeTransferManager = recipeTransferManager;
 	}
 
 	@Override
@@ -108,14 +105,28 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 		return components;
 	}
 
-	private Optional<ClientTooltipComponent> createComponent(BookmarkFeature feature){
-		return this.recipeBookmark.createRecipeLayoutDrawable()
+	private Optional<ClientTooltipComponent> createComponent(BookmarkFeature feature) {
+		IRecipeManager recipeManager = Internal.getJeiRuntime().getRecipeManager();
+		IFocusFactory focusFactory = Internal.getJeiRuntime().getJeiHelpers().getFocusFactory();
+		IScalableDrawable recipePreviewBackground = Internal.getTextures().getRecipePreviewBackground();
+
+		return recipeManager.createRecipeLayoutDrawable(
+				recipeBookmark.getRecipeCategory(),
+				recipeBookmark.getRecipe(),
+				focusFactory.getEmptyFocusGroup(),
+				recipePreviewBackground,
+				4
+			)
 			.map(layoutDrawable -> {
 				return switch (feature) {
-					case PREVIEW -> new PreviewTooltipComponent<>(layoutDrawable, recipeTransferManager);
-					case INGREDIENTS -> new IngredientsTooltipComponent(layoutDrawable, ingredientManager);
+					case PREVIEW -> new PreviewTooltipComponent<>(layoutDrawable);
+					case INGREDIENTS -> new IngredientsTooltipComponent(layoutDrawable);
 				};
 			});
 	}
 
+	@Override
+	public boolean isVisible() {
+		return recipeBookmark.isVisible();
+	}
 }

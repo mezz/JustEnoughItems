@@ -59,8 +59,8 @@ public final class ClientConfig implements IClientConfig {
 		);
 		addBookmarksToFrontEnabled = advanced.addBoolean(
 			"AddBookmarksToFrontEnabled",
-			true,
-			"Enable adding new bookmarks to the front of the bookmark list."
+			false,
+			"Add new bookmarks to the front of the bookmark list instead of the end."
 		);
 		lookupFluidContentsEnabled = advanced.addBoolean(
 			"lookupFluidContentsEnabled",

@@ -22,6 +22,8 @@ public interface IRecipeGuiLogic {
 
 	void previousRecipeCategory();
 
+	int getRecipesPerPage();
+
 	void nextRecipeCategory();
 
 	void setRecipeCategory(IRecipeCategory<?> category);

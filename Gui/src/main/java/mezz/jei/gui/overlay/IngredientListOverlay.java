@@ -29,7 +29,6 @@ import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -83,8 +82,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 		ingredientGridSource.addSourceListChangedListener(() -> {
 			Minecraft minecraft = Minecraft.getInstance();
-			Screen screen = minecraft.screen;
-			updateScreen(screen, null);
+			getScreenPropertiesUpdater()
+				.updateScreen(minecraft.screen)
+				.update();
 		});
 
 		this.configButton = ConfigButton.create(this::isListDisplayed, toggleState, keyBindings);
@@ -104,8 +104,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return screenRectangle.cropLeft(guiRight);
 	}
 
-	public void updateScreen(@Nullable Screen guiScreen, @Nullable Set<ImmutableRect2i> updatedGuiExclusionAreas) {
-		screenPropertiesCache.updateScreen(guiScreen, updatedGuiExclusionAreas, this::onScreenPropertiesChanged);
+
+	public ScreenPropertiesCache.Updater getScreenPropertiesUpdater() {
+		return this.screenPropertiesCache.getUpdater(this::onScreenPropertiesChanged);
 	}
 
 	private void onScreenPropertiesChanged() {
@@ -124,7 +125,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, guiProperties);
 
 		final ImmutableRect2i availableContentsArea = getAvailableContentsArea(displayArea, searchBarCentered);
-		this.contents.updateBounds(availableContentsArea, guiExclusionAreas);
+		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, null);
 		this.contents.updateLayout(false);
 
 		final ImmutableRect2i searchAndConfigArea = getSearchAndConfigArea(displayArea, searchBarCentered, guiProperties);

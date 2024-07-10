@@ -11,6 +11,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.Internal;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -24,7 +25,8 @@ import java.util.Optional;
 public class IngredientsTooltipComponent implements ClientTooltipComponent, IBookmarkTooltip {
 	private final List<RenderElement<?>> ingredients;
 
-	public IngredientsTooltipComponent(IRecipeLayoutDrawable<?> layout, IIngredientManager ingredientManager) {
+	public IngredientsTooltipComponent(IRecipeLayoutDrawable<?> layout) {
+		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		IRecipeSlotsView recipeSlotsView = layout.getRecipeSlotsView();
 		Map<String, SummaryElement<?>> summary = new HashMap<>();
 		recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT)

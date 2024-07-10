@@ -6,21 +6,24 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.common.util.Translator;
-import mezz.jei.common.config.IIngredientFilterConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.TooltipFlag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class ListElementInfo<V> implements IListElementInfo<V> {
@@ -33,12 +36,12 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	private final ResourceLocation resourceLocation;
 	private int sortedIndex = Integer.MAX_VALUE;
 
-	public static <V> Optional<IListElementInfo<V>> create(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	@Nullable
+	public static <V> IListElementInfo<V> create(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		try {
-			ListElementInfo<V> info = new ListElementInfo<>(element, ingredientHelper, modIdHelper);
-			return Optional.of(info);
+			return new ListElementInfo<>(element, ingredientHelper, modIdHelper);
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
@@ -46,7 +49,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 			} catch (RuntimeException e2) {
 				LOGGER.warn("Found a broken ingredient.", e2);
 			}
-			return Optional.empty();
+			return null;
 		}
 	}
 
@@ -57,12 +60,16 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		this.resourceLocation = ingredientHelper.getResourceLocation(ingredient);
 		String displayModId = ingredientHelper.getDisplayModId(ingredient);
 		String modId = this.resourceLocation.getNamespace();
-		this.modIds = Stream.of(displayModId, modId)
-			.distinct()
-			.toList();
-		this.modNames = this.modIds.stream()
-			.map(modIdHelper::getModNameForModId)
-			.toList();
+		if (modId.equals(displayModId)) {
+			this.modIds = List.of(modId);
+			this.modNames = List.of(modIdHelper.getModNameForModId(modId));
+		} else {
+			this.modIds = List.of(modId, displayModId);
+			this.modNames = List.of(
+				modIdHelper.getModNameForModId(modId),
+				modIdHelper.getModNameForModId(displayModId)
+			);
+		}
 		this.displayNameLowercase = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
 	}
 
@@ -88,7 +95,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 
 	@Override
 	@Unmodifiable
-	public final List<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager) {
+	public final Set<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager) {
 		String modName = this.modNames.getFirst();
 		String modId = this.modIds.getFirst();
 		String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
@@ -97,18 +104,21 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		ImmutableSet<String> toRemove = ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceLocation.getPath());
 		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
 		List<Component> tooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, value, tooltipFlag);
-		return tooltip.stream()
-			.map(Component::getString)
-			.map(StringUtil::removeChatFormatting)
-			.map(Translator::toLowercaseWithLocale)
-			.map(line -> {
-				for (String excludeWord : toRemove) {
-					line = line.replace(excludeWord, "");
-				}
-				return line;
-			})
-			.filter(line -> !line.isEmpty())
-			.toList();
+
+		Set<String> result = new HashSet<>();
+		for (Component component : tooltip) {
+			String string = component.getString();
+			string = StringUtil.removeChatFormatting(string);
+			string = Translator.toLowercaseWithLocale(string);
+			for (String excludeWord : toRemove) {
+				string = string.replace(excludeWord, "");
+			}
+			// Split tooltip strings into words to keep them from being too long.
+			// Longer strings are more expensive for the suffix tree to handle.
+			String[] strings = string.split(" ");
+			Collections.addAll(result, strings);
+		}
+		return result;
 	}
 
 	@Override

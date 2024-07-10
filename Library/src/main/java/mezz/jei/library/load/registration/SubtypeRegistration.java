@@ -22,11 +22,9 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 		if (!ingredientBaseClass.isInstance(base)) {
 			throw new IllegalArgumentException(String.format("base (%s) must be an instance of %s", base.getClass(), ingredientBaseClass));
 		}
-		if (this.interpreters.contains(type, base)) {
+		if (!this.interpreters.addInterpreter(type, base, interpreter)) {
 			LOGGER.error("An interpreter is already registered for this: {}", base, new IllegalArgumentException());
-			return;
 		}
-		this.interpreters.addInterpreter(type, base, interpreter);
 	}
 
 	public SubtypeInterpreters getInterpreters() {

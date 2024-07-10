@@ -28,11 +28,10 @@ public final class ItemStackListFactory {
 
 	public static List<ItemStack> create(StackHelper stackHelper) {
 		final List<ItemStack> itemList = new ArrayList<>();
-		final Set<String> itemNameSet = new HashSet<>();
+		final Set<Object> itemUidSet = new HashSet<>();
 
 		Minecraft minecraft = Minecraft.getInstance();
-		FeatureFlagSet features = Optional.of(minecraft)
-				.map(m -> m.player)
+		FeatureFlagSet features = Optional.ofNullable(minecraft.player)
 				.map(p -> p.connection)
 				.map(ClientPacketListener::enabledFeatures)
 				.orElse(FeatureFlagSet.of());
@@ -76,26 +75,30 @@ public final class ItemStackListFactory {
 				if (itemStack.isEmpty()) {
 					LOGGER.error("Found an empty itemStack from creative tab: {}", itemGroup);
 				} else {
-					addItemStack(stackHelper, itemStack, itemList, itemNameSet);
+					addItemStack(stackHelper, itemStack, itemList, itemUidSet);
 				}
 			}
 		}
 		return itemList;
 	}
 
-	private static void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<String> itemNameSet) {
-		final String itemKey;
+	private static void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<Object> itemUidSet) {
+		final Object itemKey;
 
-		try {
-			itemKey = stackHelper.getUniqueIdentifierForStack(stack, UidContext.Ingredient);
-		} catch (RuntimeException | LinkageError e) {
-			String stackInfo = ErrorUtil.getItemStackInfo(stack);
-			LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);
-			return;
+		if (stackHelper.hasSubtypes(stack)) {
+			try {
+				itemKey = stackHelper.getUniqueIdentifierForStack(stack, UidContext.Ingredient);
+			} catch (RuntimeException | LinkageError e) {
+				String stackInfo = ErrorUtil.getItemStackInfo(stack);
+				LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);
+				return;
+			}
+		} else {
+			itemKey = stack.getItem();
 		}
 
-		if (!itemNameSet.contains(itemKey)) {
-			itemNameSet.add(itemKey);
+		if (!itemUidSet.contains(itemKey)) {
+			itemUidSet.add(itemKey);
 			itemList.add(stack);
 		}
 	}

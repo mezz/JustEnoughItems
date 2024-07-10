@@ -8,7 +8,6 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer.IDeserializeResult;
 import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
@@ -68,14 +67,13 @@ public class BookmarkConfig implements IBookmarkConfig {
 		IFocusFactory focusFactory,
 		IGuiHelper guiHelper,
 		IIngredientManager ingredientManager,
-		IRecipeTransferManager recipeTransferManager,
 		RegistryAccess registryAccess,
 		Collection<IBookmark> bookmarks
 	) {
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper, ingredientManager, recipeTransferManager);
+				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper);
 
 				List<String> strings = new ArrayList<>();
 				for (IBookmark bookmark : bookmarks) {
@@ -107,7 +105,6 @@ public class BookmarkConfig implements IBookmarkConfig {
 		IFocusFactory focusFactory,
 		IGuiHelper guiHelper,
 		IIngredientManager ingredientManager,
-		IRecipeTransferManager recipeTransferManager,
 		RegistryAccess registryAccess,
 		BookmarkList bookmarkList
 	) {
@@ -125,7 +122,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 				}
 
 				TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper, ingredientManager, recipeTransferManager);
+				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper);
 
 				Collection<IIngredientType<?>> otherIngredientTypes = ingredientManager.getRegisteredIngredientTypes()
 						.stream()
@@ -172,7 +169,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 					LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
 				} else {
 					IngredientBookmark<ItemStack> bookmark = IngredientBookmark.create(typedIngredient.get(), ingredientManager);
-					bookmarkList.addToList(bookmark, false);
+					bookmarkList.addToListWithoutNotifying(bookmark, false);
 				}
 			} else {
 				LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item is empty:\n{}", itemStackAsJson);
@@ -195,7 +192,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 			LOGGER.warn("Failed to load bookmarked ingredients from string: \n{}\n{}", serializedIngredient, String.join(", ", errors));
 		} else {
 			IngredientBookmark<?> bookmark = IngredientBookmark.create(result.get(), ingredientManager);
-			bookmarkList.addToList(bookmark, false);
+			bookmarkList.addToListWithoutNotifying(bookmark, false);
 		}
 	}
 
@@ -210,7 +207,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 			LOGGER.error("Failed to load unknown bookmarked ingredient with uid:\n{}", uid);
 		} else {
 			IngredientBookmark<?> bookmark = IngredientBookmark.create(typedIngredient.get(), ingredientManager);
-			bookmarkList.addToList(bookmark, false);
+			bookmarkList.addToListWithoutNotifying(bookmark, false);
 		}
 	}
 
@@ -225,7 +222,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 			List<String> errors = deserialized.getErrors();
 			LOGGER.warn("Failed to load bookmarked recipe from string: \n{}\n{}", serializedRecipe, String.join(", ", errors));
 		} else {
-			bookmarkList.addToList(result.get(), false);
+			bookmarkList.addToListWithoutNotifying(result.get(), false);
 		}
 	}
 

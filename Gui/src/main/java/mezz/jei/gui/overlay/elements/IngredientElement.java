@@ -48,4 +48,9 @@ public class IngredientElement<T> implements IElement<T> {
 	public List<Component> getTooltip(IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
 		return tooltipHelper.getIngredientTooltip(ingredient, ingredientRenderer, ingredientHelper);
 	}
+
+	@Override
+	public boolean isVisible() {
+		return true;
+	}
 }

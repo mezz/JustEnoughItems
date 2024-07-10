@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.common.Internal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,14 +20,12 @@ import org.jetbrains.annotations.Nullable;
 public class PreviewTooltipComponent<R> implements ClientTooltipComponent, IBookmarkTooltip {
 	private static final int UPDATE_INTERVAL_MS = 2000;
 
-	private final IRecipeTransferManager recipeTransferManager;
 	private final IRecipeLayoutDrawable<R> drawable;
 	private @Nullable IRecipeTransferError transferError;
 	private long lastUpdateTime = 0;
 
-	public PreviewTooltipComponent(IRecipeLayoutDrawable<R> drawable, IRecipeTransferManager recipeTransferManager) {
+	public PreviewTooltipComponent(IRecipeLayoutDrawable<R> drawable) {
 		this.drawable = drawable;
-		this.recipeTransferManager = recipeTransferManager;
 	}
 
 	@Override
@@ -79,6 +78,7 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, IBook
 
 	@Nullable
 	private <C extends AbstractContainerMenu> IRecipeTransferError getTransferError(C container, Player player) {
+		IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
 		return recipeTransferManager.getRecipeTransferHandler(container, drawable.getRecipeCategory())
 			.map(handler -> handler.transferRecipe(container, drawable.getRecipe(), drawable.getRecipeSlotsView(), player, false, false))
 			.orElse(null);
