@@ -14,9 +14,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -24,89 +22,126 @@ import java.util.Map;
 import java.util.Optional;
 
 public class IngredientsTooltipComponent implements ClientTooltipComponent, IBookmarkTooltip {
-    private final List<Pair<IIngredientRenderer<?>, ITypedIngredient<?>>> ingredients = new ArrayList<>();
+	private final List<RenderElement<?>> ingredients;
 
-    public IngredientsTooltipComponent(IRecipeLayoutDrawable<?> layout, IIngredientManager ingredientManager) {
-        IRecipeSlotsView recipeSlotsView = layout.getRecipeSlotsView();
-        List<IRecipeSlotView> slots = recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT);
-        Map<String, ITypedIngredient<?>> summary = new HashMap<>();
-        List<ITypedIngredient<?>> displayed = slots.stream()
-            .map(IRecipeSlotView::getDisplayedIngredient)
-            .filter(Optional::isPresent)
-            .<ITypedIngredient<?>>map(Optional::get)
-            .toList();
+	public IngredientsTooltipComponent(IRecipeLayoutDrawable<?> layout, IIngredientManager ingredientManager) {
+		IRecipeSlotsView recipeSlotsView = layout.getRecipeSlotsView();
+		Map<String, SummaryElement<?>> summary = new HashMap<>();
+		recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT)
+			.stream()
+			.map(IRecipeSlotView::getDisplayedIngredient)
+			.filter(Optional::isPresent)
+			.<ITypedIngredient<?>>map(Optional::get)
+			.forEach(ingredient -> {
+				addToSummary(ingredient, ingredientManager, summary);
+			});
 
-        for (ITypedIngredient<?> ingredient : displayed) {
-            addToSummary(ingredient, ingredientManager, summary);
-        }
-        for (ITypedIngredient<?> value : summary.values()) {
-            IIngredientRenderer<?> renderer = ingredientManager.getIngredientRenderer(value.getType());
-            ingredients.add(Pair.of(renderer, value));
-        }
-        ingredients.sort(Comparator.comparingLong(i -> getAmount(i.getRight(), ingredientManager)));
-    }
+		Comparator<SummaryElement<?>> comparator = Comparator.comparingLong(SummaryElement::getAmount);
+		this.ingredients = summary.values().stream()
+			.sorted(comparator.reversed())
+			.<RenderElement<?>>map(e -> RenderElement.create(e, ingredientManager))
+			.toList();
+	}
 
-    private static <T> void addToSummary(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager, Map<String, ITypedIngredient<?>> summary) {
-        IIngredientType<T> type = typedIngredient.getType();
-        IIngredientHelper<T> helper = ingredientManager.getIngredientHelper(type);
-        if (!helper.countable()) {
-            return;
-        }
-        String uid = getUid(typedIngredient, ingredientManager);
-        summary.compute(uid, (k, v) -> {
-            if (v == null) {
-                return typedIngredient;
-            } else {
-                return type.castIngredient(v)
-                    .flatMap(i -> {
-                        T merged = helper.merge(i, typedIngredient.getIngredient());
-                        if (merged != null) {
-                            return ingredientManager.createTypedIngredient(type, merged);
-                        }
-                        return Optional.empty();
-                    })
-                    .orElse(null);
-            }
-        });
-    }
+	private static <T> void addToSummary(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager, Map<String, SummaryElement<?>> summary) {
+		IIngredientType<T> type = typedIngredient.getType();
+		IIngredientHelper<T> helper = ingredientManager.getIngredientHelper(type);
+		T ingredient = typedIngredient.getIngredient();
+		long ingredientAmount = helper.getAmount(ingredient);
+		if (ingredientAmount == -1) {
+			return;
+		}
+		String uid = getUid(typedIngredient, ingredientManager);
+		summary.compute(uid, (k, v) -> {
+			if (v == null) {
+				return SummaryElement.create(typedIngredient, ingredientAmount);
+			}
+			long newAmount = v.getAmount() + ingredientAmount;
+			v.setAmount(newAmount);
+			return v;
+		});
+	}
 
-    private static <T> long getAmount(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
-        IIngredientHelper<T> helper = ingredientManager.getIngredientHelper(typedIngredient.getType());
-        return helper.getAmount(typedIngredient.getIngredient());
-    }
+	private static <T> String getUid(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
+		return ingredientHelper.getUniqueId(typedIngredient.getIngredient(), UidContext.Recipe);
+	}
 
-    private static <T> String getUid(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
-        IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
-        return ingredientHelper.getUniqueId(typedIngredient.getIngredient(), UidContext.Recipe);
-    }
+	@Override
+	public int getHeight() {
+		return 16;
+	}
 
-    @Override
-    public int getHeight() {
-        return 16;
-    }
+	@Override
+	public int getWidth(Font font) {
+		return ingredients.size() * 16;
+	}
 
-    @Override
-    public int getWidth(Font font) {
-        return ingredients.size() * 16;
-    }
+	@Override
+	public void renderImage(Font font, int x, int y, GuiGraphics guiGraphics) {
+		for (int i = 0; i < ingredients.size(); i++) {
+			RenderElement<?> renderElement = ingredients.get(i);
+			PoseStack pose = guiGraphics.pose();
+			pose.pushPose();
+			{
+				pose.translate(x + i * 16, y, 0);
+				renderElement.render(guiGraphics);
+			}
+			pose.popPose();
+		}
+	}
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Override
-    public void renderImage(Font font, int x, int y, GuiGraphics guiGraphics) {
-        for (int i = 0; i < ingredients.size(); i++) {
-            Pair<IIngredientRenderer<?>, ITypedIngredient<?>> pair = ingredients.get(i);
-            IIngredientRenderer renderer = pair.getLeft();
-            Object ingredient = pair.getRight().getIngredient();
-            PoseStack pose = guiGraphics.pose();
-            pose.pushPose();
-            pose.translate(x + i * 16, y, 0);
-            renderer.render(guiGraphics, ingredient);
-            pose.popPose();
-        }
-    }
+	@Override
+	public boolean longTerm() {
+		return false;
+	}
 
-    @Override
-    public boolean longTerm() {
-        return false;
-    }
+	private static class SummaryElement<T> {
+		public static <T> SummaryElement<T> create(ITypedIngredient<T> ingredient, long amount) {
+			return new SummaryElement<>(ingredient, amount);
+		}
+
+		private final ITypedIngredient<T> ingredient;
+		private long amount;
+
+		private SummaryElement(ITypedIngredient<T> ingredient, long amount) {
+			this.ingredient = ingredient;
+			this.amount = amount;
+		}
+
+		public ITypedIngredient<T> getIngredient() {
+			return ingredient;
+		}
+
+		public long getAmount() {
+			return amount;
+		}
+
+		public void setAmount(long amount) {
+			this.amount = amount;
+		}
+	}
+
+	private static class RenderElement<T> {
+		public static <T> RenderElement<T> create(SummaryElement<T> summaryElement, IIngredientManager ingredientManager) {
+			ITypedIngredient<T> typedIngredient = summaryElement.getIngredient();
+			IIngredientType<T> type = typedIngredient.getType();
+			IIngredientHelper<T> helper = ingredientManager.getIngredientHelper(type);
+			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
+			T ingredient = helper.setAmount(typedIngredient.getIngredient(), summaryElement.getAmount());
+			return new RenderElement<>(renderer, ingredient);
+		}
+
+		private final IIngredientRenderer<T> renderer;
+		private final T ingredient;
+
+		private RenderElement(IIngredientRenderer<T> renderer, T ingredient) {
+			this.renderer = renderer;
+			this.ingredient = ingredient;
+		}
+
+		public void render(GuiGraphics guiGraphics) {
+			renderer.render(guiGraphics, ingredient);
+		}
+	}
 }

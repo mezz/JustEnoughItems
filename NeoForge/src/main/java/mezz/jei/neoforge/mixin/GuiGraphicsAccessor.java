@@ -12,10 +12,10 @@ import java.util.List;
 
 @Mixin(net.minecraft.client.gui.GuiGraphics.class)
 public interface GuiGraphicsAccessor {
-    @Invoker
-    void callRenderTooltipInternal(Font font, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner);
+	@Invoker
+	void callRenderTooltipInternal(Font font, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner);
 
-    @Accessor
-    void setTooltipStack(ItemStack stack);
+	@Accessor
+	void setTooltipStack(ItemStack stack);
 
 }

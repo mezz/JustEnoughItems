@@ -2,6 +2,7 @@ package mezz.jei.gui.bookmarks;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -12,6 +13,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.Internal;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import mezz.jei.gui.recipes.RecipeCategoryIconUtil;
@@ -27,8 +29,6 @@ public class RecipeBookmark<T, R> implements IBookmark {
 	private final ITypedIngredient<R> recipeOutput;
 	private final IRecipeManager recipeManager;
 	private final IFocusFactory focusFactory;
-
-	private IRecipeLayoutDrawable<T> recipeLayoutDrawable = null;
 
 	public static <T> Optional<RecipeBookmark<T, ?>> create(
 		IRecipeLayoutDrawable<T> recipeLayoutDrawable,
@@ -97,8 +97,9 @@ public class RecipeBookmark<T, R> implements IBookmark {
 		return recipeOutput;
 	}
 
-	public IRecipeLayoutDrawable<T> createRecipeLayoutDrawable() {
-		return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, focusFactory.getEmptyFocusGroup(), true).orElseThrow();
+	public Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable() {
+		IScalableDrawable recipePreviewBackground = Internal.getTextures().getRecipePreviewBackground();
+		return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, focusFactory.getEmptyFocusGroup(), recipePreviewBackground, 4);
 	}
 
 	@Override

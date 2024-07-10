@@ -31,6 +31,6 @@ public interface IPlatformRenderHelper {
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<Component> textComponents, Optional<TooltipComponent> tooltipComponent, int x, int y, Font font, ItemStack stack);
 
-	void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<ClientTooltipComponent> components,int x, int y, Font font, ItemStack stack);
+	void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<ClientTooltipComponent> components, int x, int y, Font font, ItemStack stack);
 
 }

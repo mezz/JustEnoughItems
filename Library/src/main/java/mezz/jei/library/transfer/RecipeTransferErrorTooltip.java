@@ -1,17 +1,13 @@
 package mezz.jei.library.transfer;
 
-import net.minecraft.client.gui.GuiGraphics;
+import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
-
-import mezz.jei.api.recipe.transfer.IRecipeTransferError;
-import mezz.jei.common.gui.TooltipRenderer;
 
 public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 	private final List<Component> message = new ArrayList<>();
@@ -28,7 +24,7 @@ public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 	}
 
 	@Override
-	public void drawTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
-		TooltipRenderer.drawHoveringText(guiGraphics, message, mouseX, mouseY);
+	public List<Component> getTooltip() {
+		return Collections.unmodifiableList(message);
 	}
 }

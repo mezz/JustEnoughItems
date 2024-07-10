@@ -84,8 +84,8 @@ public class RenderHelper implements IPlatformRenderHelper {
 
 	@Override
 	public void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<ClientTooltipComponent> components, int x, int y, Font font, ItemStack stack) {
-//		guiGraphics.tooltipStack = stack;
+		guiGraphics.tooltipStack = stack;
 		guiGraphics.renderTooltipInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE);
-//		guiGraphics.tooltipStack = null;
+		guiGraphics.tooltipStack = ItemStack.EMPTY;
 	}
 }

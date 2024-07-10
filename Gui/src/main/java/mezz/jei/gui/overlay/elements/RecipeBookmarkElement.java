@@ -39,10 +39,10 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	public RecipeBookmarkElement(RecipeBookmark<T, R> recipeBookmark, IDrawable icon, IIngredientManager ingredientManager, IRecipeTransferManager recipeTransferManager) {
 		this.recipeBookmark = recipeBookmark;
 		this.icon = icon;
-        this.clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-        this.ingredientManager = ingredientManager;
-        this.recipeTransferManager = recipeTransferManager;
-    }
+		this.clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		this.ingredientManager = ingredientManager;
+		this.recipeTransferManager = recipeTransferManager;
+	}
 
 	@Override
 	public ITypedIngredient<R> getTypedIngredient() {
@@ -98,18 +98,24 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 		for (BookmarkFeature feature : clientConfig.getBookmarkFeatures()) {
 			ClientTooltipComponent component = longTermCache.get(feature);
 			if (component == null || (component instanceof IBookmarkTooltip tooltip && !tooltip.longTerm())){
-				longTermCache.put(feature, component = createComponent(feature));
+				component = createComponent(feature).orElse(null);
+				longTermCache.put(feature, component);
 			}
-			components.add(component);
+			if (component != null) {
+				components.add(component);
+			}
 		}
 		return components;
 	}
 
-	private ClientTooltipComponent createComponent(BookmarkFeature feature){
-		return switch (feature) {
-			case PREVIEW -> new PreviewTooltipComponent(this.recipeBookmark.getRecipeLayoutDrawable(), recipeTransferManager);
-			case INGREDIENTS -> new IngredientsTooltipComponent(this.recipeBookmark.getRecipeLayoutDrawable(), ingredientManager);
-		};
+	private Optional<ClientTooltipComponent> createComponent(BookmarkFeature feature){
+		return this.recipeBookmark.createRecipeLayoutDrawable()
+			.map(layoutDrawable -> {
+				return switch (feature) {
+					case PREVIEW -> new PreviewTooltipComponent<>(layoutDrawable, recipeTransferManager);
+					case INGREDIENTS -> new IngredientsTooltipComponent(layoutDrawable, ingredientManager);
+				};
+			});
 	}
 
 }

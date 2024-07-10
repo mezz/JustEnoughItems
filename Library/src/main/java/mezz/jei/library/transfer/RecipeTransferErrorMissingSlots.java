@@ -18,7 +18,7 @@ public class RecipeTransferErrorMissingSlots extends RecipeTransferErrorTooltip 
 	}
 
 	@Override
-	public void drawHighlight(GuiGraphics guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
+	public void showError(GuiGraphics guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
 		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{

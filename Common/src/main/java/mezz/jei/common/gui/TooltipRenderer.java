@@ -73,7 +73,7 @@ public final class TooltipRenderer {
 			return;
 		}
 
-        IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		renderHelper.renderTooltip(screen, guiGraphics, components, x, y, font, itemStack);
 	}
 

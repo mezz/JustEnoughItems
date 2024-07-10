@@ -85,7 +85,6 @@ public class RenderHelper implements IPlatformRenderHelper {
 
 	@Override
 	public void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<ClientTooltipComponent> components, int x, int y, Font font, ItemStack stack) {
-		//neoform does support AT for neoforge patches
 		GuiGraphicsAccessor accessor = (GuiGraphicsAccessor) guiGraphics;
 		accessor.setTooltipStack(stack);
 		accessor.callRenderTooltipInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE);

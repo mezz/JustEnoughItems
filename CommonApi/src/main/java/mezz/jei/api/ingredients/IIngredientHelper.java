@@ -52,16 +52,28 @@ public interface IIngredientHelper<V> {
 		return getResourceLocation(ingredient).getNamespace();
 	}
 
-	default boolean countable(){
-		return false;
-	}
-
+	/**
+	 * Get the amount of an ingredient.
+	 * For example, an ItemStack's amount is its count.
+	 *
+	 * Returns -1 if this type of ingredient can't be counted.
+	 *
+	 * @since 19.4.0
+	 */
 	default long getAmount(V ingredient){
-		return 1;
+		return -1;
 	}
 
-	default @Nullable V merge(V first, V second) {
-		return null;
+	/**
+	 * Set the amount of an ingredient.
+	 * For example, an ItemStack's amount is its count.
+	 *
+	 * Does nothing if this ingredient can't store an amount.
+	 *
+	 * @since 19.4.0
+	 */
+	default V setAmount(V ingredient, long amount) {
+		return ingredient;
 	}
 
 	/**

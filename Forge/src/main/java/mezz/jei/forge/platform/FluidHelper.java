@@ -23,7 +23,6 @@ import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,12 +52,11 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	}
 
 	@Override
-	public @Nullable FluidStack merge(FluidStack first, FluidStack second) {
-		if (first.isEmpty() || second.isEmpty()) return null;
-		if (!first.isFluidEqual(second)) return null;
-		FluidStack merged = first.copy();
-		merged.grow(second.getAmount());
-		return merged;
+	public FluidStack setAmount(FluidStack ingredient, long amount) {
+		FluidStack copy = ingredient.copy();
+		int intAmount = Math.toIntExact(amount);
+		copy.setAmount(intAmount);
+		return copy;
 	}
 
 	@Override
