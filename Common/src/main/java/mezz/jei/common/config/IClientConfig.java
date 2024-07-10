@@ -24,6 +24,10 @@ public interface IClientConfig {
 
 	GiveMode getGiveMode();
 
+	List<BookmarkTooltipFeature> getBookmarkTooltipFeatures();
+
+	boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled();
+
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();

@@ -83,6 +83,16 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
+	public long getAmount(T ingredient) {
+		return platformFluidHelper.getAmount(ingredient);
+	}
+
+	@Override
+	public T copyWithAmount(T ingredient, long amount) {
+		return platformFluidHelper.copyWithAmount(ingredient, amount);
+	}
+
+	@Override
 	public Iterable<Integer> getColors(T ingredient) {
 		return platformFluidHelper.getStillFluidSprite(ingredient)
 			.map(fluidStillSprite -> {

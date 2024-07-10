@@ -17,12 +17,12 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
-public class RecipeBookmark<T, R> implements IBookmark {
-	private final IElement<R> element;
-	private final IRecipeCategory<T> recipeCategory;
-	private final T recipe;
+public class RecipeBookmark<R, I> implements IBookmark {
+	private final IElement<I> element;
+	private final IRecipeCategory<R> recipeCategory;
+	private final R recipe;
 	private final ResourceLocation recipeUid;
-	private final ITypedIngredient<R> recipeOutput;
+	private final ITypedIngredient<I> recipeOutput;
 	private boolean visible = true;
 
 	public static <T> Optional<RecipeBookmark<T, ?>> create(
@@ -55,10 +55,10 @@ public class RecipeBookmark<T, R> implements IBookmark {
 	}
 
 	public RecipeBookmark(
-		IRecipeCategory<T> recipeCategory,
-		T recipe,
+		IRecipeCategory<R> recipeCategory,
+		R recipe,
 		ResourceLocation recipeUid,
-		ITypedIngredient<R> recipeOutput,
+		ITypedIngredient<I> recipeOutput,
 		IDrawable icon
 	) {
 		this.recipeCategory = recipeCategory;
@@ -68,7 +68,7 @@ public class RecipeBookmark<T, R> implements IBookmark {
 		this.element = new RecipeBookmarkElement<>(this, icon);
 	}
 
-	public IRecipeCategory<T> getRecipeCategory() {
+	public IRecipeCategory<R> getRecipeCategory() {
 		return recipeCategory;
 	}
 
@@ -76,11 +76,11 @@ public class RecipeBookmark<T, R> implements IBookmark {
 		return recipeUid;
 	}
 
-	public T getRecipe() {
+	public R getRecipe() {
 		return recipe;
 	}
 
-	public ITypedIngredient<R> getRecipeOutput() {
+	public ITypedIngredient<I> getRecipeOutput() {
 		return recipeOutput;
 	}
 

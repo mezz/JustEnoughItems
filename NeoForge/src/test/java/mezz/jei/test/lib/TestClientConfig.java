@@ -1,5 +1,6 @@
 package mezz.jei.test.lib;
 
+import mezz.jei.common.config.BookmarkTooltipFeature;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.IngredientSortStage;
 import mezz.jei.common.config.IClientConfig;
@@ -53,6 +54,16 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public GiveMode getGiveMode() {
 		return GiveMode.INVENTORY;
+	}
+
+	@Override
+	public List<BookmarkTooltipFeature> getBookmarkTooltipFeatures() {
+		return List.of();
+	}
+
+	@Override
+	public boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled() {
+		return true;
 	}
 
 	@Override

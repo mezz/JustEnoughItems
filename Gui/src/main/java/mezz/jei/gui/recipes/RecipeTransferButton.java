@@ -6,7 +6,6 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
@@ -89,22 +88,13 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		if (isMouseOver(mouseX, mouseY)) {
-			if (recipeTransferError == null) {
-				Component tooltipTransfer = Component.translatable("jei.tooltip.transfer");
-				TooltipRenderer.drawHoveringText(guiGraphics, List.of(tooltipTransfer), mouseX, mouseY);
-			} else {
-				IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
-				Rect2i recipeRect = recipeLayout.getRect();
-				recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY());
-			}
-		}
-	}
-
-	@Override
 	protected void getTooltips(List<Component> tooltip) {
-
+		if (recipeTransferError == null) {
+			Component tooltipTransfer = Component.translatable("jei.tooltip.transfer");
+			tooltip.add(tooltipTransfer);
+		} else {
+			tooltip.addAll(recipeTransferError.getTooltip());
+		}
 	}
 
 	@Override
@@ -115,15 +105,22 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 	@Override
 	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		super.draw(guiGraphics, mouseX, mouseY, partialTicks);
-		if (this.recipeTransferError != null && this.recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
-			guiGraphics.fill(
-				RenderType.guiOverlay(),
-				this.button.getX(),
-				this.button.getY(),
-				this.button.getX() + this.button.getWidth(),
-				this.button.getY() + this.button.getHeight(),
-				this.recipeTransferError.getButtonHighlightColor()
-			);
+		if (this.recipeTransferError != null) {
+			if (this.recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
+				guiGraphics.fill(
+					RenderType.guiOverlay(),
+					this.button.getX(),
+					this.button.getY(),
+					this.button.getX() + this.button.getWidth(),
+					this.button.getY() + this.button.getHeight(),
+					this.recipeTransferError.getButtonHighlightColor()
+				);
+			}
+			if (isMouseOver(mouseX, mouseY)) {
+				IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
+				Rect2i recipeRect = recipeLayout.getRect();
+				recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY());
+			}
 		}
 	}
 

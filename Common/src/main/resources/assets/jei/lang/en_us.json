@@ -25,6 +25,7 @@
   "jei.tooltip.bookmarks.recipe": "%s Recipe Bookmark",
   "jei.tooltip.bookmarks.recipe.add": "Bookmark this recipe.",
   "jei.tooltip.bookmarks.recipe.remove": "Remove the bookmark for this recipe.",
+  "jei.tooltip.bookmarks.tooltips.usage": "[Hold %s to show recipe info]",
   "jei.tooltip.recipe.sort.bookmarks.first.enabled": "Show bookmarked recipes first (enabled)",
   "jei.tooltip.recipe.sort.bookmarks.first.disabled": "Show bookmarked recipes first (disabled)",
   "jei.tooltip.recipe.sort.craftable.first.enabled": "Show craftable recipes first (enabled)",
@@ -181,6 +182,7 @@
   "jei.key.combo.control": "CTRL + %s",
   "jei.key.combo.command": "CMD + %s",
   "jei.key.combo.alt": "ALT + %s",
+  "jei.key.shift": "SHIFT",
 
   "_comment": "DEBUG (for debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",

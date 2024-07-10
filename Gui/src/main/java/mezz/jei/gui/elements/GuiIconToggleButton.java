@@ -63,7 +63,7 @@ public abstract class GuiIconToggleButton {
 
 	}
 
-	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public final void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			List<Component> tooltip = new ArrayList<>();
 			getTooltips(tooltip);
