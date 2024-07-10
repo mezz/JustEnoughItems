@@ -24,4 +24,6 @@ accessible field net/minecraft/world/item/crafting/UpgradeRecipe addition Lnet/m
 
 accessible field net/minecraft/world/item/alchemy/PotionBrewing ALLOWED_CONTAINERS Ljava/util/List;
 
+accessible method net/minecraft/client/gui/screens/Screen renderTooltipInternal (Lcom/mojang/blaze3d/vertex/PoseStack;Ljava/util/List;II)V
+
 accessible method net/minecraft/world/inventory/GrindstoneMenu createResult ()V

@@ -1,14 +1,13 @@
 package mezz.jei.library.gui.elements;
 
-import mezz.jei.common.gui.elements.DrawableAnimated;
-import mezz.jei.common.gui.elements.DrawableResource;
-import net.minecraft.resources.ResourceLocation;
-
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.common.gui.elements.DrawableAnimated;
+import mezz.jei.common.gui.elements.DrawableResource;
 import mezz.jei.common.util.ErrorUtil;
+import net.minecraft.resources.ResourceLocation;
 
 public class DrawableBuilder implements IDrawableBuilder {
 	private final ResourceLocation resourceLocation;

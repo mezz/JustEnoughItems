@@ -10,9 +10,12 @@ import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.util.LimitedLogger;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -61,6 +64,38 @@ public final class TooltipRenderer {
 		T ingredient = typedIngredient.getIngredient();
 		Font font = ingredientRenderer.getFontRenderer(minecraft, ingredient);
 		drawHoveringText(poseStack, textLines, x, y, typedIngredient, font);
+	}
+
+	public static <T> void drawHoveringTooltip(
+		PoseStack poseStack,
+		List<ClientTooltipComponent> components,
+		int x,
+		int y,
+		ITypedIngredient<T> typedIngredient,
+		IIngredientRenderer<T> ingredientRenderer,
+		IIngredientManager ingredientManager
+	) {
+		Minecraft minecraft = Minecraft.getInstance();
+		T ingredient = typedIngredient.getIngredient();
+		Font font = ingredientRenderer.getFontRenderer(minecraft, ingredient);
+		ItemStack itemStack = typedIngredient.getItemStack().orElse(ItemStack.EMPTY);
+		try {
+			drawHoveringTooltip(poseStack, components, x, y, itemStack, font);
+		} catch (RuntimeException e) {
+			CrashReport crashReport = ErrorUtil.createIngredientCrashReport(e, "Rendering ingredient tooltip", ingredientManager, typedIngredient);
+			throw new ReportedException(crashReport);
+		}
+	}
+
+	private static void drawHoveringTooltip(PoseStack poseStack, List<ClientTooltipComponent> components, int x, int y, ItemStack itemStack, Font font) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Screen screen = minecraft.screen;
+		if (screen == null) {
+			return;
+		}
+
+		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+		renderHelper.renderTooltip(screen, poseStack, components, x, y, font, itemStack);
 	}
 
 	private static <T> void drawHoveringText(PoseStack poseStack, List<Component> textLines, int x, int y, ITypedIngredient<T> typedIngredient, Font font) {

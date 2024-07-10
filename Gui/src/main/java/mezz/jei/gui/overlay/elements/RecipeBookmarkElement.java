@@ -1,31 +1,57 @@
 package mezz.jei.gui.overlay.elements;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusFactory;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
+import mezz.jei.common.Internal;
+import mezz.jei.common.config.BookmarkTooltipFeature;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
+import mezz.jei.gui.overlay.bookmarks.IngredientsTooltipComponent;
+import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
 import mezz.jei.gui.overlay.ingredients.IngredientGridTooltipHelper;
 import mezz.jei.gui.util.FocusUtil;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.KeybindComponent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
 
 public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	private final RecipeBookmark<T, R> recipeBookmark;
 	private final IDrawable icon;
+	private final IClientConfig clientConfig;
+	private final EnumMap<BookmarkTooltipFeature, ClientTooltipComponent> cache = new EnumMap<>(BookmarkTooltipFeature.class);
 
 	public RecipeBookmarkElement(RecipeBookmark<T, R> recipeBookmark, IDrawable icon) {
 		this.recipeBookmark = recipeBookmark;
 		this.icon = icon;
+		this.clientConfig = Internal.getJeiClientConfigs().getClientConfig();
 	}
 
 	@Override
@@ -56,14 +82,92 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 
 	@Override
 	public void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<R> ingredientRenderer, IIngredientHelper<R> ingredientHelper) {
-		ITypedIngredient<R> ingredient = recipeBookmark.getRecipeOutput();
-		tooltipHelper.getRecipeTooltip(
-			tooltip,
+		ITypedIngredient<R> recipeOutput = recipeBookmark.getRecipeOutput();
+		T recipe = recipeBookmark.getRecipe();
+		IRecipeCategory<T> recipeCategory = recipeBookmark.getRecipeCategory();
+
+		tooltip.add(new TranslatableComponent("jei.tooltip.bookmarks.recipe", recipeCategory.getTitle()));
+		addBookmarkTooltipFeaturesIfEnabled(tooltip);
+
+		IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+		IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
+		IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
+
+		ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
+		if (recipeName != null) {
+			String recipeModId = recipeName.getNamespace();
+			ResourceLocation ingredientName = ingredientHelper.getResourceLocation(recipeOutput.getIngredient());
+			String ingredientModId = ingredientName.getNamespace();
+			if (!recipeModId.equals(ingredientModId)) {
+				String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
+				MutableComponent recipeBy = new TranslatableComponent("jei.tooltip.recipe.by", modName);
+				tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
+			}
+		}
+
+		tooltip.add(new TextComponent(""));
+		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
+	}
+
+	private void addBookmarkTooltipFeaturesIfEnabled(JeiTooltip tooltip) {
+		if (clientConfig.getBookmarkTooltipFeatures().isEmpty()) {
+			return;
+		}
+		if (clientConfig.isHoldShiftToShowBookmarkTooltipFeaturesEnabled()) {
+			if (Screen.hasShiftDown()) {
+				addBookmarkTooltipFeatures(tooltip);
+			} else {
+				Component shiftKey = new KeybindComponent("jei.key.shift")
+					.withStyle(ChatFormatting.BOLD);
+				Component component = new TranslatableComponent("jei.tooltip.bookmarks.tooltips.usage", shiftKey)
+					.withStyle(ChatFormatting.ITALIC)
+					.withStyle(ChatFormatting.GRAY);
+				tooltip.add(component);
+			}
+		} else {
+			addBookmarkTooltipFeatures(tooltip);
+		}
+	}
+
+	private void addBookmarkTooltipFeatures(JeiTooltip tooltip) {
+		@Nullable
+		IRecipeLayoutDrawable layoutDrawable = null;
+
+		for (BookmarkTooltipFeature feature : clientConfig.getBookmarkTooltipFeatures()) {
+			ClientTooltipComponent component = cache.get(feature);
+			if (component == null) {
+				if (layoutDrawable == null) {
+					layoutDrawable = createRecipeLayoutDrawable().orElse(null);
+					if (layoutDrawable == null) {
+						break;
+					}
+				}
+				component = createComponent(feature, layoutDrawable);
+				cache.put(feature, component);
+			}
+			tooltip.addClientTooltipComponent(component);
+		}
+	}
+
+	private ClientTooltipComponent createComponent(BookmarkTooltipFeature feature, IRecipeLayoutDrawable layoutDrawable) {
+		return switch (feature) {
+			case PREVIEW -> new PreviewTooltipComponent(layoutDrawable);
+			case INGREDIENTS -> new IngredientsTooltipComponent(layoutDrawable);
+		};
+	}
+
+	private Optional<IRecipeLayoutDrawable> createRecipeLayoutDrawable() {
+		IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+		IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
+		IFocusFactory focusFactory = jeiRuntime.getJeiHelpers().getFocusFactory();
+		IScalableDrawable recipePreviewBackground = Internal.getTextures().getRecipePreviewBackground();
+
+		return recipeManager.createRecipeLayoutDrawable(
 			recipeBookmark.getRecipeCategory(),
 			recipeBookmark.getRecipe(),
-			ingredient,
-			ingredientRenderer,
-			ingredientHelper
+			focusFactory.getEmptyFocusGroup(),
+			recipePreviewBackground,
+			4
 		);
 	}
 
