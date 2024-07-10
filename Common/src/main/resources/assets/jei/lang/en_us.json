@@ -25,7 +25,7 @@
   "jei.tooltip.bookmarks.recipe": "%s Recipe Bookmark",
   "jei.tooltip.bookmarks.recipe.add": "Bookmark this recipe.",
   "jei.tooltip.bookmarks.recipe.remove": "Remove the bookmark for this recipe.",
-  "jei.tooltip.bookmarks.tooltips.usage": "[Hold %s to show recipe info]",
+  "jei.tooltip.bookmarks.tooltips.usage": "[Hold %s to show recipe]",
   "jei.tooltip.recipe.sort.bookmarks.first.enabled": "Show bookmarked recipes first (enabled)",
   "jei.tooltip.recipe.sort.bookmarks.first.disabled": "Show bookmarked recipes first (disabled)",
   "jei.tooltip.recipe.sort.craftable.first.enabled": "Show craftable recipes first (enabled)",
