@@ -57,7 +57,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	}
 
 	@Override
-	public FluidStack setAmount(FluidStack ingredient, long amount) {
+	public FluidStack copyWithAmount(FluidStack ingredient, long amount) {
 		FluidStack copy = ingredient.copy();
 		int intAmount = Math.toIntExact(amount);
 		copy.setAmount(intAmount);

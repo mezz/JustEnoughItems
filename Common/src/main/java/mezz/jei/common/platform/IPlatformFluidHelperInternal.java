@@ -23,13 +23,13 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
 
 	long getAmount(T ingredient);
 
-	T setAmount(T ingredient, long amount);
-
 	DataComponentPatch getComponentsPatch(T ingredient);
 
 	List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag);
 
 	T copy(T ingredient);
+
+	T copyWithAmount(T ingredient, long amount);
 
 	T normalize(T ingredient);
 

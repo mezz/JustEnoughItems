@@ -78,10 +78,10 @@ public final class ClientConfig implements IClientConfig {
 			"How items should be handed to you"
 		);
 		bookmarkFeatures = advanced.addList(
-		"BookmarkFeatures",
-		BookmarkFeature.defaultBookmarkFeatures,
-		new ListSerializer<>(new EnumSerializer<>(BookmarkFeature.class)),
-		"Features for bookmarks"
+			"BookmarkFeatures",
+			BookmarkFeature.defaultBookmarkFeatures,
+			new ListSerializer<>(new EnumSerializer<>(BookmarkFeature.class)),
+			"Features for bookmarks"
 		);
 		maxRecipeGuiHeight = advanced.addInteger(
 			"RecipeGuiHeight",

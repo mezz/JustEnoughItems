@@ -116,7 +116,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	}
 
 	@Override
-	public IJeiFluidIngredient setAmount(IJeiFluidIngredient ingredient, long amount) {
+	public IJeiFluidIngredient copyWithAmount(IJeiFluidIngredient ingredient, long amount) {
 		return new JeiFluidIngredient(ingredient.getFluidVariant(), amount);
 	}
 }
