@@ -1,8 +1,6 @@
 package mezz.jei.library.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 
 import java.util.AbstractSet;
@@ -16,7 +14,7 @@ import java.util.Optional;
 public class IngredientSet<V> extends AbstractSet<V> {
 	private final IIngredientHelper<V> ingredientHelper;
 	private final UidContext context;
-	private final Map<Object, V> ingredients;
+	private final Map<String, V> ingredients;
 
 	public IngredientSet(IIngredientHelper<V> ingredientHelper, UidContext context) {
 		this.ingredientHelper = ingredientHelper;
@@ -24,26 +22,20 @@ public class IngredientSet<V> extends AbstractSet<V> {
 		this.ingredients = new LinkedHashMap<>();
 	}
 
-	private Object getUid(V ingredient) {
-		IIngredientType<V> ingredientType = ingredientHelper.getIngredientType();
-		if (ingredientType instanceof IIngredientTypeWithSubtypes<?,V> ingredientTypeWithSubtypes) {
-			if (!ingredientHelper.hasSubtypes(ingredient)) {
-				return ingredientTypeWithSubtypes.getBase(ingredient);
-			}
-		}
+	private String getUid(V ingredient) {
 		return ingredientHelper.getUniqueId(ingredient, context);
 	}
 
 	@Override
 	public boolean add(V v) {
-		Object uid = getUid(v);
+		String uid = getUid(v);
 		return ingredients.put(uid, v) == null;
 	}
 
 	@Override
 	public boolean remove(Object o) {
 		//noinspection unchecked
-		Object uid = getUid((V) o);
+		String uid = getUid((V) o);
 		return ingredients.remove(uid) != null;
 	}
 
