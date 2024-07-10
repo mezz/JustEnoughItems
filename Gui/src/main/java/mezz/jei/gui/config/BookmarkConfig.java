@@ -93,6 +93,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 
 				try {
 					Files.write(path, strings);
+					LOGGER.debug("Saved bookmarks list to file {}", path);
 				} catch (IOException e) {
 					LOGGER.error("Failed to save bookmarks list to file {}", path, e);
 				}

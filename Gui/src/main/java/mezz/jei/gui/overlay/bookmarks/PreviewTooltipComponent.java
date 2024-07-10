@@ -5,6 +5,7 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.transfer.RecipeTransferUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,11 +14,10 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
-public class PreviewTooltipComponent<R> implements ClientTooltipComponent, IBookmarkTooltip {
+public class PreviewTooltipComponent<R> implements ClientTooltipComponent {
 	private static final int UPDATE_INTERVAL_MS = 2000;
 
 	private final IRecipeLayoutDrawable<R> drawable;
@@ -70,22 +70,11 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, IBook
 		Screen screen = Minecraft.getInstance().screen;
 		if (screen instanceof AbstractContainerScreen<?> containerScreen) {
 			AbstractContainerMenu container = containerScreen.getMenu();
-			transferError = getTransferError(container, player);
+			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
+			transferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, container, drawable, player)
+				.orElse(null);
 		} else {
 			transferError = null;
 		}
-	}
-
-	@Nullable
-	private <C extends AbstractContainerMenu> IRecipeTransferError getTransferError(C container, Player player) {
-		IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
-		return recipeTransferManager.getRecipeTransferHandler(container, drawable.getRecipeCategory())
-			.map(handler -> handler.transferRecipe(container, drawable.getRecipe(), drawable.getRecipeSlotsView(), player, false, false))
-			.orElse(null);
-	}
-
-	@Override
-	public boolean isCacheable() {
-		return true;
 	}
 }

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class IngredientsTooltipComponent implements ClientTooltipComponent, IBookmarkTooltip {
+public class IngredientsTooltipComponent implements ClientTooltipComponent {
 	private final List<RenderElement<?>> ingredients;
 
 	public IngredientsTooltipComponent(IRecipeLayoutDrawable<?> layout) {
@@ -91,11 +91,6 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, IBoo
 			}
 			pose.popPose();
 		}
-	}
-
-	@Override
-	public boolean isCacheable() {
-		return false;
 	}
 
 	private static class SummaryElement<T> {

@@ -26,7 +26,8 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> lookupFluidContentsEnabled;
 	private final Supplier<Boolean> lookupBlockTagsEnabled;
 	private final Supplier<GiveMode> giveMode;
-	private final Supplier<List<BookmarkFeature>> bookmarkFeatures;
+	private final Supplier<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures;
+	private final Supplier<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
 	private final Supplier<Integer> maxRecipeGuiHeight;
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
 	private final ConfigValue<List<RecipeSorterStage>> recipeSorterStages;
@@ -77,18 +78,26 @@ public final class ClientConfig implements IClientConfig {
 			GiveMode.defaultGiveMode,
 			"How items should be handed to you"
 		);
-		bookmarkFeatures = advanced.addList(
-			"BookmarkFeatures",
-			BookmarkFeature.defaultBookmarkFeatures,
-			new ListSerializer<>(new EnumSerializer<>(BookmarkFeature.class)),
-			"Features for bookmarks"
-		);
+
 		maxRecipeGuiHeight = advanced.addInteger(
 			"RecipeGuiHeight",
 			defaultRecipeGuiHeight,
 			minRecipeGuiHeight,
 			Integer.MAX_VALUE,
 			"Max. recipe gui height"
+		);
+
+		IConfigCategoryBuilder bookmarkTooltips = schema.addCategory("bookmark_tooltips");
+		bookmarkTooltipFeatures = bookmarkTooltips.addList(
+			"BookmarkTooltipFeatures",
+			BookmarkTooltipFeature.DEFAULT_BOOKMARK_TOOLTIP_FEATURES,
+			new ListSerializer<>(new EnumSerializer<>(BookmarkTooltipFeature.class)),
+			"Extra features for bookmark tooltips"
+		);
+		holdShiftToShowBookmarkTooltipFeaturesEnabled = bookmarkTooltips.addBoolean(
+			"HoldShiftToShowBookmarkTooltipFeatures",
+			true,
+			"Hold shift to show bookmark tooltip features"
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
@@ -156,8 +165,13 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public List<BookmarkFeature> getBookmarkFeatures() {
-		return bookmarkFeatures.get();
+	public List<BookmarkTooltipFeature> getBookmarkTooltipFeatures() {
+		return bookmarkTooltipFeatures.get();
+	}
+
+	@Override
+	public boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled() {
+		return holdShiftToShowBookmarkTooltipFeaturesEnabled.get();
 	}
 
 	@Override

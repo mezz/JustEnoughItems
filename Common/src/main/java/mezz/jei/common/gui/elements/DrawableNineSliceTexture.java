@@ -4,15 +4,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import mezz.jei.api.gui.drawable.IScalableDrawable;
-import net.minecraft.client.gui.GuiGraphics;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.common.Constants;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.util.ImmutableRect2i;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
@@ -41,11 +40,6 @@ public class DrawableNineSliceTexture implements IScalableDrawable {
 		this.sliceRight = right;
 		this.sliceTop = top;
 		this.sliceBottom = bottom;
-	}
-
-	@Override
-	public void draw(GuiGraphics guiGraphics, Rect2i area) {
-		draw(guiGraphics, area.getX(), area.getY(), area.getWidth(), area.getHeight());
 	}
 
 	public void draw(GuiGraphics guiGraphics, ImmutableRect2i area) {

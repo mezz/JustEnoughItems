@@ -24,7 +24,9 @@ public interface IClientConfig {
 
 	GiveMode getGiveMode();
 
-	List<BookmarkFeature> getBookmarkFeatures();
+	List<BookmarkTooltipFeature> getBookmarkTooltipFeatures();
+
+	boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled();
 
 	int getMaxRecipeGuiHeight();
 

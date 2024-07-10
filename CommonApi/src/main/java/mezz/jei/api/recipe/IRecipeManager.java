@@ -142,7 +142,7 @@ public interface IRecipeManager {
 	 * @param background     the background image to draw behind the recipe layout.
 	 * @param borderSize     the number of pixels that the background should extend beyond the recipe layout on all sides
 	 *
-	 * @since 11.5.0
+	 * @since 19.4.0
 	 */
 	<T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
 			IRecipeCategory<T> recipeCategory,
