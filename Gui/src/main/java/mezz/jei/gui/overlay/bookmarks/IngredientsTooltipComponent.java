@@ -130,7 +130,7 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent {
 			IIngredientType<T> type = typedIngredient.getType();
 			IIngredientHelper<T> helper = ingredientManager.getIngredientHelper(type);
 			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
-			T ingredient = helper.setAmount(typedIngredient.getIngredient(), summaryElement.getAmount());
+			T ingredient = helper.copyWithAmount(typedIngredient.getIngredient(), summaryElement.getAmount());
 			return new RenderElement<>(renderer, ingredient);
 		}
 

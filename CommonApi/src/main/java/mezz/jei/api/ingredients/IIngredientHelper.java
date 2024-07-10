@@ -82,12 +82,12 @@ public interface IIngredientHelper<V> {
 	 * For example, an ItemStack's amount is its count.
 	 *
 	 * Does not mutate the given ingredient.
-	 * Does nothing if this ingredient can't store an amount.
+	 * If this ingredient can't store an amount, this just returns a copy.
 	 *
 	 * @since 19.4.0
 	 */
-	default V setAmount(V ingredient, long amount) {
-		return ingredient;
+	default V copyWithAmount(V ingredient, long amount) {
+		return copyIngredient(ingredient);
 	}
 
 	/**

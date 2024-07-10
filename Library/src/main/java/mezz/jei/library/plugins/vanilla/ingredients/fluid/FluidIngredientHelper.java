@@ -88,7 +88,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
-	public T setAmount(T ingredient, long amount) {
+	public T copyWithAmount(T ingredient, long amount) {
 		return platformFluidHelper.copyWithAmount(ingredient, amount);
 	}
 

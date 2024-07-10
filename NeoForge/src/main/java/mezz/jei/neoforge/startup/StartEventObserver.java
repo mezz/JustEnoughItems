@@ -158,13 +158,6 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 				if (this.state != State.LISTENING) {
 					throw new IllegalStateException("Attempted Illegal state transition from " + this.state + " to " + newState);
 				}
-
-				// debug performance
-//				for (int i = 0; i < 1000; i++) {
-//					this.startRunnable.run();
-//					this.stopRunnable.run();
-//				}
-
 				this.startRunnable.run();
 			}
 		}

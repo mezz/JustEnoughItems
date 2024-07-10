@@ -139,22 +139,23 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	}
 
 	private void addBookmarkTooltipFeaturesIfEnabled(List<ClientTooltipComponent> components) {
-		if (!clientConfig.getBookmarkTooltipFeatures().isEmpty()) {
-			if (clientConfig.isHoldShiftToShowBookmarkTooltipFeaturesEnabled()) {
-				if (Screen.hasShiftDown()) {
-					addBookmarkTooltipFeatures(components);
-				} else {
-					Component shiftKey = Component.keybind("jei.key.shift")
-						.withStyle(ChatFormatting.BOLD);
-					Component component = Component.translatable("jei.tooltip.bookmarks.tooltips.usage", shiftKey)
-						.withStyle(ChatFormatting.ITALIC)
-						.withStyle(ChatFormatting.GRAY);
-					ClientTooltipComponent tooltipComponent = ClientTooltipComponent.create(component.getVisualOrderText());
-					components.add(tooltipComponent);
-				}
-			} else {
+		if (clientConfig.getBookmarkTooltipFeatures().isEmpty()) {
+			return;
+		}
+		if (clientConfig.isHoldShiftToShowBookmarkTooltipFeaturesEnabled()) {
+			if (Screen.hasShiftDown()) {
 				addBookmarkTooltipFeatures(components);
+			} else {
+				Component shiftKey = Component.keybind("jei.key.shift")
+					.withStyle(ChatFormatting.BOLD);
+				Component component = Component.translatable("jei.tooltip.bookmarks.tooltips.usage", shiftKey)
+					.withStyle(ChatFormatting.ITALIC)
+					.withStyle(ChatFormatting.GRAY);
+				ClientTooltipComponent tooltipComponent = ClientTooltipComponent.create(component.getVisualOrderText());
+				components.add(tooltipComponent);
 			}
+		} else {
+			addBookmarkTooltipFeatures(components);
 		}
 	}
 
@@ -185,8 +186,9 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	}
 
 	private Optional<IRecipeLayoutDrawable<R>> createRecipeLayoutDrawable() {
-		IRecipeManager recipeManager = Internal.getJeiRuntime().getRecipeManager();
-		IFocusFactory focusFactory = Internal.getJeiRuntime().getJeiHelpers().getFocusFactory();
+		IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+		IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
+		IFocusFactory focusFactory = jeiRuntime.getJeiHelpers().getFocusFactory();
 		IScalableDrawable recipePreviewBackground = Internal.getTextures().getRecipePreviewBackground();
 
 		return recipeManager.createRecipeLayoutDrawable(

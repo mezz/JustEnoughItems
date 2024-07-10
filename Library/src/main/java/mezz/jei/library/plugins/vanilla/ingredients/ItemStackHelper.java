@@ -108,7 +108,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
-	public ItemStack setAmount(ItemStack ingredient, long amount) {
+	public ItemStack copyWithAmount(ItemStack ingredient, long amount) {
 		ItemStack copy = ingredient.copy();
 		int intAmount = Math.toIntExact(amount);
 		copy.setCount(intAmount);
