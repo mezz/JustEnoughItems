@@ -2,8 +2,11 @@ package mezz.jei.api.recipe.transfer;
 
 import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+
+import java.util.List;
 
 /**
  * A reason that a recipe transfer couldn't happen.
@@ -56,12 +59,21 @@ public interface IRecipeTransferError {
 	}
 
 	/**
-	 * Called on {@link Type#USER_FACING} errors.
+	 * Called on {@link Type#USER_FACING} and {@link Type#COSMETIC} errors.
 	 *
 	 * @since 9.3.0
 	 */
 	default void showError(GuiGraphics guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
 
+	}
+
+	/**
+	 * Called on {@link Type#USER_FACING} and {@link Type#COSMETIC} errors.
+	 *
+	 * @since 15.7.0
+	 */
+	default List<Component> getTooltip() {
+		return List.of();
 	}
 
 	/**

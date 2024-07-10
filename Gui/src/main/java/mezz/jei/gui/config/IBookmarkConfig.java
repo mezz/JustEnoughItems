@@ -13,5 +13,5 @@ import java.util.Collection;
 public interface IBookmarkConfig {
 	void saveBookmarks(IRecipeManager recipeManager, IFocusFactory focusFactory, IGuiHelper guiHelper, IIngredientManager ingredientManager, RegistryAccess registryAccess, Collection<IBookmark> bookmarks);
 
-	void loadBookmarks(IRecipeManager recipeManager, IFocusFactory focusFactory, IGuiHelper guiHelper,IIngredientManager ingredientManager, RegistryAccess registryAccess, BookmarkList bookmarkList);
+	void loadBookmarks(IRecipeManager recipeManager, IFocusFactory focusFactory, IGuiHelper guiHelper, IIngredientManager ingredientManager, RegistryAccess registryAccess, BookmarkList bookmarkList);
 }

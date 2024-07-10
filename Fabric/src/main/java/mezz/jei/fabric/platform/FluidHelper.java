@@ -143,4 +143,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 				.orElse(IIngredientSubtypeInterpreter.NONE);
 		}
 	}
+
+	@Override
+	public IJeiFluidIngredient copyWithAmount(IJeiFluidIngredient ingredient, long amount) {
+		CompoundTag tag = ingredient.getTag().orElse(null);
+		return new JeiFluidIngredient(ingredient.getFluid(), amount, tag);
+	}
 }

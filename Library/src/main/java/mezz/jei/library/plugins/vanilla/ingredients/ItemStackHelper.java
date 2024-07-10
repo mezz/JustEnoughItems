@@ -101,6 +101,19 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	public long getAmount(ItemStack ingredient) {
+		return ingredient.getCount();
+	}
+
+	@Override
+	public ItemStack copyWithAmount(ItemStack ingredient, long amount) {
+		ItemStack copy = ingredient.copy();
+		int intAmount = Math.toIntExact(amount);
+		copy.setCount(intAmount);
+		return copy;
+	}
+
+	@Override
 	public Iterable<Integer> getColors(ItemStack ingredient) {
 		return colorHelper.getColors(ingredient, 2);
 	}

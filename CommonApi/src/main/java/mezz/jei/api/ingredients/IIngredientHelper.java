@@ -66,6 +66,31 @@ public interface IIngredientHelper<V> {
 	}
 
 	/**
+	 * Get the amount of an ingredient.
+	 * For example, an ItemStack's amount is its count.
+	 *
+	 * Returns -1 if this type of ingredient can't be counted.
+	 *
+	 * @since 15.7.0
+	 */
+	default long getAmount(V ingredient){
+		return -1;
+	}
+
+	/**
+	 * Creates an ingredient with the given amount.
+	 * For example, an ItemStack's amount is its count.
+	 *
+	 * Does not mutate the given ingredient.
+	 * If this ingredient can't store an amount, this just returns a copy.
+	 *
+	 * @since 15.7.0
+	 */
+	default V copyWithAmount(V ingredient, long amount) {
+		return copyIngredient(ingredient);
+	}
+
+	/**
 	 * Get the main colors of this ingredient. Used for the color search.
 	 * If this is too difficult to implement for your ingredient, just return an empty collection.
 	 * @see mezz.jei.api.helpers.IColorHelper

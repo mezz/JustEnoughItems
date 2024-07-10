@@ -65,6 +65,13 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 		return Optional.ofNullable(ingredient.getTag());
 	}
 
+	public FluidStack copyWithAmount(FluidStack ingredient, long amount) {
+		FluidStack copy = ingredient.copy();
+		int intAmount = Math.toIntExact(amount);
+		copy.setAmount(intAmount);
+		return copy;
+	}
+
 	@Override
 	public List<Component> getTooltip(FluidStack ingredient, TooltipFlag tooltipFlag) {
 		List<Component> tooltip = new ArrayList<>();

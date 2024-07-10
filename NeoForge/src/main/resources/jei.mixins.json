@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "mezz.jei.neoforge.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "GuiGraphicsAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

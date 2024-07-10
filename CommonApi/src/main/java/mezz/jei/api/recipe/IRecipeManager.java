@@ -2,6 +2,7 @@ package mezz.jei.api.recipe;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -129,6 +130,26 @@ public interface IRecipeManager {
 		IRecipeCategory<T> recipeCategory,
 		T recipe,
 		IFocusGroup focusGroup
+	);
+
+	/**
+	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
+	 * Use a custom background to draw behind the recipe.
+	 *
+	 * @param recipeCategory the recipe category that the recipe belongs to
+	 * @param recipe         the specific recipe to draw.
+	 * @param focusGroup     the focuses of the recipe layout.
+	 * @param background     the background image to draw behind the recipe layout.
+	 * @param borderSize     the number of pixels that the background should extend beyond the recipe layout on all sides
+	 *
+	 * @since 15.7.0
+	 */
+	<T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
+			IRecipeCategory<T> recipeCategory,
+			T recipe,
+			IFocusGroup focusGroup,
+			IScalableDrawable background,
+			int borderSize
 	);
 
 	/**

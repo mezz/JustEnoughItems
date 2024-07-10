@@ -3,6 +3,7 @@ package mezz.jei.library.gui.recipes;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -16,7 +17,6 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
@@ -35,7 +35,7 @@ import java.util.Optional;
 
 public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int RECIPE_BORDER_PADDING = 4;
+	private static final int DEFAULT_RECIPE_BORDER_PADDING = 4;
 	public static final int RECIPE_BUTTON_SIZE = 13;
 	public static final int RECIPE_BUTTON_SPACING = 2;
 
@@ -44,15 +44,43 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private final Collection<IRecipeCategoryDecorator<R>> recipeCategoryDecorators;
 	private final RecipeSlots recipeSlots;
 	private final R recipe;
-	private final DrawableNineSliceTexture recipeBorder;
+	private final IScalableDrawable recipeBackground;
+	private final int recipeBorderPadding;
 	private ImmutableRect2i recipeTransferButtonArea;
 	@Nullable
 	private ShapelessIcon shapelessIcon;
 
 	private ImmutableRect2i area;
 
-	public static <T> Optional<IRecipeLayoutDrawable<T>> create(IRecipeCategory<T> recipeCategory, Collection<IRecipeCategoryDecorator<T>> decorators, T recipe, IFocusGroup focuses, IIngredientManager ingredientManager) {
-		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, decorators, recipe);
+	public static <T> Optional<IRecipeLayoutDrawable<T>> create(
+		IRecipeCategory<T> recipeCategory,
+		Collection<IRecipeCategoryDecorator<T>> decorators,
+		T recipe,
+		IFocusGroup focuses,
+		IIngredientManager ingredientManager
+	) {
+		DrawableNineSliceTexture recipeBackground = Internal.getTextures().getRecipeBackground();
+		return create(
+			recipeCategory,
+			decorators,
+			recipe,
+			focuses,
+			ingredientManager,
+			recipeBackground,
+			DEFAULT_RECIPE_BORDER_PADDING
+		);
+	}
+
+	public static <T> Optional<IRecipeLayoutDrawable<T>> create(
+		IRecipeCategory<T> recipeCategory,
+		Collection<IRecipeCategoryDecorator<T>> decorators,
+		T recipe,
+		IFocusGroup focuses,
+		IIngredientManager ingredientManager,
+		IScalableDrawable recipeBackground,
+		int recipeBorderPadding
+	) {
+		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, decorators, recipe, recipeBackground, recipeBorderPadding);
 		if (recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses, ingredientManager)) {
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 			if (recipeName != null) {
@@ -99,11 +127,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	public RecipeLayout(
 		IRecipeCategory<R> recipeCategory,
 		Collection<IRecipeCategoryDecorator<R>> recipeCategoryDecorators,
-		R recipe
+		R recipe,
+		IScalableDrawable recipeBackground,
+		int recipeBorderPadding
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
 		this.recipeSlots = new RecipeSlots();
+		this.recipeBorderPadding = recipeBorderPadding;
 		this.area = new ImmutableRect2i(
 			0,
 			0,
@@ -112,15 +143,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		);
 
 		this.recipeTransferButtonArea = new ImmutableRect2i(
-			area.getWidth() + RECIPE_BORDER_PADDING + RECIPE_BUTTON_SPACING,
-			area.getHeight() + RECIPE_BORDER_PADDING - RECIPE_BUTTON_SIZE,
+			area.getWidth() + recipeBorderPadding + RECIPE_BUTTON_SPACING,
+			area.getHeight() + recipeBorderPadding - RECIPE_BUTTON_SIZE,
 			RECIPE_BUTTON_SIZE,
 			RECIPE_BUTTON_SIZE
 		);
 
 		this.recipe = recipe;
-		Textures textures = Internal.getTextures();
-		this.recipeBorder = textures.getRecipeBackground();
+		this.recipeBackground = recipeBackground;
 	}
 
 	@Override
@@ -138,7 +168,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		IDrawable background = recipeCategory.getBackground();
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		recipeBorder.draw(guiGraphics, getRectWithBorder());
+		recipeBackground.draw(guiGraphics, getRectWithBorder());
 
 		final int recipeMouseX = mouseX - area.getX();
 		final int recipeMouseY = mouseY - area.getY();
@@ -238,7 +268,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	@Override
 	public Rect2i getRectWithBorder() {
-		return area.expandBy(RECIPE_BORDER_PADDING).toMutable();
+		return area.expandBy(recipeBorderPadding).toMutable();
 	}
 
 	@Override

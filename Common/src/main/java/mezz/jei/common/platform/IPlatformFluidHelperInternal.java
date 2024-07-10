@@ -32,6 +32,8 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
 
 	T copy(T ingredient);
 
+	T copyWithAmount(T ingredient, long amount);
+
 	T normalize(T ingredient);
 
 	Optional<T> getContainedFluid(ITypedIngredient<?> ingredient);
