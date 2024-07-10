@@ -78,7 +78,6 @@ public final class ClientConfig implements IClientConfig {
 			GiveMode.defaultGiveMode,
 			"How items should be handed to you"
 		);
-
 		maxRecipeGuiHeight = advanced.addInteger(
 			"RecipeGuiHeight",
 			defaultRecipeGuiHeight,

@@ -12,6 +12,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -23,6 +24,8 @@ import java.util.Map;
 import java.util.Optional;
 
 public class IngredientsTooltipComponent implements ClientTooltipComponent {
+	private static final int MAX_INGREDIENTS_PER_ROW = 16;
+	private static final int INGREDIENT_SIZE = 18;
 	private final List<RenderElement<?>> ingredients;
 
 	public IngredientsTooltipComponent(IRecipeLayoutDrawable<?> layout) {
@@ -71,22 +74,24 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent {
 
 	@Override
 	public int getHeight() {
-		return 16;
+		return INGREDIENT_SIZE * MathUtil.divideCeil(ingredients.size(), MAX_INGREDIENTS_PER_ROW);
 	}
 
 	@Override
 	public int getWidth(Font font) {
-		return ingredients.size() * 16;
+		return INGREDIENT_SIZE * Math.min(ingredients.size(), MAX_INGREDIENTS_PER_ROW);
 	}
 
 	@Override
 	public void renderImage(Font font, int x, int y, GuiGraphics guiGraphics) {
 		for (int i = 0; i < ingredients.size(); i++) {
+			int elementX = 1 + x + ((i % MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);
+			int elementY = 1 + y + ((i / MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);
 			RenderElement<?> renderElement = ingredients.get(i);
 			PoseStack pose = guiGraphics.pose();
 			pose.pushPose();
 			{
-				pose.translate(x + i * 16, y, 0);
+				pose.translate(elementX, elementY, 0);
 				renderElement.render(guiGraphics);
 			}
 			pose.popPose();
