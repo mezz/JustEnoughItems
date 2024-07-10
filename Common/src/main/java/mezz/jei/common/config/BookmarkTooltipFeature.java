@@ -6,5 +6,5 @@ public enum BookmarkTooltipFeature {
 	PREVIEW,
 	INGREDIENTS;
 
-	public static final List<BookmarkTooltipFeature> DEFAULT_BOOKMARK_TOOLTIP_FEATURES = List.of(PREVIEW, INGREDIENTS);
+	public static final List<BookmarkTooltipFeature> DEFAULT_BOOKMARK_TOOLTIP_FEATURES = List.of(PREVIEW);
 }
