@@ -30,6 +30,8 @@ public final class ClientConfig implements IClientConfig {
 	// bookmarks
 	private final Supplier<Boolean> addBookmarksToFrontEnabled;
 	private final Supplier<Boolean> dragToRearrangeBookmarksEnabled;
+	private final Supplier<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures;
+	private final Supplier<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
 
 	// advanced
 	private final ConfigValue<Boolean> lowMemorySlowSearchEnabled;
@@ -88,6 +90,19 @@ public final class ClientConfig implements IClientConfig {
 			"DragToRearrangeBookmarksEnabled",
 			true,
 			"Drag bookmarks to rearrange them in the list."
+		);
+
+		IConfigCategoryBuilder bookmarkTooltips = schema.addCategory("bookmark_tooltips");
+		bookmarkTooltipFeatures = bookmarkTooltips.addList(
+			"BookmarkTooltipFeatures",
+			BookmarkTooltipFeature.DEFAULT_BOOKMARK_TOOLTIP_FEATURES,
+			new ListSerializer<>(new EnumSerializer<>(BookmarkTooltipFeature.class)),
+			"Extra features for bookmark tooltips."
+		);
+		holdShiftToShowBookmarkTooltipFeaturesEnabled = bookmarkTooltips.addBoolean(
+			"HoldShiftToShowBookmarkTooltipFeatures",
+			true,
+			"Hold shift to show bookmark tooltip features."
 		);
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
@@ -217,6 +232,16 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public int getSmoothScrollRate() {
 		return smoothScrollRate.get();
+	}
+
+	@Override
+	public List<BookmarkTooltipFeature> getBookmarkTooltipFeatures() {
+		return bookmarkTooltipFeatures.get();
+	}
+
+	@Override
+	public boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled() {
+		return holdShiftToShowBookmarkTooltipFeaturesEnabled.get();
 	}
 
 	@Override

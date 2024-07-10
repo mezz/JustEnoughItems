@@ -22,6 +22,7 @@ import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 
 public class JeiTooltip implements ITooltipBuilder {
 	private final List<Component> lines = new ArrayList<>();
+	private final List<Object> orderedComponents = new ArrayList<>();
 	private @Nullable ITypedIngredient<?> typedIngredient;
 
 	@Override
@@ -48,6 +50,11 @@ public class JeiTooltip implements ITooltipBuilder {
 			return;
 		}
 		lines.add(formattedText);
+		orderedComponents.add(formattedText);
+	}
+
+	public void addClientTooltipComponent(ClientTooltipComponent component) {
+		orderedComponents.add(component);
 	}
 
 	@Override
@@ -79,15 +86,17 @@ public class JeiTooltip implements ITooltipBuilder {
 	@Override
 	public void clear() {
 		this.lines.clear();
+		this.orderedComponents.clear();
 		this.typedIngredient = null;
 	}
 
 	public void addAll(JeiTooltip tooltip) {
 		lines.addAll(tooltip.lines);
+		orderedComponents.addAll(tooltip.orderedComponents);
 	}
 
 	public boolean isEmpty() {
-		return lines.isEmpty() && typedIngredient == null;
+		return orderedComponents.isEmpty() && typedIngredient == null;
 	}
 
 	@Override
@@ -157,13 +166,35 @@ public class JeiTooltip implements ITooltipBuilder {
 		}
 		try {
 			IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-			renderHelper.renderTooltip(screen, poseStack, lines, tooltipImage, x, y, font, itemStack);
+			if (hasClientTooltipComponents()) {
+				List<ClientTooltipComponent> tooltipComponents = getClientTooltipComponents();
+				renderHelper.renderTooltip(screen, poseStack, tooltipComponents, x, y, font, itemStack);
+			} else {
+				renderHelper.renderTooltip(screen, poseStack, lines, tooltipImage, x, y, font, itemStack);
+			}
 		} catch (RuntimeException e) {
 			CrashReport crashReport = ErrorUtil.createIngredientCrashReport(e, "Rendering ingredient tooltip", ingredientManager, typedIngredient);
 			crashReport.addCategory("tooltip")
 				.setDetail("value", this);
 			throw new ReportedException(crashReport);
 		}
+	}
+
+	private boolean hasClientTooltipComponents() {
+		return orderedComponents.stream()
+			.anyMatch(ClientTooltipComponent.class::isInstance);
+	}
+
+	private List<ClientTooltipComponent> getClientTooltipComponents() {
+		return orderedComponents.stream()
+			.map(component -> {
+				if (component instanceof ClientTooltipComponent clientTooltipComponent) {
+					return clientTooltipComponent;
+				}
+				Component line = (Component) component;
+				return ClientTooltipComponent.create(line.getVisualOrderText());
+			})
+			.toList();
 	}
 
 	private <T> void addDebugInfo(IIngredientManager ingredientManager,  ITypedIngredient<T> typedIngredient) {

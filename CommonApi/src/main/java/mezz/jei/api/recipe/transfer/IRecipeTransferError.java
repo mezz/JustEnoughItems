@@ -3,8 +3,11 @@ package mezz.jei.api.recipe.transfer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+
+import java.util.List;
 
 /**
  * A reason that a recipe transfer couldn't happen.
@@ -57,7 +60,7 @@ public interface IRecipeTransferError {
 	}
 
 	/**
-	 * Called on {@link Type#USER_FACING} errors.
+	 * Called on {@link Type#USER_FACING} and {@link Type#COSMETIC} errors.
 	 *
 	 * @since 9.3.0
 	 */
@@ -72,6 +75,15 @@ public interface IRecipeTransferError {
 	 */
 	default void getTooltip(ITooltipBuilder tooltip) {
 
+	}
+
+	/**
+	 * Called on {@link Type#USER_FACING} and {@link Type#COSMETIC} errors.
+	 *
+	 * @since 11.29.0
+	 */
+	default List<Component> getTooltip() {
+		return List.of();
 	}
 
 	/**

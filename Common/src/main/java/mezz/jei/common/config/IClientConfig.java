@@ -31,6 +31,10 @@ public interface IClientConfig {
 
 	int getSmoothScrollRate();
 
+	List<BookmarkTooltipFeature> getBookmarkTooltipFeatures();
+
+	boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled();
+
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();
