@@ -85,7 +85,7 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, IBook
 	}
 
 	@Override
-	public boolean longTerm() {
+	public boolean isCacheable() {
 		return true;
 	}
 }

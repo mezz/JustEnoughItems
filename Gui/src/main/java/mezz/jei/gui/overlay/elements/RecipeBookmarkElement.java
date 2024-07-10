@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay.elements;
 
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -33,7 +34,7 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	private final RecipeBookmark<T, R> recipeBookmark;
 	private final IDrawable icon;
 	private final IClientConfig clientConfig;
-	private final EnumMap<BookmarkFeature, ClientTooltipComponent> longTermCache = new EnumMap<>(BookmarkFeature.class);
+	private final EnumMap<BookmarkFeature, ClientTooltipComponent> cache = new EnumMap<>(BookmarkFeature.class);
 
 	public RecipeBookmarkElement(RecipeBookmark<T, R> recipeBookmark, IDrawable icon) {
 		this.recipeBookmark = recipeBookmark;
@@ -92,37 +93,44 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	@Override
 	public List<ClientTooltipComponent> getTooltipComponents(IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<R> ingredientRenderer, IIngredientHelper<R> ingredientHelper) {
 		List<ClientTooltipComponent> components = IElement.super.getTooltipComponents(tooltipHelper, ingredientRenderer, ingredientHelper);
-		for (BookmarkFeature feature : clientConfig.getBookmarkFeatures()) {
-			ClientTooltipComponent component = longTermCache.get(feature);
-			if (component == null || (component instanceof IBookmarkTooltip tooltip && !tooltip.longTerm())){
-				component = createComponent(feature).orElse(null);
-				longTermCache.put(feature, component);
-			}
-			if (component != null) {
-				components.add(component);
-			}
+		if (clientConfig.getBookmarkFeatures().isEmpty()) {
+			return components;
 		}
+
+		createRecipeLayoutDrawable()
+			.ifPresent(layoutDrawable -> {
+				for (BookmarkFeature feature : clientConfig.getBookmarkFeatures()) {
+					ClientTooltipComponent component = cache.get(feature);
+					if (component == null || (component instanceof IBookmarkTooltip tooltip && !tooltip.isCacheable())){
+						component = createComponent(feature, layoutDrawable);
+						cache.put(feature, component);
+					}
+					components.add(component);
+				}
+			});
+
 		return components;
 	}
 
-	private Optional<ClientTooltipComponent> createComponent(BookmarkFeature feature) {
+	private ClientTooltipComponent createComponent(BookmarkFeature feature, IRecipeLayoutDrawable<T> layoutDrawable) {
+		return switch (feature) {
+			case PREVIEW -> new PreviewTooltipComponent<>(layoutDrawable);
+			case INGREDIENTS -> new IngredientsTooltipComponent(layoutDrawable);
+		};
+	}
+
+	private Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable() {
 		IRecipeManager recipeManager = Internal.getJeiRuntime().getRecipeManager();
 		IFocusFactory focusFactory = Internal.getJeiRuntime().getJeiHelpers().getFocusFactory();
 		IScalableDrawable recipePreviewBackground = Internal.getTextures().getRecipePreviewBackground();
 
 		return recipeManager.createRecipeLayoutDrawable(
-				recipeBookmark.getRecipeCategory(),
-				recipeBookmark.getRecipe(),
-				focusFactory.getEmptyFocusGroup(),
-				recipePreviewBackground,
-				4
-			)
-			.map(layoutDrawable -> {
-				return switch (feature) {
-					case PREVIEW -> new PreviewTooltipComponent<>(layoutDrawable);
-					case INGREDIENTS -> new IngredientsTooltipComponent(layoutDrawable);
-				};
-			});
+			recipeBookmark.getRecipeCategory(),
+			recipeBookmark.getRecipe(),
+			focusFactory.getEmptyFocusGroup(),
+			recipePreviewBackground,
+			4
+		);
 	}
 
 	@Override

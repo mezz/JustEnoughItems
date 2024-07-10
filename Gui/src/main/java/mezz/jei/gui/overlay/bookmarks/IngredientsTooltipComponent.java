@@ -94,7 +94,7 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, IBoo
 	}
 
 	@Override
-	public boolean longTerm() {
+	public boolean isCacheable() {
 		return false;
 	}
 

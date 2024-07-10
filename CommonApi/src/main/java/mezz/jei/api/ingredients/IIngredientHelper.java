@@ -78,9 +78,10 @@ public interface IIngredientHelper<V> {
 	}
 
 	/**
-	 * Set the amount of an ingredient.
+	 * Creates an ingredient with the given amount.
 	 * For example, an ItemStack's amount is its count.
 	 *
+	 * Does not mutate the given ingredient.
 	 * Does nothing if this ingredient can't store an amount.
 	 *
 	 * @since 19.4.0
