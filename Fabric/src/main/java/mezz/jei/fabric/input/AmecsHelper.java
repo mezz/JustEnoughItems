@@ -3,6 +3,7 @@ package mezz.jei.fabric.input;
 import com.mojang.blaze3d.platform.InputConstants;
 import de.siphalor.amecs.api.KeyModifier;
 import de.siphalor.amecs.api.KeyModifiers;
+import mezz.jei.common.gui.TooltipHelper;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 import net.minecraft.network.chat.Component;
 
@@ -39,7 +40,7 @@ public class AmecsHelper {
 	}
 
 	public static Component getCombinedName(KeyModifiers modifiers, InputConstants.Key key) {
-		Component component = key.getDisplayName();
+		Component component = TooltipHelper.getKeyDisplayName(key);
 		for (JeiKeyModifier modifier : getJeiModifiers(modifiers)) {
 			component = modifier.getCombinedName(component);
 		}

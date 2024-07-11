@@ -13,26 +13,37 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.BookmarkTooltipFeature;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
+import mezz.jei.common.transfer.RecipeTransferUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
+import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.bookmarks.IngredientsTooltipComponent;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
 import mezz.jei.gui.overlay.ingredients.IngredientGridTooltipHelper;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
@@ -44,6 +55,8 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	private final IDrawable icon;
 	private final IClientConfig clientConfig;
 	private final EnumMap<BookmarkTooltipFeature, ClientTooltipComponent> cache = new EnumMap<>(BookmarkTooltipFeature.class);
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	private @Nullable Optional<IRecipeLayoutDrawable<T>> cachedLayoutDrawable;
 
 	public RecipeBookmarkElement(RecipeBookmark<T, R> recipeBookmark, IDrawable icon) {
 		this.recipeBookmark = recipeBookmark;
@@ -64,6 +77,32 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	@Override
 	public @Nullable IDrawable createRenderOverlay() {
 		return new RecipeBookmarkOverlay(icon);
+	}
+
+	@Override
+	public boolean handleClick(UserInput input, IInternalKeyMappings keyBindings) {
+		boolean transferOnce = input.is(keyBindings.getTransferRecipeBookmark());
+		boolean transferMax = input.is(keyBindings.getMaxTransferRecipeBookmark());
+		if (transferOnce || transferMax) {
+			Minecraft minecraft = Minecraft.getInstance();
+			Screen screen = minecraft.screen;
+			Player player = minecraft.player;
+			if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
+				IRecipeLayoutDrawable<T> recipeLayout = getRecipeLayoutDrawable().orElse(null);
+				if (recipeLayout == null) {
+					return false;
+				}
+
+				IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
+				AbstractContainerMenu container = containerScreen.getMenu();
+				if (input.isSimulate()) {
+					IRecipeTransferError recipeTransferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, container, recipeLayout, player).orElse(null);
+					return recipeTransferError == null || recipeTransferError.getType().allowsTransfer;
+				}
+				return RecipeTransferUtil.transferRecipe(recipeTransferManager, container, recipeLayout, player, transferMax);
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -107,13 +146,16 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	}
 
 	private void addBookmarkTooltipFeaturesIfEnabled(JeiTooltip tooltip) {
-		if (clientConfig.getBookmarkTooltipFeatures().isEmpty()) {
+		JeiTooltip transferComponents = createTransferComponents();
+
+		if (clientConfig.getBookmarkTooltipFeatures().isEmpty() && transferComponents.isEmpty()) {
 			return;
 		}
 		if (clientConfig.isHoldShiftToShowBookmarkTooltipFeaturesEnabled()) {
 			IJeiKeyMappingInternal showBookmarkTooltipFeatures = Internal.getKeyMappings().getShowBookmarkTooltipFeatures();
 			if (showBookmarkTooltipFeatures.isDown()) {
 				addBookmarkTooltipFeatures(tooltip);
+				tooltip.addAll(transferComponents);
 			} else {
 				tooltip.addKeyUsageComponent(
 					"jei.tooltip.bookmarks.tooltips.usage",
@@ -122,20 +164,17 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 			}
 		} else {
 			addBookmarkTooltipFeatures(tooltip);
+			tooltip.addAll(transferComponents);
 		}
 	}
 
 	private void addBookmarkTooltipFeatures(JeiTooltip tooltip) {
-		@Nullable IRecipeLayoutDrawable<T> layoutDrawable = null;
-
 		for (BookmarkTooltipFeature feature : clientConfig.getBookmarkTooltipFeatures()) {
 			ClientTooltipComponent component = cache.get(feature);
 			if (component == null) {
+				IRecipeLayoutDrawable<T> layoutDrawable = getRecipeLayoutDrawable().orElse(null);
 				if (layoutDrawable == null) {
-					layoutDrawable = createRecipeLayoutDrawable().orElse(null);
-					if (layoutDrawable == null) {
-						break;
-					}
+					break;
 				}
 				component = createComponent(feature, layoutDrawable);
 				cache.put(feature, component);
@@ -151,19 +190,61 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 		};
 	}
 
-	private Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable() {
-		IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
-		IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
-		IFocusFactory focusFactory = jeiRuntime.getJeiHelpers().getFocusFactory();
-		IScalableDrawable recipePreviewBackground = Internal.getTextures().getRecipePreviewBackground();
+	private JeiTooltip createTransferComponents() {
+		JeiTooltip results = new JeiTooltip();
 
-		return recipeManager.createRecipeLayoutDrawable(
-			recipeBookmark.getRecipeCategory(),
-			recipeBookmark.getRecipe(),
-			focusFactory.getEmptyFocusGroup(),
-			recipePreviewBackground,
-			4
-		);
+		Minecraft minecraft = Minecraft.getInstance();
+		Screen screen = minecraft.screen;
+		Player player = minecraft.player;
+		if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
+			IRecipeTransferError recipeTransferError = getRecipeLayoutDrawable()
+				.flatMap(recipeLayout -> {
+					IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+					IRecipeTransferManager recipeTransferManager = jeiRuntime.getRecipeTransferManager();
+					AbstractContainerMenu container = containerScreen.getMenu();
+					return RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, container, recipeLayout, player);
+				})
+				.orElse(null);
+
+			if (recipeTransferError == null || recipeTransferError.getType().allowsTransfer) {
+				IInternalKeyMappings keyMappings = Internal.getKeyMappings();
+				IJeiKeyMapping transferRecipeBookmark = keyMappings.getTransferRecipeBookmark();
+				if (!transferRecipeBookmark.isUnbound()) {
+					results.addKeyUsageComponent(
+						"jei.tooltip.bookmarks.tooltips.transfer.usage",
+						transferRecipeBookmark
+					);
+				}
+
+				IJeiKeyMapping maxTransferRecipeBookmark = keyMappings.getMaxTransferRecipeBookmark();
+				if (!maxTransferRecipeBookmark.isUnbound()) {
+					results.addKeyUsageComponent(
+						"jei.tooltip.bookmarks.tooltips.transfer.max.usage",
+						maxTransferRecipeBookmark
+					);
+				}
+			}
+		}
+		return results;
+	}
+
+	private Optional<IRecipeLayoutDrawable<T>> getRecipeLayoutDrawable() {
+		//noinspection OptionalAssignedToNull
+		if (cachedLayoutDrawable == null) {
+			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+			IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
+			IFocusFactory focusFactory = jeiRuntime.getJeiHelpers().getFocusFactory();
+			IScalableDrawable recipePreviewBackground = Internal.getTextures().getRecipePreviewBackground();
+
+			cachedLayoutDrawable = recipeManager.createRecipeLayoutDrawable(
+				recipeBookmark.getRecipeCategory(),
+				recipeBookmark.getRecipe(),
+				focusFactory.getEmptyFocusGroup(),
+				recipePreviewBackground,
+				4
+			);
+		}
+		return cachedLayoutDrawable;
 	}
 
 	@Override

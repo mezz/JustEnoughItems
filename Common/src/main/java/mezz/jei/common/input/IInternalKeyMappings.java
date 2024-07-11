@@ -36,6 +36,10 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 	IJeiKeyMappingInternal getShowBookmarkTooltipFeatures();
 	IJeiKeyMapping getQuickMove();
 	IJeiKeyMapping getShareToChat();
+
+	IJeiKeyMapping getTransferRecipeBookmark();
+	IJeiKeyMapping getMaxTransferRecipeBookmark();
+
 	IJeiKeyMapping getCheatOneItem();
 	IJeiKeyMapping getCheatItemStack();
 
