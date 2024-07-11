@@ -4,6 +4,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.TooltipHelper;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.gui.textures.Textures;
@@ -48,11 +49,11 @@ public class BookmarkButton extends GuiIconToggleButton {
 			MutableComponent notEnoughSpace = Component.translatable("jei.tooltip.bookmarks.not.enough.space");
 			tooltip.add(notEnoughSpace.withStyle(ChatFormatting.GOLD));
 		} else {
-			MutableComponent key = Component.translatable(
+			Component keyUsage = TooltipHelper.createKeyUsageComponent(
 				"jei.tooltip.bookmarks.usage.key",
-				bookmarkKey.getTranslatedKeyMessage()
+				bookmarkKey
 			);
-			tooltip.add(key.withStyle(ChatFormatting.GRAY));
+			tooltip.add(keyUsage);
 		}
 	}
 

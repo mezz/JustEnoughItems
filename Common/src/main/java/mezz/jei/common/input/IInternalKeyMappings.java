@@ -31,6 +31,9 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 	@Override
 	IJeiKeyMapping getShowUses();
 
+	IJeiKeyMapping getTransferRecipeBookmark();
+	IJeiKeyMapping getMaxTransferRecipeBookmark();
+
 	IJeiKeyMapping getCheatOneItem();
 	IJeiKeyMapping getCheatItemStack();
 

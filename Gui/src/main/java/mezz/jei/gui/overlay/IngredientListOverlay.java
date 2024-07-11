@@ -4,12 +4,10 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.elements.GuiIconToggleButton;
@@ -21,7 +19,6 @@ import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.MouseUtil;
-import mezz.jei.gui.input.handlers.CheatInputHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.NullDragHandler;
 import mezz.jei.gui.input.handlers.NullInputHandler;
@@ -47,10 +44,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IngredientGridWithNavigation contents;
 	private final IClientConfig clientConfig;
 	private final IClientToggleState toggleState;
-	private final IConnectionToServer serverConnection;
 	private final GuiTextFieldFilter searchField;
 	private final IInternalKeyMappings keyBindings;
-	private final IIngredientManager ingredientManager;
 	private final ScreenPropertiesCache screenPropertiesCache;
 	private final IFilterTextSource filterTextSource;
 
@@ -61,19 +56,15 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IngredientGridWithNavigation contents,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
-		IConnectionToServer serverConnection,
-		IInternalKeyMappings keyBindings,
-		IIngredientManager ingredientManager
+		IInternalKeyMappings keyBindings
 	) {
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		this.contents = contents;
 		this.clientConfig = clientConfig;
 		this.toggleState = toggleState;
-		this.serverConnection = serverConnection;
 
 		this.searchField = new GuiTextFieldFilter(contents::isEmpty);
 		this.keyBindings = keyBindings;
-		this.ingredientManager = ingredientManager;
 		this.filterTextSource = filterTextSource;
 		this.searchField.setValue(filterTextSource.getFilterText());
 		this.searchField.setFocused(false);
@@ -210,8 +201,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
 			this.searchField.createInputHandler(),
 			this.configButton.createInputHandler(),
-			this.contents.createInputHandler(),
-			new CheatInputHandler(this.contents, toggleState, clientConfig, serverConnection, ingredientManager)
+			this.contents.createInputHandler()
 		);
 
 		final IUserInputHandler configButtonInputHandler = this.configButton.createInputHandler();

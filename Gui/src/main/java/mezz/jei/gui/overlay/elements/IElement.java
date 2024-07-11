@@ -5,7 +5,9 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IRecipesGui;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.bookmarks.IBookmark;
+import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.IngredientGridTooltipHelper;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,4 +31,8 @@ public interface IElement<T> {
 	List<ClientTooltipComponent> getTooltipComponents(IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper);
 
 	boolean isVisible();
+
+	default boolean handleClick(UserInput input, IInternalKeyMappings keyBindings, IRecipesGui recipesGui, FocusUtil focusUtil) {
+		return false;
+	}
 }
