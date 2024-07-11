@@ -57,7 +57,7 @@ public class ForgeJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
 			mouseButton,
 			category
 		);
-		return new ForgeJeiKeyMapping(keyMapping);
+		return new NeoForgeJeiKeyMapping(keyMapping);
 	}
 
 	@Override
@@ -70,6 +70,6 @@ public class ForgeJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
 			key,
 			category
 		);
-		return new ForgeJeiKeyMapping(keyMapping);
+		return new NeoForgeJeiKeyMapping(keyMapping);
 	}
 }

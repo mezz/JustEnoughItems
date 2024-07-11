@@ -2,6 +2,7 @@ package mezz.jei.gui.overlay;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.TooltipHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
@@ -46,12 +47,12 @@ public class ConfigButton extends GuiIconToggleButton {
 		tooltip.add(Component.translatable("jei.tooltip.config"));
 		if (!toggleState.isOverlayEnabled()) {
 			MutableComponent disabled = Component.translatable("jei.tooltip.ingredient.list.disabled");
-			MutableComponent disabledFix = Component.translatable(
+			Component disabledFix = TooltipHelper.createKeyUsageComponent(
 				"jei.tooltip.ingredient.list.disabled.how.to.fix",
-				keyBindings.getToggleOverlay().getTranslatedKeyMessage()
+				keyBindings.getToggleOverlay()
 			);
 			tooltip.add(disabled.withStyle(ChatFormatting.GOLD));
-			tooltip.add(disabledFix.withStyle(ChatFormatting.GOLD));
+			tooltip.add(disabledFix);
 		} else if (!isListDisplayed.getAsBoolean()) {
 			MutableComponent notEnoughSpace = Component.translatable("jei.tooltip.not.enough.space");
 			tooltip.add(notEnoughSpace.withStyle(ChatFormatting.GOLD));
@@ -62,16 +63,16 @@ public class ConfigButton extends GuiIconToggleButton {
 			tooltip.add(enabled);
 
 			if (!keyBindings.getToggleCheatMode().isUnbound()) {
-				MutableComponent component = Component.translatable(
+				Component component = TooltipHelper.createKeyUsageComponent(
 					"jei.tooltip.cheat.mode.how.to.disable.hotkey",
-					keyBindings.getToggleCheatMode().getTranslatedKeyMessage()
-				).withStyle(ChatFormatting.RED);
+					keyBindings.getToggleCheatMode()
+				);
 				tooltip.add(component);
 			} else if (!keyBindings.getToggleCheatModeConfigButton().isUnbound()) {
-				MutableComponent component = Component.translatable(
+				Component component = TooltipHelper.createKeyUsageComponent(
 					"jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey",
-					keyBindings.getToggleCheatModeConfigButton().getTranslatedKeyMessage()
-				).withStyle(ChatFormatting.RED);
+					keyBindings.getToggleCheatModeConfigButton()
+				);
 				tooltip.add(component);
 			}
 		}

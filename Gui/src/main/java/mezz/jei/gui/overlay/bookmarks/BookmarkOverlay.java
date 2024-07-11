@@ -4,12 +4,9 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.bookmarks.BookmarkList;
@@ -20,7 +17,6 @@ import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.MouseUtil;
-import mezz.jei.gui.input.handlers.CheatInputHandler;
 import mezz.jei.gui.input.handlers.CombinedDragHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.NullDragHandler;
@@ -46,7 +42,6 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	private static final int BUTTON_SIZE = 20;
 
 	// input
-	private final CheatInputHandler cheatInputHandler;
 	private final BookmarkDragManager bookmarkDragManager;
 
 	// areas
@@ -63,17 +58,13 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	public BookmarkOverlay(
 		BookmarkList bookmarkList,
 		IngredientGridWithNavigation contents,
-		IClientConfig clientConfig,
 		IClientToggleState toggleState,
 		IScreenHelper screenHelper,
-		IConnectionToServer serverConnection,
-		IInternalKeyMappings keyBindings,
-		IIngredientManager ingredientManager
+		IInternalKeyMappings keyBindings
 	) {
 		this.bookmarkList = bookmarkList;
 		this.toggleState = toggleState;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, toggleState, keyBindings);
-		this.cheatInputHandler = new CheatInputHandler(this, toggleState, clientConfig, serverConnection, ingredientManager);
 		this.contents = contents;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		this.bookmarkDragManager = new BookmarkDragManager(this);
@@ -196,7 +187,6 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		final IUserInputHandler bookmarkButtonInputHandler = this.bookmarkButton.createInputHandler();
 
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
-			this.cheatInputHandler,
 			this.contents.createInputHandler(),
 			bookmarkButtonInputHandler
 		);

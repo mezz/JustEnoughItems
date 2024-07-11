@@ -1,6 +1,7 @@
 package mezz.jei.common.input.keys;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.common.gui.TooltipHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -15,9 +16,9 @@ public enum JeiKeyModifier {
 		@Override
 		public Component getCombinedName(InputConstants.Key key) {
 			if (Minecraft.ON_OSX) {
-				return Component.translatable("jei.key.combo.command", key.getDisplayName());
+				return Component.translatable("jei.key.combo.command", TooltipHelper.getKeyDisplayName(key));
 			} else {
-				return Component.translatable("jei.key.combo.control", key.getDisplayName());
+				return Component.translatable("jei.key.combo.control", TooltipHelper.getKeyDisplayName(key));
 			}
 		}
 	},
@@ -29,7 +30,7 @@ public enum JeiKeyModifier {
 
 		@Override
 		public Component getCombinedName(InputConstants.Key key) {
-			return Component.translatable("jei.key.combo.shift", key.getDisplayName());
+			return Component.translatable("jei.key.combo.shift", TooltipHelper.getKeyDisplayName(key));
 		}
 	},
 	ALT {
@@ -40,7 +41,7 @@ public enum JeiKeyModifier {
 
 		@Override
 		public Component getCombinedName(InputConstants.Key key) {
-			return Component.translatable("jei.key.combo.alt", key.getDisplayName());
+			return Component.translatable("jei.key.combo.alt", TooltipHelper.getKeyDisplayName(key));
 		}
 	},
 	NONE {
@@ -56,7 +57,7 @@ public enum JeiKeyModifier {
 
 		@Override
 		public Component getCombinedName(InputConstants.Key key) {
-			return key.getDisplayName();
+			return TooltipHelper.getKeyDisplayName(key);
 		}
 	};
 
