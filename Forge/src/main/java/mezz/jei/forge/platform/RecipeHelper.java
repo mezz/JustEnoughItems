@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class RecipeHelper implements IPlatformRecipeHelper {
+	private final List<Class<? extends UpgradeRecipe>> supportedSmithingRecipeClasses = List.of(UpgradeRecipe.class);
+
 	@Override
 	public <T extends CraftingRecipe> int getWidth(T recipe) {
 		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
@@ -42,6 +44,11 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 	@Override
 	public Ingredient getAddition(UpgradeRecipe recipe) {
 		return recipe.addition;
+	}
+
+	@Override
+	public List<Class<? extends UpgradeRecipe>> getSupportedSmithingRecipeClasses() {
+		return supportedSmithingRecipeClasses;
 	}
 
 	@SuppressWarnings("DataFlowIssue")

@@ -12,6 +12,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraft.world.item.enchantment.Enchantment;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,7 @@ public interface IPlatformRecipeHelper {
 
 	Ingredient getBase(UpgradeRecipe recipe);
 	Ingredient getAddition(UpgradeRecipe recipe);
+	Collection<Class<? extends UpgradeRecipe>> getSupportedSmithingRecipeClasses();
 
 	Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe);
 

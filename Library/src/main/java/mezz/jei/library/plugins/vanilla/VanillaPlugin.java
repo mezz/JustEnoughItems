@@ -14,6 +14,7 @@ import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmithingRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
@@ -37,6 +38,7 @@ import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
+import mezz.jei.library.plugins.vanilla.anvil.SmithingCategoryExtension;
 import mezz.jei.library.plugins.vanilla.anvil.SmithingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.compostable.CompostableRecipeCategory;
@@ -137,7 +139,7 @@ public class VanillaPlugin implements IModPlugin {
 	@Nullable
 	private IRecipeCategory<CampfireCookingRecipe> campfireCategory;
 	@Nullable
-	private IRecipeCategory<UpgradeRecipe> smithingCategory;
+	private SmithingRecipeCategory smithingCategory;
 
 	@Override
 	public ResourceLocation getPluginUid() {
@@ -215,6 +217,12 @@ public class VanillaPlugin implements IModPlugin {
 	public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
 		IExtendableRecipeCategory<CraftingRecipe, ICraftingCategoryExtension> craftingCategory = registration.getCraftingCategory();
 		craftingCategory.addCategoryExtension(CraftingRecipe.class, r -> !r.isSpecial(), CraftingCategoryExtension::new);
+
+		IExtendableSmithingRecipeCategory smithingCategory = registration.getSmithingCategory();
+		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
+		for (Class<? extends UpgradeRecipe> recipeClass : recipeHelper.getSupportedSmithingRecipeClasses()) {
+			smithingCategory.addExtension(recipeClass, new SmithingCategoryExtension<>(recipeHelper));
+		}
 	}
 
 	@Override
@@ -314,6 +322,10 @@ public class VanillaPlugin implements IModPlugin {
 
 	public Optional<CraftingRecipeCategory> getCraftingCategory() {
 		return Optional.ofNullable(craftingCategory);
+	}
+
+	public Optional<SmithingRecipeCategory> getSmithingCategory() {
+		return Optional.ofNullable(smithingCategory);
 	}
 
 	/**
