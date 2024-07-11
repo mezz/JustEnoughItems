@@ -2,9 +2,10 @@ package mezz.jei.api.registration;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
-import net.minecraft.world.item.crafting.CraftingRecipe;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmithingRecipeCategory;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -26,4 +27,10 @@ public interface IVanillaCategoryExtensionRegistration {
 	 * Get the vanilla crafting category, to extend it with your own mod's crafting category extensions.
 	 */
 	IExtendableRecipeCategory<CraftingRecipe, ICraftingCategoryExtension> getCraftingCategory();
+
+	/**
+	 * Get the vanilla smithing category, to extend it with your own mod's smithing category extensions.
+	 * @since 10.35.0
+	 */
+	IExtendableSmithingRecipeCategory getSmithingCategory();
 }
