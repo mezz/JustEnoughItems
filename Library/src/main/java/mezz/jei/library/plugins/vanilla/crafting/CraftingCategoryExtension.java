@@ -29,6 +29,7 @@ public class CraftingCategoryExtension implements ICraftingCategoryExtension<Cra
 		craftingGridHelper.createAndSetInputs(builder, inputs, width, height);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public Optional<ResourceLocation> getRegistryName(RecipeHolder<CraftingRecipe> recipeHolder) {
 		return Optional.of(recipeHolder.id());
