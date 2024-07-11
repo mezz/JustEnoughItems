@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class RecipeHelper implements IPlatformRecipeHelper {
+	private final List<Class<? extends SmithingRecipe>> supportedSmithingRecipeClasses = List.of(SmithingTransformRecipe.class, SmithingTrimRecipe.class);
+
 	@Override
 	public <T extends CraftingRecipe> int getWidth(T recipe) {
 		if (recipe instanceof IShapedRecipe<?> shapedRecipe) {
@@ -68,8 +70,8 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 
 	@SuppressWarnings("removal")
 	@Override
-	public boolean isHandled(SmithingRecipe recipe) {
-		return recipe instanceof SmithingTransformRecipe || recipe instanceof SmithingTrimRecipe;
+	public List<Class<? extends SmithingRecipe>> getSupportedSmithingRecipeClasses() {
+		return supportedSmithingRecipeClasses;
 	}
 
 	@SuppressWarnings("DataFlowIssue")

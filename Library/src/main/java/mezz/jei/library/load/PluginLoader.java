@@ -41,6 +41,7 @@ import mezz.jei.library.load.registration.SubtypeRegistration;
 import mezz.jei.library.load.registration.VanillaCategoryExtensionRegistration;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
+import mezz.jei.library.plugins.vanilla.anvil.SmithingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.library.recipes.RecipeManager;
 import mezz.jei.library.recipes.RecipeManagerInternal;
@@ -90,7 +91,9 @@ public class PluginLoader {
 		PluginCaller.callOnPlugins("Registering categories", plugins, p -> p.registerCategories(recipeCategoryRegistration));
 		CraftingRecipeCategory craftingCategory = vanillaPlugin.getCraftingCategory()
 			.orElseThrow(() -> new NullPointerException("vanilla crafting category"));
-		VanillaCategoryExtensionRegistration vanillaCategoryExtensionRegistration = new VanillaCategoryExtensionRegistration(craftingCategory, jeiHelpers);
+		SmithingRecipeCategory smithingCategory = vanillaPlugin.getSmithingCategory()
+			.orElseThrow(() -> new NullPointerException("vanilla smithing category"));
+		VanillaCategoryExtensionRegistration vanillaCategoryExtensionRegistration = new VanillaCategoryExtensionRegistration(craftingCategory, smithingCategory, jeiHelpers);
 		PluginCaller.callOnPlugins("Registering vanilla category extensions", plugins, p -> p.registerVanillaCategoryExtensions(vanillaCategoryExtensionRegistration));
 		return recipeCategoryRegistration.getRecipeCategories();
 	}
