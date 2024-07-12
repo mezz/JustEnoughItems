@@ -7,7 +7,9 @@ import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -15,13 +17,17 @@ import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.gui.TooltipHelper;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RecipeSlots;
+import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -29,9 +35,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -237,9 +245,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
 			hoveredSlot.getDisplayedIngredient()
 				.ifPresent(i -> {
-					List<Component> tooltip = hoveredSlot.getTooltip();
-					tooltip = modIdHelper.addModNameToIngredientTooltip(tooltip, i);
-					TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY, i);
+					List<ClientTooltipComponent> components = hoveredSlot.getTooltip().stream()
+							.map(TooltipHelper::toTooltipComponent)
+							.collect(Collectors.toCollection(ArrayList::new));
+					addTagContentTooltip(components, i, hoveredSlot);
+                    List<Component> modIdTooltip = new ArrayList<>();
+                    modIdTooltip = modIdHelper.addModNameToIngredientTooltip(modIdTooltip, i);
+                    addAllTooltipComponents(components, modIdTooltip);
+					TooltipRenderer.drawHoveringTooltip(guiGraphics, components, mouseX, mouseY, i);
 				});
 		} else if (isMouseOver(mouseX, mouseY)) {
 			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeSlots.getView(), recipeMouseX, recipeMouseY);
@@ -252,6 +265,26 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			}
 			if (!tooltipStrings.isEmpty()) {
 				TooltipRenderer.drawHoveringText(guiGraphics, tooltipStrings, mouseX, mouseY);
+			}
+		}
+	}
+
+    private void addAllTooltipComponents(List<ClientTooltipComponent> tooltipComponents, List<Component> components) {
+		tooltipComponents.addAll(TooltipHelper.toTooltipComponents(components));
+    }
+
+	private <T> void addTagContentTooltip(List<ClientTooltipComponent> tooltipComponents, ITypedIngredient<T> displayed, IRecipeSlotDrawable slotDrawable) {
+		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		if (clientConfig.isTagContentTooltipEnabled()) {
+			IIngredientType<T> type = displayed.getType();
+
+			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
+			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
+
+			List<T> ingredients = slotDrawable.getIngredients(type).toList();
+			if (ingredients.size() > 1) {
+				tooltipComponents.add(new TagContentTooltipComponent<>(renderer, ingredients));
 			}
 		}
 	}

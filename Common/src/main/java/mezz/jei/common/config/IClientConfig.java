@@ -37,4 +37,8 @@ public interface IClientConfig {
 	void enableRecipeSorterStage(RecipeSorterStage stage);
 
 	void disableRecipeSorterStage(RecipeSorterStage stage);
+
+	boolean isTagContentTooltipEnabled();
+
+	boolean isHideSingleIngredientTagsEnabled();
 }

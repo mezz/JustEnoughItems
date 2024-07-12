@@ -67,6 +67,16 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isTagContentTooltipEnabled() {
+		return true;
+	}
+
+	@Override
+	public boolean isHideSingleIngredientTagsEnabled() {
+		return true;
+	}
+
+	@Override
 	public int getMaxRecipeGuiHeight() {
 		return 500;
 	}
