@@ -247,7 +247,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 					List<Component> tooltip = hoveredSlot.getTooltip();
 					List<ClientTooltipComponent> components = tooltip.stream()
 							.map(it -> ClientTooltipComponent.create(it.getVisualOrderText()))
-							.collect(Collectors.toList());
+							.collect(Collectors.toCollection(ArrayList::new));
 					addTagContentTooltip(components, i, hoveredSlot);
                     List<Component> modIdTooltip = new ArrayList<>();
                     modIdTooltip = modIdHelper.addModNameToIngredientTooltip(modIdTooltip, i);
