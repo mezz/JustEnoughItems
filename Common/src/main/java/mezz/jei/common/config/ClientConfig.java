@@ -26,12 +26,16 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> lookupFluidContentsEnabled;
 	private final Supplier<Boolean> lookupBlockTagsEnabled;
 	private final Supplier<GiveMode> giveMode;
+
 	private final Supplier<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures;
 	private final Supplier<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
-	private final Supplier<Boolean> tagContentTooltipEnabled;
+
 	private final Supplier<Integer> maxRecipeGuiHeight;
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
 	private final ConfigValue<List<RecipeSorterStage>> recipeSorterStages;
+
+	private final Supplier<Boolean> tagContentTooltipEnabled;
+	private final Supplier<Boolean> hideSingleIngredientTagsEnabled;
 
 	public ClientConfig(IConfigSchemaBuilder schema) {
 		instance = this;
@@ -99,11 +103,6 @@ public final class ClientConfig implements IClientConfig {
 			true,
 			"Hold shift to show bookmark tooltip features"
 		);
-		tagContentTooltipEnabled = bookmarkTooltips.addBoolean(
-			"TagContentTooltipEnabled",
-			true,
-			"Show tag content in tooltip"
-		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
 		ingredientSorterStages = sorting.addList(
@@ -117,6 +116,18 @@ public final class ClientConfig implements IClientConfig {
 			RecipeSorterStage.defaultStages,
 			new ListSerializer<>(new EnumSerializer<>(RecipeSorterStage.class)),
 			"Sorting order for displayed recipes"
+		);
+
+		IConfigCategoryBuilder tags = schema.addCategory("tags");
+		tagContentTooltipEnabled = tags.addBoolean(
+			"TagContentTooltipEnabled",
+			true,
+			"Show tag content in tooltips"
+		);
+		hideSingleIngredientTagsEnabled = tags.addBoolean(
+			"HideSingleIngredientTagsEnabled",
+			true,
+			"Hide tag content in tooltips if the tag has 1 ingredient"
 		);
 	}
 
@@ -180,11 +191,6 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isTagContentTooltipEnabled() {
-		return tagContentTooltipEnabled.get();
-	}
-
-	@Override
 	public int getMaxRecipeGuiHeight() {
 		return maxRecipeGuiHeight.get();
 	}
@@ -217,5 +223,15 @@ public final class ClientConfig implements IClientConfig {
 			recipeSorterStages.remove(stage);
 			this.recipeSorterStages.set(recipeSorterStages);
 		}
+	}
+
+	@Override
+	public boolean isTagContentTooltipEnabled() {
+		return tagContentTooltipEnabled.get();
+	}
+
+	@Override
+	public boolean isHideSingleIngredientTagsEnabled() {
+		return hideSingleIngredientTagsEnabled.get();
 	}
 }

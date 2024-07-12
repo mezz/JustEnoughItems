@@ -28,8 +28,6 @@ public interface IClientConfig {
 
 	boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled();
 
-	boolean isTagContentTooltipEnabled();
-
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();
@@ -39,4 +37,8 @@ public interface IClientConfig {
 	void enableRecipeSorterStage(RecipeSorterStage stage);
 
 	void disableRecipeSorterStage(RecipeSorterStage stage);
+
+	boolean isTagContentTooltipEnabled();
+
+	boolean isHideSingleIngredientTagsEnabled();
 }

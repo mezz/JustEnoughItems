@@ -7,7 +7,7 @@
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
   "jei.tooltip.transfer": "Move Items",
-  "jei.tooltip.recipe.tag": "Accepts any: %s",
+  "jei.tooltip.recipe.tag": "Accepts tag: %s",
   "jei.tooltip.item.colors": "Colors: %s",
   "jei.tooltip.shapeless.recipe": "Shapeless Recipe",
   "jei.tooltip.cheat.mode.button.enabled": "Cheat Mode enabled",
