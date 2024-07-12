@@ -2,8 +2,11 @@ package mezz.jei.forge.platform;
 
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
+import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.forge.ingredients.JeiIngredient;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
@@ -22,7 +25,10 @@ public class IngredientHelper implements IPlatformIngredientHelper {
 		DyeItem dye = DyeItem.byColor(color);
 		TagKey<Item> colorTag = color.getTag();
 		Ingredient.Value colorList = new Ingredient.TagValue(colorTag);
-		boolean contains = StreamSupport.stream(BuiltInRegistries.ITEM.getTagOrEmpty(colorTag).spliterator(), false).anyMatch(h -> h.value() == dye);
+		Registry<Item> itemRegistry = RegistryUtil.getRegistry(Registries.ITEM);
+		Iterable<Holder<Item>> coloredItems = itemRegistry.getTagOrEmpty(colorTag);
+		boolean contains = StreamSupport.stream(coloredItems.spliterator(), false)
+			.anyMatch(h -> h.value() == dye);
 		Stream<Ingredient.Value> colorIngredientStream;
 		if (!contains) {
 			ItemStack dyeStack = new ItemStack(dye);
