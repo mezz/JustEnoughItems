@@ -13,14 +13,15 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
+import mezz.jei.common.util.Translator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -151,20 +152,41 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		List<Component> tooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, typedIngredient);
 		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onTooltip(this, tooltip);
 		}
 
-		List<T> ingredients = getIngredients(ingredientType).toList();
-		ingredientHelper.getTagEquivalent(ingredients)
-			.ifPresent(tagEquivalent -> {
-				final MutableComponent acceptsAny = Component.translatable("jei.tooltip.recipe.tag", tagEquivalent);
-				tooltip.add(acceptsAny.withStyle(ChatFormatting.GRAY));
-			});
+		addTagNameTooltip(ingredientManager, typedIngredient, tooltip);
 
 		return tooltip;
+	}
+
+	private <T> void addTagNameTooltip(IIngredientManager ingredientManager, ITypedIngredient<T> ingredient, List<Component> tooltip) {
+		IIngredientType<T> ingredientType = ingredient.getType();
+		List<T> ingredients = getIngredients(ingredientType).toList();
+		if (ingredients.isEmpty()) {
+			return;
+		}
+
+		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		if (clientConfig.isHideSingleIngredientTagsEnabled() && ingredients.size() == 1) {
+			return;
+		}
+
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		ingredientHelper.getTagEquivalent(ingredients)
+			.ifPresent(tagEquivalent -> {
+				tooltip.add(
+					Component.translatable("jei.tooltip.recipe.tag", "")
+						.withStyle(ChatFormatting.GRAY)
+				);
+				String tagName = Translator.translateToLocal(tagEquivalent.toString());
+				tooltip.add(
+					Component.literal(tagName)
+					.withStyle(ChatFormatting.GRAY)
+				);
+			});
 	}
 
 	public void setBackground(IDrawable background) {
