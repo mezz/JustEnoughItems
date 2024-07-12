@@ -18,6 +18,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.gui.TooltipHelper;
 import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -244,9 +245,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
 			hoveredSlot.getDisplayedIngredient()
 				.ifPresent(i -> {
-					List<Component> tooltip = hoveredSlot.getTooltip();
-					List<ClientTooltipComponent> components = tooltip.stream()
-							.map(it -> ClientTooltipComponent.create(it.getVisualOrderText()))
+					List<ClientTooltipComponent> components = hoveredSlot.getTooltip().stream()
+							.map(TooltipHelper::toTooltipComponent)
 							.collect(Collectors.toCollection(ArrayList::new));
 					addTagContentTooltip(components, i, hoveredSlot);
                     List<Component> modIdTooltip = new ArrayList<>();
@@ -270,10 +270,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	}
 
     private void addAllTooltipComponents(List<ClientTooltipComponent> tooltipComponents, List<Component> components) {
-        for (Component component : components) {
-			ClientTooltipComponent clientTooltipComponent = ClientTooltipComponent.create(component.getVisualOrderText());
-			tooltipComponents.add(clientTooltipComponent);
-        }
+		tooltipComponents.addAll(TooltipHelper.toTooltipComponents(components));
     }
 
 	private <T> void addTagContentTooltip(List<ClientTooltipComponent> tooltipComponents, ITypedIngredient<T> displayed, IRecipeSlotDrawable slotDrawable) {
