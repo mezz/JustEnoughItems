@@ -279,11 +279,15 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private <T> void addTagContentTooltip(List<ClientTooltipComponent> tooltipComponents, ITypedIngredient<T> displayed, IRecipeSlotDrawable slotDrawable) {
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
 		if (clientConfig.isTagContentTooltipEnabled()) {
-			IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(displayed.getType());
-			List<T> ingredients = slotDrawable.getIngredients(displayed.getType()).toList();
+			IIngredientType<T> type = displayed.getType();
+
+			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
+			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
+
+			List<T> ingredients = slotDrawable.getIngredients(type).toList();
 			if (ingredients.size() > 1) {
-				tooltipComponents.add(new TagContentTooltipComponent(renderer, ingredients));
+				tooltipComponents.add(new TagContentTooltipComponent<>(renderer, ingredients));
 			}
 		}
 	}

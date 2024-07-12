@@ -8,18 +8,16 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 
 import java.util.List;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
-public class TagContentTooltipComponent implements ClientTooltipComponent {
-
+public class TagContentTooltipComponent<T> implements ClientTooltipComponent {
     private static final int MAX_PER_LINE = 10;
     private static final int MAX_LINES = 3;
     private static final int MAX_INGREDIENTS = MAX_PER_LINE * MAX_LINES;
     private static final int MAX_HEIGHT = 16 * MAX_LINES;
 
-    private final IIngredientRenderer renderer;
-    private final List ingredients;
+    private final IIngredientRenderer<T> renderer;
+    private final List<T> ingredients;
 
-    public <T> TagContentTooltipComponent(IIngredientRenderer<T> renderer, List<T> ingredients) {
+    public TagContentTooltipComponent(IIngredientRenderer<T> renderer, List<T> ingredients) {
         this.renderer = renderer;
         this.ingredients = ingredients;
     }
