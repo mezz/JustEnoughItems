@@ -9,18 +9,22 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.util.LimitedLogger;
 import mezz.jei.library.gui.ingredients.CycleTicker;
+import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -212,9 +216,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		if (hoveredSlotResult != null) {
 			IRecipeSlotDrawable hoveredSlot = hoveredSlotResult.slot();
 
-			JeiTooltip tooltip = new JeiTooltip();
-			tooltip.addAll(hoveredSlot.getTooltip());
-			tooltip.draw(poseStack, mouseX, mouseY);
+			hoveredSlot.getDisplayedIngredient()
+				.ifPresent(i -> drawSlotTooltip(poseStack, mouseX, mouseY, hoveredSlot, i));
 		} else if (isMouseOver(mouseX, mouseY)) {
 			JeiTooltip tooltip = new JeiTooltip();
 			try {
@@ -237,6 +240,28 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 				}
 			}
 			tooltip.draw(poseStack, mouseX, mouseY);
+		}
+	}
+
+	private <T> void drawSlotTooltip(PoseStack poseStack, int mouseX, int mouseY, IRecipeSlotDrawable hoveredSlot, ITypedIngredient<T> displayed) {
+		IIngredientType<T> type = displayed.getType();
+		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+		IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
+
+		JeiTooltip tooltip = new JeiTooltip();
+		tooltip.addAll(hoveredSlot.getTooltip());
+		addTagContentTooltip(tooltip, displayed, renderer, hoveredSlot);
+		tooltip.draw(poseStack, mouseX, mouseY, displayed, renderer, ingredientManager);
+	}
+
+	private <T> void addTagContentTooltip(JeiTooltip tooltip, ITypedIngredient<T> displayed, IIngredientRenderer<T> renderer, IRecipeSlotDrawable slotDrawable) {
+		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		if (clientConfig.isTagContentTooltipEnabled()) {
+			IIngredientType<T> type = displayed.getType();
+			List<T> ingredients = slotDrawable.getIngredients(type).toList();
+			if (ingredients.size() > 1) {
+				tooltip.addClientTooltipComponent(new TagContentTooltipComponent<>(renderer, ingredients));
+			}
 		}
 	}
 

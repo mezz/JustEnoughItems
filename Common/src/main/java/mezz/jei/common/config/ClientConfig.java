@@ -47,6 +47,7 @@ public final class ClientConfig implements IClientConfig {
 	private final ConfigValue<List<RecipeSorterStage>> recipeSorterStages;
 
 	// tags
+	private final Supplier<Boolean> tagContentTooltipEnabled;
 	private final Supplier<Boolean> hideSingleIngredientTagsEnabled;
 
 	public ClientConfig(IConfigSchemaBuilder schema) {
@@ -153,6 +154,11 @@ public final class ClientConfig implements IClientConfig {
 		);
 
 		IConfigCategoryBuilder tags = schema.addCategory("tags");
+		tagContentTooltipEnabled = tags.addBoolean(
+			"TagContentTooltipEnabled",
+			true,
+			"Show tag content in tooltips."
+		);
 		hideSingleIngredientTagsEnabled = tags.addBoolean(
 			"HideSingleIngredientTagsEnabled",
 			true,
@@ -282,6 +288,11 @@ public final class ClientConfig implements IClientConfig {
 			recipeSorterStages.remove(stage);
 			this.recipeSorterStages.set(recipeSorterStages);
 		}
+	}
+
+	@Override
+	public boolean isTagContentTooltipEnabled() {
+		return tagContentTooltipEnabled.get();
 	}
 
 	@Override

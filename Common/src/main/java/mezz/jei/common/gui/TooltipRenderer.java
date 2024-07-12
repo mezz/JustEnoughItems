@@ -66,6 +66,13 @@ public final class TooltipRenderer {
 		drawHoveringText(poseStack, textLines, x, y, typedIngredient, font);
 	}
 
+	public static <T> void drawHoveringTooltip(PoseStack poseStack, List<ClientTooltipComponent> components, int x, int y, ITypedIngredient<T> typedIngredient) {
+		IIngredientType<T> ingredientType = typedIngredient.getType();
+		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
+		drawHoveringTooltip(poseStack, components, x, y, typedIngredient, ingredientRenderer, ingredientManager);
+	}
+
 	public static <T> void drawHoveringTooltip(
 		PoseStack poseStack,
 		List<ClientTooltipComponent> components,

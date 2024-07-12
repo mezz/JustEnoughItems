@@ -122,7 +122,12 @@ public class JeiTooltip implements ITooltipBuilder {
 		Font font = minecraft.font;
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		try {
-			renderHelper.renderTooltip(screen, poseStack, lines, Optional.empty(), x, y, font, ItemStack.EMPTY);
+			if (hasClientTooltipComponents()) {
+				List<ClientTooltipComponent> tooltipComponents = getClientTooltipComponents();
+				renderHelper.renderTooltip(screen, poseStack, tooltipComponents, x, y, font, ItemStack.EMPTY);
+			} else {
+				renderHelper.renderTooltip(screen, poseStack, lines, Optional.empty(), x, y, font, ItemStack.EMPTY);
+			}
 		} catch (RuntimeException e) {
 			throw new RuntimeException("Crashed when rendering tooltip:\n" + this, e);
 		}

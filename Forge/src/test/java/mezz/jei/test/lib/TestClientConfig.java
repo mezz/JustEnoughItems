@@ -83,17 +83,22 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isHideSingleIngredientTagsEnabled() {
-		return true;
-	}
-
-	@Override
 	public List<BookmarkTooltipFeature> getBookmarkTooltipFeatures() {
 		return List.of();
 	}
 
 	@Override
 	public boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled() {
+		return true;
+	}
+
+	@Override
+	public boolean isTagContentTooltipEnabled() {
+		return true;
+	}
+
+	@Override
+	public boolean isHideSingleIngredientTagsEnabled() {
 		return true;
 	}
 
