@@ -102,6 +102,7 @@ public class CraftingRecipeCategory implements IExtendableCraftingRecipeCategory
 		extendableHelper.addRecipeExtension(recipeClass, extension);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public ResourceLocation getRegistryName(RecipeHolder<CraftingRecipe> recipeHolder) {
 		ErrorUtil.checkNotNull(recipeHolder, "recipeHolder");

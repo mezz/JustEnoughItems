@@ -26,6 +26,7 @@ import java.util.Optional;
 public class IngredientsTooltipComponent implements ClientTooltipComponent {
 	private static final int MAX_INGREDIENTS_PER_ROW = 16;
 	private static final int INGREDIENT_SIZE = 18;
+	private static final int INGREDIENT_PADDING = 1;
 	private final List<RenderElement<?>> ingredients;
 
 	public IngredientsTooltipComponent(IRecipeLayoutDrawable<?> layout) {
@@ -74,7 +75,9 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent {
 
 	@Override
 	public int getHeight() {
-		return INGREDIENT_SIZE * MathUtil.divideCeil(ingredients.size(), MAX_INGREDIENTS_PER_ROW);
+		// Add 4 extra height so that there is some extra room below the rendered items.
+		// They look too cramped if there is text right below them without some extra room.
+		return 4 + INGREDIENT_SIZE * MathUtil.divideCeil(ingredients.size(), MAX_INGREDIENTS_PER_ROW);
 	}
 
 	@Override
@@ -85,8 +88,8 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent {
 	@Override
 	public void renderImage(Font font, int x, int y, GuiGraphics guiGraphics) {
 		for (int i = 0; i < ingredients.size(); i++) {
-			int elementX = 1 + x + ((i % MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);
-			int elementY = 1 + y + ((i / MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);
+			int elementX = INGREDIENT_PADDING + x + ((i % MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);
+			int elementY = INGREDIENT_PADDING + y + ((i / MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);
 			RenderElement<?> renderElement = ingredients.get(i);
 			PoseStack pose = guiGraphics.pose();
 			pose.pushPose();

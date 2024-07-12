@@ -2,6 +2,8 @@ package mezz.jei.forge.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import java.util.function.Consumer;
+
+import mezz.jei.common.gui.TooltipHelper;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
@@ -25,7 +27,8 @@ public class ForgeJeiKeyMapping implements IJeiKeyMappingInternal {
 
 	@Override
 	public Component getTranslatedKeyMessage() {
-		return keyMapping.getTranslatedKeyMessage();
+		InputConstants.Key key = keyMapping.getKey();
+		return keyMapping.getKeyModifier().getCombinedName(key, () -> TooltipHelper.getKeyDisplayName(key));
 	}
 
 	@Override

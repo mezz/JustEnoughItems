@@ -3,6 +3,7 @@ package mezz.jei.gui.input;
 import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.runtime.IJeiKeyMapping;
+import mezz.jei.common.gui.TooltipHelper;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.client.KeyMapping;
@@ -131,7 +132,7 @@ public class UserInput {
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
 			.add("clickState", clickState)
-			.add("key", key.getDisplayName().getString())
+			.add("key", TooltipHelper.getKeyDisplayName(key))
 			.add("modifiers", modifiers)
 			.add("mouse", String.format("%s, %s", mouseX, mouseY))
 			.toString();

@@ -6,12 +6,14 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IRecipesGui;
+import mezz.jei.common.gui.TooltipHelper;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.bookmarks.IngredientBookmark;
 import mezz.jei.gui.overlay.IngredientGridTooltipHelper;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,10 +50,8 @@ public class IngredientBookmarkElement<T> implements IElement<T> {
 	@Override
 	public List<ClientTooltipComponent> getTooltipComponents(IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
 		ITypedIngredient<T> ingredient = bookmark.getIngredient();
-		return tooltipHelper.getIngredientTooltip(ingredient, ingredientRenderer, ingredientHelper)
-			.stream()
-			.map(c -> ClientTooltipComponent.create(c.getVisualOrderText()))
-			.toList();
+		List<Component> ingredientTooltip = tooltipHelper.getIngredientTooltip(ingredient, ingredientRenderer, ingredientHelper);
+		return TooltipHelper.toTooltipComponents(ingredientTooltip);
 	}
 
 	@Override

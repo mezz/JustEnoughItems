@@ -102,9 +102,7 @@ public final class OverlayHelper {
 			ingredientListGridNavigation,
 			clientConfig,
 			toggleState,
-			serverConnection,
-			keyMappings,
-			ingredientManager
+			keyMappings
 		);
 	}
 
@@ -140,12 +138,9 @@ public final class OverlayHelper {
 		return new BookmarkOverlay(
 			bookmarkList,
 			bookmarkListGridNavigation,
-			clientConfig,
 			toggleState,
 			screenHelper,
-			serverConnection,
-			keyMappings,
-			ingredientManager
+			keyMappings
 		);
 	}
 }

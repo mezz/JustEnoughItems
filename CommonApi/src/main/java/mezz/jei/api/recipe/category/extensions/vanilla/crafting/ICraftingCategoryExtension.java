@@ -48,7 +48,9 @@ public interface ICraftingCategoryExtension<R extends CraftingRecipe> extends IR
 	 *
 	 * @return the registry name of the recipe
 	 * @since 16.0.0
+	 * @deprecated recipe holders all have ids, there is no need for this method any more.
 	 */
+	@Deprecated(since = "19.4.1", forRemoval = true)
 	default Optional<ResourceLocation> getRegistryName(RecipeHolder<R> recipeHolder) {
 		return Optional.ofNullable(getRegistryName())
 			.or(() -> Optional.of(recipeHolder.id()));
@@ -89,7 +91,7 @@ public interface ICraftingCategoryExtension<R extends CraftingRecipe> extends IR
 	 * This lets the player know where the recipe came from.
 	 *
 	 * @return the registry name of the recipe, or null if there is none
-	 * @deprecated use {@link #getRegistryName(RecipeHolder)}
+	 * @deprecated use {@link RecipeHolder#id()}
 	 */
 	@Deprecated(since = "16.0.0", forRemoval = true)
 	@Nullable

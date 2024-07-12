@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.gui.TooltipHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.core.search.SearchMode;
@@ -79,14 +80,14 @@ public final class IngredientGridTooltipHelper {
 			CommonComponents.EMPTY,
 			Component.translatable("gui.jei.editMode.description")
 				.withStyle(ChatFormatting.DARK_GREEN),
-			Component.translatable(
+			TooltipHelper.createKeyUsageComponent(
 				"gui.jei.editMode.description.hide",
-				keyBindings.getToggleHideIngredient().getTranslatedKeyMessage()
-			).withStyle(ChatFormatting.GRAY),
-			Component.translatable(
+				keyBindings.getToggleHideIngredient()
+			),
+			TooltipHelper.createKeyUsageComponent(
 				"gui.jei.editMode.description.hide.wild",
-				keyBindings.getToggleWildcardHideIngredient().getTranslatedKeyMessage()
-			).withStyle(ChatFormatting.GRAY)
+				keyBindings.getToggleWildcardHideIngredient()
+			)
 		);
 		tooltip.addAll(lines);
 	}
