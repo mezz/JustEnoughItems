@@ -14,7 +14,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.library.gui.GuiHelper;
 import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;

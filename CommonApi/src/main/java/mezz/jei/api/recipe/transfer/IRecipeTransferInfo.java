@@ -10,7 +10,7 @@ import net.minecraft.world.inventory.Slot;
 
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Gives JEI the information it needs to transfer recipes from a slotted inventory into the crafting area.
