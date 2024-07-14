@@ -115,7 +115,7 @@ public class BrewingRecipeMaker {
 		List<ItemStack> newPotions = new ArrayList<>();
 		for (ItemStack potionInput : knownPotions) {
 			for (ItemStack potionReagent : potionReagents) {
-				ItemStack potionOutput = vanillaBrewingRecipe.getOutput(potionInput.copy(), potionReagent);
+				ItemStack potionOutput = getPotionOutput(vanillaBrewingRecipe, potionInput.copy(), potionReagent);
 				if (potionOutput.isEmpty()) {
 					continue;
 				}
@@ -146,6 +146,22 @@ public class BrewingRecipeMaker {
 			}
 		}
 		return newPotions;
+	}
+
+	private static ItemStack getPotionOutput(VanillaBrewingRecipe vanillaBrewingRecipe, ItemStack potion, ItemStack reagent) {
+		try {
+			return vanillaBrewingRecipe.getOutput(potion, reagent);
+		} catch (RuntimeException | LinkageError e) {
+			String potionInfo = ErrorUtil.getItemStackInfo(potion);
+			String reagentInfo = ErrorUtil.getItemStackInfo(reagent);
+			LOGGER.error(
+				"A modded potion mix crashed:\nPotion: {}\nItemStack: {}",
+				potionInfo,
+				reagentInfo,
+				e
+			);
+			return ItemStack.EMPTY;
+		}
 	}
 
 	private void addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<IJeiBrewingRecipe> recipes) {
