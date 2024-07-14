@@ -4,7 +4,7 @@ import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public final class JeiFluidIngredient implements IJeiFluidIngredient {
