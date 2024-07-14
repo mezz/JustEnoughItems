@@ -3,7 +3,7 @@ package mezz.jei.common.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.LanguageManager;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Locale;
 import java.util.function.Supplier;
 
