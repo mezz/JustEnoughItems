@@ -103,7 +103,7 @@ public class BrewingRecipeMakerCommon {
 		List<ItemStack> newPotions = new ArrayList<>();
 		for (ItemStack potionInput : knownPotions) {
 			for (ItemStack potionReagent : potionReagents) {
-				ItemStack potionOutput = vanillaOutputSupplier.getOutput(potionInput.copy(), potionReagent);
+				ItemStack potionOutput = getOutput(vanillaOutputSupplier, potionInput.copy(), potionReagent);
 				if (potionOutput.isEmpty()) {
 					continue;
 				}
@@ -135,5 +135,21 @@ public class BrewingRecipeMakerCommon {
 	@FunctionalInterface
 	public interface IVanillaPotionOutputSupplier {
 		ItemStack getOutput(ItemStack input, ItemStack ingredient);
+	}
+
+	private static ItemStack getOutput(IVanillaPotionOutputSupplier vanillaOutputSupplier, ItemStack potion, ItemStack itemStack) {
+		try {
+			return vanillaOutputSupplier.getOutput(potion, itemStack);
+		} catch (RuntimeException e) {
+			String potionInfo = ErrorUtil.getItemStackInfo(potion);
+			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			LOGGER.error(
+				"A modded potion mix crashed: \nPotion: {}\nItemStack: {}",
+				potionInfo,
+				itemStackInfo,
+				e
+			);
+		}
+		return ItemStack.EMPTY;
 	}
 }
