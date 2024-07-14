@@ -145,9 +145,20 @@ public class BrewingRecipeMakerCommon {
 	}
 
 	private static ItemStack getOutput(ItemStack potion, ItemStack itemStack) {
-		ItemStack result = PotionBrewing.mix(itemStack, potion);
-		if (result != itemStack) {
-			return result;
+		try {
+			ItemStack result = PotionBrewing.mix(itemStack, potion);
+			if (result != itemStack) {
+				return result;
+			}
+		} catch (RuntimeException e) {
+			String potionInfo = ErrorUtil.getItemStackInfo(potion);
+			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			LOGGER.error(
+				"A modded potion mix crashed: \nPotion: {}\nItemStack: {}",
+				potionInfo,
+				itemStackInfo,
+				e
+			);
 		}
 		return ItemStack.EMPTY;
 	}
