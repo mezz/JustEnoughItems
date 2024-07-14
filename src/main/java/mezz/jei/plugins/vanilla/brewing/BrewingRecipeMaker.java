@@ -24,6 +24,7 @@ import net.minecraft.util.ResourceLocation;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
+import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Log;
 
 public class BrewingRecipeMaker {
@@ -78,7 +79,7 @@ public class BrewingRecipeMaker {
 		List<ItemStack> newPotions = new ArrayList<>();
 		for (ItemStack potionInput : knownPotions) {
 			for (ItemStack potionIngredient : potionIngredients) {
-				ItemStack potionOutput = vanillaBrewingRecipe.getOutput(potionInput.copy(), potionIngredient);
+				ItemStack potionOutput = getPotionOutput(vanillaBrewingRecipe, potionInput.copy(), potionIngredient);
 				if (potionOutput.isEmpty()) {
 					continue;
 				}
@@ -109,6 +110,22 @@ public class BrewingRecipeMaker {
 			}
 		}
 		return newPotions;
+	}
+
+	private static ItemStack getPotionOutput(VanillaBrewingRecipe vanillaBrewingRecipe, ItemStack potion, ItemStack reagent) {
+		try {
+			return vanillaBrewingRecipe.getOutput(potion, reagent);
+		} catch (RuntimeException | LinkageError e) {
+			String potionInfo = ErrorUtil.getItemStackInfo(potion);
+			String reagentInfo = ErrorUtil.getItemStackInfo(reagent);
+			Log.get().error(
+				"A modded potion mix crashed:\nPotion: {}\nItemStack: {}",
+				potionInfo,
+				reagentInfo,
+				e
+			);
+			return ItemStack.EMPTY;
+		}
 	}
 
 	public static void addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<BrewingRecipeWrapper> recipes) {
