@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.ingredients.IngredientSet;
 import net.minecraft.core.Holder;
@@ -20,6 +21,8 @@ import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.alchemy.PotionContents;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +35,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BrewingRecipeMakerCommon {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public static Set<IJeiBrewingRecipe> getVanillaBrewingRecipes(
 		IVanillaRecipeFactory recipeFactory,
 		IIngredientManager ingredientManager,
@@ -135,9 +140,20 @@ public class BrewingRecipeMakerCommon {
 	}
 
 	private static ItemStack getOutput(PotionBrewing potionBrewing, ItemStack potion, ItemStack itemStack) {
-		ItemStack result = potionBrewing.mix(itemStack, potion);
-		if (result != itemStack) {
-			return result;
+		try {
+			ItemStack result = potionBrewing.mix(itemStack, potion);
+			if (result != itemStack) {
+				return result;
+			}
+		} catch (RuntimeException e) {
+			String potionInfo = ErrorUtil.getItemStackInfo(potion);
+			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
+			LOGGER.error(
+				"A modded potion mix crashed: \nPotion: {}\nItemStack: {}",
+				potionInfo,
+				itemStackInfo,
+				e
+			);
 		}
 		return ItemStack.EMPTY;
 	}
