@@ -86,7 +86,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 
 		List<Slot> craftingSlots = Collections.unmodifiableList(transferInfo.getRecipeSlots(container, recipe));
 		List<Slot> inventorySlots = Collections.unmodifiableList(transferInfo.getInventorySlots(container, recipe));
-		if (!validateTransferInfo(transferInfo, container, craftingSlots, inventorySlots)) {
+		if (!validateTransferInfo(transferInfo, container, craftingSlots, inventorySlots, player)) {
 			return handlerHelper.createInternalError();
 		}
 
@@ -114,15 +114,13 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			craftingSlots
 		);
 
-		if (transferOperations.missingItems.size() > 0) {
+		if (!transferOperations.missingItems.isEmpty()) {
 			Component message = Component.translatable("jei.tooltip.error.recipe.transfer.missing");
 			return handlerHelper.createUserErrorForMissingSlots(message, transferOperations.missingItems);
 		}
 
-		{
-			if (!RecipeTransferUtil.validateSlots(player, transferOperations.results, craftingSlots, inventorySlots)) {
-				return handlerHelper.createInternalError();
-			}
+		if (!RecipeTransferUtil.validateSlots(player, transferOperations.results, craftingSlots, inventorySlots)) {
+			return handlerHelper.createInternalError();
 		}
 
 		if (doTransfer) {
@@ -144,8 +142,27 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		IRecipeTransferInfo<C, R> transferInfo,
 		C container,
 		List<Slot> craftingSlots,
-		List<Slot> inventorySlots
+		List<Slot> inventorySlots,
+		Player player
 	) {
+		for (Slot slot : craftingSlots) {
+			if (!slot.allowModification(player)) {
+				LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
+						"The Recipe Transfer Helper references crafting slot index [{}] but it does not allow modification.",
+					transferInfo.getClass(), container.getClass(), slot.index
+				);
+				return false;
+			}
+		}
+		for (Slot slot : inventorySlots) {
+			if (!slot.allowModification(player)) {
+				LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
+						"The Recipe Transfer Helper references inventory slot index [{}] but it does not allow modification.",
+					transferInfo.getClass(), container.getClass(), slot.index
+				);
+				return false;
+			}
+		}
 		Collection<Integer> craftingSlotIndexes = slotIndexes(craftingSlots);
 		Collection<Integer> inventorySlotIndexes = slotIndexes(inventorySlots);
 		Collection<Integer> containerSlotIndexes = slotIndexes(container.slots);
