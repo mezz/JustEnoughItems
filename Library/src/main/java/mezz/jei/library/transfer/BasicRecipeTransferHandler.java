@@ -119,10 +119,8 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			return handlerHelper.createUserErrorForMissingSlots(message, transferOperations.missingItems);
 		}
 
-		{
-			if (!RecipeTransferUtil.validateSlots(player, transferOperations.results, craftingSlots, inventorySlots)) {
-				return handlerHelper.createInternalError();
-			}
+		if (!RecipeTransferUtil.validateSlots(player, transferOperations.results, craftingSlots, inventorySlots)) {
+			return handlerHelper.createInternalError();
 		}
 
 		if (doTransfer) {
@@ -146,6 +144,24 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		List<Slot> craftingSlots,
 		List<Slot> inventorySlots
 	) {
+		for (Slot slot : craftingSlots) {
+			if (slot.isFake()) {
+				LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
+						"The Recipe Transfer Helper references crafting slot index [{}] but it is a fake (output) slot, which is not allowed.",
+					transferInfo.getClass(), container.getClass(), slot.index
+				);
+				return false;
+			}
+		}
+		for (Slot slot : inventorySlots) {
+			if (slot.isFake()) {
+				LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
+						"The Recipe Transfer Helper references inventory slot index [{}] but it is a fake (output) slot, which is not allowed.",
+					transferInfo.getClass(), container.getClass(), slot.index
+				);
+				return false;
+			}
+		}
 		Collection<Integer> craftingSlotIndexes = slotIndexes(craftingSlots);
 		Collection<Integer> inventorySlotIndexes = slotIndexes(inventorySlots);
 		Collection<Integer> containerSlotIndexes = slotIndexes(container.slots);
