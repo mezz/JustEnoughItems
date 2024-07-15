@@ -132,11 +132,10 @@ public final class RecipeTransferUtil {
 				.toList();
 			if (!invalidInventorySlotIndexes.isEmpty()) {
 				LOGGER.error(
-					"Transfer handler has invalid source slots for the inventory stacks for the recipe, " +
-						"the slots are not included in the list of inventory slots or recipe slots. " +
-						StringUtil.intsToString(invalidInventorySlotIndexes) +
-						"\n inventory slots: " + StringUtil.intsToString(inventorySlotIndexes) +
-						"\n crafting slots: " + StringUtil.intsToString(craftingSlotIndexes)
+					"Transfer request has invalid source slots for the inventory stacks for the recipe, the slots are not included in the list of inventory slots or recipe slots. {}\n inventory slots: {}\n crafting slots: {}",
+					StringUtil.intsToString(invalidInventorySlotIndexes),
+					StringUtil.intsToString(inventorySlotIndexes),
+					StringUtil.intsToString(craftingSlotIndexes)
 				);
 				return false;
 			}
@@ -149,9 +148,8 @@ public final class RecipeTransferUtil {
 				.collect(Collectors.toSet());
 			if (!overlappingSlots.isEmpty()) {
 				LOGGER.error(
-					"Transfer handler has invalid slots, " +
-						"inventorySlots and craftingSlots should not share any slot, but both have: " +
-						StringUtil.intsToString(overlappingSlots)
+					"Transfer request has invalid slots, inventorySlots and craftingSlots should not share any slot, but both have: {}",
+					StringUtil.intsToString(overlappingSlots)
 				);
 				return false;
 			}
@@ -169,9 +167,8 @@ public final class RecipeTransferUtil {
 				.toList();
 			if (!invalidPickupSlots.isEmpty()) {
 				LOGGER.error(
-					"Transfer handler has invalid slots, " +
-						"the player is unable to pickup from them: " +
-						StringUtil.intsToString(invalidPickupSlots)
+					"Transfer request has invalid slots, the player is unable to pickup from them: {}",
+					StringUtil.intsToString(invalidPickupSlots)
 				);
 				return false;
 			}
