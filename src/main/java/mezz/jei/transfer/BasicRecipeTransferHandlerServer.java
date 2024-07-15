@@ -52,7 +52,7 @@ public final class BasicRecipeTransferHandlerServer {
 		for (int craftingSlotNumberIndex = 0; craftingSlotNumberIndex < craftingSlots.size(); craftingSlotNumberIndex++) {
 			int craftingSlotNumber = craftingSlots.get(craftingSlotNumberIndex);
 			Slot craftingSlot = container.getSlot(craftingSlotNumber);
-			if (!craftingSlot.mayPickup(player)) {
+			if (!craftingSlot.mayPickup(player) || !craftingSlot.mayPlace(craftingSlot.getItem())) {
 				continue;
 			}
 			if (craftingSlot.hasItem()) {
@@ -142,7 +142,7 @@ public final class BasicRecipeTransferHandlerServer {
 				// Locate a slot that has what we need.
 				final Slot slot = getSlotWithStack(container, requiredStack, craftingSlots, inventorySlots);
 
-				boolean itemFound = (slot != null) && !slot.getItem().isEmpty() && slot.mayPickup(player);
+				boolean itemFound = (slot != null) && !slot.getItem().isEmpty() && slot.mayPickup(player) && slot.mayPlace(slot.getItem());
 				ItemStack resultItemStack = result.get(entry.getKey());
 				boolean resultItemStackLimitReached = (resultItemStack != null) && (resultItemStack.getCount() == resultItemStack.getMaxStackSize());
 
