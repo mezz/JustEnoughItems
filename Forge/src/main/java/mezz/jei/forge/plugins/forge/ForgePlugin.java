@@ -15,17 +15,17 @@ import java.util.List;
 
 @JeiPlugin
 public class ForgePlugin implements IModPlugin {
-    @Override
-    public ResourceLocation getPluginUid() {
-        return new ResourceLocation(ModIds.JEI_ID, "forge");
-    }
+	@Override
+	public ResourceLocation getPluginUid() {
+		return new ResourceLocation(ModIds.JEI_ID, "forge");
+	}
 
-    @Override
-    public void registerRecipes(IRecipeRegistration registration) {
-        IIngredientManager ingredientManager = registration.getIngredientManager();
-        IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
+	@Override
+	public void registerRecipes(IRecipeRegistration registration) {
+		IIngredientManager ingredientManager = registration.getIngredientManager();
+		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
 
-        List<IJeiBrewingRecipe> brewingRecipes = BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory);
-        registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
-    }
+		List<IJeiBrewingRecipe> brewingRecipes = BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory);
+		registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
+	}
 }

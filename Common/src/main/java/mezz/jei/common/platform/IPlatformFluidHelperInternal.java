@@ -11,21 +11,21 @@ import java.util.Optional;
 
 public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T> {
 
-    IIngredientSubtypeInterpreter<T> getAllNbtSubtypeInterpreter();
+	IIngredientSubtypeInterpreter<T> getAllNbtSubtypeInterpreter();
 
-    IIngredientRenderer<T> createRenderer(long capacity, boolean showCapacity, int width, int height);
+	IIngredientRenderer<T> createRenderer(long capacity, boolean showCapacity, int width, int height);
 
-    TextureAtlasSprite getStillFluidSprite(T ingredient);
+	TextureAtlasSprite getStillFluidSprite(T ingredient);
 
-    Component getDisplayName(T ingredient);
+	Component getDisplayName(T ingredient);
 
-    int getColorTint(T ingredient);
+	int getColorTint(T ingredient);
 
-    long getAmount(T ingredient);
+	long getAmount(T ingredient);
 
-    Optional<CompoundTag> getTag(T ingredient);
+	Optional<CompoundTag> getTag(T ingredient);
 
-    T copy(T ingredient);
+	T copy(T ingredient);
 
-    T normalize(T ingredient);
+	T normalize(T ingredient);
 }

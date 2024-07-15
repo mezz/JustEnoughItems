@@ -9,30 +9,30 @@ import mezz.jei.common.gui.ingredients.RecipeSlots;
 import java.util.Optional;
 
 public interface IRecipeLayoutInternal<R> {
-    int getPosY();
+	int getPosY();
 
-    R getRecipe();
+	R getRecipe();
 
-    RecipeSlots getRecipeSlots();
+	RecipeSlots getRecipeSlots();
 
-    void setPosition(int posX, int posY);
+	void setPosition(int posX, int posY);
 
-    void drawRecipe(PoseStack poseStack, int mouseX, int mouseY);
+	void drawRecipe(PoseStack poseStack, int mouseX, int mouseY);
 
-    void drawOverlays(PoseStack poseStack, int mouseX, int mouseY);
+	void drawOverlays(PoseStack poseStack, int mouseX, int mouseY);
 
-    boolean isMouseOver(double mouseX, double mouseY);
+	boolean isMouseOver(double mouseX, double mouseY);
 
-    Optional<RecipeSlot> getRecipeSlotUnderMouse(double mouseX, double mouseY);
+	Optional<RecipeSlot> getRecipeSlotUnderMouse(double mouseX, double mouseY);
 
-    void moveRecipeTransferButton(int posX, int posY);
+	void moveRecipeTransferButton(int posX, int posY);
 
-    void setShapeless();
+	void setShapeless();
 
-    IRecipeCategory<R> getRecipeCategory();
+	IRecipeCategory<R> getRecipeCategory();
 
-    int getPosX();
+	int getPosX();
 
-    @SuppressWarnings("deprecation")
-    RecipeLayoutLegacyAdapter<R> getLegacyAdapter();
+	@SuppressWarnings("deprecation")
+	RecipeLayoutLegacyAdapter<R> getLegacyAdapter();
 }

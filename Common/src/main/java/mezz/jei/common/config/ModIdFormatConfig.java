@@ -21,70 +21,70 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ModIdFormatConfig implements IModIdFormatConfig {
-    protected static final List<ChatFormatting> defaultModNameFormat = List.of(ChatFormatting.BLUE, ChatFormatting.ITALIC);
-    public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
+	protected static final List<ChatFormatting> defaultModNameFormat = List.of(ChatFormatting.BLUE, ChatFormatting.ITALIC);
+	public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
 
-    private final Supplier<String> modNameFormat;
-    @Nullable
-    private String cachedOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
+	private final Supplier<String> modNameFormat;
+	@Nullable
+	private String cachedOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
 
-    public ModIdFormatConfig(ConfigSchemaBuilder builder) {
-        ConfigCategoryBuilder modName = builder.addCategory("modname");
-        Supplier<List<ChatFormatting>> configValue = modName.addValue(new ConfigValue<>(
-            "ModNameFormat",
-            defaultModNameFormat,
-            ChatFormattingSerializer.INSTANCE,
-            "Formatting for mod name tooltip"
-        ));
-        this.modNameFormat = new CachedSupplierTransformer<>(configValue, ModIdFormatConfig::toFormatString);
-    }
+	public ModIdFormatConfig(ConfigSchemaBuilder builder) {
+		ConfigCategoryBuilder modName = builder.addCategory("modname");
+		Supplier<List<ChatFormatting>> configValue = modName.addValue(new ConfigValue<>(
+			"ModNameFormat",
+			defaultModNameFormat,
+			ChatFormattingSerializer.INSTANCE,
+			"Formatting for mod name tooltip"
+		));
+		this.modNameFormat = new CachedSupplierTransformer<>(configValue, ModIdFormatConfig::toFormatString);
+	}
 
-    private static String toFormatString(List<ChatFormatting> values) {
-        return values.stream()
-            .map(ChatFormatting::toString)
-            .collect(Collectors.joining());
-    }
+	private static String toFormatString(List<ChatFormatting> values) {
+		return values.stream()
+			.map(ChatFormatting::toString)
+			.collect(Collectors.joining());
+	}
 
-    private String getOverride() {
-        if (cachedOverride == null) {
-            cachedOverride = detectModNameTooltipFormatting();
-        }
-        return cachedOverride;
-    }
+	private String getOverride() {
+		if (cachedOverride == null) {
+			cachedOverride = detectModNameTooltipFormatting();
+		}
+		return cachedOverride;
+	}
 
-    @Override
-    public final String getModNameFormat() {
-        String override = getOverride();
-        if (!override.isEmpty()) {
-            return override;
-        }
-        return modNameFormat.get();
-    }
+	@Override
+	public final String getModNameFormat() {
+		String override = getOverride();
+		if (!override.isEmpty()) {
+			return override;
+		}
+		return modNameFormat.get();
+	}
 
-    @Override
-    public final boolean isModNameFormatOverrideActive() {
-        return !getOverride().isEmpty();
-    }
+	@Override
+	public final boolean isModNameFormatOverrideActive() {
+		return !getOverride().isEmpty();
+	}
 
-    private String detectModNameTooltipFormatting() {
-        IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
-        Minecraft minecraft = Minecraft.getInstance();
-        LocalPlayer player = minecraft.player;
-        List<Component> tooltip = itemStackHelper.getTestTooltip(player, new ItemStack(Items.APPLE));
-        if (tooltip.size() <= 1) {
-            return "";
-        }
+	private String detectModNameTooltipFormatting() {
+		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
+		Minecraft minecraft = Minecraft.getInstance();
+		LocalPlayer player = minecraft.player;
+		List<Component> tooltip = itemStackHelper.getTestTooltip(player, new ItemStack(Items.APPLE));
+		if (tooltip.size() <= 1) {
+			return "";
+		}
 
-        for (int lineNum = 1; lineNum < tooltip.size(); lineNum++) {
-            Component line = tooltip.get(lineNum);
-            String lineString = line.getString();
-            if (lineString.contains(ModIds.MINECRAFT_NAME)) {
-                String withoutFormatting = ChatFormatting.stripFormatting(lineString);
-                if (withoutFormatting != null && withoutFormatting.contains(ModIds.MINECRAFT_NAME)) {
-                    return StringUtils.replaceOnce(lineString, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
-                }
-            }
-        }
-        return "";
-    }
+		for (int lineNum = 1; lineNum < tooltip.size(); lineNum++) {
+			Component line = tooltip.get(lineNum);
+			String lineString = line.getString();
+			if (lineString.contains(ModIds.MINECRAFT_NAME)) {
+				String withoutFormatting = ChatFormatting.stripFormatting(lineString);
+				if (withoutFormatting != null && withoutFormatting.contains(ModIds.MINECRAFT_NAME)) {
+					return StringUtils.replaceOnce(lineString, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
+				}
+			}
+		}
+		return "";
+	}
 }

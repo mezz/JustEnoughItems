@@ -144,10 +144,10 @@ public interface IGuiIngredientGroup<T> {
 	 */
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void init(int ingredientIndex, boolean input,
-			  IIngredientRenderer<T> ingredientRenderer,
-			  int xPosition, int yPosition,
-			  int width, int height,
-			  int xInset, int yInset);
+			IIngredientRenderer<T> ingredientRenderer,
+			int xPosition, int yPosition,
+			int width, int height,
+			int xInset, int yInset);
 
 	/**
 	 * Force this ingredient group to display a different focus.

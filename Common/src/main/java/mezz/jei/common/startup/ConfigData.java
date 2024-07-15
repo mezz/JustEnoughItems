@@ -23,54 +23,54 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public record ConfigData(
-    IClientConfig clientConfig,
-    IEditModeConfig editModeConfig,
-    IIngredientFilterConfig ingredientFilterConfig,
-    IWorldConfig worldConfig,
-    IBookmarkConfig bookmarkConfig,
-    IIngredientGridConfig ingredientListConfig,
-    IIngredientGridConfig bookmarkListConfig,
-    RecipeCategorySortingConfig recipeCategorySortingConfig,
-    IModIdFormatConfig modIdFormatConfig,
-    ModNameSortingConfig modNameSortingConfig,
-    IngredientTypeSortingConfig ingredientTypeSortingConfig
+	IClientConfig clientConfig,
+	IEditModeConfig editModeConfig,
+	IIngredientFilterConfig ingredientFilterConfig,
+	IWorldConfig worldConfig,
+	IBookmarkConfig bookmarkConfig,
+	IIngredientGridConfig ingredientListConfig,
+	IIngredientGridConfig bookmarkListConfig,
+	RecipeCategorySortingConfig recipeCategorySortingConfig,
+	IModIdFormatConfig modIdFormatConfig,
+	ModNameSortingConfig modNameSortingConfig,
+	IngredientTypeSortingConfig ingredientTypeSortingConfig
 ) {
-    public static ConfigData create(
-        IConnectionToServer serverConnection,
-        IKeyBindings keyBindings,
-        Path configDir
-    ) {
-        try {
-            Files.createDirectories(configDir);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to create JEI config directory: " + configDir, e);
-        }
-        Internal.setServerConnection(serverConnection);
+	public static ConfigData create(
+		IConnectionToServer serverConnection,
+		IKeyBindings keyBindings,
+		Path configDir
+	) {
+		try {
+			Files.createDirectories(configDir);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to create JEI config directory: " + configDir, e);
+		}
+		Internal.setServerConnection(serverConnection);
 
-        Path configFile = configDir.resolve("jei-client.ini");
-        JEIClientConfigs jeiClientConfigs = new JEIClientConfigs(configFile);
-        jeiClientConfigs.register(configDir, configFile);
+		Path configFile = configDir.resolve("jei-client.ini");
+		JEIClientConfigs jeiClientConfigs = new JEIClientConfigs(configFile);
+		jeiClientConfigs.register(configDir, configFile);
 
-        IBookmarkConfig bookmarkConfig = new BookmarkConfig(configDir);
-        IEditModeConfig editModeConfig = new EditModeConfig(configDir.resolve("blacklist.cfg"));
-        RecipeCategorySortingConfig recipeCategorySortingConfig = new RecipeCategorySortingConfig(configDir.resolve("recipe-category-sort-order.ini"));
-        ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(configDir.resolve("ingredient-list-mod-sort-order.ini"));
-        IngredientTypeSortingConfig ingredientTypeSortingConfig = new IngredientTypeSortingConfig(configDir.resolve("ingredient-list-type-sort-order.ini"));
+		IBookmarkConfig bookmarkConfig = new BookmarkConfig(configDir);
+		IEditModeConfig editModeConfig = new EditModeConfig(configDir.resolve("blacklist.cfg"));
+		RecipeCategorySortingConfig recipeCategorySortingConfig = new RecipeCategorySortingConfig(configDir.resolve("recipe-category-sort-order.ini"));
+		ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(configDir.resolve("ingredient-list-mod-sort-order.ini"));
+		IngredientTypeSortingConfig ingredientTypeSortingConfig = new IngredientTypeSortingConfig(configDir.resolve("ingredient-list-type-sort-order.ini"));
 
-        WorldConfig worldConfig = new WorldConfig(serverConnection, keyBindings);
+		WorldConfig worldConfig = new WorldConfig(serverConnection, keyBindings);
 
-        return new ConfigData(
-            jeiClientConfigs.getClientConfig(),
-            editModeConfig,
-            jeiClientConfigs.getFilterConfig(),
-            worldConfig,
-            bookmarkConfig,
-            jeiClientConfigs.getIngredientListConfig(),
-            jeiClientConfigs.getBookmarkListConfig(),
-            recipeCategorySortingConfig,
-            jeiClientConfigs.getModIdFormat(),
-            ingredientModNameSortingConfig,
-            ingredientTypeSortingConfig
-        );
-    }
+		return new ConfigData(
+			jeiClientConfigs.getClientConfig(),
+			editModeConfig,
+			jeiClientConfigs.getFilterConfig(),
+			worldConfig,
+			bookmarkConfig,
+			jeiClientConfigs.getIngredientListConfig(),
+			jeiClientConfigs.getBookmarkListConfig(),
+			recipeCategorySortingConfig,
+			jeiClientConfigs.getModIdFormat(),
+			ingredientModNameSortingConfig,
+			ingredientTypeSortingConfig
+		);
+	}
 }

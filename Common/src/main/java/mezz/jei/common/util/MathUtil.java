@@ -156,18 +156,18 @@ public final class MathUtil {
 		int ry1 = rect2.getY();
 		rx2 += rx1;
 		ry2 += ry1;
-        if (tx1 > rx1) {
-            tx1 = rx1;
-        }
-        if (ty1 > ry1) {
-            ty1 = ry1;
-        }
-        if (tx2 < rx2) {
-            tx2 = rx2;
-        }
-        if (ty2 < ry2) {
-            ty2 = ry2;
-        }
+		if (tx1 > rx1) {
+			tx1 = rx1;
+		}
+		if (ty1 > ry1) {
+			ty1 = ry1;
+		}
+		if (tx2 < rx2) {
+			tx2 = rx2;
+		}
+		if (ty2 < ry2) {
+			ty2 = ry2;
+		}
 		tx2 -= tx1;
 		ty2 -= ty1;
 		tx2 = Math.min(tx2, Integer.MAX_VALUE);

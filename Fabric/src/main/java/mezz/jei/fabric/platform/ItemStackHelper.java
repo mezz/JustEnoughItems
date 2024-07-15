@@ -17,41 +17,41 @@ import java.util.List;
 import java.util.Map;
 
 public class ItemStackHelper implements IPlatformItemStackHelper {
-    private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
-    @Override
-    public int getBurnTime(ItemStack itemStack) {
-        Map<Item, Integer> fuels = AbstractFurnaceBlockEntity.getFuel();
-        return fuels.getOrDefault(itemStack.getItem(), 0);
-    }
+	@Override
+	public int getBurnTime(ItemStack itemStack) {
+		Map<Item, Integer> fuels = AbstractFurnaceBlockEntity.getFuel();
+		return fuels.getOrDefault(itemStack.getItem(), 0);
+	}
 
-    @Override
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        return true;
-    }
+	@Override
+	public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+		return true;
+	}
 
-    @Override
-    @Nullable
-    public String getCreatorModId(ItemStack stack) {
-        return null;
-    }
+	@Override
+	@Nullable
+	public String getCreatorModId(ItemStack stack) {
+		return null;
+	}
 
-    @Override
-    public Collection<CreativeModeTab> getCreativeTabs(ItemStack itemStack) {
-        CreativeModeTab creativeTab = itemStack.getItem().getItemCategory();
-        if (creativeTab == null) {
-            return List.of();
-        }
-        return List.of(creativeTab);
-    }
+	@Override
+	public Collection<CreativeModeTab> getCreativeTabs(ItemStack itemStack) {
+		CreativeModeTab creativeTab = itemStack.getItem().getItemCategory();
+		if (creativeTab == null) {
+			return List.of();
+		}
+		return List.of(creativeTab);
+	}
 
-    @Override
-    public List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
-        try {
-            return itemStack.getTooltipLines(player, TooltipFlag.Default.NORMAL);
-        } catch (LinkageError | RuntimeException e) {
-            LOGGER.error("Error while Testing for mod name formatting", e);
-        }
-        return List.of();
-    }
+	@Override
+	public List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
+		try {
+			return itemStack.getTooltipLines(player, TooltipFlag.Default.NORMAL);
+		} catch (LinkageError | RuntimeException e) {
+			LOGGER.error("Error while Testing for mod name formatting", e);
+		}
+		return List.of();
+	}
 }

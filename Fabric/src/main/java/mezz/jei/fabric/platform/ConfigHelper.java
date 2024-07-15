@@ -8,13 +8,13 @@ import net.minecraft.network.chat.TextComponent;
 import java.util.Optional;
 
 public class ConfigHelper implements IPlatformConfigHelper {
-    @Override
-    public Optional<Screen> getConfigScreen() {
-        return Optional.empty();
-    }
+	@Override
+	public Optional<Screen> getConfigScreen() {
+		return Optional.empty();
+	}
 
-    @Override
-    public Component getMissingConfigScreenMessage() {
-        return new TextComponent("A JEI Config screen has not been implemented for Fabric");
-    }
+	@Override
+	public Component getMissingConfigScreenMessage() {
+		return new TextComponent("A JEI Config screen has not been implemented for Fabric");
+	}
 }

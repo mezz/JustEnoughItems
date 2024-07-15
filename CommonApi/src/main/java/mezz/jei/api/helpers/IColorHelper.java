@@ -11,12 +11,12 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
  */
 public interface IColorHelper {
 
-    /**
-     * Gets the "main" colors of a given sprite when overlayed with a specific tint color.
-     * @param textureAtlasSprite Sprite to extract main colors from.
-     * @param renderColor        Overlay/tint color that is applied to the sprite.
-     * @param colorCount         Number of "main" colors to get.
-     * @return A list of the main colors for the given sprite when overlayed with a specific tint color.
-     */
-    List<Integer> getColors(TextureAtlasSprite textureAtlasSprite, int renderColor, int colorCount);
+	/**
+	 * Gets the "main" colors of a given sprite when overlayed with a specific tint color.
+	 * @param textureAtlasSprite Sprite to extract main colors from.
+	 * @param renderColor        Overlay/tint color that is applied to the sprite.
+	 * @param colorCount         Number of "main" colors to get.
+	 * @return A list of the main colors for the given sprite when overlayed with a specific tint color.
+	 */
+	List<Integer> getColors(TextureAtlasSprite textureAtlasSprite, int renderColor, int colorCount);
 }

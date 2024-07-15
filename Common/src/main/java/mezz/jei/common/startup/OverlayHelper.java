@@ -15,113 +15,113 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.ingredients.RegisteredIngredients;
 
 public final class OverlayHelper {
-    private OverlayHelper() {}
+	private OverlayHelper() {}
 
-    public static IngredientGridWithNavigation createIngredientGridWithNavigation(
-        StartData data,
-        IIngredientGridSource ingredientFilter,
-        RegisteredIngredients registeredIngredients,
-        IIngredientGridConfig ingredientGridConfig,
-        GuiScreenHelper guiScreenHelper,
-        IModIdHelper modIdHelper,
-        DrawableNineSliceTexture background,
-        DrawableNineSliceTexture slotBackground
-    ) {
-        ConfigData configData = data.configData();
-        IngredientGrid ingredientListGrid = new IngredientGrid(
-            registeredIngredients,
-            ingredientGridConfig,
-            configData.editModeConfig(),
-            configData.ingredientFilterConfig(),
-            configData.clientConfig(),
-            configData.worldConfig(),
-            guiScreenHelper,
-            modIdHelper,
-            data.serverConnection(),
-            data.keyBindings()
-        );
+	public static IngredientGridWithNavigation createIngredientGridWithNavigation(
+		StartData data,
+		IIngredientGridSource ingredientFilter,
+		RegisteredIngredients registeredIngredients,
+		IIngredientGridConfig ingredientGridConfig,
+		GuiScreenHelper guiScreenHelper,
+		IModIdHelper modIdHelper,
+		DrawableNineSliceTexture background,
+		DrawableNineSliceTexture slotBackground
+	) {
+		ConfigData configData = data.configData();
+		IngredientGrid ingredientListGrid = new IngredientGrid(
+			registeredIngredients,
+			ingredientGridConfig,
+			configData.editModeConfig(),
+			configData.ingredientFilterConfig(),
+			configData.clientConfig(),
+			configData.worldConfig(),
+			guiScreenHelper,
+			modIdHelper,
+			data.serverConnection(),
+			data.keyBindings()
+		);
 
-        return new IngredientGridWithNavigation(
-            ingredientFilter,
-            guiScreenHelper,
-            ingredientListGrid,
-            configData.worldConfig(),
-            configData.clientConfig(),
-            data.serverConnection(),
-            ingredientGridConfig,
-            background,
-            slotBackground,
-            data.textures()
-        );
-    }
+		return new IngredientGridWithNavigation(
+			ingredientFilter,
+			guiScreenHelper,
+			ingredientListGrid,
+			configData.worldConfig(),
+			configData.clientConfig(),
+			data.serverConnection(),
+			ingredientGridConfig,
+			background,
+			slotBackground,
+			data.textures()
+		);
+	}
 
-    public static IngredientListOverlay createIngredientListOverlay(
-        StartData data,
-        RegisteredIngredients registeredIngredients,
-        GuiScreenHelper guiScreenHelper,
-        IIngredientGridSource ingredientFilter,
-        IFilterTextSource filterTextSource,
-        IModIdHelper modIdHelper
-    ) {
-        ConfigData configData = data.configData();
+	public static IngredientListOverlay createIngredientListOverlay(
+		StartData data,
+		RegisteredIngredients registeredIngredients,
+		GuiScreenHelper guiScreenHelper,
+		IIngredientGridSource ingredientFilter,
+		IFilterTextSource filterTextSource,
+		IModIdHelper modIdHelper
+	) {
+		ConfigData configData = data.configData();
 
-        Textures textures = data.textures();
-        IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
-            data,
-            ingredientFilter,
-            registeredIngredients,
-            configData.ingredientListConfig(),
-            guiScreenHelper,
-            modIdHelper,
-            textures.getIngredientListBackground(),
-            textures.getIngredientListSlotBackground()
-        );
+		Textures textures = data.textures();
+		IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
+			data,
+			ingredientFilter,
+			registeredIngredients,
+			configData.ingredientListConfig(),
+			guiScreenHelper,
+			modIdHelper,
+			textures.getIngredientListBackground(),
+			textures.getIngredientListSlotBackground()
+		);
 
-        return new IngredientListOverlay(
-            ingredientFilter,
-            filterTextSource,
-            registeredIngredients,
-            guiScreenHelper,
-            ingredientListGridNavigation,
-            configData.clientConfig(),
-            configData.worldConfig(),
-            data.serverConnection(),
-            textures,
-            data.keyBindings()
-        );
-    }
+		return new IngredientListOverlay(
+			ingredientFilter,
+			filterTextSource,
+			registeredIngredients,
+			guiScreenHelper,
+			ingredientListGridNavigation,
+			configData.clientConfig(),
+			configData.worldConfig(),
+			data.serverConnection(),
+			textures,
+			data.keyBindings()
+		);
+	}
 
-    public static BookmarkOverlay createBookmarkOverlay(
-        StartData data,
-        RegisteredIngredients registeredIngredients,
-        GuiScreenHelper guiScreenHelper,
-        BookmarkList bookmarkList,
-        IModIdHelper modIdHelper
-    ) {
-        ConfigData configData = data.configData();
+	public static BookmarkOverlay createBookmarkOverlay(
+		StartData data,
+		RegisteredIngredients registeredIngredients,
+		GuiScreenHelper guiScreenHelper,
+		BookmarkList bookmarkList,
+		IModIdHelper modIdHelper
+	) {
+		ConfigData configData = data.configData();
 
-        Textures textures = data.textures();
+		Textures textures = data.textures();
 
-        IngredientGridWithNavigation bookmarkListGridNavigation = createIngredientGridWithNavigation(
-            data,
-            bookmarkList,
-            registeredIngredients,
-            configData.bookmarkListConfig(),
-            guiScreenHelper,
-            modIdHelper,
-            textures.getBookmarkListBackground(),
-            textures.getBookmarkListSlotBackground()
-        );
+		IngredientGridWithNavigation bookmarkListGridNavigation = createIngredientGridWithNavigation(
+			data,
+			bookmarkList,
+			registeredIngredients,
+			configData.bookmarkListConfig(),
+			guiScreenHelper,
+			modIdHelper,
+			textures.getBookmarkListBackground(),
+			textures.getBookmarkListSlotBackground()
+		);
 
-        return new BookmarkOverlay(
-            bookmarkList,
-            textures,
-            bookmarkListGridNavigation,
-            configData.clientConfig(),
-            configData.worldConfig(),
-            guiScreenHelper,
-            data.serverConnection(),
-            data.keyBindings()
-        );
-    }
+		return new BookmarkOverlay(
+			bookmarkList,
+			textures,
+			bookmarkListGridNavigation,
+			configData.clientConfig(),
+			configData.worldConfig(),
+			guiScreenHelper,
+			data.serverConnection(),
+			data.keyBindings()
+		);
+	}
 }

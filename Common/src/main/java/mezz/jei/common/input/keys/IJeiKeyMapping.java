@@ -4,11 +4,11 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.network.chat.Component;
 
 public interface IJeiKeyMapping {
-    boolean isActiveAndMatches(InputConstants.Key key);
+	boolean isActiveAndMatches(InputConstants.Key key);
 
-    boolean isUnbound();
+	boolean isUnbound();
 
-    Component getTranslatedKeyMessage();
+	Component getTranslatedKeyMessage();
 
-    IJeiKeyMapping register();
+	IJeiKeyMapping register();
 }

@@ -7,30 +7,30 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.client.ClientRegistry;
 
 public class ForgeJeiKeyMapping implements IJeiKeyMapping {
-    private final KeyMapping keyMapping;
+	private final KeyMapping keyMapping;
 
-    public ForgeJeiKeyMapping(KeyMapping keyMapping) {
-        this.keyMapping = keyMapping;
-    }
+	public ForgeJeiKeyMapping(KeyMapping keyMapping) {
+		this.keyMapping = keyMapping;
+	}
 
-    @Override
-    public boolean isActiveAndMatches(InputConstants.Key key) {
-        return keyMapping.isActiveAndMatches(key);
-    }
+	@Override
+	public boolean isActiveAndMatches(InputConstants.Key key) {
+		return keyMapping.isActiveAndMatches(key);
+	}
 
-    @Override
-    public boolean isUnbound() {
-        return keyMapping.isUnbound();
-    }
+	@Override
+	public boolean isUnbound() {
+		return keyMapping.isUnbound();
+	}
 
-    @Override
-    public Component getTranslatedKeyMessage() {
-        return keyMapping.getTranslatedKeyMessage();
-    }
+	@Override
+	public Component getTranslatedKeyMessage() {
+		return keyMapping.getTranslatedKeyMessage();
+	}
 
-    @Override
-    public IJeiKeyMapping register() {
-        ClientRegistry.registerKeyBinding(keyMapping);
-        return this;
-    }
+	@Override
+	public IJeiKeyMapping register() {
+		ClientRegistry.registerKeyBinding(keyMapping);
+		return this;
+	}
 }

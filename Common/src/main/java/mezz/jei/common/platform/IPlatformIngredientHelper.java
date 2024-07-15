@@ -6,7 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public interface IPlatformIngredientHelper {
-    Ingredient createShulkerDyeIngredient(DyeColor color);
+	Ingredient createShulkerDyeIngredient(DyeColor color);
 
-    Ingredient createNbtIngredient(ItemStack stack, IStackHelper stackHelper);
+	Ingredient createNbtIngredient(ItemStack stack, IStackHelper stackHelper);
 }

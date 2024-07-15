@@ -109,7 +109,7 @@ public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayou
 			this.recipeLayout.getRecipeSlots(),
 			this.registeredIngredients,
 			ingredientType,
-            ingredientVisibility,
+			ingredientVisibility,
 			this.ingredientCycleOffset
 		);
 		IFocus<V> focus = getFocus(ingredientType);

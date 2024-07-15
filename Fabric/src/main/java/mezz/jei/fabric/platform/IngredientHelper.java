@@ -8,15 +8,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public class IngredientHelper implements IPlatformIngredientHelper {
-    @Override
-    public Ingredient createShulkerDyeIngredient(DyeColor color) {
-        DyeItem dye = DyeItem.byColor(color);
-        return Ingredient.of(dye);
-    }
+	@Override
+	public Ingredient createShulkerDyeIngredient(DyeColor color) {
+		DyeItem dye = DyeItem.byColor(color);
+		return Ingredient.of(dye);
+	}
 
-    @Override
-    public Ingredient createNbtIngredient(ItemStack stack, IStackHelper stackHelper) {
-        // TODO: Implement Fabric NBT-aware ingredients
-        return Ingredient.of(stack);
-    }
+	@Override
+	public Ingredient createNbtIngredient(ItemStack stack, IStackHelper stackHelper) {
+		// TODO: Implement Fabric NBT-aware ingredients
+		return Ingredient.of(stack);
+	}
 }

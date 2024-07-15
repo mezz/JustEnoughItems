@@ -16,23 +16,23 @@ import net.minecraftforge.fml.ModList;
 import java.util.Optional;
 
 public class ConfigHelper implements IPlatformConfigHelper {
-    @Override
-    public Optional<Screen> getConfigScreen() {
-        Minecraft minecraft = Minecraft.getInstance();
-        return ModList.get()
-            .getModContainerById(ModIds.JEI_ID)
-            .map(ModContainer::getModInfo)
-            .flatMap(ConfigGuiHandler::getGuiFactoryFor)
-            .map(f -> f.apply(minecraft, minecraft.screen));
-    }
+	@Override
+	public Optional<Screen> getConfigScreen() {
+		Minecraft minecraft = Minecraft.getInstance();
+		return ModList.get()
+			.getModContainerById(ModIds.JEI_ID)
+			.map(ModContainer::getModInfo)
+			.flatMap(ConfigGuiHandler::getGuiFactoryFor)
+			.map(f -> f.apply(minecraft, minecraft.screen));
+	}
 
-    @Override
-    public Component getMissingConfigScreenMessage() {
-        ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/configured");
-        Style style = Style.EMPTY
-            .setUnderlined(true)
-            .withClickEvent(clickEvent);
-        MutableComponent message = new TranslatableComponent("jei.message.configured");
-        return message.setStyle(style);
-    }
+	@Override
+	public Component getMissingConfigScreenMessage() {
+		ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/configured");
+		Style style = Style.EMPTY
+			.setUnderlined(true)
+			.withClickEvent(clickEvent);
+		MutableComponent message = new TranslatableComponent("jei.message.configured");
+		return message.setStyle(style);
+	}
 }

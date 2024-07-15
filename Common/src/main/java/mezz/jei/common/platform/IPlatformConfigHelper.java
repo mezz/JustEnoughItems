@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import java.util.Optional;
 
 public interface IPlatformConfigHelper {
-    Optional<Screen> getConfigScreen();
+	Optional<Screen> getConfigScreen();
 
-    Component getMissingConfigScreenMessage();
+	Component getMissingConfigScreenMessage();
 }

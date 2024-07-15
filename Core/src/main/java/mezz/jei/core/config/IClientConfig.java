@@ -3,11 +3,11 @@ package mezz.jei.core.config;
 import java.util.List;
 
 public interface IClientConfig {
-    int minRecipeGuiHeight = 175;
-    int defaultRecipeGuiHeight = 350;
-    boolean defaultCenterSearchBar = false;
+	int minRecipeGuiHeight = 175;
+	int defaultRecipeGuiHeight = 350;
+	boolean defaultCenterSearchBar = false;
 
-    boolean isDebugModeEnabled();
+	boolean isDebugModeEnabled();
 
 	boolean isCenterSearchBarEnabled();
 

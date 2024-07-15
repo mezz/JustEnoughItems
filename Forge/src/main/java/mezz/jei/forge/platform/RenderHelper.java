@@ -23,61 +23,61 @@ import java.util.List;
 import java.util.Optional;
 
 public class RenderHelper implements IPlatformRenderHelper {
-    @Override
-    public Font getFontRenderer(Minecraft minecraft, ItemStack itemStack) {
-        IItemRenderProperties renderProperties = RenderProperties.get(itemStack);
-        Font fontRenderer = renderProperties.getFont(itemStack);
-        if (fontRenderer != null) {
-            return fontRenderer;
-        }
-        return minecraft.font;
-    }
+	@Override
+	public Font getFontRenderer(Minecraft minecraft, ItemStack itemStack) {
+		IItemRenderProperties renderProperties = RenderProperties.get(itemStack);
+		Font fontRenderer = renderProperties.getFont(itemStack);
+		if (fontRenderer != null) {
+			return fontRenderer;
+		}
+		return minecraft.font;
+	}
 
-    @Override
-    public boolean shouldRender(MobEffectInstance potionEffect) {
-        EffectRenderer effectRenderer = RenderProperties.getEffectRenderer(potionEffect);
-        return effectRenderer.shouldRender(potionEffect);
-    }
+	@Override
+	public boolean shouldRender(MobEffectInstance potionEffect) {
+		EffectRenderer effectRenderer = RenderProperties.getEffectRenderer(potionEffect);
+		return effectRenderer.shouldRender(potionEffect);
+	}
 
-    @Override
-    public TextureAtlasSprite getParticleIcon(BakedModel bakedModel) {
-        return bakedModel.getParticleIcon(EmptyModelData.INSTANCE);
-    }
+	@Override
+	public TextureAtlasSprite getParticleIcon(BakedModel bakedModel) {
+		return bakedModel.getParticleIcon(EmptyModelData.INSTANCE);
+	}
 
-    @Override
-    public ItemColors getItemColors() {
-        return Minecraft.getInstance().getItemColors();
-    }
+	@Override
+	public ItemColors getItemColors() {
+		return Minecraft.getInstance().getItemColors();
+	}
 
-    @Override
-    @Nullable
-    public NativeImage getMainImage(TextureAtlasSprite sprite) {
-        NativeImage[] frames = sprite.mainImage;
-        if (frames.length == 0) {
-            return null;
-        }
-        return frames[0];
-    }
+	@Override
+	@Nullable
+	public NativeImage getMainImage(TextureAtlasSprite sprite) {
+		NativeImage[] frames = sprite.mainImage;
+		if (frames.length == 0) {
+			return null;
+		}
+		return frames[0];
+	}
 
-    @Override
-    public void renderTooltip(
-        Screen screen,
-        PoseStack poseStack,
-        List<Component> textComponents,
-        Optional<TooltipComponent> tooltipComponent,
-        int x,
-        int y,
-        @Nullable Font font,
-        ItemStack stack
-    ) {
-        screen.renderTooltip(
-            poseStack,
-            textComponents,
-            tooltipComponent,
-            x,
-            y,
-            font,
-            stack
-        );
-    }
+	@Override
+	public void renderTooltip(
+		Screen screen,
+		PoseStack poseStack,
+		List<Component> textComponents,
+		Optional<TooltipComponent> tooltipComponent,
+		int x,
+		int y,
+		@Nullable Font font,
+		ItemStack stack
+	) {
+		screen.renderTooltip(
+			poseStack,
+			textComponents,
+			tooltipComponent,
+			x,
+			y,
+			font,
+			stack
+		);
+	}
 }

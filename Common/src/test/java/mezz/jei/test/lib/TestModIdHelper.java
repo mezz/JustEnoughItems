@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 
 public class TestModIdHelper implements IModIdHelper {
-    @Override
+	@Override
 	public String getModNameForModId(String modId) {
 		return "ModName(" + modId + ")";
 	}
