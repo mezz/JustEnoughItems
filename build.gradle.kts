@@ -1,9 +1,17 @@
 plugins {
-	id("com.diffplug.spotless") version("5.14.3")
+	id("com.diffplug.spotless") version("6.25.0")
     id("com.dorongold.task-tree") version("2.1.0")
+    // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/
+    id("fabric-loom") version("1.7.1") apply(false)
+    // https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/gradle/vanilla/org.spongepowered.gradle.vanilla.gradle.plugin/
+    id("org.spongepowered.gradle.vanilla") version("0.2.1-SNAPSHOT") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
+}
+
+repositories {
+    mavenCentral()
 }
 
 // gradle.properties
@@ -26,13 +34,16 @@ val modName: String by extra
 val specificationVersion: String by extra
 
 spotless {
-	java {
-		target("*/src/*/java/mezz/jei/**/*.java")
+    java {
+        target("*/src/*/java/mezz/jei/**/*.java")
 
-		endWithNewline()
-		trimTrailingWhitespace()
-		removeUnusedImports()
-	}
+        endWithNewline()
+        trimTrailingWhitespace()
+        removeUnusedImports()
+        indentWithTabs(4)
+        replaceRegex("class-level javadoc indentation fix", "^\\*", " *")
+        replaceRegex("method-level javadoc indentation fix", "\t\\*", "\t *")
+    }
 }
 
 subprojects {

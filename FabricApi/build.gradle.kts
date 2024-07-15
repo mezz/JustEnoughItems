@@ -6,7 +6,7 @@ plugins {
     java
     idea
     `maven-publish`
-    id("fabric-loom") version("0.11-SNAPSHOT")
+    id("fabric-loom")
 }
 
 // gradle.properties

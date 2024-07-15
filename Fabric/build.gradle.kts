@@ -9,7 +9,7 @@ plugins {
     java
     idea
     `maven-publish`
-    id("fabric-loom") version("0.11-SNAPSHOT")
+    id("fabric-loom")
     id("net.darkhax.curseforgegradle") version("1.0.8")
 }
 
