@@ -6,7 +6,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: "[6.0.24,6.2)"
 	}
 }
 
@@ -225,7 +225,7 @@ abstract class ExtractLwjglNatives extends DefaultTask {
 					}
 					FileUtils.copyURLToFile(url, target)
 				}
-				def rootPath = FileSystems.newFileSystem(target.toPath(), null).getPath('/')
+				def rootPath = FileSystems.newFileSystem(target.toPath(), Map.of()).getPath('/')
 				Files.walk(rootPath.resolve(osName))
 					.filter { Files.isRegularFile(it) }
 					.each {
