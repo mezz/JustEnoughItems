@@ -141,20 +141,19 @@ public final class RecipeTransferUtil {
 			}
 		}
 
-		// check that all slots can be picked up by the player
+		// check that all slots are interactable (can be picked up, and not output slots)
 		{
-			List<Integer> invalidPickupSlots = Stream.concat(
+			List<Integer> invalidModificationSlots = Stream.concat(
 					craftingSlots.stream(),
 					inventorySlots.stream()
 				)
-				.filter(Slot::hasItem)
-				.filter(slot -> !slot.mayPickup(player))
+				.filter(s -> !s.allowModification(player))
 				.map(slot -> slot.index)
 				.toList();
-			if (!invalidPickupSlots.isEmpty()) {
+			if (!invalidModificationSlots.isEmpty()) {
 				LOGGER.error(
-					"Transfer request has invalid slots, the player is unable to pickup from them: {}",
-					StringUtil.intsToString(invalidPickupSlots)
+					"Transfer request has invalid slots, they do not allow modification: {}",
+					StringUtil.intsToString(invalidModificationSlots)
 				);
 				return false;
 			}

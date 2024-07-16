@@ -66,7 +66,7 @@ public final class BasicRecipeTransferHandlerServer {
 		List<ItemStack> clearedCraftingItems = clearCraftingGrid(craftingSlots, player);
 
 		// put items into the crafting grid
-		List<ItemStack> remainderItems = putItemsIntoCraftingGrid(recipeSlotToTakenStacks, requireCompleteSets);
+		List<ItemStack> remainderItems = putItemsIntoCraftingGrid(recipeSlotToTakenStacks, requireCompleteSets, player);
 
 		// put leftover items back into the inventory
 		stowItems(player, inventorySlots, clearedCraftingItems);
@@ -100,7 +100,7 @@ public final class BasicRecipeTransferHandlerServer {
 	private static List<ItemStack> clearCraftingGrid(List<Slot> craftingSlots, Player player) {
 		List<ItemStack> clearedCraftingItems = new ArrayList<>();
 		for (Slot craftingSlot : craftingSlots) {
-			if (!craftingSlot.mayPickup(player)) {
+			if (!craftingSlot.allowModification(player)) {
 				continue;
 			}
 			if (craftingSlot.hasItem()) {
@@ -113,13 +113,14 @@ public final class BasicRecipeTransferHandlerServer {
 
 	private static List<ItemStack> putItemsIntoCraftingGrid(
 		Map<Slot, ItemStack> recipeSlotToTakenStacks,
-		boolean requireCompleteSets
+		boolean requireCompleteSets,
+		Player player
 	) {
 		final int slotStackLimit = getSlotStackLimit(recipeSlotToTakenStacks, requireCompleteSets);
 		List<ItemStack> remainderItems = new ArrayList<>();
 
 		recipeSlotToTakenStacks.forEach((slot, stack) -> {
-			if (slot.getItem().isEmpty() && slot.mayPlace(stack)) {
+			if (slot.getItem().isEmpty() && slot.allowModification(player) && slot.mayPlace(stack)) {
 				ItemStack remainder = slot.safeInsert(stack, slotStackLimit);
 				if (!remainder.isEmpty()) {
 					remainderItems.add(remainder);
@@ -138,7 +139,7 @@ public final class BasicRecipeTransferHandlerServer {
 		for (TransferOperation transferOperation : transferOperations) {
 			Slot recipeSlot = transferOperation.craftingSlot(player.containerMenu);
 			Slot inventorySlot = transferOperation.inventorySlot(player.containerMenu);
-			if (!inventorySlot.mayPickup(player)) {
+			if (!inventorySlot.allowModification(player)) {
 				LOGGER.error(
 					"Tried to transfer recipe but was given an" +
 					" inventory slot that the player can't pickup from: {}" ,

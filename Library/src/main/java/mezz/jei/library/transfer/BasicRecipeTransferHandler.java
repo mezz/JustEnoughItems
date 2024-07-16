@@ -225,7 +225,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		for (Slot slot : craftingSlots) {
 			final ItemStack stack = slot.getItem();
 			if (!stack.isEmpty()) {
-				if (!slot.mayPickup(player)) {
+				if (!slot.allowModification(player)) {
 					LOGGER.error(
 						"Recipe Transfer helper {} does not work for container {}. " +
 							"The Player is not able to move items out of Crafting Slot number {}",
@@ -241,7 +241,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		for (Slot slot : inventorySlots) {
 			final ItemStack stack = slot.getItem();
 			if (!stack.isEmpty()) {
-				if (!slot.mayPickup(player)) {
+				if (!slot.allowModification(player)) {
 					LOGGER.error(
 						"Recipe Transfer helper {} does not work for container {}. " +
 							"The Player is not able to move items out of Inventory Slot number {}",
