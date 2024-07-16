@@ -16,9 +16,14 @@ import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 
+
 /**
  * The main class to implement to create a JEI plugin. Everything communicated between a mod and JEI is through this class.
- * IModPlugins must have the {@link JeiPlugin} annotation to get loaded by JEI.
+ *
+ * In a Forge environment, IModPlugins must have the {@link JeiPlugin} annotation to get loaded by JEI.
+ *
+ * In a Fabric environment, IModPlugins must be declared under `entrypoints.jei_mod_plugin` in `fabric.mod.json`.
+ * See <a href="https://fabricmc.net/wiki/documentation:entrypoint">the Fabric Wiki</a> for more information.
  */
 public interface IModPlugin {
 
@@ -109,7 +114,11 @@ public interface IModPlugin {
 
 	/**
 	 * Override the default JEI runtime.
+	 *
+	 * @since 12.0.2
+	 * @deprecated this has moved to {@link IRuntimePlugin}
 	 */
+	@Deprecated(since = "13.2.0", forRemoval = true)
 	default void registerRuntime(IRuntimeRegistration registration) {
 
 	}
