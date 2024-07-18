@@ -4,21 +4,28 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 
 public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final ResourceLocation recipeName;
 
 	public OutputSlotTooltipCallback(ResourceLocation recipeName) {
@@ -37,14 +44,14 @@ public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 
 		IModIdHelper modIdHelper = Internal.getJeiRuntime().getJeiHelpers().getModIdHelper();
 		if (modIdHelper.isDisplayingModNameEnabled()) {
-			ResourceLocation ingredientName = getResourceLocation(displayedIngredient.get());
-
-			String recipeModId = recipeName.getNamespace();
-			String ingredientModId = ingredientName.getNamespace();
-			if (!recipeModId.equals(ingredientModId)) {
-				String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
-				MutableComponent recipeBy = Component.translatable("jei.tooltip.recipe.by", modName);
-				tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
+			String ingredientModId = getDisplayModId(displayedIngredient.get());
+			if (ingredientModId != null) {
+				String recipeModId = recipeName.getNamespace();
+				if (!recipeModId.equals(ingredientModId)) {
+					String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
+					MutableComponent recipeBy = Component.translatable("jei.tooltip.recipe.by", modName);
+					tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
+				}
 			}
 		}
 
@@ -56,9 +63,18 @@ public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 		}
 	}
 
-	private <T> ResourceLocation getResourceLocation(ITypedIngredient<T> ingredient) {
+	private <T> @Nullable String getDisplayModId(ITypedIngredient<T> typedIngredient) {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient.getType());
-		return ingredientHelper.getResourceLocation(ingredient.getIngredient());
+
+		IIngredientType<T> type = typedIngredient.getType();
+		T ingredient = typedIngredient.getIngredient();
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
+		try {
+			return ingredientHelper.getDisplayModId(ingredient);
+		} catch (RuntimeException e) {
+			String ingredientInfo = ErrorUtil.getIngredientInfo(ingredient, type, ingredientManager);
+			LOGGER.error("Caught exception from ingredient without a resource location: {}", ingredientInfo, e);
+			return null;
+		}
 	}
 }
