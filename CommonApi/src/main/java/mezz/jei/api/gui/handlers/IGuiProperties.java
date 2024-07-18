@@ -7,17 +7,17 @@ import net.minecraft.client.gui.screens.Screen;
  * Created by {@link IScreenHandler#apply(Screen)}
  */
 public interface IGuiProperties {
-	Class<? extends Screen> getScreenClass();
+	Class<? extends Screen> screenClass();
 
-	int getGuiLeft();
+	int guiLeft();
 
-	int getGuiTop();
+	int guiTop();
 
-	int getGuiXSize();
+	int guiXSize();
 
-	int getGuiYSize();
+	int guiYSize();
 
-	int getScreenWidth();
+	int screenWidth();
 
-	int getScreenHeight();
+	int screenHeight();
 }

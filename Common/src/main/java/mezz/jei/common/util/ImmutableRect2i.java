@@ -6,27 +6,23 @@ import net.minecraft.client.renderer.Rect2i;
 
 import javax.annotation.Nonnegative;
 
-public class ImmutableRect2i {
+@SuppressWarnings("unused")
+public record ImmutableRect2i(
+	int x,
+	int y,
+	@Nonnegative int width,
+	@Nonnegative int height
+) {
 	public static final ImmutableRect2i EMPTY = new ImmutableRect2i(0, 0, 0, 0);
-
-	private final int x;
-	private final int y;
-	@Nonnegative
-	private final int width;
-	@Nonnegative
-	private final int height;
 
 	public ImmutableRect2i(Rect2i rect) {
 		this(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
 	}
 
-	public ImmutableRect2i(int x, int y, int width, int height) {
+	@SuppressWarnings("ConstantValue")
+	public ImmutableRect2i {
 		Preconditions.checkArgument(width >= 0, "width must be >= 0");
 		Preconditions.checkArgument(height >= 0, "height must be >= 0");
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
 	}
 
 	public int getX() {
@@ -74,28 +70,48 @@ public class ImmutableRect2i {
 		if (x == 0) {
 			return this;
 		}
-		return new ImmutableRect2i(this.x + x, this.y, this.width, this.height);
+		return new ImmutableRect2i(
+			Math.addExact(this.x, x),
+			this.y,
+			this.width,
+			this.height
+		);
 	}
 
 	public ImmutableRect2i moveLeft(int x) {
 		if (x == 0) {
 			return this;
 		}
-		return new ImmutableRect2i(this.x - x, this.y, this.width, this.height);
+		return new ImmutableRect2i(
+			Math.subtractExact(this.x, x),
+			this.y,
+			this.width,
+			this.height
+		);
 	}
 
 	public ImmutableRect2i moveDown(int y) {
 		if (y == 0) {
 			return this;
 		}
-		return new ImmutableRect2i(this.x, this.y + y, this.width, this.height);
+		return new ImmutableRect2i(
+			this.x,
+			Math.addExact(this.y, y),
+			this.width,
+			this.height
+		);
 	}
 
 	public ImmutableRect2i moveUp(int y) {
 		if (y == 0) {
 			return this;
 		}
-		return new ImmutableRect2i(this.x, this.y - y, this.width, this.height);
+		return new ImmutableRect2i(
+			this.x,
+			Math.subtractExact(this.y, y),
+			this.width,
+			this.height
+		);
 	}
 
 	public ImmutableRect2i insetBy(int amount) {
@@ -104,11 +120,12 @@ public class ImmutableRect2i {
 		}
 		amount = Math.min(amount, this.width / 2);
 		amount = Math.min(amount, this.height / 2);
+		int doubleAmount = Math.multiplyExact(amount, 2);
 		return new ImmutableRect2i(
-			this.x + amount,
-			this.y + amount,
-			this.width - amount * 2,
-			this.height - amount * 2
+			Math.addExact(this.x, amount),
+			Math.addExact(this.y, amount),
+			Math.subtractExact(this.width, doubleAmount),
+			Math.subtractExact(this.height, doubleAmount)
 		);
 	}
 
@@ -116,7 +133,13 @@ public class ImmutableRect2i {
 		if (amount == 0) {
 			return this;
 		}
-		return new ImmutableRect2i(this.x - amount, this.y - amount, this.width + (amount * 2), this.height + (amount * 2));
+		int doubleAmount = Math.multiplyExact(amount, 2);
+		return new ImmutableRect2i(
+			Math.subtractExact(this.x, amount),
+			Math.subtractExact(y, amount),
+			Math.addExact(this.width, doubleAmount),
+			Math.addExact(this.height, doubleAmount)
+		);
 	}
 
 	public ImmutableRect2i cropRight(int amount) {
@@ -126,7 +149,12 @@ public class ImmutableRect2i {
 		if (amount > this.width) {
 			amount = this.width;
 		}
-		return new ImmutableRect2i(this.x, this.y, this.width - amount, this.height);
+		return new ImmutableRect2i(
+			this.x,
+			this.y,
+			Math.subtractExact(this.width, amount),
+			this.height
+		);
 	}
 
 	public ImmutableRect2i cropLeft(int amount) {
@@ -136,7 +164,12 @@ public class ImmutableRect2i {
 		if (amount > this.width) {
 			amount = this.width;
 		}
-		return new ImmutableRect2i(this.x + amount, this.y, this.width - amount, this.height);
+		return new ImmutableRect2i(
+			Math.addExact(this.x, amount),
+			this.y,
+			Math.subtractExact(this.width, amount),
+			this.height
+		);
 	}
 
 	public ImmutableRect2i cropBottom(int amount) {
@@ -146,7 +179,12 @@ public class ImmutableRect2i {
 		if (amount > this.height) {
 			amount = this.height;
 		}
-		return new ImmutableRect2i(this.x, this.y, this.width, this.height - amount);
+		return new ImmutableRect2i(
+			this.x,
+			this.y,
+			this.width,
+			Math.subtractExact(this.height, amount)
+		);
 	}
 
 	public ImmutableRect2i cropTop(int amount) {
@@ -156,17 +194,27 @@ public class ImmutableRect2i {
 		if (amount > this.height) {
 			amount = this.height;
 		}
-		return new ImmutableRect2i(this.x, this.y + amount, this.width, this.height - amount);
+		return new ImmutableRect2i(
+			this.x,
+			Math.addExact(this.y, amount),
+			this.width,
+			Math.subtractExact(this.height, amount)
+		);
 	}
 
-	public ImmutableRect2i keepTop(int amount) {
+	public ImmutableRect2i keepTop(@Nonnegative int amount) {
 		if (amount == this.height) {
 			return this;
 		}
 		if (amount > this.height) {
 			return this;
 		}
-		return new ImmutableRect2i(this.x, this.y, this.width, amount);
+		return new ImmutableRect2i(
+			this.x,
+			this.y,
+			this.width,
+			amount
+		);
 	}
 
 	public ImmutableRect2i keepBottom(int amount) {
@@ -176,8 +224,13 @@ public class ImmutableRect2i {
 		if (amount > this.height) {
 			return this;
 		}
-		int cropAmount = this.height - amount;
-		return new ImmutableRect2i(this.x, this.y + cropAmount, this.width, amount);
+		int cropAmount = Math.subtractExact(this.height, amount);
+		return new ImmutableRect2i(
+			this.x,
+			Math.addExact(this.y, cropAmount),
+			this.width,
+			amount
+		);
 	}
 
 	public ImmutableRect2i keepRight(int amount) {
@@ -187,8 +240,13 @@ public class ImmutableRect2i {
 		if (amount > this.width) {
 			return this;
 		}
-		int cropAmount = this.width - amount;
-		return new ImmutableRect2i(this.x + cropAmount, this.y, amount, this.height);
+		int cropAmount = Math.subtractExact(this.width, amount);
+		return new ImmutableRect2i(
+			Math.addExact(this.x, cropAmount),
+			this.y,
+			amount,
+			this.height
+		);
 	}
 
 	public ImmutableRect2i keepLeft(int amount) {
@@ -202,7 +260,12 @@ public class ImmutableRect2i {
 	}
 
 	public ImmutableRect2i addOffset(int x, int y) {
-		return new ImmutableRect2i(this.x + x, this.y + y, this.width, this.height);
+		return new ImmutableRect2i(
+			Math.addExact(this.x, x),
+			Math.addExact(this.y, y),
+			this.width,
+			this.height
+		);
 	}
 
 	public ImmutableRect2i matchWidthAndX(ImmutableRect2i rect) {

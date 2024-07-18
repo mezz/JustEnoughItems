@@ -151,10 +151,10 @@ public class GuiEventHandler {
 				// draw the gui area
 				guiGraphics.fill(
 					RenderType.gui(),
-					guiProperties.getGuiLeft(),
-					guiProperties.getGuiTop(),
-					guiProperties.getGuiLeft() + guiProperties.getGuiXSize(),
-					guiProperties.getGuiTop() + guiProperties.getGuiYSize(),
+					guiProperties.guiLeft(),
+					guiProperties.guiTop(),
+					guiProperties.guiLeft() + guiProperties.guiXSize(),
+					guiProperties.guiTop() + guiProperties.guiYSize(),
 					0x22CCCC00
 				);
 

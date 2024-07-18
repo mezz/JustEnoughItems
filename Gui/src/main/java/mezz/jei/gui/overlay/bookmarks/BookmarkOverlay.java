@@ -124,11 +124,11 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	private static ImmutableRect2i getDisplayArea(IGuiProperties guiProperties) {
-		int width = guiProperties.getGuiLeft();
+		int width = guiProperties.guiLeft();
 		if (width <= 0) {
 			width = 0;
 		}
-		int screenHeight = guiProperties.getScreenHeight();
+		int screenHeight = guiProperties.screenHeight();
 		return new ImmutableRect2i(0, 0, width, screenHeight);
 	}
 

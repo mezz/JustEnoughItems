@@ -26,6 +26,8 @@ import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -35,6 +37,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFocusSource, ICharTypedHandler {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private static final int BORDER_MARGIN = 6;
 	private static final int INNER_PADDING = 2;
 	private static final int BUTTON_SIZE = 20;
@@ -103,9 +107,15 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private void onScreenPropertiesChanged() {
 		screenPropertiesCache.getGuiProperties()
 			.ifPresentOrElse(guiProperties -> {
-				ImmutableRect2i displayArea = createDisplayArea(guiProperties);
-				Set<ImmutableRect2i> guiExclusionAreas = screenPropertiesCache.getGuiExclusionAreas();
-				updateBounds(guiProperties, displayArea, guiExclusionAreas);
+				try {
+					ImmutableRect2i displayArea = createDisplayArea(guiProperties);
+					Set<ImmutableRect2i> guiExclusionAreas = screenPropertiesCache.getGuiExclusionAreas();
+					updateBounds(guiProperties, displayArea, guiExclusionAreas);
+				} catch (RuntimeException e) {
+					LOGGER.error("Failed to update JEI bounds for screen with properties : {}", guiProperties, e);
+					this.contents.close();
+					this.searchField.setFocused(false);
+				}
 			}, () -> {
 				this.contents.close();
 				this.searchField.setFocused(false);
@@ -131,7 +141,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	private static boolean isSearchBarCentered(IClientConfig clientConfig, IGuiProperties guiProperties) {
 		return clientConfig.isCenterSearchBarEnabled() &&
-			GuiProperties.getGuiBottom(guiProperties) + SEARCH_HEIGHT < guiProperties.getScreenHeight();
+			GuiProperties.getGuiBottom(guiProperties) + SEARCH_HEIGHT < guiProperties.screenHeight();
 	}
 
 	private ImmutableRect2i getAvailableContentsArea(ImmutableRect2i displayArea, boolean searchBarCentered) {
