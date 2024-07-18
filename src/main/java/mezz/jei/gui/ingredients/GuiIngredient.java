@@ -221,13 +221,11 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 					final String acceptsAny = String.format(oreDictionaryIngredient, oreDictEquivalent);
 					tooltip.add(TextFormatting.GRAY + acceptsAny);
 				}
-				TooltipRenderer.drawHoveringText((ItemStack) value, minecraft, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
-			} else {
-				TooltipRenderer.drawHoveringText(minecraft, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
 			}
+			TooltipRenderer.drawHoveringText(value, minecraft, tooltip, xOffset + mouseX, yOffset + mouseY, fontRenderer);
 
 			GlStateManager.enableDepth();
-		} catch (RuntimeException e) {
+		} catch (RuntimeException | LinkageError e) {
 			Log.get().error("Exception when rendering tooltip on {}.", value, e);
 		}
 	}
