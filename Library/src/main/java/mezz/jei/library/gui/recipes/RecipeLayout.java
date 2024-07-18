@@ -249,9 +249,9 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 							.map(TooltipHelper::toTooltipComponent)
 							.collect(Collectors.toCollection(ArrayList::new));
 					addTagContentTooltip(components, i, hoveredSlot);
-                    List<Component> modIdTooltip = new ArrayList<>();
-                    modIdTooltip = modIdHelper.addModNameToIngredientTooltip(modIdTooltip, i);
-                    addAllTooltipComponents(components, modIdTooltip);
+					List<Component> modIdTooltip = new ArrayList<>();
+					modIdTooltip = modIdHelper.addModNameToIngredientTooltip(modIdTooltip, i);
+					addAllTooltipComponents(components, modIdTooltip);
 					TooltipRenderer.drawHoveringTooltip(guiGraphics, components, mouseX, mouseY, i);
 				});
 		} else if (isMouseOver(mouseX, mouseY)) {
@@ -269,9 +269,9 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		}
 	}
 
-    private void addAllTooltipComponents(List<ClientTooltipComponent> tooltipComponents, List<Component> components) {
+	private void addAllTooltipComponents(List<ClientTooltipComponent> tooltipComponents, List<Component> components) {
 		tooltipComponents.addAll(TooltipHelper.toTooltipComponents(components));
-    }
+	}
 
 	private <T> void addTagContentTooltip(List<ClientTooltipComponent> tooltipComponents, ITypedIngredient<T> displayed, IRecipeSlotDrawable slotDrawable) {
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
