@@ -1,6 +1,7 @@
 package mezz.jei.common;
 
 import com.google.common.base.Preconditions;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.WorldConfig;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -20,6 +21,8 @@ public final class Internal {
 	private static IInternalKeyMappings keyMappings;
 	@Nullable
 	private static IWorldConfig worldConfig;
+	@Nullable
+	private static IIngredientManager ingredientManager;
 
 	private Internal() {
 
@@ -57,5 +60,14 @@ public final class Internal {
 			worldConfig = new WorldConfig();
 		}
 		return worldConfig;
+	}
+
+	public static void setIngredientManager(IIngredientManager ingredientManager) {
+		Internal.ingredientManager = ingredientManager;
+	}
+
+	public static IIngredientManager getIngredientManager() {
+		Preconditions.checkState(ingredientManager != null, "Ingredient Manager has not been created yet.");
+		return ingredientManager;
 	}
 }

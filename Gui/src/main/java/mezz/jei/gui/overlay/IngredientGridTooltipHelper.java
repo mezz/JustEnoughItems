@@ -46,17 +46,17 @@ public final class IngredientGridTooltipHelper {
 		this.colorHelper = colorHelper;
 	}
 
-	public <T> void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, ITypedIngredient<T> value) {
-		IIngredientType<T> ingredientType = value.getType();
-		T ingredient = value.getIngredient();
+	public <T> void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, ITypedIngredient<T> typedIngredient) {
+		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
-		List<Component> tooltip = getTooltip(ingredient, ingredientRenderer, ingredientHelper);
-		TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, ingredient, ingredientRenderer);
+		List<Component> tooltip = getTooltip(typedIngredient, ingredientRenderer, ingredientHelper);
+		TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY, typedIngredient, ingredientRenderer);
 	}
 
-	public <T> List<Component> getTooltip(T ingredient, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
+	public <T> List<Component> getTooltip(ITypedIngredient<T> typedIngredient, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
+		T ingredient = typedIngredient.getIngredient();
 		List<Component> ingredientTooltipSafe = IngredientTooltipHelper.getMutableIngredientTooltipSafe(ingredient, ingredientRenderer);
 		List<Component> tooltip = modIdHelper.addModNameToIngredientTooltip(ingredientTooltipSafe, ingredient, ingredientHelper);
 

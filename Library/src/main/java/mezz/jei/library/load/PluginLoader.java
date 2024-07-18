@@ -16,6 +16,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
@@ -74,6 +75,7 @@ public class PluginLoader {
 		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
 		this.ingredientManager = ingredientManagerBuilder.build();
+		Internal.setIngredientManager(ingredientManager);
 
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(ingredientManager, data.textures());
