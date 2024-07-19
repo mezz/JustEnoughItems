@@ -5,20 +5,15 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.common.config.RecipeSorterStage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
-import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 public class RecipeSortUtil {
-	private static final Comparator<?> EQUAL_COMPARATOR = (a, b) -> 0;
-	private static final Comparator<RecipeLayoutWithButtons<?>> BOOKMARK_COMPARATOR = createBookmarkComparator();
+	private static final Comparator<RecipeLayoutWithButtons<?>> CRAFTABLE_COMPARATOR = createCraftableComparator();
 
 	public static List<IRecipeCategory<?>> sortRecipeCategories(
 		List<IRecipeCategory<?>> recipeCategories,
@@ -46,71 +41,28 @@ public class RecipeSortUtil {
 			.toList();
 	}
 
-	public static Comparator<RecipeLayoutWithButtons<?>> createRecipeComparator(
-		Set<RecipeSorterStage> recipeSorterStages,
-		@Nullable AbstractContainerMenu container,
-		@Nullable Player player
-	) {
-		Comparator<RecipeLayoutWithButtons<?>> comparator = getEqualComparator();
-
-		if (recipeSorterStages.contains(RecipeSorterStage.BOOKMARKED)) {
-			comparator = chainComparators(comparator, BOOKMARK_COMPARATOR);
-		}
-
-		if (recipeSorterStages.contains(RecipeSorterStage.CRAFTABLE)) {
-			Comparator<RecipeLayoutWithButtons<?>> ingredientMatchCountComparator = createIngredientMatchCountComparator(container, player);
-			comparator = chainComparators(comparator, ingredientMatchCountComparator);
-		}
-
-		return comparator;
+	public static Comparator<RecipeLayoutWithButtons<?>> getCraftableComparator() {
+		return CRAFTABLE_COMPARATOR;
 	}
 
-	private static <T> Comparator<T> chainComparators(Comparator<T> first, Comparator<T> second) {
-		if (first == EQUAL_COMPARATOR) {
-			return second;
-		}
-		return first.thenComparing(second);
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T> Comparator<T> getEqualComparator() {
-		return (Comparator<T>) EQUAL_COMPARATOR;
-	}
-
-	private static Comparator<RecipeLayoutWithButtons<?>> createBookmarkComparator() {
-		return Comparator.comparing(r -> {
-			RecipeBookmarkButton bookmarkButton = r.getBookmarkButton();
-			return !bookmarkButton.isBookmarked();
-		});
-	}
-
-	private static Comparator<RecipeLayoutWithButtons<?>> createIngredientMatchCountComparator(
-		@Nullable AbstractContainerMenu container,
-		@Nullable Player player
-	) {
+	private static Comparator<RecipeLayoutWithButtons<?>> createCraftableComparator() {
 		return Comparator.comparingInt(r -> {
 			IRecipeLayoutDrawable<?> recipeLayout = r.getRecipeLayout();
 			List<IRecipeSlotView> inputSlotViews = recipeLayout.getRecipeSlotsView()
 				.getSlotViews(RecipeIngredientRole.INPUT);
-			RecipeTransferButton transferButton = r.getTransferButton();
 
-			transferButton.update(container, player);
+			RecipeTransferButton transferButton = r.getTransferButton();
+			int missingCount = transferButton.getMissingCountHint();
+			if (missingCount == -1) {
+				return 0;
+			}
 
 			int ingredientCount = ingredientCount(inputSlotViews);
 			if (ingredientCount == 0) {
 				return 0;
 			}
 
-			int matchCount = transferButton.getRecipeTransferError()
-				.map(recipeTransferError -> {
-					int missingCountHint = recipeTransferError.getMissingCountHint();
-					if (missingCountHint < 0) {
-						return 0;
-					}
-					return ingredientCount - missingCountHint;
-				})
-				.orElse(ingredientCount);
-
+			int matchCount = ingredientCount - missingCount;
 			int matchPercent = 100 * matchCount / ingredientCount;
 			return -matchPercent;
 		});

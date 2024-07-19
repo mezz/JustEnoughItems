@@ -21,7 +21,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 public class RecipeTransferButton extends GuiIconToggleButton {
 	public static RecipeTransferButton create(
@@ -45,6 +44,7 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 	private @Nullable IRecipeTransferError recipeTransferError;
 	private @Nullable AbstractContainerMenu parentContainer;
 	private @Nullable Player player;
+	private boolean initialized = false;
 
 	private RecipeTransferButton(IDrawable icon, IRecipeLayoutDrawable<?> recipeLayout, Runnable onClose) {
 		super(icon, icon);
@@ -55,6 +55,7 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 	public void update(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
 		this.player = player;
 		this.parentContainer = parentContainer;
+		this.initialized = true;
 
 		if (parentContainer != null && player != null) {
 			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
@@ -124,7 +125,17 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 		}
 	}
 
-	public Optional<IRecipeTransferError> getRecipeTransferError() {
-		return Optional.ofNullable(recipeTransferError);
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	public int getMissingCountHint() {
+		if (!initialized) {
+			return -1;
+		}
+		if (recipeTransferError == null) {
+			return 0;
+		}
+		return recipeTransferError.getMissingCountHint();
 	}
 }

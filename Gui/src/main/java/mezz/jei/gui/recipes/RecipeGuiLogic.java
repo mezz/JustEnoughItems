@@ -13,6 +13,7 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.gui.recipes.layouts.IRecipeLayoutList;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.ILookupState;
 import mezz.jei.gui.recipes.lookups.IngredientLookupState;
@@ -41,7 +42,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IFocusFactory focusFactory;
 	private final IRecipeLayoutWithButtonsFactory recipeLayoutFactory;
 	private @Nullable IRecipeCategory<?> cachedRecipeCategory;
-	private @Nullable @Unmodifiable List<? extends RecipeLayoutWithButtons<?>> cachedRecipeLayoutsWithButtons;
+	private @Nullable IRecipeLayoutList cachedRecipeLayoutsWithButtons;
 	private Set<RecipeSorterStage> cachedSorterStages = Set.of();
 
 	public RecipeGuiLogic(
@@ -65,6 +66,13 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipeTransferManager
 		);
 		this.focusFactory = focusFactory;
+	}
+
+	@Override
+	public void tick() {
+		if (cachedRecipeLayoutsWithButtons != null) {
+			cachedRecipeLayoutsWithButtons.tick();
+		}
 	}
 
 	@Override
@@ -213,8 +221,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 
 		final int recipeHeight =
-			this.cachedRecipeLayoutsWithButtons.stream()
-				.findFirst()
+			this.cachedRecipeLayoutsWithButtons.findFirst()
 				.map(RecipeLayoutWithButtons::getRecipeLayout)
 				.map(IRecipeLayoutDrawable::getRectWithBorder)
 				.map(Rect2i::getHeight)
@@ -232,7 +239,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Unmodifiable
-	private <T> List<RecipeLayoutWithButtons<T>> createRecipeLayoutsWithButtons(
+	private <T> IRecipeLayoutList createRecipeLayoutsWithButtons(
 		Set<RecipeSorterStage> recipeSorterStages,
 		IFocusedRecipes<T> selectedRecipes,
 		@Nullable AbstractContainerMenu container,
@@ -248,7 +255,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 					.ifPresentOrElse(acceptor, () -> brokenRecipes.add(recipe))
 			)
 			.map(recipeLayoutFactory::create)
-			.sorted(RecipeSortUtil.createRecipeComparator(recipeSorterStages, container, player))
 			.toList();
 
 		if (!brokenRecipes.isEmpty()) {
@@ -256,7 +262,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipeManager.hideRecipes(recipeType, brokenRecipes);
 		}
 
-		return results;
+		return IRecipeLayoutList.create(recipeSorterStages, container, player, results);
 	}
 
 	@Override
