@@ -2,10 +2,10 @@ package mezz.jei.gui.recipes.lookups;
 
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.gui.recipes.RecipeLayoutWithButtons;
+import mezz.jei.gui.recipes.layouts.IRecipeLayoutList;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public interface ILookupState {
 	List<IRecipeCategory<?>> getRecipeCategories();
@@ -34,11 +34,13 @@ public interface ILookupState {
 
 	int pageCount();
 
-	default <T> List<T> getVisible(List<? extends T> recipes) {
-		final int firstRecipeIndex = getRecipeIndex() - (getRecipeIndex() % getRecipesPerPage());
-		final int maxIndex = Math.min(recipes.size(), firstRecipeIndex + getRecipesPerPage());
-		return IntStream.range(firstRecipeIndex, maxIndex)
-			.mapToObj(recipes::get)
-			.collect(Collectors.toList());
+	default List<RecipeLayoutWithButtons<?>> getVisible(IRecipeLayoutList recipes) {
+		final int recipesPerPage = getRecipesPerPage();
+		final int firstRecipeIndex = getRecipeIndex() - (getRecipeIndex() % recipesPerPage);
+		final int maxIndex = Math.min(recipes.size(), firstRecipeIndex + recipesPerPage);
+		if (firstRecipeIndex >= maxIndex) {
+			return List.of();
+		}
+		return recipes.subList(firstRecipeIndex, maxIndex);
 	}
 }

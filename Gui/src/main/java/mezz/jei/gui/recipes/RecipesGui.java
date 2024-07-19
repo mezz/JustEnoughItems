@@ -370,6 +370,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.layouts.tick(container);
 
 		this.optionButtons.tick();
+
+		this.logic.tick();
 	}
 
 	@Override

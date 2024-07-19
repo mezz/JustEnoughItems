@@ -36,6 +36,8 @@ public interface IRecipeGuiLogic {
 
 	void nextPage();
 
+	void tick();
+
 	boolean showFocus(IFocusGroup focuses);
 
 	boolean showRecipes(IFocusedRecipes<?> recipes, IFocusGroup focuses);
