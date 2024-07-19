@@ -273,7 +273,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 				}
 			})
 			.map(recipeLayout -> recipeLayoutFactory.<T>create(recipeLayout))
-			.sorted(RecipeSortUtil.createRecipeComparator(recipeSorterStages, container, player))
 			.toList();
 
 		if (!brokenRecipes.isEmpty()) {
@@ -281,7 +280,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipeManager.hideRecipes(recipeType, brokenRecipes);
 		}
 
-		return IRecipeLayoutList.create(results);
+		return IRecipeLayoutList.create(recipeSorterStages, container, player, results);
 	}
 
 	@Override
