@@ -39,15 +39,15 @@ public class IngredientSet<V> extends AbstractSet<V> {
 
 	@Override
 	public boolean add(V v) {
-		String uid = uidGenerator.apply(v);
-		return ingredients.put(uid, v) == null;
+		String uid = getUid(v);
+		return uid != null && ingredients.put(uid, v) == null;
 	}
 
 	@Override
 	public boolean remove(Object o) {
 		//noinspection unchecked
-		String uid = uidGenerator.apply((V) o);
-		return ingredients.remove(uid) != null;
+		String uid = getUid((V) o);
+		return uid != null && ingredients.remove(uid) != null;
 	}
 
 	@Override
@@ -66,8 +66,18 @@ public class IngredientSet<V> extends AbstractSet<V> {
 	@Override
 	public boolean contains(Object o) {
 		//noinspection unchecked
-		String uid = uidGenerator.apply((V) o);
-		return ingredients.containsKey(uid);
+		String uid = getUid((V) o);
+		return uid != null && ingredients.containsKey(uid);
+	}
+
+	@Nullable
+	private String getUid(V ingredient) {
+		try {
+			return uidGenerator.apply(ingredient);
+		} catch (RuntimeException | LinkageError e) {
+			Log.get().warn("Found a broken ingredient while getting its unique id.", e);
+			return null;
+		}
 	}
 
 	@Nullable
