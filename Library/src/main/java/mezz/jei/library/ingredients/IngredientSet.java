@@ -1,7 +1,11 @@
 package mezz.jei.library.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractSet;
 import java.util.Collection;
@@ -12,6 +16,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class IngredientSet<V> extends AbstractSet<V> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final IIngredientHelper<V> ingredientHelper;
 	private final UidContext context;
 	private final Map<String, V> ingredients;
@@ -22,21 +28,32 @@ public class IngredientSet<V> extends AbstractSet<V> {
 		this.ingredients = new LinkedHashMap<>();
 	}
 
+	@Nullable
 	private String getUid(V ingredient) {
-		return ingredientHelper.getUniqueId(ingredient, context);
+		try {
+			return ingredientHelper.getUniqueId(ingredient, context);
+		} catch (RuntimeException e) {
+			try {
+				String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
+				LOGGER.warn("Found a broken ingredient {}", ingredientInfo, e);
+			} catch (RuntimeException e2) {
+				LOGGER.warn("Found a broken ingredient.", e2);
+			}
+			return null;
+		}
 	}
 
 	@Override
 	public boolean add(V v) {
 		String uid = getUid(v);
-		return ingredients.put(uid, v) == null;
+		return uid != null && ingredients.put(uid, v) == null;
 	}
 
 	@Override
 	public boolean remove(Object o) {
 		//noinspection unchecked
 		String uid = getUid((V) o);
-		return ingredients.remove(uid) != null;
+		return uid != null && ingredients.remove(uid) != null;
 	}
 
 	@Override
@@ -54,9 +71,14 @@ public class IngredientSet<V> extends AbstractSet<V> {
 
 	@Override
 	public boolean contains(Object o) {
-		//noinspection unchecked
-		Object uid = getUid((V) o);
-		return ingredients.containsKey(uid);
+		IIngredientType<V> ingredientType = ingredientHelper.getIngredientType();
+		Class<? extends V> ingredientClass = ingredientType.getIngredientClass();
+		if (!ingredientClass.isInstance(o)) {
+			return false;
+		}
+		V v = ingredientClass.cast(o);
+		String uid = getUid(v);
+		return uid != null && ingredients.containsKey(uid);
 	}
 
 	public Optional<V> getByUid(String uid) {
