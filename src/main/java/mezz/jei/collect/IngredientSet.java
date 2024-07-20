@@ -12,7 +12,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class IngredientSet<V> extends AbstractSet<V> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public static <V> IngredientSet<V> create(IIngredientHelper<V> ingredientHelper, UidContext context) {
 		final Function<V, String> uidGenerator = v -> ingredientHelper.getUniqueId(v, context);
 		return new IngredientSet<>(uidGenerator);
@@ -28,15 +33,15 @@ public class IngredientSet<V> extends AbstractSet<V> {
 
 	@Override
 	public boolean add(V v) {
-		String uid = uidGenerator.apply(v);
-		return ingredients.put(uid, v) == null;
+		String uid = getUid(v);
+		return uid != null && ingredients.put(uid, v) == null;
 	}
 
 	@Override
 	public boolean remove(Object o) {
 		//noinspection unchecked
-		String uid = uidGenerator.apply((V) o);
-		return ingredients.remove(uid) != null;
+		String uid = getUid((V) o);
+		return uid != null && ingredients.remove(uid) != null;
 	}
 
 	@Override
@@ -55,8 +60,17 @@ public class IngredientSet<V> extends AbstractSet<V> {
 	@Override
 	public boolean contains(Object o) {
 		//noinspection unchecked
-		String uid = uidGenerator.apply((V) o);
-		return ingredients.containsKey(uid);
+		String uid = getUid((V) o);
+		return uid != null && ingredients.containsKey(uid);
+	}
+
+	private String getUid(V ingredient) {
+		try {
+			return uidGenerator.apply(ingredient);
+		} catch (RuntimeException | LinkageError e) {
+			LOGGER.warn("Found a broken ingredient while getting its unique id.", e);
+			return null;
+		}
 	}
 
 	public Optional<V> getByUid(String uid) {
