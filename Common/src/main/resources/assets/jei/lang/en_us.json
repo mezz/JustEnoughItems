@@ -88,6 +88,8 @@
   "key.jei.showRecipe2": "Show Recipe",
   "key.jei.showUses": "Show Uses",
   "key.jei.showUses2": "Show Uses",
+  "key.jei.transferRecipeBookmark": "Craft Bookmarked Recipe (once)",
+  "key.jei.maxTransferRecipeBookmark": "Craft Bookmarked Recipe (max amount)",
 
   "jei.key.category.search": "JEI (Search Filter)",
   "key.jei.clearSearchBar": "Clear Search Filter",
