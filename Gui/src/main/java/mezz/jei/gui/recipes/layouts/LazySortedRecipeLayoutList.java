@@ -9,9 +9,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -53,7 +53,7 @@ public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 		}
 		if (!matchingCraftable) {
 			this.results.addAll(unsortedList);
-			this.unsortedIterator = new EmptyIterator();
+			this.unsortedIterator = Collections.emptyIterator();
 		} else {
 			this.unsortedIterator = unsortedList.iterator();
 		}
@@ -121,17 +121,5 @@ public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 		}
 
 		return false;
-	}
-
-	private static class EmptyIterator implements Iterator<RecipeLayoutWithButtons<?>> {
-		@Override
-		public boolean hasNext() {
-			return false;
-		}
-
-		@Override
-		public RecipeLayoutWithButtons<?> next() {
-			throw new NoSuchElementException();
-		}
 	}
 }
