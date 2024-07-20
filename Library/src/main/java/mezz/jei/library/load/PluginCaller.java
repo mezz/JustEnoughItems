@@ -2,6 +2,7 @@ package mezz.jei.library.load;
 
 import com.google.common.base.Stopwatch;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +25,11 @@ public class PluginCaller {
 					func.accept(plugin);
 					timer.end();
 				} catch (RuntimeException | LinkageError e) {
+					if (plugin instanceof VanillaPlugin) {
+						// Later plugins are going to crash if basic things added by the Vanilla Plugin are missing.
+						// Better to just crash immediately, so that it doesn't hide the real problem in the logs.
+						throw e;
+					}
 					LOGGER.error("Caught an error from mod plugin: {} {}", plugin.getClass(), plugin.getPluginUid(), e);
 				}
 			}
