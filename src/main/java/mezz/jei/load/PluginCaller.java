@@ -1,6 +1,5 @@
 package mezz.jei.load;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -16,8 +15,6 @@ public class PluginCaller {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static void callOnPlugins(String title, List<IModPlugin> plugins, Consumer<IModPlugin> func) {
-		List<IModPlugin> erroredPlugins = new ArrayList<>();
-
 		for (IModPlugin plugin : plugins) {
 			try {
 				ResourceLocation pluginUid = plugin.getPluginUid();
@@ -30,9 +27,7 @@ public class PluginCaller {
 					throw e;
 				}
 				LOGGER.error("Caught an error from mod plugin: {} {}", plugin.getClass(), plugin.getPluginUid(), e);
-				erroredPlugins.add(plugin);
 			}
 		}
-		plugins.removeAll(erroredPlugins);
 	}
 }
