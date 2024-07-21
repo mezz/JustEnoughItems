@@ -25,4 +25,6 @@ public interface IClientConfig {
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();
+
+	boolean getUseJeiTreeFile();
 }

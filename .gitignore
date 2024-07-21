@@ -31,3 +31,4 @@ changelog.md
 *.launch
 /**/build/
 /**/logs
+/.vscode/*
