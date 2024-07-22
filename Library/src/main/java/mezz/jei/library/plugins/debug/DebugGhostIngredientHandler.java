@@ -58,16 +58,11 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 		LOGGER.info("Ghost Ingredient Handling Complete");
 	}
 
-	private static class DebugInfoTarget<I> implements IGhostIngredientHandler.Target<I> {
-		private final String message;
-		private final Rect2i rectangle;
-		private final IIngredientManager ingredientManager;
-
-		public DebugInfoTarget(String message, Rect2i rectangle, IIngredientManager ingredientManager) {
-			this.message = message;
-			this.rectangle = rectangle;
-			this.ingredientManager = ingredientManager;
-		}
+	private record DebugInfoTarget<I>(
+		String message,
+		Rect2i rectangle,
+		IIngredientManager ingredientManager
+	) implements Target<I> {
 
 		@Override
 		public Rect2i getArea() {

@@ -45,7 +45,7 @@ public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 			Iterator<? extends RecipeLayoutWithButtons<?>> iterator = unsortedList.iterator();
 			while (iterator.hasNext()) {
 				RecipeLayoutWithButtons<?> layoutWithButtons = iterator.next();
-				if (layoutWithButtons.getBookmarkButton().isBookmarked()) {
+				if (layoutWithButtons.bookmarkButton().isBookmarked()) {
 					this.results.add(layoutWithButtons);
 					iterator.remove();
 				}
@@ -97,7 +97,7 @@ public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 			// if craftables go first, look for a 100% craftable element
 			while (unsortedIterator.hasNext()) {
 				RecipeLayoutWithButtons<?> next = unsortedIterator.next();
-				RecipeTransferButton transferButton = next.getTransferButton();
+				RecipeTransferButton transferButton = next.transferButton();
 				if (!transferButton.isInitialized()) {
 					transferButton.update(container, player);
 				}

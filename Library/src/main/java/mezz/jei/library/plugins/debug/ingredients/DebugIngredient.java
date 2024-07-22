@@ -2,7 +2,7 @@ package mezz.jei.library.plugins.debug.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
 
-public class DebugIngredient {
+public record DebugIngredient(int number) {
 	public static final IIngredientType<DebugIngredient> TYPE = new IIngredientType<>() {
 		@Override
 		public String getUid() {
@@ -14,16 +14,6 @@ public class DebugIngredient {
 			return DebugIngredient.class;
 		}
 	};
-
-	private final int number;
-
-	public DebugIngredient(int number) {
-		this.number = number;
-	}
-
-	public int getNumber() {
-		return number;
-	}
 
 	public DebugIngredient copy() {
 		return new DebugIngredient(number);

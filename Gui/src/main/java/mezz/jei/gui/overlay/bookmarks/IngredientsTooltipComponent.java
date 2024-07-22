@@ -128,7 +128,10 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 		}
 	}
 
-	private static class RenderElement<T> {
+	private record RenderElement<T>(
+		IIngredientRenderer<T> renderer,
+		T ingredient
+	) {
 		public static <T> RenderElement<T> create(SummaryElement<T> summaryElement, IIngredientManager ingredientManager) {
 			ITypedIngredient<T> typedIngredient = summaryElement.getIngredient();
 			IIngredientType<T> type = typedIngredient.getType();
@@ -136,14 +139,6 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
 			T ingredient = helper.copyWithAmount(typedIngredient.getIngredient(), summaryElement.getAmount());
 			return new RenderElement<>(renderer, ingredient);
-		}
-
-		private final IIngredientRenderer<T> renderer;
-		private final T ingredient;
-
-		private RenderElement(IIngredientRenderer<T> renderer, T ingredient) {
-			this.renderer = renderer;
-			this.ingredient = ingredient;
 		}
 
 		public void render(GuiGraphics guiGraphics) {

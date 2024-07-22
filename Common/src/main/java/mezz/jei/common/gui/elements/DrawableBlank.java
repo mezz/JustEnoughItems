@@ -4,15 +4,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 
-public class DrawableBlank implements IDrawableStatic, IDrawableAnimated {
-	private final int width;
-	private final int height;
-
-	public DrawableBlank(int width, int height) {
-		this.width = width;
-		this.height = height;
-	}
-
+public record DrawableBlank(int width, int height) implements IDrawableStatic, IDrawableAnimated {
 	@Override
 	public int getWidth() {
 		return width;

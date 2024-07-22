@@ -26,7 +26,7 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = getFontRenderer(minecraft, ingredient);
 		guiGraphics.drawString(font, "JEI", 0, 0, 0xFFFF0000, false);
-		guiGraphics.drawString(font, "#" + ingredient.getNumber(), 0, 8, 0xFFFF0000, false);
+		guiGraphics.drawString(font, "#" + ingredient.number(), 0, 8, 0xFFFF0000, false);
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 

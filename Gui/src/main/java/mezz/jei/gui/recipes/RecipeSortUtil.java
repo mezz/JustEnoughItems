@@ -47,11 +47,11 @@ public class RecipeSortUtil {
 
 	private static Comparator<RecipeLayoutWithButtons<?>> createCraftableComparator() {
 		return Comparator.comparingInt(r -> {
-			IRecipeLayoutDrawable<?> recipeLayout = r.getRecipeLayout();
+			IRecipeLayoutDrawable<?> recipeLayout = r.recipeLayout();
 			List<IRecipeSlotView> inputSlotViews = recipeLayout.getRecipeSlotsView()
 				.getSlotViews(RecipeIngredientRole.INPUT);
 
-			RecipeTransferButton transferButton = r.getTransferButton();
+			RecipeTransferButton transferButton = r.transferButton();
 			int missingCount = transferButton.getMissingCountHint();
 			if (missingCount == -1) {
 				return 0;

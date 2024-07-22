@@ -36,7 +36,7 @@ public class ErrorIngredientRenderer implements IIngredientRenderer<ErrorIngredi
 	@Override
 	public void render(GuiGraphics guiGraphics, ErrorIngredient ingredient) {
 		Minecraft minecraft = Minecraft.getInstance();
-		switch (ingredient.getCrashType()) {
+		switch (ingredient.crashType()) {
 			case RenderBreakVertexBufferCrash -> {
 				MultiBufferSource.BufferSource bufferSource = guiGraphics.bufferSource();
 				for (RenderType renderType : RENDER_TYPES) {
@@ -57,7 +57,7 @@ public class ErrorIngredientRenderer implements IIngredientRenderer<ErrorIngredi
 
 	@Override
 	public List<Component> getTooltip(ErrorIngredient ingredient, TooltipFlag tooltipFlag) {
-		if (ingredient.getCrashType() == ErrorIngredient.CrashType.TooltipCrash) {
+		if (ingredient.crashType() == ErrorIngredient.CrashType.TooltipCrash) {
 			throw new RuntimeException("intentional tooltip crash for testing");
 		}
 		List<Component> tooltip = new ArrayList<>();
