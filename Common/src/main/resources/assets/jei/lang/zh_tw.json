@@ -105,7 +105,7 @@
   "config.jei.valid": "有效",
   "config.jei.title": "%MODNAME 設定",
   "config.jei.mode": "模式",
-  "config.jei.mode.comment": "更改 JEI 工作模式。",
+  "config.jei.mode.comment": "變更 JEI 運作模式。",
   "config.jei.mode.cheatItemsEnabled": "作弊模式",
   "config.jei.mode.cheatItemsEnabled.comment": "給予物品而不是顯示配方。",
   "config.jei.mode.editEnabled": "隱藏物品模式",
