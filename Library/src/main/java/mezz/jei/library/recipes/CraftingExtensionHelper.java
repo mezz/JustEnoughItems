@@ -111,15 +111,10 @@ public class CraftingExtensionHelper {
 		return Optional.of(assignableHandlers.getFirst());
 	}
 
-	private static class Handler<T extends CraftingRecipe> {
-		private final Class<? extends T> recipeClass;
-		private final ICraftingCategoryExtension<T> extension;
-
-		public Handler(Class<? extends T> recipeClass, ICraftingCategoryExtension<T> extension) {
-			this.recipeClass = recipeClass;
-			this.extension = extension;
-		}
-
+	private record Handler<T extends CraftingRecipe>(
+		Class<? extends T> recipeClass,
+		ICraftingCategoryExtension<T> extension
+	) {
 		public <V extends CraftingRecipe> Optional<Handler<V>> optionalCast(RecipeHolder<V> recipeHolder) {
 			if (isHandled(recipeHolder)) {
 				@SuppressWarnings("unchecked")

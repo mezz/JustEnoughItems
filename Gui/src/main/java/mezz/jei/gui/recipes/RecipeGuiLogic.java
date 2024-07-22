@@ -222,7 +222,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		final int recipeHeight =
 			this.cachedRecipeLayoutsWithButtons.findFirst()
-				.map(RecipeLayoutWithButtons::getRecipeLayout)
+				.map(RecipeLayoutWithButtons::recipeLayout)
 				.map(IRecipeLayoutDrawable::getRectWithBorder)
 				.map(Rect2i::getHeight)
 				.orElseGet(recipeCategory::getHeight);

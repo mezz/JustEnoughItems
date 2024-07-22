@@ -15,17 +15,17 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 
 	@Override
 	public String getDisplayName(DebugIngredient ingredient) {
-		return "JEI Debug Item #" + ingredient.getNumber();
+		return "JEI Debug Item #" + ingredient.number();
 	}
 
 	@Override
 	public String getUniqueId(DebugIngredient ingredient, UidContext context) {
-		return "JEI_debug_" + ingredient.getNumber();
+		return "JEI_debug_" + ingredient.number();
 	}
 
 	@Override
 	public ResourceLocation getResourceLocation(DebugIngredient ingredient) {
-		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "debug_" + ingredient.getNumber());
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "debug_" + ingredient.number());
 	}
 
 	@Override

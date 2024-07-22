@@ -7,12 +7,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public class AnvilRecipe implements IJeiAnvilRecipe {
-	private final List<ItemStack> leftInputs;
-	private final List<ItemStack> rightInputs;
-	private final List<ItemStack> outputs;
-	private final @Nullable ResourceLocation uid;
-
+public record AnvilRecipe(
+	List<ItemStack> leftInputs,
+	List<ItemStack> rightInputs,
+	List<ItemStack> outputs,
+	@Nullable ResourceLocation uid
+) implements IJeiAnvilRecipe {
 	public AnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs, @Nullable ResourceLocation uid) {
 		this.leftInputs = List.copyOf(leftInputs);
 		this.rightInputs = List.copyOf(rightInputs);

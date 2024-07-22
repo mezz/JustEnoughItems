@@ -220,14 +220,10 @@ public class JeiDebugPlugin implements IModPlugin {
 		}
 	}
 
-	private static class DebugClickableIngredient<T> implements IClickableIngredient<T> {
-		private final ITypedIngredient<T> typedIngredient;
-		private final Rect2i area;
-
-		public DebugClickableIngredient(ITypedIngredient<T> typedIngredient, Rect2i area) {
-			this.typedIngredient = typedIngredient;
-			this.area = area;
-		}
+	private record DebugClickableIngredient<T>(
+		ITypedIngredient<T> typedIngredient,
+		Rect2i area
+	) implements IClickableIngredient<T> {
 
 		@Override
 		public ITypedIngredient<T> getTypedIngredient() {

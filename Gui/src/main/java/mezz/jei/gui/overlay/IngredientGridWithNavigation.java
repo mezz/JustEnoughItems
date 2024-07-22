@@ -451,7 +451,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		 * Modeled after ContainerScreen#checkHotbarKeys(int)
 		 * Sets the stack in a hotbar slot to the one that's hovered over.
 		 */
-		protected Optional<IUserInputHandler> checkHotbarKeys(Screen screen, UserInput input) {
+		private Optional<IUserInputHandler> checkHotbarKeys(Screen screen, UserInput input) {
 			if (!clientConfig.isCheatToHotbarUsingHotkeysEnabled() ||
 				!this.toggleState.isCheatItemsEnabled() ||
 				screen instanceof RecipesGui

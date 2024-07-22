@@ -17,17 +17,17 @@ public class ErrorIngredientHelper implements IIngredientHelper<ErrorIngredient>
 
 	@Override
 	public String getDisplayName(ErrorIngredient ingredient) {
-		return "JEI Error Item #" + ingredient.getCrashType();
+		return "JEI Error Item #" + ingredient.crashType();
 	}
 
 	@Override
 	public String getUniqueId(ErrorIngredient ingredient, UidContext context) {
-		return "JEI_error_" + ingredient.getCrashType();
+		return "JEI_error_" + ingredient.crashType();
 	}
 
 	@Override
 	public ResourceLocation getResourceLocation(ErrorIngredient ingredient) {
-		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "error_" + ingredient.getCrashType().toString().toLowerCase(Locale.ROOT));
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "error_" + ingredient.crashType().toString().toLowerCase(Locale.ROOT));
 	}
 
 	@Override

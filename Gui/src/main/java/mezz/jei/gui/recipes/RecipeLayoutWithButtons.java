@@ -16,33 +16,11 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
-public class RecipeLayoutWithButtons<R> {
-	private final IRecipeLayoutDrawable<R> recipeLayout;
-	private final RecipeTransferButton transferButton;
-	private final RecipeBookmarkButton bookmarkButton;
-
-	public RecipeLayoutWithButtons(
-		IRecipeLayoutDrawable<R> recipeLayout,
-		RecipeTransferButton transferButton,
-		RecipeBookmarkButton bookmarkButton
-	) {
-		this.recipeLayout = recipeLayout;
-		this.transferButton = transferButton;
-		this.bookmarkButton = bookmarkButton;
-	}
-
-	public IRecipeLayoutDrawable<R> getRecipeLayout() {
-		return recipeLayout;
-	}
-
-	public RecipeTransferButton getTransferButton() {
-		return transferButton;
-	}
-
-	public RecipeBookmarkButton getBookmarkButton() {
-		return bookmarkButton;
-	}
-
+public record RecipeLayoutWithButtons<R>(
+	IRecipeLayoutDrawable<R> recipeLayout,
+	RecipeTransferButton transferButton,
+	RecipeBookmarkButton bookmarkButton
+) {
 	public int totalWidth() {
 		Rect2i area = recipeLayout.getRect();
 		Rect2i areaWithBorder = recipeLayout.getRectWithBorder();
@@ -72,12 +50,7 @@ public class RecipeLayoutWithButtons<R> {
 		);
 	}
 
-	private static class RecipeLayoutUserInputHandler<R> implements IUserInputHandler {
-		private final IRecipeLayoutDrawable<R> recipeLayout;
-
-		public RecipeLayoutUserInputHandler(IRecipeLayoutDrawable<R> recipeLayout) {
-			this.recipeLayout = recipeLayout;
-		}
+	private record RecipeLayoutUserInputHandler<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IUserInputHandler {
 
 		@Override
 		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {

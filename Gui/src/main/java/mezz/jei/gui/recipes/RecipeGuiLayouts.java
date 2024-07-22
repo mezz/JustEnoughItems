@@ -39,7 +39,7 @@ public class RecipeGuiLayouts {
 		if (firstLayout == null) {
 			return;
 		}
-		ImmutableRect2i layoutAreaWithBorder = new ImmutableRect2i(firstLayout.getRecipeLayout().getRectWithBorder());
+		ImmutableRect2i layoutAreaWithBorder = new ImmutableRect2i(firstLayout.recipeLayout().getRectWithBorder());
 		final int recipeXOffset = getRecipeXOffset(layoutAreaWithBorder, recipeLayoutsArea);
 
 		final int recipeHeight = layoutAreaWithBorder.getHeight();
@@ -50,7 +50,7 @@ public class RecipeGuiLayouts {
 		final int spacingY = recipeHeight + recipeSpacing;
 		int recipeYOffset = recipeLayoutsArea.getY() + recipeSpacing;
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
+			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
 			Rect2i rectWithBorder = recipeLayout.getRectWithBorder();
 			Rect2i rect = recipeLayout.getRect();
 			recipeLayout.setPosition(
@@ -65,18 +65,18 @@ public class RecipeGuiLayouts {
 
 	private void updateRecipeButtonPositions() {
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
+			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
 			Rect2i layoutArea = recipeLayout.getRect();
 
 			{
-				RecipeTransferButton button = recipeLayoutWithButtons.getTransferButton();
+				RecipeTransferButton button = recipeLayoutWithButtons.transferButton();
 				Rect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
 				buttonArea.setX(buttonArea.getX() + layoutArea.getX());
 				buttonArea.setY(buttonArea.getY() + layoutArea.getY());
 				button.updateBounds(buttonArea);
 			}
 			{
-				RecipeBookmarkButton button = recipeLayoutWithButtons.getBookmarkButton();
+				RecipeBookmarkButton button = recipeLayoutWithButtons.bookmarkButton();
 				Rect2i buttonArea = recipeLayout.getRecipeBookmarkButtonArea();
 				buttonArea.setX(buttonArea.getX() + layoutArea.getX());
 				buttonArea.setY(buttonArea.getY() + layoutArea.getY());
@@ -119,10 +119,10 @@ public class RecipeGuiLayouts {
 	public void tick(@Nullable AbstractContainerMenu parentContainer) {
 		Player player = Minecraft.getInstance().player;
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : this.recipeLayoutsWithButtons) {
-			RecipeTransferButton button = recipeLayoutWithButtons.getTransferButton();
+			RecipeTransferButton button = recipeLayoutWithButtons.transferButton();
 			button.update(parentContainer, player);
 
-			RecipeBookmarkButton bookmarkButton = recipeLayoutWithButtons.getBookmarkButton();
+			RecipeBookmarkButton bookmarkButton = recipeLayoutWithButtons.bookmarkButton();
 			bookmarkButton.tick();
 		}
 	}
@@ -135,7 +135,7 @@ public class RecipeGuiLayouts {
 
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.recipeLayoutsWithButtons.stream()
-			.map(RecipeLayoutWithButtons::getRecipeLayout)
+			.map(RecipeLayoutWithButtons::recipeLayout)
 			.map(recipeLayout -> getRecipeLayoutIngredientUnderMouse(recipeLayout, mouseX, mouseY))
 			.flatMap(Optional::stream);
 	}
@@ -176,16 +176,16 @@ public class RecipeGuiLayouts {
 		float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
 
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
+			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
 			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
 				hoveredLayout = recipeLayout;
 			}
 			recipeLayout.drawRecipe(guiGraphics, mouseX, mouseY);
 
-			RecipeTransferButton transferButton = recipeLayoutWithButtons.getTransferButton();
+			RecipeTransferButton transferButton = recipeLayoutWithButtons.transferButton();
 			transferButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 
-			RecipeBookmarkButton bookmarkButton = recipeLayoutWithButtons.getBookmarkButton();
+			RecipeBookmarkButton bookmarkButton = recipeLayoutWithButtons.bookmarkButton();
 			bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		RenderSystem.disableBlend();
@@ -194,8 +194,8 @@ public class RecipeGuiLayouts {
 
 	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			recipeLayoutWithButtons.getTransferButton().drawTooltips(guiGraphics, mouseX, mouseY);
-			recipeLayoutWithButtons.getBookmarkButton().drawTooltips(guiGraphics, mouseX, mouseY);
+			recipeLayoutWithButtons.transferButton().drawTooltips(guiGraphics, mouseX, mouseY);
+			recipeLayoutWithButtons.bookmarkButton().drawTooltips(guiGraphics, mouseX, mouseY);
 		}
 	}
 

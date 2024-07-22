@@ -46,7 +46,7 @@ public record ImmutableRect2i(
 	}
 
 	public boolean contains(ImmutablePoint2i point) {
-		return contains(point.getX(), point.getY());
+		return contains(point.x(), point.y());
 	}
 
 	public boolean contains(double x, double y) {
@@ -270,41 +270,6 @@ public record ImmutableRect2i(
 
 	public ImmutableRect2i matchWidthAndX(ImmutableRect2i rect) {
 		return new ImmutableRect2i(rect.getX(), this.y, rect.getWidth(), this.height);
-	}
-
-	@Override
-	public boolean equals(Object obj){
-		if (this == obj) {
-			return true;
-		}
-		if (obj instanceof ImmutableRect2i other) {
-			return
-				x == other.x &&
-				y == other.y &&
-				width == other.width &&
-				height == other.height;
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		int hash = 17;
-		hash = hash * 31 + x;
-		hash = hash * 31 + y;
-		hash = hash * 31 + width;
-		hash = hash * 31 + height;
-		return hash;
-	}
-
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this)
-			.add("x", x)
-			.add("y", y)
-			.add("width", width)
-			.add("height", height)
-			.toString();
 	}
 
 	public Rect2i toMutable() {
