@@ -7,14 +7,14 @@ import mezz.jei.common.util.VerticalAlignment;
 
 public class AlignmentUtil {
 	public static ImmutableRect2i align(ImmutableSize2i size, ImmutableRect2i availableArea, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
-		final int width = size.getWidth();
+		final int width = size.width();
 		final int x = switch (horizontalAlignment) {
 			case LEFT -> availableArea.getX();
 			case CENTER -> availableArea.getX() + ((availableArea.getWidth() - width) / 2);
 			case RIGHT -> availableArea.getX() + (availableArea.getWidth() - width);
 		};
 
-		final int height = size.getHeight();
+		final int height = size.height();
 		final int y = switch (verticalAlignment) {
 			case TOP -> availableArea.getY();
 			case CENTER -> availableArea.getY() + ((availableArea.getHeight() - height) / 2);
