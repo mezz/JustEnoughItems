@@ -56,7 +56,9 @@ public class NetworkHandler {
 		return (t, payloadContext) -> {
 			LocalPlayer player = (LocalPlayer) payloadContext.player();
 			var clientPacketContext = new ClientPacketContext(player, connectionToServer);
-			consumer.accept(t, clientPacketContext);
+			payloadContext.enqueueWork(() -> {
+				consumer.accept(t, clientPacketContext);
+			});
 		};
 	}
 
@@ -64,7 +66,9 @@ public class NetworkHandler {
 		return (t, payloadContext) -> {
 			ServerPlayer player = (ServerPlayer) payloadContext.player();
 			var serverPacketContext = new ServerPacketContext(player, serverConfig, connectionToClient);
-			consumer.accept(t, serverPacketContext);
+			payloadContext.enqueueWork(() -> {
+				consumer.accept(t, serverPacketContext);
+			});
 		};
 	}
 

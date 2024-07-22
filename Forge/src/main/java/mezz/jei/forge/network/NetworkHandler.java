@@ -71,7 +71,10 @@ public class NetworkHandler {
 			LocalPlayer player = Minecraft.getInstance().player;
 			if (player != null) {
 				var clientPacketContext = new ClientPacketContext(player, connectionToServer);
-				consumer.accept(t, clientPacketContext);
+				payloadContext.setPacketHandled(true);
+				payloadContext.enqueueWork(() -> {
+					consumer.accept(t, clientPacketContext);
+				});
 			} else {
 				LOGGER.debug("Tried to handle packet payload with no player: {}", t.type());
 			}
@@ -83,7 +86,10 @@ public class NetworkHandler {
 			ServerPlayer player = payloadContext.getSender();
 			if (player != null) {
 				var serverPacketContext = new ServerPacketContext(player, serverConfig, connectionToClient);
-				consumer.accept(t, serverPacketContext);
+				payloadContext.setPacketHandled(true);
+				payloadContext.enqueueWork(() -> {
+					consumer.accept(t, serverPacketContext);
+				});
 			} else {
 				LOGGER.debug("Tried to handle packet payload with no player: {}", t.type());
 			}
