@@ -5,7 +5,6 @@ import mezz.jei.library.ingredients.IngredientHelperWithResourceLocation;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 public class DebugIngredientHelper implements IngredientHelperWithResourceLocation<DebugIngredient> {
@@ -16,34 +15,17 @@ public class DebugIngredientHelper implements IngredientHelperWithResourceLocati
 
 	@Override
 	public String getDisplayName(DebugIngredient ingredient) {
-		return "JEI Debug Item #" + ingredient.getNumber();
+		return "JEI Debug Item #" + ingredient.number();
 	}
 
 	@Override
 	public String getUniqueId(DebugIngredient ingredient, UidContext context) {
-		return "JEI_debug_" + ingredient.getNumber();
+		return "JEI_debug_" + ingredient.number();
 	}
 
 	@Override
 	public ResourceLocation getResourceLocation(DebugIngredient ingredient) {
-		return new ResourceLocation(ModIds.JEI_ID, "debug_" + ingredient.getNumber());
-	}
-
-	@Override
-	@Deprecated(forRemoval = true, since = "9.2.2")
-	public String getModId(DebugIngredient ingredient) {
-		return getResourceLocation(ingredient).getNamespace();
-	}
-
-	@Override
-	@Deprecated(forRemoval = true, since = "9.2.2")
-	public String getResourceId(DebugIngredient ingredient) {
-		return getResourceLocation(ingredient).getPath();
-	}
-
-	@Override
-	public ItemStack getCheatItemStack(DebugIngredient ingredient) {
-		return ItemStack.EMPTY;
+		return new ResourceLocation(ModIds.JEI_ID, "debug_" + ingredient.number());
 	}
 
 	@Override

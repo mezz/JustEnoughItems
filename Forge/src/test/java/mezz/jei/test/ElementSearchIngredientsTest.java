@@ -181,7 +181,7 @@ public class ElementSearchIngredientsTest {
 
 		// Assertions: equivalent ingredient UIDs resolve to the indexed element.
 		Assertions.assertTrue(foundElement.isPresent());
-		Assertions.assertEquals(12, foundElement.orElseThrow().getTypedIngredient().getIngredient().getNumber());
+		Assertions.assertEquals(12, foundElement.orElseThrow().getTypedIngredient().getIngredient().number());
 	}
 
 	@Test
@@ -312,7 +312,7 @@ public class ElementSearchIngredientsTest {
 
 	private static int getIngredientNumber(IListElement<?> element) {
 		TestIngredient ingredient = (TestIngredient) element.getTypedIngredient().getIngredient();
-		return ingredient.getNumber();
+		return ingredient.number();
 	}
 
 	private record SearchFixture(
