@@ -50,8 +50,8 @@ public class NetworkHandler {
 				LOGGER.error("Packet error, the sender player is missing for event: {}", event);
 				return;
 			}
-			packetRouter.onPacket(event.getPayload(), player);
 			context.setPacketHandled(true);
+			packetRouter.onPacket(event.getPayload(), player);
 		});
 	}
 
@@ -64,9 +64,9 @@ public class NetworkHandler {
 				LOGGER.error("Packet error, the local player is missing for event: {}", event);
 				return;
 			}
-			packetRouter.onPacket(event.getPayload(), player);
 			NetworkEvent.Context context = event.getSource().get();
 			context.setPacketHandled(true);
+			packetRouter.onPacket(event.getPayload(), player);
 		});
 	}
 }
