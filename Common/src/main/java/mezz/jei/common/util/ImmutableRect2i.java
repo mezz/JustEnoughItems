@@ -1,6 +1,5 @@
 package mezz.jei.common.util;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import net.minecraft.client.renderer.Rect2i;
 
