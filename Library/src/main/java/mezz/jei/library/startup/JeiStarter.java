@@ -1,6 +1,7 @@
 package mezz.jei.library.startup;
 
 import com.google.common.collect.ImmutableTable;
+import com.google.common.util.concurrent.MoreExecutors;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -11,6 +12,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
+import mezz.jei.common.async.JeiStartTask;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientToggleState;
@@ -39,12 +41,18 @@ import mezz.jei.library.recipes.RecipeTransferManager;
 import mezz.jei.library.runtime.JeiHelpers;
 import mezz.jei.library.runtime.JeiRuntime;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 public final class JeiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -58,6 +66,9 @@ public final class JeiStarter {
 	@SuppressWarnings("FieldCanBeLocal")
 	private final FileWatcher fileWatcher = new FileWatcher("JEI Config File Watcher");
 	private final ConfigManager configManager;
+	private Executor taskExecutor;
+
+	private JeiStartTask currentStartTask = null;
 
 	public JeiStarter(StartData data) {
 		ErrorUtil.checkNotEmpty(data.plugins(), "plugins");
@@ -96,21 +107,40 @@ public final class JeiStarter {
 		PluginCaller.callOnPlugins("Sending ConfigManager", plugins, p -> p.onConfigManagerAvailable(configManager));
 	}
 
+	/**
+	 * Starts JEI, either synchronously or asynchronously depending on config. Should only be called from
+	 * the main thread.
+	 */
 	public void start() {
+		if(currentStartTask != null) {
+			LOGGER.error("JEI start requested but it is already starting.");
+			return;
+		}
 		Minecraft minecraft = Minecraft.getInstance();
 		if (minecraft.level == null) {
 			LOGGER.error("Failed to start JEI, there is no Minecraft client level.");
 			return;
 		}
+		JeiStartTask task = new JeiStartTask(this::doActualStart);
+		if(Internal.getJeiClientConfigs().getClientConfig().isAsyncLoadingEnabled()) {
+			currentStartTask = task;
+			this.taskExecutor = new ClientTaskExecutor();
+			task.start();
+		} else {
+			this.taskExecutor = MoreExecutors.directExecutor();
+			task.run();
+		}
+	}
 
+	private void doActualStart() {
 		LoggedTimer totalTime = new LoggedTimer();
-		totalTime.start("Starting JEI");
+		totalTime.start("Starting JEI" + ((Thread.currentThread() instanceof JeiStartTask) ? " (asynchronously)" : ""));
 
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
 
 		IClientToggleState toggleState = Internal.getClientToggleState();
 
-		PluginLoader pluginLoader = new PluginLoader(data, modIdFormatConfig, colorHelper);
+		PluginLoader pluginLoader = new PluginLoader(data, modIdFormatConfig, colorHelper, taskExecutor);
 		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 
@@ -137,7 +167,7 @@ public final class JeiStarter {
 			ingredientVisibility
 		);
 		ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers =
-			pluginLoader.createRecipeTransferHandlers(plugins);
+				pluginLoader.createRecipeTransferHandlers(plugins);
 		IRecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
 
 		LoggedTimer timer = new LoggedTimer();
@@ -179,7 +209,43 @@ public final class JeiStarter {
 
 	public void stop() {
 		LOGGER.info("Stopping JEI");
+		if(currentStartTask != null) {
+			currentStartTask.interruptStart();
+			Minecraft.getInstance().managedBlock(() -> !currentStartTask.isAlive());
+			currentStartTask = null;
+		}
 		List<IModPlugin> plugins = data.plugins();
 		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
+	}
+
+	static final class ClientTaskExecutor implements Executor {
+		private static final long TICK_BUDGET = TimeUnit.MILLISECONDS.toNanos(2);
+
+		final ConcurrentLinkedQueue<Runnable> startTasks = new ConcurrentLinkedQueue<>();
+
+		public void tick() {
+			long startTime = System.nanoTime();
+			do {
+				Runnable r = this.startTasks.poll();
+				if(r != null)
+					r.run();
+				else
+					break;
+			} while((System.nanoTime() - startTime) < TICK_BUDGET);
+		}
+
+		@Override
+		public void execute(@NotNull Runnable runnable) {
+			// sanity check, in case a task is submitted from the main thread to the main thread
+			if(Minecraft.getInstance().isSameThread())
+				runnable.run();
+			else
+				this.startTasks.add(runnable);
+		}
+	}
+
+	public void tick() {
+		if(this.taskExecutor instanceof ClientTaskExecutor)
+			((ClientTaskExecutor)this.taskExecutor).tick();
 	}
 }

@@ -5,6 +5,7 @@ import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
+import mezz.jei.common.config.file.serializers.StringSerializer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -17,6 +18,8 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> centerSearchBarEnabled;
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
+	private final Supplier<Boolean> asyncLoadingEnabled;
+	private final Supplier<List<String>> mainThreadPluginUids;
 	private final Supplier<Boolean> addBookmarksToFront;
 	private final Supplier<Boolean> lookupFluidContents;
 	private final Supplier<GiveMode> giveMode;
@@ -64,6 +67,16 @@ public final class ClientConfig implements IClientConfig {
 			Integer.MAX_VALUE,
 			"Max. recipe gui height"
 		);
+		asyncLoadingEnabled = advanced.addBoolean(
+				"AsyncLoading",
+				false,
+				"Whether JEI should load asynchronously"
+		);
+		mainThreadPluginUids = advanced.addList("AsyncPluginCompat",
+				List.of("namespace:mod"),
+				new ListSerializer<>(new StringSerializer()),
+				"List of plugin UIDs that should be loaded on the main thread"
+		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
 		ingredientSorterStages = sorting.addList(
@@ -96,6 +109,16 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isCheatToHotbarUsingHotkeysEnabled() {
 		return cheatToHotbarUsingHotkeysEnabled.get();
+	}
+
+	@Override
+	public boolean isAsyncLoadingEnabled() {
+		return asyncLoadingEnabled.get();
+	}
+
+	@Override
+	public List<String> getAsyncCompatPluginUids() {
+		return mainThreadPluginUids.get();
 	}
 
 	@Override
