@@ -6,6 +6,7 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.widgets.IScrollGridWidgetFactory;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -77,6 +78,11 @@ public class GuiHelper implements IGuiHelper {
 	@Override
 	public ICraftingGridHelper createCraftingGridHelper() {
 		return CraftingGridHelper.INSTANCE;
+	}
+
+	@Override
+	public IScrollGridWidgetFactory<?> createScrollGridFactory(int columns, int visibleRows) {
+		return new ScrollGridWidgetFactory<>(columns, visibleRows);
 	}
 
 	@Override

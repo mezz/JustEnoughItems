@@ -138,4 +138,11 @@ public interface IRecipeLayoutDrawable<R> {
 	 * @since 19.6.0
 	 */
 	IJeiInputHandler getInputHandler();
+
+	/**
+	 * Update the recipe layout on game tick.
+	 *
+	 * @since 19.7.0
+	 */
+	void tick();
 }

@@ -28,6 +28,8 @@ public class Textures {
 	private final DrawableNineSliceTexture recipeBackground;
 	private final DrawableNineSliceTexture recipePreviewBackground;
 	private final DrawableNineSliceTexture searchBackground;
+	private final DrawableNineSliceTexture scrollbarBackground;
+	private final DrawableNineSliceTexture scrollbarMarker;
 
 	private final HighResolutionDrawable shapelessIcon;
 	private final IDrawableStatic arrowPrevious;
@@ -66,6 +68,8 @@ public class Textures {
 		this.recipeBackground = createNineSliceGuiSprite("single_recipe_background", 64, 64, 16, 16, 16, 16);
 		this.recipePreviewBackground = createNineSliceGuiSprite("recipe_preview_background", 64, 64, 16, 16, 16, 16);
 		this.searchBackground = createNineSliceGuiSprite("search_background", 20, 20, 6, 6, 6, 6);
+		this.scrollbarBackground = createNineSliceGuiSprite("scrollbar_background", 14, 50, 6, 6, 6, 6);
+		this.scrollbarMarker = createNineSliceGuiSprite("scrollbar_marker", 12, 15, 2, 2, 2, 1);
 		this.catalystTab = createNineSliceGuiSprite("catalyst_tab", 28, 28, 8, 9, 8, 8);
 		this.recipeOptionsTab = createNineSliceGuiSprite("recipe_options_tab", 28, 28, 8, 9, 8, 8);
 		this.recipeArrow = createGuiSprite("recipe_arrow", 22, 15);
@@ -226,6 +230,14 @@ public class Textures {
 
 	public IDrawableStatic getFlameIcon() {
 		return flameIcon;
+	}
+
+	public DrawableNineSliceTexture getScrollbarMarker() {
+		return scrollbarMarker;
+	}
+
+	public DrawableNineSliceTexture getScrollbarBackground() {
+		return scrollbarBackground;
 	}
 
 	public JeiSpriteUploader getSpriteUploader() {
