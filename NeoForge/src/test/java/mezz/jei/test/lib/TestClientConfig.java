@@ -67,6 +67,16 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isDragToRearrangeBookmarksEnabled() {
+		return false;
+	}
+
+	@Override
+	public int getDragDelayMs() {
+		return 0;
+	}
+
+	@Override
 	public boolean isTagContentTooltipEnabled() {
 		return true;
 	}
