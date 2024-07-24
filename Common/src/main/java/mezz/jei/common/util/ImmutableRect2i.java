@@ -50,7 +50,7 @@ public class ImmutableRect2i {
 	}
 
 	public boolean contains(ImmutablePoint2i point) {
-		return contains(point.getX(), point.getY());
+		return contains(point.x(), point.y());
 	}
 
 	public boolean contains(double x, double y) {

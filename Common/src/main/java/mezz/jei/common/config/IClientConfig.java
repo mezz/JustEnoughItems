@@ -30,6 +30,8 @@ public interface IClientConfig {
 
 	boolean isDragToRearrangeBookmarksEnabled();
 
+	int getDragDelayMs();
+
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();

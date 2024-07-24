@@ -37,6 +37,7 @@ public final class ClientConfig implements IClientConfig {
 
 	private final Supplier<Boolean> tagContentTooltipEnabled;
 	private final Supplier<Boolean> hideSingleIngredientTagsEnabled;
+	private final Supplier<Integer> dragDelayMs;
 
 	public ClientConfig(IConfigSchemaBuilder schema) {
 		instance = this;
@@ -112,6 +113,13 @@ public final class ClientConfig implements IClientConfig {
 			"lookupBlockTagsEnabled",
 			true,
 			"When searching for item tags, also include tags for the default blocks contained in the items."
+		);
+		dragDelayMs = advanced.addInteger(
+			"dragDelayInMilliseconds",
+			150,
+			0,
+			1000,
+			"Number of milliseconds before a long mouse click is considered to become a drag operation"
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
@@ -203,6 +211,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isDragToRearrangeBookmarksEnabled() {
 		return dragToRearrangeBookmarksEnabled.get();
+	}
+
+	@Override
+	public int getDragDelayMs() {
+		return dragDelayMs.get();
 	}
 
 	@Override

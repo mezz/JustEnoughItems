@@ -1,22 +1,20 @@
 package mezz.jei.gui.ghost;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.Vec2;
-import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 
@@ -32,6 +30,7 @@ public class GhostIngredientDrag<T> {
 	private final double mouseStartX;
 	private final double mouseStartY;
 	private final ImmutableRect2i origin;
+	private final long dragCanStartTime;
 
 	public GhostIngredientDrag(
 		IGhostIngredientHandler<?> handler,
@@ -52,6 +51,8 @@ public class GhostIngredientDrag<T> {
 		this.origin = origin;
 		this.mouseStartX = mouseX;
 		this.mouseStartY = mouseY;
+		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		this.dragCanStartTime = System.currentTimeMillis() + clientConfig.getDragDelayMs();
 	}
 
 	public void drawTargets(GuiGraphics guiGraphics, int mouseX, int mouseY) {
@@ -60,12 +61,18 @@ public class GhostIngredientDrag<T> {
 		}
 	}
 
-	public static boolean farEnoughToDraw(GhostIngredientDrag<?> drag, double mouseX, double mouseY) {
+	public static boolean canStart(GhostIngredientDrag<?> drag, double mouseX, double mouseY) {
+		if (System.currentTimeMillis() < drag.dragCanStartTime) {
+			return false;
+		}
 		ImmutableRect2i origin = drag.getOrigin();
 		final Vec2 center;
 		if (origin.isEmpty()) {
 			center = new Vec2((float) drag.mouseStartX, (float) drag.mouseStartY);
 		} else {
+			if (origin.contains(mouseX, mouseY)) {
+				return false;
+			}
 			center = new Vec2(
 				origin.getX() + (origin.getWidth() / 2.0f),
 				origin.getY() + (origin.getHeight() / 2.0f)
@@ -79,37 +86,8 @@ public class GhostIngredientDrag<T> {
 	}
 
 	public void drawItem(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		if (!farEnoughToDraw(this, mouseX, mouseY)) {
+		if (!canStart(this, mouseX, mouseY)) {
 			return;
-		}
-
-		if (!origin.isEmpty()) {
-			int originX = origin.getX() + (origin.getWidth() / 2);
-			int originY = origin.getY() + (origin.getHeight() / 2);
-
-			RenderSystem.disableDepthTest();
-			RenderSystem.depthMask(false);
-
-			var oldShader = RenderSystem.getShader();
-			RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
-			GL11.glEnable(GL11.GL_LINE_SMOOTH);
-			GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-
-			var tesselator = RenderSystem.renderThreadTesselator();
-			var builder = tesselator.getBuilder();
-			builder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-			float red = (targetColor >> 24 & 255) / 255.0F;
-			float green = (targetColor >> 16 & 255) / 255.0F;
-			float blue = (targetColor >> 8 & 255) / 255.0F;
-			float alpha = (targetColor & 255) / 255.0F;
-			builder.vertex(mouseX, mouseY, 150).color(red, green, blue, alpha).endVertex();
-			builder.vertex(originX, originY, 150).color(red, green, blue, alpha).endVertex();
-			tesselator.end();
-
-			RenderSystem.setShader(() -> oldShader);
-			RenderSystem.enableDepthTest();
-			RenderSystem.depthMask(true);
 		}
 
 		var poseStack = guiGraphics.pose();
@@ -143,6 +121,10 @@ public class GhostIngredientDrag<T> {
 	}
 
 	public boolean onClick(UserInput input) {
+		if (!canStart(this, input.getMouseX(), input.getMouseY())) {
+			return false;
+		}
+
 		for (Target<T> target : targets) {
 			Rect2i area = target.getArea();
 			if (MathUtil.contains(area, input.getMouseX(), input.getMouseY())) {
