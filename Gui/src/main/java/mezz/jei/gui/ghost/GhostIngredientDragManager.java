@@ -164,7 +164,7 @@ public class GhostIngredientDragManager {
 			boolean success = ghostIngredientDrag.onClick(input);
 			double mouseX = input.getMouseX();
 			double mouseY = input.getMouseY();
-			if (!success && GhostIngredientDrag.farEnoughToDraw(ghostIngredientDrag, mouseX, mouseY)) {
+			if (!success && GhostIngredientDrag.canStart(ghostIngredientDrag, mouseX, mouseY)) {
 				GhostIngredientReturning.create(ghostIngredientDrag, mouseX, mouseY)
 					.ifPresent(ghostIngredientsReturning::add);
 			}

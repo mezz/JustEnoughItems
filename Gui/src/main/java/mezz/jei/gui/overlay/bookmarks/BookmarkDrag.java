@@ -2,6 +2,8 @@ package mezz.jei.gui.overlay.bookmarks;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
@@ -22,6 +24,7 @@ public class BookmarkDrag<T> {
 	private final double mouseStartY;
 	private final IBookmark bookmark;
 	private final ImmutableRect2i origin;
+	private final long dragCanStartTime;
 
 	public BookmarkDrag(
 		BookmarkOverlay bookmarkOverlay,
@@ -41,9 +44,14 @@ public class BookmarkDrag<T> {
 		this.origin = origin;
 		this.mouseStartX = mouseX;
 		this.mouseStartY = mouseY;
+		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		this.dragCanStartTime = System.currentTimeMillis() + clientConfig.getDragDelayMs();
 	}
 
-	public static boolean farEnoughToDraw(BookmarkDrag<?> drag, double mouseX, double mouseY) {
+	public static boolean canStart(BookmarkDrag<?> drag, double mouseX, double mouseY) {
+		if (System.currentTimeMillis() < drag.dragCanStartTime) {
+			return false;
+		}
 		ImmutableRect2i origin = drag.origin;
 		final Vec2 center;
 		if (origin.isEmpty()) {
@@ -65,7 +73,7 @@ public class BookmarkDrag<T> {
 	}
 
 	public void update(int mouseX, int mouseY) {
-		if (bookmark.isVisible() && !farEnoughToDraw(this, mouseX, mouseY)) {
+		if (bookmark.isVisible() && !canStart(this, mouseX, mouseY)) {
 			return;
 		}
 
@@ -91,6 +99,10 @@ public class BookmarkDrag<T> {
 	}
 
 	public boolean onClick(UserInput input) {
+		if (bookmark.isVisible()) {
+			return false;
+		}
+
 		for (IBookmarkDragTarget target : targets) {
 			ImmutableRect2i area = target.getArea();
 			if (MathUtil.contains(area, input.getMouseX(), input.getMouseY())) {
