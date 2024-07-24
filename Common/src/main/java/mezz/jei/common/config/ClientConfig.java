@@ -29,6 +29,7 @@ public final class ClientConfig implements IClientConfig {
 
 	private final Supplier<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures;
 	private final Supplier<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
+	private final Supplier<Boolean> dragToRearrangeBookmarksEnabled;
 
 	private final Supplier<Integer> maxRecipeGuiHeight;
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
@@ -42,12 +43,56 @@ public final class ClientConfig implements IClientConfig {
 
 		boolean isDev = Services.PLATFORM.getModHelper().isInDev();
 
-		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
-		centerSearchBarEnabled = advanced.addBoolean(
+		IConfigCategoryBuilder appearance = schema.addCategory("appearance");
+		centerSearchBarEnabled = appearance.addBoolean(
 			"CenterSearch",
 			defaultCenterSearchBar,
 			"Display search bar in the center"
 		);
+		maxRecipeGuiHeight = appearance.addInteger(
+			"RecipeGuiHeight",
+			defaultRecipeGuiHeight,
+			minRecipeGuiHeight,
+			Integer.MAX_VALUE,
+			"Max. recipe gui height"
+		);
+
+		IConfigCategoryBuilder cheatMode = schema.addCategory("cheat_mode");
+		giveMode = cheatMode.addEnum(
+			"GiveMode",
+			GiveMode.defaultGiveMode,
+			"How items should be handed to you"
+		);
+		cheatToHotbarUsingHotkeysEnabled = cheatMode.addBoolean(
+			"CheatToHotbarUsingHotkeysEnabled",
+			false,
+			"Enable cheating items into the hotbar by using the shift+number keys."
+		);
+
+		IConfigCategoryBuilder bookmarks = schema.addCategory("bookmarks");
+		addBookmarksToFrontEnabled = bookmarks.addBoolean(
+			"AddBookmarksToFrontEnabled",
+			false,
+			"Add new bookmarks to the front of the bookmark list instead of the end."
+		);
+		bookmarkTooltipFeatures = bookmarks.addList(
+			"BookmarkTooltipFeatures",
+			BookmarkTooltipFeature.DEFAULT_BOOKMARK_TOOLTIP_FEATURES,
+			new ListSerializer<>(new EnumSerializer<>(BookmarkTooltipFeature.class)),
+			"Extra features for bookmark tooltips"
+		);
+		holdShiftToShowBookmarkTooltipFeaturesEnabled = bookmarks.addBoolean(
+			"HoldShiftToShowBookmarkTooltipFeatures",
+			true,
+			"Hold shift to show bookmark tooltip features"
+		);
+		dragToRearrangeBookmarksEnabled = bookmarks.addBoolean(
+			"DragToRearrangeBookmarksEnabled",
+			true,
+			"Drag bookmarks to rearrange them in the list"
+		);
+
+		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
 		lowMemorySlowSearchEnabled = advanced.addBoolean(
 			"LowMemorySlowSearchEnabled",
 			false,
@@ -58,16 +103,6 @@ public final class ClientConfig implements IClientConfig {
 			!isDev,
 			"Catch render errors from ingredients and attempt to recover from them instead of crashing."
 		);
-		cheatToHotbarUsingHotkeysEnabled = advanced.addBoolean(
-			"CheatToHotbarUsingHotkeysEnabled",
-			false,
-			"Enable cheating items into the hotbar by using the shift+number keys."
-		);
-		addBookmarksToFrontEnabled = advanced.addBoolean(
-			"AddBookmarksToFrontEnabled",
-			false,
-			"Add new bookmarks to the front of the bookmark list instead of the end."
-		);
 		lookupFluidContentsEnabled = advanced.addBoolean(
 			"lookupFluidContentsEnabled",
 			false,
@@ -77,31 +112,6 @@ public final class ClientConfig implements IClientConfig {
 			"lookupBlockTagsEnabled",
 			true,
 			"When searching for item tags, also include tags for the default blocks contained in the items."
-		);
-		giveMode = advanced.addEnum(
-			"GiveMode",
-			GiveMode.defaultGiveMode,
-			"How items should be handed to you"
-		);
-		maxRecipeGuiHeight = advanced.addInteger(
-			"RecipeGuiHeight",
-			defaultRecipeGuiHeight,
-			minRecipeGuiHeight,
-			Integer.MAX_VALUE,
-			"Max. recipe gui height"
-		);
-
-		IConfigCategoryBuilder bookmarkTooltips = schema.addCategory("bookmark_tooltips");
-		bookmarkTooltipFeatures = bookmarkTooltips.addList(
-			"BookmarkTooltipFeatures",
-			BookmarkTooltipFeature.DEFAULT_BOOKMARK_TOOLTIP_FEATURES,
-			new ListSerializer<>(new EnumSerializer<>(BookmarkTooltipFeature.class)),
-			"Extra features for bookmark tooltips"
-		);
-		holdShiftToShowBookmarkTooltipFeaturesEnabled = bookmarkTooltips.addBoolean(
-			"HoldShiftToShowBookmarkTooltipFeatures",
-			true,
-			"Hold shift to show bookmark tooltip features"
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
@@ -188,6 +198,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled() {
 		return holdShiftToShowBookmarkTooltipFeaturesEnabled.get();
+	}
+
+	@Override
+	public boolean isDragToRearrangeBookmarksEnabled() {
+		return dragToRearrangeBookmarksEnabled.get();
 	}
 
 	@Override

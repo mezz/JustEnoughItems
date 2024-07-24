@@ -28,6 +28,8 @@ public interface IClientConfig {
 
 	boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled();
 
+	boolean isDragToRearrangeBookmarksEnabled();
+
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();
