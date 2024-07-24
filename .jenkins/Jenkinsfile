@@ -10,77 +10,77 @@ pipeline {
       ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
     }
     stages {
-        stage('Checkout') {
+        stage('Clean') {
             steps {
-                checkout scm
-                sh "rm -rf Forge/build/libs"
-                sh "rm -rf Fabric/build/libs"
+                echo 'Cleaning Project'
+                sh 'chmod +x gradlew'
+                sh './gradlew clean'
             }
         }
 
-        stage('Test') {
+        stage('Assemble') {
             steps {
-                sh "./gradlew :Core:test --no-daemon"
-                sh "./gradlew :Forge:test --no-daemon"
-                sh "./gradlew :Fabric:test --no-daemon"
-                sh "./gradlew :NeoForge:test --no-daemon"
-                sh "./gradlew :Common:test --no-daemon"
-                sh "./gradlew :CommonApi:test --no-daemon"
-                sh "./gradlew :ForgeApi:test --no-daemon"
-                sh "./gradlew :FabricApi:test --no-daemon"
-                sh "./gradlew :NeoForgeApi:test --no-daemon"
+                sh "./gradlew :Core:assemble"
+                sh "./gradlew :Forge:assemble"
+                sh "./gradlew :Fabric:assemble"
+                sh "./gradlew :NeoForge:assemble"
+                sh "./gradlew :Common:assemble"
+                sh "./gradlew :CommonApi:assemble"
+                sh "./gradlew :ForgeApi:assemble"
+                sh "./gradlew :FabricApi:assemble"
+                sh "./gradlew :NeoForgeApi:assemble"
             }
         }
 
-        stage('Build') {
+        stage('Check') {
             steps {
-                sh "./gradlew :Core:build --no-daemon"
-                sh "./gradlew :Forge:build --no-daemon"
-                sh "./gradlew :Fabric:build --no-daemon"
-                sh "./gradlew :NeoForge:build --no-daemon"
-                sh "./gradlew :Common:build --no-daemon"
-                sh "./gradlew :CommonApi:build --no-daemon"
-                sh "./gradlew :ForgeApi:build --no-daemon"
-                sh "./gradlew :FabricApi:build --no-daemon"
-                sh "./gradlew :NeoForgeApi:build --no-daemon"
+                sh "./gradlew :Core:check"
+                sh "./gradlew :Forge:check"
+                sh "./gradlew :Fabric:check"
+                sh "./gradlew :NeoForge:check"
+                sh "./gradlew :Common:check"
+                sh "./gradlew :CommonApi:check"
+                sh "./gradlew :ForgeApi:check"
+                sh "./gradlew :FabricApi:check"
+                sh "./gradlew :NeoForgeApi:check"
+            }
+        }
+
+        stage('Publish Maven') {
+            steps {
+                sh "./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                sh "./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                sh "./gradlew :Forge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                sh "./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                sh "./gradlew :NeoForge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                sh "./gradlew :Common:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                sh "./gradlew :CommonApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                sh "./gradlew :ForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                sh "./gradlew :FabricApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                sh "./gradlew :NeoForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+            }
+        }
+
+        stage('Publish CurseForge') {
+            steps {
+                sh "./gradlew :Fabric:publishCurseForge"
+                sh "./gradlew :Forge:publishCurseForge"
+                sh "./gradlew :NeoForge:publishCurseForge"
+            }
+        }
+
+        stage('Publish Modrinth') {
+            steps {
+                sh "./gradlew :Fabric:modrinth"
+                sh "./gradlew :Forge:modrinth"
+                sh "./gradlew :NeoForge:modrinth"
             }
         }
 
         stage('Archive') {
             steps {
                 junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
-            }
-        }
-
-        stage('Publish Maven') {
-            steps {
-                sh "./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :Forge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :NeoForge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :Common:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :CommonApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :ForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :FabricApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :NeoForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-            }
-        }
-
-        stage('Publish CurseForge') {
-            steps {
-                sh "./gradlew :Fabric:publishCurseForge --no-daemon"
-                sh "./gradlew :Forge:publishCurseForge --no-daemon"
-                sh "./gradlew :NeoForge:publishCurseForge --no-daemon"
-            }
-        }
-
-        stage('Publish Modrinth') {
-            steps {
-                sh "./gradlew :Fabric:modrinth --no-daemon"
-                sh "./gradlew :Forge:modrinth --no-daemon"
-                sh "./gradlew :NeoForge:modrinth --no-daemon"
             }
         }
     }
