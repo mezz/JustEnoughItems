@@ -18,31 +18,17 @@ pipeline {
             }
         }
 
-        stage('Assemble') {
+        stage('Build') {
             steps {
-                sh "./gradlew :Core:assemble"
-                sh "./gradlew :Forge:assemble"
-                sh "./gradlew :Fabric:assemble"
-                sh "./gradlew :NeoForge:assemble"
-                sh "./gradlew :Common:assemble"
-                sh "./gradlew :CommonApi:assemble"
-                sh "./gradlew :ForgeApi:assemble"
-                sh "./gradlew :FabricApi:assemble"
-                sh "./gradlew :NeoForgeApi:assemble"
-            }
-        }
-
-        stage('Check') {
-            steps {
-                sh "./gradlew :Core:check"
-                sh "./gradlew :Forge:check"
-                sh "./gradlew :Fabric:check"
-                sh "./gradlew :NeoForge:check"
-                sh "./gradlew :Common:check"
-                sh "./gradlew :CommonApi:check"
-                sh "./gradlew :ForgeApi:check"
-                sh "./gradlew :FabricApi:check"
-                sh "./gradlew :NeoForgeApi:check"
+                sh "./gradlew :Core:build"
+                sh "./gradlew :Forge:build"
+                sh "./gradlew :Fabric:build"
+                sh "./gradlew :NeoForge:build"
+                sh "./gradlew :Common:build"
+                sh "./gradlew :CommonApi:build"
+                sh "./gradlew :ForgeApi:build"
+                sh "./gradlew :FabricApi:build"
+                sh "./gradlew :NeoForgeApi:build"
             }
         }
 
