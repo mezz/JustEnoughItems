@@ -49,6 +49,9 @@ public class BookmarkDrag<T> {
 		if (origin.isEmpty()) {
 			center = new Vec2((float) drag.mouseStartX, (float) drag.mouseStartY);
 		} else {
+			if (origin.contains(mouseX, mouseY)) {
+				return false;
+			}
 			center = new Vec2(
 				origin.getX() + (origin.getWidth() / 2.0f),
 				origin.getY() + (origin.getHeight() / 2.0f)
