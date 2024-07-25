@@ -1,50 +1,75 @@
 package mezz.jei.library.plugins.vanilla.ingredients;
 
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.StackHelper;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.NonNullList;
-
-import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.StackHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public final class ItemStackListFactory {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static List<ItemStack> create(StackHelper stackHelper) {
+		final boolean debug = DebugConfig.isDebugIngredientsEnabled();
+
 		final List<ItemStack> itemList = new ArrayList<>();
 		final Set<Object> itemUidSet = new HashSet<>();
 
 		for (CreativeModeTab itemGroup : CreativeModeTab.TABS) {
 			if (itemGroup == CreativeModeTab.TAB_HOTBAR || itemGroup == CreativeModeTab.TAB_INVENTORY) {
+				if (debug) {
+					LOGGER.debug(
+						"Skipping creative tab: '{}'",
+						itemGroup.getDisplayName().getString()
+					);
+				}
 				continue;
 			}
 			NonNullList<ItemStack> creativeTabItemStacks = NonNullList.create();
 			try {
 				itemGroup.fillItemList(creativeTabItemStacks);
 			} catch (RuntimeException | LinkageError e) {
-				LOGGER.error("Item Group crashed while getting items." +
-					"Some items from this group will be missing from the ingredient list. {}", itemGroup, e);
+				LOGGER.error(
+					"Item Group crashed while getting items." +
+					"Items from this group will be missing from the JEI ingredient list: {}",
+					itemGroup.getDisplayName().getString(),
+					e
+				);
+				continue;
 			}
+
+			int added = 0;
 			for (ItemStack itemStack : creativeTabItemStacks) {
 				if (itemStack.isEmpty()) {
 					LOGGER.error("Found an empty itemStack from creative tab: {}", itemGroup);
 				} else {
-					addItemStack(stackHelper, itemStack, itemList, itemUidSet);
+					if (addItemStack(stackHelper, itemStack, itemList, itemUidSet)) {
+						added++;
+					}
 				}
+			}
+			if (debug) {
+				LOGGER.debug(
+					"Added {}/{} items from creative tab: {}",
+					added,
+					creativeTabItemStacks.size(),
+					itemGroup.getDisplayName().getString()
+				);
 			}
 		}
 		return itemList;
 	}
 
-	private static void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<Object> itemUidSet) {
+	private static boolean addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<Object> itemUidSet) {
 		final Object itemKey;
 
 		if (stackHelper.hasSubtypes(stack)) {
@@ -53,7 +78,7 @@ public final class ItemStackListFactory {
 			} catch (RuntimeException | LinkageError e) {
 				String stackInfo = ErrorUtil.getItemStackInfo(stack);
 				LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);
-				return;
+				return false;
 			}
 		} else {
 			itemKey = stack.getItem();
@@ -62,7 +87,9 @@ public final class ItemStackListFactory {
 		if (!itemUidSet.contains(itemKey)) {
 			itemUidSet.add(itemKey);
 			itemList.add(stack);
+			return true;
 		}
+		return false;
 	}
 
 }

@@ -90,11 +90,13 @@ public class IngredientFilter implements
 		addConfigListeners(clientConfig, config);
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
+		int added = 0;
 		for (IListElementInfo<?> ingredient : ingredients) {
 			updateHiddenState(ingredient.getElement());
+			added++;
 		}
 		invalidateCache();
-		LOGGER.info("Added {} ingredients", ingredients.size());
+		LOGGER.info("Added {}/{} ingredients", added, ingredients.size());
 		if (DebugConfig.isLogSuffixTreeStatsEnabled()) {
 			this.elementSearch.logStatistics();
 		}
