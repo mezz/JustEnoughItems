@@ -102,7 +102,12 @@ public class RecipeTransferButtonController implements IIconButtonController {
 			if (buttonArea.contains(mouseX, mouseY)) {
 				IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
 				Rect2i recipeRect = recipeLayout.getRect();
-				recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY());
+				var poseStack = guiGraphics.pose();
+				poseStack.pushMatrix();
+				{
+					recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY());
+				}
+				poseStack.popMatrix();
 			}
 		}
 	}
