@@ -37,7 +37,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.KeybindComponent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
@@ -45,6 +44,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
@@ -55,7 +55,7 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	private final RecipeBookmark<T, R> recipeBookmark;
 	private final IDrawable icon;
 	private final IClientConfig clientConfig;
-	private final EnumMap<BookmarkTooltipFeature, ClientTooltipComponent> cache = new EnumMap<>(BookmarkTooltipFeature.class);
+	private final EnumMap<BookmarkTooltipFeature, TooltipComponent> cache = new EnumMap<>(BookmarkTooltipFeature.class);
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	private @Nullable Optional<IRecipeLayoutDrawable> cachedLayoutDrawable;
 
@@ -170,7 +170,7 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 
 	private void addBookmarkTooltipFeatures(JeiTooltip tooltip) {
 		for (BookmarkTooltipFeature feature : clientConfig.getBookmarkTooltipFeatures()) {
-			ClientTooltipComponent component = cache.get(feature);
+			TooltipComponent component = cache.get(feature);
 			if (component == null) {
 				IRecipeLayoutDrawable layoutDrawable = getRecipeLayoutDrawable().orElse(null);
 				if (layoutDrawable == null) {
@@ -179,11 +179,11 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 				component = createComponent(feature, layoutDrawable);
 				cache.put(feature, component);
 			}
-			tooltip.addClientTooltipComponent(component);
+			tooltip.add(component);
 		}
 	}
 
-	private ClientTooltipComponent createComponent(BookmarkTooltipFeature feature, IRecipeLayoutDrawable layoutDrawable) {
+	private TooltipComponent createComponent(BookmarkTooltipFeature feature, IRecipeLayoutDrawable layoutDrawable) {
 		return switch (feature) {
 			case PREVIEW -> new PreviewTooltipComponent(layoutDrawable);
 			case INGREDIENTS -> new IngredientsTooltipComponent(layoutDrawable);

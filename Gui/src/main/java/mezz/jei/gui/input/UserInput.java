@@ -4,7 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.runtime.IJeiKeyMapping;
-import mezz.jei.common.gui.TooltipHelper;
+import mezz.jei.common.input.KeyNameUtil;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.SharedConstants;
@@ -142,7 +142,7 @@ public class UserInput implements IJeiUserInput {
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
 			.add("clickState", clickState)
-			.add("key", TooltipHelper.getKeyDisplayName(key))
+			.add("key", KeyNameUtil.getKeyDisplayName(key))
 			.add("modifiers", modifiers)
 			.add("mouse", String.format("%s, %s", mouseX, mouseY))
 			.toString();

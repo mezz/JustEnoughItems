@@ -16,17 +16,22 @@ import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.forge.network.NetworkHandler;
 import mezz.jei.forge.startup.ForgePluginFinder;
 import mezz.jei.forge.startup.StartEventObserver;
+import mezz.jei.gui.overlay.bookmarks.IngredientsTooltipComponent;
+import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
+import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class JustEnoughItemsClient {
 	private final NetworkHandler networkHandler;
@@ -45,6 +50,7 @@ public class JustEnoughItemsClient {
 		JeiChatEventHandler.register(subscriptions);
 		JeiChatTooltipEventHandler.register(subscriptions);
 		JeiInternalShowCommand.register(subscriptions);
+		registerTooltipComponents();
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RecipesUpdatedEvent.class, this::onRecipesUpdatedEvent);
 		Runtime.getRuntime().addShutdownHook(new Thread(this::onGameShuttingDown, "JEI Client Shutdown"));
@@ -100,6 +106,12 @@ public class JustEnoughItemsClient {
 		JeiSpriteUploader spriteUploader = new JeiSpriteUploader(textureManager);
 		event.registerReloadListener(spriteUploader);
 		return new Textures(spriteUploader);
+	}
+
+	private static void registerTooltipComponents() {
+		MinecraftForgeClient.registerTooltipComponentFactory(IngredientsTooltipComponent.class, Function.identity());
+		MinecraftForgeClient.registerTooltipComponentFactory(PreviewTooltipComponent.class, Function.identity());
+		MinecraftForgeClient.registerTooltipComponentFactory(TagContentTooltipComponent.class, Function.identity());
 	}
 
 	private static InternalKeyMappings createKeyMappings(PermanentEventSubscriptions subscriptions) {

@@ -17,9 +17,8 @@ public enum JeiKeyModifier {
 		public Component getCombinedName(InputConstants.Key key) {
 			if (Minecraft.ON_OSX) {
 				return new TranslatableComponent("jei.key.combo.command", key.getDisplayName());
-			} else {
-				return new TranslatableComponent("jei.key.combo.control", key.getDisplayName());
 			}
+			return new TranslatableComponent("jei.key.combo.control", key.getDisplayName());
 		}
 	},
 	SHIFT {
