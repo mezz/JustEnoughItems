@@ -5,6 +5,9 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.gui.config.InternalKeyMappings;
+import mezz.jei.gui.overlay.bookmarks.IngredientsTooltipComponent;
+import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
+import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import mezz.jei.neoforge.events.PermanentEventSubscriptions;
@@ -16,11 +19,13 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 public class JustEnoughItemsClient {
 	private final PermanentEventSubscriptions subscriptions;
@@ -51,12 +56,19 @@ public class JustEnoughItemsClient {
 
 	public void register() {
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
+		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
 	}
 
 	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event) {
 		Textures textures = Internal.getTextures();
 		event.registerReloadListener(textures.getSpriteUploader());
 		event.registerReloadListener(createReloadListener());
+	}
+
+	private void onRegisterClientTooltipEvent(RegisterClientTooltipComponentFactoriesEvent event) {
+		event.register(IngredientsTooltipComponent.class, Function.identity());
+		event.register(PreviewTooltipComponent.class, Function.identity());
+		event.register(TagContentTooltipComponent.class, Function.identity());
 	}
 
 	private ResourceManagerReloadListener createReloadListener() {

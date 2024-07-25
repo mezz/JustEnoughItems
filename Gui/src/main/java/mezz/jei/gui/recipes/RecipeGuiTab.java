@@ -1,16 +1,14 @@
 package mezz.jei.gui.recipes;
 
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiTooltip;
 import net.minecraft.client.gui.GuiGraphics;
-
-import java.util.List;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
-import net.minecraft.network.chat.Component;
 
 public abstract class RecipeGuiTab implements IUserInputHandler {
 	public static final int TAB_HEIGHT = 24;
@@ -39,5 +37,5 @@ public abstract class RecipeGuiTab implements IUserInputHandler {
 		tab.draw(guiGraphics, x, y);
 	}
 
-	public abstract List<Component> getTooltip();
+	public abstract JeiTooltip getTooltip();
 }

@@ -1,19 +1,16 @@
 package mezz.jei.neoforge.platform;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.datafixers.util.Either;
 import mezz.jei.common.platform.IPlatformRenderHelper;
-import mezz.jei.neoforge.mixin.GuiGraphicsAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
@@ -63,31 +60,7 @@ public class RenderHelper implements IPlatformRenderHelper {
 	}
 
 	@Override
-	public void renderTooltip(
-		Screen screen,
-		GuiGraphics guiGraphics,
-		List<Component> textComponents,
-		Optional<TooltipComponent> tooltipComponent,
-		int x,
-		int y,
-		Font font,
-		ItemStack stack
-	) {
-		guiGraphics.renderTooltip(
-			font,
-			textComponents,
-			tooltipComponent,
-			stack,
-			x,
-			y
-		);
-	}
-
-	@Override
-	public void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<ClientTooltipComponent> components, int x, int y, Font font, ItemStack stack) {
-		GuiGraphicsAccessor accessor = (GuiGraphicsAccessor) guiGraphics;
-		accessor.setTooltipStack(stack);
-		accessor.callRenderTooltipInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE);
-		accessor.setTooltipStack(ItemStack.EMPTY);
+	public void renderTooltip(GuiGraphics guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack) {
+		guiGraphics.renderComponentTooltipFromElements(font, elements, x, y, stack);
 	}
 }

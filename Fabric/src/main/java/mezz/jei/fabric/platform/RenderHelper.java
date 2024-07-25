@@ -1,24 +1,25 @@
 package mezz.jei.fabric.platform;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.datafixers.util.Either;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class RenderHelper implements IPlatformRenderHelper {
 	@Override
@@ -54,27 +55,21 @@ public class RenderHelper implements IPlatformRenderHelper {
 	}
 
 	@Override
-	public void renderTooltip(
-		Screen screen,
-		GuiGraphics guiGraphics,
-		List<Component> textComponents,
-		Optional<TooltipComponent> tooltipComponent,
-		int x,
-		int y,
-		Font font,
-		ItemStack stack
-	) {
-		guiGraphics.renderTooltip(
-			font,
-			textComponents,
-			tooltipComponent,
-			x,
-			y
-		);
+	public void renderTooltip(GuiGraphics guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack) {
+		List<ClientTooltipComponent> components = elements.stream()
+			.flatMap(e -> e.map(
+				text -> font.split(text, 400).stream().map(ClientTooltipComponent::create),
+				tooltipComponent -> Stream.of(createClientTooltipComponent(tooltipComponent))
+			))
+			.toList();
+
+		guiGraphics.renderTooltipInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE);
 	}
 
-	@Override
-	public void renderTooltip(Screen screen, GuiGraphics guiGraphics, List<ClientTooltipComponent> components, int x, int y, Font font, ItemStack stack) {
-		guiGraphics.renderTooltipInternal(font,components,x,y, DefaultTooltipPositioner.INSTANCE);
+	private ClientTooltipComponent createClientTooltipComponent(TooltipComponent tooltipComponent) {
+		if (tooltipComponent instanceof ClientTooltipComponent clientTooltipComponent) {
+			return clientTooltipComponent;
+		}
+		return ClientTooltipComponent.create(tooltipComponent);
 	}
 }

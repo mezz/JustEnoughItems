@@ -1,7 +1,7 @@
 package mezz.jei.gui.elements;
 
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.common.gui.TooltipRenderer;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -10,10 +10,7 @@ import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public abstract class GuiIconToggleButton {
@@ -65,13 +62,13 @@ public abstract class GuiIconToggleButton {
 
 	public final void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
-			List<Component> tooltip = new ArrayList<>();
+			JeiTooltip tooltip = new JeiTooltip();
 			getTooltips(tooltip);
-			TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY);
+			tooltip.draw(guiGraphics, mouseX, mouseY);
 		}
 	}
 
-	protected abstract void getTooltips(List<Component> tooltip);
+	protected abstract void getTooltips(JeiTooltip tooltip);
 
 	protected abstract boolean isIconToggledOn();
 

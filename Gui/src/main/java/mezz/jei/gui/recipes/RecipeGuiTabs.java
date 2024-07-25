@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.gui.TooltipRenderer;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.PageNavigation;
@@ -14,7 +14,6 @@ import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,8 +136,8 @@ public class RecipeGuiTabs implements IPaged {
 		pageNavigation.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 
 		if (hovered != null) {
-			List<Component> tooltip = hovered.getTooltip();
-			TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY);
+			JeiTooltip tooltip = hovered.getTooltip();
+			tooltip.draw(guiGraphics, mouseX, mouseY);
 		}
 	}
 

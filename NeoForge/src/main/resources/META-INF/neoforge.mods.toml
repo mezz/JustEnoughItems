@@ -71,6 +71,3 @@ ${modDescription}
 
 [modproperties.jei]
     catalogueImageIcon="jei-icon.png"
-
-[[mixins]]
-config="jei.mixins.json"

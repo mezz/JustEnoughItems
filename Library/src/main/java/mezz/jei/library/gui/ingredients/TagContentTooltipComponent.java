@@ -6,10 +6,11 @@ import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
 import java.util.List;
 
-public class TagContentTooltipComponent<T> implements ClientTooltipComponent {
+public class TagContentTooltipComponent<T> implements ClientTooltipComponent, TooltipComponent {
 	private static final int MAX_PER_LINE = 10;
 	private static final int MAX_LINES = 3;
 	private static final int MAX_INGREDIENTS = MAX_PER_LINE * MAX_LINES;

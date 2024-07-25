@@ -16,6 +16,7 @@ import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class IngredientsTooltipComponent implements ClientTooltipComponent {
+public class IngredientsTooltipComponent implements ClientTooltipComponent, TooltipComponent {
 	private static final int MAX_INGREDIENTS_PER_ROW = 16;
 	private static final int INGREDIENT_SIZE = 18;
 	private static final int INGREDIENT_PADDING = 1;

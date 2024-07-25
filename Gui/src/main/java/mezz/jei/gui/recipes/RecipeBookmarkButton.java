@@ -6,6 +6,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
@@ -16,8 +17,6 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class RecipeBookmarkButton extends GuiIconToggleButton {
 	private final BookmarkList bookmarks;
@@ -61,7 +60,7 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected void getTooltips(List<Component> tooltip) {
+	protected void getTooltips(JeiTooltip tooltip) {
 		if (recipeBookmark != null) {
 			if (bookmarks.contains(recipeBookmark)) {
 				tooltip.add(Component.translatable("jei.tooltip.bookmarks.recipe.remove"));

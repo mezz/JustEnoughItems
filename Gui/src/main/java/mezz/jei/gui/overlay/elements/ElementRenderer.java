@@ -8,15 +8,12 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.TooltipRenderer;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.overlay.IngredientGridTooltipHelper;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.RenderType;
-
-import java.util.List;
 
 public class ElementRenderer<T> implements IElementRenderer<T> {
 	private static final int BLACKLIST_COLOR = 0xFFFF0000;
@@ -72,8 +69,7 @@ public class ElementRenderer<T> implements IElementRenderer<T> {
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
-		List<ClientTooltipComponent> tooltip = element.getTooltipComponents(tooltipHelper, ingredientRenderer, ingredientHelper);
-
-		TooltipRenderer.drawHoveringTooltip(guiGraphics, tooltip, mouseX, mouseY, typedIngredient, ingredientRenderer, ingredientManager);
+		JeiTooltip tooltip = element.getTooltip(tooltipHelper, ingredientRenderer, ingredientHelper);
+		tooltip.draw(guiGraphics, mouseX, mouseY, typedIngredient, ingredientRenderer, ingredientManager);
 	}
 }

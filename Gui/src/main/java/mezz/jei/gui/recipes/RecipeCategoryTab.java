@@ -6,6 +6,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
@@ -18,8 +19,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class RecipeCategoryTab extends RecipeGuiTab {
@@ -77,8 +76,8 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	@Override
-	public List<Component> getTooltip() {
-		List<Component> tooltip = new ArrayList<>();
+	public JeiTooltip getTooltip() {
+		JeiTooltip tooltip = new JeiTooltip();
 		Component title = category.getTitle();
 		//noinspection ConstantConditions
 		if (title != null) {
