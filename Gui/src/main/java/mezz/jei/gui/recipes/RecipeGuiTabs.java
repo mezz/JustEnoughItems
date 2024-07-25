@@ -6,12 +6,12 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
-import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import net.minecraft.client.Minecraft;
 
@@ -136,8 +136,7 @@ public class RecipeGuiTabs implements IPaged {
 		pageNavigation.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
 
 		if (hovered != null) {
-			JeiTooltip tooltip = new JeiTooltip();
-			tooltip.addAll(hovered.getTooltip());
+			JeiTooltip tooltip = hovered.getTooltip();
 			tooltip.draw(poseStack, mouseX, mouseY);
 		}
 	}

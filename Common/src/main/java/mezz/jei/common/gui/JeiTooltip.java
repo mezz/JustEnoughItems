@@ -1,6 +1,7 @@
 package mezz.jei.common.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.datafixers.util.Either;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -33,12 +34,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class JeiTooltip implements ITooltipBuilder {
 	private final List<Component> lines = new ArrayList<>();
-	private final List<Object> orderedComponents = new ArrayList<>();
+	private final List<Either<FormattedText, TooltipComponent>> elements = new ArrayList<>();
 	private @Nullable ITypedIngredient<?> typedIngredient;
 
 	@Override
@@ -50,11 +50,19 @@ public class JeiTooltip implements ITooltipBuilder {
 			return;
 		}
 		lines.add(formattedText);
-		orderedComponents.add(formattedText);
+		elements.add(Either.left(formattedText));
+	}
+
+	public void add(TooltipComponent component) {
+		elements.add(Either.right(component));
 	}
 
 	public void addClientTooltipComponent(ClientTooltipComponent component) {
-		orderedComponents.add(component);
+		if (component instanceof TooltipComponent tooltipComponent) {
+			add(tooltipComponent);
+			return;
+		}
+		throw new IllegalArgumentException("ClientTooltipComponent must also implement TooltipComponent");
 	}
 
 	@Override
@@ -86,23 +94,30 @@ public class JeiTooltip implements ITooltipBuilder {
 	@Override
 	public void clear() {
 		this.lines.clear();
-		this.orderedComponents.clear();
+		this.elements.clear();
 		this.typedIngredient = null;
 	}
 
 	public void addAll(JeiTooltip tooltip) {
 		lines.addAll(tooltip.lines);
-		orderedComponents.addAll(tooltip.orderedComponents);
+		elements.addAll(tooltip.elements);
 	}
 
 	public boolean isEmpty() {
-		return orderedComponents.isEmpty() && typedIngredient == null;
+		return elements.isEmpty() && typedIngredient == null;
+	}
+
+	public List<Either<FormattedText, TooltipComponent>> build() {
+		return elements;
 	}
 
 	@Override
 	public String toString() {
-		return lines.stream()
-			.map(FormattedText::getString)
+		return elements.stream()
+			.map(e -> e.map(
+				FormattedText::getString,
+				Object::toString
+			))
 			.collect(Collectors.joining("\n", "[\n", "\n]"));
 	}
 
@@ -122,12 +137,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		Font font = minecraft.font;
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		try {
-			if (hasClientTooltipComponents()) {
-				List<ClientTooltipComponent> tooltipComponents = getClientTooltipComponents();
-				renderHelper.renderTooltip(screen, poseStack, tooltipComponents, x, y, font, ItemStack.EMPTY);
-			} else {
-				renderHelper.renderTooltip(screen, poseStack, lines, Optional.empty(), x, y, font, ItemStack.EMPTY);
-			}
+			renderHelper.renderTooltip(screen, poseStack, elements, x, y, font, ItemStack.EMPTY);
 		} catch (RuntimeException e) {
 			throw new RuntimeException("Crashed when rendering tooltip:\n" + this, e);
 		}
@@ -157,7 +167,8 @@ public class JeiTooltip implements ITooltipBuilder {
 		Font font = ingredientRenderer.getFontRenderer(minecraft, ingredient);
 		ItemStack itemStack = typedIngredient.getItemStack().orElse(ItemStack.EMPTY);
 
-		Optional<TooltipComponent> tooltipImage = itemStack.getTooltipImage();
+		itemStack.getTooltipImage()
+			.ifPresent(c -> elements.add(Math.min(1, elements.size()), Either.right(c)));
 
 		addDebugInfo(ingredientManager, typedIngredient);
 
@@ -171,12 +182,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		}
 		try {
 			IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-			if (hasClientTooltipComponents()) {
-				List<ClientTooltipComponent> tooltipComponents = getClientTooltipComponents();
-				renderHelper.renderTooltip(screen, poseStack, tooltipComponents, x, y, font, itemStack);
-			} else {
-				renderHelper.renderTooltip(screen, poseStack, lines, tooltipImage, x, y, font, itemStack);
-			}
+			renderHelper.renderTooltip(screen, poseStack, elements, x, y, font, itemStack);
 		} catch (RuntimeException e) {
 			CrashReport crashReport = ErrorUtil.createIngredientCrashReport(e, "Rendering ingredient tooltip", ingredientManager, typedIngredient);
 			crashReport.addCategory("tooltip")
@@ -185,24 +191,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		}
 	}
 
-	private boolean hasClientTooltipComponents() {
-		return orderedComponents.stream()
-			.anyMatch(ClientTooltipComponent.class::isInstance);
-	}
-
-	private List<ClientTooltipComponent> getClientTooltipComponents() {
-		return orderedComponents.stream()
-			.map(component -> {
-				if (component instanceof ClientTooltipComponent clientTooltipComponent) {
-					return clientTooltipComponent;
-				}
-				Component line = (Component) component;
-				return ClientTooltipComponent.create(line.getVisualOrderText());
-			})
-			.toList();
-	}
-
-	private <T> void addDebugInfo(IIngredientManager ingredientManager,  ITypedIngredient<T> typedIngredient) {
+	private <T> void addDebugInfo(IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
 		if (!DebugConfig.isDebugInfoTooltipsEnabled() || !Minecraft.getInstance().options.advancedItemTooltips) {
 			return;
 		}

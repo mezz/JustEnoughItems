@@ -23,7 +23,9 @@ public class ShapelessIcon {
 		return area.contains(mouseX, mouseY);
 	}
 
-	public void addTooltip(JeiTooltip tooltip) {
-		tooltip.add(Component.translatable("jei.tooltip.shapeless.recipe"));
+	public void addTooltipStrings(JeiTooltip tooltip, int mouseX, int mouseY) {
+		if (this.area.contains(mouseX, mouseY)) {
+			tooltip.add(Component.translatable("jei.tooltip.shapeless.recipe"));
+		}
 	}
 }

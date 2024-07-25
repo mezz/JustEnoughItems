@@ -2,6 +2,7 @@ package mezz.jei.forge.platform;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.datafixers.util.Either;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
@@ -10,17 +11,22 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.client.extensions.common.IClientMobEffectExtensions;
 import net.minecraftforge.client.model.data.ModelData;
-import org.jetbrains.annotations.Nullable;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class RenderHelper implements IPlatformRenderHelper {
 	@Override
@@ -60,29 +66,71 @@ public class RenderHelper implements IPlatformRenderHelper {
 	}
 
 	@Override
-	public void renderTooltip(
-		Screen screen,
-		PoseStack poseStack,
-		List<Component> textComponents,
-		Optional<TooltipComponent> tooltipComponent,
-		int x,
-		int y,
-		@Nullable Font font,
-		ItemStack stack
-	) {
-		screen.renderTooltip(
-			poseStack,
-			textComponents,
-			tooltipComponent,
-			x,
-			y,
-			font,
-			stack
-		);
+	public void renderTooltip(Screen screen, PoseStack poseStack, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack) {
+		List<ClientTooltipComponent> components = gatherTooltipComponents(stack, elements, x, screen.width, screen.height, font);
+		screen.renderTooltipInternal(poseStack, components, x, y);
 	}
 
-	@Override
-	public void renderTooltip(Screen screen, PoseStack poseStack, List<ClientTooltipComponent> components, int x, int y, Font font, ItemStack stack) {
-		screen.renderTooltipInternal(poseStack, components, x, y);
+	private static List<ClientTooltipComponent> gatherTooltipComponents(ItemStack stack, List<Either<FormattedText, TooltipComponent>> elements, int mouseX, int screenWidth, int screenHeight, Font fallbackFont) {
+		Font font = ForgeHooksClient.getTooltipFont(fallbackFont, stack, Minecraft.getInstance().font);
+		RenderTooltipEvent.GatherComponents event = new RenderTooltipEvent.GatherComponents(stack, screenWidth, screenHeight, elements, -1);
+		MinecraftForge.EVENT_BUS.post(event);
+		if (event.isCanceled()) {
+			return List.of();
+		}
+
+		int tooltipTextWidth = event.getTooltipElements()
+			.stream()
+			.mapToInt(either -> either.map(font::width, component -> 0))
+			.max()
+			.orElse(0);
+
+		boolean needsWrap = false;
+		int tooltipX = mouseX + 12;
+		if (tooltipX + tooltipTextWidth + 4 > screenWidth) {
+			tooltipX = mouseX - 16 - tooltipTextWidth;
+			if (tooltipX < 4) {
+				if (mouseX > screenWidth / 2) {
+					tooltipTextWidth = mouseX - 12 - 8;
+				} else {
+					tooltipTextWidth = screenWidth - 16 - mouseX;
+				}
+				needsWrap = true;
+			}
+		}
+
+		if (event.getMaxWidth() > 0 && tooltipTextWidth > event.getMaxWidth()) {
+			tooltipTextWidth = event.getMaxWidth();
+			needsWrap = true;
+		}
+
+		int tooltipTextWidthFinal = tooltipTextWidth;
+		if (needsWrap) {
+			return event.getTooltipElements()
+				.stream()
+				.flatMap(either -> either.map(
+					text -> splitLine(text, font, tooltipTextWidthFinal),
+					component -> Stream.of(ClientTooltipComponent.create(component))
+				))
+				.toList();
+		}
+
+		return event.getTooltipElements()
+			.stream()
+			.map(either -> either.map(
+				text -> ClientTooltipComponent.create(text instanceof Component component ? component.getVisualOrderText() : Language.getInstance().getVisualOrder(text)),
+				ClientTooltipComponent::create
+			))
+			.toList();
+	}
+
+	private static Stream<ClientTooltipComponent> splitLine(FormattedText text, Font font, int maxWidth) {
+		if (text instanceof Component component) {
+			if (component.getString().isEmpty()) {
+				return Stream.of(component.getVisualOrderText()).map(ClientTooltipComponent::create);
+			}
+		}
+
+		return font.split(text, maxWidth).stream().map(ClientTooltipComponent::create);
 	}
 }

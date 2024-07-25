@@ -16,6 +16,9 @@ import mezz.jei.forge.network.NetworkHandler;
 import mezz.jei.forge.startup.ForgePluginFinder;
 import mezz.jei.forge.startup.StartEventObserver;
 import mezz.jei.gui.config.InternalKeyMappings;
+import mezz.jei.gui.overlay.bookmarks.IngredientsTooltipComponent;
+import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
+import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.minecraft.client.KeyMapping;
@@ -23,6 +26,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.event.GameShuttingDownEvent;
@@ -31,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 public class JustEnoughItemsClient {
 	private final NetworkHandler networkHandler;
@@ -50,6 +55,7 @@ public class JustEnoughItemsClient {
 		JeiChatTooltipEventHandler.register(subscriptions);
 		JeiInternalShowCommand.register(subscriptions);
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
+		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
 		subscriptions.register(RecipesUpdatedEvent.class, this::onRecipesUpdatedEvent);
 		subscriptions.register(GameShuttingDownEvent.class, e -> onGameShuttingDown());
 	}
@@ -104,6 +110,12 @@ public class JustEnoughItemsClient {
 		JeiSpriteUploader spriteUploader = new JeiSpriteUploader(textureManager);
 		event.registerReloadListener(spriteUploader);
 		return new Textures(spriteUploader);
+	}
+
+	private void onRegisterClientTooltipEvent(RegisterClientTooltipComponentFactoriesEvent event) {
+		event.register(IngredientsTooltipComponent.class, Function.identity());
+		event.register(PreviewTooltipComponent.class, Function.identity());
+		event.register(TagContentTooltipComponent.class, Function.identity());
 	}
 
 	private static InternalKeyMappings createKeyMappings(PermanentEventSubscriptions subscriptions) {

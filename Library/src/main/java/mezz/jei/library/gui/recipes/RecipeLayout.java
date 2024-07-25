@@ -235,9 +235,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			}
 
 			if (tooltip.isEmpty() && shapelessIcon != null) {
-				if (shapelessIcon.isMouseOver(recipeMouseX, recipeMouseY)) {
-					shapelessIcon.addTooltip(tooltip);
-				}
+				shapelessIcon.addTooltipStrings(tooltip, recipeMouseX, recipeMouseY);
 			}
 			tooltip.draw(poseStack, mouseX, mouseY);
 		}
@@ -260,7 +258,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			IIngredientType<T> type = displayed.getType();
 			List<T> ingredients = slotDrawable.getIngredients(type).toList();
 			if (ingredients.size() > 1) {
-				tooltip.addClientTooltipComponent(new TagContentTooltipComponent<>(renderer, ingredients));
+				tooltip.add(new TagContentTooltipComponent<>(renderer, ingredients));
 			}
 		}
 	}

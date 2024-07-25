@@ -4,12 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IUserInputHandler;
-import net.minecraft.network.chat.Component;
-
-import java.util.List;
 
 public abstract class RecipeGuiTab implements IUserInputHandler {
 	public static final int TAB_HEIGHT = 24;
@@ -38,5 +36,5 @@ public abstract class RecipeGuiTab implements IUserInputHandler {
 		tab.draw(poseStack, x, y);
 	}
 
-	public abstract List<Component> getTooltip();
+	public abstract JeiTooltip getTooltip();
 }

@@ -2,6 +2,7 @@ package mezz.jei.gui.input.handlers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -9,7 +10,6 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.common.util.ServerCommandUtil;
-import mezz.jei.common.config.GiveMode;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;

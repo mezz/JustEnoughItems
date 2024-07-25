@@ -15,9 +15,10 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
-public class PreviewTooltipComponent<R> implements ClientTooltipComponent {
+public class PreviewTooltipComponent<R> implements ClientTooltipComponent, TooltipComponent {
 	private static final int UPDATE_INTERVAL_MS = 2000;
 
 	private final IRecipeLayoutDrawable<R> drawable;
