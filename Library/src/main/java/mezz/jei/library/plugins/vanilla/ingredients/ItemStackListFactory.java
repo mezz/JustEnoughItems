@@ -1,6 +1,7 @@
 package mezz.jei.library.plugins.vanilla.ingredients;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.StackHelper;
 import net.minecraft.client.Minecraft;
@@ -27,6 +28,8 @@ public final class ItemStackListFactory {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static List<ItemStack> create(StackHelper stackHelper) {
+		final boolean debug = DebugConfig.isDebugIngredientsEnabled();
+
 		final List<ItemStack> itemList = new ArrayList<>();
 		final Set<Object> itemUidSet = new HashSet<>();
 
@@ -53,36 +56,92 @@ public final class ItemStackListFactory {
 
 		for (CreativeModeTab itemGroup : CreativeModeTabs.allTabs()) {
 			if (itemGroup.getType() != CreativeModeTab.Type.CATEGORY) {
+				if (debug) {
+					LOGGER.debug(
+						"Skipping creative tab: '{}' because it is type: {}",
+						itemGroup.getDisplayName().getString(),
+						itemGroup.getType()
+					);
+				}
 				continue;
 			}
 			try {
 				itemGroup.buildContents(displayParameters);
 			} catch (RuntimeException | LinkageError e) {
-				LOGGER.error("Item Group crashed while building contents." +
-						"Items from this group will be missing from the JEI ingredient list. {}", itemGroup, e);
+				LOGGER.error(
+					"Item Group crashed while building contents." +
+					"Items from this group will be missing from the JEI ingredient list: {}",
+					itemGroup.getDisplayName().getString(),
+					e
+				);
 				continue;
 			}
 
-			final @Unmodifiable Collection<ItemStack> creativeTabItemStacks;
+			@Unmodifiable Collection<ItemStack> creativeTabItemStacks;
 			try {
 				creativeTabItemStacks = itemGroup.getSearchTabDisplayItems();
 			} catch (RuntimeException | LinkageError e) {
-				LOGGER.error("Item Group crashed while getting display items." +
-					"Some items from this group will be missing from the JEI ingredient list. {}", itemGroup, e);
+				LOGGER.error(
+					"Item Group crashed while getting search tab display items." +
+					"Some items from this group will be missing from the JEI ingredient list: {}",
+					itemGroup.getDisplayName().getString(),
+					e
+				);
 				continue;
 			}
+
+			if (creativeTabItemStacks.isEmpty()) {
+				try {
+					Collection<ItemStack> displayItems = itemGroup.getDisplayItems();
+					if (displayItems.isEmpty()) {
+						LOGGER.warn(
+							"Item Group has no display items and no search tab display items. " +
+							"Items from this group will be missing from the JEI ingredient list. {}",
+							itemGroup.getDisplayName().getString()
+						);
+						continue;
+					} else {
+						LOGGER.warn(
+							"Item Group has no search tab display items. " +
+								"Falling back on getting the regular display items: {}",
+							itemGroup.getDisplayName().getString()
+						);
+						creativeTabItemStacks = displayItems;
+					}
+				} catch (RuntimeException | LinkageError e) {
+					LOGGER.error(
+						"Item Group has no search tab display items and crashed while getting display items. " +
+							"Items from this group will be missing from the JEI ingredient list. {}",
+						itemGroup.getDisplayName().getString(),
+						e
+					);
+					continue;
+				}
+			}
+
+			int added = 0;
 			for (ItemStack itemStack : creativeTabItemStacks) {
 				if (itemStack.isEmpty()) {
 					LOGGER.error("Found an empty itemStack from creative tab: {}", itemGroup);
 				} else {
-					addItemStack(stackHelper, itemStack, itemList, itemUidSet);
+					if (addItemStack(stackHelper, itemStack, itemList, itemUidSet)) {
+						added++;
+					}
 				}
+			}
+			if (debug) {
+				LOGGER.debug(
+					"Added {}/{} items from creative tab: {}",
+					added,
+					creativeTabItemStacks.size(),
+					itemGroup.getDisplayName().getString()
+				);
 			}
 		}
 		return itemList;
 	}
 
-	private static void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<Object> itemUidSet) {
+	private static boolean addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<Object> itemUidSet) {
 		final Object itemKey;
 
 		if (stackHelper.hasSubtypes(stack)) {
@@ -91,7 +150,7 @@ public final class ItemStackListFactory {
 			} catch (RuntimeException | LinkageError e) {
 				String stackInfo = ErrorUtil.getItemStackInfo(stack);
 				LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);
-				return;
+				return false;
 			}
 		} else {
 			itemKey = stack.getItem();
@@ -100,7 +159,9 @@ public final class ItemStackListFactory {
 		if (!itemUidSet.contains(itemKey)) {
 			itemUidSet.add(itemKey);
 			itemList.add(stack);
+			return true;
 		}
+		return false;
 	}
 
 }
