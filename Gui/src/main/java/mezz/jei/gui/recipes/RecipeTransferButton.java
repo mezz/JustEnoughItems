@@ -6,6 +6,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
@@ -19,8 +20,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class RecipeTransferButton extends GuiIconToggleButton {
 	public static RecipeTransferButton create(
@@ -89,7 +88,7 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected void getTooltips(List<Component> tooltip) {
+	protected void getTooltips(JeiTooltip tooltip) {
 		if (recipeTransferError == null) {
 			Component tooltipTransfer = Component.translatable("jei.tooltip.transfer");
 			tooltip.add(tooltipTransfer);

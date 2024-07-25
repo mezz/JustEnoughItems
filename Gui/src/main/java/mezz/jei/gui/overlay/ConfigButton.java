@@ -2,25 +2,23 @@ package mezz.jei.gui.overlay;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.TooltipHelper;
+import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
@@ -43,37 +41,39 @@ public class ConfigButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected void getTooltips(List<Component> tooltip) {
+	protected void getTooltips(JeiTooltip tooltip) {
 		tooltip.add(Component.translatable("jei.tooltip.config"));
 		if (!toggleState.isOverlayEnabled()) {
-			MutableComponent disabled = Component.translatable("jei.tooltip.ingredient.list.disabled");
-			Component disabledFix = TooltipHelper.createKeyUsageComponent(
+			tooltip.add(
+				Component.translatable("jei.tooltip.ingredient.list.disabled")
+					.withStyle(ChatFormatting.GOLD)
+			);
+			tooltip.addKeyUsageComponent(
 				"jei.tooltip.ingredient.list.disabled.how.to.fix",
 				keyBindings.getToggleOverlay()
 			);
-			tooltip.add(disabled.withStyle(ChatFormatting.GOLD));
-			tooltip.add(disabledFix);
 		} else if (!isListDisplayed.getAsBoolean()) {
-			MutableComponent notEnoughSpace = Component.translatable("jei.tooltip.not.enough.space");
-			tooltip.add(notEnoughSpace.withStyle(ChatFormatting.GOLD));
+			tooltip.add(
+				Component.translatable("jei.tooltip.not.enough.space")
+					.withStyle(ChatFormatting.GOLD)
+			);
 		}
 		if (toggleState.isCheatItemsEnabled()) {
-			MutableComponent enabled = Component.translatable("jei.tooltip.cheat.mode.button.enabled")
-				.withStyle(ChatFormatting.RED);
-			tooltip.add(enabled);
+			tooltip.add(
+				Component.translatable("jei.tooltip.cheat.mode.button.enabled")
+					.withStyle(ChatFormatting.RED)
+			);
 
 			if (!keyBindings.getToggleCheatMode().isUnbound()) {
-				Component component = TooltipHelper.createKeyUsageComponent(
+				tooltip.addKeyUsageComponent(
 					"jei.tooltip.cheat.mode.how.to.disable.hotkey",
 					keyBindings.getToggleCheatMode()
 				);
-				tooltip.add(component);
 			} else if (!keyBindings.getToggleCheatModeConfigButton().isUnbound()) {
-				Component component = TooltipHelper.createKeyUsageComponent(
+				tooltip.addKeyUsageComponent(
 					"jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey",
 					keyBindings.getToggleCheatModeConfigButton()
 				);
-				tooltip.add(component);
 			}
 		}
 	}

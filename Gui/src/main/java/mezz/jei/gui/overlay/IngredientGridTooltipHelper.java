@@ -8,7 +8,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.gui.TooltipHelper;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.core.search.SearchMode;
@@ -44,13 +44,16 @@ public final class IngredientGridTooltipHelper {
 		this.colorHelper = colorHelper;
 	}
 
-	public <T> List<Component> getIngredientTooltip(
+	public <T> JeiTooltip getIngredientTooltip(
 		ITypedIngredient<T> typedIngredient,
 		IIngredientRenderer<T> ingredientRenderer,
 		IIngredientHelper<T> ingredientHelper
 	) {
-		List<Component> tooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, typedIngredient);
-		tooltip = modIdHelper.addModNameToIngredientTooltip(tooltip, typedIngredient.getIngredient(), ingredientHelper);
+		List<Component> ingredientTooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, typedIngredient);
+		ingredientTooltip = modIdHelper.addModNameToIngredientTooltip(ingredientTooltip, typedIngredient.getIngredient(), ingredientHelper);
+
+		JeiTooltip tooltip = new JeiTooltip();
+		tooltip.addAll(ingredientTooltip);
 
 		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
 			addColorSearchInfoToTooltip(tooltip, typedIngredient, ingredientHelper);
@@ -63,7 +66,7 @@ public final class IngredientGridTooltipHelper {
 		return tooltip;
 	}
 
-	private <T> void addColorSearchInfoToTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
+	private <T> void addColorSearchInfoToTooltip(JeiTooltip tooltip, ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
 		Iterable<Integer> colors = ingredientHelper.getColors(typedIngredient.getIngredient());
 		String colorNamesString = StreamSupport.stream(colors.spliterator(), false)
 			.map(colorHelper::getClosestColorName)
@@ -75,20 +78,19 @@ public final class IngredientGridTooltipHelper {
 		}
 	}
 
-	private static void addEditModeInfoToTooltip(List<Component> tooltip, IInternalKeyMappings keyBindings) {
-		List<Component> lines = List.of(
-			CommonComponents.EMPTY,
+	private static void addEditModeInfoToTooltip(JeiTooltip tooltip, IInternalKeyMappings keyBindings) {
+		tooltip.add(CommonComponents.EMPTY);
+		tooltip.add(
 			Component.translatable("gui.jei.editMode.description")
-				.withStyle(ChatFormatting.DARK_GREEN),
-			TooltipHelper.createKeyUsageComponent(
-				"gui.jei.editMode.description.hide",
-				keyBindings.getToggleHideIngredient()
-			),
-			TooltipHelper.createKeyUsageComponent(
-				"gui.jei.editMode.description.hide.wild",
-				keyBindings.getToggleWildcardHideIngredient()
-			)
+				.withStyle(ChatFormatting.DARK_GREEN)
 		);
-		tooltip.addAll(lines);
+		tooltip.addKeyUsageComponent(
+			"gui.jei.editMode.description.hide",
+			keyBindings.getToggleHideIngredient()
+		);
+		tooltip.addKeyUsageComponent(
+			"gui.jei.editMode.description.hide.wild",
+			keyBindings.getToggleWildcardHideIngredient()
+		);
 	}
 }

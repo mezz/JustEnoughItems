@@ -5,11 +5,11 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.network.chat.Component;
 
-import java.util.List;
 import java.util.Set;
 
 public class RecipeSortStateButton extends GuiIconToggleButton {
@@ -37,7 +37,7 @@ public class RecipeSortStateButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected void getTooltips(List<Component> tooltip) {
+	protected void getTooltips(JeiTooltip tooltip) {
 		if (toggledOn) {
 			tooltip.add(enabledTooltip);
 		} else {

@@ -4,8 +4,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
-
-import mezz.jei.common.gui.TooltipRenderer;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
@@ -22,7 +21,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
 import java.util.Optional;
 
 public class DeleteItemInputHandler implements IUserInputHandler {
@@ -78,8 +76,9 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 
 	@SuppressWarnings("MethodMayBeStatic")
 	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		Component deleteItem = Component.translatable("jei.tooltip.delete.item");
-		TooltipRenderer.drawHoveringText(guiGraphics, List.of(deleteItem), mouseX, mouseY);
+		JeiTooltip tooltip = new JeiTooltip();
+		tooltip.add(Component.translatable("jei.tooltip.delete.item"));
+		tooltip.draw(guiGraphics, mouseX, mouseY);
 	}
 
 	public boolean shouldDeleteItemOnClick(Minecraft minecraft, double mouseX, double mouseY) {

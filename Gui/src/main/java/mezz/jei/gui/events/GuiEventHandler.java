@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.DebugConfig;
-import mezz.jei.common.gui.TooltipRenderer;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -25,7 +25,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -143,10 +142,12 @@ public class GuiEventHandler {
 				.map(IGuiClickableArea::getTooltipStrings)
 				.findFirst()
 				.ifPresent(tooltipStrings -> {
-					if (tooltipStrings.isEmpty()) {
-						tooltipStrings = List.of(Component.translatable("jei.tooltip.show.recipes"));
+					JeiTooltip tooltip = new JeiTooltip();
+					tooltip.addAll(tooltipStrings);
+					if (tooltip.isEmpty()) {
+						tooltip.add(Component.translatable("jei.tooltip.show.recipes"));
 					}
-					TooltipRenderer.drawHoveringText(guiGraphics, tooltipStrings, mouseX, mouseY);
+					tooltip.draw(guiGraphics, mouseX, mouseY);
 				});
 		}
 

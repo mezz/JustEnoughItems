@@ -21,7 +21,7 @@ import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.gui.TooltipRenderer;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -49,7 +49,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
@@ -298,17 +297,20 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		hoveredRecipeCatalyst.ifPresent(h ->
 			h.getDisplayedIngredient()
 				.ifPresent(i -> {
-					List<Component> tooltip = h.getTooltip();
+					List<Component> tooltipComponents = h.getTooltip();
 					IModIdHelper modIdHelper = Internal.getJeiRuntime().getJeiHelpers().getModIdHelper();
-					tooltip = modIdHelper.addModNameToIngredientTooltip(tooltip, i);
-					TooltipRenderer.drawHoveringText(guiGraphics, tooltip, mouseX, mouseY, i);
+					tooltipComponents = modIdHelper.addModNameToIngredientTooltip(tooltipComponents, i);
+					JeiTooltip tooltip = new JeiTooltip();
+					tooltip.addAll(tooltipComponents);
+					tooltip.draw(guiGraphics, mouseX, mouseY, i);
 				})
 		);
 		RenderSystem.enableDepthTest();
 
 		if (titleStringArea.contains(mouseX, mouseY) && !logic.hasAllCategories()) {
-			MutableComponent showAllRecipesString = Component.translatable("jei.tooltip.show.all.recipes");
-			TooltipRenderer.drawHoveringText(guiGraphics, List.of(showAllRecipesString), mouseX, mouseY);
+			JeiTooltip tooltip = new JeiTooltip();
+			tooltip.add(Component.translatable("jei.tooltip.show.all.recipes"));
+			tooltip.draw(guiGraphics, mouseX, mouseY);
 		}
 
 		if (DebugConfig.isDebugGuisEnabled()) {
