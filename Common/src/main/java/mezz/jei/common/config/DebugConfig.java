@@ -17,6 +17,7 @@ public final class DebugConfig {
 	private final Supplier<Boolean> debugModeEnabled;
 	private final Supplier<Boolean> debugGuisEnabled;
 	private final Supplier<Boolean> debugInputsEnabled;
+	private final Supplier<Boolean> debugIngredientsEnabled;
 	private final Supplier<Boolean> crashingTestIngredientsEnabled;
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
@@ -35,6 +36,11 @@ public final class DebugConfig {
 			"DebugInputs",
 			false,
 			"Debug inputs enabled"
+		);
+		debugIngredientsEnabled = advanced.addBoolean(
+			"DebugIngredients",
+			false,
+			"Debug ingredients enabled"
 		);
 		crashingTestIngredientsEnabled = advanced.addBoolean(
 			"CrashingTestItemsEnabled",
@@ -62,6 +68,13 @@ public final class DebugConfig {
 			return false;
 		}
 		return instance.debugInputsEnabled.get();
+	}
+
+	public static boolean isDebugIngredientsEnabled() {
+		if (instance == null) {
+			return false;
+		}
+		return instance.debugIngredientsEnabled.get();
 	}
 
 	public static boolean isCrashingTestIngredientsEnabled() {

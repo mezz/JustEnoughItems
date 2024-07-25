@@ -82,13 +82,15 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
+		int added = 0;
 		for (IListElement<?> ingredient : ingredients) {
 			IListElementInfo<?> info = ListElementInfo.create(ingredient, ingredientManager, modIdHelper);
 			if (info != null) {
 				addIngredient(info);
+				added++;
 			}
 		}
-		LOGGER.info("Added {} ingredients", ingredients.size());
+		LOGGER.info("Added {}/{} ingredients", added, ingredients.size());
 
 		this.filterTextSource.addListener(filterText -> {
 			ingredientListCached = null;
