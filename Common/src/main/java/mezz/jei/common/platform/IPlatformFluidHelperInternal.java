@@ -15,6 +15,8 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
 
 	IIngredientRenderer<T> createRenderer(long capacity, boolean showCapacity, int width, int height);
 
+	IIngredientRenderer<T> createSlotRenderer(long capacity);
+
 	Optional<TextureAtlasSprite> getStillFluidSprite(T ingredient);
 
 	Component getDisplayName(T ingredient);

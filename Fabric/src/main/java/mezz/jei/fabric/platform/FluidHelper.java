@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.fabric.ingredients.fluid.JeiFluidIngredient;
+import mezz.jei.library.render.FluidSlotRenderer;
 import mezz.jei.library.render.FluidTankRenderer;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
@@ -35,6 +36,11 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	@Override
 	public IIngredientRenderer<IJeiFluidIngredient> createRenderer(long capacity, boolean showCapacity, int width, int height) {
 		return new FluidTankRenderer<>(this, capacity, showCapacity, width, height);
+	}
+
+	@Override
+	public IIngredientRenderer<IJeiFluidIngredient> createSlotRenderer(long capacity) {
+		return new FluidSlotRenderer<>(this, capacity);
 	}
 
 	@Override
@@ -77,6 +83,11 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	@Override
 	public long bucketVolume() {
 		return FluidConstants.BUCKET;
+	}
+
+	@Override
+	public String unit() {
+		return "dl";
 	}
 
 	@Override

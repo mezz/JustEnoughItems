@@ -34,4 +34,6 @@ public interface IPlatformFluidHelper<T> {
 	 * @since 10.1.0
 	 */
 	long bucketVolume();
+
+	String unit();
 }

@@ -12,11 +12,14 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -29,6 +32,7 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 	private static final int INGREDIENT_SIZE = 18;
 	private static final int INGREDIENT_PADDING = 1;
 	private final List<RenderElement<?>> ingredients;
+	private final static String FLUID_TYPE_UID = "fluid_stack";
 
 	public IngredientsTooltipComponent(IRecipeLayoutDrawable<?> layout) {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
@@ -138,6 +142,10 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 			IIngredientHelper<T> helper = ingredientManager.getIngredientHelper(type);
 			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
 			T ingredient = helper.copyWithAmount(typedIngredient.getIngredient(), summaryElement.getAmount());
+			if (type.getUid().equals(FLUID_TYPE_UID)){
+				IPlatformFluidHelperInternal<T> fluidHelper = (IPlatformFluidHelperInternal<T>) Services.PLATFORM.getFluidHelper();
+				renderer = fluidHelper.createSlotRenderer(fluidHelper.bucketVolume());
+			}
 			return new RenderElement<>(renderer, ingredient);
 		}
 

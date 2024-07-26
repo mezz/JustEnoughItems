@@ -178,7 +178,7 @@ public class JeiDebugPlugin implements IModPlugin {
 
 	private <T> void registerFluidRecipes(IRecipeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
 		long bucketVolume = platformFluidHelper.bucketVolume();
-		T fluidIngredient = platformFluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume);
+		T fluidIngredient = platformFluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume * 2);
 		registration.addIngredientInfo(fluidIngredient, platformFluidHelper.getFluidIngredientType(), Component.literal("water"));
 
 		fluidIngredient = platformFluidHelper.create(Fluids.LAVA.defaultFluidState().holder(), 1);
