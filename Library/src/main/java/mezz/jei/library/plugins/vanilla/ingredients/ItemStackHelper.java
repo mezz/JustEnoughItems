@@ -150,6 +150,9 @@ public class ItemStackHelper implements IngredientHelperWithResourceLocation<Ite
 
 	@Override
 	public ItemStack normalizeIngredient(ItemStack ingredient) {
+		if (ingredient.getCount() == 1) {
+			return ingredient;
+		}
 		ItemStack copy = ingredient.copy();
 		copy.setCount(1);
 		return copy;

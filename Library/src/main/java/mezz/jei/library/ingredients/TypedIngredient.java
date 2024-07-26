@@ -60,9 +60,29 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		if (ingredient == null) {
 			return Optional.empty();
 		}
+		checkParameters(ingredientType, ingredient);
 
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		return createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
+	}
+
+	public static <T> List<Optional<ITypedIngredient<T>>> createAndFilterInvalidList(
+		IIngredientManager ingredientManager,
+		IIngredientType<T> ingredientType,
+		List<@Nullable T> ingredients,
+		boolean normalize
+	) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		List<Optional<ITypedIngredient<T>>> results = new ArrayList<>(ingredients.size());
+		for (T ingredient : ingredients) {
+			if (ingredient == null) {
+				results.add(Optional.empty());
+			} else {
+				Optional<ITypedIngredient<T>> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
+				results.add(result);
+			}
+		}
+		return results;
 	}
 
 	public static <T> Optional<ITypedIngredient<T>> createAndFilterInvalid(
@@ -96,25 +116,6 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		T ingredient = ingredientHelper.copyIngredient(value.getIngredient());
 		return createAndFilterInvalid(ingredientHelper, value.getType(), ingredient, false);
-	}
-
-	public static <T> List<Optional<ITypedIngredient<T>>> createAndFilterInvalidList(
-		IIngredientManager ingredientManager,
-		IIngredientType<T> ingredientType,
-		List<@Nullable T> ingredients,
-		boolean normalize
-	) {
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		List<Optional<ITypedIngredient<T>>> results = new ArrayList<>(ingredients.size());
-		for (T ingredient : ingredients) {
-			if (ingredient == null) {
-				results.add(Optional.empty());
-			} else {
-				Optional<ITypedIngredient<T>> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
-				results.add(result);
-			}
-		}
-		return results;
 	}
 
 	private final IIngredientType<T> ingredientType;
