@@ -20,6 +20,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class ItemStackListFactory {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -125,13 +127,25 @@ public final class ItemStackListFactory {
 				}
 			}
 
+			Set<Object> tabUidSet = new HashSet<>();
 			int added = 0;
+			Set<Object> duplicateInTab = new HashSet<>();
+			int duplicateInTabCount = 0;
 			for (ItemStack itemStack : creativeTabItemStacks) {
 				if (itemStack.isEmpty()) {
 					LOGGER.error("Found an empty itemStack from creative tab: {}", itemGroup);
 				} else {
-					if (addItemStack(stackHelper, itemStack, itemList, itemUidSet)) {
-						added++;
+					Object itemKey = getItemKey(stackHelper, itemStack);
+					if (itemKey != null) {
+						if (tabUidSet.contains(itemKey)) {
+							duplicateInTab.add(itemKey);
+							duplicateInTabCount++;
+						}
+						if (itemUidSet.add(itemKey)) {
+							tabUidSet.add(itemKey);
+							itemList.add(itemStack);
+							added++;
+						}
 					}
 				}
 			}
@@ -141,6 +155,17 @@ public final class ItemStackListFactory {
 				creativeTabItemStacks.size(),
 				itemGroup.getDisplayName().getString()
 			);
+			if (duplicateInTabCount > 0) {
+				LOGGER.warn(
+					"""
+						{} duplicates items were found in creative tab: {}
+						This may indicate that these types of item need a subtype interpreter added to JEI:
+						{}""",
+					duplicateInTabCount,
+					itemGroup.getDisplayName().getString(),
+					duplicateInTab.stream().map(Object::toString).collect(Collectors.joining(", ", "[", "]"))
+				);
+			}
 		}
 
 		if (showHidden) {
@@ -167,13 +192,15 @@ public final class ItemStackListFactory {
 
 			int added = 0;
 			for (ItemStack itemStack : itemStacks) {
-				if (addItemStack(stackHelper, itemStack, itemList, itemUidSet)) {
+				Object itemKey = getItemKey(stackHelper, itemStack);
+				if (itemKey != null && itemUidSet.add(itemKey)) {
+					itemList.add(itemStack);
 					added++;
 				}
 			}
 
 			LOGGER.debug(
-				"Added {}/{} new items from the item registry",
+				"Added {}/{} new items from the item registry (this is run because ShowHiddenItems is set to true in JEI's config)",
 				added,
 				itemStacks.size()
 			);
@@ -191,40 +218,32 @@ public final class ItemStackListFactory {
 
 			int added = 0;
 			for (ItemStack itemStack : itemStacks) {
-				if (addItemStack(stackHelper, itemStack, itemList, itemUidSet)) {
+				Object itemKey = getItemKey(stackHelper, itemStack);
+				if (itemKey != null && itemUidSet.add(itemKey)) {
+					itemList.add(itemStack);
 					added++;
 				}
 			}
 
 			LOGGER.debug(
-				"Added {}/{} new items from the block registry",
+				"Added {}/{} new items from the block registry (this is run because ShowHiddenItems is set to true in JEI's config)",
 				added,
 				itemStacks.size()
 			);
 		}
 	}
 
-	private static boolean addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<Object> itemUidSet) {
-		final Object itemKey;
-
+	@Nullable
+	private static Object getItemKey(StackHelper stackHelper, ItemStack stack) {
 		if (stackHelper.hasSubtypes(stack)) {
 			try {
-				itemKey = stackHelper.getUniqueIdentifierForStack(stack, UidContext.Ingredient);
+				return stackHelper.getUniqueIdentifierForStack(stack, UidContext.Ingredient);
 			} catch (RuntimeException | LinkageError e) {
 				String stackInfo = ErrorUtil.getItemStackInfo(stack);
 				LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);
-				return false;
+				return null;
 			}
-		} else {
-			itemKey = stack.getItem();
 		}
-
-		if (!itemUidSet.contains(itemKey)) {
-			itemUidSet.add(itemKey);
-			itemList.add(stack);
-			return true;
-		}
-		return false;
+		return stack.getItem();
 	}
-
 }
