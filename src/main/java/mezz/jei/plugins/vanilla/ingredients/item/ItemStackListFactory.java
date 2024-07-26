@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Set;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.config.JEIClientConfig;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.StackHelper;
@@ -41,6 +43,17 @@ public final class ItemStackListFactory {
 					addItemStack(stackHelper, itemStack, itemList, itemNameSet);
 				}
 			}
+		}
+
+		if (JEIClientConfig.clientConfig.isShowHiddenItemsEnabled()) {
+			ForgeRegistries.ITEMS.getValues().stream()
+				.map(ItemStack::new)
+				.filter(itemStack -> !itemStack.isEmpty())
+				.forEach(itemStack -> addItemStack(stackHelper, itemStack, itemList, itemNameSet));
+			ForgeRegistries.BLOCKS.getValues().stream()
+				.map(ItemStack::new)
+				.filter(itemStack -> !itemStack.isEmpty())
+				.forEach(itemStack -> addItemStack(stackHelper, itemStack, itemList, itemNameSet));
 		}
 		return itemList;
 	}

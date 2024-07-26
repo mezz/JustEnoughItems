@@ -40,6 +40,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isShowHiddenItemsEnabled() {
+		return false;
+	}
+
+	@Override
 	public GiveMode getGiveMode() {
 		return GiveMode.INVENTORY;
 	}

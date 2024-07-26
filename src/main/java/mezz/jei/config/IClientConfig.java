@@ -18,6 +18,8 @@ public interface IClientConfig {
 
 	boolean isCheatToHotbarUsingHotkeysEnabled();
 
+	boolean isShowHiddenItemsEnabled();
+
 	GiveMode getGiveMode();
 
 	int getMinColumns();

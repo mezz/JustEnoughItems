@@ -56,6 +56,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private final ForgeConfigSpec.BooleanValue lowMemorySlowSearchEnabled;
 	private final ForgeConfigSpec.BooleanValue fastItemRenderingEnabled;
 	private final ForgeConfigSpec.BooleanValue cheatToHotbarUsingHotkeysEnabled;
+	private final ForgeConfigSpec.BooleanValue showHiddenItemsEnabled;
 	private final ForgeConfigSpec.EnumValue<GiveMode> giveMode;
 	private final ForgeConfigSpec.IntValue maxColumns;
 	private final ForgeConfigSpec.IntValue maxRecipeGuiHeight;
@@ -81,6 +82,9 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 			builder.comment("Enable cheating items into the hotbar by using Shift + numeric keys.");
 			cheatToHotbarUsingHotkeysEnabled = builder.define("CheatToHotbarUsingHotkeysEnabled", false);
+
+			builder.comment("Enable showing items that are not in the creative menu.");
+			showHiddenItemsEnabled = builder.define("ShowHiddenItems", false);
 
 			builder.comment("Choose if JEI should give ingredients directly to the inventory (INVENTORY) or pick them up with the mouse (MOUSE_PICKUP).");
 			giveMode = builder.defineEnum("GiveMode", defaultGiveMode);
@@ -155,6 +159,11 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	@Override
 	public boolean isCheatToHotbarUsingHotkeysEnabled() {
 		return cheatToHotbarUsingHotkeysEnabled.get();
+	}
+
+	@Override
+	public boolean isShowHiddenItemsEnabled() {
+		return showHiddenItemsEnabled.get();
 	}
 
 	@Override
