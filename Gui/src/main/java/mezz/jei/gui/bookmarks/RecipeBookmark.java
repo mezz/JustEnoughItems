@@ -15,6 +15,7 @@ import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import mezz.jei.gui.recipes.RecipeCategoryIconUtil;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.List;
 import java.util.Optional;
 
 public class RecipeBookmark<R, I> implements IBookmark {
@@ -39,19 +40,22 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		}
 
 		IRecipeSlotsView recipeSlotsView = recipeLayoutDrawable.getRecipeSlotsView();
-		return recipeSlotsView.getSlotViews(RecipeIngredientRole.OUTPUT)
-			.stream()
-			.flatMap(IRecipeSlotView::getAllIngredients)
-			.findFirst()
-			.map(ingredientManager::normalizeTypedIngredient)
-			.map(output -> {
-				IDrawable icon = RecipeCategoryIconUtil.create(
-					recipeCategory,
-					recipeManager,
-					guiHelper
-				);
-				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon);
-			});
+		List<IRecipeSlotView> outputSlots = recipeSlotsView.getSlotViews(RecipeIngredientRole.OUTPUT);
+		for (IRecipeSlotView slotView : outputSlots) {
+			Optional<ITypedIngredient<?>> outputOptional = slotView.getAllIngredients().findFirst();
+			if (outputOptional.isEmpty()) {
+				continue;
+			}
+			ITypedIngredient<?> output = outputOptional.get();
+			IDrawable icon = RecipeCategoryIconUtil.create(
+				recipeCategory,
+				recipeManager,
+				guiHelper
+			);
+			output = ingredientManager.normalizeTypedIngredient(output);
+			return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon));
+		}
+		return Optional.empty();
 	}
 
 	public RecipeBookmark(

@@ -8,6 +8,8 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public final class TypedIngredient<T> implements ITypedIngredient<T> {
@@ -51,6 +53,34 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		checkParameters(ingredientType, ingredient);
 
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		return createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
+	}
+
+	public static <T> List<Optional<ITypedIngredient<T>>> createAndFilterInvalidList(
+		IIngredientManager ingredientManager,
+		IIngredientType<T> ingredientType,
+		List<@Nullable T> ingredients,
+		boolean normalize
+	) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		List<Optional<ITypedIngredient<T>>> results = new ArrayList<>(ingredients.size());
+		for (T ingredient : ingredients) {
+			if (ingredient == null) {
+				results.add(Optional.empty());
+			} else {
+				Optional<ITypedIngredient<T>> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
+				results.add(result);
+			}
+		}
+		return results;
+	}
+
+	public static <T> Optional<ITypedIngredient<T>> createAndFilterInvalid(
+		IIngredientHelper<T> ingredientHelper,
+		IIngredientType<T> ingredientType,
+		T ingredient,
+		boolean normalize
+	) {
 		try {
 			if (normalize) {
 				ingredient = ingredientHelper.normalizeIngredient(ingredient);

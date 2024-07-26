@@ -131,6 +131,9 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 
 	@Override
 	public FluidStack normalize(FluidStack ingredient) {
+		if (ingredient.getAmount() == FluidType.BUCKET_VOLUME) {
+			return ingredient;
+		}
 		FluidStack copy = this.copy(ingredient);
 		copy.setAmount(FluidType.BUCKET_VOLUME);
 		return copy;
