@@ -6,7 +6,6 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
@@ -297,11 +296,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		hoveredRecipeCatalyst.ifPresent(h ->
 			h.getDisplayedIngredient()
 				.ifPresent(i -> {
-					List<Component> tooltipComponents = h.getTooltip();
-					IModIdHelper modIdHelper = Internal.getJeiRuntime().getJeiHelpers().getModIdHelper();
-					tooltipComponents = modIdHelper.addModNameToIngredientTooltip(tooltipComponents, i);
 					JeiTooltip tooltip = new JeiTooltip();
-					tooltip.addAll(tooltipComponents);
+					tooltip.addAll(h.getTooltip());
 					tooltip.draw(guiGraphics, mouseX, mouseY, i);
 				})
 		);

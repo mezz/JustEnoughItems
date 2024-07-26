@@ -1,7 +1,6 @@
 package mezz.jei.gui.startup;
 
 import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IClientConfig;
@@ -27,7 +26,6 @@ public final class OverlayHelper {
 		IIngredientGridSource ingredientFilter,
 		IIngredientManager ingredientManager,
 		IIngredientGridConfig ingredientGridConfig,
-		IModIdHelper modIdHelper,
 		DrawableNineSliceTexture background,
 		DrawableNineSliceTexture slotBackground,
 		IInternalKeyMappings keyMappings,
@@ -44,7 +42,6 @@ public final class OverlayHelper {
 			ingredientFilterConfig,
 			clientConfig,
 			toggleState,
-			modIdHelper,
 			serverConnection,
 			keyMappings,
 			colorHelper
@@ -69,7 +66,6 @@ public final class OverlayHelper {
 		IScreenHelper screenHelper,
 		IIngredientGridSource ingredientFilter,
 		IFilterTextSource filterTextSource,
-		IModIdHelper modIdHelper,
 		IInternalKeyMappings keyMappings,
 		IIngredientGridConfig ingredientGridConfig,
 		IClientConfig clientConfig,
@@ -83,7 +79,6 @@ public final class OverlayHelper {
 			ingredientFilter,
 			ingredientManager,
 			ingredientGridConfig,
-			modIdHelper,
 			textures.getIngredientListBackground(),
 			textures.getIngredientListSlotBackground(),
 			keyMappings,
@@ -110,7 +105,6 @@ public final class OverlayHelper {
 		IIngredientManager ingredientManager,
 		IScreenHelper screenHelper,
 		BookmarkList bookmarkList,
-		IModIdHelper modIdHelper,
 		IInternalKeyMappings keyMappings,
 		IIngredientGridConfig bookmarkListConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
@@ -124,7 +118,6 @@ public final class OverlayHelper {
 			bookmarkList,
 			ingredientManager,
 			bookmarkListConfig,
-			modIdHelper,
 			textures.getBookmarkListBackground(),
 			textures.getBookmarkListSlotBackground(),
 			keyMappings,

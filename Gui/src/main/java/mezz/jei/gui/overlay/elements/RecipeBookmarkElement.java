@@ -45,7 +45,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
@@ -158,11 +157,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 		tooltip.add(Component.empty());
 
 		List<Component> outputTooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, recipeOutput);
-
 		tooltip.addAll(outputTooltip);
-		List<Component> modIdTooltip = new ArrayList<>();
-		modIdTooltip = modIdHelper.addModNameToIngredientTooltip(modIdTooltip, recipeOutput.getIngredient(), ingredientHelper);
-		tooltip.addAll(modIdTooltip);
 
 		return tooltip;
 	}
