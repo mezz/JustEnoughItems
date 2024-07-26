@@ -1,4 +1,4 @@
-package mezz.jei.library.plugins.vanilla.brewing;
+package mezz.jei.library.plugins.vanilla.ingredients.subtypes;
 
 import java.util.List;
 

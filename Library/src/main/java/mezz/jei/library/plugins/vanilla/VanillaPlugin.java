@@ -39,7 +39,6 @@ import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.library.plugins.vanilla.anvil.SmithingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeCategory;
-import mezz.jei.library.plugins.vanilla.brewing.PotionSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.compostable.CompostableRecipeCategory;
 import mezz.jei.library.plugins.vanilla.compostable.CompostingRecipeMaker;
 import mezz.jei.library.plugins.vanilla.cooking.BlastingCategory;
@@ -60,8 +59,11 @@ import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipeMaker;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackListFactory;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.EnchantedBookSubtypeInterpreter;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.FireworkRocketSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.LightSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PaintingSubtypeInterpreter;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterpreter;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.SuspiciousStewSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.library.render.ItemStackRenderer;
@@ -113,8 +115,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 @JeiPlugin
 public class VanillaPlugin implements IModPlugin {
@@ -149,6 +149,8 @@ public class VanillaPlugin implements IModPlugin {
 		registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, EnchantedBookSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.LIGHT, LightSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.PAINTING, PaintingSubtypeInterpreter.INSTANCE);
+		registration.registerSubtypeInterpreter(Items.FIREWORK_ROCKET, FireworkRocketSubtypeInterpreter.INSTANCE);
+		registration.registerSubtypeInterpreter(Items.SUSPICIOUS_STEW, SuspiciousStewSubtypeInterpreter.INSTANCE);
 	}
 
 	@Override
