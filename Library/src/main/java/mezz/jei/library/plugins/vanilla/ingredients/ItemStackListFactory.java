@@ -158,7 +158,7 @@ public final class ItemStackListFactory {
 			if (duplicateInTabCount > 0) {
 				LOGGER.warn(
 					"""
-						{} duplicates items were found in creative tab: {}
+						{} duplicate items were found in creative tab: {}
 						This may indicate that these types of item need a subtype interpreter added to JEI:
 						{}""",
 					duplicateInTabCount,

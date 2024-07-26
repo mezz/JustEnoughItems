@@ -80,14 +80,20 @@ public class RecipeLayoutBuilder implements IRecipeLayoutBuilder, IIngredientSup
 		// The focus-linked slots should have the same number of ingredients.
 		// Users can technically add more ingredients to the slots later,
 		// but it's probably not worth the effort of enforcing this very strictly.
-		IntSummaryStatistics stats = builders.stream()
-			.mapToInt(IRecipeLayoutSlotSource::getIngredientCount)
-			.summaryStatistics();
-		if (stats.getMin() != stats.getMax()) {
-			throw new IllegalArgumentException(
-				"All slots must have the same number of ingredients in order to create a focus link. " +
-					String.format("slot stats: %s", stats)
-			);
+		int count = -1;
+		for (IRecipeLayoutSlotSource slot : builders) {
+			int ingredientCount = slot.getIngredientCount();
+			if (count == -1) {
+				count = ingredientCount;
+			} else if (count != ingredientCount) {
+				IntSummaryStatistics stats = builders.stream()
+					.mapToInt(IRecipeLayoutSlotSource::getIngredientCount)
+					.summaryStatistics();
+				throw new IllegalArgumentException(
+					"All slots must have the same number of ingredients in order to create a focus link. " +
+						String.format("slot stats: %s", stats)
+				);
+			}
 		}
 
 		this.slots.removeAll(builders);

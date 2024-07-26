@@ -111,6 +111,9 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 
 	@Override
 	public IJeiFluidIngredient normalize(IJeiFluidIngredient ingredient) {
+		if (ingredient.getAmount() == bucketVolume()) {
+			return ingredient;
+		}
 		CompoundTag tag = ingredient.getTag().orElse(null);
 		return new JeiFluidIngredient(ingredient.getFluid(), bucketVolume(), tag);
 	}

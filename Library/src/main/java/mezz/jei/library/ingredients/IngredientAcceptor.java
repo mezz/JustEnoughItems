@@ -1,7 +1,7 @@
 package mezz.jei.library.ingredients;
 
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class IngredientAcceptor implements IIngredientAcceptor<IngredientAcceptor> {
@@ -63,8 +62,19 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
-		for (T ingredient : ingredients) {
-			addIngredientInternal(ingredientType, ingredient);
+		List<Optional<ITypedIngredient<T>>> typedIngredients = TypedIngredient.createAndFilterInvalidList(this.ingredientManager, ingredientType, ingredients, false);
+
+		if (!typedIngredients.isEmpty()) {
+			boolean anyPresent = false;
+			for (Optional<ITypedIngredient<T>> typedIngredientOptional : typedIngredients) {
+				this.ingredients.add(typedIngredientOptional.map(Function.identity()));
+				if (!anyPresent && typedIngredientOptional.isPresent()) {
+					anyPresent = true;
+				}
+			}
+			if (anyPresent) {
+				this.types.add(ingredientType);
+			}
 		}
 
 		return this;
@@ -121,17 +131,18 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	}
 
 	public IntSet getMatches(IFocusGroup focusGroup, RecipeIngredientRole role) {
-		int[] matches = focusGroup.getFocuses(role)
-			.flatMapToInt(this::getMatches)
-			.distinct()
-			.toArray();
-		return new IntArraySet(matches);
+		List<IFocus<?>> focuses = focusGroup.getFocuses(role).toList();
+		IntSet results = new IntOpenHashSet();
+		for (IFocus<?> focus : focuses) {
+			getMatches(focus, results);
+		}
+		return results;
 	}
 
-	private <T> IntStream getMatches(IFocus<T> focus) {
+	private <T> void getMatches(IFocus<T> focus, IntSet results) {
 		List<Optional<ITypedIngredient<?>>> ingredients = getAllIngredients();
 		if (ingredients.isEmpty()) {
-			return IntStream.empty();
+			return;
 		}
 
 		ITypedIngredient<T> focusValue = focus.getTypedValue();
@@ -140,15 +151,21 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 		IIngredientHelper<T> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredientType);
 		String focusUid = ingredientHelper.getUniqueId(focusIngredient, UidContext.Ingredient);
 
-		return IntStream.range(0, ingredients.size())
-			.filter(i ->
-				ingredients.get(i)
-					.flatMap(typedIngredient -> typedIngredient.getIngredient(ingredientType))
-					.map(ingredient -> {
-						String uniqueId = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-						return focusUid.equals(uniqueId);
-					})
-					.orElse(false)
-			);
+		for (int i = 0; i < ingredients.size(); i++) {
+			Optional<ITypedIngredient<?>> typedIngredientOptional = ingredients.get(i);
+			if (typedIngredientOptional.isEmpty()) {
+				continue;
+			}
+			ITypedIngredient<?> typedIngredient = typedIngredientOptional.get();
+			Optional<T> ingredientOptional = typedIngredient.getIngredient(ingredientType);
+			if (ingredientOptional.isEmpty()) {
+				continue;
+			}
+			T ingredient = ingredientOptional.get();
+			String uniqueId = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+			if (focusUid.equals(uniqueId)) {
+				results.add(i);
+			}
+		}
 	}
 }
