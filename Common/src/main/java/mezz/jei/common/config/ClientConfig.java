@@ -26,6 +26,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> lookupFluidContentsEnabled;
 	private final Supplier<Boolean> lookupBlockTagsEnabled;
 	private final Supplier<GiveMode> giveMode;
+	private final Supplier<Boolean> showHiddenItemsEnabled;
 
 	private final Supplier<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures;
 	private final Supplier<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
@@ -68,6 +69,11 @@ public final class ClientConfig implements IClientConfig {
 			"CheatToHotbarUsingHotkeysEnabled",
 			false,
 			"Enable cheating items into the hotbar by using the shift+number keys."
+		);
+		showHiddenItemsEnabled = cheatMode.addBoolean(
+			"ShowHiddenItems",
+			false,
+			"Enable showing items that are not in the creative menu."
 		);
 
 		IConfigCategoryBuilder bookmarks = schema.addCategory("bookmarks");
@@ -196,6 +202,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public GiveMode getGiveMode() {
 		return giveMode.get();
+	}
+
+	@Override
+	public boolean isShowHiddenItemsEnabled() {
+		return showHiddenItemsEnabled.get();
 	}
 
 	@Override

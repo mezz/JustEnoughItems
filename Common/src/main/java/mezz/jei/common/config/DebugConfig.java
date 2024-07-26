@@ -2,6 +2,8 @@ package mezz.jei.common.config;
 
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
+import mezz.jei.common.platform.IPlatformModHelper;
+import mezz.jei.common.platform.Services;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
@@ -21,6 +23,9 @@ public final class DebugConfig {
 	private final Supplier<Boolean> crashingTestIngredientsEnabled;
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
+		IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
+		boolean inDev = modHelper.isInDev();
+
 		IConfigCategoryBuilder advanced = schema.addCategory("debug");
 		debugModeEnabled = advanced.addBoolean(
 			"DebugMode",
@@ -39,7 +44,7 @@ public final class DebugConfig {
 		);
 		debugIngredientsEnabled = advanced.addBoolean(
 			"DebugIngredients",
-			false,
+			inDev,
 			"Debug ingredients enabled"
 		);
 		crashingTestIngredientsEnabled = advanced.addBoolean(

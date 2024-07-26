@@ -11,7 +11,6 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
-
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
@@ -59,6 +58,9 @@ import mezz.jei.library.plugins.vanilla.ingredients.ItemStackHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackListFactory;
 import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidStackListFactory;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.EnchantedBookSubtypeInterpreter;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.LightSubtypeInterpreter;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PaintingSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.library.render.ItemStackRenderer;
@@ -74,8 +76,6 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.BlastFurnaceMenu;
@@ -85,7 +85,6 @@ import net.minecraft.world.inventory.FurnaceMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.inventory.SmokerMenu;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.BlastingRecipe;
@@ -99,20 +98,17 @@ import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.SuspiciousStewRecipe;
 import net.minecraft.world.item.crafting.TippedArrowRecipe;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.StringJoiner;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -146,28 +142,9 @@ public class VanillaPlugin implements IModPlugin {
 		registration.registerSubtypeInterpreter(Items.POTION, PotionSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, (itemStack, context) -> {
-			List<String> strings = new ArrayList<>();
-			ListTag enchantments = EnchantedBookItem.getEnchantments(itemStack);
-			for (int i = 0; i < enchantments.size(); ++i) {
-				CompoundTag compoundnbt = enchantments.getCompound(i);
-				String id = compoundnbt.getString("id");
-				IPlatformRegistry<Enchantment> enchantmentRegistry = Services.PLATFORM.getRegistry(Registries.ENCHANTMENT);
-				ResourceLocation resourceLocation = ResourceLocation.tryParse(id);
-				if (resourceLocation != null) {
-					enchantmentRegistry.getValue(resourceLocation)
-						.map(enchantment -> enchantment.getDescriptionId() + ".lvl" + compoundnbt.getShort("lvl"))
-						.ifPresent(strings::add);
-				}
-			}
-
-			StringJoiner joiner = new StringJoiner(",", "[", "]");
-			strings.sort(null);
-			for (String s : strings) {
-				joiner.add(s);
-			}
-			return joiner.toString();
-		});
+		registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, EnchantedBookSubtypeInterpreter.INSTANCE);
+		registration.registerSubtypeInterpreter(Items.LIGHT, LightSubtypeInterpreter.INSTANCE);
+		registration.registerSubtypeInterpreter(Items.PAINTING, PaintingSubtypeInterpreter.INSTANCE);
 	}
 
 	@Override
