@@ -34,7 +34,8 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	public List<Component> getTooltip(ItemStack ingredient, TooltipFlag tooltipFlag) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Player player = minecraft.player;
-		return ingredient.getTooltipLines(Item.TooltipContext.EMPTY, player, tooltipFlag);
+		Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
+		return ingredient.getTooltipLines(tooltipContext, player, tooltipFlag);
 	}
 
 	@Override
