@@ -1,12 +1,17 @@
 package mezz.jei.common.gui;
 
 import com.mojang.datafixers.util.Either;
+import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
@@ -51,8 +56,8 @@ public class JeiTooltip {
 		add(component);
 	}
 
-	public void addAll(List<Component> components) {
-		for (Component component : components) {
+	public void addAll(List<? extends FormattedText> components) {
+		for (FormattedText component : components) {
 			add(component);
 		}
 	}
@@ -63,10 +68,6 @@ public class JeiTooltip {
 
 	public boolean isEmpty() {
 		return list.isEmpty();
-	}
-
-	public List<Either<FormattedText, TooltipComponent>> build() {
-		return list;
 	}
 
 	@Override
@@ -93,7 +94,7 @@ public class JeiTooltip {
 		}
 	}
 
-	public <T> void draw(GuiGraphics guiGraphics, int x, int y, ITypedIngredient<T> typedIngredient){
+	public <T> void draw(GuiGraphics guiGraphics, int x, int y, ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
@@ -118,6 +119,13 @@ public class JeiTooltip {
 				list.add(1, Either.right(c));
 			});
 
+		addDebugInfo(ingredientManager, typedIngredient);
+
+		IJeiHelpers jeiHelpers = Internal.getJeiRuntime().getJeiHelpers();
+		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
+		modIdHelper.getModNameForTooltip(typedIngredient)
+			.ifPresent(this::add);
+
 		if (isEmpty()) {
 			return;
 		}
@@ -130,5 +138,37 @@ public class JeiTooltip {
 				.setDetail("value", this);
 			throw new ReportedException(crashReport);
 		}
+	}
+
+	private <T> void addDebugInfo(IIngredientManager ingredientManager,  ITypedIngredient<T> typedIngredient) {
+		if (!DebugConfig.isDebugIngredientsEnabled()) {
+			return;
+		}
+		T ingredient = typedIngredient.getIngredient();
+		IIngredientType<T> type = typedIngredient.getType();
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
+
+		add(Component.empty());
+		add(
+			Component.literal("JEI Debug:")
+				.withStyle(ChatFormatting.DARK_GRAY)
+		);
+		add(
+			Component.literal("* type: " + ingredientHelper.getIngredientType().getUid())
+				.withStyle(ChatFormatting.DARK_GRAY)
+		);
+		add(
+			Component.literal("* has subtypes: " + (ingredientHelper.hasSubtypes(ingredient) ? "true" : "false"))
+				.withStyle(ChatFormatting.DARK_GRAY)
+		);
+		add(
+			Component.literal("* uid: " + ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient))
+				.withStyle(ChatFormatting.DARK_GRAY)
+		);
+		add(
+			Component.literal("* extra info: " + ingredientHelper.getErrorInfo(ingredient))
+				.withStyle(ChatFormatting.DARK_GRAY)
+		);
+		add(Component.empty());
 	}
 }

@@ -80,7 +80,7 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 			String lineString = line.getString();
 			if (lineString.contains(ModIds.MINECRAFT_NAME)) {
 				String withoutFormatting = ChatFormatting.stripFormatting(lineString);
-				if (withoutFormatting != null && withoutFormatting.contains(ModIds.MINECRAFT_NAME)) {
+				if (withoutFormatting.contains(ModIds.MINECRAFT_NAME)) {
 					return StringUtils.replaceOnce(lineString, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
 				}
 			}

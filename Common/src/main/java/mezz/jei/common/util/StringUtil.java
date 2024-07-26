@@ -28,8 +28,7 @@ public final class StringUtil {
 	}
 
 	public static String removeChatFormatting(String string) {
-		String withoutFormattingCodes = ChatFormatting.stripFormatting(string);
-		return (withoutFormattingCodes == null) ? "" : withoutFormattingCodes;
+		return ChatFormatting.stripFormatting(string);
 	}
 
 	public static Component truncateStringToWidth(Component text, int width, Font fontRenderer) {

@@ -6,7 +6,6 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -33,7 +32,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -238,16 +236,11 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			}
 			poseStack.popPose();
 
-			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
-			IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
 			hoveredSlot.getDisplayedIngredient()
 				.ifPresent(i -> {
 					JeiTooltip tooltip = new JeiTooltip();
 					tooltip.addAll(hoveredSlot.getTooltip());
 					addTagContentTooltip(tooltip, i, hoveredSlot);
-					List<Component> modIdTooltip = new ArrayList<>();
-					modIdTooltip = modIdHelper.addModNameToIngredientTooltip(modIdTooltip, i);
-					tooltip.addAll(modIdTooltip);
 					tooltip.draw(guiGraphics, mouseX, mouseY, i);
 				});
 		} else if (isMouseOver(mouseX, mouseY)) {

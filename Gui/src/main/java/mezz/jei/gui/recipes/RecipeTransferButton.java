@@ -105,15 +105,16 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 	@Override
 	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		super.draw(guiGraphics, mouseX, mouseY, partialTicks);
-		if (this.recipeTransferError != null) {
-			if (this.recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
+		IRecipeTransferError recipeTransferError = this.recipeTransferError;
+		if (recipeTransferError != null) {
+			if (recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
 				guiGraphics.fill(
 					RenderType.guiOverlay(),
 					this.button.getX(),
 					this.button.getY(),
 					this.button.getX() + this.button.getWidth(),
 					this.button.getY() + this.button.getHeight(),
-					this.recipeTransferError.getButtonHighlightColor()
+					recipeTransferError.getButtonHighlightColor()
 				);
 			}
 			if (isMouseOver(mouseX, mouseY)) {

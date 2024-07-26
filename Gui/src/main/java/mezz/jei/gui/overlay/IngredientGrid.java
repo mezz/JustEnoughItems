@@ -2,7 +2,6 @@ package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientConfig;
@@ -55,14 +54,13 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
-		IModIdHelper modIdHelper,
 		IConnectionToServer serverConnection,
 		IInternalKeyMappings keyBindings,
 		IColorHelper colorHelper
 	) {
 		this.gridConfig = gridConfig;
 		this.ingredientListRenderer = new IngredientListRenderer();
-		this.tooltipHelper = new IngredientGridTooltipHelper(ingredientManager, ingredientFilterConfig, toggleState, modIdHelper, keyBindings, colorHelper);
+		this.tooltipHelper = new IngredientGridTooltipHelper(ingredientManager, ingredientFilterConfig, toggleState, keyBindings, colorHelper);
 		this.deleteItemHandler = new DeleteItemInputHandler(this, toggleState, clientConfig, serverConnection, ingredientManager);
 	}
 

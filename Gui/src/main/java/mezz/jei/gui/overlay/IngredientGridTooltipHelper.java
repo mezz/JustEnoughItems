@@ -1,7 +1,6 @@
 package mezz.jei.gui.overlay;
 
 import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -24,7 +23,6 @@ public final class IngredientGridTooltipHelper {
 	private final IIngredientManager ingredientManager;
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IClientToggleState toggleState;
-	private final IModIdHelper modIdHelper;
 	private final IInternalKeyMappings keyBindings;
 	private final IColorHelper colorHelper;
 
@@ -32,14 +30,12 @@ public final class IngredientGridTooltipHelper {
 		IIngredientManager ingredientManager,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientToggleState toggleState,
-		IModIdHelper modIdHelper,
 		IInternalKeyMappings keyBindings,
 		IColorHelper colorHelper
 	) {
 		this.ingredientManager = ingredientManager;
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.toggleState = toggleState;
-		this.modIdHelper = modIdHelper;
 		this.keyBindings = keyBindings;
 		this.colorHelper = colorHelper;
 	}
@@ -50,7 +46,6 @@ public final class IngredientGridTooltipHelper {
 		IIngredientHelper<T> ingredientHelper
 	) {
 		List<Component> ingredientTooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, typedIngredient);
-		ingredientTooltip = modIdHelper.addModNameToIngredientTooltip(ingredientTooltip, typedIngredient.getIngredient(), ingredientHelper);
 
 		JeiTooltip tooltip = new JeiTooltip();
 		tooltip.addAll(ingredientTooltip);
