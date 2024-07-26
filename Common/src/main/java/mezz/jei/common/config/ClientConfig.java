@@ -26,6 +26,7 @@ public final class ClientConfig implements IClientConfig {
 	// cheat_mode
 	private final Supplier<GiveMode> giveMode;
 	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
+	private final Supplier<Boolean> showHiddenItemsEnabled;
 
 	// bookmarks
 	private final Supplier<Boolean> addBookmarksToFrontEnabled;
@@ -79,6 +80,11 @@ public final class ClientConfig implements IClientConfig {
 			"CheatToHotbarUsingHotkeysEnabled",
 			false,
 			"Enable cheating items into the hotbar by using Shift + numeric keys."
+		);
+		showHiddenItemsEnabled = cheatMode.addBoolean(
+			"ShowHiddenItems",
+			false,
+			"Enable showing items that are not in the creative menu."
 		);
 
 		IConfigCategoryBuilder bookmarks = schema.addCategory("bookmarks");
@@ -223,6 +229,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public GiveMode getGiveMode() {
 		return giveMode.get();
+	}
+
+	@Override
+	public boolean isShowHiddenItemsEnabled() {
+		return showHiddenItemsEnabled.get();
 	}
 
 	@Override

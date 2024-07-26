@@ -25,6 +25,8 @@ public interface IClientConfig {
 
 	GiveMode getGiveMode();
 
+	boolean isShowHiddenItemsEnabled();
+
 	boolean isDragToRearrangeBookmarksEnabled();
 
 	int getDragDelayMs();

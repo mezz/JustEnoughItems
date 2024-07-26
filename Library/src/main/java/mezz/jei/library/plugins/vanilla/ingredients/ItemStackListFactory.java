@@ -1,10 +1,14 @@
 package mezz.jei.library.plugins.vanilla.ingredients;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.StackHelper;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +23,9 @@ public final class ItemStackListFactory {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static List<ItemStack> create(StackHelper stackHelper) {
+		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+		final boolean showHidden = clientConfig.isShowHiddenItemsEnabled();
 		final boolean debug = DebugConfig.isDebugIngredientsEnabled();
 
 		final List<ItemStack> itemList = new ArrayList<>();
@@ -59,14 +66,70 @@ public final class ItemStackListFactory {
 			}
 			if (debug) {
 				LOGGER.debug(
-					"Added {}/{} items from creative tab: {}",
+					"Added {}/{} new items from creative tab: {}",
 					added,
 					creativeTabItemStacks.size(),
 					itemGroup.getDisplayName().getString()
 				);
 			}
 		}
+
+		if (showHidden) {
+			addItemsFromRegistries(stackHelper, itemList, itemUidSet, debug);
+		}
+
 		return itemList;
+	}
+
+	private static void addItemsFromRegistries(
+		StackHelper stackHelper,
+		List<ItemStack> itemList,
+		Set<Object> itemUidSet,
+		boolean debug
+	) {
+		{
+			List<ItemStack> itemStacks = Registry.ITEM.stream()
+				.map(ItemStack::new)
+				.filter(i -> !i.isEmpty())
+				.toList();
+
+			int added = 0;
+			for (ItemStack itemStack : itemStacks) {
+				if (addItemStack(stackHelper, itemStack, itemList, itemUidSet)) {
+					added++;
+				}
+			}
+
+			if (debug) {
+				LOGGER.debug(
+					"Added {}/{} new items from the item registry",
+					added,
+					itemStacks.size()
+				);
+			}
+		}
+
+		{
+			List<ItemStack> itemStacks = Registry.BLOCK.stream()
+				.map(ItemStack::new)
+				.filter(i -> !i.isEmpty())
+				.toList();
+
+			int added = 0;
+			for (ItemStack itemStack : itemStacks) {
+				if (addItemStack(stackHelper, itemStack, itemList, itemUidSet)) {
+					added++;
+				}
+			}
+
+			if (debug) {
+				LOGGER.debug(
+					"Added {}/{} new items from the block registry",
+					added,
+					itemStacks.size()
+				);
+			}
+		}
 	}
 
 	private static boolean addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<Object> itemUidSet) {

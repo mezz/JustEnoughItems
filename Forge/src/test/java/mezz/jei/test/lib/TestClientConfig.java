@@ -68,6 +68,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isShowHiddenItemsEnabled() {
+		return false;
+	}
+
+	@Override
 	public boolean isDragToRearrangeBookmarksEnabled() {
 		return false;
 	}
