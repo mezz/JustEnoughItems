@@ -103,6 +103,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(value.getType());
 		ImmutableSet<String> toRemove = ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceLocation.getPath());
 		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
+		tooltipFlag = tooltipFlag.asCreative();
 		List<Component> tooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, value, tooltipFlag);
 
 		Set<String> result = new HashSet<>();
