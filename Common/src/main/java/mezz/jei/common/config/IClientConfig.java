@@ -24,6 +24,8 @@ public interface IClientConfig {
 
 	GiveMode getGiveMode();
 
+	boolean isShowHiddenItemsEnabled();
+
 	List<BookmarkTooltipFeature> getBookmarkTooltipFeatures();
 
 	boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled();

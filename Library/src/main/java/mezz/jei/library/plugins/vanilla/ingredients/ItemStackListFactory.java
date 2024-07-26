@@ -1,13 +1,18 @@
 package mezz.jei.library.plugins.vanilla.ingredients;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.StackHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
@@ -28,23 +33,26 @@ public final class ItemStackListFactory {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static List<ItemStack> create(StackHelper stackHelper) {
-		final boolean debug = DebugConfig.isDebugIngredientsEnabled();
+		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+		final boolean showHidden = clientConfig.isShowHiddenItemsEnabled();
 
 		final List<ItemStack> itemList = new ArrayList<>();
 		final Set<Object> itemUidSet = new HashSet<>();
 
 		Minecraft minecraft = Minecraft.getInstance();
 		FeatureFlagSet features = Optional.ofNullable(minecraft.player)
-				.map(p -> p.connection)
-				.map(ClientPacketListener::enabledFeatures)
-				.orElse(FeatureFlagSet.of());
+			.map(p -> p.connection)
+			.map(ClientPacketListener::enabledFeatures)
+			.orElse(FeatureFlagSet.of());
 
-		final boolean hasPermissions =
-				minecraft.options.operatorItemsTab().get() ||
-				Optional.of(minecraft)
-				.map(m -> m.player)
-				.map(Player::canUseGameMasterBlocks)
-				.orElse(false);
+		final boolean hasOperatorItemsTabPermissions =
+			showHidden ||
+			minecraft.options.operatorItemsTab().get() ||
+			Optional.of(minecraft)
+			.map(m -> m.player)
+			.map(Player::canUseGameMasterBlocks)
+			.orElse(false);
 
 		ClientLevel level = minecraft.level;
 		if (level == null) {
@@ -52,17 +60,15 @@ public final class ItemStackListFactory {
 		}
 		RegistryAccess registryAccess = level.registryAccess();
 		final CreativeModeTab.ItemDisplayParameters displayParameters =
-			new CreativeModeTab.ItemDisplayParameters(features, hasPermissions, registryAccess);
+			new CreativeModeTab.ItemDisplayParameters(features, hasOperatorItemsTabPermissions, registryAccess);
 
 		for (CreativeModeTab itemGroup : CreativeModeTabs.allTabs()) {
 			if (itemGroup.getType() != CreativeModeTab.Type.CATEGORY) {
-				if (debug) {
-					LOGGER.debug(
-						"Skipping creative tab: '{}' because it is type: {}",
-						itemGroup.getDisplayName().getString(),
-						itemGroup.getType()
-					);
-				}
+				LOGGER.debug(
+					"Skipping creative tab: '{}' because it is type: {}",
+					itemGroup.getDisplayName().getString(),
+					itemGroup.getType()
+				);
 				continue;
 			}
 			try {
@@ -129,16 +135,73 @@ public final class ItemStackListFactory {
 					}
 				}
 			}
-			if (debug) {
-				LOGGER.debug(
-					"Added {}/{} items from creative tab: {}",
-					added,
-					creativeTabItemStacks.size(),
-					itemGroup.getDisplayName().getString()
-				);
-			}
+			LOGGER.debug(
+				"Added {}/{} new items from creative tab: {}",
+				added,
+				creativeTabItemStacks.size(),
+				itemGroup.getDisplayName().getString()
+			);
 		}
+
+		if (showHidden) {
+			addItemsFromRegistries(stackHelper, itemList, itemUidSet, features);
+		}
+
 		return itemList;
+	}
+
+	private static void addItemsFromRegistries(
+		StackHelper stackHelper,
+		List<ItemStack> itemList,
+		Set<Object> itemUidSet,
+		FeatureFlagSet features
+	) {
+		{
+			List<ItemStack> itemStacks = RegistryUtil.getRegistry(Registries.ITEM)
+				.asLookup()
+				.filterFeatures(features)
+				.listElements()
+				.map(ItemStack::new)
+				.filter(i -> !i.isEmpty())
+				.toList();
+
+			int added = 0;
+			for (ItemStack itemStack : itemStacks) {
+				if (addItemStack(stackHelper, itemStack, itemList, itemUidSet)) {
+					added++;
+				}
+			}
+
+			LOGGER.debug(
+				"Added {}/{} new items from the item registry",
+				added,
+				itemStacks.size()
+			);
+		}
+
+		{
+			List<ItemStack> itemStacks = RegistryUtil.getRegistry(Registries.BLOCK)
+				.asLookup()
+				.filterFeatures(features)
+				.listElements()
+				.map(Holder.Reference::value)
+				.map(ItemStack::new)
+				.filter(i -> !i.isEmpty())
+				.toList();
+
+			int added = 0;
+			for (ItemStack itemStack : itemStacks) {
+				if (addItemStack(stackHelper, itemStack, itemList, itemUidSet)) {
+					added++;
+				}
+			}
+
+			LOGGER.debug(
+				"Added {}/{} new items from the block registry",
+				added,
+				itemStacks.size()
+			);
+		}
 	}
 
 	private static boolean addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<Object> itemUidSet) {
