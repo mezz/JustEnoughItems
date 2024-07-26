@@ -17,8 +17,10 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RenderHelper implements IPlatformRenderHelper {
@@ -61,7 +63,7 @@ public class RenderHelper implements IPlatformRenderHelper {
 				text -> font.split(text, 400).stream().map(ClientTooltipComponent::create),
 				tooltipComponent -> Stream.of(createClientTooltipComponent(tooltipComponent))
 			))
-			.toList();
+			.collect(Collectors.toCollection(ArrayList::new));
 
 		guiGraphics.renderTooltipInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE);
 	}
