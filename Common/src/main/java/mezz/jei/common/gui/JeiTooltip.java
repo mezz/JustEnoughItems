@@ -143,7 +143,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		}
 	}
 
-	private <T> void draw(PoseStack poseStack, int x, int y, ITypedIngredient<T> typedIngredient) {
+	public <T> void draw(PoseStack poseStack, int x, int y, ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
