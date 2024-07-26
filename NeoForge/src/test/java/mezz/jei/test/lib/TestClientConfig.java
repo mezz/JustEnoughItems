@@ -57,6 +57,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isShowHiddenItemsEnabled() {
+		return false;
+	}
+
+	@Override
 	public List<BookmarkTooltipFeature> getBookmarkTooltipFeatures() {
 		return List.of();
 	}

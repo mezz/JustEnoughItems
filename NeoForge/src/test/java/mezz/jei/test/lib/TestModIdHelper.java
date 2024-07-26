@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class TestModIdHelper implements IModIdHelper {
@@ -27,6 +28,11 @@ public class TestModIdHelper implements IModIdHelper {
 	@Override
 	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient) {
 		return tooltip;
+	}
+
+	@Override
+	public <T> Optional<Component> getModNameForTooltip(ITypedIngredient<T> typedIngredient) {
+		return Optional.empty();
 	}
 
 	@Override
