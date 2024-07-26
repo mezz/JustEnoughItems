@@ -16,25 +16,15 @@ public class LightSubtypeInterpreter implements IIngredientSubtypeInterpreter<It
 
 	@Override
 	public String apply(ItemStack itemStack, UidContext context) {
-		float level = getLevel(itemStack);
-		int round = Math.round(level);
-		return Integer.toString(round);
-	}
-
-	private float getLevel(ItemStack itemStack) {
 		CompoundTag compoundtag = itemStack.getTagElement("BlockStateTag");
 
-		try {
-			if (compoundtag != null) {
-				Tag tag = compoundtag.get(LightBlock.LEVEL.getName());
-				if (tag != null) {
-					return (float)Integer.parseInt(tag.getAsString()) / 16.0F;
-				}
+		if (compoundtag != null) {
+			Tag tag = compoundtag.get(LightBlock.LEVEL.getName());
+			if (tag != null) {
+				return tag.getAsString();
 			}
-		} catch (NumberFormatException ignored) {
-			return 1.0F;
 		}
 
-		return 1.0F;
+		return "15";
 	}
 }
