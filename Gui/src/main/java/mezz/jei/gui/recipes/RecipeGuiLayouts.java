@@ -35,10 +35,10 @@ public class RecipeGuiLayouts {
 	}
 
 	public void updateLayout(ImmutableRect2i recipeLayoutsArea, final int recipesPerPage) {
-		RecipeLayoutWithButtons<?> firstLayout = this.recipeLayoutsWithButtons.getFirst();
-		if (firstLayout == null) {
+		if (this.recipeLayoutsWithButtons.isEmpty()) {
 			return;
 		}
+		RecipeLayoutWithButtons<?> firstLayout = this.recipeLayoutsWithButtons.getFirst();
 		ImmutableRect2i layoutAreaWithBorder = new ImmutableRect2i(firstLayout.recipeLayout().getRectWithBorder());
 		final int recipeXOffset = getRecipeXOffset(layoutAreaWithBorder, recipeLayoutsArea);
 
@@ -200,10 +200,10 @@ public class RecipeGuiLayouts {
 	}
 
 	public int getWidth() {
-		RecipeLayoutWithButtons<?> first = this.recipeLayoutsWithButtons.getFirst();
-		if (first == null) {
+		if (recipeLayoutsWithButtons.isEmpty()) {
 			return 0;
 		}
+		RecipeLayoutWithButtons<?> first = this.recipeLayoutsWithButtons.getFirst();
 		return first.totalWidth();
 	}
 }
