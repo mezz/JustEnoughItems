@@ -55,5 +55,7 @@ public interface IJeiBrewingRecipe {
 	 * @since 10.25.0
 	 */
 	@Nullable
-	ResourceLocation getUid();
+	default ResourceLocation getUid() {
+		return null;
+	}
 }
