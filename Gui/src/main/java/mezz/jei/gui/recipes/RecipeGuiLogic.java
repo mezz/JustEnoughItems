@@ -14,6 +14,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.IngredientBookmark;
@@ -295,11 +296,18 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		List<IRecipeLayoutWithButtons<T>> results = recipes.stream()
 			.map(recipe -> {
-				DrawableNineSliceTexture recipeBackground = Internal.getTextures().getRecipeBackground();
-				return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses(), recipeBackground, 4)
+				if (recipeCategory.needsRecipeBorder()) {
+					DrawableNineSliceTexture recipeBackground = Internal.getTextures().getRecipeBackground();
+					return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses(), recipeBackground, 4)
+						.orElseGet(() -> {
+							brokenRecipes.add(recipe);
+							return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, 4);
+						});
+				}
+				return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses(), DrawableBlank.EMPTY, 0)
 					.orElseGet(() -> {
 						brokenRecipes.add(recipe);
-						return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, 4);
+						return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, DrawableBlank.EMPTY, 0);
 					});
 			})
 			.map(recipeLayoutFactory::create)
