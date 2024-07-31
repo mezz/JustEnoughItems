@@ -234,4 +234,9 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	public @Nullable ResourceLocation getRegistryName(DebugRecipe recipe) {
 		return recipe.getRegistryName();
 	}
+
+	@Override
+	public boolean needsRecipeBorder() {
+		return false;
+	}
 }
