@@ -239,6 +239,11 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 		tooltip.add(Component.literal(mouseX + ", " + mouseY));
 	}
 
+	@Override
+	public boolean needsRecipeBorder() {
+		return false;
+	}
+
 	public class JeiInputHandler implements IJeiInputHandler {
 		private final DebugRecipe recipe;
 		private final Rect2i area;

@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
@@ -14,6 +15,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.IngredientBookmark;
@@ -311,17 +313,25 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		List<IRecipeLayoutWithButtons<T>> results = recipes.stream()
 			.map(recipe -> {
-				DrawableNineSliceTexture recipeBackground = Internal.getTextures().getRecipeBackground();
+				IScalableDrawable recipeBackground;
+				int borderPadding;
+				if (recipeCategory.needsRecipeBorder()) {
+					recipeBackground = Internal.getTextures().getRecipeBackground();
+					borderPadding = 4;
+				} else {
+					recipeBackground = DrawableBlank.EMPTY;
+					borderPadding = 0;
+				}
 				try {
-					return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses(), recipeBackground, 4)
+					return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses(), recipeBackground, borderPadding)
 						.orElseGet(() -> {
 							brokenRecipes.add(recipe);
-							return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, 4);
+							return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding);
 						});
 				} catch (RuntimeException e) {
 					LOGGER.error("Recipe layout crashed while being created", e);
 					brokenRecipes.add(recipe);
-					return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, 4);
+					return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding);
 				}
 			})
 			.map(recipeLayoutFactory::create)

@@ -222,6 +222,21 @@ public interface IRecipeCategory<T> {
 	}
 
 	/**
+	 * @return true if JEI should draw a border around this recipe to
+	 * 				separate it visually from other recipes near it.
+	 * 				(most recipes should use this to help players navigate easily)
+	 *
+	 *         false if this recipe already draws a strong border that
+	 *         		separates it visually from the other recipes.
+	 *         		In this case, JEI will not draw another border around the recipe.
+	 *
+	 * @since 11.39.1
+	 */
+	default boolean needsRecipeBorder() {
+		return true;
+	}
+
+	/**
 	 * @return true if the given recipe can be handled by this category.
 	 * @since 7.2.0
 	 */
