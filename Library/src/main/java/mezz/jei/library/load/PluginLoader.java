@@ -152,6 +152,8 @@ public class PluginLoader {
 		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, ingredientVisibility, vanillaRecipeFactory, recipeManagerInternal);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
+		recipeManagerInternal.compact();
+
 		return new RecipeManager(recipeManagerInternal, ingredientManager);
 	}
 
