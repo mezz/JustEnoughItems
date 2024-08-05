@@ -3,10 +3,6 @@ package mezz.jei.library.gui.recipes.supplier.builder;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
-import mezz.jei.api.gui.inputs.IJeiInputHandler;
-import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
-import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -21,7 +17,7 @@ import java.util.List;
  * Minimal version of {@link IRecipeLayoutBuilder} that can only return the ingredients,
  * but doesn't bother building anything for drawing on screen.
  */
-public class IngredientSupplierBuilder implements IRecipeLayoutBuilder, IRecipeExtrasBuilder {
+public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 	private final List<IngredientSlotBuilder> slots = new ArrayList<>();
 	private final IIngredientManager ingredientManager;
 
@@ -44,21 +40,6 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder, IRecipeE
 	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
 		return addSlot(role, 0, 0);
-	}
-
-	@Override
-	public void addWidget(IRecipeWidget widget) {
-
-	}
-
-	@Override
-	public void addInputHandler(IJeiInputHandler inputHandler) {
-
-	}
-
-	@Override
-	public void addGuiEventListener(IJeiGuiEventListener guiEventListener) {
-
 	}
 
 	@Override
