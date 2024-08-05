@@ -112,7 +112,7 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 		guiGraphics.drawString(font, tagName, nameArea.x(), nameArea.getY(), 0xFF505050, false);
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({"removal"})
 	@Override
 	public List<Component> getTooltipStrings(R recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
 		if (nameArea.contains(mouseX, mouseY)) {
