@@ -45,7 +45,7 @@ public class ChatLinkInputHandler {
 			return false;
 		}
 
-		return switch (input.getClickState()) {
+		return switch (input.getInputType()) {
 			case IMMEDIATE -> handleImmediateInput(chatScreen, input, keyBindings);
 			case SIMULATE -> handleSimulateInput(chatScreen, input, keyBindings);
 			case EXECUTE -> handleExecuteInput(chatScreen, input);

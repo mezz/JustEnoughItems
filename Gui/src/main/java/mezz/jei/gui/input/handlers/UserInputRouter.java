@@ -27,7 +27,7 @@ public class UserInputRouter {
 		if (DebugConfig.isDebugInputsEnabled()) {
 			LOGGER.debug("Received user input: {}", input);
 		}
-		return switch (input.getClickState()) {
+		return switch (input.getInputType()) {
 			case IMMEDIATE -> handleImmediateClick(screen, input, keyBindings);
 			case SIMULATE -> handleSimulateClick(screen, input, keyBindings);
 			case EXECUTE -> handleExecuteClick(screen, input, keyBindings);
