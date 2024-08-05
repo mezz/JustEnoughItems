@@ -280,4 +280,8 @@ public class RecipeManagerInternal {
 		ImmutableList<IRecipeCategoryDecorator<?>> decorators = recipeCategoryDecorators.get(recipeType);
 		return (List<IRecipeCategoryDecorator<T>>) (Object) decorators;
 	}
+
+	public void compact() {
+		recipeMaps.values().forEach(RecipeMap::compact);
+	}
 }

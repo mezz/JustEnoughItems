@@ -1,16 +1,16 @@
 package mezz.jei.library.recipes.collect;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class IngredientToRecipesMap<R> {
-	private final Map<Object, List<R>> uidToRecipes = new HashMap<>();
+	private final Map<Object, ArrayList<R>> uidToRecipes = new Object2ObjectOpenHashMap<>();
 
 	public void add(R recipe, Collection<Object> ingredientUids) {
 		for (Object uid : ingredientUids) {
@@ -26,5 +26,9 @@ public class IngredientToRecipesMap<R> {
 			return Collections.emptyList();
 		}
 		return Collections.unmodifiableList(recipes);
+	}
+
+	public void compact() {
+		uidToRecipes.values().forEach(ArrayList::trimToSize);
 	}
 }
