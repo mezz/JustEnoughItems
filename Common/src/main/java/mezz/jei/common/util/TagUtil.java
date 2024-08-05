@@ -15,7 +15,8 @@ public class TagUtil {
 	public static <VALUE, STACK> Optional<TagKey<?>> getTagEquivalent(
 		Collection<STACK> stacks,
 		Function<STACK, VALUE> stackToValue,
-		Supplier<Stream<Pair<TagKey<VALUE>, HolderSet.Named<VALUE>>>> tagSupplier
+		Supplier<Stream<Pair<TagKey<VALUE>,
+		HolderSet.Named<VALUE>>>> tagSupplier
 	) {
 		List<VALUE> values = stacks.stream()
 			.map(stackToValue)

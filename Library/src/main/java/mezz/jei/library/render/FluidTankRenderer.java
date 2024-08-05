@@ -65,16 +65,21 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, T fluidStack) {
+		render(guiGraphics, fluidStack, 0, 0);
+	}
+
+	@Override
+	public void render(GuiGraphics guiGraphics, T ingredient, int posX, int posY) {
 		RenderSystem.enableBlend();
 
-		drawFluid(guiGraphics, width, height, fluidStack);
+		drawFluid(guiGraphics, width, height, ingredient, posX, posY);
 
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 
 		RenderSystem.disableBlend();
 	}
 
-	private void drawFluid(GuiGraphics guiGraphics, final int width, final int height, T fluidStack) {
+	private void drawFluid(GuiGraphics guiGraphics, final int width, final int height, T fluidStack, int posX, int posY) {
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluid = type.getBase(fluidStack);
 		if (fluid.isSame(Fluids.EMPTY)) {
@@ -94,11 +99,11 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 					scaledAmount = height;
 				}
 
-				drawTiledSprite(guiGraphics, width, height, fluidColor, scaledAmount, fluidStillSprite);
+				drawTiledSprite(guiGraphics, width, height, fluidColor, scaledAmount, fluidStillSprite, posX, posY);
 			});
 	}
 
-	private static void drawTiledSprite(GuiGraphics guiGraphics, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite) {
+	private static void drawTiledSprite(GuiGraphics guiGraphics, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite, int posX, int posY) {
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 		setGLColorFromInt(color);
@@ -108,13 +113,13 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		final long yTileCount = scaledAmount / TEXTURE_SIZE;
 		final long yRemainder = scaledAmount - (yTileCount * TEXTURE_SIZE);
 
-		final int yStart = tiledHeight;
+		final int yStart = tiledHeight + posY;
 
 		for (int xTile = 0; xTile <= xTileCount; xTile++) {
 			for (int yTile = 0; yTile <= yTileCount; yTile++) {
 				int width = (xTile == xTileCount) ? xRemainder : TEXTURE_SIZE;
 				long height = (yTile == yTileCount) ? yRemainder : TEXTURE_SIZE;
-				int x = (xTile * TEXTURE_SIZE);
+				int x = posX + (xTile * TEXTURE_SIZE);
 				int y = yStart - ((yTile + 1) * TEXTURE_SIZE);
 				if (width > 0 && height > 0) {
 					long maskTop = TEXTURE_SIZE - height;

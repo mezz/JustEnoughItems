@@ -202,7 +202,7 @@ public interface IIngredientHelper<V> {
 	 * @since 9.3.0
 	 * @deprecated use {@link #getTagKeyEquivalent}
 	 */
-	@Deprecated(since = "19.6.0", forRemoval = true)
+	@Deprecated(since = "19.5.5", forRemoval = true)
 	default Optional<ResourceLocation> getTagEquivalent(Collection<V> ingredients) {
 		return getTagKeyEquivalent(ingredients)
 			.map(TagKey::location);

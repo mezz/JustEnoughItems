@@ -3,6 +3,7 @@ package mezz.jei.api.ingredients;
 import java.util.Collection;
 import java.util.List;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -21,7 +22,7 @@ import net.minecraft.network.chat.Component;
  */
 public interface IIngredientRenderer<T> {
 	/**
-	 * Renders an ingredient at a specific location.
+	 * Renders an ingredient.
 	 *
 	 * @param guiGraphics The current {@link GuiGraphics} for rendering the ingredient.
 	 * @param ingredient the ingredient to render.
@@ -29,6 +30,26 @@ public interface IIngredientRenderer<T> {
 	 * @since 9.3.0
 	 */
 	void render(GuiGraphics guiGraphics, T ingredient);
+
+	/**
+	 * Renders an ingredient at a specific location.
+	 *
+	 * @param guiGraphics The current {@link GuiGraphics} for rendering the ingredient.
+	 * @param ingredient the ingredient to render.
+	 * @param posX       the x offset for rendering this ingredient
+	 * @param posY       the y offset for rendering this ingredient
+	 *
+	 * @since 19.5.5
+	 */
+	default void render(GuiGraphics guiGraphics, T ingredient, int posX, int posY) {
+		PoseStack poseStack = guiGraphics.pose();
+		poseStack.pushPose();
+		{
+			poseStack.translate(posX, posY, 0);
+			render(guiGraphics, ingredient);
+		}
+		poseStack.popPose();
+	}
 
 	/**
 	 * Get the tooltip text for this ingredient. JEI renders the tooltip based on this.

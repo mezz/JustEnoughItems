@@ -33,7 +33,7 @@ public class IngredientElement<T> implements IElement<T> {
 	}
 
 	@Override
-	public void renderExtras(GuiGraphics guiGraphics) {
+	public void renderExtras(GuiGraphics guiGraphics, int xPosition, int yPosition) {
 
 	}
 

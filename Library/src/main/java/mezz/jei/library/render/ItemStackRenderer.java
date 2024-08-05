@@ -20,13 +20,18 @@ import java.util.List;
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
 	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient) {
+		render(guiGraphics, ingredient, 0, 0);
+	}
+
+	@Override
+	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient, int posX, int posY) {
 		if (ingredient != null) {
 			RenderSystem.enableDepthTest();
 
 			Minecraft minecraft = Minecraft.getInstance();
 			Font font = getFontRenderer(minecraft, ingredient);
-			guiGraphics.renderFakeItem(ingredient, 0, 0);
-			guiGraphics.renderItemDecorations(font, ingredient, 0, 0);
+			guiGraphics.renderFakeItem(ingredient, posX, posY);
+			guiGraphics.renderItemDecorations(font, ingredient, posX, posY);
 			RenderSystem.disableBlend();
 		}
 	}

@@ -24,7 +24,7 @@ public interface IElement<T> {
 	 */
 	Optional<IBookmark> getBookmark();
 
-	void renderExtras(GuiGraphics guiGraphics);
+	void renderExtras(GuiGraphics guiGraphics, int xPosition, int yPosition);
 
 	void show(IRecipesGui recipesGui, FocusUtil focusUtil, List<RecipeIngredientRole> roles);
 

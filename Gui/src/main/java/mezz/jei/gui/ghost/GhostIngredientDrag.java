@@ -90,13 +90,7 @@ public class GhostIngredientDrag<T> {
 			return;
 		}
 
-		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
-		{
-			poseStack.translate(mouseX - 8, mouseY - 8, 0);
-			SafeIngredientUtil.render(guiGraphics, ingredientRenderer, ingredient);
-		}
-		poseStack.popPose();
+		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, ingredient, mouseX - 8, mouseY - 8);
 	}
 
 	public static void drawTargets(GuiGraphics guiGraphics, int mouseX, int mouseY, List<Rect2i> targetAreas) {

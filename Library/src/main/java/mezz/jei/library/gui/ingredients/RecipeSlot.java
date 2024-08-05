@@ -282,41 +282,36 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 		final int x = this.rect.getX();
 		final int y = this.rect.getY();
-		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
-		{
-			poseStack.translate(x, y, 0);
 
-			if (background != null) {
-				background.draw(guiGraphics);
-			}
+		if (background != null) {
+			background.draw(guiGraphics, x, y);
+		}
 
+		RenderSystem.enableBlend();
+
+		getDisplayedIngredient()
+			.ifPresent(ingredient -> drawIngredient(guiGraphics, ingredient, x, y));
+
+		if (overlay != null) {
 			RenderSystem.enableBlend();
 
-			getDisplayedIngredient()
-				.ifPresent(ingredient -> drawIngredient(guiGraphics, ingredient));
-
-			if (overlay != null) {
-				RenderSystem.enableBlend();
-
-				poseStack.pushPose();
-				{
-					poseStack.translate(0, 0, 200);
-					overlay.draw(guiGraphics);
-				}
-				poseStack.popPose();
+			var poseStack = guiGraphics.pose();
+			poseStack.pushPose();
+			{
+				poseStack.translate(0, 0, 200);
+				overlay.draw(guiGraphics, x, y);
 			}
-
-			RenderSystem.disableBlend();
+			poseStack.popPose();
 		}
-		poseStack.popPose();
+
+		RenderSystem.disableBlend();
 	}
 
-	private <T> void drawIngredient(GuiGraphics guiGraphics, ITypedIngredient<T> typedIngredient) {
+	private <T> void drawIngredient(GuiGraphics guiGraphics, ITypedIngredient<T> typedIngredient, int x, int y) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 
-		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, typedIngredient);
+		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, typedIngredient, x, y);
 	}
 
 	@Override

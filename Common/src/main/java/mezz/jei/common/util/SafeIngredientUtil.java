@@ -78,7 +78,13 @@ public final class SafeIngredientUtil {
 		tooltip.add(crash.withStyle(ChatFormatting.RED));
 	}
 
-	public static <T> void render(GuiGraphics guiGraphics, IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> typedIngredient) {
+	public static <T> void render(
+		GuiGraphics guiGraphics,
+		IIngredientRenderer<T> ingredientRenderer,
+		ITypedIngredient<T> typedIngredient,
+		int x,
+		int y
+	) {
 		if (CRASHING_INGREDIENT_RENDER_CACHE.getIfPresent(typedIngredient) == Boolean.TRUE) {
 			renderError(guiGraphics);
 			return;
@@ -86,7 +92,7 @@ public final class SafeIngredientUtil {
 
 		T ingredient = typedIngredient.getIngredient();
 		try {
-			ingredientRenderer.render(guiGraphics, ingredient);
+			ingredientRenderer.render(guiGraphics, ingredient, x, y);
 		} catch (RuntimeException | LinkageError e) {
 			CRASHING_INGREDIENT_RENDER_CACHE.put(typedIngredient, Boolean.TRUE);
 
