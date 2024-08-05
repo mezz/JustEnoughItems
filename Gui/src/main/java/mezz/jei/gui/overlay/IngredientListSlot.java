@@ -1,8 +1,10 @@
 package mezz.jei.gui.overlay;
 
-import mezz.jei.gui.input.ClickableIngredientInternal;
-import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.input.ClickableIngredientInternal;
+import mezz.jei.gui.input.DraggableIngredientInternal;
+import mezz.jei.gui.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.RenderableElement;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,7 +32,13 @@ public class IngredientListSlot {
 	public Optional<IClickableIngredientInternal<?>> getClickableIngredient() {
 		return Optional.ofNullable(renderableElement)
 			.map(RenderableElement::getElement)
-			.map(element -> new ClickableIngredientInternal<>(element, area, true, true));
+			.map(element -> new ClickableIngredientInternal<>(element, this::isMouseOver, true, true));
+	}
+
+	public Optional<IDraggableIngredientInternal<?>> getDraggableIngredient() {
+		return Optional.ofNullable(renderableElement)
+			.map(RenderableElement::getElement)
+			.map(element -> new DraggableIngredientInternal<>(element, area));
 	}
 
 	public void render(GuiGraphics guiGraphics) {

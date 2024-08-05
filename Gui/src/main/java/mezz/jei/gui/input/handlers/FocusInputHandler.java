@@ -7,7 +7,6 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -82,8 +81,7 @@ public class FocusInputHandler implements IUserInputHandler {
 		for (IClickableIngredientInternal<?> clicked : ingredientUnderMouse) {
 			IElement<?> element = clicked.getElement();
 			if (element.handleClick(input, keyBindings, recipesGui, focusUtil)) {
-				ImmutableRect2i area = clicked.getArea();
-				IUserInputHandler result = LimitedAreaInputHandler.create(this, area);
+				IUserInputHandler result = new SameElementInputHandler(this, clicked::isMouseOver);
 				return Optional.of(result);
 			}
 		}
@@ -99,8 +97,7 @@ public class FocusInputHandler implements IUserInputHandler {
 					IElement<?> element = clicked.getElement();
 					element.show(recipesGui, focusUtil, roles);
 				}
-				ImmutableRect2i area = clicked.getArea();
-				return LimitedAreaInputHandler.create(this, area);
+				return new SameElementInputHandler(this, clicked::isMouseOver);
 			});
 	}
 
@@ -112,8 +109,7 @@ public class FocusInputHandler implements IUserInputHandler {
 					if (!input.isSimulate()) {
 						commandUtil.giveStack(itemStack, giveAmount);
 					}
-					ImmutableRect2i area = clicked.getArea();
-					IUserInputHandler handler = LimitedAreaInputHandler.create(this, area);
+					IUserInputHandler handler = new SameElementInputHandler(this, clicked::isMouseOver);
 					consumer.accept(handler);
 				}
 			})

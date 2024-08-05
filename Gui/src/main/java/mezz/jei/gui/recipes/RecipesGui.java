@@ -32,12 +32,13 @@ import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.elements.GuiIconButton;
 import mezz.jei.gui.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.InputType;
 import mezz.jei.gui.input.MouseUtil;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.gui.input.handlers.CombinedInputHandler;
+import mezz.jei.gui.input.handlers.UserInputRouter;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.StaticFocusedRecipes;
 import net.minecraft.client.Minecraft;
@@ -86,7 +87,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final RecipeCatalysts recipeCatalysts;
 	private final RecipeGuiTabs recipeGuiTabs;
 	private final RecipeOptionButtons optionButtons;
-	private final CombinedInputHandler inputHandler;
+	private final UserInputRouter inputHandler;
 
 	private final GuiIconButton nextRecipeCategory;
 	private final GuiIconButton previousRecipeCategory;
@@ -151,9 +152,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		background = textures.getRecipeGuiBackground();
 
-		inputHandler = new CombinedInputHandler(
-			new UserInputHandler(this),
+		inputHandler = new UserInputRouter(
 			layouts.createInputHandler(),
+			new UserInputHandler(this),
 			optionButtons.createInputHandler(),
 			recipeGuiTabs.createInputHandler(),
 			nextRecipeCategory.createInputHandler(),
@@ -393,8 +394,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
+	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		return Stream.empty();
+	}
+
+	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-		if (this.inputHandler.handleMouseScrolled(mouseX, mouseY, scrollDelta).isPresent()) {
+		if (this.inputHandler.handleMouseScrolled(mouseX, mouseY, scrollDelta)) {
 			return true;
 		}
 
@@ -403,7 +409,19 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-		boolean handled = UserInput.fromVanilla(mouseX, mouseY, mouseButton, InputType.IMMEDIATE)
+		boolean handled = UserInput.fromVanilla(mouseX, mouseY, mouseButton, InputType.SIMULATE)
+			.map(this::handleInput)
+			.orElse(false);
+
+		if (handled) {
+			return true;
+		}
+		return super.mouseClicked(mouseX, mouseY, mouseButton);
+	}
+
+	@Override
+	public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
+		boolean handled = UserInput.fromVanilla(mouseX, mouseY, mouseButton, InputType.EXECUTE)
 			.map(this::handleInput)
 			.orElse(false);
 
@@ -420,7 +438,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	private boolean handleInput(UserInput input) {
-		return this.inputHandler.handleUserInput(this, input, keyBindings).isPresent();
+		return this.inputHandler.handleUserInput(this, input, keyBindings);
 	}
 
 	public boolean isOpen() {

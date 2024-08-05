@@ -1,7 +1,6 @@
 package mezz.jei.gui.input.handlers;
 
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -34,8 +33,7 @@ public class BookmarkInputHandler implements IUserInputHandler {
 				if (input.isSimulate() ||
 					bookmarkList.onElementBookmarked(clicked.getElement())
 				) {
-					ImmutableRect2i area = clicked.getArea();
-					IUserInputHandler handler = LimitedAreaInputHandler.create(this, area);
+					IUserInputHandler handler = new SameElementInputHandler(this, clicked::isMouseOver);
 					return Optional.of(handler);
 				}
 				return Optional.empty();

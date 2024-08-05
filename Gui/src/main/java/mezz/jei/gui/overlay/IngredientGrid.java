@@ -16,6 +16,7 @@ import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.DeleteItemInputHandler;
@@ -194,6 +195,14 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return ingredientListRenderer.getSlots()
 			.filter(s -> s.isMouseOver(mouseX, mouseY))
 			.map(IngredientListSlot::getClickableIngredient)
+			.flatMap(Optional::stream);
+	}
+
+	@Override
+	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		return ingredientListRenderer.getSlots()
+			.filter(s -> s.isMouseOver(mouseX, mouseY))
+			.map(IngredientListSlot::getDraggableIngredient)
 			.flatMap(Optional::stream);
 	}
 

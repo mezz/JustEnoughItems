@@ -14,6 +14,7 @@ import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.MouseUtil;
@@ -157,6 +158,14 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY);
+		}
+		return Stream.empty();
+	}
+
+	@Override
+	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		if (isListDisplayed()) {
+			return this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY);
 		}
 		return Stream.empty();
 	}
