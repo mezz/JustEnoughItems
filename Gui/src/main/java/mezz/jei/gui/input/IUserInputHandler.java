@@ -1,6 +1,5 @@
 package mezz.jei.gui.input;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IInternalKeyMappings;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -12,7 +11,7 @@ public interface IUserInputHandler {
 	/**
 	 * Called when a mouse is clicked but was handled and canceled by some other mouse handler.
 	 */
-	default void handleMouseClickedOut(InputConstants.Key key) {
+	default void unfocus() {
 
 	}
 

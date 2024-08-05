@@ -1,6 +1,5 @@
 package mezz.jei.gui.input.handlers;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -22,7 +21,7 @@ public class CombinedInputHandler implements IUserInputHandler {
 
 	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-		return switch (input.getClickState()) {
+		return switch (input.getInputType()) {
 			case IMMEDIATE, SIMULATE -> handleClickInternal(screen, input, keyBindings);
 			case EXECUTE -> Optional.empty();
 		};
@@ -41,19 +40,19 @@ public class CombinedInputHandler implements IUserInputHandler {
 			if (firstHandled.isEmpty()) {
 				firstHandled = inputHandler.handleUserInput(screen, input, keyBindings);
 				if (firstHandled.isEmpty()) {
-					inputHandler.handleMouseClickedOut(input.getKey());
+					inputHandler.unfocus();
 				}
 			} else {
-				inputHandler.handleMouseClickedOut(input.getKey());
+				inputHandler.unfocus();
 			}
 		}
 		return firstHandled;
 	}
 
 	@Override
-	public void handleMouseClickedOut(InputConstants.Key key) {
+	public void unfocus() {
 		for (IUserInputHandler inputHandler : this.inputHandlers) {
-			inputHandler.handleMouseClickedOut(key);
+			inputHandler.unfocus();
 		}
 	}
 

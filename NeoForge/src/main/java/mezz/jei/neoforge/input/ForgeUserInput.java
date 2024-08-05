@@ -16,6 +16,7 @@ public final class ForgeUserInput {
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
 		int modifiers = keyEvent.getModifiers();
+		// execute the input immediately, on key pressed. do not wait for key released
 		return new UserInput(input, mouseX, mouseY, modifiers, InputType.IMMEDIATE);
 	}
 
