@@ -25,10 +25,22 @@ import java.util.List;
 @ApiStatus.NonExtendable
 public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	/**
+	 * Move this slot to the given position.
+	 *
+	 * @param x the new x coordinate, relative to its parent element.
+	 * @param y the new y coordinate, relative to its parent element.
+	 *
+	 * @since 10.31.0
+	 */
+	void setPosition(int x, int y);
+
+	/**
 	 * Get the position and size of the recipe slot drawable relative to its parent element.
 	 *
 	 * @since 10.3.0
+	 * @deprecated use {@link #isMouseOver(double, double)} to check if the mouse is over the slot
 	 */
+	@Deprecated(since = "10.31.0", forRemoval = true)
 	Rect2i getRect();
 
 	/**

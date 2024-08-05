@@ -9,6 +9,7 @@ import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -100,6 +101,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 		RecipeLayout<T> recipeLayout;
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
+			recipeCategory.createRecipeExtras(builder, recipe, focuses);
 			recipeLayout = builder.buildRecipeLayout(
 				focuses,
 				recipeCategoryDecorators,
@@ -131,13 +133,15 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 		List<IRecipeSlotDrawable> recipeCategorySlots,
 		IFocusGroup focuses,
 		IIngredientManager ingredientManager,
+		List<IJeiInputHandler> inputHandlers,
+		List<IJeiGuiEventListener> guiEventListeners,
 		CycleTicker cycleTicker
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
 		this.focuses = focuses;
 		this.ingredientManager = ingredientManager;
-		this.inputHandler = new RecipeLayoutInputHandler<>(this);
+		this.inputHandler = new RecipeLayoutInputHandler<>(this, inputHandlers, guiEventListeners);
 		this.cycleTicker = cycleTicker;
 
 		this.recipeCategorySlots = recipeCategorySlots;

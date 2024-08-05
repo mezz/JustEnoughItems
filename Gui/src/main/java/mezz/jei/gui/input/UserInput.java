@@ -78,11 +78,7 @@ public class UserInput implements IJeiUserInput {
 		return inputType == InputType.SIMULATE;
 	}
 
-	public boolean isMouse() {
-		return this.key.getType() == InputConstants.Type.MOUSE;
-	}
-
-	public boolean isKeyboard() {
+	private boolean isKeyboard() {
 		return this.key.getType() == InputConstants.Type.KEYSYM;
 	}
 

@@ -9,12 +9,15 @@ import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
@@ -95,6 +98,17 @@ public interface IRecipeCategory<T> {
 	}
 
 	/**
+	 * Sets the extras for the recipe category, like input handlers.
+	 *
+	 * @see IRecipeExtrasBuilder
+	 *
+	 * @since 10.31.0
+	 */
+	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IFocusGroup focuses) {
+
+	}
+
+	/**
 	 * Draw extras or additional info about the recipe.
 	 * Use the mouse position for things like button highlights.
 	 * Tooltips are handled by {@link #getTooltip}
@@ -168,7 +182,12 @@ public interface IRecipeCategory<T> {
 	 * @param input  the current input
 	 * @return true if the input was handled, false otherwise
 	 * @since 8.3.0
+	 *
+	 * @deprecated create an {@link IJeiInputHandler} or {@link GuiEventListener} and add it with
+	 * {@link IRecipeExtrasBuilder#addInputHandler} or {@link IRecipeExtrasBuilder#addGuiEventListener}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "10.31.0", forRemoval = true)
 	default boolean handleInput(T recipe, double mouseX, double mouseY, InputConstants.Key input) {
 		if (input.getType() == InputConstants.Type.MOUSE) {
 			return handleClick(recipe, mouseX, mouseY, input.getValue());

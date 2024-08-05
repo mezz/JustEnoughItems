@@ -3,7 +3,7 @@ package mezz.jei.library.util;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.focus.FocusGroup;
-import mezz.jei.library.gui.recipes.supplier.builder.IngredientSupplierBuilder;
+import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import mezz.jei.library.ingredients.IIngredientSupplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,9 +18,15 @@ public final class IngredientSupplierHelper {
 	@Nullable
 	public static <T> IIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager) {
 		try {
-			IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager);
+			RecipeLayoutBuilder<T> builder = new RecipeLayoutBuilder<>(recipeCategory, recipe, ingredientManager);
 			recipeCategory.setRecipe(builder, recipe, FocusGroup.EMPTY);
-			return builder.buildIngredientSupplier();
+			// as a minor optimization, skip setting widgets that have no slots (IRecipeCategory#createWidgets)
+			if (!builder.isEmpty()) {
+				return builder.buildIngredientSupplier();
+			} else {
+				String recipeName = RecipeErrorUtil.getNameForRecipe(recipe);
+				LOGGER.warn("The recipe category for '{}' failed to set anything in its setRecipe method, for recipe: {}", recipeCategory.getRecipeType(), recipeName);
+			}
 		} catch (RuntimeException | LinkageError e) {
 			String recipeName = RecipeErrorUtil.getNameForRecipe(recipe);
 			LOGGER.error("Found a broken recipe, failed to setRecipe with RecipeLayoutBuilder: {}\n", recipeName, e);

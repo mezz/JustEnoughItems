@@ -198,9 +198,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		if (allIngredients.size() < MAX_DISPLAYED_INGREDIENTS) {
 			// re-use allIngredients to save some memory
 			return allIngredients;
-		} else {
-			return allIngredients.subList(0, MAX_DISPLAYED_INGREDIENTS);
 		}
+		return allIngredients.subList(0, MAX_DISPLAYED_INGREDIENTS);
 	}
 
 	@Override
@@ -441,6 +440,11 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.rect.contains(mouseX, mouseY);
+	}
+
+	@Override
+	public void setPosition(int x, int y) {
+		this.rect = this.rect.setPosition(x, y);
 	}
 
 	@Override

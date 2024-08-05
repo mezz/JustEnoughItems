@@ -2,7 +2,6 @@ package mezz.jei.debug;
 
 import net.minecraft.network.chat.TextComponent;
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -90,7 +89,7 @@ public class DebugFocusRecipeCategory<F> implements RecipeCategoryWithType<Debug
 				new ItemStack(Items.TROPICAL_FISH)
 			));
 
-		IIngredientAcceptor<?> invisibleSlot = builder.addInvisibleIngredients(RecipeIngredientRole.INPUT)
+		builder.addInvisibleIngredients(RecipeIngredientRole.INPUT)
 			.addItemStacks(List.of(
 				new ItemStack(Items.ACACIA_BOAT),
 				new ItemStack(Items.ACACIA_BUTTON),
@@ -103,7 +102,7 @@ public class DebugFocusRecipeCategory<F> implements RecipeCategoryWithType<Debug
 				new ItemStack(Items.ACACIA_PRESSURE_PLATE)
 			));
 
-		builder.createFocusLink(inputSlot, outputSlot, invisibleSlot);
+		builder.createFocusLink(inputSlot, outputSlot);
 	}
 
 	@Override
