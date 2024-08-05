@@ -3,6 +3,7 @@ package mezz.jei.library.gui.recipes.supplier.builder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.TilingDirection;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -10,12 +11,11 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotIngredients;
-import mezz.jei.library.ingredients.SimpleIngredientAcceptor;
+import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,10 +24,12 @@ import java.util.Optional;
  * but doesn't bother building anything for drawing on screen.
  */
 public class IngredientSlotBuilder implements IRecipeSlotBuilder {
-	private final SimpleIngredientAcceptor ingredients;
+	private final DisplayIngredientAcceptor ingredients;
+	private final RecipeIngredientRole role;
 
-	public IngredientSlotBuilder(IIngredientManager ingredientManager) {
-		this.ingredients = new SimpleIngredientAcceptor(ingredientManager);
+	public IngredientSlotBuilder(IIngredientManager ingredientManager, RecipeIngredientRole role) {
+		this.ingredients = new DisplayIngredientAcceptor(ingredientManager);
+		this.role = role;
 	}
 
 	@Override
@@ -98,7 +100,7 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 	}
 
 	@Override
-	public IRecipeSlotBuilder addTooltipCallback(mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback tooltipCallback) {
+	public IRecipeSlotBuilder addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
 		return this;
 	}
 
@@ -107,22 +109,11 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 		return this;
 	}
 
-	public List<ITypedIngredient<?>> getAllIngredients() {
-		return this.ingredients.getAllIngredients();
-	}
-
-	public RecipeSlotIngredients getRecipeSlotIngredients(RecipeIngredientRole role) {
-		List<Optional<ITypedIngredient<?>>> ingredients = new ArrayList<>();
-		List<IIngredientType<?>> types = new ArrayList<>();
-
-		for (ITypedIngredient<?> ingredient : getAllIngredients()) {
-			ingredients.add(Optional.of(ingredient));
-			IIngredientType<?> type = ingredient.getType();
-			if (!types.contains(type)) {
-				types.add(type);
-			}
-		}
-
-		return new RecipeSlotIngredients(role, ingredients, types);
+	public RecipeSlotIngredients getRecipeSlotIngredients() {
+		return new RecipeSlotIngredients(
+			this.role,
+			this.ingredients.getAllIngredients(),
+			this.ingredients.getIngredientTypes().toList()
+		);
 	}
 }

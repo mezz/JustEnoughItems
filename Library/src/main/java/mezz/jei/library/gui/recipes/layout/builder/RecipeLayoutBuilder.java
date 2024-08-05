@@ -29,10 +29,8 @@ import mezz.jei.core.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
-import mezz.jei.library.gui.recipes.RecipeLayoutIngredientSupplier;
 import mezz.jei.library.gui.recipes.ShapelessIcon;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
-import mezz.jei.library.ingredients.IIngredientSupplier;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +47,6 @@ import java.util.Set;
 
 public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtrasBuilder {
 	private final List<RecipeSlotBuilder> visibleSlots = new ArrayList<>();
-	private final List<InvisibleRecipeLayoutSlotSource> invisibleSlots = new ArrayList<>();
 	private final List<List<RecipeSlotBuilder>> focusLinkedSlots = new ArrayList<>();
 	private final List<IRecipeWidget> widgets = new ArrayList<>();
 	private final List<IJeiInputHandler> inputHandlers = new ArrayList<>();
@@ -108,9 +105,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 
 	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
-		InvisibleRecipeLayoutSlotSource slot = new InvisibleRecipeLayoutSlotSource(ingredientManager, role);
-		this.invisibleSlots.add(slot);
-		return slot;
+		// invisible slots are only used by IngredientSupplierBuilder, and are ignored here
+		return IngredientAcceptorVoid.INSTANCE;
 	}
 
 	@Override
@@ -184,18 +180,9 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 
 	public boolean isEmpty() {
 		return this.visibleSlots.isEmpty() &&
-			this.invisibleSlots.isEmpty();
-	}
-
-	public IIngredientSupplier buildIngredientSupplier() {
-		List<RecipeSlotIngredients> ingredients = new ArrayList<>();
-		for (RecipeSlotBuilder slot : this.visibleSlots) {
-			ingredients.add(slot.getRecipeSlotIngredients());
-		}
-		for (InvisibleRecipeLayoutSlotSource slot : this.invisibleSlots) {
-			ingredients.add(slot.getRecipeSlotIngredients());
-		}
-		return new RecipeLayoutIngredientSupplier(ingredients);
+			this.widgets.isEmpty() &&
+			this.inputHandlers.isEmpty() &&
+			this.guiEventListeners.isEmpty();
 	}
 
 	public RecipeLayout<T> buildRecipeLayout(

@@ -3,6 +3,10 @@ package mezz.jei.library.gui.recipes.supplier.builder;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -10,30 +14,25 @@ import mezz.jei.library.gui.recipes.RecipeLayoutIngredientSupplier;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotIngredients;
 import mezz.jei.library.ingredients.IIngredientSupplier;
 
-import java.util.EnumMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Minimal version of {@link IRecipeLayoutBuilder} that can only return the ingredients,
- * but doesn't bother building real slots or anything else for drawing on screen.
+ * but doesn't bother building anything for drawing on screen.
  */
-public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
+public class IngredientSupplierBuilder implements IRecipeLayoutBuilder, IRecipeExtrasBuilder {
+	private final List<IngredientSlotBuilder> slots = new ArrayList<>();
 	private final IIngredientManager ingredientManager;
-	private final Map<RecipeIngredientRole, IngredientSlotBuilder> ingredientSlotBuilders;
 
 	public IngredientSupplierBuilder(IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
-		this.ingredientSlotBuilders = new EnumMap<>(RecipeIngredientRole.class);
 	}
 
 	@Override
 	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role, int x, int y) {
-		IngredientSlotBuilder slot = ingredientSlotBuilders.get(role);
-		if (slot == null) {
-			slot = new IngredientSlotBuilder(ingredientManager);
-			ingredientSlotBuilders.put(role, slot);
-		}
+		IngredientSlotBuilder slot = new IngredientSlotBuilder(ingredientManager, role);
+		this.slots.add(slot);
 		return slot;
 	}
 
@@ -45,6 +44,21 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
 		return addSlot(role, 0, 0);
+	}
+
+	@Override
+	public void addWidget(IRecipeWidget widget) {
+
+	}
+
+	@Override
+	public void addInputHandler(IJeiInputHandler inputHandler) {
+
+	}
+
+	@Override
+	public void addGuiEventListener(IJeiGuiEventListener guiEventListener) {
+
 	}
 
 	@Override
@@ -67,11 +81,15 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 
 	}
 
+	public boolean isEmpty() {
+		return slots.isEmpty();
+	}
+
 	public IIngredientSupplier buildIngredientSupplier() {
-		List<RecipeSlotIngredients> slots = this.ingredientSlotBuilders.entrySet()
-			.stream()
-			.map(entry -> entry.getValue().getRecipeSlotIngredients(entry.getKey()))
-			.toList();
-		return new RecipeLayoutIngredientSupplier(slots);
+		List<RecipeSlotIngredients> ingredients = new ArrayList<>();
+		for (IngredientSlotBuilder slot : this.slots) {
+			ingredients.add(slot.getRecipeSlotIngredients());
+		}
+		return new RecipeLayoutIngredientSupplier(ingredients);
 	}
 }
