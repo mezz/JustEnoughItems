@@ -88,13 +88,7 @@ public class BookmarkDrag<T> {
 			return false;
 		}
 
-		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
-		{
-			poseStack.translate(mouseX - 8, mouseY - 8, 0);
-			SafeIngredientUtil.render(guiGraphics, ingredientRenderer, ingredient);
-		}
-		poseStack.popPose();
+		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, ingredient, mouseX - 8, mouseY - 8);
 		return true;
 	}
 
