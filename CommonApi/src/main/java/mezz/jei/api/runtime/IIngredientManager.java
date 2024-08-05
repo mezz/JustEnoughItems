@@ -6,6 +6,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
@@ -99,6 +100,14 @@ public interface IIngredientManager {
 	 * @since 11.5.0
 	 */
 	<V> Optional<IIngredientType<V>> getIngredientTypeChecked(V ingredient);
+
+	/**
+	 * Helper method to get ingredient type for an ingredient.
+	 * Returns {@link Optional#empty()} if there is no known type for the given ingredient.
+	 *
+	 * @since 11.30.3
+	 */
+	<B, I> Optional<IIngredientTypeWithSubtypes<B, I>> getIngredientTypeWithSubtypesFromBase(B baseIngredient);
 
 	/**
 	 * Helper method to get ingredient type for an ingredient.

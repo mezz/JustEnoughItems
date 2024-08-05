@@ -1,10 +1,9 @@
 package mezz.jei.api.constants;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-
-import mezz.jei.api.ingredients.IIngredientType;
 
 /**
  * Built-in {@link IIngredientType} for vanilla Minecraft.
@@ -32,6 +31,11 @@ public final class VanillaTypes {
 		@Override
 		public Item getBase(ItemStack ingredient) {
 			return ingredient.getItem();
+		}
+
+		@Override
+		public ItemStack getDefaultIngredient(Item base) {
+			return new ItemStack(base);
 		}
 	};
 
