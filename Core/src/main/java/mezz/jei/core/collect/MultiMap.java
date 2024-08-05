@@ -1,8 +1,10 @@
 package mezz.jei.core.collect;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -59,9 +61,11 @@ public class MultiMap<K, V, T extends Collection<V>> {
 	}
 
 	public Collection<V> allValues() {
-		return this.map.values().stream()
-			.flatMap(Collection::stream)
-			.toList();
+		List<V> list = new ArrayList<>();
+		for (T t : this.map.values()) {
+			list.addAll(t);
+		}
+		return list;
 	}
 
 	public void clear() {

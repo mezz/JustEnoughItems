@@ -3,6 +3,7 @@ package mezz.jei.library.ingredients;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
@@ -119,6 +120,12 @@ public class IngredientManager implements IIngredientManager {
 	public <V> Optional<IIngredientType<V>> getIngredientTypeChecked(V ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		return this.registeredIngredients.getIngredientType(ingredient);
+	}
+
+	@Override
+	public <B, I> Optional<IIngredientTypeWithSubtypes<B, I>> getIngredientTypeWithSubtypesFromBase(B baseIngredient) {
+		ErrorUtil.checkNotNull(baseIngredient, "baseIngredient");
+		return this.registeredIngredients.getIngredientTypeWithSubtypesFromBase(baseIngredient);
 	}
 
 	@Override
