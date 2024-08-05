@@ -44,7 +44,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private final @Nullable IDrawable background;
 	private final @Nullable IDrawable overlay;
 	private final @Nullable String slotName;
-	private final ImmutableRect2i rect;
+	private ImmutableRect2i rect;
 
 	/**
 	 * All ingredients, ignoring focus and visibility
@@ -135,9 +135,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		if (allIngredients.size() < MAX_DISPLAYED_INGREDIENTS) {
 			// re-use allIngredients to save some memory
 			return allIngredients;
-		} else {
-			return allIngredients.subList(0, MAX_DISPLAYED_INGREDIENTS);
 		}
+		return allIngredients.subList(0, MAX_DISPLAYED_INGREDIENTS);
 	}
 
 	@Override
@@ -158,7 +157,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		int height = this.rect.getHeight();
 
 		RenderSystem.disableDepthTest();
-		GuiComponent.fill(poseStack, x, y, x + width, y + height , color);
+		GuiComponent.fill(poseStack, x, y, x + width, y + height, color);
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 
@@ -331,6 +330,11 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.rect.contains(mouseX, mouseY);
+	}
+
+	@Override
+	public void setPosition(int x, int y) {
+		this.rect = this.rect.setPosition(x, y);
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -89,13 +90,16 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		RecipeLayoutBuilder<T> builder = new RecipeLayoutBuilder<>(recipeCategory, recipe, ingredientManager);
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
-			RecipeLayout<T> recipeLayout = builder.buildRecipeLayout(
-				focuses,
-				recipeCategoryDecorators,
-				recipeBackground,
-				recipeBorderPadding
-			);
-			return Optional.of(recipeLayout);
+			recipeCategory.createRecipeExtras(builder, recipe, focuses);
+			if (!builder.isEmpty()) {
+				RecipeLayout<T> recipeLayout = builder.buildRecipeLayout(
+					focuses,
+					recipeCategoryDecorators,
+					recipeBackground,
+					recipeBorderPadding
+				);
+				return Optional.of(recipeLayout);
+			}
 		} catch (RuntimeException | LinkageError e) {
 			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getRecipeType(), e);
 		}
@@ -111,11 +115,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		@Nullable ShapelessIcon shapelessIcon,
 		ImmutablePoint2i recipeTransferButtonPos,
 		List<IRecipeSlotDrawable> recipeCategorySlots,
+		List<IJeiInputHandler> inputHandlers,
+		List<IJeiGuiEventListener> guiEventListeners,
 		CycleTicker cycleTicker
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
-		this.inputHandler = new RecipeLayoutInputHandler<>(this);
+		this.inputHandler = new RecipeLayoutInputHandler<>(this, inputHandlers, guiEventListeners);
 		this.cycleTicker = cycleTicker;
 
 		this.recipeCategorySlots = recipeCategorySlots;

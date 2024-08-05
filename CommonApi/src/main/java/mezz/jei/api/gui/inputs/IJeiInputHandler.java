@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.Rect2i;
 
 /**
  * An interface for things that want to receive user inputs like other JEI elements.
+ * If you want to do vanilla-like input handling instead, use {@link IJeiGuiEventListener}.
  *
  * @since 11.7.0
  */
@@ -51,9 +52,9 @@ public interface IJeiInputHandler {
 	 *  need a simulate step. The immediate handling of the key press will feel fast and responsive.
 	 *
 	 *
-	 * @param mouseX    the X position of the mouse, relative to the parent element.
-	 * @param mouseY    the Y position of the mouse, relative to the parent element.
-	 * @param input the current input, it may be a click or a keyboard key
+	 * @param mouseX the X position of the mouse, relative to the parent element.
+	 * @param mouseY the Y position of the mouse, relative to the parent element.
+	 * @param input  the current input, it may be a click or a keyboard key
 	 * @return true if the input was handled (or could be handled), false otherwise
 	 *
 	 * @since 11.7.0
@@ -66,8 +67,8 @@ public interface IJeiInputHandler {
 	 * Called when a player scrolls the mouse on the widget.
 	 * Useful for implementing scroll boxes, and other interactions.
 	 *
-	 * @param mouseX   the X position of the mouse, relative to the parent element.
-	 * @param mouseY   the Y position of the mouse, relative to the parent element.
+	 * @param mouseX       the X position of the mouse, relative to the parent element.
+	 * @param mouseY       the Y position of the mouse, relative to the parent element.
 	 * @param scrollDeltaY the amount of vertical scrolling.
 	 * @return true if the scrolling was handled, false otherwise.
 	 *
@@ -81,11 +82,11 @@ public interface IJeiInputHandler {
 	 * Called when a player drags the mouse on the target.
 	 * Useful for implementing scroll bars and other interactions.
 	 *
-	 * @param mouseX the X position of the mouse, relative to the parent element.
-	 * @param mouseY the Y position of the mouse, relative to the parent element.
+	 * @param mouseX   the X position of the mouse, relative to the parent element.
+	 * @param mouseY   the Y position of the mouse, relative to the parent element.
 	 * @param mouseKey the currently pressed mouse key
-	 * @param dragX the amount of horizontal dragging.
-	 * @param dragY the amount of vertical dragging.
+	 * @param dragX    the amount of horizontal dragging.
+	 * @param dragY    the amount of vertical dragging.
 	 * @return true if the scrolling was handled, false otherwise.
 	 *
 	 * @since 11.7.0

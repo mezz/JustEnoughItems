@@ -77,7 +77,10 @@ public interface IRecipeLayoutDrawable<R> {
 	/**
 	 * Get the recipe slot currently under the mouse, if there is one.
 	 * @since 11.5.0
+	 *
+	 * @deprecated use {@link #getSlotUnderMouse(double, double)}
 	 */
+	@Deprecated
 	Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY);
 
 	/**

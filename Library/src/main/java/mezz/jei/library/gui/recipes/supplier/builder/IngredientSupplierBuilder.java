@@ -6,9 +6,11 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.gui.recipes.RecipeLayoutIngredientSupplier;
+import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotIngredients;
 import mezz.jei.library.ingredients.IIngredientSupplier;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,6 +62,10 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 	}
 
 	public IIngredientSupplier buildIngredientSupplier() {
-		return new RecipeLayoutIngredientSupplier(this.ingredientSlotBuilders);
+		List<RecipeSlotIngredients> slots = this.ingredientSlotBuilders.entrySet()
+			.stream()
+			.map(entry -> entry.getValue().getRecipeSlotIngredients(entry.getKey()))
+			.toList();
+		return new RecipeLayoutIngredientSupplier(slots);
 	}
 }

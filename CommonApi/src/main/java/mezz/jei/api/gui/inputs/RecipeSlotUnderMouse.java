@@ -9,8 +9,8 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
  * This class includes an offset to help determine where the slot is, relative to the caller, when getting a slot under the mouse.
  *
  * @param slot the slot under the mouse
- * @param x the X offset for this slot, relative to the caller
- * @param y the Y offset for this slot, relative to the caller
+ * @param x    the X offset for this slot, relative to the caller
+ * @param y    the Y offset for this slot, relative to the caller
  *
  * @since 11.7.0
  */

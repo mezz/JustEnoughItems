@@ -71,7 +71,6 @@ public final class StringUtil {
 			.collect(Collectors.joining(", "));
 	}
 
-
 	public static void drawCenteredStringWithShadow(PoseStack poseStack, Font font, String string, ImmutableRect2i area) {
 		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, string);
 		Screen.drawString(poseStack, font, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);

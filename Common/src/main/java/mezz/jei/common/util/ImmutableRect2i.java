@@ -286,4 +286,8 @@ public record ImmutableRect2i(
 	public Rect2i toMutable() {
 		return new Rect2i(x, y, width, height);
 	}
+
+	public ImmutablePoint2i getPosition() {
+		return new ImmutablePoint2i(x, y);
+	}
 }

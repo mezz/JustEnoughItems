@@ -8,6 +8,9 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -16,13 +19,16 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.core.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
+import mezz.jei.library.gui.recipes.RecipeLayoutIngredientSupplier;
 import mezz.jei.library.gui.recipes.ShapelessIcon;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
+import mezz.jei.library.ingredients.IIngredientSupplier;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,9 +42,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
+public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtrasBuilder {
 	private final List<RecipeSlotBuilder> visibleSlots = new ArrayList<>();
+	private final List<InvisibleRecipeLayoutSlotSource> invisibleSlots = new ArrayList<>();
 	private final List<List<RecipeSlotBuilder>> focusLinkedSlots = new ArrayList<>();
+	private final List<IJeiInputHandler> inputHandlers = new ArrayList<>();
+	private final List<IJeiGuiEventListener> guiEventListeners = new ArrayList<>();
 
 	private final IIngredientManager ingredientManager;
 	private final IRecipeCategory<T> recipeCategory;
@@ -80,7 +89,21 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 
 	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
-		return new RecipeSlotBuilder(ingredientManager, nextSlotIndex++, role, 0, 0);
+		InvisibleRecipeLayoutSlotSource slot = new InvisibleRecipeLayoutSlotSource(ingredientManager, role);
+		this.invisibleSlots.add(slot);
+		return slot;
+	}
+
+	@Override
+	public void addInputHandler(IJeiInputHandler inputHandler) {
+		ErrorUtil.checkNotNull(inputHandler, "inputHandler");
+		this.inputHandlers.add(inputHandler);
+	}
+
+	@Override
+	public void addGuiEventListener(IJeiGuiEventListener guiEventListener) {
+		ErrorUtil.checkNotNull(guiEventListener, "guiEventListener");
+		this.guiEventListeners.add(guiEventListener);
 	}
 
 	@Override
@@ -134,6 +157,22 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 		this.focusLinkedSlots.add(builders);
 	}
 
+	public boolean isEmpty() {
+		return this.visibleSlots.isEmpty() &&
+			this.invisibleSlots.isEmpty();
+	}
+
+	public IIngredientSupplier buildIngredientSupplier() {
+		List<RecipeSlotIngredients> ingredients = new ArrayList<>();
+		for (RecipeSlotBuilder slot : this.visibleSlots) {
+			ingredients.add(slot.getRecipeSlotIngredients());
+		}
+		for (InvisibleRecipeLayoutSlotSource slot : this.invisibleSlots) {
+			ingredients.add(slot.getRecipeSlotIngredients());
+		}
+		return new RecipeLayoutIngredientSupplier(ingredients);
+	}
+
 	public RecipeLayout<T> buildRecipeLayout(
 		IFocusGroup focuses,
 		Collection<IRecipeCategoryDecorator<T>> recipeCategoryDecorators,
@@ -184,6 +223,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			shapelessIcon,
 			recipeTransferButtonPosition,
 			slots,
+			inputHandlers,
+			guiEventListeners,
 			cycleTicker
 		);
 	}

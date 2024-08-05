@@ -25,13 +25,6 @@ import java.util.List;
 @ApiStatus.NonExtendable
 public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	/**
-	 * Get the position and size of the recipe slot drawable relative to its parent element.
-	 *
-	 * @since 11.5.0
-	 */
-	Rect2i getRect();
-
-	/**
 	 * Draws the recipe slot relative to the pose stack.
 	 *
 	 * @since 11.5.0
@@ -71,15 +64,6 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	void getTooltip(ITooltipBuilder tooltipBuilder);
 
 	/**
-	 * Add a tooltip callback to be called when the mouse is hovering over this recipe slot.
-	 *
-	 * @since 11.5.0
-	 * @deprecated use {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)} instead, when creating the slot
-	 */
-	@Deprecated(since = "11.30.1", forRemoval = true)
-	void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback);
-
-	/**
 	 * Return true if the mouse is over the slot.
 	 *
 	 * @param mouseX relative to its parent element.
@@ -88,4 +72,31 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 * @since 11.7.0
 	 */
 	boolean isMouseOver(double mouseX, double mouseY);
+
+	/**
+	 * Move this slot to the given position.
+	 * @param x the new x coordinate, relative to its parent element.
+	 * @param y the new y coordinate, relative to its parent element.
+	 *
+	 * @since 11.31.0
+	 */
+	void setPosition(int x, int y);
+
+	/**
+	 * Get the position and size of the recipe slot drawable relative to its parent element.
+	 *
+	 * @since 11.5.0
+	 * @deprecated use {@link #isMouseOver(double, double)} to check if the mouse is over the slot
+	 */
+	@Deprecated(since = "11.31.0", forRemoval = true)
+	Rect2i getRect();
+
+	/**
+	 * Add a tooltip callback to be called when the mouse is hovering over this recipe slot.
+	 *
+	 * @since 11.5.0
+	 * @deprecated use {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)} instead, when creating the slot
+	 */
+	@Deprecated(since = "11.30.1", forRemoval = true)
+	void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback);
 }

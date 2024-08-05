@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -66,10 +67,12 @@ public class RecipeMap {
 
 	public <T> void addRecipe(RecipeType<T> recipeType, T recipe, IIngredientSupplier ingredientSupplier) {
 		Set<Object> ingredientUids = new HashSet<>();
-		Collection<ITypedIngredient<?>> ingredients = ingredientSupplier.getIngredients(this.role);
-		for (ITypedIngredient<?> ingredient : ingredients) {
-			Object ingredientUid = getIngredientUid(ingredient);
-			ingredientUids.add(ingredientUid);
+		Collection<Optional<ITypedIngredient<?>>> ingredients = ingredientSupplier.getIngredients(this.role);
+		for (Optional<ITypedIngredient<?>> ingredient : ingredients) {
+			if (ingredient.isPresent()) {
+				Object ingredientUid = getIngredientUid(ingredient.get());
+				ingredientUids.add(ingredientUid);
+			}
 		}
 
 		if (!ingredientUids.isEmpty()) {

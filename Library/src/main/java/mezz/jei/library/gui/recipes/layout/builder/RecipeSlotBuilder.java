@@ -15,15 +15,15 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.elements.OffsetDrawable;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
+import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.library.gui.ingredients.ICycler;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RendererOverrides;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import mezz.jei.library.render.FluidTankRenderer;
-import mezz.jei.common.platform.IPlatformFluidHelperInternal;
-import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
@@ -224,6 +224,14 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 			this.rect.getY(),
 			rendererOverrides.getIngredientWidth(),
 			rendererOverrides.getIngredientHeight()
+		);
+	}
+
+	public RecipeSlotIngredients getRecipeSlotIngredients() {
+		return new RecipeSlotIngredients(
+			this.role,
+			this.ingredients.getAllIngredients(),
+			this.ingredients.getIngredientTypes().toList()
 		);
 	}
 }

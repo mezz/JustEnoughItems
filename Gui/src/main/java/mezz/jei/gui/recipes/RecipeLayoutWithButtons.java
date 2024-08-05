@@ -102,6 +102,9 @@ public record RecipeLayoutWithButtons<R>(
 	public void tick(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
 		recipeLayout.tick();
 		updateTransferButton(parentContainer, player);
+		if (bookmarkButton != null) {
+			bookmarkButton.tick();
+		}
 	}
 
 	@Override
@@ -131,7 +134,6 @@ public record RecipeLayoutWithButtons<R>(
 	public int getMissingCountHint() {
 		return transferButton.getMissingCountHint();
 	}
-
 	private record RecipeLayoutUserInputHandler<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IUserInputHandler {
 
 		@Override
@@ -183,9 +185,9 @@ public record RecipeLayoutWithButtons<R>(
 		}
 
 		@Override
-		public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaY) {
+		public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
 			if (recipeLayout.isMouseOver(mouseX, mouseY) &&
-				recipeLayout.getInputHandler().handleMouseScrolled(mouseX, mouseY, scrollDeltaY)
+				recipeLayout.getInputHandler().handleMouseScrolled(mouseX, mouseY, scrollDelta)
 			) {
 				return Optional.of(this);
 			}

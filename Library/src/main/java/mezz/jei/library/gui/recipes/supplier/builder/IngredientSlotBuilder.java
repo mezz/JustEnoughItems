@@ -6,13 +6,16 @@ import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
+import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotIngredients;
 import mezz.jei.library.ingredients.SimpleIngredientAcceptor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -106,5 +109,20 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 
 	public List<ITypedIngredient<?>> getAllIngredients() {
 		return this.ingredients.getAllIngredients();
+	}
+
+	public RecipeSlotIngredients getRecipeSlotIngredients(RecipeIngredientRole role) {
+		List<Optional<ITypedIngredient<?>>> ingredients = new ArrayList<>();
+		List<IIngredientType<?>> types = new ArrayList<>();
+
+		for (ITypedIngredient<?> ingredient : getAllIngredients()) {
+			ingredients.add(Optional.of(ingredient));
+			IIngredientType<?> type = ingredient.getType();
+			if (!types.contains(type)) {
+				types.add(type);
+			}
+		}
+
+		return new RecipeSlotIngredients(role, ingredients, types);
 	}
 }
