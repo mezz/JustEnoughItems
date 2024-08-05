@@ -40,7 +40,10 @@ public interface IModIdHelper {
 	 *
 	 * If {@link #isDisplayingModNameEnabled()} is false,
 	 * this will just return the tooltip without adding the mod name.
+	 *
+	 * @deprecated use {@link #getModNameForTooltip(ITypedIngredient)}
 	 */
+	@Deprecated(since = "11.30.1", forRemoval = true)
 	<T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper);
 
 	/**
@@ -50,7 +53,10 @@ public interface IModIdHelper {
 	 * this will just return the tooltip without adding the mod name.
 	 *
 	 * @since 11.5.0
+	 *
+	 * @deprecated use {@link #getModNameForTooltip(ITypedIngredient)}
 	 */
+	@Deprecated(since = "11.30.1", forRemoval = true)
 	<T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient);
 
 	/**

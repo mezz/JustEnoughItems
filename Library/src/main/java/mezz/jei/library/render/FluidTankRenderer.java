@@ -8,9 +8,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.GameRenderer;
@@ -25,7 +27,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
@@ -225,16 +226,31 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		tessellator.end();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public List<Component> getTooltip(T fluidStack, TooltipFlag tooltipFlag) {
+		try {
+			JeiTooltip jeiTooltip = new JeiTooltip();
+			getTooltip(jeiTooltip, fluidStack, tooltipFlag);
+			return jeiTooltip.toLegacyToComponents();
+		} catch (RuntimeException e) {
+			Component displayName = fluidHelper.getDisplayName(fluidStack);
+			LOGGER.error("Failed to get tooltip for fluid: {}", displayName, e);
+		}
+
+		return List.of();
+	}
+
+	@Override
+	public void getTooltip(ITooltipBuilder tooltip, T fluidStack, TooltipFlag tooltipFlag) {
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluidType = type.getBase(fluidStack);
 		try {
 			if (fluidType.isSame(Fluids.EMPTY)) {
-				return new ArrayList<>();
+				return;
 			}
 
-			List<Component> tooltip = fluidHelper.getTooltip(fluidStack, tooltipFlag);
+			fluidHelper.getTooltip(tooltip, fluidStack, tooltipFlag);
 
 			long amount = fluidHelper.getAmount(fluidStack);
 			long milliBuckets = (amount * 1000) / fluidHelper.bucketVolume();
@@ -246,13 +262,10 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 				MutableComponent amountString = Component.translatable("jei.tooltip.liquid.amount", nf.format(milliBuckets));
 				tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
 			}
-			return tooltip;
 		} catch (RuntimeException e) {
 			Component displayName = fluidHelper.getDisplayName(fluidStack);
 			LOGGER.error("Failed to get tooltip for fluid: {}", displayName, e);
 		}
-
-		return new ArrayList<>();
 	}
 
 	@Override

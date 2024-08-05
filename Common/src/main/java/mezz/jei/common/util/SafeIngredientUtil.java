@@ -58,7 +58,7 @@ public final class SafeIngredientUtil {
 
 		tooltip.setIngredient(typedIngredient);
 		try {
-			tooltip.addAll(ingredientRenderer.getTooltip(ingredient, tooltipFlag));
+			ingredientRenderer.getTooltip(tooltip, ingredient, tooltipFlag);
 			if (CRASHING_INGREDIENT_RENDERERS.contains(ingredient)) {
 				getRenderErrorTooltip(tooltip);
 			}

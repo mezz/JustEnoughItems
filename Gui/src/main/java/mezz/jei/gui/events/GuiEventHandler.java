@@ -140,7 +140,7 @@ public class GuiEventHandler {
 				.findFirst()
 				.ifPresent(area -> {
 					JeiTooltip tooltip = new JeiTooltip();
-					tooltip.addAll(area.getTooltipStrings());
+					area.getTooltip(tooltip);
 					if (tooltip.isEmpty()) {
 						tooltip.add(Component.translatable("jei.tooltip.show.recipes"));
 					}

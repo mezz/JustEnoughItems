@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -13,8 +14,8 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.common.Constants;
-import mezz.jei.library.recipes.ExtendableRecipeCategoryHelper;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.library.recipes.ExtendableRecipeCategoryHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -79,6 +80,13 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 		extension.drawInfo(recipeWidth, recipeHeight, poseStack, mouseX, mouseY);
 	}
 
+	@Override
+	public void getTooltip(ITooltipBuilder tooltip, CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
+		extension.getTooltip(tooltip, mouseX, mouseY);
+	}
+
+	@SuppressWarnings({"removal"})
 	@Override
 	public List<Component> getTooltipStrings(CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);

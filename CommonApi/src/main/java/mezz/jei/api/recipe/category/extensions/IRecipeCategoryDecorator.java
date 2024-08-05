@@ -1,6 +1,7 @@
 package mezz.jei.api.recipe.category.extensions;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -23,7 +24,7 @@ public interface IRecipeCategoryDecorator<T> {
 	/**
 	 * Draw extras or additional info about the recipe after the {@link IRecipeCategory} that
 	 * this decorator is registered to has drawn.
-	 * Tooltips are handled by {@link #decorateExistingTooltips(List, Object, IRecipeCategory, IRecipeSlotsView, double, double)}.
+	 * Tooltips are handled by {@link #decorateTooltips(ITooltipBuilder, Object, IRecipeCategory, IRecipeSlotsView, double, double)}.
 	 *
 	 * @param recipe          the current recipe being drawn.
 	 * @param recipeCategory  the recipe category of the recipe.
@@ -57,8 +58,27 @@ public interface IRecipeCategoryDecorator<T> {
 	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
 	 *
 	 * @since 11.8.0
+	 * @deprecated use {@link #decorateTooltips(ITooltipBuilder, Object, IRecipeCategory, IRecipeSlotsView, double, double)}
 	 */
+	@Deprecated(since = "11.30.1", forRemoval = true)
 	default List<Component> decorateExistingTooltips(List<Component> tooltips, T recipe, IRecipeCategory<T> recipeCategory, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
 		return tooltips;
+	}
+
+	/**
+	 * Allows adding to existing tooltips added by the {@link IRecipeCategory} that
+	 * this decorator is registered to.
+	 *
+	 * @param tooltip         the existing tooltip strings.
+	 * @param recipe          the current recipe being drawn.
+	 * @param recipeCategory  the recipe category of the recipe.
+	 * @param recipeSlotsView a view of the current recipe slots being drawn.
+	 * @param mouseX          the X position of the mouse, relative to the recipe.
+	 * @param mouseY          the Y position of the mouse, relative to the recipe.
+	 *
+	 * @since 11.30.1
+	 */
+	default void decorateTooltips(ITooltipBuilder tooltip, T recipe, IRecipeCategory<T> recipeCategory, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+
 	}
 }

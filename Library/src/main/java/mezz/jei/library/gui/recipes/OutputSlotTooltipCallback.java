@@ -1,5 +1,6 @@
 package mezz.jei.library.gui.recipes;
 
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -35,6 +36,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 		this.recipeFromSameModAsCategory = recipeName.getNamespace().equals(recipeType.getUid().getNamespace());
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
 		if (recipeSlotView.getRole() != RecipeIngredientRole.OUTPUT) {
@@ -56,6 +58,47 @@ public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 	}
 
 	private void addRecipeBy(List<Component> tooltip, ITypedIngredient<?> displayedIngredient) {
+		if (recipeFromSameModAsCategory) {
+			return;
+		}
+		IModIdHelper modIdHelper = Internal.getJeiRuntime().getJeiHelpers().getModIdHelper();
+		if (!modIdHelper.isDisplayingModNameEnabled()) {
+			return;
+		}
+		String ingredientModId = getDisplayModId(displayedIngredient);
+		if (ingredientModId == null) {
+			return;
+		}
+		String recipeModId = recipeName.getNamespace();
+		if (recipeModId.equals(ingredientModId)) {
+			return;
+		}
+		String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
+		MutableComponent recipeBy = Component.translatable("jei.tooltip.recipe.by", modName);
+		tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
+	}
+
+	@Override
+	public void onRichTooltip(IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
+		if (recipeSlotView.getRole() != RecipeIngredientRole.OUTPUT) {
+			return;
+		}
+		Optional<ITypedIngredient<?>> displayedIngredient = recipeSlotView.getDisplayedIngredient();
+		if (displayedIngredient.isEmpty()) {
+			return;
+		}
+
+		addRecipeBy(tooltip, displayedIngredient.get());
+
+		Minecraft minecraft = Minecraft.getInstance();
+		boolean showAdvanced = minecraft.options.advancedItemTooltips || Screen.hasShiftDown();
+		if (showAdvanced) {
+			MutableComponent recipeId = Component.translatable("jei.tooltip.recipe.id", Component.literal(recipeName.toString()));
+			tooltip.add(recipeId.withStyle(ChatFormatting.DARK_GRAY));
+		}
+	}
+
+	private void addRecipeBy(ITooltipBuilder tooltip, ITypedIngredient<?> displayedIngredient) {
 		if (recipeFromSameModAsCategory) {
 			return;
 		}

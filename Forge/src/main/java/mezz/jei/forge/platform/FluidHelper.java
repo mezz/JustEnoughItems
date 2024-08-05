@@ -1,6 +1,7 @@
 package mezz.jei.forge.platform;
 
 import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
@@ -26,8 +27,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
@@ -66,11 +65,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	}
 
 	@Override
-	public List<Component> getTooltip(FluidStack ingredient, TooltipFlag tooltipFlag) {
-		List<Component> tooltip = new ArrayList<>();
+	public void getTooltip(ITooltipBuilder tooltip, FluidStack ingredient, TooltipFlag tooltipFlag) {
 		Fluid fluid = ingredient.getFluid();
 		if (fluid.isSame(Fluids.EMPTY)) {
-			return tooltip;
+			return;
 		}
 
 		Component displayName = getDisplayName(ingredient);
@@ -84,8 +82,6 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 				tooltip.add(advancedId);
 			}
 		}
-
-		return tooltip;
 	}
 
 	@Override

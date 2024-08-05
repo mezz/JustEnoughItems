@@ -26,6 +26,7 @@ public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 		return Type.USER_FACING;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public void showError(PoseStack poseStack, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
 

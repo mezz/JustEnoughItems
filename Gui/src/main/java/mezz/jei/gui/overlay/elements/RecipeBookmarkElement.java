@@ -121,7 +121,6 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 		ITypedIngredient<R> recipeOutput = recipeBookmark.getRecipeOutput();
 		T recipe = recipeBookmark.getRecipe();
 		IRecipeCategory<T> recipeCategory = recipeBookmark.getRecipeCategory();
-
 		tooltip.add(Component.translatable("jei.tooltip.bookmarks.recipe", recipeCategory.getTitle()));
 		addBookmarkTooltipFeaturesIfEnabled(tooltip);
 
@@ -142,6 +141,7 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 		}
 
 		tooltip.add(Component.empty());
+
 		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
 	}
 
