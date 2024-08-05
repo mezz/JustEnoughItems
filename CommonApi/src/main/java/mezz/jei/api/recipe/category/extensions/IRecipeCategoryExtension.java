@@ -1,6 +1,7 @@
 package mezz.jei.api.recipe.category.extensions;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import net.minecraft.client.gui.GuiGraphics;
 import java.util.Collections;
 import java.util.List;
@@ -8,7 +9,6 @@ import java.util.List;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.network.chat.Component;
@@ -41,13 +41,31 @@ public interface IRecipeCategoryExtension<T> {
 	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
 	 *
 	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
-	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltipStrings(Object, IRecipeSlotsView, double, double)}
+	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltip}
+	 *
+	 * @param mouseX the X position of the mouse, relative to the recipe.
+	 * @param mouseY the Y position of the mouse, relative to the recipe.
+	 * @since 19.5.4
+	 */
+	default void getTooltip(ITooltipBuilder tooltip, T recipe, double mouseX, double mouseY) {
+		List<Component> tooltipStrings = getTooltipStrings(recipe, mouseX, mouseY);
+		tooltip.addAll(tooltipStrings);
+	}
+
+	/**
+	 * Get the tooltip for whatever is under the mouse.
+	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
+	 *
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltip}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
 	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
 	 * @since 16.0.0
+	 * @deprecated use {@link #getTooltip}
 	 */
+	@Deprecated(since = "19.5.4", forRemoval = true)
 	default List<Component> getTooltipStrings(T recipe, double mouseX, double mouseY) {
 		return getTooltipStrings(mouseX, mouseY);
 	}
@@ -96,7 +114,7 @@ public interface IRecipeCategoryExtension<T> {
 	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
 	 *
 	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
-	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltipStrings(Object, IRecipeSlotsView, double, double)}
+	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltip}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.

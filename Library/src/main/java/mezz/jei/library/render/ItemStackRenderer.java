@@ -1,6 +1,7 @@
 package mezz.jei.library.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
@@ -30,12 +31,22 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		}
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public List<Component> getTooltip(ItemStack ingredient, TooltipFlag tooltipFlag) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Player player = minecraft.player;
 		Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
 		return ingredient.getTooltipLines(tooltipContext, player, tooltipFlag);
+	}
+
+	@Override
+	public void getTooltip(ITooltipBuilder tooltip, ItemStack ingredient, TooltipFlag tooltipFlag) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Player player = minecraft.player;
+		Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
+		List<Component> tooltipLines = ingredient.getTooltipLines(tooltipContext, player, tooltipFlag);
+		tooltip.addAll(tooltipLines);
 	}
 
 	@Override

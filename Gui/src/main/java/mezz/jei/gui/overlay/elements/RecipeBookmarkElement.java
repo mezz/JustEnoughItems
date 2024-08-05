@@ -127,9 +127,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	}
 
 	@Override
-	public JeiTooltip getTooltip(IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<I> ingredientRenderer, IIngredientHelper<I> ingredientHelper) {
-		JeiTooltip tooltip = new JeiTooltip();
-
+	public void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<I> ingredientRenderer, IIngredientHelper<I> ingredientHelper) {
 		ITypedIngredient<I> recipeOutput = recipeBookmark.getRecipeOutput();
 		R recipe = recipeBookmark.getRecipe();
 
@@ -156,10 +154,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 
 		tooltip.add(Component.empty());
 
-		List<Component> outputTooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, recipeOutput);
-		tooltip.addAll(outputTooltip);
-
-		return tooltip;
+		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
 	}
 
 	private void addBookmarkTooltipFeaturesIfEnabled(JeiTooltip tooltip) {

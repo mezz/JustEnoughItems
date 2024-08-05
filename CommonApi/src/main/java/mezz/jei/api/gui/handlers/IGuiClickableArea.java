@@ -1,5 +1,6 @@
 package mezz.jei.api.gui.handlers;
 
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IRecipesGui;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface IGuiClickableArea {
 	/**
 	 * The hover/click area for this {@link IGuiClickableArea}.
-	 * When hovered, the message from {@link #getTooltipStrings()} will be displayed.
+	 * When hovered, the message from {@link #getTooltip} will be displayed.
 	 * When clicked, {@link #onClick(IFocusFactory, IRecipesGui)} will be called.
 	 *
 	 * Area is in gui-relative coordinates (not absolute Screen coordinates).
@@ -22,7 +23,7 @@ public interface IGuiClickableArea {
 
 	/**
 	 * Returns whether the area should render a tooltip when hovered over.
-	 * The tooltip can be modified by overriding {@link #getTooltipStrings()}.
+	 * The tooltip can be modified by overriding {@link #getTooltip}.
 	 * This will also disable the default "Show Recipes" message.
 	 *
 	 * @since 11.2.2
@@ -34,9 +35,23 @@ public interface IGuiClickableArea {
 	/**
 	 * Returns the strings to be shown on the tooltip when this area is hovered over.
 	 * Return an empty list to display the default "Show Recipes" message.
+	 *
+	 * @deprecated use {@link #getTooltip(ITooltipBuilder)}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "19.5.4", forRemoval = true)
 	default List<Component> getTooltipStrings() {
 		return Collections.emptyList();
+	}
+
+	/**
+	 * Add the tooltip elements to be shown on the tooltip when this area is hovered over.
+	 * Leave it empty to display the default "Show Recipes" message.
+	 *
+	 * @since 19.5.4
+	 */
+	default void getTooltip(ITooltipBuilder tooltip) {
+		tooltip.addAll(getTooltipStrings());
 	}
 
 	/**

@@ -15,7 +15,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -40,15 +39,13 @@ public final class IngredientGridTooltipHelper {
 		this.colorHelper = colorHelper;
 	}
 
-	public <T> JeiTooltip getIngredientTooltip(
+	public <T> void getIngredientTooltip(
+		JeiTooltip tooltip,
 		ITypedIngredient<T> typedIngredient,
 		IIngredientRenderer<T> ingredientRenderer,
 		IIngredientHelper<T> ingredientHelper
 	) {
-		List<Component> ingredientTooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, typedIngredient);
-
-		JeiTooltip tooltip = new JeiTooltip();
-		tooltip.addAll(ingredientTooltip);
+		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 
 		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
 			addColorSearchInfoToTooltip(tooltip, typedIngredient, ingredientHelper);
@@ -57,8 +54,6 @@ public final class IngredientGridTooltipHelper {
 		if (toggleState.isEditModeEnabled()) {
 			addEditModeInfoToTooltip(tooltip, keyBindings);
 		}
-
-		return tooltip;
 	}
 
 	private <T> void addColorSearchInfoToTooltip(JeiTooltip tooltip, ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {

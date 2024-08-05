@@ -93,7 +93,7 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 			Component tooltipTransfer = Component.translatable("jei.tooltip.transfer");
 			tooltip.add(tooltipTransfer);
 		} else {
-			tooltip.addAll(recipeTransferError.getTooltip());
+			recipeTransferError.getTooltip(tooltip);
 		}
 	}
 

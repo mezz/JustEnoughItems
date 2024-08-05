@@ -2,6 +2,7 @@ package mezz.jei.fabric.platform;
 
 import mezz.jei.api.fabric.constants.FabricTypes;
 import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -58,9 +59,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	}
 
 	@Override
-	public List<Component> getTooltip(IJeiFluidIngredient ingredient, TooltipFlag tooltipFlag) {
+	public void getTooltip(ITooltipBuilder tooltip, IJeiFluidIngredient ingredient, TooltipFlag tooltipFlag) {
 		FluidVariant fluidVariant = ingredient.getFluidVariant();
-		return FluidVariantRendering.getTooltip(fluidVariant, tooltipFlag);
+		List<Component> components = FluidVariantRendering.getTooltip(fluidVariant, tooltipFlag);
+		tooltip.addAll(components);
 	}
 
 	@Override

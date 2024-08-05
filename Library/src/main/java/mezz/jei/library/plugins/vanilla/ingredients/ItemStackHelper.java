@@ -211,7 +211,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
-	public Optional<ResourceLocation> getTagEquivalent(Collection<ItemStack> ingredients) {
+	public Optional<TagKey<?>> getTagKeyEquivalent(Collection<ItemStack> ingredients) {
 		Registry<Item> itemRegistry = RegistryUtil.getRegistry(Registries.ITEM);
 		return TagUtil.getTagEquivalent(ingredients, ItemStack::getItem, itemRegistry::getTags);
 	}

@@ -1,5 +1,6 @@
 package mezz.jei.library.transfer;
 
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -23,8 +24,14 @@ public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 		return Type.USER_FACING;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public List<Component> getTooltip() {
 		return Collections.unmodifiableList(message);
+	}
+
+	@Override
+	public void getTooltip(ITooltipBuilder tooltip) {
+		tooltip.addAll(message);
 	}
 }

@@ -297,8 +297,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			h.getDisplayedIngredient()
 				.ifPresent(i -> {
 					JeiTooltip tooltip = new JeiTooltip();
-					tooltip.addAll(h.getTooltip());
-					tooltip.draw(guiGraphics, mouseX, mouseY, i);
+					h.getTooltip(tooltip);
+					tooltip.draw(guiGraphics, mouseX, mouseY);
 				})
 		);
 		RenderSystem.enableDepthTest();

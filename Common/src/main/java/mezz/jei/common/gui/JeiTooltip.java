@@ -1,6 +1,7 @@
 package mezz.jei.common.gui;
 
 import com.mojang.datafixers.util.Either;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -26,20 +27,30 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class JeiTooltip {
-	private final List<Either<FormattedText, TooltipComponent>> list = new ArrayList<>();
+public class JeiTooltip implements ITooltipBuilder {
+	private final List<Either<FormattedText, TooltipComponent>> lines = new ArrayList<>();
+	private @Nullable ITypedIngredient<?> typedIngredient;
 
+	@Override
 	public void add(FormattedText formattedText) {
-		list.add(Either.left(formattedText));
+		lines.add(Either.left(formattedText));
 	}
 
+	@Override
 	public void add(TooltipComponent component) {
-		list.add(Either.right(component));
+		lines.add(Either.right(component));
+	}
+
+	@Override
+	public void setIngredient(ITypedIngredient<?> typedIngredient) {
+		this.typedIngredient = typedIngredient;
 	}
 
 	public void addKeyUsageComponent(String translationKey, IJeiKeyMapping keyMapping) {
@@ -56,23 +67,36 @@ public class JeiTooltip {
 		add(component);
 	}
 
-	public void addAll(List<? extends FormattedText> components) {
+	@Override
+	public void addAll(Collection<? extends FormattedText> components) {
 		for (FormattedText component : components) {
 			add(component);
 		}
 	}
 
 	public void addAll(JeiTooltip tooltip) {
-		list.addAll(tooltip.list);
+		lines.addAll(tooltip.lines);
 	}
 
 	public boolean isEmpty() {
-		return list.isEmpty();
+		return lines.isEmpty() && typedIngredient == null;
+	}
+
+	public List<Component> toLegacyToComponents() {
+		return lines.stream()
+			.<Component>mapMulti((e, consumer) -> {
+				e.left().ifPresent(f -> {
+					if (f instanceof Component c) {
+						consumer.accept(c);
+					}
+				});
+			})
+			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
 	public String toString() {
-		return list.stream()
+		return lines.stream()
 			.map(e -> e.map(
 				FormattedText::getString,
 				Object::toString
@@ -81,6 +105,10 @@ public class JeiTooltip {
 	}
 
 	public void draw(GuiGraphics guiGraphics, int x, int y) {
+		if (typedIngredient != null) {
+			draw(guiGraphics, x, y, typedIngredient);
+			return;
+		}
 		if (isEmpty()) {
 			return;
 		}
@@ -88,13 +116,13 @@ public class JeiTooltip {
 		Font font = minecraft.font;
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		try {
-			renderHelper.renderTooltip(guiGraphics, list, x, y, font, ItemStack.EMPTY);
+			renderHelper.renderTooltip(guiGraphics, lines, x, y, font, ItemStack.EMPTY);
 		} catch (RuntimeException e) {
 			throw new RuntimeException("Crashed when rendering tooltip:\n" + this);
 		}
 	}
 
-	public <T> void draw(GuiGraphics guiGraphics, int x, int y, ITypedIngredient<T> typedIngredient) {
+	private <T> void draw(GuiGraphics guiGraphics, int x, int y, ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
@@ -116,7 +144,7 @@ public class JeiTooltip {
 
 		itemStack.getTooltipImage()
 			.ifPresent((c) -> {
-				list.add(1, Either.right(c));
+				lines.add(1, Either.right(c));
 			});
 
 		addDebugInfo(ingredientManager, typedIngredient);
@@ -131,7 +159,7 @@ public class JeiTooltip {
 		}
 		try {
 			IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-			renderHelper.renderTooltip(guiGraphics, list, x, y, font, itemStack);
+			renderHelper.renderTooltip(guiGraphics, lines, x, y, font, itemStack);
 		} catch (RuntimeException e) {
 			CrashReport crashReport = ErrorUtil.createIngredientCrashReport(e, "Rendering ingredient tooltip", ingredientManager, typedIngredient);
 			crashReport.addCategory("tooltip")

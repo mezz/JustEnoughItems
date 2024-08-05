@@ -2,7 +2,9 @@ package mezz.jei.forge.platform;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Either;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
@@ -10,7 +12,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
@@ -62,5 +67,32 @@ public class RenderHelper implements IPlatformRenderHelper {
 	@Override
 	public void renderTooltip(GuiGraphics guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack) {
 		guiGraphics.renderComponentTooltipFromElements(font, elements, x, y, stack);
+	}
+
+	@Override
+	public Component getName(TagKey<?> tagKey) {
+		String tagTranslationKey = getTagTranslationKey(tagKey);
+		return Component.translatableWithFallback(tagTranslationKey, "#" + tagKey.location());
+	}
+
+
+	private static String getTagTranslationKey(TagKey<?> tagKey) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("tag.");
+		ResourceLocation registryIdentifier = tagKey.registry().location();
+		ResourceLocation tagIdentifier = tagKey.location();
+		if (!registryIdentifier.getNamespace().equals(ModIds.MINECRAFT_ID)) {
+			stringBuilder.append(registryIdentifier.getNamespace()).append(".");
+		}
+
+		String registryId = ResourceLocationUtil.sanitizePath(registryIdentifier.getPath());
+		String tagId = ResourceLocationUtil.sanitizePath(tagIdentifier.getPath());
+
+		stringBuilder.append(registryId)
+			.append(".")
+			.append(tagIdentifier.getNamespace())
+			.append(".")
+			.append(tagId);
+		return stringBuilder.toString();
 	}
 }

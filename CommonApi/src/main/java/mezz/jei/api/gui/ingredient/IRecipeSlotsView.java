@@ -3,6 +3,7 @@ package mezz.jei.api.gui.ingredient;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,7 @@ public interface IRecipeSlotsView {
 	 *
 	 * @since 9.3.0
 	 */
+	@Unmodifiable
 	List<IRecipeSlotView> getSlotViews();
 
 	/**

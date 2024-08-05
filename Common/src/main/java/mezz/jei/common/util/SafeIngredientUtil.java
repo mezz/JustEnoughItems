@@ -3,6 +3,7 @@ package mezz.jei.common.util;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -19,8 +20,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.TooltipFlag;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public final class SafeIngredientUtil {
@@ -36,50 +35,47 @@ public final class SafeIngredientUtil {
 	private SafeIngredientUtil() {
 	}
 
-	public static <T> List<Component> getTooltip(IIngredientManager ingredientManager, IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> typedIngredient) {
+	public static <T> void getTooltip(ITooltipBuilder tooltip, IIngredientManager ingredientManager, IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> typedIngredient) {
 		Minecraft minecraft = Minecraft.getInstance();
 		TooltipFlag.Default tooltipFlag = minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
 		tooltipFlag = tooltipFlag.asCreative();
-		return getTooltip(ingredientManager, ingredientRenderer, typedIngredient, tooltipFlag);
+		getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient, tooltipFlag);
 	}
 
-	public static <T> List<Component> getTooltip(
+	public static <T> void getTooltip(
+		ITooltipBuilder tooltip,
 		IIngredientManager ingredientManager,
 		IIngredientRenderer<T> ingredientRenderer,
 		ITypedIngredient<T> typedIngredient,
 		TooltipFlag.Default tooltipFlag
 	) {
 		if (CRASHING_INGREDIENT_TOOLTIP_CACHE.getIfPresent(typedIngredient) == Boolean.TRUE) {
-			return getTooltipErrorTooltip();
+			getTooltipErrorTooltip(tooltip);
+			return;
 		}
 
+		tooltip.setIngredient(typedIngredient);
 		T ingredient = typedIngredient.getIngredient();
 		try {
-			List<Component> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
-			List<Component> tooltipCopy = new ArrayList<>(tooltip);
+			ingredientRenderer.getTooltip(tooltip, ingredient, tooltipFlag);
 			if (CRASHING_INGREDIENT_RENDER_CACHE.getIfPresent(typedIngredient) == Boolean.TRUE) {
-				tooltipCopy.addAll(getRenderErrorTooltip());
+				getRenderErrorTooltip(tooltip);
 			}
-			return tooltipCopy;
 		} catch (RuntimeException | LinkageError e) {
 			CRASHING_INGREDIENT_TOOLTIP_CACHE.put(typedIngredient, Boolean.TRUE);
 			ErrorUtil.logIngredientCrash(e, "Caught an error getting an Ingredient's tooltip", ingredientManager, typedIngredient);
-			return getTooltipErrorTooltip();
+			getTooltipErrorTooltip(tooltip);
 		}
 	}
 
-	private static List<Component> getTooltipErrorTooltip() {
-		List<Component> list = new ArrayList<>();
+	private static void getTooltipErrorTooltip(ITooltipBuilder tooltip) {
 		MutableComponent crash = Component.translatable("jei.tooltip.error.crash");
-		list.add(crash.withStyle(ChatFormatting.RED));
-		return list;
+		tooltip.add(crash.withStyle(ChatFormatting.RED));
 	}
 
-	private static List<Component> getRenderErrorTooltip() {
-		List<Component> list = new ArrayList<>();
+	private static void getRenderErrorTooltip(ITooltipBuilder tooltip) {
 		MutableComponent crash = Component.translatable("jei.tooltip.error.render.crash");
-		list.add(crash.withStyle(ChatFormatting.RED));
-		return list;
+		tooltip.add(crash.withStyle(ChatFormatting.RED));
 	}
 
 	public static <T> void render(GuiGraphics guiGraphics, IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> typedIngredient) {

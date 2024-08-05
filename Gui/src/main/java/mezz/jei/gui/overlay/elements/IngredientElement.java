@@ -45,8 +45,8 @@ public class IngredientElement<T> implements IElement<T> {
 	}
 
 	@Override
-	public JeiTooltip getTooltip(IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
-		return tooltipHelper.getIngredientTooltip(ingredient, ingredientRenderer, ingredientHelper);
+	public void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
+		tooltipHelper.getIngredientTooltip(tooltip, ingredient, ingredientRenderer, ingredientHelper);
 	}
 
 	@Override

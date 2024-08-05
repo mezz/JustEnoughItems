@@ -10,13 +10,16 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.common.Tags;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,5 +65,11 @@ public class RenderHelper implements IPlatformRenderHelper {
 	@Override
 	public void renderTooltip(GuiGraphics guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack) {
 		guiGraphics.renderComponentTooltipFromElements(font, elements, x, y, stack);
+	}
+
+	@Override
+	public Component getName(TagKey<?> tagKey) {
+		String tagTranslationKey = Tags.getTagTranslationKey(tagKey);
+		return Component.translatableWithFallback(tagTranslationKey, "#" + tagKey.location());
 	}
 }
