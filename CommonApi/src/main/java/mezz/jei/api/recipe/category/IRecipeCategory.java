@@ -11,6 +11,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
@@ -98,9 +99,11 @@ public interface IRecipeCategory<T> {
 	}
 
 	/**
-	 * Sets the extras for the recipe category, like input handlers.
+	 * Create per-recipe extras like {@link IRecipeWidget} and {@link IJeiInputHandler}.
 	 *
-	 * @see IRecipeExtrasBuilder
+	 * These have access to a specific recipe, and will persist as long as a recipe layout is on screen,
+	 * so they can be used for caching and displaying recipe-specific
+	 * information more easily than from the recipe category directly.
 	 *
 	 * @since 10.31.0
 	 */

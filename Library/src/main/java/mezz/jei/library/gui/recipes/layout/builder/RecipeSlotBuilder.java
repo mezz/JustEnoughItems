@@ -7,6 +7,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
@@ -43,6 +44,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private @Nullable IDrawable background;
 	private @Nullable IDrawable overlay;
 	private @Nullable String slotName;
+	private @Nullable ISlottedWidgetFactory<?> assignedWidgetFactory;
 
 	public RecipeSlotBuilder(IIngredientManager ingredientManager, RecipeIngredientRole role, int x, int y) {
 		this(ingredientManager, -1, role, x, y);
@@ -173,6 +175,18 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 
 		this.slotName = slotName;
 		return this;
+	}
+
+	public RecipeSlotBuilder assignToWidgetFactory(ISlottedWidgetFactory<?> widgetFactory) {
+		ErrorUtil.checkNotNull(widgetFactory, "widgetFactory");
+
+		this.assignedWidgetFactory = widgetFactory;
+		return this;
+	}
+
+	@Nullable
+	public ISlottedWidgetFactory<?> getAssignedWidget() {
+		return assignedWidgetFactory;
 	}
 
 	public IRecipeSlotDrawable build(IFocusGroup focusGroup, ICycler cycler) {

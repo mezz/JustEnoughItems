@@ -7,7 +7,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
- * Create per-recipe extras like {@link IJeiInputHandler}.
+ * Create per-recipe extras like {@link IRecipeWidget} and {@link IJeiInputHandler}.
  *
  * These have access to a specific recipe, and will persist as long as a recipe layout is on screen,
  * so they can be used for caching and displaying recipe-specific
@@ -15,10 +15,21 @@ import org.jetbrains.annotations.ApiStatus;
  *
  * An instance of this is given to your {@link IRecipeCategory#createRecipeExtras} method.
  *
+ * @see IRecipeWidget
+ * @see IJeiInputHandler
+ * @see IJeiGuiEventListener
+ *
  * @since 10.31.0
  */
 @ApiStatus.NonExtendable
 public interface IRecipeExtrasBuilder {
+	/**
+	 * Add a {@link IRecipeWidget} for the recipe category.
+	 *
+	 * @since 10.32.0
+	 */
+	void addWidget(IRecipeWidget widget);
+
 	/**
 	 * Add a {@link IJeiInputHandler} for the recipe category.
 	 *

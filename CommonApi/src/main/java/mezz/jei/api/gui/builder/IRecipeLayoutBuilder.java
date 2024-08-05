@@ -1,6 +1,7 @@
 package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -34,6 +35,16 @@ public interface IRecipeLayoutBuilder {
 	 * this new method does not have a hidden automatic 1 pixel offset. Sorry!
 	 */
 	IRecipeSlotBuilder addSlot(RecipeIngredientRole recipeIngredientRole, int x, int y);
+
+	/**
+	 * Assign this slot to a {@link ISlottedWidgetFactory},
+	 * so that the widget can manage this slot instead the recipe category.
+	 *
+	 * @param widgetFactory the {@link ISlottedWidgetFactory} to assign this slot to.
+	 *
+	 * @since 10.32.0
+	 */
+	IRecipeSlotBuilder addSlotToWidget(RecipeIngredientRole role, ISlottedWidgetFactory<?> widgetFactory);
 
 	/**
 	 * Add ingredients that are important for recipe lookup, but are not displayed on the recipe layout.

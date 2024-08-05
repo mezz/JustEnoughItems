@@ -39,9 +39,11 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	}
 
 	/**
-	 * Sets the extras for the recipe category, like input handlers.
+	 * Sets the extras for the recipe category, like input handlers and recipe widgets.
 	 *
-	 * @see IRecipeExtrasBuilder
+	 * Recipe Widgets persist as long as a recipe layout is on screen,
+	 * so they can be used for caching and displaying recipe-specific
+	 * information more easily than from the recipe category directly.
 	 *
 	 * @since 10.31.0
 	 */
