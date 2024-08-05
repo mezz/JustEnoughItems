@@ -1,4 +1,4 @@
-package mezz.jei.library.gui.recipes;
+package mezz.jei.library.gui.recipes.layout.builder;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -24,10 +24,9 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.core.collect.ListMultiMap;
-import mezz.jei.library.gui.recipes.layout.builder.InvisibleRecipeLayoutSlotSource;
-import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
-import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotIngredients;
-import mezz.jei.library.ingredients.IIngredientSupplier;
+import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
+import mezz.jei.library.gui.recipes.RecipeLayout;
+import mezz.jei.library.gui.recipes.ShapelessIcon;
 import mezz.jei.library.ingredients.IngredientAcceptor;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -45,7 +44,6 @@ import java.util.Set;
 // TODO: make IRecipeLayoutBuilder take a generic parameter for ISlottedWidgetFactory
 public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtrasBuilder {
 	private final List<RecipeSlotBuilder> slots = new ArrayList<>();
-	private final List<InvisibleRecipeLayoutSlotSource> invisibleSlots = new ArrayList<>();
 	private final List<List<RecipeSlotBuilder>> focusLinkedSlots = new ArrayList<>();
 	private final List<IRecipeWidget> widgets = new ArrayList<>();
 	private final List<IJeiInputHandler> inputHandlers = new ArrayList<>();
@@ -104,9 +102,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 
 	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
-		InvisibleRecipeLayoutSlotSource slot = new InvisibleRecipeLayoutSlotSource(ingredientManager, role);
-		this.invisibleSlots.add(slot);
-		return slot;
+		// invisible slots are only used by IngredientSupplierBuilder, and are ignored here
+		return IngredientAcceptorVoid.INSTANCE;
 	}
 
 	@Override
@@ -179,19 +176,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 	}
 
 	public boolean isEmpty() {
-		return slots.isEmpty() &&
-			invisibleSlots.isEmpty();
-	}
-
-	public IIngredientSupplier buildIngredientSupplier() {
-		List<RecipeSlotIngredients> ingredients = new ArrayList<>();
-		for (RecipeSlotBuilder slot : this.slots) {
-			ingredients.add(slot.getRecipeSlotIngredients());
-		}
-		for (InvisibleRecipeLayoutSlotSource slot : this.invisibleSlots) {
-			ingredients.add(slot.getRecipeSlotIngredients());
-		}
-		return new RecipeLayoutIngredientSupplier(ingredients);
+		return slots.isEmpty() && widgets.isEmpty() && inputHandlers.isEmpty() && guiEventListeners.isEmpty();
 	}
 
 	public RecipeLayout<T> buildRecipeLayout(

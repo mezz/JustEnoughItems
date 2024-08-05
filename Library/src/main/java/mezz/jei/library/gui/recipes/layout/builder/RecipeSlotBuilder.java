@@ -220,12 +220,4 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 			rendererOverrides.getIngredientHeight()
 		);
 	}
-
-	public RecipeSlotIngredients getRecipeSlotIngredients() {
-		return new RecipeSlotIngredients(
-			this.role,
-			this.ingredients.getAllIngredients(),
-			this.ingredients.getIngredientTypes()
-		);
-	}
 }

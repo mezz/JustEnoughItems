@@ -22,6 +22,7 @@ import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.renderer.Rect2i;
