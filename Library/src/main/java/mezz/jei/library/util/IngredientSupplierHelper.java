@@ -3,7 +3,7 @@ package mezz.jei.library.util;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.focus.FocusGroup;
-import mezz.jei.library.gui.recipes.RecipeLayoutBuilder;
+import mezz.jei.library.gui.recipes.supplier.builder.IngredientSupplierBuilder;
 import mezz.jei.library.ingredients.IIngredientSupplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,9 +21,8 @@ public final class IngredientSupplierHelper {
 			return null;
 		}
 		try {
-			RecipeLayoutBuilder<T> builder = new RecipeLayoutBuilder<>(recipeCategory, recipe, ingredientManager);
+			IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager);
 			recipeCategory.setRecipe(builder, recipe, FocusGroup.EMPTY);
-			// as a minor optimization, skip setting widgets that have no slots (IRecipeCategory#createWidgets)
 			if (!builder.isEmpty()) {
 				return builder.buildIngredientSupplier();
 			} else {
