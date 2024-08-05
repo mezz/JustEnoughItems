@@ -1,7 +1,6 @@
 package mezz.jei.gui.input.handlers;
 
 import com.google.common.base.MoreObjects;
-import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -30,8 +29,8 @@ public class ProxyInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public void handleMouseClickedOut(InputConstants.Key input) {
-		this.source.get().handleMouseClickedOut(input);
+	public void unfocus() {
+		this.source.get().unfocus();
 	}
 
 	@Override

@@ -45,14 +45,14 @@ public class UserInput {
 	private final double mouseX;
 	private final double mouseY;
 	private final int modifiers;
-	private final InputType clickState;
+	private final InputType inputType;
 
-	public UserInput(InputConstants.Key key, double mouseX, double mouseY, int modifiers, InputType clickState) {
+	public UserInput(InputConstants.Key key, double mouseX, double mouseY, int modifiers, InputType inputType) {
 		this.key = key;
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
 		this.modifiers = modifiers;
-		this.clickState = clickState;
+		this.inputType = inputType;
 	}
 
 	public InputConstants.Key getKey() {
@@ -67,12 +67,12 @@ public class UserInput {
 		return mouseY;
 	}
 
-	public InputType getClickState() {
-		return clickState;
+	public InputType getInputType() {
+		return inputType;
 	}
 
 	public boolean isSimulate() {
-		return clickState == InputType.SIMULATE;
+		return inputType == InputType.SIMULATE;
 	}
 
 	public boolean isMouse() {
@@ -112,8 +112,8 @@ public class UserInput {
 	public boolean callVanilla(KeyPressable keyPressable) {
 		if (this.key.getType() == InputConstants.Type.KEYSYM) {
 			if (this.isSimulate()) {
-				// we can't easily simulate the key press, just say we could handle it
-				return true;
+				// key press simulate happens on key up, which we ignore
+				return false;
 			}
 			return keyPressable.keyPressed(this.key.getValue(), 0, this.modifiers);
 		}
@@ -131,8 +131,8 @@ public class UserInput {
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
-			.add("clickState", clickState)
-			.add("key", KeyNameUtil.getKeyDisplayName(key))
+			.add("inputType", inputType)
+			.add("key", KeyNameUtil.getKeyDisplayName(key).getString())
 			.add("modifiers", modifiers)
 			.add("mouse", String.format("%s, %s", mouseX, mouseY))
 			.toString();
