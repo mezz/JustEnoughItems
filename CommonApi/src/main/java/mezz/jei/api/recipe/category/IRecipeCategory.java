@@ -7,11 +7,14 @@ import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -85,6 +88,17 @@ public interface IRecipeCategory<T> {
 	void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses);
 
 	/**
+	 * Sets the extras for the recipe category, like input handlers.
+	 *
+	 * @see IRecipeExtrasBuilder
+	 *
+	 * @since 19.6.0
+	 */
+	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IFocusGroup focuses) {
+
+	}
+
+	/**
 	 * Draw extras or additional info about the recipe.
 	 * Use the mouse position for things like button highlights.
 	 * Tooltips are handled by {@link #getTooltip}
@@ -149,14 +163,18 @@ public interface IRecipeCategory<T> {
 	 * Called when a player clicks the recipe.
 	 * Useful for implementing buttons, hyperlinks, and other interactions to your recipe.
 	 *
-
 	 * @param recipe the currently hovered recipe
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
 	 * @param input  the current input
 	 * @return true if the input was handled, false otherwise
 	 * @since 8.3.0
+	 *
+	 * @deprecated create an {@link IJeiInputHandler} or {@link GuiEventListener} and add it with
+	 * {@link IRecipeExtrasBuilder#addInputHandler} or {@link IRecipeExtrasBuilder#addGuiEventListener}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "19.6.0", forRemoval = true)
 	default boolean handleInput(T recipe, double mouseX, double mouseY, InputConstants.Key input) {
 		return false;
 	}

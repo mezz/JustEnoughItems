@@ -1,17 +1,22 @@
 package mezz.jei.api.recipe.category.extensions;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+
 import java.util.Collections;
 import java.util.List;
-
-import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
-import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.network.chat.Component;
 
 /**
  * An extension to a recipe category with methods that allow JEI to make sense of it.
@@ -71,6 +76,17 @@ public interface IRecipeCategoryExtension<T> {
 	}
 
 	/**
+	 * Sets the extras for the recipe category, like input handlers.
+	 *
+	 * @see IRecipeExtrasBuilder
+	 * 
+	 * @since 19.6.0
+	 */
+	default void createRecipeExtras(T recipe, IRecipeExtrasBuilder acceptor, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
+
+	}
+
+	/**
 	 * Called when a player inputs while hovering over the recipe.
 	 * Useful for implementing buttons, hyperlinks, and other interactions to your recipe.
 	 *
@@ -79,7 +95,12 @@ public interface IRecipeCategoryExtension<T> {
 	 * @param input  the current input from the player.
 	 * @return true if the input was handled, false otherwise
 	 * @since 16.0.0
+	 *
+	 * @deprecated create a {@link IJeiInputHandler} to handle inputs using {@link IRecipeExtrasBuilder#addInputHandler}, then
+	 * use {@link IJeiInputHandler#handleInput(double, double, IJeiUserInput)}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "19.6.0", forRemoval = true)
 	default boolean handleInput(T recipe, double mouseX, double mouseY, InputConstants.Key input) {
 		return handleInput(mouseX, mouseY, input);
 	}
@@ -135,7 +156,8 @@ public interface IRecipeCategoryExtension<T> {
 	 * @param input  the current input from the player.
 	 * @return true if the input was handled, false otherwise
 	 * @since 8.3.0
-	 * @deprecated use {@link #handleInput(Object, double, double, InputConstants.Key)}
+	 * @deprecated create a {@link IJeiInputHandler} to handle inputs using {@link IRecipeExtrasBuilder#addInputHandler}, then
+	 * use {@link IJeiInputHandler#handleInput(double, double, IJeiUserInput)}
 	 */
 	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(since = "16.0.0", forRemoval = true)

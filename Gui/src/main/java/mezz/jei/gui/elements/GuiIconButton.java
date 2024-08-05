@@ -133,7 +133,7 @@ public class GuiIconButton extends Button {
 		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 			this.button.pressed = false;
 
-			if (!input.isMouse()) {
+			if (!input.is(keyBindings.getLeftClick())) {
 				return Optional.empty();
 			}
 			double mouseX = input.getMouseX();

@@ -1,10 +1,11 @@
 package mezz.jei.gui.recipes;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.input.ClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -120,11 +121,7 @@ public class RecipeGuiLayouts {
 	public void tick(@Nullable AbstractContainerMenu parentContainer) {
 		Player player = Minecraft.getInstance().player;
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : this.recipeLayoutsWithButtons) {
-			RecipeTransferButton button = recipeLayoutWithButtons.transferButton();
-			button.update(parentContainer, player);
-
-			RecipeBookmarkButton bookmarkButton = recipeLayoutWithButtons.bookmarkButton();
-			bookmarkButton.tick();
+			recipeLayoutWithButtons.tick(parentContainer, player);
 		}
 	}
 
@@ -137,36 +134,46 @@ public class RecipeGuiLayouts {
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.recipeLayoutsWithButtons.stream()
 			.map(RecipeLayoutWithButtons::recipeLayout)
-			.map(recipeLayout -> getRecipeLayoutIngredientUnderMouse(recipeLayout, mouseX, mouseY))
+			.map(recipeLayout -> recipeLayout.getSlotUnderMouse(mouseX, mouseY))
+			.flatMap(Optional::stream)
+			.map(RecipeGuiLayouts::getClickedIngredient)
 			.flatMap(Optional::stream);
 	}
 
-	private static Optional<IClickableIngredientInternal<?>> getRecipeLayoutIngredientUnderMouse(IRecipeLayoutDrawable<?> recipeLayout, double mouseX, double mouseY) {
-		return recipeLayout.getRecipeSlotUnderMouse(mouseX, mouseY)
-			.flatMap(recipeSlot -> getClickedIngredient(recipeLayout, recipeSlot));
-	}
-
-	private static Optional<IClickableIngredientInternal<?>> getClickedIngredient(IRecipeLayoutDrawable<?> recipeLayout, IRecipeSlotDrawable recipeSlot) {
-		return recipeSlot.getDisplayedIngredient()
+	private static Optional<IClickableIngredientInternal<?>> getClickedIngredient(RecipeSlotUnderMouse slotUnderMouse) {
+		return slotUnderMouse.slot().getDisplayedIngredient()
 			.map(displayedIngredient -> {
-				ImmutableRect2i area = absoluteClickedArea(recipeLayout, recipeSlot.getRect());
 				IElement<?> element = new IngredientElement<>(displayedIngredient);
-				return new ClickableIngredientInternal<>(element, (x, y) -> MathUtil.contains(area, x, y), false, true);
+				return new ClickableIngredientInternal<>(element, slotUnderMouse::isMouseOver, false, true);
 			});
 	}
 
-	/**
-	 * Converts from relative recipeLayout coordinates to absolute screen coordinates
-	 */
-	private static ImmutableRect2i absoluteClickedArea(IRecipeLayoutDrawable<?> recipeLayout, Rect2i area) {
-		Rect2i layoutArea = recipeLayout.getRect();
+	public boolean mouseDragged(double mouseX, double mouseY, InputConstants.Key input, double dragX, double dragY) {
+		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
+			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
+			if (mouseDragged(recipeLayout, mouseX, mouseY, input, dragX, dragY)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-		return new ImmutableRect2i(
-			area.getX() + layoutArea.getX(),
-			area.getY() + layoutArea.getY(),
-			area.getWidth(),
-			area.getHeight()
-		);
+	private <R> boolean mouseDragged(IRecipeLayoutDrawable<R> recipeLayout, double mouseX, double mouseY, InputConstants.Key input, double dragX, double dragY) {
+		if (recipeLayout.isMouseOver(mouseX, mouseY)) {
+			IJeiInputHandler inputHandler = recipeLayout.getInputHandler();
+			return inputHandler.handleMouseDragged(mouseX, mouseY, input, dragX, dragY);
+		}
+		return false;
+	}
+
+	public void mouseMoved(double mouseX, double mouseY) {
+		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
+			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
+			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
+				IJeiInputHandler inputHandler = recipeLayout.getInputHandler();
+				inputHandler.handleMouseMoved(mouseX, mouseY);
+			}
+		}
 	}
 
 	public Optional<IRecipeLayoutDrawable<?>> draw(GuiGraphics guiGraphics, int mouseX, int mouseY) {

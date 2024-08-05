@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Allows setting properties of a slot on a {@link IRecipeLayoutBuilder}.
@@ -16,6 +17,7 @@ import mezz.jei.api.registration.IModIngredientRegistration;
  *
  * @since 9.3.0
  */
+@ApiStatus.NonExtendable
 public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuilder> {
 	/**
 	 * Add a callback to alter the tooltip for these ingredients.

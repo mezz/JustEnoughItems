@@ -80,7 +80,7 @@ public class FocusInputHandler implements IUserInputHandler {
 
 		for (IClickableIngredientInternal<?> clicked : ingredientUnderMouse) {
 			IElement<?> element = clicked.getElement();
-			if (element.handleClick(input, keyBindings, recipesGui, focusUtil)) {
+			if (element.handleClick(input, keyBindings)) {
 				IUserInputHandler result = new SameElementInputHandler(this, clicked::isMouseOver);
 				return Optional.of(result);
 			}

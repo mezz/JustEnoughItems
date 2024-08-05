@@ -4,6 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
@@ -66,5 +67,15 @@ public final class StringUtil {
 			.sorted()
 			.map(i -> Integer.toString(i))
 			.collect(Collectors.joining(", "));
+	}
+
+	public static void drawCenteredStringWithShadow(GuiGraphics guiGraphics, Font font, String string, ImmutableRect2i area) {
+		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, string);
+		guiGraphics.drawString(font, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
+	}
+
+	public static void drawCenteredStringWithShadow(GuiGraphics guiGraphics, Font font, Component text, ImmutableRect2i area) {
+		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, text);
+		guiGraphics.drawString(font, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 }

@@ -1,4 +1,4 @@
-package mezz.jei.library.gui;
+package mezz.jei.library.gui.helpers;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
+	public static final CraftingGridHelper INSTANCE = new CraftingGridHelper();
+
+	private CraftingGridHelper() {}
 
 	@Override
 	public <T> List<IRecipeSlotBuilder> createAndSetInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height) {

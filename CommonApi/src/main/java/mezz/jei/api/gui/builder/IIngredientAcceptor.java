@@ -2,13 +2,16 @@ package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A chainable interface that accepts typed ingredients.
@@ -19,6 +22,7 @@ import java.util.List;
  *
  * @since 9.3.0
  */
+@ApiStatus.NonExtendable
 public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	/**
 	 * Add an ordered list of ingredients.
@@ -51,6 +55,34 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	default THIS addIngredients(Ingredient ingredient) {
 		return addIngredients(VanillaTypes.ITEM_STACK, List.of(ingredient.getItems()));
 	}
+
+	/**
+	 * Add one typed ingredient.
+	 *
+	 * @since 19.6.0
+	 */
+	default <I> THIS addTypedIngredient(ITypedIngredient<I> typedIngredient) {
+		return addIngredient(typedIngredient.getType(), typedIngredient.getIngredient());
+	}
+
+	/**
+	 * Convenience function to add an ordered non-null list of typed ingredients.
+	 *
+	 * @param ingredients a non-null list of ingredients for the slot
+	 *
+	 * @since 19.6.0
+	 */
+	THIS addTypedIngredients(List<ITypedIngredient<?>> ingredients);
+
+	/**
+	 * Convenience function to add an ordered non-null list of typed ingredients.
+	 * {@link Optional#empty()} ingredients will be shown as blank in the rotation.
+	 *
+	 * @param ingredients a non-null list of optional ingredients for the slot
+	 *
+	 * @since 19.6.0
+	 */
+	THIS addOptionalTypedIngredients(List<Optional<ITypedIngredient<?>>> ingredients);
 
 	/**
 	 * Convenience function to add an order list of {@link ItemStack}.

@@ -10,7 +10,7 @@ import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.library.gui.GuiContainerHandlers;
-import mezz.jei.library.gui.ScreenHelper;
+import mezz.jei.library.gui.helpers.ScreenHelper;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
