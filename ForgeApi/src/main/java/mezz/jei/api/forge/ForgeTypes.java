@@ -3,6 +3,7 @@ package mezz.jei.api.forge;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 
 /**
@@ -33,6 +34,11 @@ public final class ForgeTypes {
 		@Override
 		public Fluid getBase(FluidStack ingredient) {
 			return ingredient.getFluid();
+		}
+
+		@Override
+		public FluidStack getDefaultIngredient(Fluid base) {
+			return new FluidStack(base, FluidAttributes.BUCKET_VOLUME);
 		}
 	};
 
