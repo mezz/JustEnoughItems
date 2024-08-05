@@ -10,6 +10,8 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
+import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -33,8 +35,10 @@ import org.jetbrains.annotations.Nullable;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -49,6 +53,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	 * Slots handled by the recipe category directly.
 	 */
 	private final List<IRecipeSlotDrawable> recipeCategorySlots;
+	/**
+	 * All slots, including slots handled by the recipe category and widgets.
+	 */
+	private final List<IRecipeSlotDrawable> allSlots;
+	private final List<ISlottedRecipeWidget> slottedWidgets;
+	private final List<IRecipeWidget> allWidgets;
 	private final R recipe;
 	private final IScalableDrawable recipeBackground;
 	private final int recipeBorderPadding;
@@ -115,16 +125,25 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		@Nullable ShapelessIcon shapelessIcon,
 		ImmutablePoint2i recipeTransferButtonPos,
 		List<IRecipeSlotDrawable> recipeCategorySlots,
+		List<IRecipeSlotDrawable> allSlots,
+		List<ISlottedRecipeWidget> slottedWidgets,
+		List<IRecipeWidget> widgets,
 		List<IJeiInputHandler> inputHandlers,
 		List<IJeiGuiEventListener> guiEventListeners,
 		CycleTicker cycleTicker
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
+		this.slottedWidgets = Collections.unmodifiableList(slottedWidgets);
 		this.inputHandler = new RecipeLayoutInputHandler<>(this, inputHandlers, guiEventListeners);
 		this.cycleTicker = cycleTicker;
 
+		Set<IRecipeWidget> allWidgets = new HashSet<>(widgets);
+		allWidgets.addAll(slottedWidgets);
+		this.allWidgets = List.copyOf(allWidgets);
+
 		this.recipeCategorySlots = recipeCategorySlots;
+		this.allSlots = Collections.unmodifiableList(allSlots);
 		this.recipeBorderPadding = recipeBorderPadding;
 		this.area = new ImmutableRect2i(
 			0,
@@ -161,7 +180,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		final double recipeMouseY = mouseY - area.getY();
 
 		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(recipeCategorySlots);
-		RecipeSlotUnderMouse hoveredSlotResult = getSlotUnderMouse(mouseX, mouseY).orElse(null);
 
 		poseStack.pushPose();
 		{
@@ -173,8 +191,16 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			{
 				recipeCategory.draw(recipe, recipeCategorySlotsView, poseStack, recipeMouseX, recipeMouseY);
 				for (IRecipeSlotDrawable slot : recipeCategorySlots) {
-					boolean hovered = hoveredSlotResult != null && hoveredSlotResult.slot() == slot;
-					slot.draw(poseStack, hovered);
+					slot.draw(poseStack, false);
+				}
+				for (IRecipeWidget widget : allWidgets) {
+					Rect2i widgetArea = widget.getArea();
+					poseStack.pushPose();
+					{
+						poseStack.translate(widgetArea.getX(), widgetArea.getY(), 0);
+						widget.draw(poseStack, recipeMouseX, recipeMouseY);
+					}
+					poseStack.popPose();
 				}
 
 				// drawExtras and drawInfo often render text which messes with the color, this clears it
@@ -216,8 +242,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		RecipeSlotUnderMouse hoveredSlotResult = getSlotUnderMouse(mouseX, mouseY).orElse(null);
 
 		if (hoveredSlotResult != null) {
-			IRecipeSlotDrawable hoveredSlot = hoveredSlotResult.slot();
-			drawSlotTooltip(poseStack, mouseX, mouseY, hoveredSlot);
+			drawSlotTooltip(poseStack, mouseX, mouseY, hoveredSlotResult);
 		} else if (isMouseOver(mouseX, mouseY)) {
 			JeiTooltip tooltip = new JeiTooltip();
 			try {
@@ -242,7 +267,17 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		}
 	}
 
-	private void drawSlotTooltip(PoseStack poseStack, int mouseX, int mouseY, IRecipeSlotDrawable hoveredSlot) {
+	@SuppressWarnings("removal")
+	private void drawSlotTooltip(PoseStack poseStack, int mouseX, int mouseY, RecipeSlotUnderMouse hoveredSlotResult) {
+		IRecipeSlotDrawable hoveredSlot = hoveredSlotResult.slot();
+
+		poseStack.pushPose();
+		{
+			poseStack.translate(hoveredSlotResult.x(), hoveredSlotResult.y(), 0);
+			hoveredSlot.drawHoverOverlays(poseStack);
+		}
+		poseStack.popPose();
+
 		JeiTooltip tooltip = new JeiTooltip();
 		hoveredSlot.getTooltip(tooltip);
 		tooltip.draw(poseStack, mouseX, mouseY);
@@ -281,6 +316,16 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		final double recipeMouseX = mouseX - area.getX();
 		final double recipeMouseY = mouseY - area.getY();
 
+		for (ISlottedRecipeWidget widget : slottedWidgets) {
+			Rect2i widgetArea = widget.getArea();
+			double relativeMouseX = recipeMouseX - widgetArea.getX();
+			double relativeMouseY = recipeMouseY - widgetArea.getY();
+			Optional<RecipeSlotUnderMouse> slotResult = widget.getSlotUnderMouse(relativeMouseX, relativeMouseY);
+			if (slotResult.isPresent()) {
+				return slotResult
+					.map(slot -> slot.addOffset(area.getX(), area.getY()));
+			}
+		}
 		for (IRecipeSlotDrawable slot : recipeCategorySlots) {
 			if (slot.isMouseOver(recipeMouseX, recipeMouseY)) {
 				return Optional.of(new RecipeSlotUnderMouse(slot, area.getX(), area.getY()));
@@ -306,9 +351,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		return area;
 	}
 
+	@SuppressWarnings("RedundantUnmodifiable")
 	@Override
 	public IRecipeSlotsView getRecipeSlotsView() {
-		return () -> Collections.unmodifiableList(recipeCategorySlots);
+		return () -> Collections.unmodifiableList(allSlots);
 	}
 
 	@Override
@@ -324,5 +370,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	@Override
 	public void tick() {
 		cycleTicker.tick();
+		for (IRecipeWidget widget : allWidgets) {
+			widget.tick();
+		}
 	}
 }

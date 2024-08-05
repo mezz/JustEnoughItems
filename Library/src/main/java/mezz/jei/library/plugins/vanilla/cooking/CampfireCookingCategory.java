@@ -4,8 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -37,8 +37,6 @@ public class CampfireCookingCategory extends AbstractCookingCategory<CampfireCoo
 	@Override
 	public void draw(CampfireCookingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
 		animatedFlame.draw(poseStack, 1, 20);
-		IDrawableAnimated arrow = getArrow(recipe);
-		arrow.draw(poseStack, 24, 8);
 		drawCookTime(recipe, poseStack, 35);
 	}
 
@@ -49,5 +47,10 @@ public class CampfireCookingCategory extends AbstractCookingCategory<CampfireCoo
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 61, 9)
 			.addItemStack(recipe.getResultItem());
+	}
+
+	@Override
+	public void createRecipeExtras(IRecipeExtrasBuilder acceptor, CampfireCookingRecipe recipe, IFocusGroup focuses) {
+		acceptor.addWidget(createCookingArrowWidget(recipe, 24, 8));
 	}
 }

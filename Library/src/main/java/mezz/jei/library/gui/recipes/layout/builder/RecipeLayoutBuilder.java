@@ -11,6 +11,9 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
+import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
+import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -21,6 +24,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutablePoint2i;
+import mezz.jei.core.collect.ListMultiMap;
 import mezz.jei.core.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
@@ -39,6 +43,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -46,6 +51,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 	private final List<RecipeSlotBuilder> visibleSlots = new ArrayList<>();
 	private final List<InvisibleRecipeLayoutSlotSource> invisibleSlots = new ArrayList<>();
 	private final List<List<RecipeSlotBuilder>> focusLinkedSlots = new ArrayList<>();
+	private final List<IRecipeWidget> widgets = new ArrayList<>();
 	private final List<IJeiInputHandler> inputHandlers = new ArrayList<>();
 	private final List<IJeiGuiEventListener> guiEventListeners = new ArrayList<>();
 
@@ -88,10 +94,29 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 	}
 
 	@Override
+	public IRecipeSlotBuilder addSlotToWidget(RecipeIngredientRole role, ISlottedWidgetFactory<?> widgetFactory) {
+		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, nextSlotIndex++, role, 0, 0)
+			.assignToWidgetFactory(widgetFactory);
+
+		if (role == RecipeIngredientRole.OUTPUT) {
+			addOutputSlotTooltipCallback(slot);
+		}
+
+		this.visibleSlots.add(slot);
+		return slot;
+	}
+
+	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
 		InvisibleRecipeLayoutSlotSource slot = new InvisibleRecipeLayoutSlotSource(ingredientManager, role);
 		this.invisibleSlots.add(slot);
 		return slot;
+	}
+
+	@Override
+	public void addWidget(IRecipeWidget widget) {
+		ErrorUtil.checkNotNull(widget, "widget");
+		this.widgets.add(widget);
 	}
 
 	@Override
@@ -182,8 +207,9 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		ShapelessIcon shapelessIcon = createShapelessIcon(recipeCategory);
 		ImmutablePoint2i recipeTransferButtonPosition = getRecipeTransferButtonPosition(recipeCategory, recipeBorderPadding);
 
-		List<Pair<Integer, IRecipeSlotDrawable>> recipeCategorySlots = new ArrayList<>();
-
+		List<Pair<Integer, IRecipeSlotDrawable>> recipeCategorySlotPairs = new ArrayList<>();
+		List<Pair<Integer, IRecipeSlotDrawable>> allSlotPairs = new ArrayList<>();
+		ListMultiMap<ISlottedWidgetFactory<?>, IRecipeSlotDrawable> widgetSlots = new ListMultiMap<>();
 		CycleTicker cycleTicker = CycleTicker.createWithRandomOffset();
 
 		Set<RecipeSlotBuilder> focusLinkedSlots = new HashSet<>();
@@ -197,7 +223,13 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 					continue;
 				}
 				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focusMatches, cycleTicker);
-				recipeCategorySlots.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
+				ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
+				if (assignedWidget == null) {
+					recipeCategorySlotPairs.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
+				} else {
+					widgetSlots.put(assignedWidget, slotDrawable);
+				}
+				allSlotPairs.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
 			}
 			focusLinkedSlots.addAll(linkedSlots);
 		}
@@ -205,11 +237,36 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		for (RecipeSlotBuilder slotBuilder : visibleSlots) {
 			if (!focusLinkedSlots.contains(slotBuilder)) {
 				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focuses, cycleTicker);
-				recipeCategorySlots.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
+				ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
+				if (assignedWidget == null) {
+					recipeCategorySlotPairs.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
+				} else {
+					widgetSlots.put(assignedWidget, slotDrawable);
+				}
+				allSlotPairs.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
 			}
 		}
 
-		List<IRecipeSlotDrawable> slots = recipeCategorySlots.stream()
+		for (Map.Entry<ISlottedWidgetFactory<?>, List<IRecipeSlotDrawable>> e : widgetSlots.entrySet()) {
+			// TODO: breaking change: add a type parameter to IRecipeLayoutBuilder to avoid this cast
+			@SuppressWarnings("unchecked")
+			ISlottedWidgetFactory<T> factory = (ISlottedWidgetFactory<T>) e.getKey();
+			List<IRecipeSlotDrawable> slots = e.getValue();
+			factory.createWidgetForSlots(this, recipe, slots);
+		}
+
+		List<ISlottedRecipeWidget> slottedWidgets = new ArrayList<>();
+		for (IRecipeWidget widget : widgets) {
+			if (widget instanceof ISlottedRecipeWidget slottedWidget) {
+				slottedWidgets.add(slottedWidget);
+			}
+		}
+
+		List<IRecipeSlotDrawable> recipeCategorySlots = recipeCategorySlotPairs.stream()
+			.sorted(Comparator.comparingInt(Pair::first))
+			.map(Pair::second)
+			.toList();
+		List<IRecipeSlotDrawable> allSlots = allSlotPairs.stream()
 			.sorted(Comparator.comparingInt(Pair::first))
 			.map(Pair::second)
 			.toList();
@@ -222,7 +279,10 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 			recipeBorderPadding,
 			shapelessIcon,
 			recipeTransferButtonPosition,
-			slots,
+			recipeCategorySlots,
+			allSlots,
+			slottedWidgets,
+			widgets,
 			inputHandlers,
 			guiEventListeners,
 			cycleTicker

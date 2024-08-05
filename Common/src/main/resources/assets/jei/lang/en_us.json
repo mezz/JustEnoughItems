@@ -127,6 +127,7 @@
   "gui.jei.category.compostable.chance": "Chance: %s%%",
   "gui.jei.category.grindstone.experience": "%s to %s XP",
   "gui.jei.category.itemInformation": "Information",
+  "gui.jei.category.tagInformation": "%s Tags",
 
   "_comment": "Messages",
   "jei.message.configured": "Install the \"Configured\" mod to access the in-game config",
