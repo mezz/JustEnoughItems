@@ -26,18 +26,13 @@ public class DrawableIngredient<V> implements IDrawable {
 
 	@Override
 	public void draw(PoseStack poseStack) {
-		RenderSystem.enableDepthTest();
-		this.ingredientRenderer.render(poseStack, ingredient);
-		RenderSystem.disableDepthTest();
+		draw(poseStack, 0, 0);
 	}
 
 	@Override
 	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
-		poseStack.pushPose();
-		{
-			poseStack.translate(xOffset, yOffset, 0);
-			draw(poseStack);
-		}
-		poseStack.popPose();
+		RenderSystem.enableDepthTest();
+		this.ingredientRenderer.render(poseStack, ingredient, xOffset, yOffset);
+		RenderSystem.disableDepthTest();
 	}
 }
