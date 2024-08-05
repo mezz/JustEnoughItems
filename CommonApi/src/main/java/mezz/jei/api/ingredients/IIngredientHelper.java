@@ -4,6 +4,7 @@ import mezz.jei.api.constants.Tags;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -186,12 +187,24 @@ public interface IIngredientHelper<V> {
 	String getErrorInfo(@Nullable V ingredient);
 
 	/**
+	 * If these ingredients represent everything from a single tag, returns that tag.
+	 *
+	 * @since 15.8.4
+	 */
+	default Optional<TagKey<?>> getTagKeyEquivalent(Collection<V> ingredients) {
+		return Optional.empty();
+	}
+
+	/**
 	 * If these ingredients represent everything from a single tag,
 	 * returns that tag's resource location.
 	 *
 	 * @since 9.3.0
+	 * @deprecated use {@link #getTagKeyEquivalent}
 	 */
+	@Deprecated(since = "19.6.0", forRemoval = true)
 	default Optional<ResourceLocation> getTagEquivalent(Collection<V> ingredients) {
-		return Optional.empty();
+		return getTagKeyEquivalent(ingredients)
+			.map(TagKey::location);
 	}
 }

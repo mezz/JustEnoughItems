@@ -151,7 +151,7 @@ public final class ClientConfig implements IClientConfig {
 		hideSingleIngredientTagsEnabled = tags.addBoolean(
 			"HideSingleIngredientTagsEnabled",
 			true,
-			"Hide tag content in tooltips if the tag has 1 ingredient"
+			"Hide tags that only have 1 ingredient"
 		);
 	}
 

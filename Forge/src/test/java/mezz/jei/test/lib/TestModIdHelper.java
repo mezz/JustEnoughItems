@@ -19,11 +19,13 @@ public class TestModIdHelper implements IModIdHelper {
 		return getModNameForModId(modId);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
 		return tooltip;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient) {
 		return tooltip;

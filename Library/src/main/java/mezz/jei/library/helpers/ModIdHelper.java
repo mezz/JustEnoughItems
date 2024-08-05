@@ -36,6 +36,7 @@ public final class ModIdHelper implements IModIdHelper {
 		return !modNameFormat.isEmpty();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
 		if (!isDisplayingModNameEnabled()) {
@@ -72,6 +73,7 @@ public final class ModIdHelper implements IModIdHelper {
 		return Optional.of(Component.literal(modName));
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> type = typedIngredient.getType();

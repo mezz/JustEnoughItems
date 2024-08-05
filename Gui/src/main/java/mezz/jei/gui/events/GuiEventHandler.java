@@ -139,11 +139,10 @@ public class GuiEventHandler {
 			int guiTop = screenHelper.getGuiTop(guiContainer);
 			this.screenHelper.getGuiClickableArea(guiContainer, mouseX - guiLeft, mouseY - guiTop)
 				.filter(IGuiClickableArea::isTooltipEnabled)
-				.map(IGuiClickableArea::getTooltipStrings)
 				.findFirst()
-				.ifPresent(tooltipStrings -> {
+				.ifPresent(area -> {
 					JeiTooltip tooltip = new JeiTooltip();
-					tooltip.addAll(tooltipStrings);
+					area.getTooltip(tooltip);
 					if (tooltip.isEmpty()) {
 						tooltip.add(Component.translatable("jei.tooltip.show.recipes"));
 					}

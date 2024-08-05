@@ -46,9 +46,9 @@ public class IngredientBookmarkElement<T> implements IElement<T> {
 	}
 
 	@Override
-	public JeiTooltip getTooltip(IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
+	public void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
 		ITypedIngredient<T> ingredient = bookmark.getIngredient();
-		return tooltipHelper.getIngredientTooltip(ingredient, ingredientRenderer, ingredientHelper);
+		tooltipHelper.getIngredientTooltip(tooltip, ingredient, ingredientRenderer, ingredientHelper);
 	}
 
 	@Override

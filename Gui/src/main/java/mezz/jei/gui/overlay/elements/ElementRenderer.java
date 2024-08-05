@@ -69,7 +69,8 @@ public class ElementRenderer<T> implements IElementRenderer<T> {
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
-		JeiTooltip tooltip = element.getTooltip(tooltipHelper, ingredientRenderer, ingredientHelper);
+		JeiTooltip tooltip = new JeiTooltip();
+		element.getTooltip(tooltip, tooltipHelper, ingredientRenderer, ingredientHelper);
 		tooltip.draw(guiGraphics, mouseX, mouseY, typedIngredient, ingredientRenderer, ingredientManager);
 	}
 }

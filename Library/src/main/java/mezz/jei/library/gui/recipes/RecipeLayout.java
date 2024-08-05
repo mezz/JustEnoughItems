@@ -6,27 +6,21 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
-import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RecipeSlots;
-import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -236,42 +230,22 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			}
 			poseStack.popPose();
 
-			hoveredSlot.getDisplayedIngredient()
-				.ifPresent(i -> {
-					JeiTooltip tooltip = new JeiTooltip();
-					tooltip.addAll(hoveredSlot.getTooltip());
-					addTagContentTooltip(tooltip, i, hoveredSlot);
-					tooltip.draw(guiGraphics, mouseX, mouseY, i);
-				});
-		} else if (isMouseOver(mouseX, mouseY)) {
-			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeSlots.getView(), recipeMouseX, recipeMouseY);
-			for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
-				tooltipStrings = decorator.decorateExistingTooltips(tooltipStrings, recipe, recipeCategory, recipeSlots.getView(), recipeMouseX, recipeMouseY);
-			}
-
 			JeiTooltip tooltip = new JeiTooltip();
-			tooltip.addAll(tooltipStrings);
+			hoveredSlot.getTooltip(tooltip);
+			tooltip.draw(guiGraphics, mouseX, mouseY);
+		} else if (isMouseOver(mouseX, mouseY)) {
+			JeiTooltip tooltip = new JeiTooltip();
+			recipeCategory.getTooltip(tooltip, recipe, recipeSlots.getView(), recipeMouseX, recipeMouseY);
+			for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
+				decorator.decorateTooltips(tooltip, recipe, recipeCategory, recipeSlots.getView(), recipeMouseX, recipeMouseY);
+			}
 
 			if (tooltip.isEmpty() && shapelessIcon != null) {
-				shapelessIcon.addTooltipStrings(tooltip, recipeMouseX, recipeMouseY);
+				if (shapelessIcon.isMouseOver(recipeMouseX, recipeMouseY)) {
+					shapelessIcon.addTooltip(tooltip);
+				}
 			}
 			tooltip.draw(guiGraphics, mouseX, mouseY);
-		}
-	}
-
-	private <T> void addTagContentTooltip(JeiTooltip tooltip, ITypedIngredient<T> displayed, IRecipeSlotDrawable slotDrawable) {
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (clientConfig.isTagContentTooltipEnabled()) {
-			IIngredientType<T> type = displayed.getType();
-
-			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
-			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
-			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
-
-			List<T> ingredients = slotDrawable.getIngredients(type).toList();
-			if (ingredients.size() > 1) {
-				tooltip.add(new TagContentTooltipComponent<>(renderer, ingredients));
-			}
 		}
 	}
 
@@ -314,16 +288,16 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	}
 
 	public void setShapeless() {
-		this.shapelessIcon = new ShapelessIcon();
-
+		IDrawable icon = Internal.getTextures().getShapelessIcon();
 		// align to top-right
-		int x = area.getWidth() - shapelessIcon.getIcon().getWidth();
-		this.shapelessIcon.setPosition(x, 0);
+		int x = recipeCategory.getWidth() - icon.getWidth();
+		int y = 0;
+		this.shapelessIcon = new ShapelessIcon(icon, x, y);
 	}
 
 	public void setShapeless(int shapelessX, int shapelessY) {
-		this.shapelessIcon = new ShapelessIcon();
-		this.shapelessIcon.setPosition(shapelessX, shapelessY);
+		IDrawable icon = Internal.getTextures().getShapelessIcon();
+		this.shapelessIcon = new ShapelessIcon(icon, shapelessX, shapelessY);
 	}
 
 	@Override

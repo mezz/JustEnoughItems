@@ -8,9 +8,6 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.util.SafeIngredientUtil;
-import mezz.jei.common.util.StringUtil;
-import mezz.jei.common.util.Translator;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.TooltipFlag;
 import org.apache.logging.log4j.LogManager;
@@ -19,8 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -104,22 +99,13 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		ImmutableSet<String> toRemove = ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceLocation.getPath());
 		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
 		tooltipFlag = tooltipFlag.asCreative();
-		List<Component> tooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, value, tooltipFlag);
 
-		Set<String> result = new HashSet<>();
-		for (Component component : tooltip) {
-			String string = component.getString();
-			string = StringUtil.removeChatFormatting(string);
-			string = Translator.toLowercaseWithLocale(string);
-			for (String excludeWord : toRemove) {
-				string = string.replace(excludeWord, "");
-			}
-			// Split tooltip strings into words to keep them from being too long.
-			// Longer strings are more expensive for the suffix tree to handle.
-			String[] strings = string.split(" ");
-			Collections.addAll(result, strings);
-		}
-		return result;
+		ListElementInfoTooltip tooltip = new ListElementInfoTooltip();
+		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, value, tooltipFlag);
+
+		Set<String> strings = tooltip.getStrings();
+		strings.removeAll(toRemove);
+		return strings;
 	}
 
 	@Override

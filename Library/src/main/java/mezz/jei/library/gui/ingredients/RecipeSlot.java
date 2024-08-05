@@ -1,6 +1,7 @@
 package mezz.jei.library.gui.ingredients;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
@@ -12,11 +13,14 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
-import mezz.jei.common.util.Translator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
@@ -147,22 +151,59 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		);
 	}
 
-	private <T> List<Component> getTooltip(ITypedIngredient<T> typedIngredient) {
+	@Override
+	public void getTooltip(ITooltipBuilder tooltip) {
+		getDisplayedIngredient()
+			.ifPresent(i -> getTooltip(tooltip, i));
+	}
+
+	private <T> void getTooltip(ITooltipBuilder tooltip, ITypedIngredient<T> typedIngredient) {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
-		List<Component> tooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, typedIngredient);
+		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
-			tooltipCallback.onTooltip(this, tooltip);
+			tooltipCallback.onRichTooltip(this, tooltip);
 		}
 
-		addTagNameTooltip(ingredientManager, typedIngredient, tooltip);
-
-		return tooltip;
+		addTagNameTooltip(tooltip, ingredientManager, typedIngredient);
+		addIngredientsToTooltip(tooltip, typedIngredient);
 	}
 
-	private <T> void addTagNameTooltip(IIngredientManager ingredientManager, ITypedIngredient<T> ingredient, List<Component> tooltip) {
+	private <T> void addIngredientsToTooltip(ITooltipBuilder tooltip, ITypedIngredient<T> displayed) {
+		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		if (clientConfig.isTagContentTooltipEnabled()) {
+			IIngredientType<T> type = displayed.getType();
+			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
+			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
+			List<T> ingredients = getIngredients(type).toList();
+			if (ingredients.size() > 1) {
+				tooltip.add(new TagContentTooltipComponent<>(renderer, ingredients));
+			}
+		}
+	}
+
+	private <T> List<Component> legacyGetTooltip(ITypedIngredient<T> typedIngredient) {
+		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+
+		IIngredientType<T> ingredientType = typedIngredient.getType();
+		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
+
+		JeiTooltip tooltip = new JeiTooltip();
+		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
+		addTagNameTooltip(tooltip, ingredientManager, typedIngredient);
+
+		List<Component> legacyTooltip = tooltip.toLegacyToComponents();
+		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
+			//noinspection removal
+			tooltipCallback.onTooltip(this, legacyTooltip);
+		}
+		return legacyTooltip;
+	}
+
+	private <T> void addTagNameTooltip(ITooltipBuilder tooltip, IIngredientManager ingredientManager, ITypedIngredient<T> ingredient) {
 		IIngredientType<T> ingredientType = ingredient.getType();
 		List<T> ingredients = getIngredients(ingredientType).toList();
 		if (ingredients.isEmpty()) {
@@ -175,16 +216,16 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		}
 
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		ingredientHelper.getTagEquivalent(ingredients)
-			.ifPresent(tagEquivalent -> {
+		ingredientHelper.getTagKeyEquivalent(ingredients)
+			.ifPresent(tagKeyEquivalent -> {
 				tooltip.add(
 					Component.translatable("jei.tooltip.recipe.tag", "")
 						.withStyle(ChatFormatting.GRAY)
 				);
-				String tagName = Translator.translateToLocal(tagEquivalent.toString());
+				IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+				Component tagName = renderHelper.getName(tagKeyEquivalent);
 				tooltip.add(
-					Component.literal(tagName)
-					.withStyle(ChatFormatting.GRAY)
+					tagName.copy().withStyle(ChatFormatting.GRAY)
 				);
 			});
 	}
@@ -210,6 +251,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		}
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
 		this.tooltipCallbacks.add(tooltipCallback);
@@ -285,7 +327,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Override
 	public List<Component> getTooltip() {
 		return getDisplayedIngredient()
-			.map(this::getTooltip)
+			.map(this::legacyGetTooltip)
 			.orElseGet(List::of);
 	}
 

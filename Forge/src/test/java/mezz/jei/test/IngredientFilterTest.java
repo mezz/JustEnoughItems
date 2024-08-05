@@ -16,6 +16,7 @@ import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 import mezz.jei.gui.ingredients.IngredientFilter;
 import mezz.jei.gui.ingredients.IngredientListElementFactory;
+import mezz.jei.gui.ingredients.ListElementInfoTooltip;
 import mezz.jei.library.config.EditModeConfig;
 import mezz.jei.library.ingredients.IngredientBlacklistInternal;
 import mezz.jei.library.ingredients.IngredientVisibility;
@@ -31,8 +32,6 @@ import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
 import mezz.jei.test.lib.TestClientToggleState;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
@@ -43,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 public class IngredientFilterTest {
 	private static final int EXTRA_INGREDIENT_COUNT = 5;
@@ -135,7 +135,7 @@ public class IngredientFilterTest {
 		List<TestIngredient> ingredients = createIngredients();
 		TestIngredient testIngredient = ingredients.get(0);
 		IIngredientRenderer<TestIngredient> ingredientRenderer = ingredientManager.getIngredientRenderer(TestIngredient.TYPE);
-		List<String> tooltipStrings = getTooltipStrings(ingredientRenderer, testIngredient);
+		Set<String> tooltipStrings = getTooltipStrings(ingredientRenderer, testIngredient);
 
 		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, ingredients);
 		for (String tooltipString : tooltipStrings) {
@@ -178,13 +178,10 @@ public class IngredientFilterTest {
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientList.size());
 	}
 
-	public static List<String> getTooltipStrings(IIngredientRenderer<TestIngredient> ingredientRenderer, TestIngredient testIngredient) {
-		List<Component> tooltip = ingredientRenderer.getTooltip(testIngredient, TooltipFlag.Default.NORMAL);
-		return tooltip.stream()
-			.map(Component::getString)
-			.map(String::toLowerCase)
-			.filter(line -> !StringUtil.isNullOrEmpty(line))
-			.toList();
+	public static Set<String> getTooltipStrings(IIngredientRenderer<TestIngredient> ingredientRenderer, TestIngredient testIngredient) {
+		ListElementInfoTooltip tooltip = new ListElementInfoTooltip();
+		ingredientRenderer.getTooltip(tooltip, testIngredient, TooltipFlag.Default.NORMAL);
+		return tooltip.getStrings();
 	}
 
 	public static List<TestIngredient> createIngredients() {

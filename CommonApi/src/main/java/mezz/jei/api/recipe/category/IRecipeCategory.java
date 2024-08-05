@@ -3,6 +3,7 @@ package mezz.jei.api.recipe.category;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -86,7 +87,7 @@ public interface IRecipeCategory<T> {
 	/**
 	 * Draw extras or additional info about the recipe.
 	 * Use the mouse position for things like button highlights.
-	 * Tooltips are handled by {@link #getTooltipStrings(Object, IRecipeSlotsView, double, double)}
+	 * Tooltips are handled by {@link #getTooltip}
 	 *
 	 * @param recipe          the current recipe being drawn.
 	 * @param recipeSlotsView a view of the current recipe slots being drawn.
@@ -106,7 +107,7 @@ public interface IRecipeCategory<T> {
 
 	/**
 	 * Get the tooltip for whatever is under the mouse.
-	 * Ingredient tooltips are already handled by JEI, this is for anything else.
+	 * Ingredient tooltips from recipe slots are already handled by JEI, this is for anything else.
 	 *
 	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
 	 *
@@ -117,9 +118,31 @@ public interface IRecipeCategory<T> {
 	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
 	 *
 	 * @since 9.3.0
+	 * @deprecated use {@link #getTooltip(ITooltipBuilder, Object, IRecipeSlotsView, double, double)}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "15.8.4", forRemoval = true)
 	default List<Component> getTooltipStrings(T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
 		return List.of();
+	}
+
+	/**
+	 * Get the tooltip for whatever is under the mouse.
+	 * Ingredient tooltips from recipe slots are already handled by JEI, this is for anything else.
+	 *
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 *
+	 * @param tooltip         a tooltip builder to add tooltip lines to
+	 * @param recipe          the current recipe being drawn.
+	 * @param recipeSlotsView a view of the current recipe slots being drawn.
+	 * @param mouseX          the X position of the mouse, relative to the recipe.
+	 * @param mouseY          the Y position of the mouse, relative to the recipe.
+	 *
+	 * @since 15.8.4
+	 */
+	default void getTooltip(ITooltipBuilder tooltip, T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+		List<Component> tooltipStrings = getTooltipStrings(recipe, recipeSlotsView, mouseX, mouseY);
+		tooltip.addAll(tooltipStrings);
 	}
 
 	/**
