@@ -76,13 +76,15 @@ public interface IRecipeCategoryExtension<T> {
 	}
 
 	/**
-	 * Sets the extras for the recipe category, like input handlers.
+	 * Sets the extras for the recipe category, like input handlers and recipe widgets.
 	 *
-	 * @see IRecipeExtrasBuilder
-	 * 
+	 * Recipe Widgets persist as long as a recipe layout is on screen,
+	 * so they can be used for caching and displaying recipe-specific
+	 * information more easily than from the recipe category directly.
+	 *
 	 * @since 19.6.0
 	 */
-	default void createRecipeExtras(T recipe, IRecipeExtrasBuilder acceptor, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
+	default void createRecipeExtras(T recipe, IRecipeExtrasBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
 
 	}
 
@@ -156,6 +158,7 @@ public interface IRecipeCategoryExtension<T> {
 	 * @param input  the current input from the player.
 	 * @return true if the input was handled, false otherwise
 	 * @since 8.3.0
+	 *
 	 * @deprecated create a {@link IJeiInputHandler} to handle inputs using {@link IRecipeExtrasBuilder#addInputHandler}, then
 	 * use {@link IJeiInputHandler#handleInput(double, double, IJeiUserInput)}
 	 */
