@@ -27,7 +27,7 @@ public class CombinedInputHandler implements IUserInputHandler {
 
 	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-		return switch (input.getClickState()) {
+		return switch (input.getInputType()) {
 			case IMMEDIATE, SIMULATE -> handleClickInternal(screen, input, keyBindings);
 			case EXECUTE -> Optional.empty();
 		};
@@ -36,7 +36,7 @@ public class CombinedInputHandler implements IUserInputHandler {
 	/**
 	 * Calls handleClick on each mouse handler until one handles the click (returns non-null).
 	 * <p>
-	 * handleMouseClickedOut will be called on:
+	 * unfocus will be called on:
 	 * 1. every mouse handler that fails to handleClick (returned null).
 	 * 2. every mouse handler that never got a chance to handleClick because something else handled it first.
 	 */
