@@ -56,6 +56,7 @@ public record RecipeLayoutWithButtons<R>(
 	}
 
 	public void tick(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
+		recipeLayout.tick();
 		transferButton.update(parentContainer, player);
 		bookmarkButton.tick();
 	}

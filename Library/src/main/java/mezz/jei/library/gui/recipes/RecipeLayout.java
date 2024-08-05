@@ -9,6 +9,8 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
+import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -29,8 +31,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -44,6 +48,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	 * Slots handled by the recipe category directly.
 	 */
 	private final List<IRecipeSlotDrawable> recipeCategorySlots;
+	/**
+	 * All slots, including slots handled by the recipe category and widgets.
+	 */
+	private final List<IRecipeSlotDrawable> allSlots;
+	private final List<ISlottedRecipeWidget> slottedWidgets;
+	private final List<IRecipeWidget> allWidgets;
 	private final R recipe;
 	private final IScalableDrawable recipeBackground;
 	private final int recipeBorderPadding;
@@ -109,14 +119,23 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		@Nullable ShapelessIcon shapelessIcon,
 		ImmutablePoint2i recipeTransferButtonPos,
 		List<IRecipeSlotDrawable> recipeCategorySlots,
+		List<IRecipeSlotDrawable> allSlots,
+		List<ISlottedRecipeWidget> slottedWidgets,
+		List<IRecipeWidget> widgets,
 		List<IJeiInputHandler> inputHandlers,
 		List<IJeiGuiEventListener> guiEventListeners
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
+		this.slottedWidgets = Collections.unmodifiableList(slottedWidgets);
 		this.inputHandler = new RecipeLayoutInputHandler<>(this, inputHandlers, guiEventListeners);
 
+		Set<IRecipeWidget> allWidgets = new HashSet<>(widgets);
+		allWidgets.addAll(slottedWidgets);
+		this.allWidgets = List.copyOf(allWidgets);
+
 		this.recipeCategorySlots = recipeCategorySlots;
+		this.allSlots = Collections.unmodifiableList(allSlots);
 		this.recipeBorderPadding = recipeBorderPadding;
 		this.area = new ImmutableRect2i(
 			0,
@@ -167,6 +186,15 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 					slot.draw(guiGraphics);
 				}
 				recipeCategory.draw(recipe, recipeCategorySlotsView, guiGraphics, recipeMouseX, recipeMouseY);
+				for (IRecipeWidget widget : allWidgets) {
+					ScreenPosition position = widget.getPosition();
+					poseStack.pushPose();
+					{
+						poseStack.translate(position.x(), position.y(), 0);
+						widget.draw(guiGraphics, recipeMouseX, recipeMouseY);
+					}
+					poseStack.popPose();
+				}
 
 				// drawExtras and drawInfo often render text which messes with the color, this clears it
 				RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -270,6 +298,16 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		final double recipeMouseX = mouseX - area.getX();
 		final double recipeMouseY = mouseY - area.getY();
 
+		for (ISlottedRecipeWidget widget : slottedWidgets) {
+			ScreenPosition position = widget.getPosition();
+			double relativeMouseX = recipeMouseX - position.x();
+			double relativeMouseY = recipeMouseY - position.y();
+			Optional<RecipeSlotUnderMouse> slotResult = widget.getSlotUnderMouse(relativeMouseX, relativeMouseY);
+			if (slotResult.isPresent()) {
+				return slotResult
+					.map(slot -> slot.addOffset(area.x(), area.y()));
+			}
+		}
 		for (IRecipeSlotDrawable slot : recipeCategorySlots) {
 			if (slot.isMouseOver(recipeMouseX, recipeMouseY)) {
 				return Optional.of(new RecipeSlotUnderMouse(slot, area.getScreenPosition()));
@@ -295,9 +333,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		return area;
 	}
 
+	@SuppressWarnings("RedundantUnmodifiable")
 	@Override
 	public IRecipeSlotsView getRecipeSlotsView() {
-		return () -> Collections.unmodifiableList(recipeCategorySlots);
+		return () -> Collections.unmodifiableList(allSlots);
 	}
 
 	@Override
@@ -308,5 +347,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	@Override
 	public IJeiInputHandler getInputHandler() {
 		return inputHandler;
+	}
+
+	@Override
+	public void tick() {
+		for (IRecipeWidget widget : allWidgets) {
+			widget.tick();
+		}
 	}
 }

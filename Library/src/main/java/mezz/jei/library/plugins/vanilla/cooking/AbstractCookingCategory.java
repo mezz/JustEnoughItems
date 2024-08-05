@@ -1,12 +1,11 @@
 package mezz.jei.library.plugins.vanilla.cooking;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.common.Constants;
@@ -14,6 +13,7 @@ import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -25,10 +25,10 @@ import static mezz.jei.api.recipe.RecipeIngredientRole.OUTPUT;
 
 public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> extends FurnaceVariantCategory<T> {
 	private final IDrawable background;
-	private final int regularCookTime;
 	private final IDrawable icon;
 	private final Component localizedName;
-	private final LoadingCache<Integer, IDrawableAnimated> cachedArrows;
+	protected final IGuiHelper guiHelper;
+	protected final int regularCookTime;
 
 	public AbstractCookingCategory(IGuiHelper guiHelper, Block icon, String translationKey, int regularCookTime) {
 		super(guiHelper);
@@ -36,23 +36,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		this.regularCookTime = regularCookTime;
 		this.icon = guiHelper.createDrawableItemStack(new ItemStack(icon));
 		this.localizedName = Component.translatable(translationKey);
-		this.cachedArrows = CacheBuilder.newBuilder()
-			.maximumSize(25)
-			.build(new CacheLoader<>() {
-				@Override
-				public IDrawableAnimated load(Integer cookTime) {
-					return guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 82, 128, 24, 17)
-						.buildAnimated(cookTime, IDrawableAnimated.StartDirection.LEFT, false);
-				}
-			});
-	}
-
-	protected IDrawableAnimated getArrow(T recipe) {
-		int cookTime = recipe.getCookingTime();
-		if (cookTime <= 0) {
-			cookTime = regularCookTime;
-		}
-		return this.cachedArrows.getUnchecked(cookTime);
+		this.guiHelper = guiHelper;
 	}
 
 	@Override
@@ -68,9 +52,6 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	@Override
 	public void draw(T recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		animatedFlame.draw(guiGraphics, 1, 20);
-
-		IDrawableAnimated arrow = getArrow(recipe);
-		arrow.draw(guiGraphics, 24, 18);
 
 		drawExperience(recipe, guiGraphics, 0);
 		drawCookTime(recipe, guiGraphics, 45);
@@ -119,7 +100,41 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	}
 
 	@Override
+	public void createRecipeExtras(IRecipeExtrasBuilder acceptor, T recipe, IFocusGroup focuses) {
+		acceptor.addWidget(createCookingArrowWidget(recipe, new ScreenPosition(24, 18)));
+	}
+
+	@Override
 	public ResourceLocation getRegistryName(T recipe) {
 		return recipe.getId();
+	}
+
+	protected IRecipeWidget createCookingArrowWidget(T recipe, ScreenPosition position) {
+		return new CookingArrowRecipeWidget<>(guiHelper, recipe, regularCookTime, position);
+	}
+
+	private static class CookingArrowRecipeWidget<T extends AbstractCookingRecipe> implements IRecipeWidget {
+		private final IDrawableAnimated arrow;
+		private final ScreenPosition position;
+
+		public CookingArrowRecipeWidget(IGuiHelper guiHelper, T recipe, int regularCookTime, ScreenPosition position) {
+			int cookTime = recipe.getCookingTime();
+			if (cookTime <= 0) {
+				cookTime = regularCookTime;
+			}
+			this.arrow = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 82, 128, 24, 17)
+				.buildAnimated(cookTime, IDrawableAnimated.StartDirection.LEFT, false);
+			this.position = position;
+		}
+
+		@Override
+		public ScreenPosition getPosition() {
+			return position;
+		}
+
+		@Override
+		public void draw(GuiGraphics guiGraphics, double mouseX, double mouseY) {
+			arrow.draw(guiGraphics);
+		}
 	}
 }
