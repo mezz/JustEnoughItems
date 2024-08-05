@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 public class IngredientAcceptor implements IIngredientAcceptor<IngredientAcceptor> {
 	private final IIngredientManager ingredientManager;
@@ -90,6 +89,17 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	}
 
 	@Override
+	public <I> IngredientAcceptor addTypedIngredient(ITypedIngredient<I> typedIngredient) {
+		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
+
+		Optional<ITypedIngredient<I>> copy = TypedIngredient.deepCopy(ingredientManager, typedIngredient);
+		copy.ifPresent(i -> this.types.add(i.getType()));
+		this.ingredients.add(copy.map(Function.identity()));
+
+		return this;
+	}
+
+	@Override
 	public IngredientAcceptor addFluidStack(Fluid fluid, long amount) {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		return addFluidInternal(fluidHelper, fluid, amount, null);
@@ -108,21 +118,32 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 		return this;
 	}
 
+	@Override
+	public IngredientAcceptor addTypedIngredients(List<ITypedIngredient<?>> ingredients) {
+		ErrorUtil.checkNotNull(ingredients, "ingredients");
+
+		for (ITypedIngredient<?> typedIngredient : ingredients) {
+			this.addTypedIngredient(typedIngredient);
+		}
+		return this;
+	}
+
+	@Override
+	public IngredientAcceptor addOptionalTypedIngredients(List<Optional<ITypedIngredient<?>>> ingredients) {
+		ErrorUtil.checkNotNull(ingredients, "ingredients");
+
+		this.ingredients.addAll(ingredients);
+		return this;
+	}
+
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
 		Optional<ITypedIngredient<T>> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, false);
 		typedIngredient.ifPresent(i -> this.types.add(i.getType()));
 		this.ingredients.add(typedIngredient.map(Function.identity()));
 	}
 
-	public <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
-		return this.ingredients.stream()
-			.flatMap(Optional::stream)
-			.map(i -> i.getIngredient(ingredientType))
-			.flatMap(Optional::stream);
-	}
-
-	public Stream<IIngredientType<?>> getIngredientTypes() {
-		return this.types.stream();
+	public Set<IIngredientType<?>> getIngredientTypes() {
+		return Collections.unmodifiableSet(this.types);
 	}
 
 	@UnmodifiableView

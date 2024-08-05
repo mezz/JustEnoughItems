@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -21,14 +22,8 @@ import java.util.List;
  *
  * @since 11.5.0
  */
+@ApiStatus.NonExtendable
 public interface IRecipeSlotDrawable extends IRecipeSlotView {
-	/**
-	 * Get the position and size of the recipe slot drawable relative to its parent element.
-	 *
-	 * @since 11.5.0
-	 */
-	Rect2i getRect();
-
 	/**
 	 * Draws the recipe slot relative to the pose stack.
 	 *
@@ -56,6 +51,34 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 * @since 15.8.4
 	 */
 	void getTooltip(ITooltipBuilder tooltipBuilder);
+
+	/**
+	 * Return true if the mouse is over the slot.
+	 *
+	 * @param mouseX relative to its parent element.
+	 * @param mouseY relative to its parent element.
+	 *
+	 * @since 15.9.0
+	 */
+	boolean isMouseOver(double mouseX, double mouseY);
+
+	/**
+	 * Move this slot to the given position.
+	 * @param x the new x coordinate, relative to its parent element.
+	 * @param y the new y coordinate, relative to its parent element.
+	 *
+	 * @since 15.9.0
+	 */
+	void setPosition(int x, int y);
+
+	/**
+	 * Get the position and size of the recipe slot drawable relative to its parent element.
+	 *
+	 * @since 11.5.0
+	 * @deprecated use {@link #isMouseOver(double, double)} to check if the mouse is over the slot
+	 */
+	@Deprecated(since = "15.9.0", forRemoval = true)
+	Rect2i getRect();
 
 	/**
 	 * Add a tooltip callback to be called when the mouse is hovering over this recipe slot.

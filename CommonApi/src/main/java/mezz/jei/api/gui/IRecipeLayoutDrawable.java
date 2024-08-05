@@ -1,13 +1,15 @@
 package mezz.jei.api.gui;
 
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
 
@@ -73,8 +75,20 @@ public interface IRecipeLayoutDrawable<R> {
 	/**
 	 * Get the recipe slot currently under the mouse, if there is one.
 	 * @since 11.5.0
+	 *
+	 * @deprecated use {@link #getSlotUnderMouse(double, double)}
 	 */
+	@Deprecated
 	Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY);
+
+	/**
+	 * Get the recipe slot currently under the mouse, if there is one.
+	 *
+	 * @return the slot under the mouse, with an offset
+	 *
+	 * @since 15.9.0
+	 */
+	Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY);
 
 	/**
 	 * Get position and size for the recipe in absolute screen coordinates.
@@ -117,4 +131,11 @@ public interface IRecipeLayoutDrawable<R> {
 	 * @since 11.5.0
 	 */
 	R getRecipe();
+
+	/**
+	 * Get the input handler for this recipe layout.
+	 *
+	 * @since 15.9.0
+	 */
+	IJeiInputHandler getInputHandler();
 }

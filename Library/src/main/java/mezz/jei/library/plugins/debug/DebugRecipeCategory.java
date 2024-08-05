@@ -1,16 +1,17 @@
 package mezz.jei.library.plugins.debug;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import mezz.jei.api.gui.builder.ITooltipBuilder;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
-import mezz.jei.api.gui.ingredient.IRecipeSlotView;
-import mezz.jei.common.gui.JeiTooltip;
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -29,11 +30,14 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Constants;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
@@ -43,8 +47,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -198,7 +202,12 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 			});
 	}
 
-	@SuppressWarnings("removal")
+	@Override
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, DebugRecipe recipe, IFocusGroup focuses) {
+		builder.addInputHandler(new JeiInputHandler(recipe, new ScreenRectangle(0, 0, RECIPE_WIDTH, RECIPE_HEIGHT)));
+	}
+
+	@SuppressWarnings({"removal"})
 	@Override
 	public List<Component> getTooltipStrings(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
 		JeiTooltip tooltip = new JeiTooltip();
@@ -219,37 +228,55 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 		tooltip.add(Component.literal(mouseX + ", " + mouseY));
 	}
 
-	@Override
-	public boolean handleInput(DebugRecipe recipe, double mouseX, double mouseY, InputConstants.Key input) {
-		if (input.getType() != InputConstants.Type.MOUSE) {
+	public class JeiInputHandler implements IJeiInputHandler {
+		private final DebugRecipe recipe;
+		private final ScreenRectangle area;
+
+		public JeiInputHandler(DebugRecipe recipe, ScreenRectangle area) {
+			this.recipe = recipe;
+			this.area = area;
+		}
+
+		@Override
+		public ScreenRectangle getArea() {
+			return area;
+		}
+
+		@Override
+		public boolean handleInput(double mouseX, double mouseY, IJeiUserInput userInput) {
+			if (!userInput.is(Internal.getKeyMappings().getLeftClick())) {
+				return false;
+			}
+			InputConstants.Key key = userInput.getKey();
+			Button button = recipe.getButton();
+			int mouseButton = key.getValue();
+			if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
+				if (!userInput.isSimulate()) {
+					Minecraft minecraft = Minecraft.getInstance();
+					LocalPlayer player = minecraft.player;
+					if (player != null) {
+						Screen screen = new InventoryScreen(player);
+						minecraft.setScreen(screen);
+					}
+					if (runtime != null) {
+						IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
+						String filterText = ingredientFilter.getFilterText();
+						ingredientFilter.setFilterText(filterText + " test");
+
+						IRecipeManager recipeManager = runtime.getRecipeManager();
+						if (!hiddenRecipes) {
+							recipeManager.hideRecipeCategory(RecipeTypes.CRAFTING);
+							hiddenRecipes = true;
+						} else {
+							recipeManager.unhideRecipeCategory(RecipeTypes.CRAFTING);
+							hiddenRecipes = false;
+						}
+					}
+				}
+				return true;
+			}
 			return false;
 		}
-		Button button = recipe.getButton();
-		int mouseButton = input.getValue();
-		if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
-			Minecraft minecraft = Minecraft.getInstance();
-			LocalPlayer player = minecraft.player;
-			if (player != null) {
-				Screen screen = new InventoryScreen(player);
-				minecraft.setScreen(screen);
-			}
-			if (runtime != null) {
-				IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
-				String filterText = ingredientFilter.getFilterText();
-				ingredientFilter.setFilterText(filterText + " test");
-
-				IRecipeManager recipeManager = runtime.getRecipeManager();
-				if (!hiddenRecipes) {
-					recipeManager.hideRecipeCategory(RecipeTypes.CRAFTING);
-					hiddenRecipes = true;
-				} else {
-					recipeManager.unhideRecipeCategory(RecipeTypes.CRAFTING);
-					hiddenRecipes = false;
-				}
-			}
-			return true;
-		}
-		return false;
 	}
 
 	@Override

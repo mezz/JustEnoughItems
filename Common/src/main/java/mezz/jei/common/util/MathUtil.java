@@ -1,6 +1,7 @@
 package mezz.jei.common.util;
 
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.phys.Vec2;
@@ -31,6 +32,13 @@ public final class MathUtil {
 			y >= rect.getY() &&
 			x < rect.getX() + rect.getWidth() &&
 			y < rect.getY() + rect.getHeight();
+	}
+
+	public static boolean contains(ScreenRectangle rect, double x, double y) {
+		return x >= rect.left() &&
+			x <= rect.right() &&
+			y >= rect.top() &&
+			y <= rect.bottom();
 	}
 
 	public static ImmutableRect2i union(ImmutableRect2i rect1, ImmutableRect2i rect2) {

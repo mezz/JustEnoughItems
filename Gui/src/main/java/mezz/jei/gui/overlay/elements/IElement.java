@@ -32,7 +32,7 @@ public interface IElement<T> {
 
 	boolean isVisible();
 
-	default boolean handleClick(UserInput input, IInternalKeyMappings keyBindings, IRecipesGui recipesGui, FocusUtil focusUtil) {
+	default boolean handleClick(UserInput input, IInternalKeyMappings keyBindings) {
 		return false;
 	}
 }

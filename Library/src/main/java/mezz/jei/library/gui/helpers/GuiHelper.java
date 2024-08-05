@@ -1,4 +1,4 @@
-package mezz.jei.library.gui;
+package mezz.jei.library.gui.helpers;
 
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -76,7 +76,7 @@ public class GuiHelper implements IGuiHelper {
 
 	@Override
 	public ICraftingGridHelper createCraftingGridHelper() {
-		return new CraftingGridHelper();
+		return CraftingGridHelper.INSTANCE;
 	}
 
 	@Override

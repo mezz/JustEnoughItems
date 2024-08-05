@@ -1,24 +1,19 @@
 package mezz.jei.library.gui.recipes.layout.builder;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.library.gui.ingredients.RecipeSlots;
 import mezz.jei.library.ingredients.IngredientAcceptor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-public class InvisibleRecipeLayoutSlotSource implements IRecipeLayoutSlotSource, IIngredientAcceptor<InvisibleRecipeLayoutSlotSource> {
+public class InvisibleRecipeLayoutSlotSource implements IIngredientAcceptor<InvisibleRecipeLayoutSlotSource> {
 	private final IngredientAcceptor ingredients;
 	private final RecipeIngredientRole role;
 
@@ -46,6 +41,18 @@ public class InvisibleRecipeLayoutSlotSource implements IRecipeLayoutSlotSource,
 	}
 
 	@Override
+	public InvisibleRecipeLayoutSlotSource addTypedIngredients(List<ITypedIngredient<?>> ingredients) {
+		this.ingredients.addTypedIngredients(ingredients);
+		return this;
+	}
+
+	@Override
+	public InvisibleRecipeLayoutSlotSource addOptionalTypedIngredients(List<Optional<ITypedIngredient<?>>> ingredients) {
+		this.ingredients.addOptionalTypedIngredients(ingredients);
+		return this;
+	}
+
+	@Override
 	public InvisibleRecipeLayoutSlotSource addFluidStack(Fluid fluid, long amount) {
 		this.ingredients.addFluidStack(fluid, amount);
 		return this;
@@ -57,38 +64,11 @@ public class InvisibleRecipeLayoutSlotSource implements IRecipeLayoutSlotSource,
 		return this;
 	}
 
-	@Override
-	public RecipeIngredientRole getRole() {
-		return this.role;
-	}
-
-	@Override
-	public void setRecipeSlots(RecipeSlots recipeSlots, IntSet focusMatches) {
-		// invisible, don't set the slots
-	}
-
-	@Override
-	public <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
-		return this.ingredients.getIngredients(ingredientType);
-	}
-
-	@Override
-	public Collection<Optional<ITypedIngredient<?>>> getAllIngredients() {
-		return this.ingredients.getAllIngredients();
-	}
-
-	@Override
-	public IntSet getMatches(IFocusGroup focuses) {
-		return this.ingredients.getMatches(focuses, role);
-	}
-
-	@Override
-	public int getIngredientCount() {
-		return this.ingredients.getAllIngredients().size();
-	}
-
-	@Override
-	public Stream<IIngredientType<?>> getIngredientTypes() {
-		return this.ingredients.getIngredientTypes();
+	public RecipeSlotIngredients getRecipeSlotIngredients() {
+		return new RecipeSlotIngredients(
+			this.role,
+			this.ingredients.getAllIngredients(),
+			this.ingredients.getIngredientTypes()
+		);
 	}
 }

@@ -7,6 +7,7 @@ import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
@@ -73,6 +74,12 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	}
 
 	@Override
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, CraftingRecipe recipe, IFocusGroup focuses) {
+		ICraftingCategoryExtension recipeExtension = this.extendableHelper.getRecipeExtension(recipe);
+		recipeExtension.createRecipeExtras(builder, craftingGridHelper, focuses);
+	}
+
+	@Override
 	public void draw(CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
 		int recipeWidth = this.getWidth();
@@ -93,6 +100,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 		return extension.getTooltipStrings(mouseX, mouseY);
 	}
 
+	@SuppressWarnings({"removal"})
 	@Override
 	public boolean handleInput(CraftingRecipe recipe, double mouseX, double mouseY, InputConstants.Key input) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);

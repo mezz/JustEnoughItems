@@ -18,10 +18,14 @@ public final class IngredientSupplierHelper {
 	@Nullable
 	public static <T> IIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager) {
 		try {
-			RecipeLayoutBuilder builder = new RecipeLayoutBuilder(ingredientManager, 0);
+			RecipeLayoutBuilder<T> builder = new RecipeLayoutBuilder<>(recipeCategory, recipe, ingredientManager);
 			recipeCategory.setRecipe(builder, recipe, FocusGroup.EMPTY);
-			if (builder.isUsed()) {
-				return builder;
+			// as a minor optimization, skip setting widgets that have no slots (IRecipeCategory#createWidgets)
+			if (!builder.isEmpty()) {
+				return builder.buildIngredientSupplier();
+			} else {
+				String recipeName = RecipeErrorUtil.getNameForRecipe(recipe);
+				LOGGER.warn("The recipe category for '{}' failed to set anything in its setRecipe method, for recipe: {}", recipeCategory.getRecipeType(), recipeName);
 			}
 		} catch (RuntimeException | LinkageError e) {
 			String recipeName = RecipeErrorUtil.getNameForRecipe(recipe);

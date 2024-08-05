@@ -89,7 +89,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	}
 
 	@Override
-	public boolean handleClick(UserInput input, IInternalKeyMappings keyBindings, IRecipesGui recipesGui, FocusUtil focusUtil) {
+	public boolean handleClick(UserInput input, IInternalKeyMappings keyBindings) {
 		boolean transferOnce = input.is(keyBindings.getTransferRecipeBookmark());
 		boolean transferMax = input.is(keyBindings.getMaxTransferRecipeBookmark());
 		if (transferOnce || transferMax) {

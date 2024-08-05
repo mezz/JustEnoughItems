@@ -1,6 +1,7 @@
 package mezz.jei.common.util;
 
 import com.google.common.base.Preconditions;
+import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.renderer.Rect2i;
 
 import javax.annotation.Nonnegative;
@@ -285,5 +286,13 @@ public record ImmutableRect2i(
 
 	public Rect2i toMutable() {
 		return new Rect2i(x, y, width, height);
+	}
+
+	public ImmutablePoint2i getPosition() {
+		return new ImmutablePoint2i(x, y);
+	}
+
+	public ScreenPosition getScreenPosition() {
+		return new ScreenPosition(x, y);
 	}
 }

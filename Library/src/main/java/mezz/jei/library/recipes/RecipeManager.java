@@ -15,8 +15,8 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.recipes.RecipeLayout;
+import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
@@ -108,9 +108,9 @@ public class RecipeManager implements IRecipeManager {
 
 	@Override
 	public IRecipeSlotDrawable createRecipeSlotDrawable(RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusedIngredients, int xPos, int yPos, int ingredientCycleOffset) {
-		RecipeSlot recipeSlot = new RecipeSlot(role, xPos, yPos, ingredientCycleOffset);
-		recipeSlot.set(ingredients, focusedIngredients);
-		return recipeSlot;
+		RecipeSlotBuilder builder = new RecipeSlotBuilder(ingredientManager, role, xPos, yPos, ingredientCycleOffset);
+		builder.addOptionalTypedIngredients(ingredients);
+		return builder.build(focusedIngredients);
 	}
 
 	@Override

@@ -1,8 +1,5 @@
 package mezz.jei.library.transfer;
 
-import java.util.Collection;
-import java.util.List;
-
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
@@ -12,7 +9,6 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.common.Internal;
-import mezz.jei.library.gui.ingredients.RecipeSlotsView;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.util.ErrorUtil;
@@ -20,6 +16,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.List;
 
 public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper {
 	private final IStackHelper stackHelper;
@@ -73,7 +72,7 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 
 	@Override
 	public IRecipeSlotsView createRecipeSlotsView(List<IRecipeSlotView> slotViews) {
-		return new RecipeSlotsView(slotViews);
+		return () -> slotViews;
 	}
 
 	@Override

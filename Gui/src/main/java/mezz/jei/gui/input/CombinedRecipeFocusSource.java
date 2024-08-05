@@ -33,12 +33,9 @@ public class CombinedRecipeFocusSource {
 	 * @see IClickableIngredientInternal#canClickToFocus()
 	 */
 	private static boolean isConflictingVanillaMouseButton(UserInput input, IInternalKeyMappings keyBindings) {
-		if (input.isMouse()) {
-			Minecraft minecraft = Minecraft.getInstance();
-			return input.is(keyBindings.getLeftClick()) ||
-				input.is(minecraft.options.keyPickItem) ||
-				input.is(keyBindings.getRightClick());
-		}
-		return false;
+		Minecraft minecraft = Minecraft.getInstance();
+		return input.is(keyBindings.getLeftClick()) ||
+			input.is(minecraft.options.keyPickItem) ||
+			input.is(keyBindings.getRightClick());
 	}
 }

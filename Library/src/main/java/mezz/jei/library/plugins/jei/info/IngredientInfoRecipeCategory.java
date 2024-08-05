@@ -1,6 +1,5 @@
 package mezz.jei.library.plugins.jei.info;
 
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -17,6 +16,7 @@ import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.library.ingredients.IngredientInfoRecipe;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;

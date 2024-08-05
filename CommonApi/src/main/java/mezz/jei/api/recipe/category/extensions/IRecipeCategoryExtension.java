@@ -1,17 +1,22 @@
 package mezz.jei.api.recipe.category.extensions;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+
 import java.util.Collections;
 import java.util.List;
-
-import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
-import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.network.chat.Component;
 
 /**
  * An extension to a recipe category with methods that allow JEI to make sense of it.
@@ -73,7 +78,11 @@ public interface IRecipeCategoryExtension {
 	 * @param input  the current input from the player.
 	 * @return true if the input was handled, false otherwise
 	 * @since 8.3.0
+	 *
+	 * @deprecated create a {@link IJeiInputHandler} to handle inputs using {@link IRecipeExtrasBuilder#addInputHandler}, then
+	 * use {@link IJeiInputHandler#handleInput(double, double, IJeiUserInput)}
 	 */
+	@Deprecated(since = "15.9.0", forRemoval = true)
 	default boolean handleInput(double mouseX, double mouseY, InputConstants.Key input) {
 		return false;
 	}

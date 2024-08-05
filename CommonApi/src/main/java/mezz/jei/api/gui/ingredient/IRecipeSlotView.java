@@ -10,6 +10,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -26,7 +27,44 @@ import java.util.stream.Stream;
  *
  * @since 9.3.0
  */
+@ApiStatus.NonExtendable
 public interface IRecipeSlotView {
+	/**
+	 * All ingredient variations that can be shown.
+	 *
+	 * @see #getItemStacks() to limit to only ItemStack ingredients.
+	 * @see #getIngredients(IIngredientType) to limit to one type of ingredient.
+	 *
+	 * @since 9.3.0
+	 */
+	Stream<ITypedIngredient<?>> getAllIngredients();
+
+	/**
+	 * The ingredient variation that is shown at this moment.
+	 * For ingredients that rotate through several values, this will change over time.
+	 * If nothing is currently shown, this will return {@link Optional#empty()}.
+	 *
+	 * @since 9.3.0
+	 */
+	Optional<ITypedIngredient<?>> getDisplayedIngredient();
+
+	/**
+	 * Returns the type of focus that matches this ingredient.
+	 *
+	 * @since 9.3.0
+	 */
+	RecipeIngredientRole getRole();
+
+	/**
+	 * Draws a highlight on background of this ingredient.
+	 * This is used by recipe transfer errors to turn missing ingredient backgrounds to red, but can be used for other purposes.
+	 *
+	 * @see IRecipeTransferHandlerHelper#createUserErrorForMissingSlots(Component, Collection)
+	 *
+	 * @since 9.3.0
+	 */
+	void drawHighlight(GuiGraphics guiGraphics, int color);
+
 	/**
 	 * All ingredient variations of the given type that can be shown.
 	 *
@@ -35,7 +73,11 @@ public interface IRecipeSlotView {
 	 *
 	 * @since 9.3.0
 	 */
-	<T> Stream<T> getIngredients(IIngredientType<T> ingredientType);
+	default <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
+		return getAllIngredients()
+			.map(i -> i.getIngredient(ingredientType))
+			.flatMap(Optional::stream);
+	}
 
 	/**
 	 * All ingredient variations of the given type that can be shown.
@@ -50,21 +92,13 @@ public interface IRecipeSlotView {
 	}
 
 	/**
-	 * All ingredient variations that can be shown.
-	 *
-	 * @see #getItemStacks() to limit to only ItemStack ingredients.
-	 * @see #getIngredients(IIngredientType) to limit to one type of ingredient.
-	 *
-	 * @since 9.3.0
-	 */
-	Stream<ITypedIngredient<?>> getAllIngredients();
-
-	/**
 	 * @return true if there are no ingredients in this recipe slot.
 	 *
 	 * @since 9.3.0
 	 */
-	boolean isEmpty();
+	default boolean isEmpty() {
+		return getAllIngredients().findAny().isEmpty();
+	}
 
 	/**
 	 * The ItemStack variation that is shown at this moment.
@@ -85,16 +119,10 @@ public interface IRecipeSlotView {
 	 *
 	 * @since 9.3.0
 	 */
-	<T> Optional<T> getDisplayedIngredient(IIngredientType<T> ingredientType);
-
-	/**
-	 * The ingredient variation that is shown at this moment.
-	 * For ingredients that rotate through several values, this will change over time.
-	 * If nothing is currently shown, this will return {@link Optional#empty()}.
-	 *
-	 * @since 9.3.0
-	 */
-	Optional<ITypedIngredient<?>> getDisplayedIngredient();
+	default <T> Optional<T> getDisplayedIngredient(IIngredientType<T> ingredientType) {
+		return getDisplayedIngredient()
+			.flatMap(i -> i.getIngredient(ingredientType));
+	}
 
 	/**
 	 * The slot's name if one was set by {@link IRecipeSlotBuilder#setSlotName(String)}
@@ -102,21 +130,4 @@ public interface IRecipeSlotView {
 	 * @since 9.3.0
 	 */
 	Optional<String> getSlotName();
-
-	/**
-	 * Returns the type of focus that matches this ingredient.
-	 *
-	 * @since 9.3.0
-	 */
-	RecipeIngredientRole getRole();
-
-	/**
-	 * Draws a highlight on background of this ingredient.
-	 * This is used by recipe transfer errors to turn missing ingredient backgrounds to red, but can be used for other purposes.
-	 *
-	 * @see IRecipeTransferHandlerHelper#createUserErrorForMissingSlots(Component, Collection)
-	 *
-	 * @since 9.3.0
-	 */
-	void drawHighlight(GuiGraphics guiGraphics, int color);
 }

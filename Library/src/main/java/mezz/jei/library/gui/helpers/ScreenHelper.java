@@ -1,4 +1,4 @@
-package mezz.jei.library.gui;
+package mezz.jei.library.gui.helpers;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
@@ -13,6 +13,7 @@ import mezz.jei.common.input.ClickableIngredient;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.library.gui.GuiContainerHandlers;
 import mezz.jei.library.ingredients.TypedIngredient;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

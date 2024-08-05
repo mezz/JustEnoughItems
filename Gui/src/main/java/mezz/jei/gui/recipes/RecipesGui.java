@@ -1,5 +1,6 @@
 package mezz.jei.gui.recipes;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -42,7 +43,6 @@ import mezz.jei.gui.input.handlers.UserInputRouter;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.StaticFocusedRecipes;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -164,16 +164,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		);
 	}
 
-	private static void drawCenteredStringWithShadow(GuiGraphics guiGraphics, Font font, String string, ImmutableRect2i area) {
-		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, string);
-		guiGraphics.drawString(font, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
-	}
-
-	private static void drawCenteredStringWithShadow(GuiGraphics guiGraphics, Font font, Component text, ImmutableRect2i area) {
-		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, text);
-		guiGraphics.drawString(font, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
-	}
-
 	public ImmutableRect2i getArea() {
 		return this.area;
 	}
@@ -270,10 +260,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-		drawCenteredStringWithShadow(guiGraphics, font, title, titleArea);
+		StringUtil.drawCenteredStringWithShadow(guiGraphics, font, title, titleArea);
 
 		ImmutableRect2i pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
-		drawCenteredStringWithShadow(guiGraphics, font, pageString, pageArea);
+		StringUtil.drawCenteredStringWithShadow(guiGraphics, font, pageString, pageArea);
 
 		nextRecipeCategory.render(guiGraphics, mouseX, mouseY, partialTicks);
 		previousRecipeCategory.render(guiGraphics, mouseX, mouseY, partialTicks);
@@ -294,14 +284,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		hoveredRecipeLayout.ifPresent(l -> l.drawOverlays(guiGraphics, mouseX, mouseY));
 		hoveredRecipeCatalyst.ifPresent(h -> h.drawHoverOverlays(guiGraphics));
 
-		hoveredRecipeCatalyst.ifPresent(h ->
-			h.getDisplayedIngredient()
-				.ifPresent(i -> {
-					JeiTooltip tooltip = new JeiTooltip();
-					h.getTooltip(tooltip);
-					tooltip.draw(guiGraphics, mouseX, mouseY);
-				})
-		);
+		hoveredRecipeCatalyst.ifPresent(h -> {
+			JeiTooltip tooltip = new JeiTooltip();
+			h.getTooltip(tooltip);
+			tooltip.draw(guiGraphics, mouseX, mouseY);
+		});
 		RenderSystem.enableDepthTest();
 
 		if (titleStringArea.contains(mouseX, mouseY) && !logic.hasAllCategories()) {
@@ -396,6 +383,17 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		return Stream.empty();
+	}
+
+	@Override
+	public void mouseMoved(double mouseX, double mouseY) {
+		layouts.mouseMoved(mouseX, mouseY);
+	}
+
+	@Override
+	public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
+		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
+		return layouts.mouseDragged(mouseX, mouseY, input, dragX, dragY);
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package mezz.jei.api.recipe.category.extensions.vanilla.crafting;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
@@ -31,6 +32,17 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	 * @since 9.4.0
 	 */
 	void setRecipe(IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses);
+
+	/**
+	 * Sets the extras for the recipe category, like input handlers.
+	 *
+	 * @see IRecipeExtrasBuilder
+	 *
+	 * @since 15.9.0
+	 */
+	default void createRecipeExtras(IRecipeExtrasBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
+
+	}
 
 	/**
 	 * Return the registry name of the recipe here.
