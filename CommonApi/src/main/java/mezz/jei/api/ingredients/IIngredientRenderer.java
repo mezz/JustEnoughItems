@@ -11,6 +11,7 @@ import net.minecraft.world.item.TooltipFlag;
 
 import java.util.Collection;
 import java.util.List;
+
 /**
  * Renders a type of ingredient in JEI's item list and recipes.
  *
@@ -20,7 +21,7 @@ import java.util.List;
  */
 public interface IIngredientRenderer<T> {
 	/**
-	 * Renders an ingredient at a specific location.
+	 * Renders an ingredient.
 	 *
 	 * @param stack  The current {@link PoseStack} for rendering the ingredient.
 	 * @param ingredient the ingredient to render.
@@ -30,7 +31,7 @@ public interface IIngredientRenderer<T> {
 	void render(PoseStack stack, T ingredient);
 
 	/**
-	 * Renders an ingredient at a specific location.
+	 * Renders an ingredient.
 	 *
 	 * @param poseStack  The current {@link PoseStack} for rendering the ingredient.
 	 * @param ingredient the ingredient to render.

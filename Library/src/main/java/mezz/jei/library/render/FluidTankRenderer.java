@@ -97,16 +97,21 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 
 	@Override
 	public void render(PoseStack poseStack, T fluidStack) {
+		render(poseStack, fluidStack, 0, 0);
+	}
+
+	@Override
+	public void render(PoseStack poseStack, T ingredient, int posX, int posY) {
 		RenderSystem.enableBlend();
 
-		drawFluid(poseStack, width, height, fluidStack);
+		drawFluid(poseStack, width, height, ingredient, posX, posY);
 
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 
 		RenderSystem.disableBlend();
 	}
 
-	private void drawFluid(PoseStack poseStack, final int width, final int height, T fluidStack) {
+	private void drawFluid(PoseStack poseStack, final int width, final int height, T fluidStack, int posX, int posY) {
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluid = type.getBase(fluidStack);
 		if (fluid.isSame(Fluids.EMPTY)) {
@@ -127,7 +132,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 				}
 
 				if (scaledAmount > 0) {
-					drawTiledSprite(poseStack, width, height, fluidColor, scaledAmount, fluidStillSprite, tilingDirection);
+					drawTiledSprite(poseStack, width, height, fluidColor, scaledAmount, fluidStillSprite, tilingDirection, posX, posY);
 				}
 			});
 	}
@@ -139,17 +144,19 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		int color,
 		long scaledAmount,
 		TextureAtlasSprite sprite,
-		TilingDirection tilingDirection
+		TilingDirection tilingDirection,
+		int posX,
+		int posY
 	) {
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		Matrix4f matrix = poseStack.last().pose();
 
 		int scaledHeight = Math.toIntExact(scaledAmount);
-		int posY = tiledHeight - scaledHeight;
+		int fluidY = posY + tiledHeight - scaledHeight;
 		int xShift = getXShift(tilingDirection, tiledWidth);
 		int yShift = getYShift(tilingDirection, scaledHeight);
 
-		drawTiledSpriteClipped(matrix, 0, posY, tiledWidth, scaledHeight, xShift, yShift, sprite, color);
+		drawTiledSpriteClipped(matrix, posX, fluidY, tiledWidth, scaledHeight, xShift, yShift, sprite, color);
 	}
 
 	private static void drawTiledSpriteClipped(Matrix4f matrix, int posX, int posY, int tiledWidth, int tiledHeight, int xShift, int yShift, TextureAtlasSprite sprite, int color) {

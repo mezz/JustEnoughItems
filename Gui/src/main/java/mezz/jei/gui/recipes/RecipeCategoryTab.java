@@ -63,8 +63,8 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		super.draw(selected, poseStack, mouseX, mouseY);
 
 		IDrawable icon = RecipeCategoryIconUtil.create(category, recipeManager, guiHelper);
-		int iconX = x + (TAB_WIDTH - icon.getWidth()) / 2;
-		int iconY = y + (TAB_HEIGHT - icon.getHeight()) / 2;
+		int iconX = area.getX() + (TAB_WIDTH - icon.getWidth()) / 2;
+		int iconY = area.getY() + (TAB_HEIGHT - icon.getHeight()) / 2;
 		icon.draw(poseStack, iconX, iconY);
 	}
 

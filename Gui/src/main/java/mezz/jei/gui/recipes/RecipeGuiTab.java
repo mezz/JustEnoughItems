@@ -13,13 +13,9 @@ public abstract class RecipeGuiTab implements IUserInputHandler {
 	public static final int TAB_HEIGHT = 24;
 	public static final int TAB_WIDTH = 24;
 
-	protected final int x;
-	protected final int y;
-	private final ImmutableRect2i area;
+	protected final ImmutableRect2i area;
 
 	public RecipeGuiTab(int x, int y) {
-		this.x = x;
-		this.y = y;
 		this.area = new ImmutableRect2i(x, y, TAB_WIDTH, TAB_HEIGHT);
 	}
 
@@ -33,7 +29,7 @@ public abstract class RecipeGuiTab implements IUserInputHandler {
 		Textures textures = Internal.getTextures();
 		IDrawable tab = selected ? textures.getTabSelected() : textures.getTabUnselected();
 
-		tab.draw(poseStack, x, y);
+		tab.draw(poseStack, area.getX(), area.getY());
 	}
 
 	public abstract JeiTooltip getTooltip();

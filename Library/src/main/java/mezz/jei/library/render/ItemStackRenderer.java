@@ -28,6 +28,11 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 	@Override
 	public void render(PoseStack poseStack, @Nullable ItemStack ingredient) {
+		render(poseStack, ingredient, 0, 0);
+	}
+
+	@Override
+	public void render(PoseStack poseStack, @Nullable ItemStack ingredient, int posX, int posY) {
 		if (ingredient != null) {
 			PoseStack modelViewStack = RenderSystem.getModelViewStack();
 			modelViewStack.pushPose();
@@ -39,8 +44,8 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 				Minecraft minecraft = Minecraft.getInstance();
 				Font font = getFontRenderer(minecraft, ingredient);
 				ItemRenderer itemRenderer = minecraft.getItemRenderer();
-				itemRenderer.renderAndDecorateFakeItem(ingredient, 0, 0);
-				itemRenderer.renderGuiItemDecorations(font, ingredient, 0, 0);
+				itemRenderer.renderAndDecorateFakeItem(ingredient, posX, posY);
+				itemRenderer.renderGuiItemDecorations(font, ingredient, posX, posY);
 				RenderSystem.disableBlend();
 			}
 			modelViewStack.popPose();
