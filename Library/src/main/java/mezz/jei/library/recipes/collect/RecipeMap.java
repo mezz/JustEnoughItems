@@ -1,5 +1,9 @@
 package mezz.jei.library.recipes.collect;
 
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
@@ -8,7 +12,6 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.core.collect.SetMultiMap;
 import mezz.jei.library.ingredients.IIngredientSupplier;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -25,8 +28,8 @@ import java.util.stream.Stream;
  */
 public class RecipeMap {
 	private final RecipeIngredientTable recipeTable = new RecipeIngredientTable();
-	private final SetMultiMap<Object, RecipeType<?>> ingredientUidToCategoryMap = new SetMultiMap<>();
-	private final SetMultiMap<Object, RecipeType<?>> categoryCatalystUidToRecipeCategoryMap = new SetMultiMap<>();
+	private final Multimap<Object, RecipeType<?>> ingredientUidToCategoryMap = Multimaps.newSetMultimap(new Object2ObjectOpenHashMap<>(), ObjectOpenHashSet::new);
+	private final Multimap<Object, RecipeType<?>> categoryCatalystUidToRecipeCategoryMap = Multimaps.newSetMultimap(new Object2ObjectOpenHashMap<>(), ObjectOpenHashSet::new);
 	private final Comparator<RecipeType<?>> recipeTypeComparator;
 	private final IIngredientManager ingredientManager;
 	private final RecipeIngredientRole role;
@@ -78,6 +81,10 @@ public class RecipeMap {
 			}
 			recipeTable.add(recipe, recipeType, ingredientUids);
 		}
+	}
+
+	public void compact() {
+		recipeTable.compact();
 	}
 
 	private <T> Object getIngredientUid(ITypedIngredient<T> typedIngredient) {
