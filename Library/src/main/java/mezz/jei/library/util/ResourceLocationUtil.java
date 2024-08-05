@@ -9,7 +9,7 @@ public class ResourceLocationUtil {
 		for (int i = 0; i < charArray.length; i++) {
 			char c = charArray[i];
 			if (!ResourceLocation.validPathChar(c)) {
-				charArray[i] = '_';
+				charArray[i] = '.';
 				valid = false;
 			}
 		}
