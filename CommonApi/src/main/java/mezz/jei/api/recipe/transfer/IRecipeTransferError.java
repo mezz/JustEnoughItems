@@ -94,14 +94,16 @@ public interface IRecipeTransferError {
 	 * @since 10.5.0
 	 */
 	default void getTooltip(ITooltipBuilder tooltip) {
-
+		tooltip.addAll(getTooltip());
 	}
 
 	/**
 	 * Called on {@link Type#USER_FACING} and {@link Type#COSMETIC} errors.
 	 *
 	 * @since 10.28.0
+	 * @deprecated use {@link #getTooltip(ITooltipBuilder)}
 	 */
+	@Deprecated(since = "10.29.0", forRemoval = true)
 	default List<Component> getTooltip() {
 		return List.of();
 	}

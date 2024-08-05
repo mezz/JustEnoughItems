@@ -5,6 +5,8 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.common.util.Translator;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 public class ListElementInfoTooltip implements ITooltipBuilder {
-	private final List<Component> tooltip = new ArrayList<>();
+	private final List<FormattedText> tooltip = new ArrayList<>();
 
 	@Override
 	public void add(Component component) {
@@ -22,8 +24,18 @@ public class ListElementInfoTooltip implements ITooltipBuilder {
 	}
 
 	@Override
+	public void add(FormattedText component) {
+		tooltip.add(component);
+	}
+
+	@Override
 	public void addAll(Collection<? extends Component> components) {
 		tooltip.addAll(components);
+	}
+
+	@Override
+	public void add(TooltipComponent component) {
+		// ignored for the purposes of searching tooltips
 	}
 
 	@Override
@@ -38,12 +50,18 @@ public class ListElementInfoTooltip implements ITooltipBuilder {
 
 	@Override
 	public List<Component> getLegacyComponents() {
-		return new ArrayList<>(tooltip);
+		return tooltip.stream()
+			.<Component>mapMulti((text, consumer) -> {
+				if (text instanceof Component component) {
+					consumer.accept(component);
+				}
+			})
+			.toList();
 	}
 
 	public Set<String> getStrings() {
 		Set<String> result = new HashSet<>();
-		for (Component component : tooltip) {
+		for (FormattedText component : tooltip) {
 			String string = component.getString();
 			string = StringUtil.removeChatFormatting(string);
 			string = Translator.toLowercaseWithLocale(string);

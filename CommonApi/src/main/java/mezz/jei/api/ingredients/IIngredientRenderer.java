@@ -1,6 +1,7 @@
 package mezz.jei.api.ingredients;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import net.minecraft.client.Minecraft;
@@ -11,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
-
 /**
  * Renders a type of ingredient in JEI's item list and recipes.
  *
@@ -70,8 +70,25 @@ public interface IIngredientRenderer<T> {
 	 * @param ingredient  The ingredient to get the tooltip for.
 	 * @param tooltipFlag Whether to show advanced information on item tooltips, toggled by F3+H
 	 * @return The tooltip text for the ingredient.
+	 *
+	 * @deprecated use {@link #getTooltip(ITooltipBuilder, Object, TooltipFlag)}
 	 */
+	@Deprecated(since = "10.29.0", forRemoval = true)
 	List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag);
+
+	/**
+	 * Get a rich tooltip for this ingredient. JEI renders the tooltip based on this.
+	 *
+	 * @param tooltip     A tooltip builder for building rich tooltips.
+	 * @param ingredient  The ingredient to get the tooltip for.
+	 * @param tooltipFlag Whether to show advanced information on item tooltips, toggled by F3+H
+	 *
+	 * @since 10.29.0
+	 */
+	default void getTooltip(ITooltipBuilder tooltip, T ingredient, TooltipFlag tooltipFlag) {
+		List<Component> components = getTooltip(ingredient, tooltipFlag);
+		tooltip.addAll(components);
+	}
 
 	/**
 	 * Get the tooltip font renderer for this ingredient. JEI renders the tooltip based on this.

@@ -20,6 +20,7 @@ public class TestModIdHelper implements IModIdHelper {
 		return getModNameForModId(modId);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public Set<String> getModAliases(String modId) {
 		return Set.of();
@@ -31,6 +32,7 @@ public class TestModIdHelper implements IModIdHelper {
 		return tooltip;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient) {
 		return tooltip;

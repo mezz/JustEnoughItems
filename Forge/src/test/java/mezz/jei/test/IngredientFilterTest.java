@@ -30,7 +30,6 @@ import mezz.jei.test.lib.TestIngredientFilterConfig;
 import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
-
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
@@ -184,7 +183,7 @@ public class IngredientFilterTest {
 
 	public static Set<String> getTooltipStrings(IIngredientRenderer<TestIngredient> ingredientRenderer, TestIngredient testIngredient) {
 		ListElementInfoTooltip tooltip = new ListElementInfoTooltip();
-		tooltip.addAll(ingredientRenderer.getTooltip(testIngredient, TooltipFlag.Default.NORMAL));
+		ingredientRenderer.getTooltip(tooltip, testIngredient, TooltipFlag.Default.NORMAL);
 		return tooltip.getStrings();
 	}
 

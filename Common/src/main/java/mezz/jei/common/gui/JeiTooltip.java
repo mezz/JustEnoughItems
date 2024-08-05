@@ -55,6 +55,21 @@ public class JeiTooltip implements ITooltipBuilder {
 		elements.add(Either.left(formattedText));
 	}
 
+	@Override
+	public void add(@Nullable FormattedText formattedText) {
+		if (formattedText == null) {
+			if (Services.PLATFORM.getModHelper().isInDev()) {
+				throw new NullPointerException("Tried to add null tooltip text");
+			}
+			return;
+		}
+		if (formattedText instanceof Component component) {
+			lines.add(component);
+		}
+		elements.add(Either.left(formattedText));
+	}
+
+	@Override
 	public void add(TooltipComponent component) {
 		elements.add(Either.right(component));
 	}
@@ -111,6 +126,10 @@ public class JeiTooltip implements ITooltipBuilder {
 
 	public List<Either<FormattedText, TooltipComponent>> build() {
 		return elements;
+	}
+
+	public List<Component> toLegacyToComponents() {
+		return new ArrayList<>(lines);
 	}
 
 	@Override

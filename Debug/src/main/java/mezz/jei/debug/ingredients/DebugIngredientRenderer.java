@@ -3,8 +3,10 @@ package mezz.jei.debug.ingredients;
 import net.minecraft.network.chat.TextComponent;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.common.gui.JeiTooltip;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -12,7 +14,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.TooltipFlag;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredient> {
@@ -31,13 +32,19 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public List<Component> getTooltip(DebugIngredient ingredient, TooltipFlag tooltipFlag) {
-		List<Component> tooltip = new ArrayList<>();
+		JeiTooltip tooltip = new JeiTooltip();
+		getTooltip(tooltip, ingredient, tooltipFlag);
+		return tooltip.toLegacyToComponents();
+	}
+
+	@Override
+	public void getTooltip(ITooltipBuilder tooltip, DebugIngredient ingredient, TooltipFlag tooltipFlag) {
 		String displayName = ingredientHelper.getDisplayName(ingredient);
 		tooltip.add(new TextComponent(displayName));
 		MutableComponent debugIngredient = new TextComponent("debug ingredient");
 		tooltip.add(debugIngredient.withStyle(ChatFormatting.GRAY));
-		return tooltip;
 	}
 }

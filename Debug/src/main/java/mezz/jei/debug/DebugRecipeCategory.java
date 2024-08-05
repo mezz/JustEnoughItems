@@ -3,6 +3,10 @@ package mezz.jei.debug;
 import net.minecraft.network.chat.TextComponent;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -42,7 +46,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 
 import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -174,28 +177,47 @@ public class DebugRecipeCategory<F> implements RecipeCategoryWithType<DebugRecip
 				platformFluidHelper.create(Fluids.LAVA, (int) ((1.0 + Math.random()) * bucketVolume)),
 				new ItemStack(Items.LAVA_BUCKET)
 			))
-			.addTooltipCallback((recipeSlotView, tooltip) -> {
-				switch (recipeSlotView.getRole()) {
-					case INPUT -> tooltip.add(new TextComponent("Input DebugIngredient"));
-					case OUTPUT -> tooltip.add(new TextComponent("Output DebugIngredient"));
-					case CATALYST -> tooltip.add(new TextComponent("Catalyst DebugIngredient"));
+			.addTooltipCallback(new IRecipeSlotTooltipCallback() {
+				@SuppressWarnings("removal")
+				@Override
+				public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
+					switch (recipeSlotView.getRole()) {
+						case INPUT -> tooltip.add(new TextComponent("Input DebugIngredient"));
+						case OUTPUT -> tooltip.add(new TextComponent("Output DebugIngredient"));
+						case CATALYST -> tooltip.add(new TextComponent("Catalyst DebugIngredient"));
+					}
+				}
+
+				@Override
+				public void onRichTooltip(IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
+					switch (recipeSlotView.getRole()) {
+						case INPUT -> tooltip.add(new TextComponent("Input DebugIngredient"));
+						case OUTPUT -> tooltip.add(new TextComponent("Output DebugIngredient"));
+						case CATALYST -> tooltip.add(new TextComponent("Catalyst DebugIngredient"));
+					}
 				}
 			});
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public List<Component> getTooltipStrings(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		List<Component> tooltipStrings = new ArrayList<>();
-		tooltipStrings.add(new TextComponent("Debug Recipe Category Tooltip is very long and going to wrap").withStyle(ChatFormatting.GOLD));
+		JeiTooltip tooltip = new JeiTooltip();
+		getTooltip(tooltip, recipe, recipeSlotsView, mouseX, mouseY);
+		return tooltip.toLegacyToComponents();
+	}
+
+	@Override
+	public void getTooltip(ITooltipBuilder tooltip, DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+		tooltip.add(new TextComponent("Debug Recipe Category Tooltip is very long and going to wrap").withStyle(ChatFormatting.GOLD));
 
 		if (recipe.checkHover(mouseX, mouseY)) {
-			tooltipStrings.add(new TextComponent("button tooltip!"));
+			tooltip.add(new TextComponent("button tooltip!"));
 		} else {
 			MutableComponent debug = new TextComponent("tooltip debug");
-			tooltipStrings.add(debug.withStyle(ChatFormatting.BOLD));
+			tooltip.add(debug.withStyle(ChatFormatting.BOLD));
 		}
-		tooltipStrings.add(new TextComponent(mouseX + ", " + mouseY));
-		return tooltipStrings;
+		tooltip.add(new TextComponent(mouseX + ", " + mouseY));
 	}
 
 	@Override

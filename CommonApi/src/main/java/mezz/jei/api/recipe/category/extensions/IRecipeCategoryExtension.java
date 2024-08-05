@@ -2,6 +2,7 @@ package mezz.jei.api.recipe.category.extensions;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,7 +11,6 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -43,12 +43,30 @@ public interface IRecipeCategoryExtension {
 	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
 	 *
 	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
-	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltipStrings(Object, IRecipeSlotsView, double, double)}
+	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltip}
+	 *
+	 * @param mouseX the X position of the mouse, relative to the recipe.
+	 * @param mouseY the Y position of the mouse, relative to the recipe.
+	 * @since 10.29.0
+	 */
+	default void getTooltip(ITooltipBuilder tooltip, double mouseX, double mouseY) {
+		tooltip.addAll(getTooltipStrings(mouseX, mouseY));
+	}
+
+	/**
+	 * Get the tooltip for whatever is under the mouse.
+	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
+	 *
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltip}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
 	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
+	 *
+	 * @deprecated use {@link #getTooltip(ITooltipBuilder, double, double)}
 	 */
+	@Deprecated(since = "10.29.0", forRemoval = true)
 	default List<Component> getTooltipStrings(double mouseX, double mouseY) {
 		return Collections.emptyList();
 	}

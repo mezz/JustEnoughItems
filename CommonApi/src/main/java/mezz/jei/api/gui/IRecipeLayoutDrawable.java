@@ -23,6 +23,8 @@ import java.util.Optional;
  *
  * Create an instance with {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocus)}
  * or {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocusGroup)}.
+ *
+ * @since 3.13.2
  */
 @ApiStatus.NonExtendable
 @SuppressWarnings("removal")
@@ -30,22 +32,30 @@ public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	/**
 	 * Set the position of the recipe layout in screen coordinates.
 	 * To help decide on the position, you can get the width and height of this recipe from {@link IRecipeCategory#getBackground()}.
+	 *
+	 * @since 3.13.2
 	 */
 	void setPosition(int posX, int posY);
 
 	/**
 	 * Draw the recipe without overlays such as item tool tips.
+	 *
+	 * @since 3.13.2
 	 */
 	void drawRecipe(PoseStack stack, int mouseX, int mouseY);
 
 	/**
 	 * Draw the recipe overlays such as item tool tips.
+	 *
+	 * @since 4.7.4
 	 */
 	void drawOverlays(PoseStack stack, int mouseX, int mouseY);
 
 	/**
 	 * Returns true if the mouse is hovering over the recipe.
 	 * Hovered recipes should be drawn after other recipes to have the drawn tooltips overlap other elements properly.
+	 *
+	 * @since 3.13.2
 	 */
 	boolean isMouseOver(double mouseX, double mouseY);
 

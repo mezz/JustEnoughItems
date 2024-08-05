@@ -1,6 +1,6 @@
 package mezz.jei.api.gui.handlers;
 
-import java.util.ArrayList;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IRecipesGui;
@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 public interface IGuiClickableArea {
 	/**
 	 * The hover/click area for this {@link IGuiClickableArea}.
-	 * When hovered, the message from {@link #getTooltipStrings()} will be displayed.
+	 * When hovered, the message from {@link #getTooltip} will be displayed.
 	 * When clicked, {@link #onClick(IFocusFactory, IRecipesGui)} will be called.
 	 *
 	 * Area is in gui-relative coordinates (not absolute Screen coordinates).
@@ -24,7 +25,7 @@ public interface IGuiClickableArea {
 
 	/**
 	 * Returns whether the area should render a tooltip when hovered over.
-	 * The tooltip can be modified by overriding {@link #getTooltipStrings()}.
+	 * The tooltip can be modified by overriding {@link #getTooltip(ITooltipBuilder)}.
 	 * This will also disable the default "Show all recipes" message.
 	 *
 	 * @since 10.1.4
@@ -36,9 +37,23 @@ public interface IGuiClickableArea {
 	/**
 	 * Returns the strings to be shown on the tooltip when this area is hovered over.
 	 * Return an empty list to display the default "Show all recipes" message.
+	 *
+	 * @deprecated use {@link #getTooltip(ITooltipBuilder)}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "10.29.0", forRemoval = true)
 	default List<Component> getTooltipStrings() {
 		return Collections.emptyList();
+	}
+
+	/**
+	 * Add the tooltip elements to be shown on the tooltip when this area is hovered over.
+	 * Leave it empty to display the default "Show all recipes" message.
+	 *
+	 * @since 10.29.0
+	 */
+	default void getTooltip(ITooltipBuilder tooltip) {
+		tooltip.addAll(getTooltipStrings());
 	}
 
 	/**

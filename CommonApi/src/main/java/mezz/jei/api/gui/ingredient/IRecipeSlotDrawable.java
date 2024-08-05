@@ -1,6 +1,11 @@
 package mezz.jei.api.gui.ingredient;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
@@ -9,6 +14,11 @@ import java.util.List;
 
 /**
  * A drawable recipe slot, useful if you need to manually draw a slot somewhere.
+ *
+ * Created from a {@link IRecipeSlotBuilder}, usually from {@link IRecipeLayoutBuilder#addSlot},
+ * using the {@link IRecipeLayoutBuilder} given to mod plugins in {@link IRecipeCategory#setRecipe}.
+ *
+ * You can also create one for other purposes with {@link IRecipeManager#createRecipeSlotDrawable}.
  *
  * @since 10.3.0
  */
@@ -45,17 +55,28 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	void drawHoverOverlays(PoseStack poseStack);
 
 	/**
-	 * Get the tooltip for this recipe slot.
+	 * Get the plain tooltip for this recipe slot.
 	 *
 	 * @since 10.3.0
 	 */
 	List<Component> getTooltip();
 
 	/**
+	 * Get the rich tooltip for this recipe slot.
+	 *
+	 * @since 10.29.0
+	 */
+	default void getTooltip(ITooltipBuilder tooltipBuilder) {
+		tooltipBuilder.addAll(getTooltip());
+	}
+
+	/**
 	 * Add a tooltip callback to be called when the mouse is hovering over this recipe slot.
 	 *
 	 * @since 10.3.0
+	 * @deprecated use {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)} instead, when creating the slot
 	 */
+	@Deprecated(since = "10.29.0", forRemoval = true)
 	void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback);
 
 	/**
