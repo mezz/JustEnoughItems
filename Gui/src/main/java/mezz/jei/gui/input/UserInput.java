@@ -22,11 +22,6 @@ public class UserInput {
 		boolean mouseClicked(double mouseX, double mouseY, int mouseButton);
 	}
 
-	@FunctionalInterface
-	public interface MouseOverable {
-		boolean isMouseOver(double mouseX, double mouseY);
-	}
-
 	public static UserInput fromVanilla(int keyCode, int scanCode, int modifiers, InputType inputType) {
 		InputConstants.Key input = InputConstants.getKey(keyCode, scanCode);
 		return new UserInput(input, MouseUtil.getX(), MouseUtil.getY(), modifiers, inputType);
@@ -96,7 +91,7 @@ public class UserInput {
 		return inputHelper.isActiveAndMatches(keyMapping, this.key);
 	}
 
-	public boolean callVanilla(MouseOverable mouseOverable, MouseClickable mouseClickable) {
+	public boolean callVanilla(IMouseOverable mouseOverable, MouseClickable mouseClickable) {
 		if (this.key.getType() == InputConstants.Type.MOUSE) {
 			if (mouseOverable.isMouseOver(mouseX, mouseY)) {
 				if (this.isSimulate()) {
@@ -120,7 +115,7 @@ public class UserInput {
 		return false;
 	}
 
-	public boolean callVanilla(MouseOverable mouseOverable, MouseClickable mouseClickable, KeyPressable keyPressable) {
+	public boolean callVanilla(IMouseOverable mouseOverable, MouseClickable mouseClickable, KeyPressable keyPressable) {
 		return switch (this.key.getType()) {
 			case KEYSYM -> callVanilla(keyPressable);
 			case MOUSE -> callVanilla(mouseOverable, mouseClickable);

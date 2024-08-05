@@ -2,7 +2,6 @@ package mezz.jei.gui.input;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.world.item.ItemStack;
 
@@ -12,7 +11,7 @@ public interface IClickableIngredientInternal<T> {
 
 	IElement<T> getElement();
 
-	ImmutableRect2i getArea();
+	boolean isMouseOver(double mouseX, double mouseY);
 
 	/**
 	 * Returns an ItemStack if this clickable slot allows players to cheat ingredients from it

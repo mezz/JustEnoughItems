@@ -43,7 +43,7 @@ public class GuiAreaInputHandler implements IUserInputHandler {
 
 						ImmutableRect2i screenArea = new ImmutableRect2i(clickableArea.getArea())
 							.addOffset(guiLeft, guiTop);
-						return LimitedAreaInputHandler.create(this, screenArea);
+						return new SameElementInputHandler(this, screenArea::contains);
 					});
 			}
 		}

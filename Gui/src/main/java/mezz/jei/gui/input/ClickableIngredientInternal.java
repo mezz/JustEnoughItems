@@ -4,20 +4,19 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.world.item.ItemStack;
 
 public class ClickableIngredientInternal<V> implements IClickableIngredientInternal<V> {
 	private final IElement<V> element;
-	private final ImmutableRect2i area;
+	private final IMouseOverable mouseOverable;
 	private final boolean canClickToFocus;
 	private final boolean allowsCheating;
 
-	public ClickableIngredientInternal(IElement<V> element, ImmutableRect2i area, boolean allowsCheating, boolean canClickToFocus) {
+	public ClickableIngredientInternal(IElement<V> element, IMouseOverable mouseOverable, boolean allowsCheating, boolean canClickToFocus) {
 		ErrorUtil.checkNotNull(element, "element");
 		this.element = element;
-		this.area = area;
+		this.mouseOverable = mouseOverable;
 		this.allowsCheating = allowsCheating;
 		this.canClickToFocus = canClickToFocus;
 	}
@@ -33,8 +32,8 @@ public class ClickableIngredientInternal<V> implements IClickableIngredientInter
 	}
 
 	@Override
-	public ImmutableRect2i getArea() {
-		return area;
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return mouseOverable.isMouseOver(mouseX, mouseY);
 	}
 
 	@Override

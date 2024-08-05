@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.input.ClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -150,7 +151,7 @@ public class RecipeGuiLayouts {
 			.map(displayedIngredient -> {
 				ImmutableRect2i area = absoluteClickedArea(recipeLayout, recipeSlot.getRect());
 				IElement<?> element = new IngredientElement<>(displayedIngredient);
-				return new ClickableIngredientInternal<>(element, area, false, true);
+				return new ClickableIngredientInternal<>(element, (x, y) -> MathUtil.contains(area, x, y), false, true);
 			});
 	}
 

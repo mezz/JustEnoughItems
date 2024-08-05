@@ -16,12 +16,14 @@ import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
+import mezz.jei.gui.input.IMouseOverable;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
-import mezz.jei.gui.input.handlers.LimitedAreaInputHandler;
+import mezz.jei.gui.input.handlers.SameElementInputHandler;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.util.CommandUtil;
@@ -90,7 +92,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.background = background;
 		this.slotBackground = slotBackground;
 		this.commandUtil = new CommandUtil(clientConfig, serverConnection);
-		this.ghostIngredientDragManager = new GhostIngredientDragManager(this, screenHelper, ingredientManager, toggleState);
+		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.ingredientGrid, screenHelper, ingredientManager, toggleState);
 
 		this.ingredientSource.addSourceListChangedListener(() -> {
 			boolean resetToFirstPage = clientConfig.isAddingBookmarksToFrontEnabled();
@@ -286,6 +288,11 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY);
 	}
 
+	@Override
+	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		return this.ingredientGrid.getDraggableIngredientUnderMouse(mouseX, mouseY);
+	}
+
 	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
 		return this.ingredientGrid.getVisibleIngredients(ingredientType);
 	}
@@ -395,7 +402,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		private final IRecipeFocusSource focusSource;
 		private final IClientToggleState toggleState;
 		private final IClientConfig clientConfig;
-		private final UserInput.MouseOverable mouseOverable;
+		private final IMouseOverable mouseOverable;
 		private final CommandUtil commandUtil;
 		private final IIngredientManager ingredientManager;
 
@@ -406,7 +413,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			IClientConfig clientConfig,
 			CommandUtil commandUtil,
 			IIngredientManager ingredientManager,
-			UserInput.MouseOverable mouseOverable
+			IMouseOverable mouseOverable
 		) {
 			this.paged = paged;
 			this.focusSource = focusSource;
@@ -473,12 +480,11 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			}
 
 			return this.focusSource.getIngredientUnderMouse(mouseX, mouseY)
-				.flatMap(clickedIngredient -> {
+				.<IUserInputHandler>flatMap(clickedIngredient -> {
 					ItemStack cheatItemStack = clickedIngredient.getCheatItemStack(ingredientManager);
 					if (!cheatItemStack.isEmpty()) {
 						commandUtil.setHotbarStack(cheatItemStack, hotbarSlot);
-						ImmutableRect2i area = clickedIngredient.getArea();
-						return Stream.of(LimitedAreaInputHandler.create(this, area));
+						return Stream.of(new SameElementInputHandler(this, clickedIngredient::isMouseOver));
 					}
 					return Stream.empty();
 				})

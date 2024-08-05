@@ -6,10 +6,11 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.gui.input.IClickableIngredientInternal;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
@@ -113,7 +114,7 @@ public class GhostIngredientDragManager {
 		this.hoveredTargetAreas = null;
 	}
 
-	private <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IClickableIngredientInternal<V> clicked, UserInput input) {
+	private <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IDraggableIngredientInternal<V> clicked, UserInput input) {
 		return screenHelper.getGhostIngredientHandler(currentScreen)
 			.map(handler -> {
 				ITypedIngredient<V> ingredient = clicked.getTypedIngredient();
@@ -144,7 +145,7 @@ public class GhostIngredientDragManager {
 				return Optional.empty();
 			}
 
-			return source.getIngredientUnderMouse(input.getMouseX(), input.getMouseY())
+			return source.getDraggableIngredientUnderMouse(input.getMouseX(), input.getMouseY())
 				.findFirst()
 				.flatMap(clicked -> {
 					ItemStack mouseItem = player.containerMenu.getCarried();

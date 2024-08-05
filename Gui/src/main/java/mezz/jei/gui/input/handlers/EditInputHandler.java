@@ -2,11 +2,10 @@ package mezz.jei.gui.input.handlers;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
-import mezz.jei.gui.input.IClickableIngredientInternal;
-import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
@@ -48,8 +47,7 @@ public class EditInputHandler implements IUserInputHandler {
 				if (!input.isSimulate()) {
 					execute(clicked, hideMode);
 				}
-				ImmutableRect2i area = clicked.getArea();
-				return LimitedAreaInputHandler.create(this, area);
+				return new SameElementInputHandler(this, clicked::isMouseOver);
 			});
 	}
 
