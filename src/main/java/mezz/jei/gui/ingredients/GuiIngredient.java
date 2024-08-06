@@ -217,6 +217,7 @@ public class GuiIngredient<T> extends AbstractGui implements IGuiIngredient<T> {
 			for (ITooltipCallback<T> tooltipCallback : this.tooltipCallbacks) {
 				tooltipCallback.onTooltip(slotIndex, input, value, tooltip);
 			}
+			tooltip.removeIf(Objects::isNull);
 
 			if (value instanceof ItemStack) {
 				//noinspection unchecked
