@@ -39,12 +39,24 @@ public class JeiTooltip implements ITooltipBuilder {
 	private @Nullable ITypedIngredient<?> typedIngredient;
 
 	@Override
-	public void add(FormattedText formattedText) {
+	public void add(@Nullable FormattedText formattedText) {
+		if (formattedText == null) {
+			if (Services.PLATFORM.getModHelper().isInDev()) {
+				throw new NullPointerException("Tried to add null tooltip text");
+			}
+			return;
+		}
 		lines.add(Either.left(formattedText));
 	}
 
 	@Override
-	public void add(TooltipComponent component) {
+	public void add(@Nullable TooltipComponent component) {
+		if (component == null) {
+			if (Services.PLATFORM.getModHelper().isInDev()) {
+				throw new NullPointerException("Tried to add null tooltip component");
+			}
+			return;
+		}
 		lines.add(Either.right(component));
 	}
 
