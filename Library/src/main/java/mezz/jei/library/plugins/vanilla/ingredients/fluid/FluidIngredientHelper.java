@@ -11,8 +11,10 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.TagUtil;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -182,7 +184,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	@Override
 	public boolean isIngredientOnServer(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
-		IPlatformRegistry<Fluid> registry = Services.PLATFORM.getRegistry(Registries.FLUID);
-		return registry.contains(fluid);
+		Registry<Fluid> registry = RegistryUtil.getRegistry(Registries.FLUID);
+		return registry.getKey(fluid) != null;
 	}
 }
