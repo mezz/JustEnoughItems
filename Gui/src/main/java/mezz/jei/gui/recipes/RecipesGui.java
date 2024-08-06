@@ -153,6 +153,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		background = textures.getRecipeGuiBackground();
 
 		inputHandler = new UserInputRouter(
+			"RecipesGui",
 			layouts.createInputHandler(),
 			new UserInputHandler(this),
 			optionButtons.createInputHandler(),

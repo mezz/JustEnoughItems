@@ -49,6 +49,7 @@ public record RecipeLayoutWithButtons<R>(
 
 	public IUserInputHandler createUserInputHandler() {
 		return new CombinedInputHandler(
+			"RecipeLayoutWithButtons",
 			new RecipeLayoutUserInputHandler<>(recipeLayout),
 			bookmarkButton.createInputHandler(),
 			transferButton.createInputHandler()

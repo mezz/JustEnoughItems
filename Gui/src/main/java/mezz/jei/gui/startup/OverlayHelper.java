@@ -23,6 +23,7 @@ public final class OverlayHelper {
 	private OverlayHelper() {}
 
 	public static IngredientGridWithNavigation createIngredientGridWithNavigation(
+		String debugName,
 		IIngredientGridSource ingredientFilter,
 		IIngredientManager ingredientManager,
 		IIngredientGridConfig ingredientGridConfig,
@@ -48,6 +49,7 @@ public final class OverlayHelper {
 		);
 
 		return new IngredientGridWithNavigation(
+			debugName,
 			ingredientFilter,
 			ingredientListGrid,
 			toggleState,
@@ -76,6 +78,7 @@ public final class OverlayHelper {
 		IColorHelper colorHelper
 	) {
 		IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
+			"IngredientListOverlay",
 			ingredientFilter,
 			ingredientManager,
 			ingredientGridConfig,
@@ -115,6 +118,7 @@ public final class OverlayHelper {
 		IColorHelper colorHelper
 	) {
 		IngredientGridWithNavigation bookmarkListGridNavigation = createIngredientGridWithNavigation(
+			"BookmarkOverlay",
 			bookmarkList,
 			ingredientManager,
 			bookmarkListConfig,

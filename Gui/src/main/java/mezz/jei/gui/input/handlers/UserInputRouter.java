@@ -3,6 +3,7 @@ package mezz.jei.gui.input.handlers;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.KeyNameUtil;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
@@ -12,20 +13,23 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class UserInputRouter {
 	private static final Logger LOGGER = LogManager.getLogger();
 
+	private final String debugName;
 	private final CombinedInputHandler combinedInputHandler;
 	private final Map<InputConstants.Key, IUserInputHandler> pending = new HashMap<>();
 
-	public UserInputRouter(IUserInputHandler... inputHandlers) {
-		this.combinedInputHandler = new CombinedInputHandler(inputHandlers);
+	public UserInputRouter(String debugName, IUserInputHandler... inputHandlers) {
+		this.debugName = debugName;
+		this.combinedInputHandler = new CombinedInputHandler(debugName, inputHandlers);
 	}
 
 	public boolean handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		if (DebugConfig.isDebugInputsEnabled()) {
-			LOGGER.debug("Received user input: {}", input);
+			LOGGER.debug("{} received user input: {}", debugName, input);
 		}
 		return switch (input.getInputType()) {
 			case IMMEDIATE -> handleImmediateClick(screen, input, keyBindings);
@@ -43,14 +47,14 @@ public class UserInputRouter {
 		IUserInputHandler oldClick = this.pending.remove(input.getKey());
 		if (oldClick != null) {
 			if (DebugConfig.isDebugInputsEnabled()) {
-				LOGGER.debug("Canceled previous user input: {}", oldClick);
+				LOGGER.debug("{} canceled previous user input: {}", debugName, oldClick);
 			}
 		}
 
 		return this.combinedInputHandler.handleUserInput(screen, input, keyBindings)
 			.map(callback -> {
 				if (DebugConfig.isDebugInputsEnabled()) {
-					LOGGER.debug("Immediate click handled by: {}\n{}", callback, input);
+					LOGGER.debug("{} immediate click handled by: {}\n{}", debugName, callback, input);
 				}
 				return true;
 			})
@@ -69,7 +73,7 @@ public class UserInputRouter {
 		IUserInputHandler oldClick = this.pending.remove(input.getKey());
 		if (oldClick != null) {
 			if (DebugConfig.isDebugInputsEnabled()) {
-				LOGGER.debug("Canceled pending user input: {}", oldClick);
+				LOGGER.debug("{} canceled pending user input: {}", debugName, oldClick);
 			}
 		}
 
@@ -77,7 +81,7 @@ public class UserInputRouter {
 			.map(callback -> {
 				this.pending.put(input.getKey(), callback);
 				if (DebugConfig.isDebugInputsEnabled()) {
-					LOGGER.debug("Click successfully simulated by: {}\n{}", callback, input);
+					LOGGER.debug("{} click successfully simulated by: {}\n{}", debugName, callback, input);
 				}
 				return true;
 			})
@@ -89,7 +93,7 @@ public class UserInputRouter {
 			.flatMap(inputHandler -> inputHandler.handleUserInput(screen, input, keyBindings))
 			.map(callback -> {
 				if (DebugConfig.isDebugInputsEnabled()) {
-					LOGGER.debug("Click successfully executed by: {}\n{}", callback, input);
+					LOGGER.debug("{} click successfully executed by: {}\n{}", debugName, callback, input);
 				}
 				return true;
 			})
@@ -98,7 +102,7 @@ public class UserInputRouter {
 
 	public void handleGuiChange() {
 		if (DebugConfig.isDebugInputsEnabled()) {
-			LOGGER.debug("The GUI has changed, clearing all pending clicks");
+			LOGGER.debug("{}: The GUI has changed, clearing all pending clicks", debugName);
 		}
 		this.combinedInputHandler.unfocus();
 		this.pending.clear();
@@ -108,10 +112,23 @@ public class UserInputRouter {
 		return this.combinedInputHandler.handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY)
 			.map(callback -> {
 				if (DebugConfig.isDebugInputsEnabled()) {
-					LOGGER.debug("Scroll handled by: {}", callback);
+					LOGGER.debug("{} scroll handled by: {}", debugName, callback);
 				}
 				return true;
 			})
 			.orElse(false);
+	}
+
+	@Override
+	public String toString() {
+		String pendingString = pending.entrySet().stream()
+			.map(e -> KeyNameUtil.getKeyDisplayName(e.getKey()) + ": " + e.getValue())
+			.collect(Collectors.joining(", ", "[", "]"));
+
+		return "UserInputRouter{" +
+			"debugName='" + debugName + '\'' +
+			", combinedInputHandler=" + combinedInputHandler +
+			", pending=" + pendingString +
+		'}';
 	}
 }

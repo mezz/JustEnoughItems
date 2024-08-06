@@ -82,6 +82,7 @@ public class PageNavigation {
 
 	public IUserInputHandler createInputHandler() {
 		return new CombinedInputHandler(
+			"PageNavigation",
 			this.nextButton.createInputHandler(),
 			this.backButton.createInputHandler()
 		);
