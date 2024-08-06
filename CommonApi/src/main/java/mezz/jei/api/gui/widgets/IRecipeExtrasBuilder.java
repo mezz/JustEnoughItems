@@ -13,7 +13,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
  * information more easily than from the recipe category directly.
  *
  * An instance of this is given to your {@link IRecipeCategory#createRecipeExtras} method.
- * 
+ *
  * @see IRecipeWidget
  * @see IJeiInputHandler
  * @see IJeiGuiEventListener
