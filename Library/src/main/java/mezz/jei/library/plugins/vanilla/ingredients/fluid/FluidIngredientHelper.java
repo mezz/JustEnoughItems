@@ -188,7 +188,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	@Override
 	public boolean isIngredientOnServer(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
-		IPlatformRegistry<Fluid> registry = Services.PLATFORM.getRegistry(Registries.FLUID);
-		return registry.contains(fluid);
+		Registry<Fluid> registry = RegistryUtil.getRegistry(Registries.FLUID);
+		return registry.getKey(fluid) != null;
 	}
 }
