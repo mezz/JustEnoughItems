@@ -175,4 +175,10 @@ public class FluidIngredientHelper<T> implements IngredientHelperWithResourceLoc
 	public Optional<TagKey<?>> getTagKeyEquivalent(Collection<T> ingredients) {
 		return TagUtil.getTagEquivalent(ingredients, fluidType::getBase, Registry.FLUID::getTags);
 	}
+
+	@Override
+	public boolean isIngredientOnServer(T ingredient) {
+		Fluid fluid = fluidType.getBase(ingredient);
+		return Registry.FLUID.getKey(fluid) != null;
+	}
 }
