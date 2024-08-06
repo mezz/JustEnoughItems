@@ -17,6 +17,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
+import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -48,7 +49,10 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 		this.icon = guiHelper.createDrawableItemStack(new ItemStack(Items.NAME_TAG));
 		this.slotDrawable = guiHelper.getSlotDrawable();
 		this.recipeType = recipeType;
-		String registryName = StringUtils.capitalize(registryLocation.getPath());
+		Component registryName = Component.translatableWithFallback(
+			"gui.jei.category.registry." + ResourceLocationUtil.sanitizePath(registryLocation.getPath()),
+			StringUtils.capitalize(registryLocation.getPath())
+		);
 		this.localizedName = Component.translatable("gui.jei.category.tagInformation", registryName);
 		int titleHeight = Minecraft.getInstance().font.lineHeight;
 		this.nameArea = new ImmutableRect2i(22, 5, WIDTH - 22, titleHeight);
