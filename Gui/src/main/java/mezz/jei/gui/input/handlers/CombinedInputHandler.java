@@ -7,15 +7,19 @@ import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class CombinedInputHandler implements IUserInputHandler {
+	private final String debugName;
 	private final List<IUserInputHandler> inputHandlers;
 
-	public CombinedInputHandler(IUserInputHandler... inputHandlers) {
+	public CombinedInputHandler(String debugName, IUserInputHandler... inputHandlers) {
+		this.debugName = debugName;
 		this.inputHandlers = List.of(inputHandlers);
 	}
 
-	public CombinedInputHandler(List<IUserInputHandler> inputHandlers) {
+	public CombinedInputHandler(String debugName, List<IUserInputHandler> inputHandlers) {
+		this.debugName = debugName;
 		this.inputHandlers = List.copyOf(inputHandlers);
 	}
 
@@ -61,5 +65,14 @@ public class CombinedInputHandler implements IUserInputHandler {
 		return inputHandlers.stream()
 			.flatMap(inputHandler -> inputHandler.handleMouseScrolled(mouseX, mouseY, scrollDelta).stream())
 			.findFirst();
+	}
+
+	@Override
+	public String toString() {
+		String inputHandlersString = inputHandlers.stream().map(IUserInputHandler::toString).collect(Collectors.joining(", ", "[", "]"));
+		return "CombinedInputHandler{" +
+			"name=" + debugName + " " +
+			"inputHandlers=" + inputHandlersString +
+			'}';
 	}
 }

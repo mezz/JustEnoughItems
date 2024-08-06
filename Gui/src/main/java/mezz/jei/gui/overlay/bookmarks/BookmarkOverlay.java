@@ -196,6 +196,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		final IUserInputHandler bookmarkButtonInputHandler = this.bookmarkButton.createInputHandler();
 
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
+			"BookmarkOverlay",
 			this.contents.createInputHandler(),
 			bookmarkButtonInputHandler
 		);

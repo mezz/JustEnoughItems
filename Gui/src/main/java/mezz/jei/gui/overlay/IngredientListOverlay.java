@@ -208,6 +208,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public IUserInputHandler createInputHandler() {
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
+			"IngredientListOverlay",
 			this.searchField.createInputHandler(),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler()

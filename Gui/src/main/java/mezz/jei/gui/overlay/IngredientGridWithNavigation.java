@@ -56,6 +56,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private final PageNavigation navigation;
 	private final IIngredientGridConfig gridConfig;
 	private final IIngredientManager ingredientManager;
+	private final String debugName;
 	private final IClientToggleState toggleState;
 	private final IClientConfig clientConfig;
 	private final IngredientGrid ingredientGrid;
@@ -70,6 +71,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private Set<ImmutableRect2i> guiExclusionAreas = Set.of();
 
 	public IngredientGridWithNavigation(
+		String debugName,
 		IIngredientGridSource ingredientSource,
 		IngredientGrid ingredientGrid,
 		IClientToggleState toggleState,
@@ -81,6 +83,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		IScreenHelper screenHelper,
 		IIngredientManager ingredientManager
 	) {
+		this.debugName = debugName;
 		this.toggleState = toggleState;
 		this.clientConfig = clientConfig;
 		this.ingredientGrid = ingredientGrid;
@@ -277,6 +280,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public IUserInputHandler createInputHandler() {
 		return new CombinedInputHandler(
+			this.debugName,
 			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.toggleState, this.clientConfig, this.commandUtil, this.ingredientManager, this::isMouseOver),
 			this.ingredientGrid.getInputHandler(),
 			this.navigation.createInputHandler()

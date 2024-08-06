@@ -199,6 +199,7 @@ public class JeiGuiStarter {
 		FocusUtil focusUtil = new FocusUtil(focusFactory, clientConfig, ingredientManager);
 
 		UserInputRouter userInputRouter = new UserInputRouter(
+			"JEIGlobal",
 			new EditInputHandler(recipeFocusSource, toggleState, editModeConfig),
 			ingredientListOverlay.createInputHandler(),
 			bookmarkOverlay.createInputHandler(),

@@ -103,7 +103,7 @@ public class RecipeOptionButtons {
 		List<IUserInputHandler> handlers = buttons.stream()
 			.map(GuiIconToggleButton::createInputHandler)
 			.toList();
-		return new CombinedInputHandler(handlers);
+		return new CombinedInputHandler("RecipeOptionButtons", handlers);
 	}
 
 	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {

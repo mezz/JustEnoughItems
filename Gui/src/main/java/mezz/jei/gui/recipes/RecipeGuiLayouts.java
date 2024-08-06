@@ -111,7 +111,7 @@ public class RecipeGuiLayouts {
 				List<IUserInputHandler> handlers = this.recipeLayoutsWithButtons.stream()
 					.map(RecipeLayoutWithButtons::createUserInputHandler)
 					.toList();
-				cachedInputHandler = new CombinedInputHandler(handlers);
+				cachedInputHandler = new CombinedInputHandler("RecipeGuiLayouts", handlers);
 			}
 			return cachedInputHandler;
 		});

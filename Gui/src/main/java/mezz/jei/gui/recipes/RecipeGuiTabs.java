@@ -109,7 +109,7 @@ public class RecipeGuiTabs implements IPaged {
 		}
 
 		inputHandlers.add(this.pageNavigation.createInputHandler());
-		this.inputHandler = new CombinedInputHandler(inputHandlers);
+		this.inputHandler = new CombinedInputHandler("RecipeGuiTabs", inputHandlers);
 
 		pageNavigation.updatePageNumber();
 	}
