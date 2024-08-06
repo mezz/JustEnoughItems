@@ -109,6 +109,11 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	}
 
 	@Override
+	public boolean isIngredientOnServer(FluidStack ingredient) {
+		return FluidRegistry.getRegisteredFluids().containsValue(ingredient.getFluid());
+	}
+
+	@Override
 	public String getErrorInfo(@Nullable FluidStack ingredient) {
 		if (ingredient == null) {
 			return "null";
