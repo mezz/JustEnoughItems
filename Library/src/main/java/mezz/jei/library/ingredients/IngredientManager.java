@@ -101,6 +101,11 @@ public class IngredientManager implements IIngredientManager {
 					LOGGER.error("Attempted to add an invalid Ingredient: {}", errorInfo);
 					return false;
 				}
+				if (!ingredientHelper.isIngredientOnServer(i)) {
+					String errorInfo = ingredientHelper.getErrorInfo(i);
+					LOGGER.error("Attempted to add an Ingredient that is not on the server: {}", errorInfo);
+					return false;
+				}
 				return true;
 			})
 			.toList();

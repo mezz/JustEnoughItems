@@ -47,9 +47,10 @@ public final class ErrorUtil {
 		final String itemName = itemRegistry.getRegistryName(item)
 			.map(ResourceLocation::toString)
 			.orElseGet(() -> {
-				if (item instanceof BlockItem) {
+				if (item instanceof BlockItem blockItem) {
 					final String blockName;
-					Block block = ((BlockItem) item).getBlock();
+					Block block = blockItem.getBlock();
+					//noinspection ConstantValue
 					if (block == null) {
 						blockName = "null";
 					} else {

@@ -178,4 +178,11 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	public Optional<TagKey<?>> getTagKeyEquivalent(Collection<T> ingredients) {
 		return TagUtil.getTagEquivalent(ingredients, fluidType::getBase, BuiltInRegistries.FLUID::getTags);
 	}
+
+	@Override
+	public boolean isIngredientOnServer(T ingredient) {
+		Fluid fluid = fluidType.getBase(ingredient);
+		IPlatformRegistry<Fluid> registry = Services.PLATFORM.getRegistry(Registries.FLUID);
+		return registry.contains(fluid);
+	}
 }

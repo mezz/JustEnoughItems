@@ -6,6 +6,8 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -13,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 public final class TypedIngredient<T> implements ITypedIngredient<T> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private static <T> void checkParameters(IIngredientType<T> ingredientType, T ingredient) {
 		Preconditions.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredient, "ingredient");
@@ -86,6 +90,13 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 				ingredient = ingredientHelper.normalizeIngredient(ingredient);
 			}
 			if (!ingredientHelper.isValidIngredient(ingredient)) {
+				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
+				LOGGER.warn("Ignoring invalid ingredient: {}", errorInfo);
+				return Optional.empty();
+			}
+			if (!ingredientHelper.isIngredientOnServer(ingredient)) {
+				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
+				LOGGER.warn("Ignoring ingredient that isn't on the server: {}", errorInfo);
 				return Optional.empty();
 			}
 		} catch (RuntimeException e) {
