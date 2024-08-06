@@ -68,7 +68,7 @@ public final class ReflectionUtil {
 				try {
 					Field[] fields = c.getDeclaredFields();
 					return Arrays.stream(fields);
-				} catch (SecurityException e) {
+				} catch (SecurityException | LinkageError e) {
 					LOGGER.error("Failed to access fields for class " + object.getClass(), e);
 					return Stream.of();
 				}
