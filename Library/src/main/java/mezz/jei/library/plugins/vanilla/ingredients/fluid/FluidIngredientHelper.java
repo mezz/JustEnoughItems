@@ -199,6 +199,6 @@ public class FluidIngredientHelper<T> implements IngredientHelperWithResourceLoc
 	@Override
 	public boolean isIngredientOnServer(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
-		return Registry.FLUID.getKey(fluid) != null;
+		return registry.contains(fluid);
 	}
 }
