@@ -22,6 +22,16 @@
   "jei.tooltip.bookmarks.usage.nokey": "操作設定でJEIブックマークのキー割り当てを追加してください",
   "jei.tooltip.bookmarks.usage.key": "アイテムに重ねて「%s」キーを押してブックマークします",
   "jei.tooltip.bookmarks.not.enough.space": "JEIブックマークを表示するためのスペースが狭すぎます",
+  "jei.tooltip.bookmarks.recipe": "ブックマークしたレシピ（%s）",
+  "jei.tooltip.bookmarks.recipe.add": "レシピをブックマークに追加",
+  "jei.tooltip.bookmarks.recipe.remove": "レシピをブックマークから削除",
+  "jei.tooltip.bookmarks.tooltips.usage": "［%sで詳細を表示］",
+  "jei.tooltip.bookmarks.tooltips.transfer.usage": "［%sで一回分クラフト］",
+  "jei.tooltip.bookmarks.tooltips.transfer.max.usage": "［%sで作れるだけクラフト］",
+  "jei.tooltip.recipe.sort.bookmarks.first.enabled": "ブックマークしたレシピを優先表示（有効）",
+  "jei.tooltip.recipe.sort.bookmarks.first.disabled": "ブックマークしたレシピを優先表示（無効）",
+  "jei.tooltip.recipe.sort.craftable.first.enabled": "クラフト可能なレシピを優先表示（有効）",
+  "jei.tooltip.recipe.sort.craftable.first.disabled": "クラフト可能なレシピを優先表示（無効）",
 
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "アイテムがインベントリ内に存在しません",
@@ -29,6 +39,7 @@
   "jei.tooltip.error.recipe.transfer.no.server": "サーバーにJEIが導入されている必要があります",
   "jei.tooltip.error.recipe.transfer.too.large.player.inventory": "2x2のクラフトグリッドではクラフトできないサイズのレシピです",
   "jei.tooltip.error.crash": "このアイテムのツールチップの取得中にクラッシュが発生しました。詳細はクライアントのログを参照してください",
+  "jei.tooltip.error.render.crash": "このアイテムのレンダリング中にクラッシュが発生しました。詳細はクライアントのログを参照してください",
 
   "_comment": "Error Messages",
   "jei.chat.error.no.cheat.permission.1": "JEIのチートモードを使用する権限がありません",
@@ -75,6 +86,8 @@
   "key.jei.showRecipe2": "レシピの表示",
   "key.jei.showUses": "用途の表示",
   "key.jei.showUses2": "用途の表示",
+  "key.jei.transferRecipeBookmark": "ブックマークしたレシピでクラフト（一回分）",
+  "key.jei.maxTransferRecipeBookmark": "ブックマークしたレシピでクラフト（作れるだけ）",
 
   "jei.key.category.search": "JEI（検索フィルター）",
   "key.jei.clearSearchBar": "検索フィルターをクリア",
@@ -106,6 +119,7 @@
   "gui.jei.category.compostable": "堆肥化",
   "gui.jei.category.compostable.chance": "確率：%s%%",
   "gui.jei.category.itemInformation": "説明",
+  "gui.jei.category.tagInformation": "%s Tags",
 
   "_comment": "Messages",
   "jei.message.configured": "ゲーム内で設定にアクセスするには、\n\"Configured\" Modを導入してください",
@@ -118,6 +132,9 @@
   "jei.key.combo.control": "CTRL + %s",
   "jei.key.combo.command": "CMD + %s",
   "jei.key.combo.alt": "ALT + %s",
+  "jei.key.shift": "SHIFT",
+  "jei.key.mouse.left": "クリック",
+  "jei.key.mouse.right": "右クリック",
 
   "_comment": "Debug (for a debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden doors allow you to block monsters from entering your building.\\nTesting sentences.",
