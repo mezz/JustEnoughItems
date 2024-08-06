@@ -10,6 +10,7 @@ import mezz.jei.util.ErrorUtil;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.fluid.Fluid;
@@ -155,6 +156,11 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 		FluidStack copy = this.copyIngredient(ingredient);
 		copy.setAmount(FluidAttributes.BUCKET_VOLUME);
 		return copy;
+	}
+
+	@Override
+	public boolean isIngredientOnServer(FluidStack ingredient) {
+		return ForgeRegistries.FLUIDS.containsValue(ingredient.getRawFluid());
 	}
 
 	@Override
