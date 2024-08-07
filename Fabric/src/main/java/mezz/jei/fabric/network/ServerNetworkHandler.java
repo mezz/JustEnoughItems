@@ -3,6 +3,7 @@ package mezz.jei.fabric.network;
 import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.ServerPacketContext;
+import mezz.jei.common.network.packets.PacketCheatPermission;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketGiveItemStack;
 import mezz.jei.common.network.packets.PacketRecipeTransfer;
@@ -24,12 +25,14 @@ public final class ServerNetworkHandler {
 		PayloadTypeRegistry.playS2C().register(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
 
 		PayloadTypeRegistry.playC2S().register(PacketDeletePlayerItem.TYPE, PacketDeletePlayerItem.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(PacketGiveItemStack.TYPE, PacketGiveItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
 
 		ServerPlayNetworking.registerGlobalReceiver(PacketDeletePlayerItem.TYPE, wrapServerHandler(connection, serverConfig, PacketDeletePlayerItem::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketGiveItemStack.TYPE, wrapServerHandler(connection, serverConfig, PacketGiveItemStack::process));
