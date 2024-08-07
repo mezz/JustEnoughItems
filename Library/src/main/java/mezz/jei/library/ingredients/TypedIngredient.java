@@ -90,8 +90,6 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 				ingredient = ingredientHelper.normalizeIngredient(ingredient);
 			}
 			if (!ingredientHelper.isValidIngredient(ingredient)) {
-				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
-				LOGGER.warn("Ignoring invalid ingredient: {}", errorInfo);
 				return Optional.empty();
 			}
 			if (!ingredientHelper.isIngredientOnServer(ingredient)) {
