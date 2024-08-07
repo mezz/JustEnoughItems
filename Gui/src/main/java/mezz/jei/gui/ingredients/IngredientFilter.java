@@ -328,6 +328,10 @@ public class IngredientFilter implements
 			results.addAll(this.elementSearch.getAllIngredients());
 		}
 
+		if (results.isEmpty() && !searchTokens.toRemove.isEmpty()) {
+			results.addAll(this.elementSearch.getAllIngredients());
+		}
+
 		if (!results.isEmpty() && !searchTokens.toRemove.isEmpty()) {
 			for (ElementPrefixParser.TokenInfo tokenInfo : searchTokens.toRemove) {
 				Set<IListElement<?>> resultsToRemove = this.elementSearch.getSearchResults(tokenInfo);
