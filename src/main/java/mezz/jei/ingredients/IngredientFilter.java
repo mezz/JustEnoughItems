@@ -349,6 +349,13 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 			}
 		}
 
+		if (matches == null && removeMatches != null) {
+			matches = new IntOpenHashSet(elementList.size());
+			for (int i = 0; i < elementList.size(); i++) {
+				matches.add(i);
+			}
+		}
+
 		if (matches != null && removeMatches != null) {
 			matches.removeAll(removeMatches);
 		}
