@@ -96,7 +96,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return screenRectangle.cropLeft(guiRight);
 	}
 
-
 	public ScreenPropertiesCache.Updater getScreenPropertiesUpdater() {
 		return this.screenPropertiesCache.getUpdater(this::onScreenPropertiesChanged);
 	}
