@@ -237,7 +237,7 @@ public class IngredientFilter implements IIngredientGridSource {
 		String[] filters = filterText.split("\\|");
 		List<SearchTokens> searchTokens = Arrays.stream(filters)
 				.map(this::parseSearchTokens)
-				.filter(s -> !s.toSearch.isEmpty())
+				.filter(s -> !s.toSearch.isEmpty() || !s.toRemove.isEmpty())
 				.collect(Collectors.toList());
 
 		Stream<IIngredientListElementInfo<?>> elementInfoStream;
@@ -331,6 +331,10 @@ public class IngredientFilter implements IIngredientGridSource {
 				.map(this.elementSearch::getSearchResults)
 				.collect(ImmutableList.toImmutableList());
 		Set<IIngredientListElementInfo<?>> results = intersection(resultsPerToken);
+
+		if (results.isEmpty() && !searchTokens.toRemove.isEmpty()) {
+			results.addAll(this.elementSearch.getAllIngredients());
+		}
 
 		if (!results.isEmpty() && !searchTokens.toRemove.isEmpty()) {
 			for (ElementPrefixParser.TokenInfo tokenInfo : searchTokens.toRemove) {

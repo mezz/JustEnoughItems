@@ -93,6 +93,15 @@ public class IngredientFilterTest {
 	}
 
 	@Test
+	public void testSearchWithOnlyRemovalToken() {
+		Assertions.assertNotNull(ingredientFilter);
+
+		List<TestIngredient> filteredIngredients = getFilteredIngredients(ingredientFilter, "-0");
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, filteredIngredients.size());
+		Assertions.assertTrue(filteredIngredients.stream().noneMatch(ingredient -> ingredient.getNumber() == 0));
+	}
+
+	@Test
 	public void testAddingAndRemovingIngredients() {
 		Assertions.assertNotNull(ingredientFilter);
 		Assertions.assertNotNull(ingredientManager);
