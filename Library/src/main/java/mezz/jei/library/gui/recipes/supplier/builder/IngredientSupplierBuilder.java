@@ -62,10 +62,6 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 
 	}
 
-	public boolean isEmpty() {
-		return slots.isEmpty();
-	}
-
 	public IIngredientSupplier buildIngredientSupplier() {
 		List<RecipeSlotIngredients> ingredients = new ArrayList<>();
 		for (IngredientSlotBuilder slot : this.slots) {
