@@ -7,8 +7,12 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 
 import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.util.Log;
 
 public class GuiProperties implements IGuiProperties {
+	private static final int MIN_GUI_POSITION = -1_000_000_000;
+	private static final int MAX_GUI_DIMENSION = 1_000_000_000;
+
 	private final Class<? extends GuiScreen> guiClass;
 	private final int guiLeft;
 	private final int guiTop;
@@ -71,10 +75,28 @@ public class GuiProperties implements IGuiProperties {
 
 	@Nullable
 	private static GuiProperties create(Class<? extends GuiScreen> guiClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
-		if (guiXSize <= 0 || guiYSize <= 0) {
+		if (!areValid(guiLeft, guiTop, guiXSize, guiYSize, screenWidth, screenHeight)) {
+			Log.get().error("Received invalid GUI properties for screen: {}", guiClass);
 			return null;
 		}
 		return new GuiProperties(guiClass, guiLeft, guiTop, guiXSize, guiYSize, screenWidth, screenHeight);
+	}
+
+	private static boolean areValid(int guiLeft, int guiTop, int guiWidth, int guiHeight, int screenWidth, int screenHeight) {
+		return isValidPosition(guiLeft) &&
+			isValidPosition(guiTop) &&
+			isValidDimension(guiWidth) &&
+			isValidDimension(guiHeight) &&
+			isValidDimension(screenWidth) &&
+			isValidDimension(screenHeight);
+	}
+
+	private static boolean isValidPosition(int value) {
+		return value >= MIN_GUI_POSITION && value <= MAX_GUI_DIMENSION;
+	}
+
+	private static boolean isValidDimension(int value) {
+		return value > 0 && value <= MAX_GUI_DIMENSION;
 	}
 
 	@Override
