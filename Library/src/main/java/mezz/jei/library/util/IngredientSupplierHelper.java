@@ -20,12 +20,7 @@ public final class IngredientSupplierHelper {
 		try {
 			IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager);
 			recipeCategory.setRecipe(builder, recipe, FocusGroup.EMPTY);
-			if (!builder.isEmpty()) {
-				return builder.buildIngredientSupplier();
-			} else {
-				String recipeName = RecipeErrorUtil.getNameForRecipe(recipe);
-				LOGGER.warn("The recipe category for '{}' failed to set anything in its setRecipe method, for recipe: {}", recipeCategory.getRecipeType(), recipeName);
-			}
+			return builder.buildIngredientSupplier();
 		} catch (RuntimeException | LinkageError e) {
 			String recipeName = RecipeErrorUtil.getNameForRecipe(recipe);
 			LOGGER.error("Found a broken recipe, failed to setRecipe with RecipeLayoutBuilder: {}\n", recipeName, e);

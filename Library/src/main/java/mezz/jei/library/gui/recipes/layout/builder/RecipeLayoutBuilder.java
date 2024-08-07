@@ -184,16 +184,12 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 	}
 
 	public boolean isUsed() {
-		return !isEmpty() || !this.focusLinkedSlots.isEmpty();
+		return !this.visibleSlots.isEmpty() ||
+			!this.widgets.isEmpty() ||
+			!this.inputHandlers.isEmpty() ||
+			!this.guiEventListeners.isEmpty() ||
+			!this.focusLinkedSlots.isEmpty();
 	}
-
-	public boolean isEmpty() {
-		return this.visibleSlots.isEmpty() &&
-			this.widgets.isEmpty() &&
-			this.inputHandlers.isEmpty() &&
-			this.guiEventListeners.isEmpty();
-	}
-
 	public RecipeLayout<T> buildRecipeLayout(
 		IFocusGroup focuses,
 		Collection<IRecipeCategoryDecorator<T>> recipeCategoryDecorators,

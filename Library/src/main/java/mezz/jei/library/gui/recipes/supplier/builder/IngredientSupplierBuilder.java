@@ -67,10 +67,6 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 		createFocusLink((IIngredientAcceptor<?>[]) slots);
 	}
 
-	public boolean isEmpty() {
-		return slots.isEmpty();
-	}
-
 	public IIngredientSupplier buildIngredientSupplier() {
 		List<RecipeSlotIngredients> ingredients = new ArrayList<>();
 		for (IngredientSlotBuilder slot : this.slots) {
