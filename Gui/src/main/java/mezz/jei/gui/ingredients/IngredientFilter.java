@@ -221,7 +221,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		String[] filters = filterText.split("\\|");
 		List<SearchTokens> searchTokens = Arrays.stream(filters)
 			.map(this::parseSearchTokens)
-			.filter(s -> !s.toSearch.isEmpty())
+			.filter(s -> !s.isEmpty())
 			.toList();
 
 		Stream<IListElementInfo<?>> elementInfoStream;
@@ -303,7 +303,11 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		invalidateCache();
 	}
 
-	private record SearchTokens(List<ElementPrefixParser.TokenInfo> toSearch, List<ElementPrefixParser.TokenInfo> toRemove) {}
+	private record SearchTokens(List<ElementPrefixParser.TokenInfo> toSearch, List<ElementPrefixParser.TokenInfo> toRemove) {
+		public boolean isEmpty() {
+			return toSearch.isEmpty() && toRemove.isEmpty();
+		}
+	}
 
 	private SearchTokens parseSearchTokens(String filterText) {
 		SearchTokens searchTokens = new SearchTokens(new ArrayList<>(), new ArrayList<>());
@@ -339,6 +343,10 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			.map(this.elementSearch::getSearchResults)
 			.toList();
 		Set<IListElementInfo<?>> results = intersection(resultsPerToken);
+
+		if (results.isEmpty() && !searchTokens.toRemove.isEmpty()) {
+			results.addAll(this.elementSearch.getAllIngredients());
+		}
 
 		if (!results.isEmpty() && !searchTokens.toRemove.isEmpty()) {
 			for (ElementPrefixParser.TokenInfo tokenInfo : searchTokens.toRemove) {
