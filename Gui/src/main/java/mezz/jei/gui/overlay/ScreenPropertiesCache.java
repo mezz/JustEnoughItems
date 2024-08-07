@@ -80,8 +80,10 @@ public class ScreenPropertiesCache {
 			}
 		}
 
-		private static String errorRangeString(String property, int min, int max, int value) {
-			return String.format("%s must be greater than %s and less than %s: %s", property, min, max, value);
+		private static void validate(List<String> errors, String property, int min, int max, int value) {
+			if (value < min || value > max) {
+				errors.add(String.format("%s must be greater than %s and less than %s: %s", property, min, max, value));
+			}
 		}
 
 		private static boolean validateGuiProperties(@Nullable IGuiProperties guiProperties) {
@@ -89,24 +91,12 @@ public class ScreenPropertiesCache {
 				return false;
 			}
 			List<String> errors = new ArrayList<>();
-			if (guiProperties.getGuiXSize() <= 0 || guiProperties.getGuiXSize() > MAX_GUI_DIMENSION) {
-				errors.add(errorRangeString("guiXSize", 0, MAX_GUI_DIMENSION, guiProperties.getGuiXSize()));
-			}
-			if (guiProperties.getGuiYSize() <= 0 || guiProperties.getGuiYSize() > MAX_GUI_DIMENSION) {
-				errors.add(errorRangeString("guiYSize", 0, MAX_GUI_DIMENSION, guiProperties.getGuiYSize()));
-			}
-			if (guiProperties.getScreenWidth() <= 0 || guiProperties.getScreenWidth() > MAX_GUI_DIMENSION) {
-				errors.add(errorRangeString("screenWidth", 0, MAX_GUI_DIMENSION, guiProperties.getScreenWidth()));
-			}
-			if (guiProperties.getScreenHeight() <= 0 || guiProperties.getScreenHeight() > MAX_GUI_DIMENSION) {
-				errors.add(errorRangeString("screenHeight", 0, MAX_GUI_DIMENSION, guiProperties.getScreenHeight()));
-			}
-			if (guiProperties.getGuiLeft() < MIN_GUI_DIMENSION || guiProperties.getGuiLeft() > MAX_GUI_DIMENSION) {
-				errors.add(errorRangeString("guiLeft", MIN_GUI_DIMENSION, MAX_GUI_DIMENSION, guiProperties.getGuiLeft()));
-			} else if (guiProperties.getGuiTop() < MIN_GUI_DIMENSION || guiProperties.getGuiTop() > MAX_GUI_DIMENSION) {
-				errors.add(errorRangeString("guiTop", MIN_GUI_DIMENSION, MAX_GUI_DIMENSION, guiProperties.getGuiTop()));
-			}
-
+			validate(errors, "guiXSize", 1, MAX_GUI_DIMENSION, guiProperties.getGuiXSize());
+			validate(errors, "guiYSize", 1, MAX_GUI_DIMENSION, guiProperties.getGuiYSize());
+			validate(errors, "screenWidth", 1, MAX_GUI_DIMENSION, guiProperties.getScreenWidth());
+			validate(errors, "screenHeight", 1, MAX_GUI_DIMENSION, guiProperties.getScreenHeight());
+			validate(errors,"guiLeft", MIN_GUI_DIMENSION, MAX_GUI_DIMENSION, guiProperties.getGuiLeft());
+			validate(errors,"guiTop", MIN_GUI_DIMENSION, MAX_GUI_DIMENSION, guiProperties.getGuiTop());
 			if (!errors.isEmpty()) {
 				LOGGER.error(
 					"Received invalid gui properties for screen: {}\n{}",
