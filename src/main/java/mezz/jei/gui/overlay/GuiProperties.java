@@ -8,8 +8,14 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.renderer.Rectangle2d;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GuiProperties implements IGuiProperties {
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int MIN_GUI_POSITION = -1_000_000_000;
+	private static final int MAX_GUI_DIMENSION = 1_000_000_000;
+
 	private final Class<? extends Screen> screenClass;
 	private final int guiLeft;
 	private final int guiTop;
@@ -20,7 +26,15 @@ public class GuiProperties implements IGuiProperties {
 
 	@Nullable
 	public static GuiProperties create(ContainerScreen<?> containerScreen) {
-		if (containerScreen.width == 0 || containerScreen.height == 0) {
+		if (!areValid(
+			containerScreen.getGuiLeft(),
+			containerScreen.getGuiTop(),
+			containerScreen.getXSize(),
+			containerScreen.getYSize(),
+			containerScreen.width,
+			containerScreen.height
+		)) {
+			LOGGER.error("Received invalid GUI properties for screen: {}", containerScreen.getClass());
 			return null;
 		}
 		return new GuiProperties(
@@ -75,6 +89,23 @@ public class GuiProperties implements IGuiProperties {
 
 	public static int getGuiBottom(IGuiProperties guiProperties) {
 		return guiProperties.getGuiTop() + guiProperties.getGuiYSize();
+	}
+
+	private static boolean areValid(int guiLeft, int guiTop, int guiWidth, int guiHeight, int screenWidth, int screenHeight) {
+		return isValidPosition(guiLeft) &&
+			isValidPosition(guiTop) &&
+			isValidDimension(guiWidth) &&
+			isValidDimension(guiHeight) &&
+			isValidDimension(screenWidth) &&
+			isValidDimension(screenHeight);
+	}
+
+	private static boolean isValidPosition(int value) {
+		return value >= MIN_GUI_POSITION && value <= MAX_GUI_DIMENSION;
+	}
+
+	private static boolean isValidDimension(int value) {
+		return value > 0 && value <= MAX_GUI_DIMENSION;
 	}
 
 	private GuiProperties(Class<? extends Screen> screenClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
