@@ -79,6 +79,7 @@ public class ScreenPropertiesCache {
 				onChange.run();
 			}
 		}
+
 		private static void validate(List<String> errors, String property, int min, int max, int value) {
 			if (value < min || value > max) {
 				errors.add(String.format("%s must be greater than %s and less than %s: %s", property, min, max, value));
