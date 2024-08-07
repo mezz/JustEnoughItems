@@ -175,10 +175,6 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		this.focusLinkedSlots.add(builders);
 	}
 
-	public boolean isEmpty() {
-		return slots.isEmpty() && widgets.isEmpty() && inputHandlers.isEmpty() && guiEventListeners.isEmpty();
-	}
-
 	public RecipeLayout<T> buildRecipeLayout(
 		IFocusGroup focuses,
 		Collection<IRecipeCategoryDecorator<T>> decorators,

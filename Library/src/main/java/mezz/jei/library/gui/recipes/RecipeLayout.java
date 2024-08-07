@@ -96,15 +96,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
 			recipeCategory.createRecipeExtras(builder, recipe, focuses);
-			if (!builder.isEmpty()) {
-				RecipeLayout<T> recipeLayout = builder.buildRecipeLayout(
-					focuses,
-					decorators,
-					recipeBackground,
-					recipeBorderPadding
-				);
-				return Optional.of(recipeLayout);
-			}
+			RecipeLayout<T> recipeLayout = builder.buildRecipeLayout(
+				focuses,
+				decorators,
+				recipeBackground,
+				recipeBorderPadding
+			);
+			return Optional.of(recipeLayout);
 		} catch (RuntimeException | LinkageError e) {
 			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getRecipeType().getUid(), e);
 		}
