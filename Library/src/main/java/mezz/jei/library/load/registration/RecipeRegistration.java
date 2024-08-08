@@ -10,7 +10,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.library.ingredients.IngredientInfoRecipe;
+import mezz.jei.library.plugins.jei.info.IngredientInfoRecipe;
 import mezz.jei.library.recipes.RecipeManagerInternal;
 import net.minecraft.network.chat.Component;
 
@@ -79,7 +79,7 @@ public class RecipeRegistration implements IRecipeRegistration {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(descriptionComponents, "descriptionComponents");
 
-		List<IJeiIngredientInfoRecipe> recipes = IngredientInfoRecipe.create(ingredientManager, ingredients, ingredientType, descriptionComponents);
-		addRecipes(RecipeTypes.INFORMATION, recipes);
+		IJeiIngredientInfoRecipe recipe = IngredientInfoRecipe.create(ingredientManager, ingredients, ingredientType, descriptionComponents);
+		addRecipes(RecipeTypes.INFORMATION, List.of(recipe));
 	}
 }

@@ -2,14 +2,18 @@ package mezz.jei.api.helpers;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ITickTimer;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.gui.widgets.IScrollGridWidgetFactory;
+import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -88,12 +92,29 @@ public interface IGuiHelper {
 	ICraftingGridHelper createCraftingGridHelper();
 
 	/**
-	 * Create a scroll grid helper.
+	 * Create a scroll grid widget factory.
 	 * Handles displaying a grid of ingredient slots in a scrolling area.
+	 *
+	 * Add ingredients to it using {@link IRecipeLayoutBuilder#addSlotToWidget(RecipeIngredientRole, ISlottedWidgetFactory)}
 	 *
 	 * @since 19.7.0
 	 */
 	IScrollGridWidgetFactory<?> createScrollGridFactory(int columns, int visibleRows);
+
+	/**
+	 * Create a scroll box widget.
+	 * Handles displaying drawable contents in a scrolling area.
+	 *
+	 * @since 19.8.0
+	 */
+	IScrollBoxWidget createScrollBoxWidget(IDrawable contents, int visibleHeight, int xPos, int yPos);
+
+	/**
+	 * The amount of extra horizontal space that a {@link IScrollBoxWidget} takes up with its scroll bar.
+	 *
+	 * @since 19.8.0
+	 */
+	int getScrollBoxScrollbarExtraWidth();
 
 	/**
 	 * Create a timer to help with rendering things that normally depend on ticks.

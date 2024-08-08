@@ -34,6 +34,8 @@ public interface IClientConfig {
 
 	int getDragDelayMs();
 
+	int getSmoothScrollRate();
+
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();
