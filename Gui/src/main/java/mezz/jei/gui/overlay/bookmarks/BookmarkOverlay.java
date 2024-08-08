@@ -15,6 +15,7 @@ import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
+import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.MouseUtil;
@@ -241,16 +242,13 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 		List<IBookmarkDragTarget> bookmarkDragTargets = new ArrayList<>(slotTargets);
 
-		if (this.contents.hasMultiplePages()) {
+		IPaged pageDelegate = this.contents.getPageDelegate();
+		if (pageDelegate.getPageCount() > 1) {
 			// if a bookmark is dropped on the next button, put it on the next page
-			bookmarkDragTargets.add(new ActionDragTarget(this.contents.getNextPageButtonArea(), lastBookmark, bookmarkList, 1, () -> {
-				this.contents.getPageDelegate().nextPage();
-			}));
+			bookmarkDragTargets.add(new ActionDragTarget(this.contents.getNextPageButtonArea(), lastBookmark, bookmarkList, 1, pageDelegate::nextPage));
 
 			// if a bookmark is dropped on the back button, put it on the previous page
-			bookmarkDragTargets.add(new ActionDragTarget(this.contents.getBackButtonArea(), firstBookmark, bookmarkList, -1, () -> {
-				this.contents.getPageDelegate().previousPage();
-			}));
+			bookmarkDragTargets.add(new ActionDragTarget(this.contents.getBackButtonArea(), firstBookmark, bookmarkList, -1, pageDelegate::previousPage));
 		}
 
 		// if a bookmark is dropped somewhere else in the contents area, put it at the end of the current page

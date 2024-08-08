@@ -241,10 +241,6 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		return this.slotBackgroundArea;
 	}
 
-	public boolean hasMultiplePages() {
-		return this.navigation.hasMultiplePages();
-	}
-
 	public ImmutableRect2i getNextPageButtonArea() {
 		return this.navigation.getNextButtonArea();
 	}
@@ -324,6 +320,9 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private class IngredientGridPaged implements IPaged {
 		@Override
 		public boolean nextPage() {
+			if (getPageCount() <= 1) {
+				return false;
+			}
 			final int itemsCount = ingredientSource.getElements().size();
 			if (itemsCount > 0) {
 				firstItemIndex += ingredientGrid.size();
@@ -341,6 +340,10 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 		@Override
 		public boolean previousPage() {
+			if (getPageCount() <= 1) {
+				return false;
+			}
+
 			final int itemsPerPage = ingredientGrid.size();
 			if (itemsPerPage == 0) {
 				firstItemIndex = 0;
@@ -368,15 +371,13 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		@Override
 		public boolean hasNext() {
 			// true if there is more than one page because this wraps around
-			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientSource.getElements().size() > itemsPerPage;
+			return getPageCount() > 1;
 		}
 
 		@Override
 		public boolean hasPrevious() {
 			// true if there is more than one page because this wraps around
-			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientSource.getElements().size() > itemsPerPage;
+			return getPageCount() > 1;
 		}
 
 		@Override
@@ -434,11 +435,13 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 				return Optional.empty();
 			}
 			if (scrollDeltaY < 0) {
-				this.paged.nextPage();
-				return Optional.of(this);
+				if (this.paged.nextPage()) {
+					return Optional.of(this);
+				}
 			} else if (scrollDeltaY > 0) {
-				this.paged.previousPage();
-				return Optional.of(this);
+				if (this.paged.previousPage()) {
+					return Optional.of(this);
+				}
 			}
 			return Optional.empty();
 		}

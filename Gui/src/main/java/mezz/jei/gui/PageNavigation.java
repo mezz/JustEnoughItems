@@ -88,7 +88,4 @@ public class PageNavigation {
 		);
 	}
 
-	public boolean hasMultiplePages() {
-		return this.paged.getPageCount() > 1;
-	}
 }
