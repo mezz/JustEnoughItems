@@ -82,6 +82,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public int getSmoothScrollRate() {
+		return 9;
+	}
+
+	@Override
 	public boolean isTagContentTooltipEnabled() {
 		return true;
 	}
