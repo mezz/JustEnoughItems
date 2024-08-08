@@ -7,6 +7,7 @@ import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.gui.widgets.IScrollGridWidgetFactory;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -22,6 +23,8 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.TickTimer;
 import mezz.jei.library.gui.elements.DrawableBuilder;
+import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
+import mezz.jei.library.gui.widgets.ScrollGridWidgetFactory;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 
@@ -110,6 +113,16 @@ public class GuiHelper implements IGuiHelper {
 	@Override
 	public IScrollGridWidgetFactory<?> createScrollGridFactory(int columns, int visibleRows) {
 		return new ScrollGridWidgetFactory<>(columns, visibleRows);
+	}
+
+	@Override
+	public IScrollBoxWidget createScrollBoxWidget(IDrawable contents, int visibleHeight, int xPos, int yPos) {
+		return new ScrollBoxRecipeWidget(contents, visibleHeight, xPos, yPos);
+	}
+
+	@Override
+	public int getScrollBoxScrollbarExtraWidth() {
+		return ScrollBoxRecipeWidget.getScrollBoxScrollbarExtraWidth();
 	}
 
 	@Override

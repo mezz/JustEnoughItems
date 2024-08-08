@@ -1,5 +1,7 @@
 package mezz.jei.common.util;
 
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector4f;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;
@@ -94,4 +96,24 @@ public final class MathUtil {
 		return Math.sqrt(a * a + b * b);
 	}
 
+	/**
+	 * Illegal matrix math assumes the pose is only scaling and translation.
+	 * If we get rotating GUI elements we're doomed, I hope nobody wants those.
+	 */
+	public static ImmutableRect2i transform(ImmutableRect2i rect, Matrix4f pose) {
+		Vector4f topLeft = new Vector4f(rect.x(), rect.y(), 0.0f, 1.0f);
+		Vector4f bottomRight = new Vector4f(rect.x() + rect.width(), rect.y() + rect.height(), 0.0f, 1.0f);
+
+		topLeft.transform(pose);
+		bottomRight.transform(pose);
+
+		int x = Math.round(topLeft.x());
+		int y = Math.round(topLeft.y());
+		return new ImmutableRect2i(
+			x,
+			y,
+			Math.round(bottomRight.x()) - x,
+			Math.round(bottomRight.y()) - y
+		);
+	}
 }
