@@ -39,6 +39,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> tagContentTooltipEnabled;
 	private final Supplier<Boolean> hideSingleIngredientTagsEnabled;
 	private final Supplier<Integer> dragDelayMs;
+	private final Supplier<Integer> smoothScrollRate;
 
 	public ClientConfig(IConfigSchemaBuilder schema) {
 		instance = this;
@@ -120,12 +121,21 @@ public final class ClientConfig implements IClientConfig {
 			true,
 			"When searching for item tags, also include tags for the default blocks contained in the items."
 		);
-		dragDelayMs = advanced.addInteger(
+
+		IConfigCategoryBuilder input = schema.addCategory("input");
+		dragDelayMs = input.addInteger(
 			"dragDelayInMilliseconds",
 			150,
 			0,
 			1000,
 			"Number of milliseconds before a long mouse click is considered to become a drag operation"
+		);
+		smoothScrollRate = input.addInteger(
+			"smoothScrollRate",
+			9,
+			1,
+			50,
+			"Scroll rate for scrolling the mouse wheel in smooth-scrolling scroll boxes. Measured in pixels."
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
@@ -227,6 +237,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public int getDragDelayMs() {
 		return dragDelayMs.get();
+	}
+
+	@Override
+	public int getSmoothScrollRate() {
+		return smoothScrollRate.get();
 	}
 
 	@Override
