@@ -1,4 +1,4 @@
-package mezz.jei.library.gui.helpers;
+package mezz.jei.library.gui.widgets;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;

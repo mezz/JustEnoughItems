@@ -1,4 +1,4 @@
-package mezz.jei.library.gui.helpers;
+package mezz.jei.library.gui.widgets;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -79,7 +79,7 @@ public class ScrollGridRecipeWidget implements ISlottedRecipeWidget, IJeiInputHa
 		);
 	}
 
-	private ImmutableRect2i calculateScrollbarMarkerArea(int hiddenRows) {
+	private ImmutableRect2i calculateScrollbarMarkerArea() {
 		int totalSpace = scrollArea.height() - 2;
 		int scrollMarkerWidth = scrollArea.width() - 2;
 		int scrollMarkerHeight = Math.round(totalSpace * (visibleRows / (float) (visibleRows + hiddenRows)));
@@ -97,7 +97,7 @@ public class ScrollGridRecipeWidget implements ISlottedRecipeWidget, IJeiInputHa
 	public void draw(PoseStack poseStack, double mouseX, double mouseY) {
 		scrollbarBackground.draw(poseStack, scrollArea);
 
-		ImmutableRect2i scrollbarMarkerArea = calculateScrollbarMarkerArea(hiddenRows);
+		ImmutableRect2i scrollbarMarkerArea = calculateScrollbarMarkerArea();
 		scrollbarMarker.draw(poseStack, scrollbarMarkerArea);
 
 		final int totalSlots = slots.size();
@@ -141,8 +141,8 @@ public class ScrollGridRecipeWidget implements ISlottedRecipeWidget, IJeiInputHa
 		return Math.max(rowIndex, 0);
 	}
 
-	private static float subtractInputFromScroll(int hiddenRows, float scrollOffset, double scrollDeltaY) {
-		float newScrollOffset = scrollOffset - (float) (scrollDeltaY / (double) hiddenRows);
+	private static float subtractInputFromScroll(int totalSlots, float scrollOffset, double scrollDeltaY) {
+		float newScrollOffset = scrollOffset - (float) (scrollDeltaY / (double) totalSlots);
 		return Mth.clamp(newScrollOffset, 0.0F, 1.0F);
 	}
 
@@ -161,10 +161,10 @@ public class ScrollGridRecipeWidget implements ISlottedRecipeWidget, IJeiInputHa
 			}
 
 			if (userInput.isSimulate()) {
-				ImmutableRect2i scrollMarkerArea = calculateScrollbarMarkerArea(hiddenRows);
+				ImmutableRect2i scrollMarkerArea = calculateScrollbarMarkerArea();
 				if (!scrollMarkerArea.contains(mouseX, mouseY)) {
 					moveScrollbarCenterTo(scrollMarkerArea, mouseY);
-					scrollMarkerArea = calculateScrollbarMarkerArea(hiddenRows);
+					scrollMarkerArea = calculateScrollbarMarkerArea();
 				}
 				dragOriginY = mouseY - scrollMarkerArea.y();
 			}
@@ -204,7 +204,7 @@ public class ScrollGridRecipeWidget implements ISlottedRecipeWidget, IJeiInputHa
 			return false;
 		}
 
-		ImmutableRect2i scrollbarMarkerArea = calculateScrollbarMarkerArea(hiddenRows);
+		ImmutableRect2i scrollbarMarkerArea = calculateScrollbarMarkerArea();
 
 		double topY = mouseY - dragOriginY;
 		moveScrollbarTo(scrollbarMarkerArea, topY);
