@@ -21,6 +21,7 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.TickTimer;
 import mezz.jei.library.gui.elements.DrawableBuilder;
+import mezz.jei.library.gui.widgets.AbstractScrollWidget;
 import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
 import mezz.jei.library.gui.widgets.ScrollGridWidgetFactory;
 import net.minecraft.resources.ResourceLocation;
@@ -95,7 +96,7 @@ public class GuiHelper implements IGuiHelper {
 
 	@Override
 	public int getScrollBoxScrollbarExtraWidth() {
-		return ScrollBoxRecipeWidget.getScrollBoxScrollbarExtraWidth();
+		return AbstractScrollWidget.getScrollBoxScrollbarExtraWidth();
 	}
 
 	@Override
