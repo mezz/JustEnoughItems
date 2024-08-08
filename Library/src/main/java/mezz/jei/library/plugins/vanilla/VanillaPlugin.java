@@ -53,6 +53,9 @@ import mezz.jei.library.plugins.vanilla.crafting.replacers.ShieldDecorationRecip
 import mezz.jei.library.plugins.vanilla.crafting.replacers.ShulkerBoxColoringRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.SuspiciousStewRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
+import mezz.jei.library.plugins.vanilla.gui.InventoryEffectRendererGuiHandler;
+import mezz.jei.library.plugins.vanilla.gui.RecipeBookGuiHandler;
+import mezz.jei.library.plugins.vanilla.gui.ToastGuiHandler;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackListFactory;
 import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
@@ -261,6 +264,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addGuiContainerHandler(CraftingScreen.class, new RecipeBookGuiHandler<>());
 		registration.addGuiContainerHandler(InventoryScreen.class, new RecipeBookGuiHandler<>());
 		registration.addGuiContainerHandler(AbstractFurnaceScreen.class, new RecipeBookGuiHandler<>());
+		registration.addGlobalGuiHandler(new ToastGuiHandler());
 	}
 
 	@Override

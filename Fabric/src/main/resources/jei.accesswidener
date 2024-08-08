@@ -27,3 +27,6 @@ accessible field net/minecraft/world/item/crafting/SmithingTrimRecipe template L
 accessible field net/minecraft/world/item/alchemy/PotionBrewing ALLOWED_CONTAINERS Ljava/util/List;
 
 accessible method net/minecraft/client/gui/GuiGraphics renderTooltipInternal (Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;)V
+
+accessible field net/minecraft/client/gui/components/toasts/ToastComponent visible Ljava/util/List;
+accessible class net/minecraft/client/gui/components/toasts/ToastComponent$ToastInstance
