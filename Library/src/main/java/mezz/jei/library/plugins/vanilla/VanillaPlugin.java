@@ -40,6 +40,9 @@ import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.library.plugins.vanilla.anvil.SmithingCategoryExtension;
 import mezz.jei.library.plugins.vanilla.anvil.SmithingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeCategory;
+import mezz.jei.library.plugins.vanilla.gui.InventoryEffectRendererGuiHandler;
+import mezz.jei.library.plugins.vanilla.gui.RecipeBookGuiHandler;
+import mezz.jei.library.plugins.vanilla.gui.ToastGuiHandler;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.EnchantedBookSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.FireworkRocketSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.InstrumentSubtypeInterpreter;
@@ -289,6 +292,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addGuiContainerHandler(CraftingScreen.class, new RecipeBookGuiHandler<>());
 		registration.addGuiContainerHandler(InventoryScreen.class, new RecipeBookGuiHandler<>());
 		registration.addGuiContainerHandler(AbstractFurnaceScreen.class, new RecipeBookGuiHandler<>());
+		registration.addGlobalGuiHandler(new ToastGuiHandler());
 	}
 
 	@Override
