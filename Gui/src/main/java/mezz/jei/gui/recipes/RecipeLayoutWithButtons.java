@@ -93,8 +93,8 @@ public record RecipeLayoutWithButtons<R>(
 		}
 		return new CombinedInputHandler(
 			"RecipeLayoutWithButtons",
-			transferButton.createInputHandler(),
 			bookmarkButton.createInputHandler(),
+			transferButton.createInputHandler(),
 			recipeLayoutInputHandler
 		);
 	}
