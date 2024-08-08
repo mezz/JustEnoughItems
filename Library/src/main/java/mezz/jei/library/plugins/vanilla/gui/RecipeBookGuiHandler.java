@@ -1,4 +1,4 @@
-package mezz.jei.library.plugins.vanilla;
+package mezz.jei.library.plugins.vanilla.gui;
 
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.common.platform.IPlatformScreenHelper;

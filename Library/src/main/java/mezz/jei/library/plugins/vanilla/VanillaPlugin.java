@@ -56,6 +56,9 @@ import mezz.jei.library.plugins.vanilla.crafting.replacers.SuspiciousStewRecipeM
 import mezz.jei.library.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
 import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipeCategory;
 import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipeMaker;
+import mezz.jei.library.plugins.vanilla.gui.InventoryEffectRendererGuiHandler;
+import mezz.jei.library.plugins.vanilla.gui.RecipeBookGuiHandler;
+import mezz.jei.library.plugins.vanilla.gui.ToastGuiHandler;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackListFactory;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.EnchantedBookSubtypeInterpreter;
@@ -271,6 +274,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addGuiContainerHandler(CraftingScreen.class, new RecipeBookGuiHandler<>());
 		registration.addGuiContainerHandler(InventoryScreen.class, new RecipeBookGuiHandler<>());
 		registration.addGuiContainerHandler(AbstractFurnaceScreen.class, new RecipeBookGuiHandler<>());
+		registration.addGlobalGuiHandler(new ToastGuiHandler());
 	}
 
 	@Override

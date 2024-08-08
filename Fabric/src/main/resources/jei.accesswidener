@@ -27,3 +27,6 @@ accessible field net/minecraft/world/item/alchemy/PotionBrewing ALLOWED_CONTAINE
 accessible method net/minecraft/client/gui/screens/Screen renderTooltipInternal (Lcom/mojang/blaze3d/vertex/PoseStack;Ljava/util/List;II)V
 
 accessible method net/minecraft/world/inventory/GrindstoneMenu createResult ()V
+
+accessible field net/minecraft/client/gui/components/toasts/ToastComponent visible Ljava/util/List;
+accessible class net/minecraft/client/gui/components/toasts/ToastComponent$ToastInstance
