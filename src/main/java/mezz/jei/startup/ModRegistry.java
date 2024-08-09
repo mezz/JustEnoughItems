@@ -61,7 +61,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers = new ArrayList<>();
 	private final List<IGlobalGuiHandler> globalGuiHandlers = new ArrayList<>();
 	private final Map<Class, IGuiScreenHandler> guiScreenHandlers = new HashMap<>();
-	private final Map<Class, IGhostIngredientHandler> ghostIngredientHandlers = new HashMap<>();
+	private final ListMultiMap<Class, IGhostIngredientHandler> ghostIngredientHandlers = new ListMultiMap<>();
 	@Deprecated
 	private final List<Object> unsortedRecipes = new ArrayList<>();
 	private final ListMultiMap<String, Object> recipes = new ListMultiMap<>();
@@ -326,7 +326,7 @@ public class ModRegistry implements IModRegistry, IRecipeCategoryRegistration {
 		return guiScreenHandlers;
 	}
 
-	public Map<Class, IGhostIngredientHandler> getGhostIngredientHandlers() {
+	public ListMultiMap<Class, IGhostIngredientHandler> getGhostIngredientHandlers() {
 		return ghostIngredientHandlers;
 	}
 

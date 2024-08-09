@@ -22,6 +22,7 @@ import mezz.jei.api.gui.IGhostIngredientHandler;
 import mezz.jei.api.gui.IGlobalGuiHandler;
 import mezz.jei.api.gui.IGuiProperties;
 import mezz.jei.api.gui.IGuiScreenHandler;
+import mezz.jei.collect.ListMultiMap;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.input.IClickedIngredient;
@@ -31,11 +32,11 @@ public class GuiScreenHelper {
 	private final IngredientRegistry ingredientRegistry;
 	private final List<IGlobalGuiHandler> globalGuiHandlers;
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers;
-	private final Map<Class, IGhostIngredientHandler> ghostIngredientHandlers;
+	private final ListMultiMap<Class, IGhostIngredientHandler> ghostIngredientHandlers;
 	private final Map<Class, IGuiScreenHandler> guiScreenHandlers;
 	private Set<Rectangle> guiExclusionAreas = Collections.emptySet();
 
-	public GuiScreenHelper(IngredientRegistry ingredientRegistry, List<IGlobalGuiHandler> globalGuiHandlers, List<IAdvancedGuiHandler<?>> advancedGuiHandlers, Map<Class, IGhostIngredientHandler> ghostIngredientHandlers, Map<Class, IGuiScreenHandler> guiScreenHandlers) {
+	public GuiScreenHelper(IngredientRegistry ingredientRegistry, List<IGlobalGuiHandler> globalGuiHandlers, List<IAdvancedGuiHandler<?>> advancedGuiHandlers, ListMultiMap<Class, IGhostIngredientHandler> ghostIngredientHandlers, Map<Class, IGuiScreenHandler> guiScreenHandlers) {
 		this.ingredientRegistry = ingredientRegistry;
 		this.globalGuiHandlers = globalGuiHandlers;
 		this.advancedGuiHandlers = advancedGuiHandlers;
@@ -174,24 +175,29 @@ public class GuiScreenHelper {
 
 	@Nullable
 	public <T extends GuiScreen> IGhostIngredientHandler<T> getGhostIngredientHandler(T guiScreen) {
+		List<IGhostIngredientHandler<T>> handlers = getGhostIngredientHandlers(guiScreen);
+		if (handlers.isEmpty()) {
+			return null;
+		}
+		return handlers.get(0);
+	}
+
+	public <T extends GuiScreen> List<IGhostIngredientHandler<T>> getGhostIngredientHandlers(T guiScreen) {
+		List<IGhostIngredientHandler<T>> handlers = new ArrayList<>();
 		{
 			@SuppressWarnings("unchecked")
-			IGhostIngredientHandler<T> handler = (IGhostIngredientHandler<T>) ghostIngredientHandlers.get(guiScreen.getClass());
-			if (handler != null) {
-				return handler;
-			}
+			List<IGhostIngredientHandler<T>> exactHandlers = (List<IGhostIngredientHandler<T>>) (Object) ghostIngredientHandlers.get(guiScreen.getClass());
+			handlers.addAll(exactHandlers);
 		}
-		for (Map.Entry<Class, IGhostIngredientHandler> entry : ghostIngredientHandlers.entrySet()) {
+		for (Map.Entry<Class, List<IGhostIngredientHandler>> entry : ghostIngredientHandlers.entrySet()) {
 			Class guiScreenClass = entry.getKey();
-			if (guiScreenClass.isInstance(guiScreen)) {
+			if (!guiScreenClass.equals(guiScreen.getClass()) && guiScreenClass.isInstance(guiScreen)) {
 				@SuppressWarnings("unchecked")
-				IGhostIngredientHandler<T> handler = entry.getValue();
-				if (handler != null) {
-					return handler;
-				}
+				List<IGhostIngredientHandler<T>> inheritedHandlers = (List<IGhostIngredientHandler<T>>) (Object) entry.getValue();
+				handlers.addAll(inheritedHandlers);
 			}
 		}
-		return null;
+		return handlers;
 	}
 
 	@Nullable

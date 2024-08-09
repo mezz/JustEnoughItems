@@ -62,9 +62,11 @@ public class GhostIngredientDragManager {
 				this.hoveredIngredientTargets = null;
 				GuiScreen currentScreen = minecraft.currentScreen;
 				if (currentScreen != null && hovered != null) {
-					IGhostIngredientHandler<GuiScreen> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
-					if (handler != null && handler.shouldHighlightTargets()) {
-						this.hoveredIngredientTargets = handler.getTargets(currentScreen, hovered, false);
+					this.hoveredIngredientTargets = new ArrayList<>();
+					for (IGhostIngredientHandler<GuiScreen> handler : guiScreenHelper.getGhostIngredientHandlers(currentScreen)) {
+						if (handler.shouldHighlightTargets()) {
+							this.hoveredIngredientTargets.addAll(handler.getTargets(currentScreen, hovered, false));
+						}
 					}
 				}
 			}
@@ -95,25 +97,27 @@ public class GhostIngredientDragManager {
 	}
 
 	public <T extends GuiScreen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked) {
-		IGhostIngredientHandler<T> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
-		if (handler != null) {
-			V ingredient = clicked.getValue();
+		V ingredient = clicked.getValue();
+		List<GhostIngredientDrag.HandlerData<V>> handlersData = new ArrayList<>();
+		for (IGhostIngredientHandler<T> handler : guiScreenHelper.getGhostIngredientHandlers(currentScreen)) {
 			List<IGhostIngredientHandler.Target<V>> targets = handler.getTargets(currentScreen, ingredient, true);
 			if (!targets.isEmpty()) {
-				IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
-				Rectangle clickedArea = clicked.getArea();
-				this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, clickedArea);
-				clicked.onClickHandled();
-				return true;
+				handlersData.add(new GhostIngredientDrag.HandlerData<>(handler, targets));
 			}
 		}
-		return false;
+		if (handlersData.isEmpty()) {
+			return false;
+		}
+		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
+		Rectangle clickedArea = clicked.getArea();
+		this.ghostIngredientDrag = new GhostIngredientDrag<>(handlersData, ingredientRenderer, ingredient, clickedArea);
+		clicked.onClickHandled();
+		return true;
 	}
 
 	public <T extends GuiScreen, V> boolean handleQuickMoveGhostIngredient(T currentScreen, IClickedIngredient<V> clicked) {
-		IGhostIngredientHandler<T> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
-		if (handler != null) {
-			V ingredient = clicked.getValue();
+		V ingredient = clicked.getValue();
+		for (IGhostIngredientHandler<T> handler : guiScreenHelper.getGhostIngredientHandlers(currentScreen)) {
 			if (handler.quickMove(currentScreen, ingredient)) {
 				clicked.onClickHandled();
 				return true;
