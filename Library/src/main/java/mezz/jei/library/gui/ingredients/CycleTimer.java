@@ -5,7 +5,7 @@ import net.minecraft.client.gui.screens.Screen;
 import java.util.List;
 import java.util.Optional;
 
-public class CycleTimer {
+public class CycleTimer implements ICycler {
 	private static final CycleTimer ZERO_OFFSET = new CycleTimer(0);
 	private static final int MAX_INDEX = 100_000;
 	/* the amount of time in ms to display one thing before cycling to the next one */
@@ -37,18 +37,16 @@ public class CycleTimer {
 		return Math.toIntExact(index);
 	}
 
+	@Override
 	public <T> Optional<T> getCycled(List<Optional<T>> list) {
 		if (list.isEmpty()) {
 			return Optional.empty();
 		}
-		int index = this.index % list.size();
-		return list.get(index);
-	}
-
-	public void update() {
 		if (!Screen.hasShiftDown()) {
 			long now = System.currentTimeMillis();
 			index = calculateIndex(now, cycleOffset);
 		}
+		int index = this.index % list.size();
+		return list.get(index);
 	}
 }

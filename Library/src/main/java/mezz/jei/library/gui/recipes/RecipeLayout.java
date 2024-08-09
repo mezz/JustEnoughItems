@@ -22,6 +22,7 @@ import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
@@ -54,6 +55,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	 */
 	private final List<IRecipeSlotDrawable> allSlots;
 	private final List<ISlottedRecipeWidget> slottedWidgets;
+	private final CycleTicker cycleTicker;
+	private final IFocusGroup focuses;
 	private final List<IRecipeWidget> allWidgets;
 	private final R recipe;
 	private final IScalableDrawable recipeBackground;
@@ -122,11 +125,15 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		List<ISlottedRecipeWidget> slottedWidgets,
 		List<IRecipeWidget> widgets,
 		List<IJeiInputHandler> inputHandlers,
-		List<IJeiGuiEventListener> guiEventListeners
+		List<IJeiGuiEventListener> guiEventListeners,
+		CycleTicker cycleTicker,
+		IFocusGroup focuses
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
 		this.slottedWidgets = Collections.unmodifiableList(slottedWidgets);
+		this.cycleTicker = cycleTicker;
+		this.focuses = focuses;
 		this.inputHandler = new RecipeLayoutInputHandler<>(this, inputHandlers, guiEventListeners);
 
 		Set<IRecipeWidget> allWidgets = new HashSet<>(widgets);
@@ -153,6 +160,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		this.recipe = recipe;
 		this.recipeBackground = recipeBackground;
 		this.shapelessIcon = shapelessIcon;
+
+		recipeCategory.onDisplayedIngredientsUpdate(recipe, recipeCategorySlots, focuses);
 	}
 
 	@Override
@@ -352,6 +361,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	public void tick() {
 		for (IRecipeWidget widget : allWidgets) {
 			widget.tick();
+		}
+		if (cycleTicker.tick()) {
+			for (IRecipeSlotDrawable slot : recipeCategorySlots) {
+				slot.clearDisplayOverrides();
+			}
+			recipeCategory.onDisplayedIngredientsUpdate(recipe, recipeCategorySlots, focuses);
 		}
 	}
 }
