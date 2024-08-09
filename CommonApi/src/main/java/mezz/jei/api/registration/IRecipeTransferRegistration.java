@@ -1,6 +1,7 @@
 package mezz.jei.api.registration;
 
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
@@ -68,7 +69,17 @@ public interface IRecipeTransferRegistration {
 	/**
 	 * Add a universal handler that can handle any category of recipe.
 	 * Useful for mods with recipe pattern encoding, for automated recipe systems.
+	 *
+	 * @since 10.34.0
 	 */
+	<C extends AbstractContainerMenu> void addUniversalRecipeTransferHandler(IUniversalRecipeTransferHandler<C> universalRecipeTransferHandler);
+
+	/**
+	 * Add a universal handler that can handle any category of recipe.
+	 * Useful for mods with recipe pattern encoding, for automated recipe systems.
+	 * @deprecated use {@link #addUniversalRecipeTransferHandler(IUniversalRecipeTransferHandler)}
+	 */
+	@Deprecated(since = "10.34.0", forRemoval = true)
 	<C extends AbstractContainerMenu, R> void addUniversalRecipeTransferHandler(IRecipeTransferHandler<C, R> recipeTransferHandler);
 
 	/**
