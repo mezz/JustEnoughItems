@@ -265,7 +265,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 			widgets,
 			inputHandlers,
 			guiEventListeners,
-			cycleTicker
+			cycleTicker,
+			focuses
 		);
 	}
 

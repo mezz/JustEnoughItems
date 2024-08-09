@@ -165,6 +165,11 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		return Collections.unmodifiableList(this.ingredients);
 	}
 
+	public void clear() {
+		this.ingredients.clear();
+		this.types.clear();
+	}
+
 	public IntSet getMatches(IFocusGroup focusGroup, RecipeIngredientRole role) {
 		List<IFocus<?>> focuses = focusGroup.getFocuses(role).toList();
 		IntSet results = new IntOpenHashSet();

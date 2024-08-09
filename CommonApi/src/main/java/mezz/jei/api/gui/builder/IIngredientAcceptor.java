@@ -23,7 +23,7 @@ import java.util.Optional;
  * @since 9.3.0
  */
 @ApiStatus.NonExtendable
-public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
+public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> extends IIngredientConsumer {
 	/**
 	 * Add an ordered list of ingredients.
 	 *

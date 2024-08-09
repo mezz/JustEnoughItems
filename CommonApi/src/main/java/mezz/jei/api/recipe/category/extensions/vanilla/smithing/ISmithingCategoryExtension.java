@@ -34,4 +34,16 @@ public interface ISmithingCategoryExtension<R extends UpgradeRecipe> {
 	 * @since 11.34.0
 	 */
 	<T extends IIngredientAcceptor<T>> void setAddition(R recipe, T ingredientAcceptor);
+
+	/**
+	 * Set some example output ingredients for the recipe.
+	 * Don't set all the outputs if there are hundreds, it'll just waste memory.
+	 *
+	 * For example, see the results of {@link UpgradeRecipe#getResultItem()}.
+	 *
+	 * @since 11.34.1
+	 */
+	default <T extends IIngredientAcceptor<T>> void setOutput(R recipe, T ingredientAcceptor) {
+
+	}
 }

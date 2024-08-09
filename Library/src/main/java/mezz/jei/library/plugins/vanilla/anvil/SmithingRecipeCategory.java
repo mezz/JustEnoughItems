@@ -74,12 +74,12 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe>, I
 		IRecipeSlotBuilder addition = builder.addSlot(RecipeIngredientRole.INPUT, 50, 6)
 			.setBackground(slot, -1, -1);
 
+		IRecipeSlotBuilder output = builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 6)
+			.setBackground(slot, -1, -1);
+
 		extension.setBase(recipe, base);
 		extension.setAddition(recipe, addition);
-
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 6)
-			.addItemStack(recipe.getResultItem())
-			.setBackground(slot, -1, -1);
+		extension.setOutput(recipe, output);
 	}
 
 	@Override
