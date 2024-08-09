@@ -24,6 +24,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.core.collect.ListMultiMap;
+import mezz.jei.library.gui.ingredients.CycleTimer;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.ShapelessIcon;
@@ -52,8 +53,6 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 	private final IIngredientManager ingredientManager;
 	private final IRecipeCategory<T> recipeCategory;
 	private final T recipe;
-	private final @Nullable ResourceLocation recipeName;
-	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);;
 
 	private boolean shapeless = false;
 	private int shapelessX = -1;
@@ -65,19 +64,14 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		this.recipeCategory = recipeCategory;
 		this.recipe = recipe;
 		this.ingredientManager = ingredientManager;
-
-		this.recipeName = recipeCategory.getRegistryName(recipe);
 	}
 
 	@Override
 	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role, int x, int y) {
-		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, role, x, y, ingredientCycleOffset);
+		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, role, x, y);
 
 		if (role == RecipeIngredientRole.OUTPUT) {
-			if (recipeName != null) {
-				OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName);
-				slot.addTooltipCallback(callback);
-			}
+			addOutputSlotTooltipCallback(slot);
 		}
 
 		this.slots.add(slot);
@@ -86,18 +80,23 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 
 	@Override
 	public IRecipeSlotBuilder addSlotToWidget(RecipeIngredientRole role, ISlottedWidgetFactory<?> widgetFactory) {
-		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, role, 0, 0, ingredientCycleOffset)
+		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, role, 0, 0)
 			.assignToWidgetFactory(widgetFactory);
 
 		if (role == RecipeIngredientRole.OUTPUT) {
-			if (recipeName != null) {
-				OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName);
-				slot.addTooltipCallback(callback);
-			}
+			addOutputSlotTooltipCallback(slot);
 		}
 
 		this.slots.add(slot);
 		return slot;
+	}
+
+	private void addOutputSlotTooltipCallback(RecipeSlotBuilder slot) {
+		ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
+		if (recipeName != null) {
+			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName);
+			slot.addTooltipCallback(callback);
+		}
 	}
 
 	@Override
@@ -188,6 +187,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		List<IRecipeSlotDrawable> allSlots = new ArrayList<>(recipeCategorySlots);
 		ListMultiMap<ISlottedWidgetFactory<?>, IRecipeSlotDrawable> widgetSlots = new ListMultiMap<>();
 
+		CycleTimer cycleTimer = CycleTimer.createWithRandomOffset();
+
 		Set<RecipeSlotBuilder> focusLinkedSlots = new HashSet<>();
 		for (List<RecipeSlotBuilder> linkedSlots : this.focusLinkedSlots) {
 			IntSet focusMatches = new IntArraySet();
@@ -196,7 +197,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 			}
 			for (RecipeSlotBuilder slotBuilder : linkedSlots) {
 				ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
-				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focusMatches);
+				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focusMatches, cycleTimer);
 				if (assignedWidget == null) {
 					recipeCategorySlots.add(slotDrawable);
 				} else {
@@ -210,7 +211,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		for (RecipeSlotBuilder slotBuilder : slots) {
 			if (!focusLinkedSlots.contains(slotBuilder)) {
 				ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
-				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focuses);
+				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focuses, cycleTimer);
 				if (assignedWidget == null) {
 					recipeCategorySlots.add(slotDrawable);
 				} else {
