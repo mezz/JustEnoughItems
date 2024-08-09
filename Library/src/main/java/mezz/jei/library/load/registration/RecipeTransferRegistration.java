@@ -7,9 +7,11 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.common.Constants;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.library.recipes.UniversalRecipeTransferHandlerAdapter;
 import mezz.jei.library.transfer.BasicRecipeTransferHandler;
 import mezz.jei.library.transfer.BasicRecipeTransferInfo;
 import mezz.jei.common.util.ErrorUtil;
@@ -71,6 +73,15 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 
 		Class<? extends C> containerClass = recipeTransferHandler.getContainerClass();
 		this.recipeTransferHandlers.put(containerClass, recipeType, recipeTransferHandler);
+	}
+
+	@Override
+	public <C extends AbstractContainerMenu> void addUniversalRecipeTransferHandler(IUniversalRecipeTransferHandler<C> universalRecipeTransferHandler) {
+		ErrorUtil.checkNotNull(universalRecipeTransferHandler, "universalRecipeTransferHandler");
+
+		Class<? extends C> containerClass = universalRecipeTransferHandler.getContainerClass();
+		UniversalRecipeTransferHandlerAdapter<C, ?> adapter = new UniversalRecipeTransferHandlerAdapter<>(universalRecipeTransferHandler);
+		this.recipeTransferHandlers.put(containerClass, adapter.getRecipeType(), adapter);
 	}
 
 	@Override
