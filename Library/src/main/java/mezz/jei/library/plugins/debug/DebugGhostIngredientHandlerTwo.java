@@ -17,42 +17,39 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> implements IGhostIngredientHandler<T> {
+public class DebugGhostIngredientHandlerTwo<T extends AbstractContainerScreen<?>> implements IGhostIngredientHandler<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final IIngredientManager ingredientManager;
 
-	public DebugGhostIngredientHandler(IIngredientManager ingredientManager) {
+	public DebugGhostIngredientHandlerTwo(IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
 	}
 
 	@Override
 	public <I> List<Target<I>> getTargetsTyped(T gui, ITypedIngredient<I> typedIngredient, boolean doStart) {
 		List<Target<I>> targets = new ArrayList<>();
-		targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(0, 0, 20, 20), ingredientManager));
+		targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(40, 40, 20, 20), ingredientManager));
 		if (doStart) {
 			IIngredientType<I> ingredientType = typedIngredient.getType();
 			IIngredientHelper<I> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-			LOGGER.info("1: Ghost Ingredient Handling Starting with {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
-			targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(20, 20, 20, 20), ingredientManager));
+			LOGGER.info("2: Ghost Ingredient Handler Two Starting with {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
+			targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(30, 30, 20, 20), ingredientManager));
 		}
 		typedIngredient.getIngredient(VanillaTypes.ITEM_STACK)
 			.ifPresent(itemStack -> {
-				boolean even = true;
+				boolean odd = false;
 				int count = 0;
 				IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 				for (Slot slot : gui.getMenu().slots) {
-					if (even) {
+					if (odd && count > 10) {
 						int guiLeft = screenHelper.getGuiLeft(gui);
 						int guiTop = screenHelper.getGuiTop(gui);
 						Rect2i area = new Rect2i(guiLeft + slot.x, guiTop + slot.y, 16, 16);
 						targets.add(new DebugInfoTarget<>("Got an Ingredient in Gui", area, ingredientManager));
 					}
 					count++;
-					if (count > 10) {
-						break;
-					}
-					even = !even;
+					odd = !odd;
 				}
 			});
 		return targets;
@@ -60,7 +57,7 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 
 	@Override
 	public void onComplete() {
-		LOGGER.info("1: Ghost Ingredient Handling Complete");
+		LOGGER.info("2: Ghost Ingredient Handling Complete");
 	}
 
 	private record DebugInfoTarget<I>(
@@ -79,7 +76,7 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 			IIngredientType<I> ingredientType = ingredientManager.getIngredientTypeChecked(ingredient)
 				.orElseThrow();
 			IIngredientHelper<I> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-			LOGGER.info("1: {}: {}", message, ingredientHelper.getErrorInfo(ingredient));
+			LOGGER.info("2: {}: {}", message, ingredientHelper.getErrorInfo(ingredient));
 		}
 	}
 }

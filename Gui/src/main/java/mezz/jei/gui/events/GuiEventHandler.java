@@ -65,14 +65,13 @@ public class GuiEventHandler {
 	 * Draws above most ContainerScreen elements, but below the tooltips.
 	 */
 	public void onDrawForeground(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		Minecraft minecraft = Minecraft.getInstance();
 		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
 			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 			poseStack.translate(-screenHelper.getGuiLeft(screen), -screenHelper.getGuiTop(screen), 0);
-			bookmarkOverlay.drawOnForeground(minecraft, guiGraphics, mouseX, mouseY);
-			ingredientListOverlay.drawOnForeground(minecraft, guiGraphics, mouseX, mouseY);
+			bookmarkOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
+			ingredientListOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
 		}
 		poseStack.popPose();
 	}

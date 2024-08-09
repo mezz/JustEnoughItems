@@ -187,9 +187,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		}
 	}
 
-	public void drawOnForeground(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			this.contents.drawOnForeground(minecraft, guiGraphics, mouseX, mouseY);
+			this.contents.drawOnForeground(guiGraphics, mouseX, mouseY);
 		}
 	}
 
