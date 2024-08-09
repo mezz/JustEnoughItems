@@ -25,8 +25,7 @@ public class GhostIngredientDrag<T> {
 	private static final int targetColor = 0x4013C90A;
 	private static final int hoverColor = 0x804CC919;
 
-	private final IGhostIngredientHandler<?> handler;
-	private final List<Target<T>> targets;
+	private final List<HandlerData<T>> handlersData;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final T ingredient;
 	private final double mouseStartX;
@@ -35,16 +34,14 @@ public class GhostIngredientDrag<T> {
 	private final Rectangle2d origin;
 
 	public GhostIngredientDrag(
-		IGhostIngredientHandler<?> handler,
-		List<Target<T>> targets,
+		List<HandlerData<T>> handlersData,
 		IIngredientRenderer<T> ingredientRenderer,
 		T ingredient,
 		double mouseX,
 		double mouseY,
 		@Nullable Rectangle2d origin
 	) {
-		this.handler = handler;
-		this.targets = targets;
+		this.handlersData = handlersData;
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredient = ingredient;
 		this.origin = origin;
@@ -53,8 +50,10 @@ public class GhostIngredientDrag<T> {
 	}
 
 	public void drawTargets(MatrixStack matrixStack, int mouseX, int mouseY) {
-		if (handler.shouldHighlightTargets()) {
-			drawTargets(matrixStack, mouseX, mouseY, targets);
+		for (HandlerData<T> data : handlersData) {
+			if (data.handler.shouldHighlightTargets()) {
+				drawTargets(matrixStack, mouseX, mouseY, data.targets);
+			}
 		}
 	}
 
@@ -133,24 +132,28 @@ public class GhostIngredientDrag<T> {
 	}
 
 	public boolean onClick(double mouseX, double mouseY, MouseClickState clickState) {
-		for (Target<T> target : targets) {
-			Rectangle2d area = target.getArea();
-			if (MathUtil.contains(area, mouseX, mouseY)) {
-				if (!clickState.isSimulate()) {
-					target.accept(ingredient);
-					handler.onComplete();
+		for (HandlerData<T> data : handlersData) {
+			for (Target<T> target : data.targets) {
+				Rectangle2d area = target.getArea();
+				if (MathUtil.contains(area, mouseX, mouseY)) {
+					if (!clickState.isSimulate()) {
+						target.accept(ingredient);
+						data.handler.onComplete();
+					}
+					return true;
 				}
-				return true;
 			}
-		}
-		if (!clickState.isSimulate()) {
-			handler.onComplete();
+			if (!clickState.isSimulate()) {
+				data.handler.onComplete();
+			}
 		}
 		return false;
 	}
 
 	public void stop() {
-		handler.onComplete();
+		for (HandlerData<T> data : handlersData) {
+			data.handler.onComplete();
+		}
 	}
 
 	public IIngredientRenderer<T> getIngredientRenderer() {
@@ -164,5 +167,15 @@ public class GhostIngredientDrag<T> {
 	@Nullable
 	public Rectangle2d getOrigin() {
 		return origin;
+	}
+
+	public static class HandlerData<T> {
+		private final IGhostIngredientHandler<?> handler;
+		private final List<Target<T>> targets;
+
+		public HandlerData(IGhostIngredientHandler<?> handler, List<Target<T>> targets) {
+			this.handler = handler;
+			this.targets = targets;
+		}
 	}
 }

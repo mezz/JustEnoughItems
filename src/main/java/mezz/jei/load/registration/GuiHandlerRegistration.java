@@ -14,7 +14,9 @@ import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ListMultimap;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
@@ -26,7 +28,7 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 	private final GuiContainerHandlers guiContainerHandlers = new GuiContainerHandlers();
 	private final List<IGlobalGuiHandler> globalGuiHandlers = new ArrayList<>();
 	private final Map<Class<?>, IScreenHandler<?>> guiScreenHandlers = new HashMap<>();
-	private final Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers = new HashMap<>();
+	private final ListMultimap<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers = ArrayListMultimap.create();
 
 	@Override
 	public <T extends ContainerScreen<?>> void addGuiContainerHandler(Class<? extends T> guiClass, IGuiContainerHandler<T> guiHandler) {

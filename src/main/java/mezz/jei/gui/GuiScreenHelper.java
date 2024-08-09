@@ -1,6 +1,7 @@
 package mezz.jei.gui;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.ListMultimap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -31,7 +33,7 @@ public class GuiScreenHelper {
 	private final IngredientManager ingredientManager;
 	private final List<IGlobalGuiHandler> globalGuiHandlers;
 	private final GuiContainerHandlers guiContainerHandlers;
-	private final Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers;
+	private final ListMultimap<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers;
 	private final Map<Class<?>, IScreenHandler<?>> guiScreenHandlers;
 	private Set<Rectangle2d> guiExclusionAreas = Collections.emptySet();
 
@@ -39,7 +41,7 @@ public class GuiScreenHelper {
 		IngredientManager ingredientManager,
 		List<IGlobalGuiHandler> globalGuiHandlers,
 		GuiContainerHandlers guiContainerHandlers,
-		Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers,
+		ListMultimap<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers,
 		Map<Class<?>, IScreenHandler<?>> guiScreenHandlers
 	) {
 		this.ingredientManager = ingredientManager;
@@ -135,24 +137,29 @@ public class GuiScreenHelper {
 
 	@Nullable
 	public <T extends Screen> IGhostIngredientHandler<T> getGhostIngredientHandler(T guiScreen) {
+		List<IGhostIngredientHandler<T>> handlers = getGhostIngredientHandlers(guiScreen);
+		if (handlers.isEmpty()) {
+			return null;
+		}
+		return handlers.get(0);
+	}
+
+	public <T extends Screen> List<IGhostIngredientHandler<T>> getGhostIngredientHandlers(T guiScreen) {
+		List<IGhostIngredientHandler<T>> results = new ArrayList<>();
 		{
 			@SuppressWarnings("unchecked")
-			IGhostIngredientHandler<T> handler = (IGhostIngredientHandler<T>) ghostIngredientHandlers.get(guiScreen.getClass());
-			if (handler != null) {
-				return handler;
-			}
+			List<IGhostIngredientHandler<T>> handlers = (List<IGhostIngredientHandler<T>>) (Object) ghostIngredientHandlers.get(guiScreen.getClass());
+			results.addAll(handlers);
 		}
-		for (Map.Entry<Class<?>, IGhostIngredientHandler<?>> entry : ghostIngredientHandlers.entrySet()) {
-			Class<?> guiScreenClass = entry.getKey();
-			if (guiScreenClass.isInstance(guiScreen)) {
+		for (Map.Entry<Class<?>, Collection<IGhostIngredientHandler<?>>> entry : ghostIngredientHandlers.asMap().entrySet()) {
+			Class<?> handledClass = entry.getKey();
+			if (handledClass != guiScreen.getClass() && handledClass.isInstance(guiScreen)) {
 				@SuppressWarnings("unchecked")
-				IGhostIngredientHandler<T> handler = (IGhostIngredientHandler<T>) entry.getValue();
-				if (handler != null) {
-					return handler;
-				}
+				Collection<IGhostIngredientHandler<T>> handlers = (Collection<IGhostIngredientHandler<T>>) (Object) entry.getValue();
+				results.addAll(handlers);
 			}
 		}
-		return null;
+		return results;
 	}
 
 	@Nullable

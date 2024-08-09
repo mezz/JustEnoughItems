@@ -72,9 +72,12 @@ public class GhostIngredientDragManager {
 				this.hoveredIngredientTargets = null;
 				Screen currentScreen = minecraft.screen;
 				if (currentScreen != null && hovered != null) {
-					IGhostIngredientHandler<Screen> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
-					if (handler != null && handler.shouldHighlightTargets()) {
-						this.hoveredIngredientTargets = handler.getTargets(currentScreen, hovered, false);
+					List<IGhostIngredientHandler<Screen>> handlers = guiScreenHelper.getGhostIngredientHandlers(currentScreen);
+					this.hoveredIngredientTargets = new ArrayList<>();
+					for (IGhostIngredientHandler<Screen> handler : handlers) {
+						if (handler.shouldHighlightTargets()) {
+							this.hoveredIngredientTargets.addAll(handler.getTargets(currentScreen, hovered, false));
+						}
 					}
 				}
 			}
@@ -94,18 +97,20 @@ public class GhostIngredientDragManager {
 	}
 
 	private <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IClickedIngredient<V> clicked, double mouseX, double mouseY) {
-		IGhostIngredientHandler<T> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
-		if (handler == null) {
-			return false;
-		}
 		V ingredient = clicked.getValue();
-		List<IGhostIngredientHandler.Target<V>> targets = handler.getTargets(currentScreen, ingredient, true);
-		if (targets.isEmpty()) {
+		List<GhostIngredientDrag.HandlerData<V>> handlersData = new ArrayList<>();
+		for (IGhostIngredientHandler<T> handler : guiScreenHelper.getGhostIngredientHandlers(currentScreen)) {
+			List<IGhostIngredientHandler.Target<V>> targets = handler.getTargets(currentScreen, ingredient, true);
+			if (!targets.isEmpty()) {
+				handlersData.add(new GhostIngredientDrag.HandlerData<>(handler, targets));
+			}
+		}
+		if (handlersData.isEmpty()) {
 			return false;
 		}
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
 		Rectangle2d clickedArea = clicked.getArea();
-		this.ghostIngredientDrag = new GhostIngredientDrag<>(handler, targets, ingredientRenderer, ingredient, mouseX, mouseY, clickedArea);
+		this.ghostIngredientDrag = new GhostIngredientDrag<>(handlersData, ingredientRenderer, ingredient, mouseX, mouseY, clickedArea);
 		return true;
 	}
 
