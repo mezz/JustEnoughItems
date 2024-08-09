@@ -253,6 +253,7 @@ public class JeiDebugPlugin implements IModPlugin {
 		});
 
 		registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager));
+		registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandlerTwo<>(ingredientManager));
 	}
 
 	private static class DebugClickableIngredient<T> implements IClickableIngredient<T> {
