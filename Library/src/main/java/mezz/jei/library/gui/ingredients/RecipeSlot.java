@@ -63,7 +63,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	public RecipeSlot(
 		RecipeIngredientRole role,
 		ImmutableRect2i rect,
-		int ingredientCycleOffset,
+		CycleTimer cycleTimer,
 		List<IRecipeSlotTooltipCallback> tooltipCallbacks,
 		List<Optional<ITypedIngredient<?>>> allIngredients,
 		@Nullable List<Optional<ITypedIngredient<?>>> displayIngredients,
@@ -79,7 +79,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		this.rendererOverrides = rendererOverrides;
 		this.role = role;
 		this.rect = rect;
-		this.cycleTimer = new CycleTimer(ingredientCycleOffset);
+		this.cycleTimer = cycleTimer;
 		this.displayIngredients = displayIngredients;
 		this.tooltipCallbacks = tooltipCallbacks;
 	}
@@ -105,7 +105,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 					.toList();
 			}
 		}
-		return cycleTimer.getCycledItem(this.displayIngredients);
+		return cycleTimer.getCycled(this.displayIngredients);
 	}
 
 	@Override
@@ -230,7 +230,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	@Override
 	public void draw(GuiGraphics guiGraphics) {
-		cycleTimer.onDraw();
+		cycleTimer.update();
 
 		final int x = this.rect.getX();
 		final int y = this.rect.getY();

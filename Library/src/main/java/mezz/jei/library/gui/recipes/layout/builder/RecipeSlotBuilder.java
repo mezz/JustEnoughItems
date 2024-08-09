@@ -19,6 +19,7 @@ import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.library.gui.ingredients.CycleTimer;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RendererOverrides;
 import mezz.jei.library.ingredients.IngredientAcceptor;
@@ -35,7 +36,6 @@ import java.util.Set;
 public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private final IngredientAcceptor ingredients;
 	private final RecipeIngredientRole role;
-	private final int ingredientCycleOffset;
 	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
 	private ImmutableRect2i rect;
 	private @Nullable RendererOverrides rendererOverrides;
@@ -44,11 +44,10 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private @Nullable String slotName;
 	private @Nullable ISlottedWidgetFactory<?> assignedWidgetFactory;
 
-	public RecipeSlotBuilder(IIngredientManager ingredientManager, RecipeIngredientRole role, int x, int y, int ingredientCycleOffset) {
+	public RecipeSlotBuilder(IIngredientManager ingredientManager, RecipeIngredientRole role, int x, int y) {
 		this.ingredients = new IngredientAcceptor(ingredientManager);
 		this.rect = new ImmutableRect2i(x, y, 16, 16);
 		this.role = role;
-		this.ingredientCycleOffset = ingredientCycleOffset;
 	}
 
 	@Override
@@ -164,12 +163,12 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		return assignedWidgetFactory;
 	}
 
-	public IRecipeSlotDrawable build(IFocusGroup focusGroup) {
+	public IRecipeSlotDrawable build(IFocusGroup focusGroup, CycleTimer cycleTimer) {
 		Set<Integer> focusMatches = getMatches(focusGroup);
-		return build(focusMatches);
+		return build(focusMatches, cycleTimer);
 	}
 
-	public IRecipeSlotDrawable build(Set<Integer> focusMatches) {
+	public IRecipeSlotDrawable build(Set<Integer> focusMatches, CycleTimer cycleTimer) {
 		List<Optional<ITypedIngredient<?>>> allIngredients = this.ingredients.getAllIngredients();
 
 		List<Optional<ITypedIngredient<?>>> displayIngredients = null;
@@ -187,7 +186,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		return new RecipeSlot(
 			role,
 			rect,
-			ingredientCycleOffset,
+			cycleTimer,
 			tooltipCallbacks,
 			allIngredients,
 			displayIngredients,
