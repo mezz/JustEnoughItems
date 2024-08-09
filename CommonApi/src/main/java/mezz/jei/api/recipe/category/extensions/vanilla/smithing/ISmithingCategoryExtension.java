@@ -4,10 +4,7 @@ import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.SmithingRecipe;
-import net.minecraft.world.item.crafting.SmithingRecipeInput;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Implement this interface instead of just {@link IRecipeCategoryExtension}
@@ -65,15 +62,5 @@ public interface ISmithingCategoryExtension<R extends SmithingRecipe> {
 	 */
 	default <T extends IIngredientAcceptor<T>> void setOutput(R recipe, T ingredientAcceptor) {
 
-	}
-
-	/**
-	 * Reverse the recipe and return the input that is required to create the output.
-	 * This is used for displaying recipes from their output
-	 *
-	 * @since 19.8.3
-	 */
-	default ItemStack getBaseForOutput(R recipe, ItemStack output) {
-		return ItemStack.EMPTY;
 	}
 }
