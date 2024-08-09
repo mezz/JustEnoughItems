@@ -67,8 +67,9 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 	 */
 	private final List<IRecipeSlotDrawable> allSlots;
 	private final List<ISlottedRecipeWidget> slottedWidgets;
-	private final List<IRecipeWidget> allWidgets;
+	private final CycleTicker cycleTicker;
 	private final IFocusGroup focuses;
+	private final List<IRecipeWidget> allWidgets;
 	private final IIngredientManager ingredientManager;
 	private final R recipe;
 	private final IScalableDrawable recipeBackground;
@@ -77,7 +78,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 	private @Nullable ShapelessIcon shapelessIcon;
 	private final RecipeLayoutInputHandler<R> inputHandler;
 	private @Nullable RecipeLayoutLegacyAdapter<R> legacyAdapter;
-	private final CycleTicker cycleTicker;
 
 	private ImmutableRect2i area;
 
@@ -157,8 +157,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 		this.slottedWidgets = Collections.unmodifiableList(slottedWidgets);
 		this.focuses = focuses;
 		this.ingredientManager = ingredientManager;
-		this.inputHandler = new RecipeLayoutInputHandler<>(this, inputHandlers, guiEventListeners);
 		this.cycleTicker = cycleTicker;
+		this.inputHandler = new RecipeLayoutInputHandler<>(this, inputHandlers, guiEventListeners);
 
 		Set<IRecipeWidget> allWidgets = new HashSet<>(widgets);
 		allWidgets.addAll(slottedWidgets);
@@ -184,6 +184,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 		this.recipe = recipe;
 		this.recipeBackground = recipeBackground;
 		this.shapelessIcon = shapelessIcon;
+
+		recipeCategory.onDisplayedIngredientsUpdate(recipe, recipeCategorySlots, focuses);
 	}
 
 	private void addLegacyRecipeSlots(List<RecipeSlot> recipeSlots) {
@@ -457,9 +459,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 
 	@Override
 	public void tick() {
-		cycleTicker.tick();
 		for (IRecipeWidget widget : allWidgets) {
 			widget.tick();
+		}
+		if (cycleTicker.tick()) {
+			for (IRecipeSlotDrawable slot : recipeCategorySlots) {
+				slot.clearDisplayOverrides();
+			}
+			recipeCategory.onDisplayedIngredientsUpdate(recipe, recipeCategorySlots, focuses);
 		}
 	}
 }

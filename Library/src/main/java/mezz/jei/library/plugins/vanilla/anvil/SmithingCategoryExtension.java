@@ -24,4 +24,9 @@ public class SmithingCategoryExtension<R extends UpgradeRecipe> implements ISmit
 		Ingredient ingredient = recipeHelper.getAddition(recipe);
 		ingredientAcceptor.addIngredients(ingredient);
 	}
+
+	@Override
+	public <T extends IIngredientAcceptor<T>> void setOutput(R recipe, T ingredientAcceptor) {
+		ingredientAcceptor.addItemStack(recipe.getResultItem());
+	}
 }

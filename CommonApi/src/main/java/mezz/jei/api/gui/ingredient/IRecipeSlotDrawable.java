@@ -1,6 +1,7 @@
 package mezz.jei.api.gui.ingredient;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
@@ -100,4 +101,19 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 * @since 10.5.0
 	 */
 	boolean isMouseOver(double mouseX, double mouseY);
+
+	/**
+	 * Overrides the currently displayed ingredients.
+	 * Set this from {@link IRecipeCategory#onDisplayedIngredientsUpdate} when the currently displayed ingredients change.
+	 *
+	 * @since 10.36.0
+	 */
+	IIngredientConsumer createDisplayOverrides();
+
+	/**
+	 * Removes any display overrides that were set with {@link #createDisplayOverrides()}.
+	 *
+	 * @since 10.36.0
+	 */
+	void clearDisplayOverrides();
 }

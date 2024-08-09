@@ -3,6 +3,7 @@ package mezz.jei.library.gui.ingredients;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
@@ -23,6 +24,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
+import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.Rect2i;
@@ -65,6 +67,9 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Unmodifiable
 	@Nullable
 	private List<Optional<ITypedIngredient<?>>> displayIngredients;
+
+	@Nullable
+	private DisplayIngredientAcceptor displayOverrides;
 
 	public RecipeSlot(
 		RecipeIngredientRole role,
@@ -150,6 +155,10 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	@Override
 	public Optional<ITypedIngredient<?>> getDisplayedIngredient() {
+		if (this.displayOverrides != null) {
+			List<Optional<ITypedIngredient<?>>> overrides = this.displayOverrides.getAllIngredients();
+			return cycler.getCycled(overrides);
+		}
 		if (this.displayIngredients == null) {
 			this.displayIngredients = calculateDisplayIngredients(this.allIngredients);
 		}
@@ -187,7 +196,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 				visibleIngredients = new ArrayList<>(allIngredients.subList(0, i));
 			}
 		}
-
 		if (!visibleIngredients.isEmpty()) {
 			// some ingredients have been successfully hidden, and some are still visible
 			return visibleIngredients;
@@ -447,6 +455,21 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		this.rect = this.rect.setPosition(x, y);
 	}
 
+	@Override
+	public void clearDisplayOverrides() {
+		this.displayOverrides = null;
+	}
+
+	@Override
+	public IIngredientConsumer createDisplayOverrides() {
+		if (displayOverrides == null) {
+			IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+			displayOverrides = new DisplayIngredientAcceptor(ingredientManager);
+		}
+		return displayOverrides;
+	}
+
+	@SuppressWarnings("removal")
 	@Override
 	public Rect2i getRect() {
 		return rect.toMutable();
