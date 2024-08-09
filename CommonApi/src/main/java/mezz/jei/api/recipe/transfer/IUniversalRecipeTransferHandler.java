@@ -1,7 +1,6 @@
 package mezz.jei.api.recipe.transfer;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
