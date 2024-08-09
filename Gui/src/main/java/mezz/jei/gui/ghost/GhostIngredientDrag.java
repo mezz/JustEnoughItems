@@ -22,9 +22,7 @@ public class GhostIngredientDrag<T> {
 	private static final int targetColor = 0x4013C90A;
 	private static final int hoverColor = 0x804CC919;
 
-	private final IGhostIngredientHandler<?> handler;
-	private final List<Target<T>> targets;
-	private final List<Rect2i> targetAreas;
+	private final List<HandlerData<T>> handlersData;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final ITypedIngredient<T> ingredient;
 	private final double mouseStartX;
@@ -33,19 +31,14 @@ public class GhostIngredientDrag<T> {
 	private final long dragCanStartTime;
 
 	public GhostIngredientDrag(
-		IGhostIngredientHandler<?> handler,
-		List<Target<T>> targets,
+		List<HandlerData<T>> handlersData,
 		IIngredientRenderer<T> ingredientRenderer,
 		ITypedIngredient<T> ingredient,
 		double mouseX,
 		double mouseY,
 		ImmutableRect2i origin
 	) {
-		this.handler = handler;
-		this.targets = targets;
-		this.targetAreas = targets.stream()
-			.map(Target::getArea)
-			.toList();
+		this.handlersData = handlersData;
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredient = ingredient;
 		this.origin = origin;
@@ -56,8 +49,11 @@ public class GhostIngredientDrag<T> {
 	}
 
 	public void drawTargets(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		if (handler.shouldHighlightTargets()) {
-			drawTargets(guiGraphics, mouseX, mouseY, targetAreas);
+		for (HandlerData<T> data : handlersData) {
+			IGhostIngredientHandler<?> handler = data.handler;
+			if (handler.shouldHighlightTargets()) {
+				drawTargets(guiGraphics, mouseX, mouseY, data.targetAreas);
+			}
 		}
 	}
 
@@ -119,24 +115,29 @@ public class GhostIngredientDrag<T> {
 			return false;
 		}
 
-		for (Target<T> target : targets) {
-			Rect2i area = target.getArea();
-			if (MathUtil.contains(area, input.getMouseX(), input.getMouseY())) {
-				if (!input.isSimulate()) {
-					target.accept(ingredient.getIngredient());
-					handler.onComplete();
+		for (HandlerData<T> data : handlersData) {
+			for (Target<T> target : data.targets) {
+				Rect2i area = target.getArea();
+				if (MathUtil.contains(area, input.getMouseX(), input.getMouseY())) {
+					if (!input.isSimulate()) {
+						target.accept(ingredient.getIngredient());
+						data.handler.onComplete();
+					}
+					return true;
 				}
-				return true;
 			}
-		}
-		if (!input.isSimulate()) {
-			handler.onComplete();
+
+			if (!input.isSimulate()) {
+				data.handler.onComplete();
+			}
 		}
 		return false;
 	}
 
 	public void stop() {
-		handler.onComplete();
+		for (HandlerData<T> data : handlersData) {
+			data.handler.onComplete();
+		}
 	}
 
 	public IIngredientRenderer<T> getIngredientRenderer() {
@@ -149,5 +150,17 @@ public class GhostIngredientDrag<T> {
 
 	public ImmutableRect2i getOrigin() {
 		return origin;
+	}
+
+	public record HandlerData<T>(IGhostIngredientHandler<?> handler, List<Target<T>> targets, List<Rect2i> targetAreas) {
+		public HandlerData(IGhostIngredientHandler<?> handler, List<Target<T>> targets) {
+			this(
+				handler,
+				targets,
+				targets.stream()
+				.map(Target::getArea)
+				.toList()
+			);
+		}
 	}
 }

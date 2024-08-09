@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -62,6 +63,16 @@ public interface IScreenHelper {
 	Stream<Rect2i> getGuiExclusionAreas(Screen screen);
 
 	/**
+	 * Get the ghost ingredient handlers for the given screen, if there are any.
+	 *
+	 * This uses information from plugins that have registered
+	 * ghost ingredient handlers via {@link IGuiHandlerRegistration#addGhostIngredientHandler}
+	 *
+	 * @since 15.11.2
+	 */
+	<T extends Screen> List<IGhostIngredientHandler<T>> getGhostIngredientHandlers(T guiScreen);
+
+	/**
 	 * Get the ghost ingredient handler for the given screen, if there is one.
 	 *
 	 * This uses information from plugins that have registered
@@ -69,5 +80,12 @@ public interface IScreenHelper {
 	 *
 	 * @since 11.5.0
 	 */
-	<T extends Screen> Optional<IGhostIngredientHandler<T>> getGhostIngredientHandler(T guiScreen);
+	@Deprecated(since = "15.11.2", forRemoval = true)
+	default <T extends Screen> Optional<IGhostIngredientHandler<T>> getGhostIngredientHandler(T guiScreen) {
+		List<IGhostIngredientHandler<T>> handlers = getGhostIngredientHandlers(guiScreen);
+		if (handlers.isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.of(handlers.get(0));
+	}
 }

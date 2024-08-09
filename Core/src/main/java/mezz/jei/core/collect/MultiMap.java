@@ -38,6 +38,11 @@ public class MultiMap<K, V, T extends Collection<V>> {
 		return collection.add(value);
 	}
 
+	public boolean putAll(K key, Collection<V> values) {
+		T collection = map.computeIfAbsent(key, collectionMappingFunction);
+		return collection.addAll(values);
+	}
+
 	public boolean remove(K key, V value) {
 		T collection = map.get(key);
 		return collection != null && collection.remove(value);

@@ -305,8 +305,8 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.ghostIngredientDragManager.stopDrag();
 	}
 
-	public void drawOnForeground(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		this.ghostIngredientDragManager.drawOnForeground(minecraft, guiGraphics, mouseX, mouseY);
+	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		this.ghostIngredientDragManager.drawOnForeground(guiGraphics, mouseX, mouseY);
 	}
 
 	public IDragHandler createDragHandler() {

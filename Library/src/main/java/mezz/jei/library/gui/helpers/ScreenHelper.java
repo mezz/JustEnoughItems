@@ -13,6 +13,7 @@ import mezz.jei.common.input.ClickableIngredient;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.core.collect.ListMultiMap;
 import mezz.jei.library.gui.GuiContainerHandlers;
 import mezz.jei.library.ingredients.TypedIngredient;
 import net.minecraft.client.gui.screens.Screen;
@@ -21,6 +22,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -31,14 +33,15 @@ public class ScreenHelper implements IScreenHelper {
 	private final IIngredientManager ingredientManager;
 	private final List<IGlobalGuiHandler> globalGuiHandlers;
 	private final GuiContainerHandlers guiContainerHandlers;
-	private final Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers;
+	private final ListMultiMap<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers;
+	private final ListMultiMap<Class<?>, IGhostIngredientHandler<?>> cachedGhostIngredientHandlers;
 	private final Map<Class<?>, IScreenHandler<?>> guiScreenHandlers;
 
 	public ScreenHelper(
 		IIngredientManager ingredientManager,
 		List<IGlobalGuiHandler> globalGuiHandlers,
 		GuiContainerHandlers guiContainerHandlers,
-		Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers,
+		ListMultiMap<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers,
 		Map<Class<?>, IScreenHandler<?>> guiScreenHandlers
 	) {
 		this.ingredientManager = ingredientManager;
@@ -46,6 +49,7 @@ public class ScreenHelper implements IScreenHelper {
 		this.guiContainerHandlers = guiContainerHandlers;
 		this.ghostIngredientHandlers = ghostIngredientHandlers;
 		this.guiScreenHandlers = guiScreenHandlers;
+		this.cachedGhostIngredientHandlers = new ListMultiMap<>();
 	}
 
 	@Override
@@ -142,25 +146,36 @@ public class ScreenHelper implements IScreenHelper {
 	}
 
 	@Override
-	public <T extends Screen> Optional<IGhostIngredientHandler<T>> getGhostIngredientHandler(T guiScreen) {
+	public <T extends Screen> List<IGhostIngredientHandler<T>> getGhostIngredientHandlers(T guiScreen) {
 		{
-			@SuppressWarnings("unchecked")
-			IGhostIngredientHandler<T> handler = (IGhostIngredientHandler<T>) ghostIngredientHandlers.get(guiScreen.getClass());
-			if (handler != null) {
-				return Optional.of(handler);
+			Class<? extends Screen> guiScreenClass = guiScreen.getClass();
+			if (cachedGhostIngredientHandlers.containsKey(guiScreenClass)) {
+				@SuppressWarnings("unchecked")
+				List<IGhostIngredientHandler<T>> cached = (List<IGhostIngredientHandler<T>>) (Object) cachedGhostIngredientHandlers.get(guiScreenClass);
+				return cached;
 			}
 		}
-		for (Map.Entry<Class<?>, IGhostIngredientHandler<?>> entry : ghostIngredientHandlers.entrySet()) {
-			Class<?> guiScreenClass = entry.getKey();
-			if (guiScreenClass.isInstance(guiScreen)) {
-				@SuppressWarnings("unchecked")
-				IGhostIngredientHandler<T> handler = (IGhostIngredientHandler<T>) entry.getValue();
-				if (handler != null) {
-					return Optional.of(handler);
+
+		List<IGhostIngredientHandler<?>> results = new ArrayList<>();
+		{
+			List<IGhostIngredientHandler<?>> handlers = ghostIngredientHandlers.get(guiScreen.getClass());
+			if (!handlers.isEmpty()) {
+				results.addAll(handlers);
+			}
+		}
+		for (Map.Entry<Class<?>, List<IGhostIngredientHandler<?>>> entry : ghostIngredientHandlers.entrySet()) {
+			Class<?> handledClass = entry.getKey();
+			if (handledClass.isInstance(guiScreen)) {
+				List<IGhostIngredientHandler<?>> handlers = entry.getValue();
+				if (!handlers.isEmpty()) {
+					results.addAll(handlers);
 				}
 			}
 		}
-		return Optional.empty();
+		cachedGhostIngredientHandlers.putAll(guiScreen.getClass(), results);
+		@SuppressWarnings("unchecked")
+		List<IGhostIngredientHandler<T>> castResults = (List<IGhostIngredientHandler<T>>) (Object) results;
+		return castResults;
 	}
 
 	@Override
