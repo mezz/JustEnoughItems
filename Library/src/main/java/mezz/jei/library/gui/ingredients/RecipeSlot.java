@@ -1,6 +1,7 @@
 package mezz.jei.library.gui.ingredients;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
@@ -21,6 +22,7 @@ import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
+import mezz.jei.library.ingredients.IngredientAcceptor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
@@ -29,6 +31,7 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -37,7 +40,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private static final int MAX_DISPLAYED_INGREDIENTS = 100;
 
 	private final RecipeIngredientRole role;
-	private final CycleTimer cycleTimer;
+	private final ICycler cycler;
 	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks;
 	private final @Nullable RendererOverrides rendererOverrides;
 	private final @Nullable IDrawable background;
@@ -46,27 +49,30 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private ImmutableRect2i rect;
 
 	/**
-	 * All ingredients, ignoring focus
+	 * All ingredients, ignoring focus and visibility
 	 * {@link Optional#empty()} ingredients represent a "blank" drawn ingredient in the rotation.
 	 */
 	@Unmodifiable
 	private final List<Optional<ITypedIngredient<?>>> allIngredients;
 
 	/**
-	 * Displayed ingredients, taking focus into account.
+	 * Displayed ingredients, taking focus and visibility into account.
 	 * {@link Optional#empty()} ingredients represent a "blank" drawn ingredient in the rotation.
 	 */
 	@Unmodifiable
 	@Nullable
 	private List<Optional<ITypedIngredient<?>>> displayIngredients;
 
+	@Nullable
+	private IngredientAcceptor displayOverrides;
+
 	public RecipeSlot(
 		RecipeIngredientRole role,
 		ImmutableRect2i rect,
-		CycleTimer cycleTimer,
+		ICycler cycler,
 		List<IRecipeSlotTooltipCallback> tooltipCallbacks,
 		List<Optional<ITypedIngredient<?>>> allIngredients,
-		@Nullable List<Optional<ITypedIngredient<?>>> displayIngredients,
+		@Nullable List<Optional<ITypedIngredient<?>>> focusedIngredients,
 		@Nullable IDrawable background,
 		@Nullable IDrawable overlay,
 		@Nullable String slotName,
@@ -79,8 +85,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		this.rendererOverrides = rendererOverrides;
 		this.role = role;
 		this.rect = rect;
-		this.cycleTimer = cycleTimer;
-		this.displayIngredients = displayIngredients;
+		this.cycler = cycler;
+		this.displayIngredients = focusedIngredients;
 		this.tooltipCallbacks = tooltipCallbacks;
 	}
 
@@ -92,20 +98,55 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	@Override
 	public Optional<ITypedIngredient<?>> getDisplayedIngredient() {
+		if (this.displayOverrides != null) {
+			List<Optional<ITypedIngredient<?>>> overrides = this.displayOverrides.getAllIngredients();
+			return cycler.getCycled(overrides);
+		}
 		if (this.displayIngredients == null) {
-			IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getIngredientVisibility();
-			this.displayIngredients = this.allIngredients.stream()
-				.filter(i -> i.isEmpty() || ingredientVisibility.isIngredientVisible(i.get()))
-				.limit(MAX_DISPLAYED_INGREDIENTS)
-				.toList();
+			this.displayIngredients = calculateDisplayIngredients(this.allIngredients);
+		}
+		return cycler.getCycled(this.displayIngredients);
+	}
 
-			if (this.displayIngredients.isEmpty()) {
-				this.displayIngredients = this.allIngredients.stream()
-					.limit(MAX_DISPLAYED_INGREDIENTS)
-					.toList();
+	private static List<Optional<ITypedIngredient<?>>> calculateDisplayIngredients(List<Optional<ITypedIngredient<?>>> allIngredients) {
+		if (allIngredients.isEmpty()) {
+			return List.of();
+		}
+
+		List<Optional<ITypedIngredient<?>>> visibleIngredients = List.of();
+		boolean hasInvisibleIngredients = false;
+
+		// hide invisible ingredients if there are any
+		// try scanning through all the ingredients without building the list of visible ingredients.
+		// if an invisible ingredient is found, start building the list of visible ingredients
+		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getIngredientVisibility();
+		for (int i = 0; i < allIngredients.size() && visibleIngredients.size() < MAX_DISPLAYED_INGREDIENTS; i++) {
+			Optional<ITypedIngredient<?>> ingredient = allIngredients.get(i);
+			boolean visible = ingredient.isEmpty() || ingredientVisibility.isIngredientVisible(ingredient.get());
+			if (visible) {
+				if (hasInvisibleIngredients) {
+					visibleIngredients.add(ingredient);
+				}
+			} else if (!hasInvisibleIngredients) {
+				hasInvisibleIngredients = true;
+				// `i` is the first invisible ingredient, start putting visible ingredients into visibleIngredients
+				visibleIngredients = new ArrayList<>(allIngredients.subList(0, i));
 			}
 		}
-		return cycleTimer.getCycled(this.displayIngredients);
+
+		if (!visibleIngredients.isEmpty()) {
+			// some ingredients have been successfully hidden, and some are still visible
+			return visibleIngredients;
+		}
+
+		// either everything is visible or everything is invisible.
+		// if everything is invisible, we show them all anyway so that the recipe slot isn't blank
+		if (allIngredients.size() < MAX_DISPLAYED_INGREDIENTS) {
+			// re-use allIngredients to save some memory
+			return allIngredients;
+		} else {
+			return allIngredients.subList(0, MAX_DISPLAYED_INGREDIENTS);
+		}
 	}
 
 	@Override
@@ -230,8 +271,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	@Override
 	public void draw(GuiGraphics guiGraphics) {
-		cycleTimer.update();
-
 		final int x = this.rect.getX();
 		final int y = this.rect.getY();
 
@@ -294,6 +333,20 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Override
 	public void setPosition(int x, int y) {
 		this.rect = this.rect.setPosition(x, y);
+	}
+
+	@Override
+	public void clearDisplayOverrides() {
+		this.displayOverrides = null;
+	}
+
+	@Override
+	public IIngredientConsumer createDisplayOverrides() {
+		if (displayOverrides == null) {
+			IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+			displayOverrides = new IngredientAcceptor(ingredientManager);
+		}
+		return displayOverrides;
 	}
 
 	@SuppressWarnings("removal")

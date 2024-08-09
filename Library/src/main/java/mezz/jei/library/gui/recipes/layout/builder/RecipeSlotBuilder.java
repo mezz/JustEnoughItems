@@ -20,6 +20,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.library.gui.ingredients.CycleTimer;
+import mezz.jei.library.gui.ingredients.ICycler;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RendererOverrides;
 import mezz.jei.library.ingredients.IngredientAcceptor;
@@ -163,22 +164,22 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		return assignedWidgetFactory;
 	}
 
-	public IRecipeSlotDrawable build(IFocusGroup focusGroup, CycleTimer cycleTimer) {
+	public IRecipeSlotDrawable build(IFocusGroup focusGroup, ICycler cycler) {
 		Set<Integer> focusMatches = getMatches(focusGroup);
-		return build(focusMatches, cycleTimer);
+		return build(focusMatches, cycler);
 	}
 
-	public IRecipeSlotDrawable build(Set<Integer> focusMatches, CycleTimer cycleTimer) {
+	public IRecipeSlotDrawable build(Set<Integer> focusMatches, ICycler cycler) {
 		List<Optional<ITypedIngredient<?>>> allIngredients = this.ingredients.getAllIngredients();
 
-		List<Optional<ITypedIngredient<?>>> displayIngredients = null;
+		List<Optional<ITypedIngredient<?>>> focusedIngredients = null;
 
 		if (!focusMatches.isEmpty()) {
-			displayIngredients = new ArrayList<>();
+			focusedIngredients = new ArrayList<>();
 			for (Integer i : focusMatches) {
 				if (i < allIngredients.size()) {
 					Optional<ITypedIngredient<?>> ingredient = allIngredients.get(i);
-					displayIngredients.add(ingredient);
+					focusedIngredients.add(ingredient);
 				}
 			}
 		}
@@ -186,10 +187,10 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		return new RecipeSlot(
 			role,
 			rect,
-			cycleTimer,
+			cycler,
 			tooltipCallbacks,
 			allIngredients,
-			displayIngredients,
+			focusedIngredients,
 			background,
 			overlay,
 			slotName,

@@ -1,5 +1,6 @@
 package mezz.jei.api.gui.ingredient;
 
+import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
@@ -70,6 +71,21 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 * @since 19.6.0
 	 */
 	void setPosition(int x, int y);
+
+	/**
+	 * Overrides the currently displayed ingredients.
+	 * Set this from {@link IRecipeCategory#onDisplayedIngredientsUpdate} when the currently displayed ingredients change.
+	 *
+	 * @since 19.8.3
+	 */
+	IIngredientConsumer createDisplayOverrides();
+
+	/**
+	 * Removes any display overrides that were set with {@link #createDisplayOverrides()}.
+	 *
+	 * @since 19.8.3
+	 */
+	void clearDisplayOverrides();
 
 	/**
 	 * Get the position and size of the recipe slot drawable relative to its parent element.

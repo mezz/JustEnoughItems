@@ -5,6 +5,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
@@ -119,6 +120,28 @@ public interface IRecipeCategory<T> {
 	 * @since 9.3.0
 	 */
 	default void draw(T recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+
+	}
+
+	/**
+	 * Called every time JEI updates the cycling displayed ingredients on a recipe.
+	 *
+	 * Use this (for example) to compute recipe outputs that result from complex relationships between ingredients.
+	 *
+	 * Use {@link IRecipeSlotDrawable#getDisplayedIngredient()} from your regular slots to see what is
+	 * currently being drawn, and calculate what you need from there.
+	 * You can override any slot's displayed ingredient with {@link IRecipeSlotDrawable#createDisplayOverrides()}.
+	 *
+	 * Note that overrides set this way are not searchable via recipe lookups in JEI,
+	 * it is only for displaying things too complex for normal lookups to handle.
+	 *
+	 * @param recipe the current recipe being drawn.
+	 * @param recipeSlots the current recipe slots being drawn.
+	 * @param focuses the current focuses
+	 *
+	 * @since 19.8.3
+	 */
+	default void onDisplayedIngredientsUpdate(T recipe, List<IRecipeSlotDrawable> recipeSlots, IFocusGroup focuses) {
 
 	}
 

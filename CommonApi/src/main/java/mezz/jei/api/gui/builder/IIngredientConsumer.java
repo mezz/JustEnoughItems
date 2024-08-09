@@ -20,48 +20,50 @@ import java.util.Optional;
  * @see IRecipeLayoutBuilder
  * @see IRecipeSlotBuilder
  *
- * @since 9.3.0
+ * @apiNote this is meant to replace {@link IIngredientAcceptor} in future versions
+ *
+ * @since 19.8.3
  */
 @ApiStatus.NonExtendable
-public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> extends IIngredientConsumer {
+public interface IIngredientConsumer {
 	/**
 	 * Add an ordered list of ingredients.
 	 *
-	 * @since 9.3.0
+	 * @since 19.8.3
 	 */
-	<I> THIS addIngredients(IIngredientType<I> ingredientType, List<@Nullable I> ingredients);
+	<I> IIngredientConsumer addIngredients(IIngredientType<I> ingredientType, List<@Nullable I> ingredients);
 
 	/**
 	 * Add one ingredient.
 	 *
-	 * @since 9.3.0
+	 * @since 19.8.3
 	 */
-	<I> THIS addIngredient(IIngredientType<I> ingredientType, I ingredient);
+	<I> IIngredientConsumer addIngredient(IIngredientType<I> ingredientType, I ingredient);
 
 	/**
 	 * Add an ordered list of ingredients.
 	 * The type of ingredients can be mixed, as long as they are all valid ingredient types.
 	 * Prefer using {@link #addIngredients(IIngredientType, List)} for type safety.
 	 *
-	 * @since 9.3.0
+	 * @since 19.8.3
 	 */
-	THIS addIngredientsUnsafe(List<?> ingredients);
+	IIngredientConsumer addIngredientsUnsafe(List<?> ingredients);
 
 	/**
 	 * Convenience function to add an ordered list of {@link ItemStack} from an {@link Ingredient}.
 	 *
-	 * @since 9.3.0
+	 * @since 19.8.3
 	 */
-	default THIS addIngredients(Ingredient ingredient) {
+	default IIngredientConsumer addIngredients(Ingredient ingredient) {
 		return addIngredients(VanillaTypes.ITEM_STACK, List.of(ingredient.getItems()));
 	}
 
 	/**
 	 * Add one typed ingredient.
 	 *
-	 * @since 19.6.0
+	 * @since 19.8.3
 	 */
-	default <I> THIS addTypedIngredient(ITypedIngredient<I> typedIngredient) {
+	default <I> IIngredientConsumer addTypedIngredient(ITypedIngredient<I> typedIngredient) {
 		return addIngredient(typedIngredient.getType(), typedIngredient.getIngredient());
 	}
 
@@ -70,9 +72,9 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> ext
 	 *
 	 * @param ingredients a non-null list of ingredients for the slot
 	 *
-	 * @since 19.6.0
+	 * @since 19.8.3
 	 */
-	THIS addTypedIngredients(List<ITypedIngredient<?>> ingredients);
+	IIngredientConsumer addTypedIngredients(List<ITypedIngredient<?>> ingredients);
 
 	/**
 	 * Convenience function to add an ordered non-null list of typed ingredients.
@@ -80,25 +82,25 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> ext
 	 *
 	 * @param ingredients a non-null list of optional ingredients for the slot
 	 *
-	 * @since 19.6.0
+	 * @since 19.8.3
 	 */
-	THIS addOptionalTypedIngredients(List<Optional<ITypedIngredient<?>>> ingredients);
+	IIngredientConsumer addOptionalTypedIngredients(List<Optional<ITypedIngredient<?>>> ingredients);
 
 	/**
 	 * Convenience function to add an order list of {@link ItemStack}.
 	 *
-	 * @since 9.3.0
+	 * @since 19.8.3
 	 */
-	default THIS addItemStacks(List<ItemStack> itemStacks) {
+	default IIngredientConsumer addItemStacks(List<ItemStack> itemStacks) {
 		return addIngredients(VanillaTypes.ITEM_STACK, itemStacks);
 	}
 
 	/**
 	 * Convenience function to add one {@link ItemStack}.
 	 *
-	 * @since 9.3.0
+	 * @since 19.8.3
 	 */
-	default THIS addItemStack(ItemStack itemStack) {
+	default IIngredientConsumer addItemStack(ItemStack itemStack) {
 		return addIngredient(VanillaTypes.ITEM_STACK, itemStack);
 	}
 
@@ -108,9 +110,9 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> ext
 	 * To add multiple Fluid ingredients, you can call this multiple times.
 	 *
 	 * @see #addFluidStack(Fluid, long, DataComponentPatch) to add a Fluid with a {@link DataComponentPatch}.
-	 * @since 11.1.0
+	 * @since 19.8.3
 	 */
-	THIS addFluidStack(Fluid fluid, long amount);
+	IIngredientConsumer addFluidStack(Fluid fluid, long amount);
 
 	/**
 	 * Convenience helper to add one Fluid ingredient with a {@link DataComponentPatch}.
@@ -118,7 +120,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> ext
 	 * To add multiple Fluid ingredients, you can call this multiple times.
 	 *
 	 * @see #addFluidStack(Fluid, long) to add a Fluid without a {@link DataComponentPatch}.
-	 * @since 18.0.0
+	 * @since 19.8.3
 	 */
-	THIS addFluidStack(Fluid fluid, long amount, DataComponentPatch component);
+	IIngredientConsumer addFluidStack(Fluid fluid, long amount, DataComponentPatch component);
 }

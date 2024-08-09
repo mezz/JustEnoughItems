@@ -24,6 +24,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.core.collect.ListMultiMap;
+import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.ingredients.CycleTimer;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
@@ -187,7 +188,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		List<IRecipeSlotDrawable> allSlots = new ArrayList<>(recipeCategorySlots);
 		ListMultiMap<ISlottedWidgetFactory<?>, IRecipeSlotDrawable> widgetSlots = new ListMultiMap<>();
 
-		CycleTimer cycleTimer = CycleTimer.createWithRandomOffset();
+		CycleTicker cycleTicker = CycleTicker.createWithRandomOffset();
 
 		Set<RecipeSlotBuilder> focusLinkedSlots = new HashSet<>();
 		for (List<RecipeSlotBuilder> linkedSlots : this.focusLinkedSlots) {
@@ -197,7 +198,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 			}
 			for (RecipeSlotBuilder slotBuilder : linkedSlots) {
 				ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
-				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focusMatches, cycleTimer);
+				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focusMatches, cycleTicker);
 				if (assignedWidget == null) {
 					recipeCategorySlots.add(slotDrawable);
 				} else {
@@ -211,7 +212,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		for (RecipeSlotBuilder slotBuilder : slots) {
 			if (!focusLinkedSlots.contains(slotBuilder)) {
 				ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
-				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focuses, cycleTimer);
+				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focuses, cycleTicker);
 				if (assignedWidget == null) {
 					recipeCategorySlots.add(slotDrawable);
 				} else {
@@ -249,7 +250,9 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 			slottedWidgets,
 			widgets,
 			inputHandlers,
-			guiEventListeners
+			guiEventListeners,
+			cycleTicker,
+			focuses
 		);
 	}
 
