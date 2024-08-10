@@ -3,9 +3,9 @@ package mezz.jei.library.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeInput;
 
 public class RecipeUtil {
 	public static ItemStack getResultItem(Recipe<?> recipe) {
@@ -18,7 +18,7 @@ public class RecipeUtil {
 		return recipe.getResultItem(registryAccess);
 	}
 
-	public static <I extends RecipeInput> ItemStack assembleResultItem(I input, Recipe<I> recipe) {
+	public static <I extends Container> ItemStack assembleResultItem(I input, Recipe<I> recipe) {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientLevel level = minecraft.level;
 		if (level == null) {

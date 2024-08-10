@@ -84,6 +84,7 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 		this.recipeTransferHandlers.put(containerClass, adapter.getRecipeType(), adapter);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <C extends AbstractContainerMenu, R> void addUniversalRecipeTransferHandler(IRecipeTransferHandler<C, R> recipeTransferHandler) {
 		ErrorUtil.checkNotNull(recipeTransferHandler, "recipeTransferHandler");

@@ -21,9 +21,10 @@ import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.SmithingRecipe;
-import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,8 +93,8 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe>, 
 	}
 
 	@Override
-	public void onDisplayedIngredientsUpdate(RecipeHolder<SmithingRecipe> recipe, List<IRecipeSlotDrawable> recipeSlots, IFocusGroup focuses) {
-		IRecipeSlotDrawable templateSlot = recipeSlots.getFirst();
+	public void onDisplayedIngredientsUpdate(SmithingRecipe recipe, List<IRecipeSlotDrawable> recipeSlots, IFocusGroup focuses) {
+		IRecipeSlotDrawable templateSlot = recipeSlots.get(0);
 		IRecipeSlotDrawable baseSlot = recipeSlots.get(1);
 		IRecipeSlotDrawable additionSlot = recipeSlots.get(2);
 		IRecipeSlotDrawable outputSlot = recipeSlots.get(3);
@@ -104,8 +105,8 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe>, 
 			ItemStack base = baseSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
 			ItemStack addition = additionSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
 
-			SmithingRecipeInput recipeInput = new SmithingRecipeInput(template, base, addition);
-			ItemStack output = RecipeUtil.assembleResultItem(recipeInput, recipe.value());
+			Container recipeInput = createInput(template, base, addition);
+			ItemStack output = RecipeUtil.assembleResultItem(recipeInput, recipe);
 			outputSlot.createDisplayOverrides()
 				.addItemStack(output);
 		} else {
@@ -117,11 +118,19 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe>, 
 			baseSlot.createDisplayOverrides()
 				.addItemStack(base);
 
-			SmithingRecipeInput recipeInput = new SmithingRecipeInput(template, base, addition);
-			output = RecipeUtil.assembleResultItem(recipeInput, recipe.value());
+			Container recipeInput = createInput(template, base, addition);
+			output = RecipeUtil.assembleResultItem(recipeInput, recipe);
 			outputSlot.createDisplayOverrides()
 				.addItemStack(output);
 		}
+	}
+
+	private static Container createInput(ItemStack template, ItemStack base, ItemStack addition) {
+		Container container = new SimpleContainer(3);
+		container.setItem(0, template);
+		container.setItem(1, base);
+		container.setItem(2, addition);
+		return container;
 	}
 
 	@Override

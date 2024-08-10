@@ -4,10 +4,11 @@ import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.ISmithingCategoryExtension;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.library.util.RecipeUtil;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingRecipe;
-import net.minecraft.world.item.crafting.SmithingRecipeInput;
 
 public class SmithingCategoryExtension<R extends SmithingRecipe> implements ISmithingCategoryExtension<R> {
 	private final IPlatformRecipeHelper recipeHelper;
@@ -48,10 +49,18 @@ public class SmithingCategoryExtension<R extends SmithingRecipe> implements ISmi
 
 		for (ItemStack template : templateIngredient.getItems()) {
 			for (ItemStack base : baseIngredient.getItems()) {
-				SmithingRecipeInput recipeInput = new SmithingRecipeInput(template, base, addition);
+				Container recipeInput = createInput(template, base, addition);
 				ItemStack output = RecipeUtil.assembleResultItem(recipeInput, recipe);
 				ingredientAcceptor.addItemStack(output);
 			}
 		}
+	}
+
+	private static Container createInput(ItemStack template, ItemStack base, ItemStack addition) {
+		Container container = new SimpleContainer(3);
+		container.setItem(0, template);
+		container.setItem(1, base);
+		container.setItem(2, addition);
+		return container;
 	}
 }
