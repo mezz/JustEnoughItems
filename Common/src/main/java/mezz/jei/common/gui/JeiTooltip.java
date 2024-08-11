@@ -94,6 +94,8 @@ public class JeiTooltip implements ITooltipBuilder {
 		return lines.isEmpty() && typedIngredient == null;
 	}
 
+	@SuppressWarnings("removal")
+	@Override
 	public List<Component> toLegacyToComponents() {
 		return lines.stream()
 			.<Component>mapMulti((e, consumer) -> {
@@ -104,6 +106,14 @@ public class JeiTooltip implements ITooltipBuilder {
 				});
 			})
 			.collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public void removeAll(List<Component> components) {
+		for (Component component : components) {
+			lines.remove(Either.left(component));
+		}
 	}
 
 	@Override

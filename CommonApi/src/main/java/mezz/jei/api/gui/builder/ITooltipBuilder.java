@@ -7,6 +7,7 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Helper for building tooltips.
@@ -50,4 +51,17 @@ public interface ITooltipBuilder {
 	 * @since 19.5.4
 	 */
 	void setIngredient(ITypedIngredient<?> typedIngredient);
+
+	/**
+	 * @deprecated this is only for legacy tooltip support and will be removed
+	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "19.8.4", forRemoval = true)
+	List<Component> toLegacyToComponents();
+
+	/**
+	 * @deprecated this is only for legacy tooltip support and will be removed
+	 */
+	@Deprecated(since = "19.8.4", forRemoval = true)
+	void removeAll(List<Component> components);
 }

@@ -4,6 +4,7 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import net.minecraft.network.chat.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,7 +32,14 @@ public interface IRecipeSlotTooltipCallback {
 	 *
 	 * @since 19.5.4
 	 */
+	@SuppressWarnings("removal")
 	default void onRichTooltip(IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
-
+		List<Component> components = tooltip.toLegacyToComponents();
+		List<Component> changedComponents = new ArrayList<>(components);
+		onTooltip(recipeSlotView, components);
+		if (!components.equals(changedComponents)) {
+			tooltip.removeAll(components);
+			tooltip.addAll(changedComponents);
+		}
 	}
 }
