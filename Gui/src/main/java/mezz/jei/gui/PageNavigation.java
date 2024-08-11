@@ -39,7 +39,7 @@ public class PageNavigation {
 
 	public void updateBounds(ImmutableRect2i area) {
 		this.area = area;
-		int buttonSize = area.getHeight();
+		int buttonSize = Math.min(area.getHeight(), area.width() / 2);
 
 		ImmutableRect2i backArea = area.keepLeft(buttonSize);
 		this.backButton.updateBounds(backArea);
@@ -65,9 +65,12 @@ public class PageNavigation {
 				0x30000000
 			);
 
+			int availableWidth = this.area.width() - backButton.getWidth() - nextButton.getWidth();
 			Font font = minecraft.font;
 			ImmutableRect2i centerArea = MathUtil.centerTextArea(this.area, font, this.pageNumDisplayString);
-			Screen.drawString(poseStack, font, pageNumDisplayString, centerArea.getX(), centerArea.getY(), 0xFFFFFFFF);
+			if (centerArea.width() <= availableWidth) {
+				Screen.drawString(poseStack, font, pageNumDisplayString, centerArea.getX(), centerArea.getY(), 0xFFFFFFFF);
+			}
 			nextButton.render(poseStack, mouseX, mouseY, partialTicks);
 			backButton.render(poseStack, mouseX, mouseY, partialTicks);
 		}

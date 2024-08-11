@@ -12,7 +12,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final int defaultNumRows = 16;
 	private static final int largestNumRows = 100;
 
-	private static final int minNumColumns = 4;
+	private static final int minNumColumns = 2;
 	private static final int defaultNumColumns = 9;
 	private static final int largestNumColumns = 100;
 
