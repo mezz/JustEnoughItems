@@ -25,7 +25,6 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.core.collect.ListMultiMap;
 import mezz.jei.library.gui.ingredients.CycleTicker;
-import mezz.jei.library.gui.ingredients.CycleTimer;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.ShapelessIcon;
