@@ -59,6 +59,20 @@ public class ListElementInfoTooltip implements ITooltipBuilder {
 			.toList();
 	}
 
+	@SuppressWarnings("removal")
+	@Override
+	public List<Component> toLegacyToComponents() {
+		return new ArrayList<>(getLegacyComponents());
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public void removeAll(List<Component> components) {
+		for (Component component : components) {
+			tooltip.remove(component);
+		}
+	}
+
 	public Set<String> getStrings() {
 		Set<String> result = new HashSet<>();
 		for (FormattedText component : tooltip) {
