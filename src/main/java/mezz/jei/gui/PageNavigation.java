@@ -19,6 +19,7 @@ public class PageNavigation {
 	private String pageNumDisplayString = "1/1";
 	private int pageNumDisplayX;
 	private int pageNumDisplayY;
+	private boolean showPageNumber;
 
 	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
 		this.paged = paged;
@@ -29,7 +30,7 @@ public class PageNavigation {
 	}
 
 	public void updateBounds(Rectangle area) {
-		int buttonSize = area.height;
+		int buttonSize = Math.min(area.height, area.width / 2);
 		this.nextButton.x = area.x + area.width - buttonSize;
 		this.nextButton.y = area.y;
 		this.nextButton.width = this.nextButton.height = buttonSize;
@@ -50,11 +51,15 @@ public class PageNavigation {
 		int pageDisplayWidth = fontRenderer.getStringWidth(pageNumDisplayString);
 		pageNumDisplayX = ((backButton.x + backButton.width) + nextButton.x) / 2 - (pageDisplayWidth / 2);
 		pageNumDisplayY = backButton.y + Math.round((backButton.height - fontRenderer.FONT_HEIGHT) / 2.0f);
+		int availableWidth = nextButton.x - (backButton.x + backButton.width);
+		showPageNumber = pageDisplayWidth <= availableWidth;
 	}
 
 	public void draw(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
 		if (!hideOnSinglePage || this.paged.hasNext() || this.paged.hasPrevious()) {
-			minecraft.fontRenderer.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
+			if (showPageNumber) {
+				minecraft.fontRenderer.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
+			}
 			nextButton.drawButton(minecraft, mouseX, mouseY, partialTicks);
 			backButton.drawButton(minecraft, mouseX, mouseY, partialTicks);
 		}
