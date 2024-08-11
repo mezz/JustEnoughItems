@@ -202,12 +202,10 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 		addTagNameTooltip(tooltip, ingredientManager, typedIngredient);
 
-		List<Component> legacyTooltip = tooltip.toLegacyToComponents();
 		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
-			//noinspection removal
-			tooltipCallback.onTooltip(this, legacyTooltip);
+			tooltipCallback.onRichTooltip(this, tooltip);
 		}
-		return legacyTooltip;
+		return tooltip.toLegacyToComponents();
 	}
 
 	private <T> void addTagNameTooltip(ITooltipBuilder tooltip, IIngredientManager ingredientManager, ITypedIngredient<T> ingredient) {
