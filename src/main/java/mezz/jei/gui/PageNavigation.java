@@ -23,6 +23,7 @@ public class PageNavigation {
 	private String pageNumDisplayString = "1/1";
 	private int pageNumDisplayX;
 	private int pageNumDisplayY;
+	private boolean showPageNumber;
 	private Rectangle2d area = new Rectangle2d(0, 0, 0, 0);
 
 	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
@@ -36,7 +37,7 @@ public class PageNavigation {
 
 	public void updateBounds(Rectangle2d area) {
 		this.area = area;
-		int buttonSize = area.getHeight();
+		int buttonSize = Math.min(area.getHeight(), area.getWidth() / 2);
 
 		Tuple<Rectangle2d, Rectangle2d> result = MathUtil.splitX(area, buttonSize);
 		this.backButton.updateBounds(result.getA());
@@ -54,11 +55,15 @@ public class PageNavigation {
 		Rectangle2d centerArea = MathUtil.centerTextArea(this.area, fontRenderer, this.pageNumDisplayString);
 		this.pageNumDisplayX = centerArea.getX();
 		this.pageNumDisplayY = centerArea.getY();
+		int availableWidth = this.area.getWidth() - this.backButton.getWidth() - this.nextButton.getWidth();
+		this.showPageNumber = centerArea.getWidth() <= availableWidth;
 	}
 
 	public void draw(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		if (!hideOnSinglePage || this.paged.hasNext() || this.paged.hasPrevious()) {
-			minecraft.font.drawShadow(matrixStack, pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, 0xFFFFFFFF);
+			if (showPageNumber) {
+				minecraft.font.drawShadow(matrixStack, pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, 0xFFFFFFFF);
+			}
 			nextButton.render(matrixStack, mouseX, mouseY, partialTicks);
 			backButton.render(matrixStack, mouseX, mouseY, partialTicks);
 		}

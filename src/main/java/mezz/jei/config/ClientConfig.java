@@ -29,7 +29,7 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	@Nullable
 	private static IClientConfig instance;
 
-	private static final int minNumColumns = 4;
+	private static final int minNumColumns = 2;
 	private static final int defaultNumColumns = 9;
 	private static final int largestNumColumns = 100;
 
