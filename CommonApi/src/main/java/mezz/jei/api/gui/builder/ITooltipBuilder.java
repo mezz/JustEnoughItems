@@ -74,4 +74,17 @@ public interface ITooltipBuilder {
 	 */
 	@Deprecated
 	List<Component> getLegacyComponents();
+
+	/**
+	 * @deprecated this is only for legacy tooltip support and will be removed
+	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "11.34.2", forRemoval = true)
+	List<Component> toLegacyToComponents();
+
+	/**
+	 * @deprecated this is only for legacy tooltip support and will be removed
+	 */
+	@Deprecated(since = "11.34.2", forRemoval = true)
+	void removeAll(List<Component> components);
 }

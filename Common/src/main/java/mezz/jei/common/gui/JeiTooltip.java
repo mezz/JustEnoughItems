@@ -138,8 +138,19 @@ public class JeiTooltip implements ITooltipBuilder {
 		return elements;
 	}
 
+	@SuppressWarnings("removal")
+	@Override
 	public List<Component> toLegacyToComponents() {
 		return new ArrayList<>(lines);
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public void removeAll(List<Component> components) {
+		for (Component component : components) {
+			lines.remove(component);
+			elements.remove(Either.left(component));
+		}
 	}
 
 	@Override
