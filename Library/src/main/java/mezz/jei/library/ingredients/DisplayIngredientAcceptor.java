@@ -23,12 +23,9 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIngredientAcceptor> {
 	private final IIngredientManager ingredientManager;
@@ -37,7 +34,6 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	 * Blank ingredients are drawn as "nothing" in a rotation of ingredients, but aren't considered in lookups.
 	 */
 	private final List<Optional<ITypedIngredient<?>>> ingredients = new ArrayList<>();
-	private final Set<IIngredientType<?>> types = new HashSet<>();
 
 	public DisplayIngredientAcceptor(IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
@@ -49,7 +45,6 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 
 		for (Object ingredient : ingredients) {
 			Optional<ITypedIngredient<?>> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
-			typedIngredient.ifPresent(i -> this.types.add(i.getType()));
 			this.ingredients.add(typedIngredient);
 		}
 
@@ -64,15 +59,8 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		List<Optional<ITypedIngredient<T>>> typedIngredients = TypedIngredient.createAndFilterInvalidList(this.ingredientManager, ingredientType, ingredients, false);
 
 		if (!typedIngredients.isEmpty()) {
-			boolean anyPresent = false;
 			for (Optional<ITypedIngredient<T>> typedIngredientOptional : typedIngredients) {
 				this.ingredients.add(typedIngredientOptional.map(Function.identity()));
-				if (!anyPresent && typedIngredientOptional.isPresent()) {
-					anyPresent = true;
-				}
-			}
-			if (anyPresent) {
-				this.types.add(ingredientType);
 			}
 		}
 
@@ -93,7 +81,6 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
 		Optional<ITypedIngredient<I>> copy = TypedIngredient.deepCopy(ingredientManager, typedIngredient);
-		copy.ifPresent(i -> this.types.add(i.getType()));
 		this.ingredients.add(copy.map(Function.identity()));
 
 		return this;
@@ -132,42 +119,18 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public DisplayIngredientAcceptor addOptionalTypedIngredients(List<Optional<ITypedIngredient<?>>> ingredients) {
 		ErrorUtil.checkNotNull(ingredients, "ingredients");
 
-		for (Optional<ITypedIngredient<?>> o : ingredients) {
-			if (o.isPresent()) {
-				this.addTypedIngredient(o.get());
-			} else {
-				this.ingredients.add(o);
-			}
-		}
-
+		this.ingredients.addAll(ingredients);
 		return this;
 	}
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
 		Optional<ITypedIngredient<T>> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, false);
-		typedIngredient.ifPresent(i -> this.types.add(i.getType()));
 		this.ingredients.add(typedIngredient.map(Function.identity()));
-	}
-
-	public <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
-		return this.ingredients.stream()
-			.flatMap(Optional::stream)
-			.map(i -> i.getIngredient(ingredientType))
-			.flatMap(Optional::stream);
-	}
-
-	public Stream<IIngredientType<?>> getIngredientTypes() {
-		return this.types.stream();
 	}
 
 	@UnmodifiableView
 	public List<Optional<ITypedIngredient<?>>> getAllIngredients() {
 		return Collections.unmodifiableList(this.ingredients);
-	}
-
-	public void clear() {
-		this.ingredients.clear();
-		this.types.clear();
 	}
 
 	public IntSet getMatches(IFocusGroup focusGroup, RecipeIngredientRole role) {
@@ -188,7 +151,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		ITypedIngredient<T> focusValue = focus.getTypedValue();
 		IIngredientType<T> ingredientType = focusValue.getType();
 		T focusIngredient = focusValue.getIngredient();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		IIngredientHelper<T> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredientType);
 		String focusUid = ingredientHelper.getUniqueId(focusIngredient, UidContext.Ingredient);
 
 		for (int i = 0; i < ingredients.size(); i++) {
