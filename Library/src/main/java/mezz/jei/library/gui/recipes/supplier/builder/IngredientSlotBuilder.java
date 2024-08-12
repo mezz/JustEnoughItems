@@ -6,15 +6,14 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
-import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotIngredients;
-import mezz.jei.library.ingredients.IngredientAcceptor;
+import mezz.jei.library.ingredients.SimpleIngredientAcceptor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,12 +22,10 @@ import java.util.Optional;
  * but doesn't bother building anything for drawing on screen.
  */
 public class IngredientSlotBuilder implements IRecipeSlotBuilder {
-	private final IngredientAcceptor ingredients;
-	private final RecipeIngredientRole role;
+	private final SimpleIngredientAcceptor ingredients;
 
-	public IngredientSlotBuilder(IIngredientManager ingredientManager, RecipeIngredientRole role) {
-		this.ingredients = new IngredientAcceptor(ingredientManager);
-		this.role = role;
+	public IngredientSlotBuilder(IIngredientManager ingredientManager) {
+		this.ingredients = new SimpleIngredientAcceptor(ingredientManager);
 	}
 
 	@Override
@@ -103,11 +100,7 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 		return this;
 	}
 
-	public RecipeSlotIngredients getRecipeSlotIngredients() {
-		return new RecipeSlotIngredients(
-			this.role,
-			this.ingredients.getAllIngredients(),
-			this.ingredients.getIngredientTypes()
-		);
+	public Collection<ITypedIngredient<?>> getAllIngredients() {
+		return this.ingredients.getAllIngredients();
 	}
 }
