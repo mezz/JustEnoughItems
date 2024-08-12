@@ -14,6 +14,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -51,7 +52,10 @@ public final class RecipeErrorUtil {
 	}
 
 	private static void appendRoleData(IIngredientSupplier ingredientSupplier, RecipeIngredientRole role, StringBuilder recipeInfoBuilder, IIngredientManager ingredientManager) {
-		ingredientSupplier.getIngredientTypes(role)
+		ingredientSupplier.getIngredients(role)
+			.stream()
+			.map(ITypedIngredient::getType)
+			.distinct()
 			.forEach(ingredientType -> {
 				String ingredientOutputInfo = getIngredientInfo(ingredientType, role, ingredientSupplier, ingredientManager);
 				recipeInfoBuilder
@@ -63,7 +67,13 @@ public final class RecipeErrorUtil {
 	}
 
 	private static <T> String getIngredientInfo(IIngredientType<T> ingredientType, RecipeIngredientRole role, IIngredientSupplier ingredients, IIngredientManager ingredientManager) {
-		List<T> ingredientList = ingredients.getIngredientStream(ingredientType, role).toList();
+		List<T> ingredientList = new ArrayList<>();
+
+		for (ITypedIngredient<?> ingredient : ingredients.getIngredients(role)) {
+			ingredient.getIngredient(ingredientType)
+				.ifPresent(ingredientList::add);
+		}
+
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
 		Stream<String> stringStream = ingredientList.stream()
