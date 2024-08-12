@@ -22,7 +22,7 @@ import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
-import mezz.jei.library.ingredients.IngredientAcceptor;
+import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
@@ -64,7 +64,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private List<Optional<ITypedIngredient<?>>> displayIngredients;
 
 	@Nullable
-	private IngredientAcceptor displayOverrides;
+	private DisplayIngredientAcceptor displayOverrides;
 
 	public RecipeSlot(
 		RecipeIngredientRole role,
@@ -342,7 +342,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	public IIngredientConsumer createDisplayOverrides() {
 		if (displayOverrides == null) {
 			IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-			displayOverrides = new IngredientAcceptor(ingredientManager);
+			displayOverrides = new DisplayIngredientAcceptor(ingredientManager);
 		}
 		return displayOverrides;
 	}

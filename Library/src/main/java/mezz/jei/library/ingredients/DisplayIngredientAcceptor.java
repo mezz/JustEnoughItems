@@ -24,33 +24,28 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 
-public class IngredientAcceptor implements IIngredientAcceptor<IngredientAcceptor> {
+public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIngredientAcceptor> {
 	private final IIngredientManager ingredientManager;
 	/**
 	 * A list of ingredients, including "blank" ingredients represented by {@link Optional#empty()}.
 	 * Blank ingredients are drawn as "nothing" in a rotation of ingredients, but aren't considered in lookups.
 	 */
 	private final List<Optional<ITypedIngredient<?>>> ingredients = new ArrayList<>();
-	private final Set<IIngredientType<?>> types = new HashSet<>();
 
-	public IngredientAcceptor(IIngredientManager ingredientManager) {
+	public DisplayIngredientAcceptor(IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
 	}
 
 	@Override
-	public IngredientAcceptor addIngredientsUnsafe(List<?> ingredients) {
+	public DisplayIngredientAcceptor addIngredientsUnsafe(List<?> ingredients) {
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		for (Object ingredient : ingredients) {
 			Optional<ITypedIngredient<?>> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
-			typedIngredient.ifPresent(i -> this.types.add(i.getType()));
-
 			this.ingredients.add(typedIngredient);
 		}
 
@@ -58,22 +53,15 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	}
 
 	@Override
-	public <T> IngredientAcceptor addIngredients(IIngredientType<T> ingredientType, List<@Nullable T> ingredients) {
+	public <T> DisplayIngredientAcceptor addIngredients(IIngredientType<T> ingredientType, List<@Nullable T> ingredients) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		List<Optional<ITypedIngredient<T>>> typedIngredients = TypedIngredient.createAndFilterInvalidList(this.ingredientManager, ingredientType, ingredients, false);
 
 		if (!typedIngredients.isEmpty()) {
-			boolean anyPresent = false;
 			for (Optional<ITypedIngredient<T>> typedIngredientOptional : typedIngredients) {
 				this.ingredients.add(typedIngredientOptional.map(Function.identity()));
-				if (!anyPresent && typedIngredientOptional.isPresent()) {
-					anyPresent = true;
-				}
-			}
-			if (anyPresent) {
-				this.types.add(ingredientType);
 			}
 		}
 
@@ -81,7 +69,7 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	}
 
 	@Override
-	public <T> IngredientAcceptor addIngredient(IIngredientType<T> ingredientType, T ingredient) {
+	public <T> DisplayIngredientAcceptor addIngredient(IIngredientType<T> ingredientType, T ingredient) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
@@ -90,11 +78,10 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	}
 
 	@Override
-	public <I> IngredientAcceptor addTypedIngredient(ITypedIngredient<I> typedIngredient) {
+	public <I> DisplayIngredientAcceptor addTypedIngredient(ITypedIngredient<I> typedIngredient) {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
 		Optional<ITypedIngredient<I>> copy = TypedIngredient.deepCopy(ingredientManager, typedIngredient);
-		copy.ifPresent(i -> this.types.add(i.getType()));
 		this.ingredients.add(copy.map(Function.identity()));
 
 		return this;
@@ -102,19 +89,19 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public IngredientAcceptor addFluidStack(Fluid fluid, long amount) {
+	public DisplayIngredientAcceptor addFluidStack(Fluid fluid, long amount) {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		return addFluidInternal(fluidHelper, fluid.builtInRegistryHolder(), amount, DataComponentPatch.EMPTY);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public IngredientAcceptor addFluidStack(Fluid fluid, long amount, DataComponentPatch componentPatch) {
+	public DisplayIngredientAcceptor addFluidStack(Fluid fluid, long amount, DataComponentPatch componentPatch) {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		return addFluidInternal(fluidHelper, fluid.builtInRegistryHolder(), amount, componentPatch);
 	}
 
-	private <T> IngredientAcceptor addFluidInternal(IPlatformFluidHelperInternal<T> fluidHelper, Holder<Fluid> fluid, long amount, DataComponentPatch tag) {
+	private <T> DisplayIngredientAcceptor addFluidInternal(IPlatformFluidHelperInternal<T> fluidHelper, Holder<Fluid> fluid, long amount, DataComponentPatch tag) {
 		T fluidStack = fluidHelper.create(fluid, amount, tag);
 		IIngredientTypeWithSubtypes<Fluid, T> fluidIngredientType = fluidHelper.getFluidIngredientType();
 		addIngredientInternal(fluidIngredientType, fluidStack);
@@ -122,7 +109,7 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	}
 
 	@Override
-	public IngredientAcceptor addTypedIngredients(List<ITypedIngredient<?>> ingredients) {
+	public DisplayIngredientAcceptor addTypedIngredients(List<ITypedIngredient<?>> ingredients) {
 		ErrorUtil.checkNotNull(ingredients, "ingredients");
 
 		for (ITypedIngredient<?> typedIngredient : ingredients) {
@@ -132,7 +119,7 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 	}
 
 	@Override
-	public IngredientAcceptor addOptionalTypedIngredients(List<Optional<ITypedIngredient<?>>> ingredients) {
+	public DisplayIngredientAcceptor addOptionalTypedIngredients(List<Optional<ITypedIngredient<?>>> ingredients) {
 		ErrorUtil.checkNotNull(ingredients, "ingredients");
 
 		this.ingredients.addAll(ingredients);
@@ -141,22 +128,12 @@ public class IngredientAcceptor implements IIngredientAcceptor<IngredientAccepto
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
 		Optional<ITypedIngredient<T>> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, false);
-		typedIngredient.ifPresent(i -> this.types.add(i.getType()));
 		this.ingredients.add(typedIngredient.map(Function.identity()));
-	}
-
-	public Set<IIngredientType<?>> getIngredientTypes() {
-		return Collections.unmodifiableSet(this.types);
 	}
 
 	@UnmodifiableView
 	public List<Optional<ITypedIngredient<?>>> getAllIngredients() {
 		return Collections.unmodifiableList(this.ingredients);
-	}
-
-	public void clear() {
-		this.ingredients.clear();
-		this.types.clear();
 	}
 
 	public IntSet getMatches(IFocusGroup focusGroup, RecipeIngredientRole role) {

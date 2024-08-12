@@ -22,7 +22,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.library.gui.ingredients.ICycler;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RendererOverrides;
-import mezz.jei.library.ingredients.IngredientAcceptor;
+import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ import java.util.Set;
 
 // TODO: breaking change: give IRecipeSlotBuilder a parameter for ISlottedWidgetFactory
 public class RecipeSlotBuilder implements IRecipeSlotBuilder {
-	private final IngredientAcceptor ingredients;
+	private final DisplayIngredientAcceptor ingredients;
 	private final RecipeIngredientRole role;
 	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
 	private ImmutableRect2i rect;
@@ -45,7 +45,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private @Nullable ISlottedWidgetFactory<?> assignedWidgetFactory;
 
 	public RecipeSlotBuilder(IIngredientManager ingredientManager, RecipeIngredientRole role, int x, int y) {
-		this.ingredients = new IngredientAcceptor(ingredientManager);
+		this.ingredients = new DisplayIngredientAcceptor(ingredientManager);
 		this.rect = new ImmutableRect2i(x, y, 16, 16);
 		this.role = role;
 	}
@@ -201,7 +201,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		return this.ingredients.getMatches(focuses, role);
 	}
 
-	public IngredientAcceptor getIngredientAcceptor() {
+	public DisplayIngredientAcceptor getIngredientAcceptor() {
 		return ingredients;
 	}
 
