@@ -56,4 +56,6 @@ public interface IClientConfig {
 	boolean isLookupFluidContentsEnabled();
 
 	boolean isAddingBookmarksToFrontEnabled();
+
+	boolean isShowTagRecipesEnabled();
 }
