@@ -97,6 +97,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isShowTagRecipesEnabled() {
+		return false;
+	}
+
+	@Override
 	public int getMaxRecipeGuiHeight() {
 		return 500;
 	}

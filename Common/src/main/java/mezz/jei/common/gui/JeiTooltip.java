@@ -191,7 +191,7 @@ public class JeiTooltip implements ITooltipBuilder {
 	}
 
 	private <T> void addDebugInfo(IIngredientManager ingredientManager,  ITypedIngredient<T> typedIngredient) {
-		if (!DebugConfig.isDebugIngredientsEnabled() || !Minecraft.getInstance().options.advancedItemTooltips) {
+		if (!DebugConfig.isDebugInfoTooltipsEnabled() || !Minecraft.getInstance().options.advancedItemTooltips) {
 			return;
 		}
 		T ingredient = typedIngredient.getIngredient();
