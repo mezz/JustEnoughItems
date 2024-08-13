@@ -38,6 +38,7 @@ public final class ClientConfig implements IClientConfig {
 	private final ConfigValue<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> catchRenderErrorsEnabled;
 	private final Supplier<Boolean> lookupFluidContentsEnabled;
+	private final Supplier<Boolean> showTagRecipesEnabled;
 
 	// input
 	private final Supplier<Integer> dragDelayMs;
@@ -127,6 +128,11 @@ public final class ClientConfig implements IClientConfig {
 			"lookupFluidContentsEnabled",
 			false,
 			"When looking up recipes with items that contain fluids, also look up recipes for the fluids."
+		);
+		showTagRecipesEnabled = advanced.addBoolean(
+			"showTagRecipesEnabled",
+			isDev,
+			"Show recipes for ingredient tags, like Item Tags and Block Tags."
 		);
 
 		IConfigCategoryBuilder input = schema.addCategory("input");
@@ -309,5 +315,10 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isHideSingleIngredientTagsEnabled() {
 		return hideSingleIngredientTagsEnabled.get();
+	}
+
+	@Override
+	public boolean isShowTagRecipesEnabled() {
+		return showTagRecipesEnabled.get();
 	}
 }
