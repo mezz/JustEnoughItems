@@ -18,49 +18,119 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh "./gradlew :Core:build"
-                sh "./gradlew :Forge:build"
-                sh "./gradlew :Fabric:build"
-                sh "./gradlew :NeoForge:build"
-                sh "./gradlew :Common:build"
-                sh "./gradlew :CommonApi:build"
-                sh "./gradlew :ForgeApi:build"
-                sh "./gradlew :FabricApi:build"
-                sh "./gradlew :NeoForgeApi:build"
+        stage('Common') {
+            stages {
+                stage('Build') {
+                    steps {
+                        sh "./gradlew :Core:build"
+                        sh "./gradlew :Gui:build"
+                        sh "./gradlew :Library:build"
+                        sh "./gradlew :Common:build"
+                        sh "./gradlew :CommonApi:build"
+                    }
+                }
+
+                stage('Publish Maven') {
+                    steps {
+                        sh "./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                        sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                        sh "./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                        sh "./gradlew :Common:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                        sh "./gradlew :CommonApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                    }
+                }
             }
         }
 
-        stage('Publish Maven') {
-            steps {
-                sh "./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :Forge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :NeoForge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :Common:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :CommonApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :ForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :FabricApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :NeoForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-            }
-        }
+        parallel {
+            stage('NeoForge') {
+                stages {
+                    stage('Build') {
+                        steps {
+                            sh "./gradlew :NeoForge:build"
+                            sh "./gradlew :NeoForgeApi:build"
+                        }
+                    }
 
-        stage('Publish CurseForge') {
-            steps {
-                sh "./gradlew :Fabric:publishCurseForge"
-                sh "./gradlew :Forge:publishCurseForge"
-                sh "./gradlew :NeoForge:publishCurseForge"
-            }
-        }
+                    stage('Publish Maven') {
+                        steps {
+                            sh "./gradlew :NeoForge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                            sh "./gradlew :NeoForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                        }
+                    }
 
-        stage('Publish Modrinth') {
-            steps {
-                sh "./gradlew :Fabric:modrinth"
-                sh "./gradlew :Forge:modrinth"
-                sh "./gradlew :NeoForge:modrinth"
+                    stage('Publish CurseForge') {
+                        steps {
+                            sh "./gradlew :NeoForge:publishCurseForge"
+                        }
+                    }
+
+                    stage('Publish Modrinth') {
+                        steps {
+                            sh "./gradlew :NeoForge:modrinth"
+                        }
+                    }
+                }
+            }
+
+            stage('Fabric') {
+                stages {
+                    stage('Build') {
+                        steps {
+                            sh "./gradlew :Fabric:build"
+                            sh "./gradlew :FabricApi:build"
+                        }
+                    }
+
+                    stage('Publish Maven') {
+                        steps {
+                            sh "./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                            sh "./gradlew :FabricApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                        }
+                    }
+
+                    stage('Publish CurseForge') {
+                        steps {
+                            sh "./gradlew :Fabric:publishCurseForge"
+                        }
+                    }
+
+                    stage('Publish Modrinth') {
+                        steps {
+                            sh "./gradlew :Fabric:modrinth"
+                        }
+                    }
+                }
+            }
+
+            stage('Forge') {
+                stages {
+                    stage('Build') {
+                        steps {
+                            sh "./gradlew :Forge:build"
+                            sh "./gradlew :ForgeApi:build"
+                        }
+                    }
+
+                    stage('Publish Maven') {
+                        steps {
+                            sh "./gradlew :Forge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                            sh "./gradlew :ForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                        }
+                    }
+
+                    stage('Publish CurseForge') {
+                        steps {
+                            sh "./gradlew :Forge:publishCurseForge"
+                        }
+                    }
+
+                    stage('Publish Modrinth') {
+                        steps {
+                            sh "./gradlew :Forge:modrinth"
+                        }
+                    }
+                }
             }
         }
 
