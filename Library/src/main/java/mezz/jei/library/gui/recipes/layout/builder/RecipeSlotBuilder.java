@@ -6,7 +6,7 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -37,7 +37,7 @@ import java.util.Set;
 public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private final DisplayIngredientAcceptor ingredients;
 	private final RecipeIngredientRole role;
-	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
+	private final List<IRecipeSlotRichTooltipCallback> tooltipCallbacks = new ArrayList<>();
 	private final int index;
 	private ImmutableRect2i rect;
 	private @Nullable RendererOverrides rendererOverrides;
@@ -151,8 +151,17 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		return this;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
-	public IRecipeSlotBuilder addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
+	public IRecipeSlotBuilder addTooltipCallback(mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback tooltipCallback) {
+		ErrorUtil.checkNotNull(tooltipCallback, "tooltipCallback");
+
+		this.tooltipCallbacks.add(new LegacyTooltipCallbackAdapter(tooltipCallback));
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder addRichTooltipCallback(IRecipeSlotRichTooltipCallback tooltipCallback) {
 		ErrorUtil.checkNotNull(tooltipCallback, "tooltipCallback");
 
 		this.tooltipCallbacks.add(tooltipCallback);

@@ -111,7 +111,7 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 * Add a tooltip callback to be called when the mouse is hovering over this recipe slot.
 	 *
 	 * @since 11.5.0
-	 * @deprecated use {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)} instead, when creating the slot
+	 * @deprecated use {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)} instead, when creating the slot
 	 */
 	@Deprecated(since = "11.30.1", forRemoval = true)
 	void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback);
