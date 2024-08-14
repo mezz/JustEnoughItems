@@ -36,7 +36,7 @@ public interface IRecipeSlotTooltipCallback {
 	default void onRichTooltip(IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
 		List<Component> components = tooltip.toLegacyToComponents();
 		List<Component> changedComponents = new ArrayList<>(components);
-		onTooltip(recipeSlotView, components);
+		onTooltip(recipeSlotView, changedComponents);
 		if (!components.equals(changedComponents)) {
 			tooltip.removeAll(components);
 			tooltip.addAll(changedComponents);
