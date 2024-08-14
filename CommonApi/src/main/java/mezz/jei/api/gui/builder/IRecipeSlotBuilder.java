@@ -1,7 +1,7 @@
 package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -22,11 +22,23 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	/**
 	 * Add a callback to alter the tooltip for these ingredients.
 	 *
-	 * @see IRecipeSlotTooltipCallback
+	 * @see mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback
 	 *
 	 * @since 9.3.0
+	 * @deprecated use {@link #addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
 	 */
-	IRecipeSlotBuilder addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback);
+	@SuppressWarnings("removal")
+	@Deprecated(since = "15.12.3", forRemoval = true)
+	IRecipeSlotBuilder addTooltipCallback(mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback tooltipCallback);
+
+	/**
+	 * Add a callback to alter the rich tooltip for these ingredients.
+	 *
+	 * @see IRecipeSlotRichTooltipCallback
+	 *
+	 * @since 15.12.3
+	 */
+	IRecipeSlotBuilder addRichTooltipCallback(IRecipeSlotRichTooltipCallback tooltipCallback);
 
 	/**
 	 * Give the slot a unique name, for looking it up later by using
