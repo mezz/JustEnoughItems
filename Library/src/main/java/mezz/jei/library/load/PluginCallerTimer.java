@@ -13,7 +13,7 @@ public class PluginCallerTimer implements AutoCloseable {
 
 	public PluginCallerTimer() {
 		this.executor = Executors.newSingleThreadScheduledExecutor();
-		this.executor.scheduleAtFixedRate(this::run, 1, 1, TimeUnit.MILLISECONDS);
+		this.executor.scheduleAtFixedRate(this::run, 100, 100, TimeUnit.MILLISECONDS);
 	}
 
 	private synchronized void run() {
