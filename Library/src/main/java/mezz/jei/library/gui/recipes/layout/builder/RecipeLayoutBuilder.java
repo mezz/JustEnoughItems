@@ -86,7 +86,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		if (recipeName != null) {
 			RecipeType<T> recipeType = recipeCategory.getRecipeType();
 			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName, recipeType);
-			slot.addTooltipCallback(callback);
+			slot.addRichTooltipCallback(callback);
 		}
 	}
 
