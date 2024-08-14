@@ -2,8 +2,6 @@ package mezz.jei.common.config;
 
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
-import mezz.jei.common.platform.IPlatformModHelper;
-import mezz.jei.common.platform.Services;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
