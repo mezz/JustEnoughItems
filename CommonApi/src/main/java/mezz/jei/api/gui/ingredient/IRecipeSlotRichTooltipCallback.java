@@ -2,10 +2,7 @@ package mezz.jei.api.gui.ingredient;
 
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import net.minecraft.network.chat.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Used to add tooltips to ingredients drawn on a recipe.
