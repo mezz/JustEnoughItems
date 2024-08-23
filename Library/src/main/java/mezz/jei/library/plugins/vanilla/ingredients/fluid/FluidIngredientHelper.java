@@ -82,6 +82,16 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
+	public Object getUid(T ingredient, UidContext context) {
+		Fluid fluid = fluidType.getBase(ingredient);
+		Object subtypeData = subtypeManager.getSubtypeData(fluidType, ingredient, context);
+		if (subtypeData != null) {
+			return List.of(fluid, subtypeData);
+		}
+		return fluid;
+	}
+
+	@Override
 	public long getAmount(T ingredient) {
 		return platformFluidHelper.getAmount(ingredient);
 	}

@@ -15,6 +15,19 @@ import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 @ApiStatus.NonExtendable
 public interface IStackHelper {
 	/**
+	 * Gets the unique identifier for a stack, ignoring NBT on items without subtypes, and uses the {@link ISubtypeManager}.
+	 * If two unique identifiers are equal, then the items can be considered equivalent.
+	 *
+	 * Returns an {@link Object} so that UID creation can be optimized.
+	 * Make sure the returned value implements {@link Object#equals(Object)} and {@link Object#hashCode()}.
+	 *
+	 * @since 11.54.0
+	 */
+	default Object getUidForStack(ItemStack stack, UidContext context) {
+		return getUniqueIdentifierForStack(stack, context);
+	}
+
+	/**
 	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the {@link ISubtypeManager}
 	 * @since 7.3.0
 	 */

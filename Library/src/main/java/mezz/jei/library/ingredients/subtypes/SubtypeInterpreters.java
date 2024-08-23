@@ -2,19 +2,24 @@ package mezz.jei.library.ingredients.subtypes;
 
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class SubtypeInterpreters {
-	private final Map<Object, IIngredientSubtypeInterpreter<?>> map;
+	private final Map<Object, ISubtypeInterpreter<?>> map;
 
 	public SubtypeInterpreters() {
 		this.map = new IdentityHashMap<>();
 	}
 
 	public <B, I> boolean addInterpreter(IIngredientTypeWithSubtypes<B, I> type, B base, IIngredientSubtypeInterpreter<I> interpreter) {
+		return addInterpreter(type, base, new LegacyInterpreterAdapter<>(interpreter));
+	}
+
+	public <B, I> boolean addInterpreter(IIngredientTypeWithSubtypes<B, I> type, B base, ISubtypeInterpreter<I> interpreter) {
 		if (!type.getIngredientBaseClass().isInstance(base)) {
 			throw new IllegalArgumentException(
 				String.format("base must be instance of %s but got %s instead", type.getIngredientBaseClass(), base.getClass())
@@ -27,11 +32,11 @@ public class SubtypeInterpreters {
 		return true;
 	}
 
-	public <B, I> Optional<IIngredientSubtypeInterpreter<I>> get(IIngredientTypeWithSubtypes<B, I> type, I ingredient) {
+	public <B, I> Optional<ISubtypeInterpreter<I>> get(IIngredientTypeWithSubtypes<B, I> type, I ingredient) {
 		B base = type.getBase(ingredient);
-		IIngredientSubtypeInterpreter<?> interpreter = map.get(base);
+		ISubtypeInterpreter<?> interpreter = map.get(base);
 		@SuppressWarnings("unchecked")
-		IIngredientSubtypeInterpreter<I> cast = (IIngredientSubtypeInterpreter<I>) interpreter;
+		ISubtypeInterpreter<I> cast = (ISubtypeInterpreter<I>) interpreter;
 		return Optional.ofNullable(cast);
 	}
 

@@ -38,12 +38,36 @@ public interface IIngredientHelper<V> {
 	String getUniqueId(V ingredient, UidContext context);
 
 	/**
+	 * Unique ID for use in comparing and looking up ingredients.
+	 *
+	 * Returns an {@link Object} so that UID creation can be optimized.
+	 * Make sure the returned value implements {@link Object#equals(Object)} and {@link Object#hashCode()}.
+	 *
+	 * @since 11.54.0
+	 */
+	default Object getUid(V ingredient, UidContext context) {
+		return getUniqueId(ingredient, context);
+	}
+
+	/**
 	 * Unique ID for use in comparing, blacklisting, and looking up ingredients.
 	 *
 	 * @since 11.41.0
 	 */
 	default String getUniqueId(ITypedIngredient<V> typedIngredient, UidContext context) {
 		return getUniqueId(typedIngredient.getIngredient(), context);
+	}
+
+	/**
+	 * Unique ID for use in comparing and looking up ingredients.
+	 *
+	 * Returns an {@link Object} so that UID creation can be optimized.
+	 * Make sure the returned value implements {@link Object#equals(Object)} and {@link Object#hashCode()}.
+	 *
+	 * @since 11.54.0
+	 */
+	default Object getUid(ITypedIngredient<V> typedIngredient, UidContext context) {
+		return getUid(typedIngredient.getIngredient(), context);
 	}
 
 	/**

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.ApiStatus;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
@@ -18,6 +19,37 @@ import net.minecraft.world.item.Item;
  */
 @ApiStatus.NonExtendable
 public interface ISubtypeRegistration {
+
+	/**
+	 * Add an interpreter to allow JEI to understand the differences between ingredient subtypes.
+	 * This interpreter should account for NBT, capabilities, and anything else
+	 * that's relevant to differentiating the ingredient's subtypes.
+	 *
+	 * @param type        the ingredient type (for example {@link VanillaTypes#ITEM_STACK}
+	 * @param base        the base of the ingredient that has subtypes (for example, {@link Items#ENCHANTED_BOOK}).
+	 *                       All ingredients with this base will use the given interpreter.
+	 * @param interpreter the interpreter for the ingredient's subtypes
+	 *
+	 * @since 11.54.0
+	 */
+	default <B, I> void registerSubtypeInterpreter(IIngredientTypeWithSubtypes<B, I> type, B base, ISubtypeInterpreter<I> interpreter) {
+		registerSubtypeInterpreter(type, base, interpreter::getLegacyStringSubtypeInfo);
+	}
+
+	/**
+	 * Add an interpreter to allow JEI to understand the differences between ingredient subtypes.
+	 * This interpreter should account for NBT, capabilities, and anything else
+	 * that's relevant to differentiating the ingredient's subtypes.
+	 *
+	 * @param item        the item base of the ItemStack that has subtypes (for example, {@link Items#ENCHANTED_BOOK}).
+	 *                       All ItemStacks with this base will use the given interpreter.
+	 * @param interpreter the interpreter for the ItemStack's subtypes
+	 *
+	 * @since 11.54.0
+	 */
+	default void registerSubtypeInterpreter(Item item, ISubtypeInterpreter<ItemStack> interpreter) {
+		registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, interpreter);
+	}
 
 	/**
 	 * Add an interpreter to allow JEI to understand the differences between ingredient subtypes.

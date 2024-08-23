@@ -196,7 +196,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		ITypedIngredient<T> focusValue = focus.getTypedValue();
 		IIngredientType<T> ingredientType = focusValue.getType();
 		IIngredientHelper<T> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredientType);
-		String focusUid = ingredientHelper.getUniqueId(focusValue, UidContext.Ingredient);
+		Object focusUid = ingredientHelper.getUid(focusValue, UidContext.Ingredient);
 
 		for (int i = 0; i < ingredients.size(); i++) {
 			@Nullable ITypedIngredient<?> typedIngredient = ingredients.get(i);
@@ -207,7 +207,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 			if (ingredient == null) {
 				continue;
 			}
-			String uniqueId = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+			Object uniqueId = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
 			if (focusUid.equals(uniqueId)) {
 				results.add(i);
 			}

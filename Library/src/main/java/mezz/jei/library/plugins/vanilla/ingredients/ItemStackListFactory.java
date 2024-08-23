@@ -214,15 +214,12 @@ public final class ItemStackListFactory {
 
 	@Nullable
 	private static Object safeGetUid(StackHelper stackHelper, ItemStack stack) {
-		if (stackHelper.hasSubtypes(stack)) {
-			try {
-				return stackHelper.getUniqueIdentifierForStack(stack, UidContext.Ingredient);
-			} catch (RuntimeException | LinkageError e) {
-				String stackInfo = ErrorUtil.getItemStackInfo(stack);
-				LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);
-				return null;
-			}
+		try {
+			return stackHelper.getUidForStack(stack, UidContext.Ingredient);
+		} catch (RuntimeException | LinkageError e) {
+			String stackInfo = ErrorUtil.getItemStackInfo(stack);
+			LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);
+			return null;
 		}
-		return stack.getItem();
 	}
 }

@@ -13,7 +13,7 @@ import java.util.Objects;
 
 public class IngredientBookmark<T> implements IBookmark {
 	private final IElement<T> element;
-	private final String uid;
+	private final Object uid;
 	private final ITypedIngredient<T> typedIngredient;
 	private boolean visible = true;
 
@@ -21,11 +21,11 @@ public class IngredientBookmark<T> implements IBookmark {
 		IIngredientType<T> type = typedIngredient.getType();
 		typedIngredient = ingredientManager.normalizeTypedIngredient(typedIngredient);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		String uniqueId = ingredientHelper.getUniqueId(typedIngredient, UidContext.Ingredient);
+		Object uniqueId = ingredientHelper.getUid(typedIngredient, UidContext.Ingredient);
 		return new IngredientBookmark<>(typedIngredient, uniqueId);
 	}
 
-	private IngredientBookmark(ITypedIngredient<T> typedIngredient, String uid) {
+	private IngredientBookmark(ITypedIngredient<T> typedIngredient, Object uid) {
 		this.typedIngredient = typedIngredient;
 		this.uid = uid;
 		this.element = new IngredientBookmarkElement<>(this);

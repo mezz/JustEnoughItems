@@ -20,7 +20,7 @@ public class IngredientSet<V> extends AbstractSet<V> {
 
 	private final IIngredientHelper<V> ingredientHelper;
 	private final UidContext context;
-	private final Map<String, V> ingredients;
+	private final Map<Object, V> ingredients;
 
 	public IngredientSet(IIngredientHelper<V> ingredientHelper, UidContext context) {
 		this.ingredientHelper = ingredientHelper;
@@ -29,9 +29,9 @@ public class IngredientSet<V> extends AbstractSet<V> {
 	}
 
 	@Nullable
-	private String getUid(V ingredient) {
+	private Object getUid(V ingredient) {
 		try {
-			return ingredientHelper.getUniqueId(ingredient, context);
+			return ingredientHelper.getUid(ingredient, context);
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
@@ -45,14 +45,14 @@ public class IngredientSet<V> extends AbstractSet<V> {
 
 	@Override
 	public boolean add(V value) {
-		String uid = getUid(value);
+		Object uid = getUid(value);
 		return uid != null && ingredients.put(uid, value) == null;
 	}
 
 	@Override
 	public boolean remove(Object value) {
 		//noinspection unchecked
-		String uid = getUid((V) value);
+		Object uid = getUid((V) value);
 		return uid != null && ingredients.remove(uid) != null;
 	}
 
@@ -74,13 +74,23 @@ public class IngredientSet<V> extends AbstractSet<V> {
 			return false;
 		}
 		V v = ingredientClass.cast(o);
-		String uid = getUid(v);
+		Object uid = getUid(v);
 		return uid != null && ingredients.containsKey(uid);
 	}
 
 	public Optional<V> getByUid(String uid) {
 		V v = ingredients.get(uid);
-		return Optional.ofNullable(v);
+		if (v != null) {
+			return Optional.of(v);
+		}
+
+		for (V ingredient : ingredients.values()) {
+			String legacyUid = ingredientHelper.getUniqueId(ingredient, context);
+			if (uid.equals(legacyUid)) {
+				return Optional.of(ingredient);
+			}
+		}
+		return Optional.empty();
 	}
 
 	@Override
