@@ -209,4 +209,15 @@ public class IngredientManager implements IIngredientManager {
 			.getIngredientInfo(ingredientType)
 			.getIngredientCodec();
 	}
+
+	@Override
+	public Collection<String> getIngredientAliases(ITypedIngredient<?> ingredient) {
+		return getIngredientAliasesInternal(ingredient);
+	}
+
+	private <T> Collection<String> getIngredientAliasesInternal(ITypedIngredient<T> typedIngredient) {
+		return registeredIngredients
+			.getIngredientInfo(typedIngredient.getType())
+			.getIngredientAliases(typedIngredient.getIngredient());
+	}
 }

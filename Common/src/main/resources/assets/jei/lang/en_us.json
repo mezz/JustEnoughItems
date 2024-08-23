@@ -9,6 +9,7 @@
   "jei.tooltip.transfer": "Move Items",
   "jei.tooltip.recipe.tag": "Accepts tag: %s",
   "jei.tooltip.item.colors": "Colors: %s",
+  "jei.tooltip.item.search.aliases": "Search Aliases:",
   "jei.tooltip.shapeless.recipe": "Shapeless Recipe",
   "jei.tooltip.cheat.mode.button.enabled": "Cheat Mode enabled",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Press \"%s\" to toggle it.",

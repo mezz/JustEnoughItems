@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SequencedMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,13 +26,12 @@ public class RegisteredIngredients {
 	/** for looking up types with subtypes by base ingredient class */
 	private final Map<Class<?>, IIngredientTypeWithSubtypes<?, ?>> baseClassToType;
 
-	public RegisteredIngredients(List<IngredientInfo<?>> ingredientInfoList) {
-		this.orderedTypes = ingredientInfoList.stream()
+	public RegisteredIngredients(SequencedMap<IIngredientType<?>, IngredientInfo<?>> ingredientInfoList) {
+		this.orderedTypes = ingredientInfoList.sequencedValues().stream()
 			.<IIngredientType<?>>map(IngredientInfo::getIngredientType)
 			.toList();
 
-		this.typeToInfo = ingredientInfoList.stream()
-			.collect(Collectors.toUnmodifiableMap(IngredientInfo::getIngredientType, Function.identity()));
+		this.typeToInfo = Map.copyOf(ingredientInfoList);
 
 		this.classToType = this.orderedTypes.stream()
 			.collect(Collectors.toMap(IIngredientType::getIngredientClass, Function.identity()));

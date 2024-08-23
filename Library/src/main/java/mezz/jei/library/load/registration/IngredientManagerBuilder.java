@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
@@ -14,16 +15,13 @@ import mezz.jei.library.ingredients.IngredientInfo;
 import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.RegisteredIngredients;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.SequencedMap;
 
-public class IngredientManagerBuilder implements IModIngredientRegistration {
-	private final List<IngredientInfo<?>> ingredientInfos = new ArrayList<>();
-	private final Set<IIngredientType<?>> registeredIngredientSet = Collections.newSetFromMap(new IdentityHashMap<>());
+public class IngredientManagerBuilder implements IModIngredientRegistration, IIngredientAliasRegistration {
+	private final SequencedMap<IIngredientType<?>, IngredientInfo<?>> ingredientInfos = new LinkedHashMap<>();
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
 
@@ -47,12 +45,11 @@ public class IngredientManagerBuilder implements IModIngredientRegistration {
 			"the default ingredient renderer registered here will be used for drawing " +
 				"ingredients in the ingredient list, and it must have a height of 16"
 		);
-		if (registeredIngredientSet.contains(ingredientType)) {
+		if (ingredientInfos.containsKey(ingredientType)) {
 			throw new IllegalArgumentException("Ingredient type has already been registered: " + ingredientType.getIngredientClass());
 		}
 
-		ingredientInfos.add(new IngredientInfo<>(ingredientType, allIngredients, ingredientHelper, ingredientRenderer, null));
-		registeredIngredientSet.add(ingredientType);
+		ingredientInfos.put(ingredientType, new IngredientInfo<>(ingredientType, allIngredients, ingredientHelper, ingredientRenderer, null));
 	}
 
 	@Override
@@ -77,12 +74,59 @@ public class IngredientManagerBuilder implements IModIngredientRegistration {
 				"ingredients in the ingredient list, and it must have a height of 16"
 		);
 
-		if (registeredIngredientSet.contains(ingredientType)) {
+		if (ingredientInfos.containsKey(ingredientType)) {
 			throw new IllegalArgumentException("Ingredient type has already been registered: " + ingredientType.getIngredientClass());
 		}
 
-		ingredientInfos.add(new IngredientInfo<>(ingredientType, allIngredients, ingredientHelper, ingredientRenderer, ingredientCodec));
-		registeredIngredientSet.add(ingredientType);
+		ingredientInfos.put(ingredientType, new IngredientInfo<>(ingredientType, allIngredients, ingredientHelper, ingredientRenderer, ingredientCodec));
+	}
+
+	@Override
+	public <I> void addAlias(IIngredientType<I> type, I ingredient, String alias) {
+		ErrorUtil.checkNotNull(type, "type");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		ErrorUtil.checkNotNull(alias, "alias");
+
+		@SuppressWarnings("unchecked")
+		IngredientInfo<I> ingredientInfo = (IngredientInfo<I>) ingredientInfos.get(type);
+		ingredientInfo.addIngredientAlias(ingredient, alias);
+	}
+
+	@Override
+	public <I> void addAliases(IIngredientType<I> type, I ingredient, Collection<String> aliases) {
+		ErrorUtil.checkNotNull(type, "type");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		ErrorUtil.checkNotNull(aliases, "aliases");
+
+		@SuppressWarnings("unchecked")
+		IngredientInfo<I> ingredientInfo = (IngredientInfo<I>) ingredientInfos.get(type);
+		ingredientInfo.addIngredientAliases(ingredient, aliases);
+	}
+
+	@Override
+	public <I> void addAliases(IIngredientType<I> type, List<I> ingredients, String alias) {
+		ErrorUtil.checkNotNull(type, "type");
+		ErrorUtil.checkNotNull(ingredients, "ingredients");
+		ErrorUtil.checkNotNull(alias, "alias");
+
+		@SuppressWarnings("unchecked")
+		IngredientInfo<I> ingredientInfo = (IngredientInfo<I>) ingredientInfos.get(type);
+		for (I ingredient : ingredients) {
+			ingredientInfo.addIngredientAlias(ingredient, alias);
+		}
+	}
+
+	@Override
+	public <I> void addAliases(IIngredientType<I> type, Collection<I> ingredients, Collection<String> aliases) {
+		ErrorUtil.checkNotNull(type, "type");
+		ErrorUtil.checkNotNull(ingredients, "ingredients");
+		ErrorUtil.checkNotNull(aliases, "aliases");
+
+		@SuppressWarnings("unchecked")
+		IngredientInfo<I> ingredientInfo = (IngredientInfo<I>) ingredientInfos.get(type);
+		for (I ingredient : ingredients) {
+			ingredientInfo.addIngredientAliases(ingredient, aliases);
+		}
 	}
 
 	@Override

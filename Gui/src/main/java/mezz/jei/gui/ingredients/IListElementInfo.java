@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public interface IListElementInfo<V> {
 
-	String getName();
+	List<String> getNames();
 
 	String getModNameForSorting();
 
@@ -39,5 +39,4 @@ public interface IListElementInfo<V> {
 	void setSortedIndex(int sortIndex);
 
 	int getSortedIndex();
-
 }

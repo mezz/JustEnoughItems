@@ -13,6 +13,7 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModInfoRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -23,6 +24,7 @@ import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
@@ -39,6 +41,7 @@ import mezz.jei.library.plugins.debug.ingredients.ErrorIngredientRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -84,6 +87,46 @@ public class JeiDebugPlugin implements IModPlugin {
 				registration.register(ErrorIngredient.TYPE, errorIngredients, errorIngredientHelper, errorIngredientRenderer, ErrorIngredient.CODEC);
 			}
 		}
+	}
+
+	@Override
+	public void registerIngredientAliases(IIngredientAliasRegistration registration) {
+		registration.addAlias(
+			VanillaTypes.ITEM_STACK,
+			new ItemStack(Items.PANDA_SPAWN_EGG),
+			"endangered"
+		);
+
+		registration.addAliases(
+			VanillaTypes.ITEM_STACK,
+			List.of(
+				new ItemStack(Items.STRUCTURE_VOID),
+				new ItemStack(Items.BARRIER)
+			),
+			"nothing"
+		);
+
+		registration.addAliases(
+			VanillaTypes.ITEM_STACK,
+			List.of(
+				new ItemStack(Items.GOLDEN_HOE),
+				new ItemStack(Items.DIAMOND_BLOCK)
+			),
+			List.of("shiny", "valuable", "expensive")
+		);
+
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		registerFluidAliases(registration, fluidHelper);
+	}
+
+	private <T> void registerFluidAliases(IIngredientAliasRegistration registration, IPlatformFluidHelper<T> fluidHelper) {
+		@SuppressWarnings("deprecation")
+		Holder.Reference<Fluid> water = Fluids.WATER.builtInRegistryHolder();
+		registration.addAliases(
+			fluidHelper.getFluidIngredientType(),
+			fluidHelper.create(water, fluidHelper.bucketVolume()),
+			List.of("wet", "aqua", "sea", "ocean")
+		);
 	}
 
 	@Override

@@ -72,7 +72,7 @@ public class IngredientSorterComparators {
 	}
 
 	private static Comparator<IListElementInfo<?>> getAlphabeticalComparator() {
-		return Comparator.comparing(IListElementInfo::getName);
+		return Comparator.comparing(i -> i.getNames().getFirst());
 	}
 
 	private Comparator<IListElementInfo<?>> getModNameComparator() {

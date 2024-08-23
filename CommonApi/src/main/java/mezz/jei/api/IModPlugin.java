@@ -1,6 +1,7 @@
 package mezz.jei.api;
 
 import mezz.jei.api.helpers.IPlatformFluidHelper;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModInfoRegistration;
 import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
@@ -50,6 +51,17 @@ public interface IModPlugin {
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
 	 */
 	default void registerIngredients(IModIngredientRegistration registration) {
+
+	}
+
+	/**
+	 * Register search aliases for ingredients.
+	 *
+	 * @implNote If the player has disabled search aliases in the config, this will not be called.
+	 *
+	 * @since 19.10.0
+	 */
+	default void registerIngredientAliases(IIngredientAliasRegistration registration) {
 
 	}
 
