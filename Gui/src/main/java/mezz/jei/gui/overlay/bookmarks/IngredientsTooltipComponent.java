@@ -7,6 +7,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -19,7 +20,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.level.material.Fluid;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -32,7 +33,6 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 	private static final int INGREDIENT_SIZE = 18;
 	private static final int INGREDIENT_PADDING = 1;
 	private final List<RenderElement<?>> ingredients;
-	private final static String FLUID_TYPE_UID = "fluid_stack";
 
 	public IngredientsTooltipComponent(IRecipeLayoutDrawable<?> layout) {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
@@ -142,11 +142,18 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 			ITypedIngredient<T> typedIngredient = summaryElement.getIngredient();
 			IIngredientType<T> type = typedIngredient.getType();
 			IIngredientHelper<T> helper = ingredientManager.getIngredientHelper(type);
-			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
 			T ingredient = helper.copyWithAmount(typedIngredient.getIngredient(), summaryElement.getAmount());
-			if (type.getUid().equals(FLUID_TYPE_UID)){
-				IPlatformFluidHelperInternal<T> fluidHelper = (IPlatformFluidHelperInternal<T>) Services.PLATFORM.getFluidHelper();
-				renderer = fluidHelper.createSlotRenderer(fluidHelper.bucketVolume());
+
+			IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+			IIngredientTypeWithSubtypes<Fluid, ?> fluidIngredientType = fluidHelper.getFluidIngredientType();
+
+			IIngredientRenderer<T> renderer;
+			if (type.equals(fluidIngredientType)){
+				@SuppressWarnings("unchecked")
+				IPlatformFluidHelperInternal<T> castFluidHelper = (IPlatformFluidHelperInternal<T>) fluidHelper;
+				renderer = castFluidHelper.createSlotRenderer(fluidHelper.bucketVolume());
+			} else {
+				renderer = ingredientManager.getIngredientRenderer(type);
 			}
 			return new RenderElement<>(renderer, ingredient);
 		}

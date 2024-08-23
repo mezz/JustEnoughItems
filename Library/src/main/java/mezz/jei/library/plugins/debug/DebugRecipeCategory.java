@@ -155,7 +155,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 		}
 
 		{
-			long capacity = 2 * bucketVolume;
+			long capacity = 200 * bucketVolume;
 			// random amount between half capacity and full
 			long amount = (capacity / 2) + (int) ((Math.random() * capacity) / 2);
 			builder.addSlot(RecipeIngredientRole.INPUT, 24, 0)

@@ -17,18 +17,12 @@ import net.minecraft.world.level.material.Fluids;
 import java.util.List;
 
 public class FluidSlotRenderer<T> implements IIngredientRenderer<T> {
-    private static final int SLOT_SIZE = 16;
     private final IPlatformFluidHelperInternal<T> fluidHelper;
     private final long capacity;
 
     public FluidSlotRenderer(IPlatformFluidHelperInternal<T> fluidHelper, long capacity) {
         this.fluidHelper = fluidHelper;
         this.capacity = capacity;
-    }
-
-    public FluidSlotRenderer(IPlatformFluidHelperInternal<T> fluidHelper) {
-        this.fluidHelper = fluidHelper;
-        this.capacity = fluidHelper.bucketVolume();
     }
 
     @Override
@@ -42,8 +36,6 @@ public class FluidSlotRenderer<T> implements IIngredientRenderer<T> {
 
         drawFluid(guiGraphics, ingredient, posX, posY);
 
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-
         RenderSystem.disableBlend();
     }
 
@@ -56,24 +48,30 @@ public class FluidSlotRenderer<T> implements IIngredientRenderer<T> {
         fluidHelper.getStillFluidSprite(fluidStack)
             .ifPresent(fluidStillSprite -> {
                 int fluidColor = fluidHelper.getColorTint(fluidStack);
-                long amount = fluidHelper.getAmount(fluidStack);
-                String amountString;
-                if (amount < capacity) {
-                    amountString = amount + fluidHelper.unit();
-                } else {
-                    amountString = String.format("%.1fB", (double) amount / capacity);
-                }
-
-                FluidTankRenderer.drawTiledSprite(guiGraphics, SLOT_SIZE, SLOT_SIZE, fluidColor, 16, fluidStillSprite, posX, posY);
-                PoseStack poseStack = guiGraphics.pose();
-                poseStack.pushPose();
-                {
-                    poseStack.translate(posX + 0.5f, posY + 0.5f, 200f);
-                    Font font = getFontRenderer(Minecraft.getInstance(), fluidStack);
-                    guiGraphics.drawString(font, amountString, 16 - font.width(amountString), 9, 0xFFFFFF, true);
-                }
-                poseStack.popPose();
+                FluidTankRenderer.drawTiledSprite(guiGraphics, getWidth(), getHeight(), fluidColor, 16, fluidStillSprite, posX, posY);
+                RenderSystem.setShaderColor(1, 1, 1, 1);
+                renderAmount(guiGraphics, fluidStack, posX, posY);
             });
+    }
+
+    private void renderAmount(GuiGraphics guiGraphics, T fluidStack, int posX, int posY) {
+        long amount = fluidHelper.getAmount(fluidStack);
+        String amountString;
+        if (amount < capacity) {
+            amountString = amount + fluidHelper.unit();
+        } else {
+            amountString = String.format("%.1fB", (double) amount / capacity);
+        }
+
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.pushPose();
+        {
+            poseStack.translate(posX + 0.5f, posY + 0.5f, 200f);
+            Font font = getFontRenderer(Minecraft.getInstance(), fluidStack);
+
+            guiGraphics.drawString(font, amountString, getWidth() - font.width(amountString), 9, 0xFFFFFF, true);
+        }
+        poseStack.popPose();
     }
 
     @SuppressWarnings("removal")
