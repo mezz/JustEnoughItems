@@ -121,12 +121,12 @@ public class ElementSearch implements IElementSearch {
 
 	private static <T> Object getUid(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
-		return ingredientHelper.getUniqueId(typedIngredient, UidContext.Ingredient);
+		return ingredientHelper.getUid(typedIngredient, UidContext.Ingredient);
 	}
 
 	@Override
 	public <T> Optional<IListElement<T>> findElement(ITypedIngredient<T> ingredient, IIngredientHelper<T> ingredientHelper) {
-		Object ingredientUid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+		Object ingredientUid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
 
 		IListElement<?> listElement = allElements.get(ingredientUid);
 		if (listElement != null && listElement.getTypedIngredient().getType().equals(ingredient.getType())) {
