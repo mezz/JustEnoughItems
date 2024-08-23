@@ -11,6 +11,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.ingredients.IngredientSet;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterpreter;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
@@ -101,8 +102,8 @@ public class BrewingRecipeMakerCommon {
 	) {
 		List<ItemStack> newPotions = new ArrayList<>();
 		for (ItemStack potionInput : knownPotions) {
-			String inputId = itemStackHelper.getUniqueId(potionInput, UidContext.Recipe);
-			String inputPathId = ResourceLocationUtil.sanitizePath(inputId);
+			Object inputId = itemStackHelper.getUid(potionInput, UidContext.Recipe);
+			String inputPathId = PotionSubtypeInterpreter.INSTANCE.getStringName(potionInput);
 
 			for (ItemStack potionReagent : potionReagents) {
 				ItemStack potionOutput = getOutput(potionBrewing, potionInput.copy(), potionReagent);
@@ -117,13 +118,15 @@ public class BrewingRecipeMakerCommon {
 					}
 				}
 
-				String outputId = itemStackHelper.getUniqueId(potionOutput, UidContext.Recipe);
+				Object outputId = itemStackHelper.getUid(potionOutput, UidContext.Recipe);
 				if (Objects.equals(inputId, outputId)) {
 					continue;
 				}
 
-				String outputModId = itemStackHelper.getResourceLocation(potionOutput).getNamespace();
-				String uidPath = inputPathId + ".to." + ResourceLocationUtil.sanitizePath(outputId);
+				ResourceLocation outputResourceLocation = itemStackHelper.getResourceLocation(potionOutput);
+				String outputPathId = PotionSubtypeInterpreter.INSTANCE.getStringName(potionOutput);
+				String outputModId = outputResourceLocation.getNamespace();
+				String uidPath = ResourceLocationUtil.sanitizePath(inputPathId + ".to." + outputPathId);
 				IJeiBrewingRecipe recipe = recipeFactory.createBrewingRecipe(
 					List.of(potionReagent),
 					potionInput.copy(),

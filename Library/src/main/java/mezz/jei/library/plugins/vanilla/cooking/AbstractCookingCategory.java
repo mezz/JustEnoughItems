@@ -1,13 +1,16 @@
 package mezz.jei.library.plugins.vanilla.cooking;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
+import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.common.Constants;
 import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.client.Minecraft;
@@ -113,6 +116,11 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	@Override
 	public ResourceLocation getRegistryName(RecipeHolder<T> recipe) {
 		return recipe.id();
+	}
+
+	@Override
+	public Codec<RecipeHolder<T>> getCodec(ICodecHelper codecHelper, IRecipeManager recipeManager) {
+		return codecHelper.getRecipeHolderCodec();
 	}
 
 	protected IRecipeWidget createCookingArrowWidget(RecipeHolder<T> recipeHolder, ScreenPosition position) {

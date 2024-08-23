@@ -66,9 +66,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private static final int minGuiWidth = 198;
 
 	private final IInternalKeyMappings keyBindings;
-	private final IRecipeManager recipeManager;
 	private final BookmarkList bookmarks;
-	private final IGuiHelper guiHelper;
 	private final IFocusFactory focusFactory;
 	private final IIngredientManager ingredientManager;
 
@@ -122,9 +120,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IGuiHelper guiHelper
 	) {
 		super(Component.literal("Recipes"));
-		this.recipeManager = recipeManager;
 		this.bookmarks = bookmarks;
-		this.guiHelper = guiHelper;
 		this.ingredientManager = ingredientManager;
 		this.keyBindings = keyBindings;
 		this.logic = new RecipeGuiLogic(
@@ -565,9 +561,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		RecipeBookmarkButton bookmarkButton = RecipeBookmarkButton.create(
 			recipeLayoutDrawable,
 			ingredientManager,
-			bookmarks,
-			recipeManager,
-			guiHelper
+			bookmarks
 		);
 
 		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, bookmarkButton);

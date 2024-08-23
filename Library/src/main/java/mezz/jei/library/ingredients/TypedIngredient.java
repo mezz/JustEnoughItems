@@ -133,7 +133,7 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
-			.add("type", ingredientType)
+			.add("type", ingredientType.getUid())
 			.add("ingredient", ingredient)
 			.toString();
 	}

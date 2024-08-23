@@ -4,6 +4,7 @@ import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
@@ -171,6 +172,12 @@ public interface IRecipeManager {
 		int yPos,
 		int ingredientCycleOffset
 	);
+
+	/**
+	 * Get the ingredients for a given recipe.
+	 * @since 19.9.0
+	 */
+	<T> IIngredientSupplier getRecipeIngredients(IRecipeCategory<T> recipeCategory, T recipe);
 
 	/**
 	 * Get the registered recipe type for the given unique id.

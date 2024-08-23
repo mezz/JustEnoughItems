@@ -4,10 +4,8 @@ import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -29,8 +27,8 @@ public class CompostingRecipeMaker {
 				Item item = itemStack.getItem();
 				float compostValue = compostables.getOrDefault(item, 0);
 				if (compostValue > 0) {
-					String ingredientUid = ingredientHelper.getUniqueId(itemStack, UidContext.Recipe);
-					String ingredientUidPath = ResourceLocationUtil.sanitizePath(ingredientUid);
+					ResourceLocation resourceLocation = ingredientHelper.getResourceLocation(itemStack);
+					String ingredientUidPath = resourceLocation.getPath();
 					ResourceLocation recipeUid = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, ingredientUidPath);
 					CompostingRecipe recipe = new CompostingRecipe(itemStack, compostValue, recipeUid);
 					consumer.accept(recipe);

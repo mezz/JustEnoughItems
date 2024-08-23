@@ -25,7 +25,7 @@ public class TestPlugin implements IModPlugin {
 			baseTestIngredients.add(new TestIngredient(i));
 		}
 
-		registration.register(TestIngredient.TYPE, baseTestIngredients, new TestIngredientHelper(), new TestIngredientRenderer());
+		registration.register(TestIngredient.TYPE, baseTestIngredients, new TestIngredientHelper(), new TestIngredientRenderer(), TestIngredient.CODEC);
 	}
 
 }

@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * An ingredient is anything used in a recipe, like ItemStacks and FluidStacks.
  *
  * If you have a new type of ingredient to add to JEI, you will have to implement this in order to use
- * {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
+ * {@link IModIngredientRegistration#register}
  */
 public interface IIngredientHelper<V> {
 	/**
@@ -34,8 +34,26 @@ public interface IIngredientHelper<V> {
 	/**
 	 * Unique ID for use in comparing, blacklisting, and looking up ingredients.
 	 * @since 7.3.0
+	 *
+	 * @deprecated use {@link #getUid(Object, UidContext)} instead
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "19.9.0", forRemoval = true)
 	String getUniqueId(V ingredient, UidContext context);
+
+	/**
+	 * Unique ID for use in comparing and looking up ingredients.
+	 *
+	 * Returns an {@link Object} so that UID creation can be optimized.
+	 * Make sure the returned value implements {@link Object#equals} and {@link Object#hashCode}.
+	 *
+	 * Replaces {@link #getUniqueId(Object, UidContext)}.
+	 *
+	 * @since 19.9.0
+	 */
+	default Object getUid(V ingredient, UidContext context) {
+		return getUniqueId(ingredient, context);
+	}
 
 	/**
 	 * Return true if the given ingredient can have subtypes.

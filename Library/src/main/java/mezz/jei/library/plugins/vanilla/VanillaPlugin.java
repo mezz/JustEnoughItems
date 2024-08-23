@@ -1,5 +1,6 @@
 package mezz.jei.library.plugins.vanilla;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
@@ -40,16 +41,6 @@ import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.library.plugins.vanilla.anvil.SmithingCategoryExtension;
 import mezz.jei.library.plugins.vanilla.anvil.SmithingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeCategory;
-import mezz.jei.library.plugins.vanilla.gui.InventoryEffectRendererGuiHandler;
-import mezz.jei.library.plugins.vanilla.gui.RecipeBookGuiHandler;
-import mezz.jei.library.plugins.vanilla.gui.ToastGuiHandler;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.EnchantedBookSubtypeInterpreter;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.FireworkRocketSubtypeInterpreter;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.InstrumentSubtypeInterpreter;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.OminousBottleSubtypeInterpreter;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PaintingSubtypeInterpreter;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.LightSubtypeInterpreter;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.compostable.CompostableRecipeCategory;
 import mezz.jei.library.plugins.vanilla.compostable.CompostingRecipeMaker;
 import mezz.jei.library.plugins.vanilla.cooking.BlastingCategory;
@@ -65,10 +56,20 @@ import mezz.jei.library.plugins.vanilla.crafting.replacers.ShieldDecorationRecip
 import mezz.jei.library.plugins.vanilla.crafting.replacers.ShulkerBoxColoringRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.SuspiciousStewRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
+import mezz.jei.library.plugins.vanilla.gui.InventoryEffectRendererGuiHandler;
+import mezz.jei.library.plugins.vanilla.gui.RecipeBookGuiHandler;
+import mezz.jei.library.plugins.vanilla.gui.ToastGuiHandler;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackListFactory;
 import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidStackListFactory;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.EnchantedBookSubtypeInterpreter;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.FireworkRocketSubtypeInterpreter;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.InstrumentSubtypeInterpreter;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.LightSubtypeInterpreter;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.OminousBottleSubtypeInterpreter;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PaintingSubtypeInterpreter;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.SuspiciousStewSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.library.render.FluidTankRenderer;
@@ -174,9 +175,15 @@ public class VanillaPlugin implements IModPlugin {
 
 		List<ItemStack> itemStacks = ItemStackListFactory.create(stackHelper);
 		IColorHelper colorHelper = registration.getColorHelper();
-		ItemStackHelper itemStackHelper = new ItemStackHelper(subtypeManager, stackHelper, colorHelper);
+		ItemStackHelper itemStackHelper = new ItemStackHelper(stackHelper, colorHelper);
 		ItemStackRenderer itemStackRenderer = new ItemStackRenderer();
-		registration.register(VanillaTypes.ITEM_STACK, itemStacks, itemStackHelper, itemStackRenderer);
+		registration.register(
+			VanillaTypes.ITEM_STACK,
+			itemStacks,
+			itemStackHelper,
+			itemStackRenderer,
+			ItemStack.STRICT_SINGLE_ITEM_CODEC
+		);
 
 		IPlatformFluidHelperInternal<?> platformFluidHelper = Services.PLATFORM.getFluidHelper();
 		registerFluidIngredients(registration, platformFluidHelper);
@@ -196,7 +203,8 @@ public class VanillaPlugin implements IModPlugin {
 		FluidIngredientHelper<T> fluidIngredientHelper = new FluidIngredientHelper<>(subtypeManager, colorHelper, platformFluidHelper);
 		FluidTankRenderer<T> fluidTankRenderer = new FluidTankRenderer<>(platformFluidHelper);
 		IIngredientType<T> fluidIngredientType = platformFluidHelper.getFluidIngredientType();
-		registration.register(fluidIngredientType, fluidIngredients, fluidIngredientHelper, fluidTankRenderer);
+		Codec<T> codec = platformFluidHelper.getCodec();
+		registration.register(fluidIngredientType, fluidIngredients, fluidIngredientHelper, fluidTankRenderer, codec);
 	}
 
 	@Override

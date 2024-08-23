@@ -19,8 +19,8 @@ public class BrewingRecipeUtil {
 	public static final ItemStack POTION = new ItemStack(Items.POTION);
 	public static final ItemStack WATER_BOTTLE = PotionContents.createItemStack(POTION.getItem(), Potions.WATER);
 
-	private final Map<String, Integer> brewingStepCache = new HashMap<>(); // output potion -> brewing steps
-	private final SetMultiMap<String, String> potionMap = new SetMultiMap<>(); // output potion -> input potions
+	private final Map<Object, Integer> brewingStepCache = new HashMap<>(); // output potion -> brewing steps
+	private final SetMultiMap<Object, Object> potionMap = new SetMultiMap<>(); // output potion -> input potions
 	private final IIngredientHelper<ItemStack> itemStackHelper;
 
 	public BrewingRecipeUtil(IIngredientHelper<ItemStack> itemStackHelper) {
@@ -29,28 +29,28 @@ public class BrewingRecipeUtil {
 	}
 
 	public void addRecipe(List<ItemStack> inputPotions, ItemStack outputPotion) {
-		String potionOutputUid = itemStackHelper.getUniqueId(outputPotion, UidContext.Recipe);
+		Object potionOutputUid = itemStackHelper.getUid(outputPotion, UidContext.Recipe);
 		for (ItemStack inputPotion : inputPotions) {
-			String potionInputUid = itemStackHelper.getUniqueId(inputPotion, UidContext.Recipe);
+			Object potionInputUid = itemStackHelper.getUid(inputPotion, UidContext.Recipe);
 			potionMap.put(potionOutputUid, potionInputUid);
 		}
 		clearCache();
 	}
 
 	public int getBrewingSteps(ItemStack outputPotion) {
-		String potionInputUid = itemStackHelper.getUniqueId(outputPotion, UidContext.Recipe);
+		Object potionInputUid = itemStackHelper.getUid(outputPotion, UidContext.Recipe);
 		return getBrewingSteps(potionInputUid, new HashSet<>());
 	}
 
 	private void clearCache() {
 		if (brewingStepCache.size() != 1) {
 			brewingStepCache.clear();
-			String waterBottleUid = itemStackHelper.getUniqueId(WATER_BOTTLE, UidContext.Recipe);
+			Object waterBottleUid = itemStackHelper.getUid(WATER_BOTTLE, UidContext.Recipe);
 			brewingStepCache.put(waterBottleUid, 0);
 		}
 	}
 
-	private int getBrewingSteps(String potionOutputUid, Set<String> previousSteps) {
+	private int getBrewingSteps(Object potionOutputUid, Set<Object> previousSteps) {
 		Integer cachedBrewingSteps = brewingStepCache.get(potionOutputUid);
 		if (cachedBrewingSteps != null) {
 			return cachedBrewingSteps;
@@ -60,8 +60,8 @@ public class BrewingRecipeUtil {
 			return Integer.MAX_VALUE;
 		}
 
-		Collection<String> prevPotions = potionMap.get(potionOutputUid);
-		int minPrevSteps = prevPotions.stream()
+		Collection<Object> prevPotionUids = potionMap.get(potionOutputUid);
+		int minPrevSteps = prevPotionUids.stream()
 			.mapToInt(prevPotion -> getBrewingSteps(prevPotion, previousSteps))
 			.min()
 			.orElse(Integer.MAX_VALUE);

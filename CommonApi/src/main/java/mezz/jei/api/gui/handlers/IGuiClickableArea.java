@@ -38,7 +38,6 @@ public interface IGuiClickableArea {
 	 *
 	 * @deprecated use {@link #getTooltip(ITooltipBuilder)}
 	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(since = "19.5.4", forRemoval = true)
 	default List<Component> getTooltipStrings() {
 		return Collections.emptyList();

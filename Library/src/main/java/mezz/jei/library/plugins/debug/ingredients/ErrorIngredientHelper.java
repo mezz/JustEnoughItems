@@ -20,9 +20,20 @@ public class ErrorIngredientHelper implements IIngredientHelper<ErrorIngredient>
 		return "JEI Error Item #" + ingredient.crashType();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getUniqueId(ErrorIngredient ingredient, UidContext context) {
 		return "JEI_error_" + ingredient.crashType();
+	}
+
+	@Override
+	public Object getUid(ErrorIngredient ingredient, UidContext context) {
+		return ingredient.crashType();
+	}
+
+	@Override
+	public String getWildcardId(ErrorIngredient ingredient) {
+		return "JEI_error";
 	}
 
 	@Override

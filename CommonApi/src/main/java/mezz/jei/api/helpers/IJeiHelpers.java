@@ -1,5 +1,6 @@
 package mezz.jei.api.helpers;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
@@ -75,4 +76,11 @@ public interface IJeiHelpers {
 	 * @since 11.5.0
 	 */
 	IIngredientManager getIngredientManager();
+
+	/**
+	 * Helps with implementing various {@link Codec}s.
+	 *
+	 * @since 19.9.0
+	 */
+	ICodecHelper getCodecHelper();
 }

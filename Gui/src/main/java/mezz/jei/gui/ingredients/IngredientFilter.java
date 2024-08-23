@@ -12,8 +12,8 @@ import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
-import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
+import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
@@ -136,8 +136,8 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 	) {
 		V ingredient = typedIngredient.getIngredient();
 		IIngredientType<V> type = typedIngredient.getType();
-		Function<ITypedIngredient<V>, String> uidFunction = (i) -> ingredientHelper.getUniqueId(i.getIngredient(), UidContext.Ingredient);
-		String ingredientUid = uidFunction.apply(typedIngredient);
+		Function<ITypedIngredient<V>, Object> uidFunction = (i) -> ingredientHelper.getUid(i.getIngredient(), UidContext.Ingredient);
+		Object ingredientUid = uidFunction.apply(typedIngredient);
 		String lowercaseDisplayName = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
 
 		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, ElementPrefixParser.NO_PREFIX);
@@ -241,11 +241,11 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			.map(IListElementInfo::getTypedIngredient);
 	}
 
-	private static <T> Optional<IListElementInfo<T>> checkForMatch(IListElementInfo<?> info, IIngredientType<T> ingredientType, String uid, Function<ITypedIngredient<T>, String> uidFunction) {
+	private static <T> Optional<IListElementInfo<T>> checkForMatch(IListElementInfo<?> info, IIngredientType<T> ingredientType, Object uid, Function<ITypedIngredient<T>, Object> uidFunction) {
 		return optionalCast(info, ingredientType)
 			.filter(cast -> {
 				ITypedIngredient<T> typedIngredient = cast.getTypedIngredient();
-				String elementUid = uidFunction.apply(typedIngredient);
+				Object elementUid = uidFunction.apply(typedIngredient);
 				return uid.equals(elementUid);
 			});
 	}

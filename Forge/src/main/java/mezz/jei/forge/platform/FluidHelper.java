@@ -1,5 +1,6 @@
 package mezz.jei.forge.platform;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -139,5 +140,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	public Optional<FluidStack> getContainedFluid(ITypedIngredient<?> ingredient) {
 		// TODO: update when Forge has item capabilities for fluid containers
 		return Optional.empty();
+	}
+
+	@Override
+	public Codec<FluidStack> getCodec() {
+		return FluidStack.CODEC;
 	}
 }

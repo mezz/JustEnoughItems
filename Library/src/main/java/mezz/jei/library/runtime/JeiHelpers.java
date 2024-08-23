@@ -1,5 +1,6 @@
 package mezz.jei.library.runtime;
 
+import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
@@ -12,9 +13,10 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.gui.helpers.GuiHelper;
+import mezz.jei.library.helpers.CodecHelper;
 import net.minecraft.resources.ResourceLocation;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -28,6 +30,7 @@ public class JeiHelpers implements IJeiHelpers {
 	private final IColorHelper colorHelper;
 	private final IIngredientManager ingredientManager;
 	private final IPlatformFluidHelper<?> platformFluidHelper;
+	private final ICodecHelper codecHelper;
 	private @Nullable Collection<IRecipeCategory<?>> recipeCategories;
 
 	public JeiHelpers(
@@ -45,6 +48,7 @@ public class JeiHelpers implements IJeiHelpers {
 		this.colorHelper = colorHelper;
 		this.ingredientManager = ingredientManager;
 		this.platformFluidHelper = Services.PLATFORM.getFluidHelper();
+		this.codecHelper = new CodecHelper(ingredientManager, focusFactory);
 	}
 
 	public void setRecipeCategories(Collection<IRecipeCategory<?>> recipeCategories) {
@@ -103,5 +107,10 @@ public class JeiHelpers implements IJeiHelpers {
 	@Override
 	public IIngredientManager getIngredientManager() {
 		return ingredientManager;
+	}
+
+	@Override
+	public ICodecHelper getCodecHelper() {
+		return codecHelper;
 	}
 }

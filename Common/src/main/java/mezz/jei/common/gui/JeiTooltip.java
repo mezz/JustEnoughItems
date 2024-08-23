@@ -1,6 +1,10 @@
 package mezz.jei.common.gui;
 
+import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -22,9 +26,12 @@ import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -197,6 +204,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		T ingredient = typedIngredient.getIngredient();
 		IIngredientType<T> type = typedIngredient.getType();
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
+		Codec<T> ingredientCodec = ingredientManager.getIngredientCodec(type);
 
 		add(Component.empty());
 		add(
@@ -212,9 +220,30 @@ public class JeiTooltip implements ITooltipBuilder {
 				.withStyle(ChatFormatting.DARK_GRAY)
 		);
 		add(
-			Component.literal("* uid: " + ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient))
+			Component.literal("* uid: " + ingredientHelper.getUid(ingredient, UidContext.Ingredient))
 				.withStyle(ChatFormatting.DARK_GRAY)
 		);
+		try {
+			Minecraft minecraft = Minecraft.getInstance();
+			ClientLevel level = minecraft.level;
+			assert level != null;
+			RegistryAccess registryAccess = level.registryAccess();
+			RegistryOps<JsonElement> registryOps = registryAccess.createSerializationContext(JsonOps.INSTANCE);
+			String jsonResult = ingredientCodec.encodeStart(registryOps, ingredient)
+					.mapOrElse(
+						JsonElement::toString,
+						DataResult.Error::message
+					);
+			add(
+				Component.literal("* json: " + jsonResult)
+					.withStyle(ChatFormatting.DARK_GRAY)
+			);
+		} catch (RuntimeException e) {
+			add(
+				Component.literal("* json crashed: " + e.getMessage())
+					.withStyle(ChatFormatting.DARK_RED)
+			);
+		}
 		add(
 			Component.literal("* extra info: " + ingredientHelper.getErrorInfo(ingredient))
 				.withStyle(ChatFormatting.DARK_GRAY)

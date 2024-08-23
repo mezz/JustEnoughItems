@@ -1,15 +1,15 @@
 package mezz.jei.api.ingredients;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
- * A type of ingredient (i.e. ItemStack, FluidStack, etc) handled by JEI.
- * Register new types with {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
+ * A type of ingredient (i.e. ItemStack, FluidStack, etc.) handled by JEI.
+ * Register new types with {@link IModIngredientRegistration#register}
  *
  * @see VanillaTypes for the built-in vanilla type {@link VanillaTypes#ITEM_STACK}
  */
@@ -22,6 +22,9 @@ public interface IIngredientType<T> {
 
 	/**
 	 * @return The unique ID for this type, used for serialization to and from disk.
+	 *
+	 * @see ICodecHelper#getIngredientTypeCodec()
+	 *
 	 * @since 19.1.0
 	 */
 	default String getUid() {
