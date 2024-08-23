@@ -20,6 +20,12 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 	}
 
 	@Override
+	public Object getUid(TestIngredient ingredient, UidContext context) {
+		return ingredient.number();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
 	public String getUniqueId(TestIngredient ingredient, UidContext context) {
 		return "Test Ingredient Unique Id " + ingredient;
 	}

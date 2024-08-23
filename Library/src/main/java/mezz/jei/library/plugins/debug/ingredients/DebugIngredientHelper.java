@@ -18,9 +18,20 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 		return "JEI Debug Item #" + ingredient.number();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getUniqueId(DebugIngredient ingredient, UidContext context) {
 		return "JEI_debug_" + ingredient.number();
+	}
+
+	@Override
+	public Object getUid(DebugIngredient ingredient, UidContext context) {
+		return ingredient.number();
+	}
+
+	@Override
+	public String getWildcardId(DebugIngredient ingredient) {
+		return "JEI_debug";
 	}
 
 	@Override

@@ -1,20 +1,24 @@
 package mezz.jei.api.recipe.category;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.serialization.Codec;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
+import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
@@ -26,6 +30,8 @@ import java.util.List;
 
 /**
  * Defines a category of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
+ * Register it with {@link IRecipeCategoryRegistration#addRecipeCategories(IRecipeCategory[])}
+ *
  * Handles setting up the GUI for its recipe category in {@link #setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}.
  * Also draws elements that are common to all recipes in the category like the background.
  */
@@ -149,7 +155,7 @@ public interface IRecipeCategory<T> {
 	 * Get the tooltip for whatever is under the mouse.
 	 * Ingredient tooltips from recipe slots are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
 	 *
 	 * @param recipe          the current recipe being drawn.
 	 * @param recipeSlotsView a view of the current recipe slots being drawn.
@@ -160,7 +166,6 @@ public interface IRecipeCategory<T> {
 	 * @since 9.3.0
 	 * @deprecated use {@link #getTooltip(ITooltipBuilder, Object, IRecipeSlotsView, double, double)}
 	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(since = "19.5.4", forRemoval = true)
 	default List<Component> getTooltipStrings(T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
 		return List.of();
@@ -170,7 +175,7 @@ public interface IRecipeCategory<T> {
 	 * Get the tooltip for whatever is under the mouse.
 	 * Ingredient tooltips from recipe slots are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
 	 *
 	 * @param tooltip         a tooltip builder to add tooltip lines to
 	 * @param recipe          the current recipe being drawn.
@@ -232,6 +237,26 @@ public interface IRecipeCategory<T> {
 			return recipeHolder.id();
 		}
 		return null;
+	}
+
+	/**
+	 * Get a codec for this type of recipe.
+	 *
+	 * The default implementation uses {@link #getRegistryName} to look up the recipes in an inefficient way.
+	 *
+	 * Override this method to provide a more efficient implementation,
+	 * or an implementation that doesn't depend on {@link #getRegistryName}
+	 *
+	 * @since 19.9.0
+	 */
+	default Codec<T> getCodec(ICodecHelper codecHelper, IRecipeManager recipeManager) {
+		RecipeType<T> recipeType = getRecipeType();
+		if (RecipeHolder.class.isAssignableFrom(recipeType.getRecipeClass())) {
+			@SuppressWarnings("unchecked")
+			Codec<T> recipeHolderCodec = (Codec<T>) codecHelper.getRecipeHolderCodec();
+			return recipeHolderCodec;
+		}
+		return codecHelper.getSlowRecipeCategoryCodec(this, recipeManager);
 	}
 
 	/**

@@ -13,7 +13,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
-import mezz.jei.library.ingredients.IIngredientSupplier;
+import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.library.recipes.collect.RecipeMap;
 import mezz.jei.library.recipes.collect.RecipeTypeData;
 import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
@@ -139,9 +139,6 @@ public class RecipeManagerInternal {
 			return false;
 		}
 		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
-		if (ingredientSupplier == null) {
-			return false;
-		}
 
 		try {
 			for (RecipeMap recipeMap : recipeMaps.values()) {

@@ -8,7 +8,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.library.ingredients.IIngredientSupplier;
+import mezz.jei.api.ingredients.IIngredientSupplier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,10 +30,6 @@ public final class RecipeErrorUtil {
 		recipeInfoBuilder.append(recipeName);
 
 		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
-		if (ingredientSupplier == null) {
-			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
-			return recipeInfoBuilder.toString();
-		}
 
 		recipeInfoBuilder.append(" {");
 		recipeInfoBuilder.append("\n  Outputs:");

@@ -3,6 +3,7 @@ package mezz.jei.library.recipes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeCatalystLookup;
@@ -18,6 +19,7 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.gui.ingredients.CycleTimer;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
+import mezz.jei.library.util.IngredientSupplierHelper;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
@@ -114,6 +116,11 @@ public class RecipeManager implements IRecipeManager {
 		builder.addOptionalTypedIngredients(ingredients);
 		CycleTimer cycleTimer = CycleTimer.create(ingredientCycleOffset);
 		return builder.build(focusedIngredients, cycleTimer);
+	}
+
+	@Override
+	public <T> IIngredientSupplier getRecipeIngredients(IRecipeCategory<T> recipeCategory, T recipe) {
+		return IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
 	}
 
 	@Override

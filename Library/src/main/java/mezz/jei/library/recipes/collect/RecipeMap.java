@@ -5,14 +5,13 @@ import com.google.common.collect.Multimaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.library.ingredients.IIngredientSupplier;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
@@ -86,15 +85,7 @@ public class RecipeMap {
 
 	private <T> Object getIngredientUid(ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> type = typedIngredient.getType();
-		T ingredient = typedIngredient.getIngredient();
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
-
-		if (type instanceof IIngredientTypeWithSubtypes<?, T> ingredientTypeWithSubtypes) {
-			if (!ingredientHelper.hasSubtypes(ingredient)) {
-				return ingredientTypeWithSubtypes.getBase(ingredient);
-			}
-		}
-
-		return ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
+		return ingredientHelper.getUid(typedIngredient.getIngredient(), UidContext.Recipe);
 	}
 }

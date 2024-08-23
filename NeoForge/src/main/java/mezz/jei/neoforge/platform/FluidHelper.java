@@ -1,5 +1,6 @@
 package mezz.jei.neoforge.platform;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
@@ -143,5 +144,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 		return ingredient.getItemStack()
 			.flatMap(i -> Optional.ofNullable(i.getCapability(Capabilities.FluidHandler.ITEM)))
 			.map(c -> c.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE));
+	}
+
+	@Override
+	public Codec<FluidStack> getCodec() {
+		return FluidStack.CODEC;
 	}
 }

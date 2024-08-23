@@ -1,6 +1,6 @@
 package mezz.jei.library.plugins.vanilla.ingredients.subtypes;
 
-import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
@@ -8,13 +8,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-public class EnchantedBookSubtypeInterpreter implements IIngredientSubtypeInterpreter<ItemStack> {
+public class EnchantedBookSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
 	public static final EnchantedBookSubtypeInterpreter INSTANCE = new EnchantedBookSubtypeInterpreter();
 
 	private EnchantedBookSubtypeInterpreter() {
@@ -22,10 +23,20 @@ public class EnchantedBookSubtypeInterpreter implements IIngredientSubtypeInterp
 	}
 
 	@Override
-	public String apply(ItemStack itemStack, UidContext context) {
+	@Nullable
+	public Object getSubtypeData(ItemStack ingredient, UidContext context) {
+		return EnchantmentHelper.getEnchantmentsForCrafting(ingredient);
+	}
+
+	@Override
+	public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+		return getStringName(ingredient);
+	}
+
+	public String getStringName(ItemStack itemStack) {
 		ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(itemStack);
 		if (enchantments.isEmpty()) {
-			return IIngredientSubtypeInterpreter.NONE;
+			return "";
 		}
 		List<String> strings = new ArrayList<>();
 		for (Holder<Enchantment> e : enchantments.keySet()) {

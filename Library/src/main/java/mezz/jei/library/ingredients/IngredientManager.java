@@ -1,5 +1,6 @@
 package mezz.jei.library.ingredients;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -189,14 +190,23 @@ public class IngredientManager implements IIngredientManager {
 	public <V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
 		return registeredIngredients
 			.getIngredientInfo(ingredientType)
-			.getIngredientByUid(ingredientUuid);
+			.getIngredientByLegacyUid(ingredientUuid);
 	}
 
+	@SuppressWarnings({"removal"})
 	@Override
+	@Deprecated
 	public <V> Optional<ITypedIngredient<V>> getTypedIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
 		return registeredIngredients
 			.getIngredientInfo(ingredientType)
-			.getIngredientByUid(ingredientUuid)
+			.getIngredientByLegacyUid(ingredientUuid)
 			.flatMap(i -> TypedIngredient.createAndFilterInvalid(this, ingredientType, i, true));
+	}
+
+	@Override
+	public <V> Codec<V> getIngredientCodec(IIngredientType<V> ingredientType) {
+		return registeredIngredients
+			.getIngredientInfo(ingredientType)
+			.getIngredientCodec();
 	}
 }

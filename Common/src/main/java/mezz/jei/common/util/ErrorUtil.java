@@ -1,19 +1,25 @@
 package mezz.jei.common.util;
 
+import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -62,7 +68,6 @@ public final class ErrorUtil {
 
 	private static String getBlockName(BlockItem blockItem) {
 		Block block = blockItem.getBlock();
-		//noinspection ConstantValue
 		if (block == null) {
 			return "null";
 		}
@@ -167,26 +172,22 @@ public final class ErrorUtil {
 
 	public static <T> CrashReport createIngredientCrashReport(Throwable throwable, String title, IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
 		CrashReport crashReport = CrashReport.forThrowable(throwable, title);
-
-		IIngredientType<T> ingredientType = typedIngredient.getType();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-
 		CrashReportCategory category = crashReport.addCategory("Ingredient");
-		setIngredientCategoryDetails(category, typedIngredient, ingredientHelper);
+		setIngredientCategoryDetails(category, typedIngredient, ingredientManager);
 		return crashReport;
 	}
 
 	public static <T> void logIngredientCrash(Throwable throwable, String title, IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
 		CrashReportCategory category = new CrashReportCategory("Ingredient");
-		IIngredientType<T> ingredientType = typedIngredient.getType();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		setIngredientCategoryDetails(category, typedIngredient, ingredientHelper);
+		setIngredientCategoryDetails(category, typedIngredient, ingredientManager);
 		LOGGER.error(crashReportToString(throwable, title, category));
 	}
 
-	private static <T> void setIngredientCategoryDetails(CrashReportCategory category, ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
+	private static <T> void setIngredientCategoryDetails(CrashReportCategory category, ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
 		T ingredient = typedIngredient.getIngredient();
 		IIngredientType<T> ingredientType = typedIngredient.getType();
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		Codec<T> ingredientCodec = ingredientManager.getIngredientCodec(ingredientType);
 
 		IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
 
@@ -198,7 +199,18 @@ public final class ErrorUtil {
 		category.setDetail("Registry Name", () -> ingredientHelper.getResourceLocation(ingredient).toString());
 		category.setDetail("Class Name", () -> ingredient.getClass().toString());
 		category.setDetail("toString Name", ingredient::toString);
-		category.setDetail("Unique Id for JEI (for JEI Blacklist)", () -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient));
+		category.setDetail("JSON", () -> {
+			Minecraft minecraft = Minecraft.getInstance();
+			ClientLevel level = minecraft.level;
+			assert level != null;
+			RegistryAccess registryAccess = level.registryAccess();
+			RegistryOps<JsonElement> registryOps = registryAccess.createSerializationContext(JsonOps.INSTANCE);
+			return ingredientCodec.encodeStart(registryOps, ingredient)
+				.mapOrElse(
+					JsonElement::toString,
+					DataResult.Error::message
+				);
+		});
 		category.setDetail("Ingredient Type for JEI", () -> ingredientType.getIngredientClass().toString());
 		category.setDetail("Error Info gathered from JEI", () -> ingredientHelper.getErrorInfo(ingredient));
 	}

@@ -63,14 +63,14 @@ public interface IEditModeConfig {
 	enum HideMode {
 		/**
 		 * Hides or shows a single item based on its UID.
-		 * See {@link IIngredientHelper#getUniqueId(Object, UidContext)} using {@link UidContext#Ingredient}.
+		 * See {@link IIngredientHelper#getUid(Object, UidContext)} using {@link UidContext#Ingredient}.
 		 *
 		 * @since 11.5.0
 		 */
 		SINGLE,
 		/**
 		 * Hides or shows a single item based on its Wildcard UID.
-		 * See {@link IIngredientHelper#getWildcardId(Object)}
+		 * See {@link IIngredientHelper#getWildcardId(Object)}.
 		 *
 		 * @since 11.5.0
 		 */

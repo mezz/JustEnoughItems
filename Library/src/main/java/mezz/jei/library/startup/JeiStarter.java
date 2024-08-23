@@ -38,6 +38,7 @@ import mezz.jei.library.recipes.RecipeTransferManager;
 import mezz.jei.library.runtime.JeiHelpers;
 import mezz.jei.library.runtime.JeiRuntime;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -101,6 +102,7 @@ public final class JeiStarter {
 			LOGGER.error("Failed to start JEI, there is no Minecraft client level.");
 			return;
 		}
+		RegistryAccess registryAccess = minecraft.level.registryAccess();
 
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
@@ -118,7 +120,12 @@ public final class JeiStarter {
 		ingredientManager.registerIngredientListener(blacklist);
 
 		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
-		EditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.cfg")), ingredientManager);
+		EditModeConfig.FileSerializer editModeSerializer = new EditModeConfig.FileSerializer(
+			configDir.resolve("blacklist.json"),
+			registryAccess,
+			jeiHelpers.getCodecHelper()
+		);
+		EditModeConfig editModeConfig = new EditModeConfig(editModeSerializer, ingredientManager);
 
 		IIngredientVisibility ingredientVisibility = new IngredientVisibility(
 			blacklist,

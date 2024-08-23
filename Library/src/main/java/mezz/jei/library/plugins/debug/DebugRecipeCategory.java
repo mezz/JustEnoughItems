@@ -6,8 +6,6 @@ import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
-import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
@@ -17,7 +15,6 @@ import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -129,8 +126,8 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 
 	private <T> void drawIngredientName(Minecraft minecraft, GuiGraphics guiGraphics, ITypedIngredient<T> ingredient) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient.getType());
-		String jeiUid = ingredientHelper.getUniqueId(ingredient.getIngredient(), UidContext.Ingredient);
-		guiGraphics.drawString(minecraft.font, jeiUid, 50, 52, 0, false);
+		String serialized = ingredientHelper.getResourceLocation(ingredient.getIngredient()).toString();
+		guiGraphics.drawString(minecraft.font, serialized, 50, 52, 0, false);
 	}
 
 	@Override
@@ -180,24 +177,11 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 				platformFluidHelper.create(Fluids.LAVA.defaultFluidState().holder(), (int) ((1.0 + Math.random()) * bucketVolume)),
 				new ItemStack(Items.ACACIA_LEAVES)
 			))
-			.addTooltipCallback(new IRecipeSlotTooltipCallback() {
-				@SuppressWarnings("removal")
-				@Override
-				public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
-					switch (recipeSlotView.getRole()) {
-						case INPUT -> tooltip.add(Component.literal("Input DebugIngredient"));
-						case OUTPUT -> tooltip.add(Component.literal( "Output DebugIngredient"));
-						case CATALYST -> tooltip.add(Component.literal("Catalyst DebugIngredient"));
-					}
-				}
-
-				@Override
-				public void onRichTooltip(IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
-					switch (recipeSlotView.getRole()) {
-						case INPUT -> tooltip.add(Component.literal("Input DebugIngredient"));
-						case OUTPUT -> tooltip.add(Component.literal( "Output DebugIngredient"));
-						case CATALYST -> tooltip.add(Component.literal("Catalyst DebugIngredient"));
-					}
+			.addRichTooltipCallback((recipeSlotView, tooltip) -> {
+				switch (recipeSlotView.getRole()) {
+					case INPUT -> tooltip.add(Component.literal("Input DebugIngredient"));
+					case OUTPUT -> tooltip.add(Component.literal( "Output DebugIngredient"));
+					case CATALYST -> tooltip.add(Component.literal("Catalyst DebugIngredient"));
 				}
 			});
 	}

@@ -196,19 +196,19 @@ public final class RecipeTransferUtil {
 		// and also split them between "equal" groups
 		Map<IRecipeSlotView, Map<ItemStack, ArrayList<PhantomSlotState>>> relevantSlots = new IdentityHashMap<>();
 
-		Map<IRecipeSlotView, Set<String>> slotUidCache = new IdentityHashMap<>();
+		Map<IRecipeSlotView, Set<Object>> slotUidCache = new IdentityHashMap<>();
 		List<IRecipeSlotView> nonEmptyRequiredStacks = requiredItemStacks.stream()
 			.filter(r -> !r.isEmpty())
 			.toList();
 
 		for (Map.Entry<Slot, ItemStack> slotTuple : availableItemStacks.entrySet()) {
 			ItemStack slotItemStack = slotTuple.getValue();
-			String slotItemStackUid = stackhelper.getUniqueIdentifierForStack(slotItemStack, UidContext.Ingredient);
+			Object slotItemStackUid = stackhelper.getUidForStack(slotItemStack, UidContext.Ingredient);
 
 			for (IRecipeSlotView ingredient : nonEmptyRequiredStacks) {
-				Set<String> ingredientUids = slotUidCache.computeIfAbsent(ingredient, s ->
+				Set<Object> ingredientUids = slotUidCache.computeIfAbsent(ingredient, s ->
 					s.getItemStacks()
-					.map(i -> stackhelper.getUniqueIdentifierForStack(i, UidContext.Ingredient))
+					.map(i -> stackhelper.getUidForStack(i, UidContext.Ingredient))
 					.collect(Collectors.toSet())
 				);
 

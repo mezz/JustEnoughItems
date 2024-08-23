@@ -1,6 +1,5 @@
 package mezz.jei.api.ingredients;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -18,7 +17,7 @@ import net.minecraft.network.chat.Component;
  *
  * If you have a new type of ingredient to add to JEI,
  * you will have to implement this to create a default renderer for
- * {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
+ * {@link IModIngredientRegistration#register}
  */
 public interface IIngredientRenderer<T> {
 	/**

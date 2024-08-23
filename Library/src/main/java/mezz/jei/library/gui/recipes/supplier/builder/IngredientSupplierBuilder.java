@@ -7,7 +7,7 @@ import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.gui.recipes.RecipeLayoutIngredientSupplier;
-import mezz.jei.library.ingredients.IIngredientSupplier;
+import mezz.jei.api.ingredients.IIngredientSupplier;
 
 import java.util.EnumMap;
 import java.util.Map;

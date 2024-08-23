@@ -16,7 +16,7 @@ import java.util.List;
  * @since 9.3.0
  * @deprecated use {@link IRecipeSlotRichTooltipCallback}
  */
-@SuppressWarnings("removal")
+@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 @Deprecated(since = "19.8.5", forRemoval = true)
 @FunctionalInterface
 public interface IRecipeSlotTooltipCallback {

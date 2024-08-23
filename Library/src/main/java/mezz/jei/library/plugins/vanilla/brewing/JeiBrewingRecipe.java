@@ -101,8 +101,8 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 	}
 
 	private static boolean arePotionsEqual(ItemStack potion1, ItemStack potion2) {
-		String key1 = PotionSubtypeInterpreter.INSTANCE.apply(potion1, UidContext.Recipe);
-		String key2 = PotionSubtypeInterpreter.INSTANCE.apply(potion2, UidContext.Recipe);
+		Object key1 = PotionSubtypeInterpreter.INSTANCE.getSubtypeData(potion1, UidContext.Recipe);
+		Object key2 = PotionSubtypeInterpreter.INSTANCE.getSubtypeData(potion2, UidContext.Recipe);
 		return Objects.equals(key1, key2);
 	}
 
@@ -119,8 +119,8 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 	@Override
 	public String toString() {
 		ItemStack input = potionInputs.getFirst();
-		String inputName = PotionSubtypeInterpreter.INSTANCE.apply(input, UidContext.Recipe);
-		String outputName = PotionSubtypeInterpreter.INSTANCE.apply(potionOutput, UidContext.Recipe);
+		String inputName = PotionSubtypeInterpreter.INSTANCE.getStringName(input);
+		String outputName = PotionSubtypeInterpreter.INSTANCE.getStringName(potionOutput);
 		return ingredients + " + [" + input.getItem() + " " + inputName + "] = [" + potionOutput + " " + outputName + "]";
 	}
 }
