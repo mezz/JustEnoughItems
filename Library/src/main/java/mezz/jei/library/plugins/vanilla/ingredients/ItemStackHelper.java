@@ -6,7 +6,6 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
@@ -34,14 +33,12 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ItemStackHelper implements IIngredientHelper<ItemStack> {
-	private final ISubtypeManager subtypeManager;
 	private final StackHelper stackHelper;
 	private final IColorHelper colorHelper;
 	private final TagKey<Item> itemHiddenFromRecipeViewers;
 	private final TagKey<Block> blockHiddenFromRecipeViewers;
 
-	public ItemStackHelper(ISubtypeManager subtypeManager, StackHelper stackHelper, IColorHelper colorHelper) {
-		this.subtypeManager = subtypeManager;
+	public ItemStackHelper(StackHelper stackHelper, IColorHelper colorHelper) {
 		this.stackHelper = stackHelper;
 		this.colorHelper = colorHelper;
 		//noinspection deprecation
@@ -63,6 +60,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		return displayName;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getUniqueId(ItemStack ingredient, UidContext context) {
 		ErrorUtil.checkNotEmpty(ingredient);
@@ -70,9 +68,16 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	public Object getUid(ItemStack ingredient, UidContext context) {
+		ErrorUtil.checkNotEmpty(ingredient, "ingredient");
+		ErrorUtil.checkNotNull(context, "type");
+		return stackHelper.getUidForStack(ingredient, context);
+	}
+
+	@Override
 	public boolean hasSubtypes(ItemStack ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		return subtypeManager.hasSubtypes(VanillaTypes.ITEM_STACK, ingredient);
+		return stackHelper.hasSubtypes(ingredient);
 	}
 
 	@Override
@@ -148,6 +153,9 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public ItemStack normalizeIngredient(ItemStack ingredient) {
+		if (ingredient.getCount() == 1) {
+			return ingredient;
+		}
 		ItemStack copy = ingredient.copy();
 		copy.setCount(1);
 		return copy;
@@ -208,7 +216,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
-	public Optional<ResourceLocation> getTagEquivalent(Collection<ItemStack> ingredients) {
+	public Optional<TagKey<?>> getTagKeyEquivalent(Collection<ItemStack> ingredients) {
 		Registry<Item> itemRegistry = RegistryUtil.getRegistry(Registries.ITEM);
 		return TagUtil.getTagEquivalent(ingredients, ItemStack::getItem, itemRegistry::getTags);
 	}

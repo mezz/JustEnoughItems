@@ -75,13 +75,13 @@ public class JeiDebugPlugin implements IModPlugin {
 		if (DebugConfig.isDebugModeEnabled()) {
 			DebugIngredientHelper ingredientHelper = new DebugIngredientHelper();
 			DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer(ingredientHelper);
-			registration.register(DebugIngredient.TYPE, Collections.emptyList(), ingredientHelper, ingredientRenderer);
+			registration.register(DebugIngredient.TYPE, Collections.emptyList(), ingredientHelper, ingredientRenderer, DebugIngredient.CODEC);
 
 			if (DebugConfig.isCrashingTestIngredientsEnabled()) {
 				ErrorIngredientHelper errorIngredientHelper = new ErrorIngredientHelper();
 				ErrorIngredientRenderer errorIngredientRenderer = new ErrorIngredientRenderer(errorIngredientHelper);
 				Collection<ErrorIngredient> errorIngredients = ErrorIngredientListFactory.create();
-				registration.register(ErrorIngredient.TYPE, errorIngredients, errorIngredientHelper, errorIngredientRenderer);
+				registration.register(ErrorIngredient.TYPE, errorIngredients, errorIngredientHelper, errorIngredientRenderer, ErrorIngredient.CODEC);
 			}
 		}
 	}
@@ -217,6 +217,7 @@ public class JeiDebugPlugin implements IModPlugin {
 			});
 
 			registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager));
+			registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandlerTwo<>(ingredientManager));
 		}
 	}
 

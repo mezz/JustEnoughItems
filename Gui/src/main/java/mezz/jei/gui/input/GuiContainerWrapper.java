@@ -28,7 +28,12 @@ public class GuiContainerWrapper implements IRecipeFocusSource {
 				ITypedIngredient<?> typedIngredient = clickableSlot.getTypedIngredient();
 				ImmutableRect2i area = new ImmutableRect2i(clickableSlot.getArea());
 				IElement<?> element = new IngredientElement<>(typedIngredient);
-				return new ClickableIngredientInternal<>(element, area, false, false);
+				return new ClickableIngredientInternal<>(element, area::contains, false, false);
 			});
+	}
+
+	@Override
+	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		return Stream.empty();
 	}
 }

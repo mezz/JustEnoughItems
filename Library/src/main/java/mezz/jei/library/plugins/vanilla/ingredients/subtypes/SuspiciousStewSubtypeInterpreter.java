@@ -1,21 +1,17 @@
 package mezz.jei.library.plugins.vanilla.ingredients.subtypes;
 
-import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.Instrument;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
-import net.minecraft.world.item.enchantment.Enchantment;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.StringJoiner;
 
-public class SuspiciousStewSubtypeInterpreter implements IIngredientSubtypeInterpreter<ItemStack> {
+public class SuspiciousStewSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
 	public static final SuspiciousStewSubtypeInterpreter INSTANCE = new SuspiciousStewSubtypeInterpreter();
 
 	private SuspiciousStewSubtypeInterpreter() {
@@ -23,10 +19,15 @@ public class SuspiciousStewSubtypeInterpreter implements IIngredientSubtypeInter
 	}
 
 	@Override
-	public String apply(ItemStack itemStack, UidContext context) {
+	public @Nullable Object getSubtypeData(ItemStack ingredient, UidContext context) {
+		return ingredient.get(DataComponents.SUSPICIOUS_STEW_EFFECTS);
+	}
+
+	@Override
+	public String getLegacyStringSubtypeInfo(ItemStack itemStack, UidContext context) {
 		SuspiciousStewEffects suspiciousStewEffects = itemStack.get(DataComponents.SUSPICIOUS_STEW_EFFECTS);
 		if (suspiciousStewEffects == null) {
-			return IIngredientSubtypeInterpreter.NONE;
+			return "";
 		}
 		List<SuspiciousStewEffects.Entry> effects = suspiciousStewEffects.effects();
 		List<String> strings = new ArrayList<>();

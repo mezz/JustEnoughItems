@@ -2,6 +2,7 @@ package mezz.jei.gui.input;
 
 import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.input.KeyNameUtil;
 import mezz.jei.common.platform.IPlatformInputHelper;
@@ -11,7 +12,7 @@ import net.minecraft.util.StringUtil;
 
 import java.util.Optional;
 
-public class UserInput {
+public class UserInput implements IJeiUserInput {
 	@FunctionalInterface
 	public interface KeyPressable {
 		boolean keyPressed(int keyCode, int scanCode, int modifiers);
@@ -20,11 +21,6 @@ public class UserInput {
 	@FunctionalInterface
 	public interface MouseClickable {
 		boolean mouseClicked(double mouseX, double mouseY, int mouseButton);
-	}
-
-	@FunctionalInterface
-	public interface MouseOverable {
-		boolean isMouseOver(double mouseX, double mouseY);
 	}
 
 	public static UserInput fromVanilla(int keyCode, int scanCode, int modifiers, InputType inputType) {
@@ -45,16 +41,17 @@ public class UserInput {
 	private final double mouseX;
 	private final double mouseY;
 	private final int modifiers;
-	private final InputType clickState;
+	private final InputType inputType;
 
-	public UserInput(InputConstants.Key key, double mouseX, double mouseY, int modifiers, InputType clickState) {
+	public UserInput(InputConstants.Key key, double mouseX, double mouseY, int modifiers, InputType inputType) {
 		this.key = key;
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
 		this.modifiers = modifiers;
-		this.clickState = clickState;
+		this.inputType = inputType;
 	}
 
+	@Override
 	public InputConstants.Key getKey() {
 		return key;
 	}
@@ -67,19 +64,21 @@ public class UserInput {
 		return mouseY;
 	}
 
-	public InputType getClickState() {
-		return clickState;
+	public InputType getInputType() {
+		return inputType;
 	}
 
+	@Override
+	public int getModifiers() {
+		return modifiers;
+	}
+
+	@Override
 	public boolean isSimulate() {
-		return clickState == InputType.SIMULATE;
+		return inputType == InputType.SIMULATE;
 	}
 
-	public boolean isMouse() {
-		return this.key.getType() == InputConstants.Type.MOUSE;
-	}
-
-	public boolean isKeyboard() {
+	private boolean isKeyboard() {
 		return this.key.getType() == InputConstants.Type.KEYSYM;
 	}
 
@@ -87,16 +86,18 @@ public class UserInput {
 		return isKeyboard() && StringUtil.isAllowedChatCharacter((char) this.key.getValue());
 	}
 
+	@Override
 	public boolean is(IJeiKeyMapping keyMapping) {
 		return keyMapping.isActiveAndMatches(this.key);
 	}
 
+	@Override
 	public boolean is(KeyMapping keyMapping) {
 		IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
 		return inputHelper.isActiveAndMatches(keyMapping, this.key);
 	}
 
-	public boolean callVanilla(MouseOverable mouseOverable, MouseClickable mouseClickable) {
+	public boolean callVanilla(IMouseOverable mouseOverable, MouseClickable mouseClickable) {
 		if (this.key.getType() == InputConstants.Type.MOUSE) {
 			if (mouseOverable.isMouseOver(mouseX, mouseY)) {
 				if (this.isSimulate()) {
@@ -112,15 +113,15 @@ public class UserInput {
 	public boolean callVanilla(KeyPressable keyPressable) {
 		if (this.key.getType() == InputConstants.Type.KEYSYM) {
 			if (this.isSimulate()) {
-				// we can't easily simulate the key press, just say we could handle it
-				return true;
+				// key press simulate happens on key up, which we ignore
+				return false;
 			}
 			return keyPressable.keyPressed(this.key.getValue(), 0, this.modifiers);
 		}
 		return false;
 	}
 
-	public boolean callVanilla(MouseOverable mouseOverable, MouseClickable mouseClickable, KeyPressable keyPressable) {
+	public boolean callVanilla(IMouseOverable mouseOverable, MouseClickable mouseClickable, KeyPressable keyPressable) {
 		return switch (this.key.getType()) {
 			case KEYSYM -> callVanilla(keyPressable);
 			case MOUSE -> callVanilla(mouseOverable, mouseClickable);
@@ -131,8 +132,8 @@ public class UserInput {
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
-			.add("clickState", clickState)
-			.add("key", KeyNameUtil.getKeyDisplayName(key))
+			.add("inputType", inputType)
+			.add("key", KeyNameUtil.getKeyDisplayName(key).getString())
 			.add("modifiers", modifiers)
 			.add("mouse", String.format("%s, %s", mouseX, mouseY))
 			.toString();

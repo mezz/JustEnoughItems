@@ -1,17 +1,22 @@
 package mezz.jei.api.recipe.category.extensions;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+
 import java.util.Collections;
 import java.util.List;
-
-import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.network.chat.Component;
 
 /**
  * An extension to a recipe category with methods that allow JEI to make sense of it.
@@ -40,16 +45,47 @@ public interface IRecipeCategoryExtension<T> {
 	 * Get the tooltip for whatever is under the mouse.
 	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
-	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltipStrings(Object, IRecipeSlotsView, double, double)}
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
+	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltip}
+	 *
+	 * @param mouseX the X position of the mouse, relative to the recipe.
+	 * @param mouseY the Y position of the mouse, relative to the recipe.
+	 * @since 19.5.4
+	 */
+	default void getTooltip(ITooltipBuilder tooltip, T recipe, double mouseX, double mouseY) {
+		List<Component> tooltipStrings = getTooltipStrings(recipe, mouseX, mouseY);
+		tooltip.addAll(tooltipStrings);
+	}
+
+	/**
+	 * Get the tooltip for whatever is under the mouse.
+	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
+	 *
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
+	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltip}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
 	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
 	 * @since 16.0.0
+	 * @deprecated use {@link #getTooltip}
 	 */
+	@Deprecated(since = "19.5.4", forRemoval = true)
 	default List<Component> getTooltipStrings(T recipe, double mouseX, double mouseY) {
 		return getTooltipStrings(mouseX, mouseY);
+	}
+
+	/**
+	 * Sets the extras for the recipe category, like input handlers and recipe widgets.
+	 *
+	 * Recipe Widgets persist as long as a recipe layout is on screen,
+	 * so they can be used for caching and displaying recipe-specific
+	 * information more easily than from the recipe category directly.
+	 *
+	 * @since 19.6.0
+	 */
+	default void createRecipeExtras(T recipe, IRecipeExtrasBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
+
 	}
 
 	/**
@@ -61,7 +97,12 @@ public interface IRecipeCategoryExtension<T> {
 	 * @param input  the current input from the player.
 	 * @return true if the input was handled, false otherwise
 	 * @since 16.0.0
+	 *
+	 * @deprecated create a {@link IJeiInputHandler} to handle inputs using {@link IRecipeExtrasBuilder#addInputHandler}, then
+	 * use {@link IJeiInputHandler#handleInput(double, double, IJeiUserInput)}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "19.6.0", forRemoval = true)
 	default boolean handleInput(T recipe, double mouseX, double mouseY, InputConstants.Key input) {
 		return handleInput(mouseX, mouseY, input);
 	}
@@ -95,8 +136,8 @@ public interface IRecipeCategoryExtension<T> {
 	 * Get the tooltip for whatever is under the mouse.
 	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
-	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltipStrings(Object, IRecipeSlotsView, double, double)}
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
+	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltip}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.
@@ -117,9 +158,10 @@ public interface IRecipeCategoryExtension<T> {
 	 * @param input  the current input from the player.
 	 * @return true if the input was handled, false otherwise
 	 * @since 8.3.0
-	 * @deprecated use {@link #handleInput(Object, double, double, InputConstants.Key)}
+	 *
+	 * @deprecated create a {@link IJeiInputHandler} to handle inputs using {@link IRecipeExtrasBuilder#addInputHandler}, then
+	 * use {@link IJeiInputHandler#handleInput(double, double, IJeiUserInput)}
 	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(since = "16.0.0", forRemoval = true)
 	default boolean handleInput(double mouseX, double mouseY, InputConstants.Key input) {
 		return false;

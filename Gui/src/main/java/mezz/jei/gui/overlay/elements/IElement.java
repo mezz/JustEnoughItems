@@ -24,15 +24,15 @@ public interface IElement<T> {
 	 */
 	Optional<IBookmark> getBookmark();
 
-	void renderExtras(GuiGraphics guiGraphics);
+	void renderExtras(GuiGraphics guiGraphics, int xPosition, int yPosition);
 
 	void show(IRecipesGui recipesGui, FocusUtil focusUtil, List<RecipeIngredientRole> roles);
 
-	JeiTooltip getTooltip(IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper);
+	void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper);
 
 	boolean isVisible();
 
-	default boolean handleClick(UserInput input, IInternalKeyMappings keyBindings, IRecipesGui recipesGui, FocusUtil focusUtil) {
+	default boolean handleClick(UserInput input, IInternalKeyMappings keyBindings) {
 		return false;
 	}
 }

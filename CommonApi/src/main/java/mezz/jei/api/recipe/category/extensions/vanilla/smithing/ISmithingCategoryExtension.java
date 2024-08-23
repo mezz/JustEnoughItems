@@ -49,4 +49,18 @@ public interface ISmithingCategoryExtension<R extends SmithingRecipe> {
 	 * @since 19.5.0
 	 */
 	<T extends IIngredientAcceptor<T>> void setAddition(R recipe, T ingredientAcceptor);
+
+	/**
+	 * Set some example output ingredients for the recipe.
+	 * Don't set all the outputs if there are hundreds, it'll just waste memory.
+	 *
+	 * For example, see the results of
+	 * {@link net.minecraft.world.item.crafting.SmithingTrimRecipe#assemble}
+	 * {@link net.minecraft.world.item.crafting.SmithingTransformRecipe#assemble}
+	 *
+	 * @since 19.8.3
+	 */
+	default <T extends IIngredientAcceptor<T>> void setOutput(R recipe, T ingredientAcceptor) {
+
+	}
 }

@@ -27,20 +27,9 @@ public class DrawableIngredient<V> implements IDrawable {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics) {
-		RenderSystem.enableDepthTest();
-		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, typedIngredient);
-		RenderSystem.disableDepthTest();
-	}
-
-	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
-		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
-		{
-			poseStack.translate(xOffset, yOffset, 0);
-			draw(guiGraphics);
-		}
-		poseStack.popPose();
+		RenderSystem.enableDepthTest();
+		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, typedIngredient, xOffset, yOffset);
+		RenderSystem.disableDepthTest();
 	}
 }

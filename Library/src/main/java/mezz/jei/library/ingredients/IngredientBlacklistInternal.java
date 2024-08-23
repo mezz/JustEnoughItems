@@ -15,34 +15,34 @@ public class IngredientBlacklistInternal implements IIngredientManager.IIngredie
 		<V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible);
 	}
 
-	private final Set<String> ingredientBlacklist = new HashSet<>();
+	private final Set<Object> uidBlacklist = new HashSet<>();
 	private final WeakList<IListener> listeners = new WeakList<>();
 
 	public <V> void addIngredientToBlacklist(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
 		V ingredient = typedIngredient.getIngredient();
-		String uniqueName = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-		if (ingredientBlacklist.add(uniqueName)) {
+		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
+		if (uidBlacklist.add(uid)) {
 			notifyListenersOfVisibilityChange(typedIngredient, false);
 		}
 	}
 
 	public <V> void removeIngredientFromBlacklist(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
 		V ingredient = typedIngredient.getIngredient();
-		String uniqueName = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-		if (ingredientBlacklist.remove(uniqueName)) {
+		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
+		if (uidBlacklist.remove(uid)) {
 			notifyListenersOfVisibilityChange(typedIngredient, true);
 		}
 	}
 
 	public <V> boolean isIngredientBlacklistedByApi(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
 		V ingredient = typedIngredient.getIngredient();
-		String uid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-		String uidWild = ingredientHelper.getWildcardId(ingredient);
+		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
+		Object uidWild = ingredientHelper.getWildcardId(ingredient);
 
 		if (uid.equals(uidWild)) {
-			return ingredientBlacklist.contains(uid);
+			return uidBlacklist.contains(uid);
 		}
-		return ingredientBlacklist.contains(uid) || ingredientBlacklist.contains(uidWild);
+		return uidBlacklist.contains(uid) || uidBlacklist.contains(uidWild);
 	}
 
 	public void registerListener(IListener listener) {

@@ -1,8 +1,12 @@
 package mezz.jei.neoforge.platform;
 
+import com.mojang.blaze3d.platform.Window;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.util.ImmutableRect2i;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.toasts.Toast;
+import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
@@ -48,6 +52,26 @@ public class ScreenHelper implements IPlatformScreenHelper {
 			return new ImmutableRect2i(i, j, 147, 166);
 		}
 		return ImmutableRect2i.EMPTY;
+	}
+
+	@Override
+	public ImmutableRect2i getToastsArea() {
+		Minecraft minecraft = Minecraft.getInstance();
+		ToastComponent toasts = minecraft.getToasts();
+		List<ToastComponent.ToastInstance<?>> visible = toasts.visible;
+		if (visible.isEmpty()) {
+			return ImmutableRect2i.EMPTY;
+		}
+		int height = 0;
+		int width = 0;
+		for (ToastComponent.ToastInstance<?> instance : visible) {
+			Toast toast = instance.getToast();
+			height += toast.height();
+			width = Math.max(toast.width(), width);
+		}
+		Window window = minecraft.getWindow();
+		int screenWidth = window.getGuiScaledWidth();
+		return new ImmutableRect2i(screenWidth - width, 0, width, height);
 	}
 
 	@Override

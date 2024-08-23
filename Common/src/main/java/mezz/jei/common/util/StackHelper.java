@@ -10,6 +10,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.Objects;
+
 public class StackHelper implements IStackHelper {
 	private final ISubtypeManager subtypeManager;
 
@@ -32,11 +35,22 @@ public class StackHelper implements IStackHelper {
 			return false;
 		}
 
-		String keyLhs = getUniqueIdentifierForStack(lhs, context);
-		String keyRhs = getUniqueIdentifierForStack(rhs, context);
-		return keyLhs.equals(keyRhs);
+		Object keyLhs = subtypeManager.getSubtypeData(lhs, context);
+		Object keyRhs = subtypeManager.getSubtypeData(rhs, context);
+		return Objects.equals(keyLhs, keyRhs);
 	}
 
+	@Override
+	public Object getUidForStack(ItemStack stack, UidContext context) {
+		Item item = stack.getItem();
+		Object subtypeData = subtypeManager.getSubtypeData(stack, context);
+		if (subtypeData != null) {
+			return List.of(item, subtypeData);
+		}
+		return item;
+	}
+
+	@SuppressWarnings("removal")
 	@Override
 	public String getUniqueIdentifierForStack(ItemStack stack, UidContext context) {
 		String result = getRegistryNameForStack(stack);

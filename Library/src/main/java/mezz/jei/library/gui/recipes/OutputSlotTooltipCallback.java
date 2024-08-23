@@ -1,6 +1,7 @@
 package mezz.jei.library.gui.recipes;
 
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -20,10 +21,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Optional;
 
-public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
+public class OutputSlotTooltipCallback implements IRecipeSlotRichTooltipCallback {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final ResourceLocation recipeName;
@@ -33,7 +33,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotTooltipCallback {
 	}
 
 	@Override
-	public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
+	public void onRichTooltip(IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
 		if (recipeSlotView.getRole() != RecipeIngredientRole.OUTPUT) {
 			return;
 		}

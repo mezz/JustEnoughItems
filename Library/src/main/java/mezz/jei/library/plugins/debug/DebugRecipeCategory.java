@@ -1,18 +1,20 @@
 package mezz.jei.library.plugins.debug;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -25,11 +27,14 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Constants;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
@@ -39,9 +44,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
-
 import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -122,8 +126,8 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 
 	private <T> void drawIngredientName(Minecraft minecraft, GuiGraphics guiGraphics, ITypedIngredient<T> ingredient) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient.getType());
-		String jeiUid = ingredientHelper.getUniqueId(ingredient.getIngredient(), UidContext.Ingredient);
-		guiGraphics.drawString(minecraft.font, jeiUid, 50, 52, 0, false);
+		String serialized = ingredientHelper.getResourceLocation(ingredient.getIngredient()).toString();
+		guiGraphics.drawString(minecraft.font, serialized, 50, 52, 0, false);
 	}
 
 	@Override
@@ -173,7 +177,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 				platformFluidHelper.create(Fluids.LAVA.defaultFluidState().holder(), (int) ((1.0 + Math.random()) * bucketVolume)),
 				new ItemStack(Items.ACACIA_LEAVES)
 			))
-			.addTooltipCallback((recipeSlotView, tooltip) -> {
+			.addRichTooltipCallback((recipeSlotView, tooltip) -> {
 				switch (recipeSlotView.getRole()) {
 					case INPUT -> tooltip.add(Component.literal("Input DebugIngredient"));
 					case OUTPUT -> tooltip.add(Component.literal( "Output DebugIngredient"));
@@ -183,55 +187,89 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public List<Component> getTooltipStrings(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		List<Component> tooltipStrings = new ArrayList<>();
-		tooltipStrings.add(Component.literal("Debug Recipe Category Tooltip is very long and going to wrap").withStyle(ChatFormatting.GOLD));
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, DebugRecipe recipe, IFocusGroup focuses) {
+		builder.addInputHandler(new JeiInputHandler(recipe, new ScreenRectangle(0, 0, RECIPE_WIDTH, RECIPE_HEIGHT)));
+	}
 
-		if (recipe.checkHover(mouseX, mouseY)) {
-			tooltipStrings.add(Component.literal("button tooltip!"));
-		} else {
-			MutableComponent debug = Component.literal("tooltip debug");
-			tooltipStrings.add(debug.withStyle(ChatFormatting.BOLD));
-		}
-		tooltipStrings.add(Component.literal(mouseX + ", " + mouseY));
-		return tooltipStrings;
+	@SuppressWarnings({"removal"})
+	@Override
+	public List<Component> getTooltipStrings(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+		JeiTooltip tooltip = new JeiTooltip();
+		getTooltip(tooltip, recipe, recipeSlotsView, mouseX, mouseY);
+		return tooltip.toLegacyToComponents();
 	}
 
 	@Override
-	public boolean handleInput(DebugRecipe recipe, double mouseX, double mouseY, InputConstants.Key input) {
-		if (input.getType() != InputConstants.Type.MOUSE) {
+	public void getTooltip(ITooltipBuilder tooltip, DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+		tooltip.add(Component.literal("Debug Recipe Category Tooltip is very long and going to wrap").withStyle(ChatFormatting.GOLD));
+
+		if (recipe.checkHover(mouseX, mouseY)) {
+			tooltip.add(Component.literal("button tooltip!"));
+		} else {
+			MutableComponent debug = Component.literal("tooltip debug");
+			tooltip.add(debug.withStyle(ChatFormatting.BOLD));
+		}
+		tooltip.add(Component.literal(mouseX + ", " + mouseY));
+	}
+
+	public class JeiInputHandler implements IJeiInputHandler {
+		private final DebugRecipe recipe;
+		private final ScreenRectangle area;
+
+		public JeiInputHandler(DebugRecipe recipe, ScreenRectangle area) {
+			this.recipe = recipe;
+			this.area = area;
+		}
+
+		@Override
+		public ScreenRectangle getArea() {
+			return area;
+		}
+
+		@Override
+		public boolean handleInput(double mouseX, double mouseY, IJeiUserInput userInput) {
+			if (!userInput.is(Internal.getKeyMappings().getLeftClick())) {
+				return false;
+			}
+			InputConstants.Key key = userInput.getKey();
+			Button button = recipe.getButton();
+			int mouseButton = key.getValue();
+			if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
+				if (!userInput.isSimulate()) {
+					Minecraft minecraft = Minecraft.getInstance();
+					LocalPlayer player = minecraft.player;
+					if (player != null) {
+						Screen screen = new InventoryScreen(player);
+						minecraft.setScreen(screen);
+					}
+					if (runtime != null) {
+						IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
+						String filterText = ingredientFilter.getFilterText();
+						ingredientFilter.setFilterText(filterText + " test");
+
+						IRecipeManager recipeManager = runtime.getRecipeManager();
+						if (!hiddenRecipes) {
+							recipeManager.hideRecipeCategory(RecipeTypes.CRAFTING);
+							hiddenRecipes = true;
+						} else {
+							recipeManager.unhideRecipeCategory(RecipeTypes.CRAFTING);
+							hiddenRecipes = false;
+						}
+					}
+				}
+				return true;
+			}
 			return false;
 		}
-		Button button = recipe.getButton();
-		int mouseButton = input.getValue();
-		if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
-			Minecraft minecraft = Minecraft.getInstance();
-			LocalPlayer player = minecraft.player;
-			if (player != null) {
-				Screen screen = new InventoryScreen(player);
-				minecraft.setScreen(screen);
-			}
-			if (runtime != null) {
-				IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
-				String filterText = ingredientFilter.getFilterText();
-				ingredientFilter.setFilterText(filterText + " test");
-
-				IRecipeManager recipeManager = runtime.getRecipeManager();
-				if (!hiddenRecipes) {
-					recipeManager.hideRecipeCategory(RecipeTypes.CRAFTING);
-					hiddenRecipes = true;
-				} else {
-					recipeManager.unhideRecipeCategory(RecipeTypes.CRAFTING);
-					hiddenRecipes = false;
-				}
-			}
-			return true;
-		}
-		return false;
 	}
 
 	@Override
 	public @Nullable ResourceLocation getRegistryName(DebugRecipe recipe) {
 		return recipe.getRegistryName();
+	}
+
+	@Override
+	public boolean needsRecipeBorder() {
+		return false;
 	}
 }

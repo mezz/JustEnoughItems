@@ -4,7 +4,6 @@ import com.google.common.base.MoreObjects;
 import mezz.jei.api.constants.Tags;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
@@ -47,8 +46,8 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
-	public IIngredientType<T> getIngredientType() {
-		return platformFluidHelper.getFluidIngredientType();
+	public IIngredientTypeWithSubtypes<Fluid, T> getIngredientType() {
+		return fluidType;
 	}
 
 	@Override
@@ -57,6 +56,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 		return displayName.getString();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getUniqueId(T ingredient, UidContext context) {
 		Fluid fluid = fluidType.getBase(ingredient);
@@ -80,6 +80,16 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 		Fluid fluid = fluidType.getBase(ingredient);
 		ResourceLocation registryName = getRegistryName(ingredient, fluid);
 		return "fluid:" + registryName;
+	}
+
+	@Override
+	public Object getUid(T ingredient, UidContext context) {
+		Fluid fluid = fluidType.getBase(ingredient);
+		Object subtypeData = subtypeManager.getSubtypeData(fluidType, ingredient, context);
+		if (subtypeData != null) {
+			return List.of(fluid, subtypeData);
+		}
+		return fluid;
 	}
 
 	@Override
@@ -180,8 +190,15 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
-	public Optional<ResourceLocation> getTagEquivalent(Collection<T> ingredients) {
+	public Optional<TagKey<?>> getTagKeyEquivalent(Collection<T> ingredients) {
 		Registry<Fluid> fluidRegistry = RegistryUtil.getRegistry(Registries.FLUID);
 		return TagUtil.getTagEquivalent(ingredients, fluidType::getBase, fluidRegistry::getTags);
+	}
+
+	@Override
+	public boolean isIngredientOnServer(T ingredient) {
+		Fluid fluid = fluidType.getBase(ingredient);
+		Registry<Fluid> registry = RegistryUtil.getRegistry(Registries.FLUID);
+		return registry.getKey(fluid) != null;
 	}
 }

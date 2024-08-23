@@ -7,8 +7,8 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
@@ -49,7 +49,7 @@ public class BookmarkDragManager {
 		}
 	}
 
-	private <V> boolean handleClickIngredient(IClickableIngredientInternal<V> clicked, UserInput input) {
+	private <V> boolean handleClickIngredient(IDraggableIngredientInternal<V> clicked, UserInput input) {
 		IElement<V> element = clicked.getElement();
 		return element
 			.getBookmark()
@@ -95,7 +95,7 @@ public class BookmarkDragManager {
 				return Optional.empty();
 			}
 
-			return bookmarkOverlay.getIngredientUnderMouse(input.getMouseX(), input.getMouseY())
+			return bookmarkOverlay.getDraggableIngredientUnderMouse(input.getMouseX(), input.getMouseY())
 				.findFirst()
 				.flatMap(clicked -> {
 					ItemStack mouseItem = player.containerMenu.getCarried();

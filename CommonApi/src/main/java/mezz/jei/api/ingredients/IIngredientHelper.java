@@ -4,6 +4,7 @@ import mezz.jei.api.constants.Tags;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +18,7 @@ import java.util.stream.Stream;
  * An ingredient is anything used in a recipe, like ItemStacks and FluidStacks.
  *
  * If you have a new type of ingredient to add to JEI, you will have to implement this in order to use
- * {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
+ * {@link IModIngredientRegistration#register}
  */
 public interface IIngredientHelper<V> {
 	/**
@@ -33,8 +34,26 @@ public interface IIngredientHelper<V> {
 	/**
 	 * Unique ID for use in comparing, blacklisting, and looking up ingredients.
 	 * @since 7.3.0
+	 *
+	 * @deprecated use {@link #getUid(Object, UidContext)} instead
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "19.9.0", forRemoval = true)
 	String getUniqueId(V ingredient, UidContext context);
+
+	/**
+	 * Unique ID for use in comparing and looking up ingredients.
+	 *
+	 * Returns an {@link Object} so that UID creation can be optimized.
+	 * Make sure the returned value implements {@link Object#equals} and {@link Object#hashCode}.
+	 *
+	 * Replaces {@link #getUniqueId(Object, UidContext)}.
+	 *
+	 * @since 19.9.0
+	 */
+	default Object getUid(V ingredient, UidContext context) {
+		return getUniqueId(ingredient, context);
+	}
 
 	/**
 	 * Return true if the given ingredient can have subtypes.
@@ -125,14 +144,14 @@ public interface IIngredientHelper<V> {
 	V copyIngredient(V ingredient);
 
 	/**
-	 * Makes a normalized copy of the given ingredient.
+	 * Makes a normalized version of the given ingredient.
 	 * Used by JEI for bookmarks.
 	 *
-	 * @param ingredient the ingredient to copy and normalize
-	 * @return a normalized copy of the ingredient
+	 * @param ingredient the ingredient to normalize
+	 * @return a normalized version of the ingredient, or the same ingredient if it is already normalized.
 	 */
 	default V normalizeIngredient(V ingredient) {
-		return copyIngredient(ingredient);
+		return ingredient;
 	}
 
 	/**
@@ -186,12 +205,24 @@ public interface IIngredientHelper<V> {
 	String getErrorInfo(@Nullable V ingredient);
 
 	/**
+	 * If these ingredients represent everything from a single tag, returns that tag.
+	 *
+	 * @since 19.5.4
+	 */
+	default Optional<TagKey<?>> getTagKeyEquivalent(Collection<V> ingredients) {
+		return Optional.empty();
+	}
+
+	/**
 	 * If these ingredients represent everything from a single tag,
 	 * returns that tag's resource location.
 	 *
 	 * @since 9.3.0
+	 * @deprecated use {@link #getTagKeyEquivalent}
 	 */
+	@Deprecated(since = "19.5.5", forRemoval = true)
 	default Optional<ResourceLocation> getTagEquivalent(Collection<V> ingredients) {
-		return Optional.empty();
+		return getTagKeyEquivalent(ingredients)
+			.map(TagKey::location);
 	}
 }

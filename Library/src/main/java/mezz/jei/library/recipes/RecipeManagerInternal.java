@@ -13,7 +13,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
-import mezz.jei.library.ingredients.IIngredientSupplier;
+import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.library.recipes.collect.RecipeMap;
 import mezz.jei.library.recipes.collect.RecipeTypeData;
 import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
@@ -84,7 +84,7 @@ public class RecipeManagerInternal {
 			.sorted(this.recipeCategoryComparator)
 			.toList();
 
-		RecipeCatalystBuilder recipeCatalystBuilder = new RecipeCatalystBuilder(ingredientManager, this.recipeMaps.get(RecipeIngredientRole.CATALYST));
+		RecipeCatalystBuilder recipeCatalystBuilder = new RecipeCatalystBuilder(this.recipeMaps.get(RecipeIngredientRole.CATALYST));
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
 			ResourceLocation recipeCategoryUid = recipeCategory.getRecipeType().getUid();
 			if (recipeCatalysts.containsKey(recipeCategoryUid)) {
@@ -139,9 +139,6 @@ public class RecipeManagerInternal {
 			return false;
 		}
 		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
-		if (ingredientSupplier == null) {
-			return false;
-		}
 
 		try {
 			for (RecipeMap recipeMap : recipeMaps.values()) {
@@ -279,5 +276,9 @@ public class RecipeManagerInternal {
 	public <T> List<IRecipeCategoryDecorator<T>> getRecipeCategoryDecorators(RecipeType<T> recipeType) {
 		ImmutableList<IRecipeCategoryDecorator<?>> decorators = recipeCategoryDecorators.get(recipeType);
 		return (List<IRecipeCategoryDecorator<T>>) (Object) decorators;
+	}
+
+	public void compact() {
+		recipeMaps.values().forEach(RecipeMap::compact);
 	}
 }

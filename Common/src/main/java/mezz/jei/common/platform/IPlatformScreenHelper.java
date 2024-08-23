@@ -24,6 +24,8 @@ public interface IPlatformScreenHelper {
 
 	ImmutableRect2i getBookArea(RecipeUpdateListener containerScreen);
 
+	ImmutableRect2i getToastsArea();
+
 	List<RecipeBookTabButton> getTabButtons(RecipeBookComponent recipeBookComponent);
 
 	void setFocused(AbstractWidget widget, boolean value);

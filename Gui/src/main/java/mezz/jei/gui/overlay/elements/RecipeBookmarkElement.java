@@ -3,6 +3,8 @@ package mezz.jei.gui.overlay.elements;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -31,6 +33,7 @@ import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.IngredientGridTooltipHelper;
 import mezz.jei.gui.overlay.bookmarks.IngredientsTooltipComponent;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
+import mezz.jei.gui.recipes.RecipeCategoryIconUtil;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -51,15 +54,14 @@ import java.util.Optional;
 
 public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	private final RecipeBookmark<R, I> recipeBookmark;
-	private final IDrawable icon;
 	private final IClientConfig clientConfig;
 	private final EnumMap<BookmarkTooltipFeature, TooltipComponent> cache = new EnumMap<>(BookmarkTooltipFeature.class);
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	private @Nullable Optional<IRecipeLayoutDrawable<R>> cachedLayoutDrawable;
+	private @Nullable IDrawable icon;
 
-	public RecipeBookmarkElement(RecipeBookmark<R, I> recipeBookmark, IDrawable icon) {
+	public RecipeBookmarkElement(RecipeBookmark<R, I> recipeBookmark) {
 		this.recipeBookmark = recipeBookmark;
-		this.icon = icon;
 		this.clientConfig = Internal.getJeiClientConfigs().getClientConfig();
 	}
 
@@ -74,14 +76,26 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	}
 
 	@Override
-	public void renderExtras(GuiGraphics guiGraphics) {
+	public void renderExtras(GuiGraphics guiGraphics, int xPosition, int yPosition) {
+		if (icon == null) {
+			IRecipeCategory<R> recipeCategory = recipeBookmark.getRecipeCategory();
+			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+			IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
+			IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
+			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+			icon = RecipeCategoryIconUtil.create(
+				recipeCategory,
+				recipeManager,
+				guiHelper
+			);
+		}
 		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
 			// this z level seems to be the sweet spot so that
 			// 2D icons draw above the items, and
 			// 3D icons draw still draw under tooltips.
-			poseStack.translate(8, 8, 200);
+			poseStack.translate(8 + xPosition, 8 + yPosition, 200);
 			poseStack.scale(0.5f, 0.5f, 0.5f);
 			icon.draw(guiGraphics);
 		}
@@ -89,7 +103,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	}
 
 	@Override
-	public boolean handleClick(UserInput input, IInternalKeyMappings keyBindings, IRecipesGui recipesGui, FocusUtil focusUtil) {
+	public boolean handleClick(UserInput input, IInternalKeyMappings keyBindings) {
 		boolean transferOnce = input.is(keyBindings.getTransferRecipeBookmark());
 		boolean transferMax = input.is(keyBindings.getMaxTransferRecipeBookmark());
 		if (transferOnce || transferMax) {
@@ -127,9 +141,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	}
 
 	@Override
-	public JeiTooltip getTooltip(IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<I> ingredientRenderer, IIngredientHelper<I> ingredientHelper) {
-		JeiTooltip tooltip = new JeiTooltip();
-
+	public void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<I> ingredientRenderer, IIngredientHelper<I> ingredientHelper) {
 		ITypedIngredient<I> recipeOutput = recipeBookmark.getRecipeOutput();
 		R recipe = recipeBookmark.getRecipe();
 
@@ -156,10 +168,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 
 		tooltip.add(Component.empty());
 
-		List<Component> outputTooltip = SafeIngredientUtil.getTooltip(ingredientManager, ingredientRenderer, recipeOutput);
-		tooltip.addAll(outputTooltip);
-
-		return tooltip;
+		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
 	}
 
 	private void addBookmarkTooltipFeaturesIfEnabled(JeiTooltip tooltip) {

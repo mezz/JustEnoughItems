@@ -7,8 +7,10 @@ import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,7 +25,6 @@ import net.minecraft.world.level.material.Fluids;
 import org.joml.Matrix4f;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
@@ -64,16 +65,21 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, T fluidStack) {
+		render(guiGraphics, fluidStack, 0, 0);
+	}
+
+	@Override
+	public void render(GuiGraphics guiGraphics, T ingredient, int posX, int posY) {
 		RenderSystem.enableBlend();
 
-		drawFluid(guiGraphics, width, height, fluidStack);
+		drawFluid(guiGraphics, width, height, ingredient, posX, posY);
 
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 
 		RenderSystem.disableBlend();
 	}
 
-	private void drawFluid(GuiGraphics guiGraphics, final int width, final int height, T fluidStack) {
+	private void drawFluid(GuiGraphics guiGraphics, final int width, final int height, T fluidStack, int posX, int posY) {
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluid = type.getBase(fluidStack);
 		if (fluid.isSame(Fluids.EMPTY)) {
@@ -93,11 +99,11 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 					scaledAmount = height;
 				}
 
-				drawTiledSprite(guiGraphics, width, height, fluidColor, scaledAmount, fluidStillSprite);
+				drawTiledSprite(guiGraphics, width, height, fluidColor, scaledAmount, fluidStillSprite, posX, posY);
 			});
 	}
 
-	protected static void drawTiledSprite(GuiGraphics guiGraphics, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite) {
+	protected static void drawTiledSprite(GuiGraphics guiGraphics, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite, int posX, int posY) {
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 		setGLColorFromInt(color);
@@ -107,13 +113,13 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		final long yTileCount = scaledAmount / TEXTURE_SIZE;
 		final long yRemainder = scaledAmount - (yTileCount * TEXTURE_SIZE);
 
-		final int yStart = tiledHeight;
+		final int yStart = tiledHeight + posY;
 
 		for (int xTile = 0; xTile <= xTileCount; xTile++) {
 			for (int yTile = 0; yTile <= yTileCount; yTile++) {
 				int width = (xTile == xTileCount) ? xRemainder : TEXTURE_SIZE;
 				long height = (yTile == yTileCount) ? yRemainder : TEXTURE_SIZE;
-				int x = (xTile * TEXTURE_SIZE);
+				int x = posX + (xTile * TEXTURE_SIZE);
 				int y = yStart - ((yTile + 1) * TEXTURE_SIZE);
 				if (width > 0 && height > 0) {
 					long maskTop = TEXTURE_SIZE - height;
@@ -153,15 +159,23 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public List<Component> getTooltip(T fluidStack, TooltipFlag tooltipFlag) {
+		JeiTooltip jeiTooltip = new JeiTooltip();
+		getTooltip(jeiTooltip, fluidStack, tooltipFlag);
+		return jeiTooltip.toLegacyToComponents();
+	}
+
+	@Override
+	public void getTooltip(ITooltipBuilder tooltip, T fluidStack, TooltipFlag tooltipFlag) {
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluidType = type.getBase(fluidStack);
 		if (fluidType.isSame(Fluids.EMPTY)) {
-			return new ArrayList<>();
+			return;
 		}
 
-		List<Component> tooltip = fluidHelper.getTooltip(fluidStack, tooltipFlag);
+		fluidHelper.getTooltip(tooltip, fluidStack, tooltipFlag);
 
 		long amount = fluidHelper.getAmount(fluidStack);
 		long milliBuckets = (amount * 1000) / fluidHelper.bucketVolume();
@@ -173,7 +187,6 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 			MutableComponent amountString = Component.translatable("jei.tooltip.liquid.amount", nf.format(milliBuckets));
 			tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
 		}
-		return tooltip;
 	}
 
 	@Override

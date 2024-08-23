@@ -35,14 +35,8 @@ public class ElementRenderer<T> implements IElementRenderer<T> {
 
 		int xPosition = area.getX() + padding;
 		int yPosition = area.getY() + padding;
-		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
-		{
-			poseStack.translate(xPosition, yPosition, 0);
-			SafeIngredientUtil.render(guiGraphics, ingredientRenderer, typedIngredient);
-			element.renderExtras(guiGraphics);
-		}
-		poseStack.popPose();
+		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, typedIngredient, xPosition, yPosition);
+		element.renderExtras(guiGraphics, xPosition, yPosition);
 	}
 
 	private static <T> void renderEditMode(GuiGraphics guiGraphics, ImmutableRect2i area, int padding, ITypedIngredient<T> typedIngredient) {
@@ -69,7 +63,8 @@ public class ElementRenderer<T> implements IElementRenderer<T> {
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
-		JeiTooltip tooltip = element.getTooltip(tooltipHelper, ingredientRenderer, ingredientHelper);
+		JeiTooltip tooltip = new JeiTooltip();
+		element.getTooltip(tooltip, tooltipHelper, ingredientRenderer, ingredientHelper);
 		tooltip.draw(guiGraphics, mouseX, mouseY, typedIngredient, ingredientRenderer, ingredientManager);
 	}
 }

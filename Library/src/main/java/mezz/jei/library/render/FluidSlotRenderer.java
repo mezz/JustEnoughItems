@@ -1,6 +1,8 @@
 package mezz.jei.library.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
@@ -31,43 +33,57 @@ public class FluidSlotRenderer<T> implements IIngredientRenderer<T> {
 
     @Override
     public void render(GuiGraphics guiGraphics, T ingredient) {
+        render(guiGraphics, ingredient, 0, 0);
+    }
+
+    @Override
+    public void render(GuiGraphics guiGraphics, T ingredient, int posX, int posY) {
         RenderSystem.enableBlend();
 
-        drawFluid(guiGraphics, ingredient);
+        drawFluid(guiGraphics, ingredient, posX, posY);
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         RenderSystem.disableBlend();
     }
 
-    private void drawFluid(GuiGraphics guiGraphics, T fluidStack) {
+    private void drawFluid(GuiGraphics guiGraphics, T fluidStack, int posX, int posY) {
         IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
         Fluid fluid = type.getBase(fluidStack);
         if (fluid.isSame(Fluids.EMPTY)) {
             return;
         }
         fluidHelper.getStillFluidSprite(fluidStack)
-                .ifPresent(fluidStillSprite -> {
-                    int fluidColor = fluidHelper.getColorTint(fluidStack);
-                    long amount = fluidHelper.getAmount(fluidStack);
-                    String amountString;
-                    if (amount < capacity) {
-                        amountString = amount + fluidHelper.unit();
-                    } else {
-                        amountString = String.format("%.1fB", (double) amount / capacity);
-                    }
+            .ifPresent(fluidStillSprite -> {
+                int fluidColor = fluidHelper.getColorTint(fluidStack);
+                long amount = fluidHelper.getAmount(fluidStack);
+                String amountString;
+                if (amount < capacity) {
+                    amountString = amount + fluidHelper.unit();
+                } else {
+                    amountString = String.format("%.1fB", (double) amount / capacity);
+                }
 
-                    FluidTankRenderer.drawTiledSprite(guiGraphics, SLOT_SIZE, SLOT_SIZE, fluidColor, 16, fluidStillSprite);
-                    guiGraphics.pose().pushPose();
+                FluidTankRenderer.drawTiledSprite(guiGraphics, SLOT_SIZE, SLOT_SIZE, fluidColor, 16, fluidStillSprite, posX, posY);
+                PoseStack poseStack = guiGraphics.pose();
+                poseStack.pushPose();
+                {
+                    poseStack.translate(posX + 0.5f, posY + 0.5f, 200f);
                     Font font = getFontRenderer(Minecraft.getInstance(), fluidStack);
-                    guiGraphics.pose().translate(0.5f, 0.5f, 200f);
                     guiGraphics.drawString(font, amountString, 16 - font.width(amountString), 9, 0xFFFFFF, true);
-                    guiGraphics.pose().popPose();
-                });
+                }
+                poseStack.popPose();
+            });
+    }
+
+    @SuppressWarnings("removal")
+	@Override
+    public List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag) {
+        return List.of();
     }
 
     @Override
-    public List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag) {
-        return List.of();
+    public void getTooltip(ITooltipBuilder tooltip, T ingredient, TooltipFlag tooltipFlag) {
+
     }
 }

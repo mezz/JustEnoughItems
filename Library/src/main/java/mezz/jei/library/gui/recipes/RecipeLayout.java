@@ -6,35 +6,37 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
+import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
-import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
-import mezz.jei.library.gui.ingredients.RecipeSlot;
-import mezz.jei.library.gui.ingredients.RecipeSlots;
-import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
+import mezz.jei.library.gui.ingredients.CycleTicker;
+import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -42,16 +44,26 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	public static final int RECIPE_BUTTON_SIZE = 13;
 	public static final int RECIPE_BUTTON_SPACING = 2;
 
-	private final int ingredientCycleOffset = (int) ((Math.random() * 10000) % Integer.MAX_VALUE);
 	private final IRecipeCategory<R> recipeCategory;
 	private final Collection<IRecipeCategoryDecorator<R>> recipeCategoryDecorators;
-	private final RecipeSlots recipeSlots;
+	/**
+	 * Slots handled by the recipe category directly.
+	 */
+	private final List<IRecipeSlotDrawable> recipeCategorySlots;
+	/**
+	 * All slots, including slots handled by the recipe category and widgets.
+	 */
+	private final List<IRecipeSlotDrawable> allSlots;
+	private final List<ISlottedRecipeWidget> slottedWidgets;
+	private final CycleTicker cycleTicker;
+	private final IFocusGroup focuses;
+	private final List<IRecipeWidget> allWidgets;
 	private final R recipe;
 	private final IScalableDrawable recipeBackground;
 	private final int recipeBorderPadding;
-	private ImmutableRect2i recipeTransferButtonArea;
-	@Nullable
-	private ShapelessIcon shapelessIcon;
+	private final ImmutableRect2i recipeTransferButtonArea;
+	private final @Nullable ShapelessIcon shapelessIcon;
+	private final RecipeLayoutInputHandler<R> inputHandler;
 
 	private ImmutableRect2i area;
 
@@ -83,48 +95,21 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		IScalableDrawable recipeBackground,
 		int recipeBorderPadding
 	) {
-		RecipeLayout<T> recipeLayout = new RecipeLayout<>(recipeCategory, decorators, recipe, recipeBackground, recipeBorderPadding);
-		if (recipeLayout.setRecipeLayout(recipeCategory, recipe, focuses, ingredientManager)) {
-			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
-			if (recipeName != null) {
-				addOutputSlotTooltip(recipeLayout, recipeName);
-			}
-			return Optional.of(recipeLayout);
-		}
-		return Optional.empty();
-	}
-
-	private boolean setRecipeLayout(
-		IRecipeCategory<R> recipeCategory,
-		R recipe,
-		IFocusGroup focuses,
-		IIngredientManager ingredientManager
-	) {
-		RecipeLayoutBuilder builder = new RecipeLayoutBuilder(ingredientManager, this.ingredientCycleOffset);
+		RecipeLayoutBuilder<T> builder = new RecipeLayoutBuilder<>(recipeCategory, recipe, ingredientManager);
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
-			if (builder.isUsed()) {
-				builder.setRecipeLayout(this, focuses);
-				return true;
-			}
+			recipeCategory.createRecipeExtras(builder, recipe, focuses);
+			RecipeLayout<T> recipeLayout = builder.buildRecipeLayout(
+				focuses,
+				decorators,
+				recipeBackground,
+				recipeBorderPadding
+			);
+			return Optional.of(recipeLayout);
 		} catch (RuntimeException | LinkageError e) {
 			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getRecipeType().getUid(), e);
 		}
-		return false;
-	}
-
-	private static void addOutputSlotTooltip(RecipeLayout<?> recipeLayout, ResourceLocation recipeName) {
-		RecipeSlots recipeSlots = recipeLayout.recipeSlots;
-		List<RecipeSlot> outputSlots = recipeSlots.getSlots().stream()
-			.filter(r -> r.getRole() == RecipeIngredientRole.OUTPUT)
-			.toList();
-
-		if (!outputSlots.isEmpty()) {
-			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName);
-			for (RecipeSlot outputSlot : outputSlots) {
-				outputSlot.addTooltipCallback(callback);
-			}
-		}
+		return Optional.empty();
 	}
 
 	public RecipeLayout(
@@ -132,11 +117,31 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		Collection<IRecipeCategoryDecorator<R>> recipeCategoryDecorators,
 		R recipe,
 		IScalableDrawable recipeBackground,
-		int recipeBorderPadding
+		int recipeBorderPadding,
+		@Nullable ShapelessIcon shapelessIcon,
+		ImmutablePoint2i recipeTransferButtonPos,
+		List<IRecipeSlotDrawable> recipeCategorySlots,
+		List<IRecipeSlotDrawable> allSlots,
+		List<ISlottedRecipeWidget> slottedWidgets,
+		List<IRecipeWidget> widgets,
+		List<IJeiInputHandler> inputHandlers,
+		List<IJeiGuiEventListener> guiEventListeners,
+		CycleTicker cycleTicker,
+		IFocusGroup focuses
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
-		this.recipeSlots = new RecipeSlots();
+		this.slottedWidgets = Collections.unmodifiableList(slottedWidgets);
+		this.cycleTicker = cycleTicker;
+		this.focuses = focuses;
+		this.inputHandler = new RecipeLayoutInputHandler<>(this, inputHandlers, guiEventListeners);
+
+		Set<IRecipeWidget> allWidgets = new HashSet<>(widgets);
+		allWidgets.addAll(slottedWidgets);
+		this.allWidgets = List.copyOf(allWidgets);
+
+		this.recipeCategorySlots = recipeCategorySlots;
+		this.allSlots = Collections.unmodifiableList(allSlots);
 		this.recipeBorderPadding = recipeBorderPadding;
 		this.area = new ImmutableRect2i(
 			0,
@@ -146,24 +151,22 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		);
 
 		this.recipeTransferButtonArea = new ImmutableRect2i(
-			area.getWidth() + recipeBorderPadding + RECIPE_BUTTON_SPACING,
-			area.getHeight() + recipeBorderPadding - RECIPE_BUTTON_SIZE,
+			recipeTransferButtonPos.x(),
+			recipeTransferButtonPos.y(),
 			RECIPE_BUTTON_SIZE,
 			RECIPE_BUTTON_SIZE
 		);
 
 		this.recipe = recipe;
 		this.recipeBackground = recipeBackground;
+		this.shapelessIcon = shapelessIcon;
+
+		recipeCategory.onDisplayedIngredientsUpdate(recipe, recipeCategorySlots, focuses);
 	}
 
 	@Override
 	public void setPosition(int posX, int posY) {
-		this.area = new ImmutableRect2i(
-			posX,
-			posY,
-			recipeCategory.getWidth(),
-			recipeCategory.getHeight()
-		);
+		area = area.setPosition(posX, posY);
 	}
 
 	@Override
@@ -173,8 +176,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		recipeBackground.draw(guiGraphics, getRectWithBorder());
 
-		final int recipeMouseX = mouseX - area.getX();
-		final int recipeMouseY = mouseY - area.getY();
+		final double recipeMouseX = mouseX - area.getX();
+		final double recipeMouseY = mouseY - area.getY();
+
+		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(recipeCategorySlots);
 
 		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
@@ -185,7 +190,19 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			// defensive push/pop to protect against recipe categories changing the last pose
 			poseStack.pushPose();
 			{
-				recipeCategory.draw(recipe, recipeSlots.getView(), guiGraphics, recipeMouseX, recipeMouseY);
+				for (IRecipeSlotDrawable slot : recipeCategorySlots) {
+					slot.draw(guiGraphics);
+				}
+				recipeCategory.draw(recipe, recipeCategorySlotsView, guiGraphics, recipeMouseX, recipeMouseY);
+				for (IRecipeWidget widget : allWidgets) {
+					ScreenPosition position = widget.getPosition();
+					poseStack.pushPose();
+					{
+						poseStack.translate(position.x(), position.y(), 0);
+						widget.draw(guiGraphics, recipeMouseX, recipeMouseY);
+					}
+					poseStack.popPose();
+				}
 
 				// drawExtras and drawInfo often render text which messes with the color, this clears it
 				RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -196,7 +213,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 				// defensive push/pop to protect against recipe category decorators changing the last pose
 				poseStack.pushPose();
 				{
-					decorator.draw(recipe, recipeCategory, recipeSlots.getView(), guiGraphics, recipeMouseX, recipeMouseY);
+					decorator.draw(recipe, recipeCategory, recipeCategorySlotsView, guiGraphics, recipeMouseX, recipeMouseY);
 
 					// drawExtras and drawInfo often render text which messes with the color, this clears it
 					RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -207,8 +224,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			if (shapelessIcon != null) {
 				shapelessIcon.draw(guiGraphics);
 			}
-
-			recipeSlots.draw(guiGraphics);
 		}
 		poseStack.popPose();
 
@@ -222,56 +237,39 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		final int recipeMouseX = mouseX - area.getX();
 		final int recipeMouseY = mouseY - area.getY();
 
-		IRecipeSlotDrawable hoveredSlot = this.recipeSlots.getHoveredSlot(recipeMouseX, recipeMouseY)
-			.orElse(null);
-
 		RenderSystem.disableBlend();
 
+		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(recipeCategorySlots);
+		RecipeSlotUnderMouse hoveredSlotResult = getSlotUnderMouse(mouseX, mouseY).orElse(null);
+
 		var poseStack = guiGraphics.pose();
-		if (hoveredSlot != null) {
+		if (hoveredSlotResult != null) {
+			IRecipeSlotDrawable hoveredSlot = hoveredSlotResult.slot();
+
 			poseStack.pushPose();
 			{
-				poseStack.translate(area.getX(), area.getY(), 0);
+				ScreenPosition offset = hoveredSlotResult.offset();
+				poseStack.translate(offset.x(), offset.y(), 0);
 				hoveredSlot.drawHoverOverlays(guiGraphics);
 			}
 			poseStack.popPose();
 
-			hoveredSlot.getDisplayedIngredient()
-				.ifPresent(i -> {
-					JeiTooltip tooltip = new JeiTooltip();
-					tooltip.addAll(hoveredSlot.getTooltip());
-					addTagContentTooltip(tooltip, i, hoveredSlot);
-					tooltip.draw(guiGraphics, mouseX, mouseY, i);
-				});
-		} else if (isMouseOver(mouseX, mouseY)) {
-			List<Component> tooltipStrings = recipeCategory.getTooltipStrings(recipe, recipeSlots.getView(), recipeMouseX, recipeMouseY);
-			for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
-				tooltipStrings = decorator.decorateExistingTooltips(tooltipStrings, recipe, recipeCategory, recipeSlots.getView(), recipeMouseX, recipeMouseY);
-			}
-
 			JeiTooltip tooltip = new JeiTooltip();
-			tooltip.addAll(tooltipStrings);
+			hoveredSlot.getTooltip(tooltip);
+			tooltip.draw(guiGraphics, mouseX, mouseY);
+		} else if (isMouseOver(mouseX, mouseY)) {
+			JeiTooltip tooltip = new JeiTooltip();
+			recipeCategory.getTooltip(tooltip, recipe, recipeCategorySlotsView, recipeMouseX, recipeMouseY);
+			for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
+				decorator.decorateTooltips(tooltip, recipe, recipeCategory, recipeCategorySlotsView, recipeMouseX, recipeMouseY);
+			}
 
 			if (tooltip.isEmpty() && shapelessIcon != null) {
-				shapelessIcon.addTooltipStrings(tooltip, recipeMouseX, recipeMouseY);
+				if (shapelessIcon.isMouseOver(recipeMouseX, recipeMouseY)) {
+					shapelessIcon.addTooltip(tooltip);
+				}
 			}
 			tooltip.draw(guiGraphics, mouseX, mouseY);
-		}
-	}
-
-	private <T> void addTagContentTooltip(JeiTooltip tooltip, ITypedIngredient<T> displayed, IRecipeSlotDrawable slotDrawable) {
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (clientConfig.isTagContentTooltipEnabled()) {
-			IIngredientType<T> type = displayed.getType();
-
-			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
-			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
-			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
-
-			List<T> ingredients = slotDrawable.getIngredients(type).toList();
-			if (ingredients.size() > 1) {
-				tooltip.add(new TagContentTooltipComponent<>(renderer, ingredients));
-			}
 		}
 	}
 
@@ -292,38 +290,38 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	@Override
 	public <T> Optional<T> getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<T> ingredientType) {
-		return getRecipeSlotUnderMouse(mouseX, mouseY)
+		return getSlotUnderMouse(mouseX, mouseY)
+			.map(RecipeSlotUnderMouse::slot)
 			.flatMap(slot -> slot.getDisplayedIngredient(ingredientType));
 	}
 
 	@Override
 	public Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY) {
+		return getSlotUnderMouse(mouseX, mouseY)
+			.map(RecipeSlotUnderMouse::slot);
+	}
+
+	@Override
+	public Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
 		final double recipeMouseX = mouseX - area.getX();
 		final double recipeMouseY = mouseY - area.getY();
-		return this.recipeSlots.getHoveredSlot(recipeMouseX, recipeMouseY)
-			.map(r -> r);
-	}
 
-	public void moveRecipeTransferButton(int posX, int posY) {
-		recipeTransferButtonArea = new ImmutableRect2i(
-			posX,
-			posY,
-			RECIPE_BUTTON_SIZE,
-			RECIPE_BUTTON_SIZE
-		);
-	}
-
-	public void setShapeless() {
-		this.shapelessIcon = new ShapelessIcon();
-
-		// align to top-right
-		int x = area.getWidth() - shapelessIcon.getIcon().getWidth();
-		this.shapelessIcon.setPosition(x, 0);
-	}
-
-	public void setShapeless(int shapelessX, int shapelessY) {
-		this.shapelessIcon = new ShapelessIcon();
-		this.shapelessIcon.setPosition(shapelessX, shapelessY);
+		for (ISlottedRecipeWidget widget : slottedWidgets) {
+			ScreenPosition position = widget.getPosition();
+			double relativeMouseX = recipeMouseX - position.x();
+			double relativeMouseY = recipeMouseY - position.y();
+			Optional<RecipeSlotUnderMouse> slotResult = widget.getSlotUnderMouse(relativeMouseX, relativeMouseY);
+			if (slotResult.isPresent()) {
+				return slotResult
+					.map(slot -> slot.addOffset(area.x(), area.y()));
+			}
+		}
+		for (IRecipeSlotDrawable slot : recipeCategorySlots) {
+			if (slot.isMouseOver(recipeMouseX, recipeMouseY)) {
+				return Optional.of(new RecipeSlotUnderMouse(slot, area.getScreenPosition()));
+			}
+		}
+		return Optional.empty();
 	}
 
 	@Override
@@ -343,9 +341,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		return area;
 	}
 
+	@SuppressWarnings("RedundantUnmodifiable")
 	@Override
 	public IRecipeSlotsView getRecipeSlotsView() {
-		return recipeSlots.getView();
+		return () -> Collections.unmodifiableList(allSlots);
 	}
 
 	@Override
@@ -353,8 +352,21 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		return recipe;
 	}
 
-	public RecipeSlots getRecipeSlots() {
-		return this.recipeSlots;
+	@Override
+	public IJeiInputHandler getInputHandler() {
+		return inputHandler;
 	}
 
+	@Override
+	public void tick() {
+		for (IRecipeWidget widget : allWidgets) {
+			widget.tick();
+		}
+		if (cycleTicker.tick()) {
+			for (IRecipeSlotDrawable slot : recipeCategorySlots) {
+				slot.clearDisplayOverrides();
+			}
+			recipeCategory.onDisplayedIngredientsUpdate(recipe, recipeCategorySlots, focuses);
+		}
+	}
 }

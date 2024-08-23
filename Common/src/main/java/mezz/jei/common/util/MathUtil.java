@@ -1,9 +1,12 @@
 package mezz.jei.common.util;
 
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.phys.Vec2;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.util.Collection;
 
@@ -31,6 +34,13 @@ public final class MathUtil {
 			y >= rect.getY() &&
 			x < rect.getX() + rect.getWidth() &&
 			y < rect.getY() + rect.getHeight();
+	}
+
+	public static boolean contains(ScreenRectangle rect, double x, double y) {
+		return x >= rect.left() &&
+			x <= rect.right() &&
+			y >= rect.top() &&
+			y <= rect.bottom();
 	}
 
 	public static ImmutableRect2i union(ImmutableRect2i rect1, ImmutableRect2i rect2) {
@@ -98,4 +108,24 @@ public final class MathUtil {
 		return Math.sqrt(a * a + b * b);
 	}
 
+	/**
+	 * Illegal matrix math assumes the pose is only scaling and translation.
+	 * If we get rotating GUI elements we're doomed, I hope nobody wants those.
+	 */
+	public static ScreenRectangle transform(ScreenRectangle rect, Matrix4f pose) {
+		Vector3f topLeft = new Vector3f(rect.left(), rect.top(), 1.0f);
+		Vector3f bottomRight = new Vector3f(rect.right(), rect.bottom(), 1.0f);
+
+		topLeft = pose.transformPosition(topLeft);
+		bottomRight = pose.transformPosition(bottomRight);
+
+		int x = Math.round(topLeft.x);
+		int y = Math.round(topLeft.y);
+		return new ScreenRectangle(
+			x,
+			y,
+			Math.round(bottomRight.x) - x,
+			Math.round(bottomRight.y) - y
+		);
+	}
 }

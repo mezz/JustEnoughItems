@@ -1,11 +1,14 @@
 package mezz.jei.api.runtime;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.world.item.ItemStack;
@@ -59,6 +62,13 @@ public interface IIngredientManager {
 	<V> IIngredientRenderer<V> getIngredientRenderer(IIngredientType<V> ingredientType);
 
 	/**
+	 * Returns an appropriate ingredient serializer codec for this ingredient type.
+	 *
+	 * @since 19.9.0
+	 */
+	<V> Codec<V> getIngredientCodec(IIngredientType<V> ingredientType);
+
+	/**
 	 * Returns an unmodifiable collection of all registered ingredient types.
 	 * Without addons, there is {@link VanillaTypes#ITEM_STACK}.
 	 */
@@ -91,6 +101,14 @@ public interface IIngredientManager {
 	 * @since 11.5.0
 	 */
 	<V> Optional<IIngredientType<V>> getIngredientTypeChecked(V ingredient);
+
+	/**
+	 * Helper method to get ingredient type for an ingredient.
+	 * Returns {@link Optional#empty()} if there is no known type for the given ingredient.
+	 *
+	 * @since 19.5.6
+	 */
+	<B, I> Optional<IIngredientTypeWithSubtypes<B, I>> getIngredientTypeWithSubtypesFromBase(B baseIngredient);
 
 	/**
 	 * Helper method to get ingredient type for an ingredient.
@@ -141,8 +159,9 @@ public interface IIngredientManager {
 	 * This uses the uids from {@link IIngredientHelper#getUniqueId(Object, UidContext)}
 	 *
 	 * @since 11.5.0
-	 * @deprecated Use {@link #getTypedIngredientByUid(IIngredientType, String)} instead.
+	 * @deprecated Use ingredient serialization from {@link ICodecHelper#getTypedIngredientCodec()} instead of this method.
 	 */
+	@SuppressWarnings("removal")
 	@Deprecated(since = "19.1.0", forRemoval = true)
 	<V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid);
 
@@ -151,7 +170,10 @@ public interface IIngredientManager {
 	 * This uses the uids from {@link IIngredientHelper#getUniqueId(Object, UidContext)}
 	 *
 	 * @since 19.1.0
+	 * @deprecated use ingredient serialization from {@link ICodecHelper#getTypedIngredientCodec()} instead of this method.
 	 */
+	@SuppressWarnings("removal")
+	@Deprecated(since = "19.9.0", forRemoval = true)
 	<V> Optional<ITypedIngredient<V>> getTypedIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid);
 
 	/**

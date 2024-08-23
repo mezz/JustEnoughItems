@@ -2,10 +2,10 @@ package mezz.jei.neoforge.platform;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterpreter;
 import mezz.jei.library.util.BrewingRecipeMakerCommon;
 import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.resources.ResourceLocation;
@@ -74,7 +74,7 @@ public class BrewingRecipeMaker {
 						.toList();
 					if (!output.isEmpty() && !inputs.isEmpty()) {
 						String outputModId = itemStackHelper.getResourceLocation(output).getNamespace();
-						String outputUid = itemStackHelper.getUniqueId(output, UidContext.Recipe);
+						String outputUid = PotionSubtypeInterpreter.INSTANCE.getStringName(output);
 						String uidPath = ResourceLocationUtil.sanitizePath(outputUid);
 						IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(
 							List.of(ingredients),

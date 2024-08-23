@@ -3,7 +3,6 @@ package mezz.jei.library.plugins.vanilla.anvil;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -11,6 +10,7 @@ import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
+import mezz.jei.library.plugins.vanilla.ingredients.subtypes.EnchantedBookSubtypeInterpreter;
 import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
@@ -47,7 +47,7 @@ public final class AnvilRecipeMaker {
 		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 		return Stream.concat(
 				getRepairRecipes(vanillaRecipeFactory, ingredientHelper),
-				getBookEnchantmentRecipes(vanillaRecipeFactory, ingredientManager, ingredientHelper)
+				getBookEnchantmentRecipes(vanillaRecipeFactory, ingredientManager)
 			)
 			.toList();
 	}
@@ -93,8 +93,7 @@ public final class AnvilRecipeMaker {
 
 	private static Stream<IJeiAnvilRecipe> getBookEnchantmentRecipes(
 		IVanillaRecipeFactory vanillaRecipeFactory,
-		IIngredientManager ingredientManager,
-		IIngredientHelper<ItemStack> ingredientHelper
+		IIngredientManager ingredientManager
 	) {
 		Registry<Enchantment> registry = RegistryUtil.getRegistry(Registries.ENCHANTMENT);
 		List<EnchantmentData> enchantmentDatas = registry.holders()
@@ -104,13 +103,12 @@ public final class AnvilRecipeMaker {
 		return ingredientManager.getAllItemStacks()
 			.stream()
 			.filter(ItemStack::isEnchantable)
-			.flatMap(ingredient -> getBookEnchantmentRecipes(vanillaRecipeFactory, enchantmentDatas, ingredientHelper, ingredient));
+			.flatMap(ingredient -> getBookEnchantmentRecipes(vanillaRecipeFactory, enchantmentDatas, ingredient));
 	}
 
 	private static Stream<IJeiAnvilRecipe> getBookEnchantmentRecipes(
 		IVanillaRecipeFactory vanillaRecipeFactory,
 		List<EnchantmentData> enchantmentDatas,
-		IIngredientHelper<ItemStack> ingredientHelper,
 		ItemStack ingredient
 	) {
 		return enchantmentDatas.stream()
@@ -119,7 +117,7 @@ public final class AnvilRecipeMaker {
 			.filter(enchantedBooks -> !enchantedBooks.isEmpty())
 			.map(enchantedBooks -> {
 				List<ItemStack> outputs = getEnchantedIngredients(ingredient, enchantedBooks);
-				String ingredientId = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
+				String ingredientId = EnchantedBookSubtypeInterpreter.INSTANCE.getStringName(ingredient);
 				String ingredientIdPath = ResourceLocationUtil.sanitizePath(ingredientId);
 				String id = "enchantment." + ingredientIdPath;
 				ResourceLocation uid = ResourceLocation.fromNamespaceAndPath(ModIds.MINECRAFT_ID, id);
@@ -250,7 +248,10 @@ public final class AnvilRecipeMaker {
 		);
 	}
 
-	private static Stream<IJeiAnvilRecipe> getRepairRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientHelper<ItemStack> ingredientHelper) {
+	private static Stream<IJeiAnvilRecipe> getRepairRecipes(
+		IVanillaRecipeFactory vanillaRecipeFactory,
+		IIngredientHelper<ItemStack> ingredientHelper
+	) {
 		return getRepairData()
 			.flatMap(repairData -> getRepairRecipes(repairData, vanillaRecipeFactory, ingredientHelper));
 	}
@@ -267,7 +268,8 @@ public final class AnvilRecipeMaker {
 
 		return repairables.stream()
 			.mapMulti((itemStack, consumer) -> {
-				String ingredientIdPath = ResourceLocationUtil.sanitizePath(ingredientHelper.getUniqueId(itemStack, UidContext.Recipe));
+				String uid = EnchantedBookSubtypeInterpreter.INSTANCE.getStringName(itemStack);
+				String ingredientIdPath = ResourceLocationUtil.sanitizePath(uid);
 				String itemModId = ingredientHelper.getResourceLocation(itemStack).getNamespace();
 
 				ItemStack damagedThreeQuarters = itemStack.copy();

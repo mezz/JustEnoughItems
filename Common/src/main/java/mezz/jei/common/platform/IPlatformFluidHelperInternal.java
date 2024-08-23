@@ -1,5 +1,7 @@
 package mezz.jei.common.platform;
 
+import com.mojang.serialization.Codec;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -8,7 +10,6 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T> {
@@ -27,7 +28,7 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
 
 	DataComponentPatch getComponentsPatch(T ingredient);
 
-	List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag);
+	void getTooltip(ITooltipBuilder tooltip, T ingredient, TooltipFlag tooltipFlag);
 
 	T copy(T ingredient);
 
@@ -36,4 +37,6 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
 	T normalize(T ingredient);
 
 	Optional<T> getContainedFluid(ITypedIngredient<?> ingredient);
+
+	Codec<T> getCodec();
 }

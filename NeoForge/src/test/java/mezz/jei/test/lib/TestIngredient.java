@@ -1,5 +1,6 @@
 package mezz.jei.test.lib;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.ingredients.IIngredientType;
 
 public record TestIngredient(int number) {
@@ -14,6 +15,8 @@ public record TestIngredient(int number) {
 			return TestIngredient.class;
 		}
 	};
+
+	public static final Codec<TestIngredient> CODEC = Codec.INT.xmap(TestIngredient::new, TestIngredient::number);
 
 
 	public TestIngredient copy() {

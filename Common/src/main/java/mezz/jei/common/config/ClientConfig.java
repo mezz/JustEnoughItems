@@ -18,27 +18,39 @@ public final class ClientConfig implements IClientConfig {
 	@Nullable
 	private static IClientConfig instance;
 
+	// appearance
 	private final Supplier<Boolean> centerSearchBarEnabled;
-	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
-	private final Supplier<Boolean> catchRenderErrorsEnabled;
-	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
-	private final Supplier<Boolean> addBookmarksToFrontEnabled;
-	private final Supplier<Boolean> lookupFluidContentsEnabled;
-	private final Supplier<Boolean> lookupBlockTagsEnabled;
+	private final Supplier<Integer> maxRecipeGuiHeight;
+
+	// cheat_mode
 	private final Supplier<GiveMode> giveMode;
+	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
 	private final Supplier<Boolean> showHiddenItemsEnabled;
 
+	// bookmarks
+	private final Supplier<Boolean> addBookmarksToFrontEnabled;
 	private final Supplier<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures;
 	private final Supplier<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
 	private final Supplier<Boolean> dragToRearrangeBookmarksEnabled;
 
-	private final Supplier<Integer> maxRecipeGuiHeight;
+	// advanced
+	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
+	private final Supplier<Boolean> catchRenderErrorsEnabled;
+	private final Supplier<Boolean> lookupFluidContentsEnabled;
+	private final Supplier<Boolean> lookupBlockTagsEnabled;
+	private final Supplier<Boolean> showTagRecipesEnabled;
+
+	// input
+	private final Supplier<Integer> dragDelayMs;
+	private final Supplier<Integer> smoothScrollRate;
+
+	// sorting
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
 	private final ConfigValue<List<RecipeSorterStage>> recipeSorterStages;
 
+	// tags
 	private final Supplier<Boolean> tagContentTooltipEnabled;
 	private final Supplier<Boolean> hideSingleIngredientTagsEnabled;
-	private final Supplier<Integer> dragDelayMs;
 
 	public ClientConfig(IConfigSchemaBuilder schema) {
 		instance = this;
@@ -120,12 +132,26 @@ public final class ClientConfig implements IClientConfig {
 			true,
 			"When searching for item tags, also include tags for the default blocks contained in the items."
 		);
-		dragDelayMs = advanced.addInteger(
+		showTagRecipesEnabled = advanced.addBoolean(
+			"showTagRecipesEnabled",
+			isDev,
+			"Show recipes for ingredient tags, like Item Tags and Block Tags"
+		);
+
+		IConfigCategoryBuilder input = schema.addCategory("input");
+		dragDelayMs = input.addInteger(
 			"dragDelayInMilliseconds",
 			150,
 			0,
 			1000,
 			"Number of milliseconds before a long mouse click is considered to become a drag operation"
+		);
+		smoothScrollRate = input.addInteger(
+			"smoothScrollRate",
+			9,
+			1,
+			50,
+			"Scroll rate for scrolling the mouse wheel in smooth-scrolling scroll boxes. Measured in pixels."
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
@@ -151,7 +177,7 @@ public final class ClientConfig implements IClientConfig {
 		hideSingleIngredientTagsEnabled = tags.addBoolean(
 			"HideSingleIngredientTagsEnabled",
 			true,
-			"Hide tag content in tooltips if the tag has 1 ingredient"
+			"Hide tags that only have 1 ingredient"
 		);
 	}
 
@@ -230,6 +256,11 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public int getSmoothScrollRate() {
+		return smoothScrollRate.get();
+	}
+
+	@Override
 	public int getMaxRecipeGuiHeight() {
 		return maxRecipeGuiHeight.get();
 	}
@@ -272,5 +303,10 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isHideSingleIngredientTagsEnabled() {
 		return hideSingleIngredientTagsEnabled.get();
+	}
+
+	@Override
+	public boolean isShowTagRecipesEnabled() {
+		return showTagRecipesEnabled.get();
 	}
 }

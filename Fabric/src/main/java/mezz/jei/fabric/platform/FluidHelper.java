@@ -1,7 +1,11 @@
 package mezz.jei.fabric.platform;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mezz.jei.api.fabric.constants.FabricTypes;
 import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -28,6 +32,25 @@ import java.util.List;
 import java.util.Optional;
 
 public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngredient> {
+	private static final Codec<Long> POSITIVE_LONG = Codec.LONG.validate((integer) -> {
+		if (integer.compareTo((long) 1) >= 0 && integer.compareTo(Long.MAX_VALUE) <= 0) {
+			return DataResult.success(integer);
+		}
+		return DataResult.error(() -> "Value must be positive: " + integer);
+	});
+
+	private static final Codec<IJeiFluidIngredient> CODEC = Codec.lazyInitialized(() -> {
+		return RecordCodecBuilder.create((builder) -> {
+			return builder.group(
+					FluidVariant.CODEC.fieldOf("variant")
+						.forGetter(IJeiFluidIngredient::getFluidVariant),
+					POSITIVE_LONG.fieldOf("amount")
+						.forGetter(IJeiFluidIngredient::getAmount)
+				)
+				.apply(builder, JeiFluidIngredient::new);
+		});
+	});
+
 	@Override
 	public IIngredientTypeWithSubtypes<Fluid, IJeiFluidIngredient> getFluidIngredientType() {
 		return FabricTypes.FLUID_STACK;
@@ -64,9 +87,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	}
 
 	@Override
-	public List<Component> getTooltip(IJeiFluidIngredient ingredient, TooltipFlag tooltipFlag) {
+	public void getTooltip(ITooltipBuilder tooltip, IJeiFluidIngredient ingredient, TooltipFlag tooltipFlag) {
 		FluidVariant fluidVariant = ingredient.getFluidVariant();
-		return FluidVariantRendering.getTooltip(fluidVariant, tooltipFlag);
+		List<Component> components = FluidVariantRendering.getTooltip(fluidVariant, tooltipFlag);
+		tooltip.addAll(components);
 	}
 
 	@Override
@@ -109,6 +133,9 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 
 	@Override
 	public IJeiFluidIngredient normalize(IJeiFluidIngredient ingredient) {
+		if (ingredient.getAmount() == bucketVolume()) {
+			return ingredient;
+		}
 		return new JeiFluidIngredient(ingredient.getFluidVariant(), bucketVolume());
 	}
 
@@ -129,5 +156,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	@Override
 	public IJeiFluidIngredient copyWithAmount(IJeiFluidIngredient ingredient, long amount) {
 		return new JeiFluidIngredient(ingredient.getFluidVariant(), amount);
+	}
+
+	@Override
+	public Codec<IJeiFluidIngredient> getCodec() {
+		return CODEC;
 	}
 }

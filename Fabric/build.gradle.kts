@@ -128,14 +128,40 @@ loom {
             configName = "Fabric Client"
             ideConfigGenerated(true)
             runDir(loomRunDir.resolve("client").toString())
-            vmArgs("-Dfabric.classPathGroups=${classPathGroupsString}")
+            vmArgs(
+                "-Dfabric.classPathGroups=${classPathGroupsString}",
+                "-Dfabric.log.level=info"
+            )
         }
         named("server") {
             server()
             configName = "Fabric Server"
             ideConfigGenerated(true)
             runDir(loomRunDir.resolve("server").toString())
-            vmArgs("-Dfabric.classPathGroups=${classPathGroupsString}")
+            vmArgs(
+                "-Dfabric.classPathGroups=${classPathGroupsString}",
+                "-Dfabric.log.level=info"
+            )
+        }
+        create("client debug") {
+            client()
+            configName = "Fabric Client Debug"
+            ideConfigGenerated(true)
+            runDir(loomRunDir.resolve("client").toString())
+            vmArgs(
+                "-Dfabric.classPathGroups=${classPathGroupsString}",
+                "-Dfabric.log.level=debug"
+            )
+        }
+        create("server debug") {
+            server()
+            configName = "Fabric Server Debug"
+            ideConfigGenerated(true)
+            runDir(loomRunDir.resolve("server").toString())
+            vmArgs(
+                "-Dfabric.classPathGroups=${classPathGroupsString}",
+                "-Dfabric.log.level=debug"
+            )
         }
     }
 

@@ -30,3 +30,6 @@ accessible field net/minecraft/world/item/alchemy/PotionBrewing containerMixes L
 accessible method net/minecraft/world/item/alchemy/PotionBrewing$Mix ingredient ()Lnet/minecraft/world/item/crafting/Ingredient;
 
 accessible method net/minecraft/client/gui/GuiGraphics renderTooltipInternal (Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;)V
+
+accessible field net/minecraft/client/gui/components/toasts/ToastComponent visible Ljava/util/List;
+accessible class net/minecraft/client/gui/components/toasts/ToastComponent$ToastInstance

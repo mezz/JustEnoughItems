@@ -33,12 +33,13 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 		if (doStart) {
 			IIngredientType<I> ingredientType = typedIngredient.getType();
 			IIngredientHelper<I> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-			LOGGER.info("Ghost Ingredient Handling Starting with {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
+			LOGGER.info("1: Ghost Ingredient Handling Starting with {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
 			targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(20, 20, 20, 20), ingredientManager));
 		}
 		typedIngredient.getIngredient(VanillaTypes.ITEM_STACK)
 			.ifPresent(itemStack -> {
 				boolean even = true;
+				int count = 0;
 				IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 				for (Slot slot : gui.getMenu().slots) {
 					if (even) {
@@ -46,6 +47,10 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 						int guiTop = screenHelper.getGuiTop(gui);
 						Rect2i area = new Rect2i(guiLeft + slot.x, guiTop + slot.y, 16, 16);
 						targets.add(new DebugInfoTarget<>("Got an Ingredient in Gui", area, ingredientManager));
+					}
+					count++;
+					if (count > 10) {
+						break;
 					}
 					even = !even;
 				}
@@ -55,7 +60,7 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 
 	@Override
 	public void onComplete() {
-		LOGGER.info("Ghost Ingredient Handling Complete");
+		LOGGER.info("1: Ghost Ingredient Handling Complete");
 	}
 
 	private record DebugInfoTarget<I>(
@@ -74,7 +79,7 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 			IIngredientType<I> ingredientType = ingredientManager.getIngredientTypeChecked(ingredient)
 				.orElseThrow();
 			IIngredientHelper<I> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-			LOGGER.info("{}: {}", message, ingredientHelper.getErrorInfo(ingredient));
+			LOGGER.info("1: {}: {}", message, ingredientHelper.getErrorInfo(ingredient));
 		}
 	}
 }

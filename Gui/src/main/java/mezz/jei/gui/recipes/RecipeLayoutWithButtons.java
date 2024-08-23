@@ -1,7 +1,9 @@
 package mezz.jei.gui.recipes;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
@@ -13,6 +15,9 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -44,38 +49,47 @@ public record RecipeLayoutWithButtons<R>(
 
 	public IUserInputHandler createUserInputHandler() {
 		return new CombinedInputHandler(
-			new RecipeLayoutUserInputHandler<>(recipeLayout),
+			"RecipeLayoutWithButtons",
 			bookmarkButton.createInputHandler(),
-			transferButton.createInputHandler()
+			transferButton.createInputHandler(),
+			new RecipeLayoutUserInputHandler<>(recipeLayout)
 		);
+	}
+
+	public void tick(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
+		recipeLayout.tick();
+		transferButton.update(parentContainer, player);
+		bookmarkButton.tick();
 	}
 
 	private record RecipeLayoutUserInputHandler<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IUserInputHandler {
 
 		@Override
 		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-			if (!recipeLayout.isMouseOver(input.getMouseX(), input.getMouseY())) {
-				return Optional.empty();
-			}
+			final double mouseX = input.getMouseX();
+			final double mouseY = input.getMouseY();
+			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
+				InputConstants.Key key = input.getKey();
+				boolean simulate = input.isSimulate();
 
-			Rect2i recipeArea = recipeLayout.getRect();
-			double recipeMouseX = input.getMouseX() - recipeArea.getX();
-			double recipeMouseY = input.getMouseY() - recipeArea.getY();
-			R recipe = recipeLayout.getRecipe();
-			IRecipeCategory<R> recipeCategory = recipeLayout.getRecipeCategory();
-			if (recipeCategory.handleInput(recipe, recipeMouseX, recipeMouseY, input.getKey())) {
-				return Optional.of(this);
-			}
-
-			if (input.is(keyBindings.getCopyRecipeId())) {
-				if (handleCopyRecipeId(recipeLayout)) {
+				if (recipeLayout.getInputHandler().handleInput(mouseX, mouseY, input)) {
 					return Optional.of(this);
+				}
+
+				IInternalKeyMappings keyMappings = Internal.getKeyMappings();
+				if (keyMappings.getCopyRecipeId().isActiveAndMatches(key)) {
+					if (handleCopyRecipeId(recipeLayout, simulate)) {
+						return Optional.of(this);
+					}
 				}
 			}
 			return Optional.empty();
 		}
 
-		private boolean handleCopyRecipeId(IRecipeLayoutDrawable<R> recipeLayout) {
+		private boolean handleCopyRecipeId(IRecipeLayoutDrawable<R> recipeLayout, boolean simulate) {
+			if (simulate) {
+				return true;
+			}
 			Minecraft minecraft = Minecraft.getInstance();
 			LocalPlayer player = minecraft.player;
 			IRecipeCategory<R> recipeCategory = recipeLayout.getRecipeCategory();
@@ -88,6 +102,7 @@ public record RecipeLayoutWithButtons<R>(
 				}
 				return false;
 			}
+
 			String recipeId = registryName.toString();
 			minecraft.keyboardHandler.setClipboard(recipeId);
 			MutableComponent message = Component.translatable("jei.message.copy.recipe.id.success", Component.literal(recipeId));
@@ -95,6 +110,17 @@ public record RecipeLayoutWithButtons<R>(
 				player.displayClientMessage(message, false);
 			}
 			return true;
+		}
+
+		@Override
+		public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+			if (recipeLayout.isMouseOver(mouseX, mouseY) &&
+				recipeLayout.getInputHandler().handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY)
+			) {
+				return Optional.of(this);
+			}
+
+			return Optional.empty();
 		}
 	}
 }

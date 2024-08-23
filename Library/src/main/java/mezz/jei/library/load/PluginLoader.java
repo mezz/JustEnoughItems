@@ -27,7 +27,7 @@ import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.focus.FocusFactory;
-import mezz.jei.library.gui.GuiHelper;
+import mezz.jei.library.gui.helpers.GuiHelper;
 import mezz.jei.library.helpers.ModIdHelper;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
@@ -151,6 +151,8 @@ public class PluginLoader {
 		VanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory(ingredientManager);
 		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, ingredientVisibility, vanillaRecipeFactory, recipeManagerInternal);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
+
+		recipeManagerInternal.compact();
 
 		return new RecipeManager(recipeManagerInternal, ingredientManager);
 	}

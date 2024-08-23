@@ -1,5 +1,7 @@
 package mezz.jei.neoforge.platform;
 
+import com.mojang.serialization.Codec;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -30,8 +32,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
@@ -76,11 +76,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	}
 
 	@Override
-	public List<Component> getTooltip(FluidStack ingredient, TooltipFlag tooltipFlag) {
-		List<Component> tooltip = new ArrayList<>();
+	public void getTooltip(ITooltipBuilder tooltip, FluidStack ingredient, TooltipFlag tooltipFlag) {
 		Fluid fluid = ingredient.getFluid();
 		if (fluid.isSame(Fluids.EMPTY)) {
-			return tooltip;
+			return;
 		}
 
 		Component displayName = getDisplayName(ingredient);
@@ -95,8 +94,6 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 				tooltip.add(advancedId);
 			}
 		}
-
-		return tooltip;
 	}
 
 	@Override
@@ -147,9 +144,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 
 	@Override
 	public FluidStack normalize(FluidStack ingredient) {
-		FluidStack copy = this.copy(ingredient);
-		copy.setAmount(FluidType.BUCKET_VOLUME);
-		return copy;
+		if (ingredient.getAmount() == FluidType.BUCKET_VOLUME) {
+			return ingredient;
+		}
+		return ingredient.copyWithAmount(FluidType.BUCKET_VOLUME);
 	}
 
 	@Override
@@ -157,5 +155,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 		return ingredient.getItemStack()
 			.flatMap(i -> Optional.ofNullable(i.getCapability(Capabilities.FluidHandler.ITEM)))
 			.map(c -> c.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE));
+	}
+
+	@Override
+	public Codec<FluidStack> getCodec() {
+		return FluidStack.CODEC;
 	}
 }

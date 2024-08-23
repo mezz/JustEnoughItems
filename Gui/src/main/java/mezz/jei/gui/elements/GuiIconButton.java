@@ -1,16 +1,15 @@
 package mezz.jei.gui.elements;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -134,9 +133,6 @@ public class GuiIconButton extends Button {
 		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 			this.button.pressed = false;
 
-			if (!input.isMouse()) {
-				return Optional.empty();
-			}
 			double mouseX = input.getMouseX();
 			double mouseY = input.getMouseY();
 			if (!this.button.active || !this.button.visible || !isMouseOver(mouseX, mouseY)) {
@@ -159,7 +155,7 @@ public class GuiIconButton extends Button {
 		}
 
 		@Override
-		public void handleMouseClickedOut(InputConstants.Key key) {
+		public void unfocus() {
 			this.button.pressed = false;
 		}
 	}

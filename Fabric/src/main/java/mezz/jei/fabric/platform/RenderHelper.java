@@ -12,7 +12,9 @@ import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPosition
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
@@ -66,6 +68,11 @@ public class RenderHelper implements IPlatformRenderHelper {
 			.collect(Collectors.toCollection(ArrayList::new));
 
 		guiGraphics.renderTooltipInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE);
+	}
+
+	@Override
+	public Component getName(TagKey<?> tagKey) {
+		return tagKey.getName();
 	}
 
 	private ClientTooltipComponent createClientTooltipComponent(TooltipComponent tooltipComponent) {

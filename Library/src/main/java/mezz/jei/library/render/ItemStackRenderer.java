@@ -1,6 +1,7 @@
 package mezz.jei.library.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
@@ -19,23 +20,38 @@ import java.util.List;
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
 	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient) {
+		render(guiGraphics, ingredient, 0, 0);
+	}
+
+	@Override
+	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient, int posX, int posY) {
 		if (ingredient != null) {
 			RenderSystem.enableDepthTest();
 
 			Minecraft minecraft = Minecraft.getInstance();
 			Font font = getFontRenderer(minecraft, ingredient);
-			guiGraphics.renderFakeItem(ingredient, 0, 0);
-			guiGraphics.renderItemDecorations(font, ingredient, 0, 0);
+			guiGraphics.renderFakeItem(ingredient, posX, posY);
+			guiGraphics.renderItemDecorations(font, ingredient, posX, posY);
 			RenderSystem.disableBlend();
 		}
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public List<Component> getTooltip(ItemStack ingredient, TooltipFlag tooltipFlag) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Player player = minecraft.player;
 		Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
 		return ingredient.getTooltipLines(tooltipContext, player, tooltipFlag);
+	}
+
+	@Override
+	public void getTooltip(ITooltipBuilder tooltip, ItemStack ingredient, TooltipFlag tooltipFlag) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Player player = minecraft.player;
+		Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
+		List<Component> tooltipLines = ingredient.getTooltipLines(tooltipContext, player, tooltipFlag);
+		tooltip.addAll(tooltipLines);
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.input.ICharTypedHandler;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.MouseUtil;
@@ -98,7 +99,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		int guiRight = GuiProperties.getGuiRight(guiProperties);
 		return screenRectangle.cropLeft(guiRight);
 	}
-
 
 	public ScreenPropertiesCache.Updater getScreenPropertiesUpdater() {
 		return this.screenPropertiesCache.getUpdater(this::onScreenPropertiesChanged);
@@ -187,9 +187,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		}
 	}
 
-	public void drawOnForeground(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			this.contents.drawOnForeground(minecraft, guiGraphics, mouseX, mouseY);
+			this.contents.drawOnForeground(guiGraphics, mouseX, mouseY);
 		}
 	}
 
@@ -201,8 +201,17 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return Stream.empty();
 	}
 
+	@Override
+	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		if (isListDisplayed()) {
+			return this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY);
+		}
+		return Stream.empty();
+	}
+
 	public IUserInputHandler createInputHandler() {
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
+			"IngredientListOverlay",
 			this.searchField.createInputHandler(),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler()

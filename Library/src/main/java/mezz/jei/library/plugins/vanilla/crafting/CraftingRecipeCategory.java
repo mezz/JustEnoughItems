@@ -1,13 +1,18 @@
 package mezz.jei.library.plugins.vanilla.crafting;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.serialization.Codec;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
+import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
@@ -70,6 +75,12 @@ public class CraftingRecipeCategory implements IExtendableCraftingRecipeCategory
 	}
 
 	@Override
+	public void createRecipeExtras(IRecipeExtrasBuilder acceptor, RecipeHolder<CraftingRecipe> recipeHolder, IFocusGroup focuses) {
+		var recipeExtension = this.extendableHelper.getRecipeExtension(recipeHolder);
+		recipeExtension.createRecipeExtras(recipeHolder, acceptor, craftingGridHelper, focuses);
+	}
+
+	@Override
 	public void draw(RecipeHolder<CraftingRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		var extension = this.extendableHelper.getRecipeExtension(recipeHolder);
 		int recipeWidth = this.getWidth();
@@ -78,11 +89,19 @@ public class CraftingRecipeCategory implements IExtendableCraftingRecipeCategory
 	}
 
 	@Override
+	public void getTooltip(ITooltipBuilder tooltip, RecipeHolder<CraftingRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+		var extension = this.extendableHelper.getRecipeExtension(recipeHolder);
+		extension.getTooltip(tooltip, recipeHolder, mouseX, mouseY);
+	}
+
+	@SuppressWarnings({"removal"})
+	@Override
 	public List<Component> getTooltipStrings(RecipeHolder<CraftingRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
 		var extension = this.extendableHelper.getRecipeExtension(recipeHolder);
 		return extension.getTooltipStrings(recipeHolder, mouseX, mouseY);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public boolean handleInput(RecipeHolder<CraftingRecipe> recipeHolder, double mouseX, double mouseY, InputConstants.Key input) {
 		var extension = this.extendableHelper.getRecipeExtension(recipeHolder);
@@ -109,5 +128,10 @@ public class CraftingRecipeCategory implements IExtendableCraftingRecipeCategory
 		return this.extendableHelper.getOptionalRecipeExtension(recipeHolder)
 			.flatMap(extension -> extension.getRegistryName(recipeHolder))
 			.orElseGet(recipeHolder::id);
+	}
+
+	@Override
+	public Codec<RecipeHolder<CraftingRecipe>> getCodec(ICodecHelper codecHelper, IRecipeManager recipeManager) {
+		return codecHelper.getRecipeHolderCodec();
 	}
 }

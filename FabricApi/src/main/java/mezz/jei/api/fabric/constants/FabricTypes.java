@@ -1,8 +1,11 @@
 package mezz.jei.api.fabric.constants;
 
 import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
+import mezz.jei.api.fabric.ingredients.fluids.JeiFluidIngredient;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.world.level.material.Fluid;
 
 /**
@@ -33,6 +36,11 @@ public final class FabricTypes {
 		@Override
 		public Fluid getBase(IJeiFluidIngredient ingredient) {
 			return ingredient.getFluidVariant().getFluid();
+		}
+
+		@Override
+		public IJeiFluidIngredient getDefaultIngredient(Fluid base) {
+			return new JeiFluidIngredient(FluidVariant.of(base), FluidConstants.BUCKET);
 		}
 	};
 

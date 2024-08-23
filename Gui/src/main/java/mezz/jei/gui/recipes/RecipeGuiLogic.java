@@ -12,6 +12,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.recipes.layouts.IRecipeLayoutList;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
@@ -250,10 +251,15 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		List<T> brokenRecipes = new ArrayList<>();
 
 		List<RecipeLayoutWithButtons<T>> results = recipes.stream()
-			.<IRecipeLayoutDrawable<T>>mapMulti((recipe, acceptor) ->
-				recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
-					.ifPresentOrElse(acceptor, () -> brokenRecipes.add(recipe))
-			)
+			.<IRecipeLayoutDrawable<T>>mapMulti((recipe, acceptor) -> {
+				if (recipeCategory.needsRecipeBorder()) {
+					recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
+						.ifPresentOrElse(acceptor, () -> brokenRecipes.add(recipe));
+				} else {
+					recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses(), new DrawableBlank(0, 0), 0)
+						.ifPresentOrElse(acceptor, () -> brokenRecipes.add(recipe));
+				}
+			})
 			.map(recipeLayoutFactory::create)
 			.toList();
 

@@ -1,10 +1,11 @@
 package mezz.jei.common.gui.elements;
 
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 
-public record DrawableBlank(int width, int height) implements IDrawableStatic, IDrawableAnimated {
+public record DrawableBlank(int width, int height) implements IDrawableStatic, IDrawableAnimated, IScalableDrawable {
 	@Override
 	public int getWidth() {
 		return width;
@@ -22,6 +23,11 @@ public record DrawableBlank(int width, int height) implements IDrawableStatic, I
 
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+		// draws nothing
+	}
+
+	@Override
+	public void draw(GuiGraphics guiGraphics, int x, int y, int width, int height) {
 		// draws nothing
 	}
 }

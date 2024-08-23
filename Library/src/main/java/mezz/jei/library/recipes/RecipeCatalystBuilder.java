@@ -4,18 +4,15 @@ import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.recipes.collect.RecipeMap;
 
 import java.util.List;
 
 public class RecipeCatalystBuilder {
 	private final ImmutableListMultimap.Builder<IRecipeCategory<?>, ITypedIngredient<?>> recipeCategoryCatalystsBuilder = ImmutableListMultimap.builder();
-	private final IIngredientManager ingredientManager;
 	private final RecipeMap recipeCatalystMap;
 
-	public RecipeCatalystBuilder(IIngredientManager ingredientManager, RecipeMap recipeCatalystMap) {
-		this.ingredientManager = ingredientManager;
+	public RecipeCatalystBuilder(RecipeMap recipeCatalystMap) {
 		this.recipeCatalystMap = recipeCatalystMap;
 	}
 

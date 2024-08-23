@@ -26,4 +26,8 @@ public class RecipeIngredientTable {
 		}
 		return ingredientToRecipesMap.get(ingredientUid);
 	}
+
+	public void compact() {
+		map.values().forEach(IngredientToRecipesMap::compact);
+	}
 }

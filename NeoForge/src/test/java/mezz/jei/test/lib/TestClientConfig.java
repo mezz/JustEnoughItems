@@ -57,6 +57,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isShowHiddenItemsEnabled() {
+		return false;
+	}
+
+	@Override
 	public List<BookmarkTooltipFeature> getBookmarkTooltipFeatures() {
 		return List.of();
 	}
@@ -77,6 +82,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public int getSmoothScrollRate() {
+		return 9;
+	}
+
+	@Override
 	public boolean isTagContentTooltipEnabled() {
 		return true;
 	}
@@ -84,6 +94,11 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public boolean isHideSingleIngredientTagsEnabled() {
 		return true;
+	}
+
+	@Override
+	public boolean isShowTagRecipesEnabled() {
+		return false;
 	}
 
 	@Override

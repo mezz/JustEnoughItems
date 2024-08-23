@@ -1,8 +1,9 @@
 package mezz.jei.api.ingredients;
 
-import java.util.Collection;
 import java.util.List;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -16,11 +17,11 @@ import net.minecraft.network.chat.Component;
  *
  * If you have a new type of ingredient to add to JEI,
  * you will have to implement this to create a default renderer for
- * {@link IModIngredientRegistration#register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer)}
+ * {@link IModIngredientRegistration#register}
  */
 public interface IIngredientRenderer<T> {
 	/**
-	 * Renders an ingredient at a specific location.
+	 * Renders an ingredient.
 	 *
 	 * @param guiGraphics The current {@link GuiGraphics} for rendering the ingredient.
 	 * @param ingredient the ingredient to render.
@@ -30,13 +31,50 @@ public interface IIngredientRenderer<T> {
 	void render(GuiGraphics guiGraphics, T ingredient);
 
 	/**
+	 * Renders an ingredient at a specific location.
+	 *
+	 * @param guiGraphics The current {@link GuiGraphics} for rendering the ingredient.
+	 * @param ingredient the ingredient to render.
+	 * @param posX       the x offset for rendering this ingredient
+	 * @param posY       the y offset for rendering this ingredient
+	 *
+	 * @since 19.5.5
+	 */
+	default void render(GuiGraphics guiGraphics, T ingredient, int posX, int posY) {
+		PoseStack poseStack = guiGraphics.pose();
+		poseStack.pushPose();
+		{
+			poseStack.translate(posX, posY, 0);
+			render(guiGraphics, ingredient);
+		}
+		poseStack.popPose();
+	}
+
+	/**
 	 * Get the tooltip text for this ingredient. JEI renders the tooltip based on this.
 	 *
 	 * @param ingredient  The ingredient to get the tooltip for.
 	 * @param tooltipFlag Whether to show advanced information on item tooltips, toggled by F3+H
 	 * @return The tooltip text for the ingredient.
+	 *
+	 * @deprecated use {@link #getTooltip(ITooltipBuilder, Object, TooltipFlag)}
 	 */
+	@Deprecated(since = "19.5.4", forRemoval = true)
 	List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag);
+
+	/**
+	 * Get a rich tooltip for this ingredient. JEI renders the tooltip based on this.
+	 *
+	 * @param tooltip     A tooltip builder for building rich tooltips.
+	 * @param ingredient  The ingredient to get the tooltip for.
+	 * @param tooltipFlag Whether to show advanced information on item tooltips, toggled by F3+H
+	 *
+	 * @since 19.5.4
+	 */
+	default void getTooltip(ITooltipBuilder tooltip, T ingredient, TooltipFlag tooltipFlag) {
+		List<Component> components = getTooltip(ingredient, tooltipFlag);
+		tooltip.addAll(components);
+	}
 
 	/**
 	 * Get the tooltip font renderer for this ingredient. JEI renders the tooltip based on this.

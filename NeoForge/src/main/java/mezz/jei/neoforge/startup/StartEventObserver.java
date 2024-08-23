@@ -9,11 +9,11 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
-import net.neoforged.bus.api.Event;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class observes events and determines when it's the right time to start JEI.
@@ -66,16 +67,24 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 				Screen screen = event.getScreen();
 				Minecraft minecraft = screen.getMinecraft();
 				if (screen instanceof AbstractContainerScreen && minecraft != null && minecraft.player != null) {
-					var missingEvents = requiredEvents.stream()
+					String missingEventsString = requiredEvents.stream()
 						.filter(e -> !observedEvents.contains(e))
+						.map(Class::getName)
 						.sorted()
-						.toList();
+						.collect(Collectors.joining(", ", "[", "]"));
+					String requiredEventsString = requiredEvents.stream()
+						.map(Class::getName)
+						.sorted()
+						.collect(Collectors.joining(", ", "[", "]"));
 
 					LOGGER.error("""
 							A Screen is opening but JEI hasn't started yet.
-							Normally, JEI is started after ClientPlayerNetworkEvent.LoggedInEvent, TagsUpdatedEvent, and RecipesUpdatedEvent.
+							Normally, JEI is started after {}.
 							Something has caused one or more of these events to fail, so JEI is starting very late.
-							Missing events: {}""", missingEvents);
+							Missing events: {}""",
+						requiredEventsString,
+						missingEventsString
+					);
 					transitionState(State.LISTENING);
 					transitionState(State.JEI_STARTED);
 				}

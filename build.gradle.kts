@@ -2,9 +2,9 @@ plugins {
 	id("com.diffplug.spotless") version("6.25.0")
     id("com.dorongold.task-tree") version("2.1.0")
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/
-    id("fabric-loom") version("1.7.1") apply(false)
+    id("fabric-loom") version("1.7.3") apply(false)
     // https://projects.neoforged.net/neoforged/neogradle
-    id("net.neoforged.gradle.userdev") version("7.0.152") apply(false)
+    id("net.neoforged.gradle.userdev") version("7.0.157") apply(false)
     // https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/gradle/vanilla/org.spongepowered.gradle.vanilla.gradle.plugin/
     id("org.spongepowered.gradle.vanilla") version("0.2.1-SNAPSHOT") apply(false)
 }

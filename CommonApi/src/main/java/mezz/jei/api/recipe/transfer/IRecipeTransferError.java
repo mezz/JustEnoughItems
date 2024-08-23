@@ -1,5 +1,6 @@
 package mezz.jei.api.recipe.transfer;
 
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import net.minecraft.network.chat.Component;
@@ -71,9 +72,20 @@ public interface IRecipeTransferError {
 	 * Called on {@link Type#USER_FACING} and {@link Type#COSMETIC} errors.
 	 *
 	 * @since 19.4.0
+	 * @deprecated use {@link #getTooltip(ITooltipBuilder)}
 	 */
+	@Deprecated(since = "19.5.4", forRemoval = true)
 	default List<Component> getTooltip() {
 		return List.of();
+	}
+
+	/**
+	 * Called on {@link Type#USER_FACING} and {@link Type#COSMETIC} errors.
+	 *
+	 * @since 19.5.4
+	 */
+	default void getTooltip(ITooltipBuilder tooltip) {
+		tooltip.addAll(getTooltip());
 	}
 
 	/**

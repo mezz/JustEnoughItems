@@ -37,7 +37,7 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 	public IngredientsTooltipComponent(IRecipeLayoutDrawable<?> layout) {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		IRecipeSlotsView recipeSlotsView = layout.getRecipeSlotsView();
-		Map<String, SummaryElement<?>> summary = new HashMap<>();
+		Map<Object, SummaryElement<?>> summary = new HashMap<>();
 		recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT)
 			.stream()
 			.map(IRecipeSlotView::getDisplayedIngredient)
@@ -54,7 +54,7 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 			.toList();
 	}
 
-	private static <T> void addToSummary(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager, Map<String, SummaryElement<?>> summary) {
+	private static <T> void addToSummary(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager, Map<Object, SummaryElement<?>> summary) {
 		IIngredientType<T> type = typedIngredient.getType();
 		IIngredientHelper<T> helper = ingredientManager.getIngredientHelper(type);
 		T ingredient = typedIngredient.getIngredient();
@@ -62,7 +62,7 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 		if (ingredientAmount == -1) {
 			return;
 		}
-		String uid = getUid(typedIngredient, ingredientManager);
+		Object uid = getUid(typedIngredient, ingredientManager);
 		summary.compute(uid, (k, v) -> {
 			if (v == null) {
 				return SummaryElement.create(typedIngredient, ingredientAmount);
@@ -73,9 +73,11 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 		});
 	}
 
-	private static <T> String getUid(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
-		return ingredientHelper.getUniqueId(typedIngredient.getIngredient(), UidContext.Recipe);
+	private static <T> Object getUid(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
+		IIngredientType<T> type = typedIngredient.getType();
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
+		T ingredient = typedIngredient.getIngredient();
+		return ingredientHelper.getUid(ingredient, UidContext.Recipe);
 	}
 
 	@Override

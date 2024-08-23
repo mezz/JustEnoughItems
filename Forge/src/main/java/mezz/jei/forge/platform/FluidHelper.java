@@ -1,6 +1,8 @@
 package mezz.jei.forge.platform;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -25,8 +27,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
@@ -72,11 +72,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	}
 
 	@Override
-	public List<Component> getTooltip(FluidStack ingredient, TooltipFlag tooltipFlag) {
-		List<Component> tooltip = new ArrayList<>();
+	public void getTooltip(ITooltipBuilder tooltip, FluidStack ingredient, TooltipFlag tooltipFlag) {
 		Fluid fluid = ingredient.getFluid();
 		if (fluid.isSame(Fluids.EMPTY)) {
-			return tooltip;
+			return;
 		}
 
 		Component displayName = getDisplayName(ingredient);
@@ -90,8 +89,6 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 				tooltip.add(advancedId);
 			}
 		}
-
-		return tooltip;
 	}
 
 	@Override
@@ -142,6 +139,9 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 
 	@Override
 	public FluidStack normalize(FluidStack ingredient) {
+		if (ingredient.getAmount() == FluidType.BUCKET_VOLUME) {
+			return ingredient;
+		}
 		FluidStack copy = this.copy(ingredient);
 		copy.setAmount(FluidType.BUCKET_VOLUME);
 		return copy;
@@ -151,5 +151,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	public Optional<FluidStack> getContainedFluid(ITypedIngredient<?> ingredient) {
 		// TODO: update when Forge has item capabilities for fluid containers
 		return Optional.empty();
+	}
+
+	@Override
+	public Codec<FluidStack> getCodec() {
+		return FluidStack.CODEC;
 	}
 }

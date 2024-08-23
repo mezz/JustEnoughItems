@@ -2,8 +2,6 @@ package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
@@ -26,11 +24,9 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 	public static RecipeBookmarkButton create(
 		IRecipeLayoutDrawable<?> recipeLayout,
 		IIngredientManager ingredientManager,
-		BookmarkList bookmarks,
-		IRecipeManager recipeManager,
-		IGuiHelper guiHelper
+		BookmarkList bookmarks
 	) {
-		RecipeBookmark<?, ?> recipeBookmark = RecipeBookmark.create(recipeLayout, ingredientManager, recipeManager, guiHelper)
+		RecipeBookmark<?, ?> recipeBookmark = RecipeBookmark.create(recipeLayout, ingredientManager)
 			.orElse(null);
 
 		Textures textures = Internal.getTextures();

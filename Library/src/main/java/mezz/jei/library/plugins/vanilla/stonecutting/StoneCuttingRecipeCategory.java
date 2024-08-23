@@ -1,8 +1,11 @@
 package mezz.jei.library.plugins.vanilla.stonecutting;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.RecipeType;
@@ -73,5 +76,10 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<RecipeHolder<
 	@Override
 	public ResourceLocation getRegistryName(RecipeHolder<StonecutterRecipe> recipe) {
 		return recipe.id();
+	}
+
+	@Override
+	public Codec<RecipeHolder<StonecutterRecipe>> getCodec(ICodecHelper codecHelper, IRecipeManager recipeManager) {
+		return codecHelper.getRecipeHolderCodec();
 	}
 }

@@ -1,8 +1,10 @@
 package mezz.jei.library.ingredients;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
@@ -100,6 +102,11 @@ public class IngredientManager implements IIngredientManager {
 					LOGGER.error("Attempted to add an invalid Ingredient: {}", errorInfo);
 					return false;
 				}
+				if (!ingredientHelper.isIngredientOnServer(i)) {
+					String errorInfo = ingredientHelper.getErrorInfo(i);
+					LOGGER.error("Attempted to add an Ingredient that is not on the server: {}", errorInfo);
+					return false;
+				}
 				return true;
 			})
 			.toList();
@@ -119,6 +126,12 @@ public class IngredientManager implements IIngredientManager {
 	public <V> Optional<IIngredientType<V>> getIngredientTypeChecked(V ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		return this.registeredIngredients.getIngredientType(ingredient);
+	}
+
+	@Override
+	public <B, I> Optional<IIngredientTypeWithSubtypes<B, I>> getIngredientTypeWithSubtypesFromBase(B baseIngredient) {
+		ErrorUtil.checkNotNull(baseIngredient, "baseIngredient");
+		return this.registeredIngredients.getIngredientTypeWithSubtypesFromBase(baseIngredient);
 	}
 
 	@Override
@@ -177,14 +190,23 @@ public class IngredientManager implements IIngredientManager {
 	public <V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
 		return registeredIngredients
 			.getIngredientInfo(ingredientType)
-			.getIngredientByUid(ingredientUuid);
+			.getIngredientByLegacyUid(ingredientUuid);
 	}
 
+	@SuppressWarnings({"removal"})
 	@Override
+	@Deprecated
 	public <V> Optional<ITypedIngredient<V>> getTypedIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
 		return registeredIngredients
 			.getIngredientInfo(ingredientType)
-			.getIngredientByUid(ingredientUuid)
+			.getIngredientByLegacyUid(ingredientUuid)
 			.flatMap(i -> TypedIngredient.createAndFilterInvalid(this, ingredientType, i, true));
+	}
+
+	@Override
+	public <V> Codec<V> getIngredientCodec(IIngredientType<V> ingredientType) {
+		return registeredIngredients
+			.getIngredientInfo(ingredientType)
+			.getIngredientCodec();
 	}
 }

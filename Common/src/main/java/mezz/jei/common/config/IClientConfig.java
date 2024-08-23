@@ -34,6 +34,8 @@ public interface IClientConfig {
 
 	int getDragDelayMs();
 
+	int getSmoothScrollRate();
+
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();
@@ -47,4 +49,6 @@ public interface IClientConfig {
 	boolean isTagContentTooltipEnabled();
 
 	boolean isHideSingleIngredientTagsEnabled();
+
+	boolean isShowTagRecipesEnabled();
 }

@@ -135,7 +135,7 @@ public final class ItemStackListFactory {
 				if (itemStack.isEmpty()) {
 					LOGGER.error("Found an empty itemStack from creative tab: {}", itemGroup);
 				} else {
-					Object itemKey = getItemKey(stackHelper, itemStack);
+					Object itemKey = safeGetUid(stackHelper, itemStack);
 					if (itemKey != null) {
 						if (tabUidSet.contains(itemKey)) {
 							duplicateInTab.add(itemKey);
@@ -158,7 +158,7 @@ public final class ItemStackListFactory {
 			if (duplicateInTabCount > 0) {
 				LOGGER.warn(
 					"""
-						{} duplicates items were found in creative tab: {}
+						{} duplicate items were found in creative tab: {}
 						This may indicate that these types of item need a subtype interpreter added to JEI:
 						{}""",
 					duplicateInTabCount,
@@ -192,7 +192,7 @@ public final class ItemStackListFactory {
 
 			int added = 0;
 			for (ItemStack itemStack : itemStacks) {
-				Object itemKey = getItemKey(stackHelper, itemStack);
+				Object itemKey = safeGetUid(stackHelper, itemStack);
 				if (itemKey != null && itemUidSet.add(itemKey)) {
 					itemList.add(itemStack);
 					added++;
@@ -218,7 +218,7 @@ public final class ItemStackListFactory {
 
 			int added = 0;
 			for (ItemStack itemStack : itemStacks) {
-				Object itemKey = getItemKey(stackHelper, itemStack);
+				Object itemKey = safeGetUid(stackHelper, itemStack);
 				if (itemKey != null && itemUidSet.add(itemKey)) {
 					itemList.add(itemStack);
 					added++;
@@ -234,16 +234,13 @@ public final class ItemStackListFactory {
 	}
 
 	@Nullable
-	private static Object getItemKey(StackHelper stackHelper, ItemStack stack) {
-		if (stackHelper.hasSubtypes(stack)) {
-			try {
-				return stackHelper.getUniqueIdentifierForStack(stack, UidContext.Ingredient);
-			} catch (RuntimeException | LinkageError e) {
-				String stackInfo = ErrorUtil.getItemStackInfo(stack);
-				LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);
-				return null;
-			}
+	private static Object safeGetUid(StackHelper stackHelper, ItemStack stack) {
+		try {
+			return stackHelper.getUidForStack(stack, UidContext.Ingredient);
+		} catch (RuntimeException | LinkageError e) {
+			String stackInfo = ErrorUtil.getItemStackInfo(stack);
+			LOGGER.error("Couldn't get unique name for itemStack {}", stackInfo, e);
+			return null;
 		}
-		return stack.getItem();
 	}
 }
