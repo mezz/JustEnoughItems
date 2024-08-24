@@ -94,7 +94,7 @@ public class JeiDebugPlugin implements IModPlugin {
 		registration.addAlias(
 			VanillaTypes.ITEM_STACK,
 			new ItemStack(Items.PANDA_SPAWN_EGG),
-			"endangered"
+			"jei.alias.panda.spawn.egg"
 		);
 
 		registration.addAliases(
