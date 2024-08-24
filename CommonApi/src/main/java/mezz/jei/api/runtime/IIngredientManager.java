@@ -178,7 +178,7 @@ public interface IIngredientManager {
 	<V> Optional<ITypedIngredient<V>> getTypedIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid);
 
 	/**
-	 * Get search aliases for ingredients.
+	 * Get localized search aliases for ingredients.
 	 * Registered by mods with {@link IIngredientAliasRegistration#addAlias}.
 	 *
 	 * If search aliases are disabled by the player in the configs, this will return an empty collection.

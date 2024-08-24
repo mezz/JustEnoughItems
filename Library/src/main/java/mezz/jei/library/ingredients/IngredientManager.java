@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.Translator;
 import mezz.jei.core.util.WeakList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -218,6 +219,9 @@ public class IngredientManager implements IIngredientManager {
 	private <T> Collection<String> getIngredientAliasesInternal(ITypedIngredient<T> typedIngredient) {
 		return registeredIngredients
 			.getIngredientInfo(typedIngredient.getType())
-			.getIngredientAliases(typedIngredient.getIngredient());
+			.getIngredientAliases(typedIngredient.getIngredient())
+			.stream()
+			.map(Translator::translateToLocal)
+			.toList();
 	}
 }

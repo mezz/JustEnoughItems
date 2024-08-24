@@ -14,6 +14,7 @@ import java.util.List;
 public interface IIngredientAliasRegistration {
 	/**
 	 * Register a search alias for an ingredient.
+	 * An alias may be a translation key.
 	 *
 	 * @since 19.10.0
 	 */
@@ -21,6 +22,7 @@ public interface IIngredientAliasRegistration {
 
 	/**
 	 * Register multiple search aliases for an ingredient.
+	 * An alias may be a translation key.
 	 *
 	 * @since 19.10.0
 	 */
@@ -28,6 +30,7 @@ public interface IIngredientAliasRegistration {
 
 	/**
 	 * Register a search aliases for multiple ingredients.
+	 * An alias may be a translation key.
 	 *
 	 * @since 19.10.0
 	 */
@@ -35,6 +38,7 @@ public interface IIngredientAliasRegistration {
 
 	/**
 	 * Register multiple search aliases for multiple ingredients.
+	 * An alias may be a translation key.
 	 *
 	 * @since 19.10.0
 	 */
