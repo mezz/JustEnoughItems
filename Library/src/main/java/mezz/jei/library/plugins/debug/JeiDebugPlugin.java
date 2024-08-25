@@ -97,6 +97,12 @@ public class JeiDebugPlugin implements IModPlugin {
 			"jei.alias.panda.spawn.egg"
 		);
 
+		registration.addAlias(
+			VanillaTypes.ITEM_STACK,
+			new ItemStack(Items.VILLAGER_SPAWN_EGG),
+			"jei.alias.villager.spawn.egg"
+		);
+
 		registration.addAliases(
 			VanillaTypes.ITEM_STACK,
 			List.of(

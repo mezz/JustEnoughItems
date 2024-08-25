@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.util.SafeIngredientUtil;
+import mezz.jei.common.util.Translator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.TooltipFlag;
 import org.apache.logging.log4j.LogManager;
@@ -73,7 +74,10 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		} else {
 			this.names = new ArrayList<>(1 + aliases.size());
 			this.names.add(displayNameLowercase);
-			this.names.addAll(aliases);
+			for (String alias : aliases) {
+				String lowercaseAlias = Translator.toLowercaseWithLocale(alias);
+				this.names.add(lowercaseAlias);
+			}
 		}
 	}
 
