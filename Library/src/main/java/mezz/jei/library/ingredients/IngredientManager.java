@@ -222,6 +222,7 @@ public class IngredientManager implements IIngredientManager {
 			.getIngredientAliases(typedIngredient.getIngredient())
 			.stream()
 			.map(Translator::translateToLocal)
+			.sorted(String::compareToIgnoreCase)
 			.toList();
 	}
 }

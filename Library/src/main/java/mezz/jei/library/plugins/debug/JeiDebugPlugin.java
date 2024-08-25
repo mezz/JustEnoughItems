@@ -118,7 +118,7 @@ public class JeiDebugPlugin implements IModPlugin {
 				new ItemStack(Items.GOLDEN_HOE),
 				new ItemStack(Items.DIAMOND_BLOCK)
 			),
-			List.of("shiny", "valuable", "expensive")
+			List.of("shiny", "valuable", "Expensive", "expansive", "extensive")
 		);
 
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
