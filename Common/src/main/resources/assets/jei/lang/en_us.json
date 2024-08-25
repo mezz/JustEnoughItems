@@ -6,6 +6,7 @@
   "jei.tooltip.delete.item": "Click to Delete",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
+  "jei.tooltip.liquid.flowing": "%s (flowing)",
   "jei.tooltip.transfer": "Move Items",
   "jei.tooltip.recipe.tag": "Accepts tag: %s",
   "jei.tooltip.item.colors": "Colors: %s",
