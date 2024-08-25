@@ -148,6 +148,9 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 
 	@Override
 	public Codec<FluidStack> getCodec() {
-		return FluidStack.CODEC;
+		return Codec.withAlternative(
+			FluidStack.fixedAmountCodec(FluidType.BUCKET_VOLUME),
+			FluidStack.CODEC // TODO: remove this fallback codec in the next major version of JEI
+		);
 	}
 }
