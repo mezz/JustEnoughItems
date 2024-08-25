@@ -56,7 +56,13 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	@Override
 	public Component getDisplayName(IJeiFluidIngredient ingredient) {
 		FluidVariant fluidVariant = getFluidVariant(ingredient);
-		return FluidVariantAttributes.getName(fluidVariant);
+		Component displayName = FluidVariantAttributes.getName(fluidVariant);
+
+		Fluid fluid = fluidVariant.getFluid();
+		if (!fluid.isSource(fluid.defaultFluidState())) {
+			return Component.translatable("jei.tooltip.liquid.flowing", displayName);
+		}
+		return displayName;
 	}
 
 	@Override
