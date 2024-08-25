@@ -20,6 +20,7 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
@@ -50,7 +51,13 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	@Override
 	public Component getDisplayName(IJeiFluidIngredient ingredient) {
 		FluidVariant fluidVariant = getFluidVariant(ingredient);
-		return FluidVariantAttributes.getName(fluidVariant);
+		Component displayName = FluidVariantAttributes.getName(fluidVariant);
+
+		Fluid fluid = fluidVariant.getFluid();
+		if (!fluid.isSource(fluid.defaultFluidState())) {
+			return new TranslatableComponent("jei.tooltip.liquid.flowing", displayName);
+		}
+		return displayName;
 	}
 
 	@Override

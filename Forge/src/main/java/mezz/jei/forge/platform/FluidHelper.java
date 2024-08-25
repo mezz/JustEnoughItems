@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -104,7 +105,13 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 
 	@Override
 	public Component getDisplayName(FluidStack ingredient) {
-		return ingredient.getDisplayName();
+		Component displayName = ingredient.getDisplayName();
+
+		Fluid fluid = ingredient.getFluid();
+		if (!fluid.isSource(fluid.defaultFluidState())) {
+			return new TranslatableComponent("jei.tooltip.liquid.flowing", displayName);
+		}
+		return displayName;
 	}
 
 	private static class AllFluidNbt implements IIngredientSubtypeInterpreter<FluidStack> {
