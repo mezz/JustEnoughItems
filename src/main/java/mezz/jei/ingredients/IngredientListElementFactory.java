@@ -38,7 +38,7 @@ public final class IngredientListElementFactory {
 		for (V ingredient : ingredients) {
 			if (ingredient != null) {
 				int orderIndex = ORDER_TRACKER.getOrderIndex(ingredient, ingredientHelper);
-				IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper, orderIndex);
+				IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientRegistry, ingredientHelper, ingredientRenderer, modIdHelper, orderIndex);
 				if (ingredientListElement != null) {
 					list.add(ingredientListElement);
 				}
@@ -51,7 +51,7 @@ public final class IngredientListElementFactory {
 	public static <V> IIngredientListElement<V> createUnorderedElement(IIngredientRegistry ingredientRegistry, IIngredientType<V> ingredientType, V ingredient, IModIdHelper modIdHelper) {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredientType);
 		IIngredientRenderer<V> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredientType);
-		return IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper, 0);
+		return IngredientListElement.create(ingredient, ingredientRegistry, ingredientHelper, ingredientRenderer, modIdHelper, 0);
 	}
 
 	private static <V> void addToBaseList(NonNullList<IIngredientListElement> baseList, IIngredientRegistry ingredientRegistry, IIngredientType<V> ingredientType, IModIdHelper modIdHelper) {
@@ -64,7 +64,7 @@ public final class IngredientListElementFactory {
 			progressBar.step("");
 			if (ingredient != null) {
 				int orderIndex = ORDER_TRACKER.getOrderIndex(ingredient, ingredientHelper);
-				IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper, ingredientRenderer, modIdHelper, orderIndex);
+				IngredientListElement<V> ingredientListElement = IngredientListElement.create(ingredient, ingredientRegistry, ingredientHelper, ingredientRenderer, modIdHelper, orderIndex);
 				if (ingredientListElement != null) {
 					baseList.add(ingredientListElement);
 				}

@@ -2,6 +2,7 @@ package mezz.jei.api;
 
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 
 /**
  * The main class to implement to create a JEI plugin. Everything communicated between a mod and JEI is through this class.
@@ -24,6 +25,15 @@ public interface IModPlugin {
 	 * @since JEI 3.11.0
 	 */
 	default void registerIngredients(IModIngredientRegistration registry) {
+
+	}
+
+	/**
+	 * Register search aliases for ingredients.
+	 *
+	 * @since JEI 4.20.0
+	 */
+	default void registerIngredientAliases(IIngredientAliasRegistration registration) {
 
 	}
 

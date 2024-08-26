@@ -18,6 +18,8 @@ public interface IIngredientListElement<V> {
 
 	String getDisplayName();
 
+	Collection<String> getNameStrings();
+
 	String getModNameForSorting();
 
 	Set<String> getModNameStrings();

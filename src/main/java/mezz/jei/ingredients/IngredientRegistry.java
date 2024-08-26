@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
@@ -23,6 +24,7 @@ import net.minecraft.util.NonNullList;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ListMultimap;
 import mezz.jei.Internal;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
@@ -35,6 +37,7 @@ import mezz.jei.startup.IModIdHelper;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.IngredientSet;
 import mezz.jei.util.Log;
+import mezz.jei.util.Translator;
 
 public class IngredientRegistry implements IIngredientRegistry {
 	private final IModIdHelper modIdHelper;
@@ -42,6 +45,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	private final Map<IIngredientType, IngredientSet> ingredientsMap;
 	private final ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap;
 	private final ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap;
+	private final ImmutableMap<IIngredientType, ListMultimap<String, String>> ingredientAliasesMap;
 	private final ImmutableMap<Class, IIngredientType> ingredientTypeMap;
 
 	private final NonNullList<ItemStack> fuels = NonNullList.create();
@@ -52,13 +56,15 @@ public class IngredientRegistry implements IIngredientRegistry {
 		IngredientBlacklistInternal blacklist,
 		Map<IIngredientType, IngredientSet> ingredientsMap,
 		ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap,
-		ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap
+		ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap,
+		ImmutableMap<IIngredientType, ListMultimap<String, String>> ingredientAliasesMap
 	) {
 		this.modIdHelper = modIdHelper;
 		this.blacklist = blacklist;
 		this.ingredientsMap = ingredientsMap;
 		this.ingredientHelperMap = ingredientHelperMap;
 		this.ingredientRendererMap = ingredientRendererMap;
+		this.ingredientAliasesMap = ingredientAliasesMap;
 		ImmutableMap.Builder<Class, IIngredientType> ingredientTypeBuilder = ImmutableMap.builder();
 		for (IIngredientType ingredientType : ingredientsMap.keySet()) {
 			ingredientTypeBuilder.put(ingredientType.getIngredientClass(), ingredientType);
@@ -326,6 +332,21 @@ public class IngredientRegistry implements IIngredientRegistry {
 			}
 		}
 		throw new IllegalArgumentException("Unknown ingredient class: " + ingredientClass);
+	}
+
+	@Override
+	public <V> Collection<String> getIngredientAliases(V ingredient) {
+		IIngredientType<V> ingredientType = getIngredientType(ingredient);
+		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientType);
+		ListMultimap<String, String> aliases = ingredientAliasesMap.get(ingredientType);
+		if (aliases == null) {
+			return Collections.emptyList();
+		}
+		String uid = ingredientHelper.getUniqueId(ingredient);
+		return aliases.get(uid).stream()
+			.map(Translator::translateToLocal)
+			.sorted(String::compareToIgnoreCase)
+			.collect(Collectors.toList());
 	}
 
 	public <V> void removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients, IngredientFilter ingredientFilter) {

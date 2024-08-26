@@ -14,6 +14,7 @@ import net.minecraft.util.ResourceLocation;
 
 import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.startup.IModIdHelper;
@@ -28,15 +29,17 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	private final IIngredientHelper<V> ingredientHelper;
 	private final IIngredientRenderer<V> ingredientRenderer;
 	private final String displayName;
+	private final List<String> nameStrings;
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final ResourceLocation resourceLocation;
 	private boolean visible = true;
 
 	@Nullable
-	public static <V> IngredientListElement<V> create(V ingredient, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper, int orderIndex) {
+	public static <V> IngredientListElement<V> create(V ingredient, IIngredientRegistry ingredientRegistry, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper, int orderIndex) {
 		try {
-			return new IngredientListElement<>(ingredient, orderIndex, ingredientHelper, ingredientRenderer, modIdHelper);
+			Collection<String> aliases = ingredientRegistry.getIngredientAliases(ingredient);
+			return new IngredientListElement<>(ingredient, orderIndex, ingredientHelper, ingredientRenderer, modIdHelper, aliases);
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
@@ -48,7 +51,7 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		}
 	}
 
-	protected IngredientListElement(V ingredient, int orderIndex, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper) {
+	protected IngredientListElement(V ingredient, int orderIndex, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer, IModIdHelper modIdHelper, Collection<String> aliases) {
 		this.ingredient = ingredient;
 		this.orderIndex = orderIndex;
 		this.ingredientHelper = ingredientHelper;
@@ -63,6 +66,11 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 		}
 		this.modNames = this.modIds.stream().map(modIdHelper::getModNameForModId).collect(Collectors.toList());
 		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
+		this.nameStrings = new ArrayList<>(1 + aliases.size());
+		this.nameStrings.add(Translator.toLowercaseWithLocale(this.displayName));
+		for (String alias : aliases) {
+			this.nameStrings.add(Translator.toLowercaseWithLocale(alias));
+		}
 	}
 
 	@Override
@@ -88,6 +96,11 @@ public class IngredientListElement<V> implements IIngredientListElement<V> {
 	@Override
 	public final String getDisplayName() {
 		return displayName;
+	}
+
+	@Override
+	public Collection<String> getNameStrings() {
+		return nameStrings;
 	}
 
 	@Override

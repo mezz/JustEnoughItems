@@ -1,12 +1,14 @@
 package mezz.jei.api.ingredients;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
 
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 
 /**
  * The IIngredientRegistry is provided by JEI and has some useful functions related to recipe ingredients.
@@ -93,6 +95,16 @@ public interface IIngredientRegistry {
 	 * @since JEI 4.12.0
 	 */
 	<V> IIngredientType<V> getIngredientType(Class<? extends V> ingredientClass);
+
+	/**
+	 * Get localized search aliases registered for an ingredient.
+	 *
+	 * @see IIngredientAliasRegistration
+	 * @since JEI 4.20.0
+	 */
+	default <V> Collection<String> getIngredientAliases(V ingredient) {
+		return Collections.emptyList();
+	}
 
 	/**
 	 * Returns an unmodifiable collection of all the ingredients known to JEI, of the specified class.

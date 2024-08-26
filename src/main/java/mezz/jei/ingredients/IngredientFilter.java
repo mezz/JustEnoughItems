@@ -113,7 +113,9 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		updateHiddenState(element);
 		final int index = elementList.size();
 		elementList.add(element);
-		searchTree.put(Translator.toLowercaseWithLocale(element.getDisplayName()), index);
+		for (String name : element.getNameStrings()) {
+			searchTree.put(name, index);
+		}
 
 		for (PrefixedSearchTree prefixedSearchTree : this.prefixedSearchTrees.values()) {
 			Config.SearchMode searchMode = prefixedSearchTree.getMode();

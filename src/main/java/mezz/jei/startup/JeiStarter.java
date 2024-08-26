@@ -60,6 +60,7 @@ public class JeiStarter {
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		ModIngredientRegistration modIngredientRegistry = registerIngredients(plugins);
+		registerIngredientAliases(plugins, modIngredientRegistry);
 		IngredientRegistry ingredientRegistry = modIngredientRegistry.createIngredientRegistry(modIdHelper, blacklist);
 		Internal.setIngredientRegistry(ingredientRegistry);
 
@@ -178,6 +179,22 @@ public class JeiStarter {
 		ProgressManager.pop(progressBar);
 
 		return modIngredientRegistry;
+	}
+
+	private static void registerIngredientAliases(List<IModPlugin> plugins, ModIngredientRegistration modIngredientRegistry) {
+		ProgressManager.ProgressBar progressBar = ProgressManager.push("Registering ingredient aliases", plugins.size());
+		for (IModPlugin plugin : plugins) {
+			try {
+				progressBar.step(plugin.getClass().getName());
+				plugin.registerIngredientAliases(modIngredientRegistry);
+			} catch (RuntimeException | LinkageError e) {
+				if (plugin instanceof VanillaPlugin) {
+					throw e;
+				}
+				Log.get().error("Failed to register ingredient aliases for mod plugin: {}", plugin.getClass(), e);
+			}
+		}
+		ProgressManager.pop(progressBar);
 	}
 
 	private static void registerCategories(List<IModPlugin> plugins, ModRegistry modRegistry) {
