@@ -1,12 +1,14 @@
 package mezz.jei.api.runtime;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 
 /**
  * The IIngredientManager is provided by JEI and has some useful functions related to recipe ingredients.
@@ -66,4 +68,14 @@ public interface IIngredientManager {
 	 * Helper method to get ingredient type from a legacy ingredient class.
 	 */
 	<V> IIngredientType<V> getIngredientType(Class<? extends V> ingredientClass);
+
+	/**
+	 * Get localized search aliases registered for an ingredient.
+	 *
+	 * @see IIngredientAliasRegistration
+	 * @since 7.15.0
+	 */
+	default <V> Collection<String> getIngredientAliases(V ingredient) {
+		return Collections.emptyList();
+	}
 }

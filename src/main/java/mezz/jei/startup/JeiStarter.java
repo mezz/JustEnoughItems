@@ -67,7 +67,7 @@ public class JeiStarter {
 		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins);
 		ErrorUtil.checkNotNull(vanillaPlugin, "vanilla plugin");
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
-		PluginLoader pluginLoader = new PluginLoader(plugins, vanillaPlugin, textures, clientConfig, modIdHelper, debugMode);
+		PluginLoader pluginLoader = new PluginLoader(plugins, vanillaPlugin, textures, clientConfig, ingredientFilterConfig, modIdHelper, debugMode);
 		GuiHandlerRegistration guiHandlerRegistration = pluginLoader.getGuiHandlerRegistration();
 		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
 		IngredientFilter ingredientFilter = pluginLoader.createIngredientFilter(ingredientSorter, worldConfig, editModeConfig, ingredientFilterConfig);

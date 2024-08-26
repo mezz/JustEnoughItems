@@ -13,11 +13,13 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.color.ColorGetter;
 import mezz.jei.util.ErrorUtil;
 
-public class ModIngredientRegistration implements IModIngredientRegistration {
+public class ModIngredientRegistration implements IModIngredientRegistration, IIngredientAliasRegistration {
 	private final List<RegisteredIngredient<?>> registeredIngredients = new ArrayList<>();
+	private final IdentityHashMap<IIngredientType<?>, RegisteredIngredient<?>> registeredIngredientsByType = new IdentityHashMap<>();
 	private final Set<IIngredientType<?>> registeredIngredientSet = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final ISubtypeManager subtypeManager;
 
@@ -35,8 +37,45 @@ public class ModIngredientRegistration implements IModIngredientRegistration {
 			throw new IllegalArgumentException("Ingredient type has already been registered: " + ingredientType.getIngredientClass());
 		}
 
-		registeredIngredients.add(new RegisteredIngredient<>(ingredientType, allIngredients, ingredientHelper, ingredientRenderer));
+		RegisteredIngredient<V> registeredIngredient = new RegisteredIngredient<>(ingredientType, allIngredients, ingredientHelper, ingredientRenderer);
+		registeredIngredients.add(registeredIngredient);
+		registeredIngredientsByType.put(ingredientType, registeredIngredient);
 		registeredIngredientSet.add(ingredientType);
+	}
+
+	@Override
+	public <I> void addAlias(IIngredientType<I> type, I ingredient, String alias) {
+		addAliases(type, ingredient, Collections.singleton(alias));
+	}
+
+	@Override
+	public <I> void addAliases(IIngredientType<I> type, I ingredient, Collection<String> aliases) {
+		ErrorUtil.checkNotNull(type, "type");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		ErrorUtil.checkNotNull(aliases, "aliases");
+		getRegisteredIngredient(type).addAliases(ingredient, aliases);
+	}
+
+	@Override
+	public <I> void addAliases(IIngredientType<I> type, Collection<I> ingredients, String alias) {
+		addAliases(type, ingredients, Collections.singleton(alias));
+	}
+
+	@Override
+	public <I> void addAliases(IIngredientType<I> type, Collection<I> ingredients, Collection<String> aliases) {
+		ErrorUtil.checkNotNull(ingredients, "ingredients");
+		for (I ingredient : ingredients) {
+			addAliases(type, ingredient, aliases);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <I> RegisteredIngredient<I> getRegisteredIngredient(IIngredientType<I> type) {
+		RegisteredIngredient<I> registeredIngredient = (RegisteredIngredient<I>) registeredIngredientsByType.get(type);
+		if (registeredIngredient == null) {
+			throw new IllegalArgumentException("Unknown ingredient type: " + type.getIngredientClass());
+		}
+		return registeredIngredient;
 	}
 
 	@Override

@@ -11,6 +11,7 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	public final ForgeConfigSpec.EnumValue<SearchMode> colorSearchMode;
 	public final ForgeConfigSpec.EnumValue<SearchMode> resourceIdSearchMode;
 	public final ForgeConfigSpec.BooleanValue searchAdvancedTooltips;
+	public final ForgeConfigSpec.BooleanValue searchIngredientAliases;
 
 	public IngredientFilterConfig(ForgeConfigSpec.Builder builder) {
 		builder.push("search");
@@ -28,6 +29,8 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 		resourceIdSearchMode = builder.defineEnum("ResourceIdSearchMode", SearchMode.DISABLED);
 		builder.comment("Search in advanced tooltips (visible with F3 + H).");
 		searchAdvancedTooltips = builder.define("SearchAdvancedTooltips", false);
+		builder.comment("Search ingredient aliases (alternative names) that are added by plugins.");
+		searchIngredientAliases = builder.define("SearchIngredientAliases", true);
 		builder.pop();
 	}
 
@@ -64,6 +67,11 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	@Override
 	public boolean getSearchAdvancedTooltips() {
 		return searchAdvancedTooltips.get();
+	}
+
+	@Override
+	public boolean getSearchIngredientAliases() {
+		return searchIngredientAliases.get();
 	}
 
 }

@@ -4,6 +4,7 @@ import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
@@ -43,6 +44,15 @@ public interface IModPlugin {
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
 	 */
 	default void registerIngredients(IModIngredientRegistration registration) {
+
+	}
+
+	/**
+	 * Register alternative search names for ingredients.
+	 *
+	 * @since 7.15.0
+	 */
+	default void registerIngredientAliases(IIngredientAliasRegistration registration) {
 
 	}
 

@@ -31,6 +31,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 
 	private final IIngredientListElement<V> element;
 	private final String displayName;
+	private final List<String> names;
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final ResourceLocation resourceLocation;
@@ -41,7 +42,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 		V ingredient = element.getIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
 		try {
-			return new IngredientListElementInfo<>(element, ingredientHelper, modIdHelper);
+			return new IngredientListElementInfo<>(element, ingredientHelper, modIdHelper, ingredientManager.getIngredientAliases(ingredient));
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(ingredient);
@@ -53,7 +54,7 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 		}
 	}
 
-	protected IngredientListElementInfo(IIngredientListElement<V> element, IIngredientHelper<V> ingredientHelper, IModIdHelper modIdHelper) {
+	protected IngredientListElementInfo(IIngredientListElement<V> element, IIngredientHelper<V> ingredientHelper, IModIdHelper modIdHelper, Collection<String> aliases) {
 		this.element = element;
 		V ingredient = element.getIngredient();
 		this.resourceLocation = ingredientHelper.getResourceLocation(ingredient);
@@ -68,12 +69,22 @@ public class IngredientListElementInfo<V> implements IIngredientListElementInfo<
 			.map(modIdHelper::getModNameForModId)
 			.collect(Collectors.toList());
 		this.displayName = IngredientInformation.getDisplayName(ingredient, ingredientHelper);
+		this.names = new ArrayList<>(1 + aliases.size());
+		this.names.add(Translator.toLowercaseWithLocale(this.displayName));
+		for (String alias : aliases) {
+			this.names.add(Translator.toLowercaseWithLocale(alias));
+		}
 		this.sortedIndex = -1;
 	}
 
 	@Override
 	public String getName() {
-		return Translator.toLowercaseWithLocale(this.displayName);
+		return names.get(0);
+	}
+
+	@Override
+	public Collection<String> getNameStrings() {
+		return names;
 	}
 
 	@Override

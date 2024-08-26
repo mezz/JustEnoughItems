@@ -13,6 +13,8 @@ public interface IIngredientListElementInfo<V> {
 
 	String getName();
 
+	Collection<String> getNameStrings();
+
 	String getModNameForSorting();
 
 	Set<String> getModNameStrings();

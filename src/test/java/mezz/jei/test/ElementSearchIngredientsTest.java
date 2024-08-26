@@ -151,6 +151,16 @@ public class ElementSearchIngredientsTest {
 		Assertions.assertEquals(numbers(20), results);
 	}
 
+	@Test
+	public void ingredientAliasSearchFindsIngredient() {
+		SearchFixture fixture = createFixture();
+		addAll(fixture.search, fixture.createBaseInfos());
+
+		Set<Integer> results = fixture.searchIngredientNumbers("first test ingredient");
+
+		Assertions.assertEquals(numbers(0), results);
+	}
+
 	private static SearchFixture createFixture() {
 		TestPlugin testPlugin = new TestPlugin();
 		SubtypeRegistration subtypeRegistration = new SubtypeRegistration();
@@ -159,6 +169,7 @@ public class ElementSearchIngredientsTest {
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeRegistration);
 		ModIngredientRegistration modIngredientRegistration = new ModIngredientRegistration(subtypeManager);
 		testPlugin.registerIngredients(modIngredientRegistration);
+		testPlugin.registerIngredientAliases(modIngredientRegistration);
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		List<RegisteredIngredient<?>> registeredIngredients = modIngredientRegistration.getRegisteredIngredients();

@@ -1,5 +1,8 @@
 package mezz.jei.ingredients;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ListMultimap;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -13,6 +16,7 @@ public class RegisteredIngredient<T> {
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final IngredientSet<T> ingredientSet;
+	private final ListMultimap<String, String> aliases = ArrayListMultimap.create();
 
 	public RegisteredIngredient(IIngredientType<T> ingredientType, Collection<T> ingredients, IIngredientHelper<T> ingredientHelper, IIngredientRenderer<T> ingredientRenderer) {
 		this.ingredientType = ingredientType;
@@ -37,5 +41,15 @@ public class RegisteredIngredient<T> {
 
 	public IngredientSet<T> getIngredientSet() {
 		return ingredientSet;
+	}
+
+	public void addAliases(T ingredient, Collection<String> ingredientAliases) {
+		String uid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+		aliases.putAll(uid, ingredientAliases);
+	}
+
+	public Collection<String> getAliases(T ingredient) {
+		String uid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+		return ImmutableList.copyOf(aliases.get(uid));
 	}
 }

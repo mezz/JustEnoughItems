@@ -9,6 +9,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 
 @JeiPlugin
 public class TestPlugin implements IModPlugin {
@@ -27,6 +28,11 @@ public class TestPlugin implements IModPlugin {
 		}
 
 		registration.register(TestIngredient.TYPE, baseTestIngredients, new TestIngredientHelper(), new TestIngredientRenderer());
+	}
+
+	@Override
+	public void registerIngredientAliases(IIngredientAliasRegistration registration) {
+		registration.addAlias(TestIngredient.TYPE, new TestIngredient(0), "First Test Ingredient");
 	}
 
 }

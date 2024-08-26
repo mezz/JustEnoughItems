@@ -20,7 +20,7 @@ public class ElementPrefixParser {
 	public static final PrefixInfo<IIngredientListElementInfo<?>> NO_PREFIX = new PrefixInfo<>(
 			'\0',
 			() -> SearchMode.ENABLED,
-			i -> ImmutableList.of(i.getName()),
+			IIngredientListElementInfo::getNameStrings,
 			GeneralizedSuffixTree::new
 	);
 

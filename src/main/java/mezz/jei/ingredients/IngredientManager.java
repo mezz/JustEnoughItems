@@ -11,6 +11,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.collect.IngredientSet;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.Translator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class IngredientManager implements IIngredientManager {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -215,6 +217,19 @@ public class IngredientManager implements IIngredientManager {
 			}
 		}
 		throw new IllegalArgumentException("Unknown ingredient class: " + ingredientClass);
+	}
+
+	@Override
+	public <V> Collection<String> getIngredientAliases(V ingredient) {
+		IIngredientType<V> ingredientType = getIngredientType(ingredient);
+		RegisteredIngredient<V> registeredIngredient = getRegisteredIngredient(ingredientType);
+		if (registeredIngredient == null) {
+			return Collections.emptyList();
+		}
+		return registeredIngredient.getAliases(ingredient).stream()
+			.map(Translator::translateToLocal)
+			.sorted(String::compareToIgnoreCase)
+			.collect(Collectors.toList());
 	}
 
 	public <V> void removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients, IngredientFilter ingredientFilter) {

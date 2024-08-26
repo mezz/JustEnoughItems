@@ -77,6 +77,7 @@ public class PluginLoader {
 		VanillaPlugin vanillaPlugin,
 		Textures textures,
 		IClientConfig clientConfig,
+		IIngredientFilterConfig ingredientFilterConfig,
 		IModIdHelper modIdHelper,
 		boolean debugMode) {
 		this.clientConfig = clientConfig;
@@ -91,6 +92,9 @@ public class PluginLoader {
 
 		ModIngredientRegistration modIngredientManager = new ModIngredientRegistration(subtypeManager);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(modIngredientManager));
+		if (ingredientFilterConfig.getSearchIngredientAliases()) {
+			PluginCaller.callOnPlugins("Registering search ingredient aliases", plugins, p -> p.registerIngredientAliases(modIngredientManager));
+		}
 		List<RegisteredIngredient<?>> registeredIngredients = modIngredientManager.getRegisteredIngredients();
 		ingredientManager = new IngredientManager(modIdHelper, blacklist, registeredIngredients, debugMode);
 		Internal.setIngredientManager(ingredientManager);
