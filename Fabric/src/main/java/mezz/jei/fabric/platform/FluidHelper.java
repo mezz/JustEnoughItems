@@ -50,6 +50,15 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 		});
 	});
 
+	private static final Codec<IJeiFluidIngredient> NORMALIZED_CODEC = Codec.lazyInitialized(() -> {
+		return FluidVariant.CODEC.xmap(
+			fluidVariant -> {
+				return new JeiFluidIngredient(fluidVariant, FluidConstants.BUCKET);
+			},
+			IJeiFluidIngredient::getFluidVariant
+		);
+	});
+
 	@Override
 	public IIngredientTypeWithSubtypes<Fluid, IJeiFluidIngredient> getFluidIngredientType() {
 		return FabricTypes.FLUID_STACK;
@@ -70,7 +79,13 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	@Override
 	public Component getDisplayName(IJeiFluidIngredient ingredient) {
 		FluidVariant fluidVariant = ingredient.getFluidVariant();
-		return FluidVariantAttributes.getName(fluidVariant);
+		Component displayName = FluidVariantAttributes.getName(fluidVariant);
+
+		Fluid fluid = ingredient.getFluidVariant().getFluid();
+		if (!fluid.isSource(fluid.defaultFluidState())) {
+			return Component.translatable("jei.tooltip.liquid.flowing", displayName);
+		}
+		return displayName;
 	}
 
 	@Override
@@ -149,6 +164,9 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 
 	@Override
 	public Codec<IJeiFluidIngredient> getCodec() {
-		return CODEC;
+		return Codec.withAlternative(
+			NORMALIZED_CODEC,
+			CODEC // TODO: remove this fallback codec in the next major version of JEI
+		);
 	}
 }
