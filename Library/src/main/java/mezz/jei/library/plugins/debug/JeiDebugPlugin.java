@@ -14,6 +14,7 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
@@ -23,6 +24,7 @@ import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
@@ -81,6 +83,50 @@ public class JeiDebugPlugin implements IModPlugin {
 				registration.register(ErrorIngredient.TYPE, errorIngredients, errorIngredientHelper, errorIngredientRenderer);
 			}
 		}
+	}
+
+	@Override
+	public void registerIngredientAliases(IIngredientAliasRegistration registration) {
+		registration.addAlias(
+			VanillaTypes.ITEM_STACK,
+			new ItemStack(Items.PANDA_SPAWN_EGG),
+			"jei.alias.panda.spawn.egg"
+		);
+
+		registration.addAlias(
+			VanillaTypes.ITEM_STACK,
+			new ItemStack(Items.VILLAGER_SPAWN_EGG),
+			"jei.alias.villager.spawn.egg"
+		);
+
+		registration.addAliases(
+			VanillaTypes.ITEM_STACK,
+			List.of(
+				new ItemStack(Items.STRUCTURE_VOID),
+				new ItemStack(Items.BARRIER)
+			),
+			"nothing"
+		);
+
+		registration.addAliases(
+			VanillaTypes.ITEM_STACK,
+			List.of(
+				new ItemStack(Items.GOLDEN_HOE),
+				new ItemStack(Items.DIAMOND_BLOCK)
+			),
+			List.of("shiny", "valuable", "Expensive", "expansive", "extensive")
+		);
+
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		registerFluidAliases(registration, fluidHelper);
+	}
+
+	private <T> void registerFluidAliases(IIngredientAliasRegistration registration, IPlatformFluidHelper<T> fluidHelper) {
+		registration.addAliases(
+			fluidHelper.getFluidIngredientType(),
+			fluidHelper.create(Fluids.WATER, fluidHelper.bucketVolume()),
+			List.of("wet", "aqua", "sea", "ocean")
+		);
 	}
 
 	@Override

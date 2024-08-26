@@ -15,6 +15,7 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	public final Supplier<Boolean> searchAdvancedTooltips;
 	public final Supplier<Boolean> searchModIds;
 	public final Supplier<Boolean> searchShortModNames;
+	public final Supplier<Boolean> searchIngredientAliases;
 
 	public IngredientFilterConfig(IConfigSchemaBuilder builder) {
 		IConfigCategoryBuilder search = builder.addCategory("search");
@@ -58,6 +59,11 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 				true,
 				"Search by the shorthand first letters of a mod's name"
 		);
+		searchIngredientAliases = search.addBoolean(
+			"SearchIngredientAliases",
+			true,
+			"Search ingredient aliases (alternative names) that are added by plugins, in addition to ingredient names"
+		);
 	}
 
 	@Override
@@ -93,6 +99,11 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	@Override
 	public boolean getSearchModIds() {
 		return searchModIds.get();
+	}
+
+	@Override
+	public boolean getSearchIngredientAliases() {
+		return searchIngredientAliases.get();
 	}
 
 	@Override

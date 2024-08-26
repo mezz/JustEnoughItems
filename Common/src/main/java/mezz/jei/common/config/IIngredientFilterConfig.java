@@ -17,5 +17,7 @@ public interface IIngredientFilterConfig {
 
 	boolean getSearchModIds();
 
+	boolean getSearchIngredientAliases();
+
 	boolean getSearchShortModNames();
 }

@@ -1,20 +1,20 @@
 package mezz.jei.api;
 
 import mezz.jei.api.helpers.IPlatformFluidHelper;
-import mezz.jei.api.registration.IRuntimeRegistration;
-import mezz.jei.api.runtime.config.IJeiConfigManager;
-import net.minecraft.resources.ResourceLocation;
-
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
+import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.api.runtime.config.IJeiConfigManager;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * The main class to implement to create a JEI plugin. Everything communicated between a mod and JEI is through this class.
@@ -49,6 +49,17 @@ public interface IModPlugin {
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
 	 */
 	default void registerIngredients(IModIngredientRegistration registration) {
+
+	}
+
+	/**
+	 * Register search aliases for ingredients.
+	 *
+	 * @implNote If the player has disabled search aliases in the config, this will not be called.
+	 *
+	 * @since 15.15.0
+	 */
+	default void registerIngredientAliases(IIngredientAliasRegistration registration) {
 
 	}
 
