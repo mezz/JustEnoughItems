@@ -201,9 +201,22 @@ public interface IRecipeManager {
 	 * recipe types directly from their API.
 	 *
 	 * @see RecipeType#getUid()
-	 * @since 10.3.0
+	 * @since 10.39.0
 	 */
-	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
+	<T> Optional<RecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass);
+
+	/**
+	 * Get the registered recipe type for the given unique id.
+	 * <p>
+	 * This is useful for integrating with other mods that do not share their
+	 * recipe types directly from their API.
+	 *
+	 * @see RecipeType#getUid()
+	 * @since 10.3.0
+	 * @deprecated use {@link #getRecipeType(ResourceLocation, Class)}
+	 */
+	@Deprecated(since = "10.39.0", forRemoval = true)
+	Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid);
 
 	/**
 	 * Hide an entire recipe category of recipes from JEI.
