@@ -86,6 +86,22 @@ public class JeiHelpers implements IJeiHelpers {
 	}
 
 	@Override
+	public <T> Optional<RecipeType<T>> getRecipeType(ResourceLocation uid, Class<? extends T> recipeClass) {
+		return Optional.ofNullable(this.recipeCategories)
+			.flatMap(r -> r.stream()
+				.map(IRecipeCategory::getRecipeType)
+				.filter(t -> t.getUid().equals(uid) && t.getRecipeClass().equals(recipeClass))
+				.map(t -> {
+					@SuppressWarnings("unchecked")
+					RecipeType<T> cast = (RecipeType<T>) t;
+					return cast;
+				})
+				.findFirst()
+			);
+	}
+
+	@SuppressWarnings("removal")
+	@Override
 	public Optional<RecipeType<?>> getRecipeType(ResourceLocation uid) {
 		return Optional.ofNullable(this.recipeCategories)
 			.flatMap(r -> r.stream()

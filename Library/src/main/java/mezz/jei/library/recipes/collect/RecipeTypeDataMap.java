@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class RecipeTypeDataMap {
 	@Unmodifiable
-	private final Map<ResourceLocation, RecipeTypeData<?>> uidMap;
+	private final Map<RecipeType<?>, RecipeTypeData<?>> uidMap;
 
 	public RecipeTypeDataMap(
 		List<IRecipeCategory<?>> recipeCategories,
@@ -23,7 +23,7 @@ public class RecipeTypeDataMap {
 		this.uidMap = recipeCategories.stream()
 			.collect(
 				Collectors.toUnmodifiableMap(
-					recipeCategory -> recipeCategory.getRecipeType().getUid(),
+					IRecipeCategory::getRecipeType,
 					recipeCategory -> {
 						List<ITypedIngredient<?>> catalysts = recipeCategoryCatalystsMap.get(recipeCategory);
 						return new RecipeTypeData<>(recipeCategory, catalysts);
@@ -33,10 +33,10 @@ public class RecipeTypeDataMap {
 	}
 
 	public <T> RecipeTypeData<T> get(RecipeType<T> recipeType) {
-		RecipeTypeData<?> data = this.uidMap.get(recipeType.getUid());
+		RecipeTypeData<?> data = this.uidMap.get(recipeType);
 		if (data == null) {
 			throw new IllegalStateException(
-				"There is no recipe category registered for: " + recipeType.getUid() +
+				"There is no recipe category registered for: " + recipeType +
 				"\nA recipe category must be registered in order to use this recipe type."
 			);
 		}
@@ -46,15 +46,27 @@ public class RecipeTypeDataMap {
 	}
 
 	public void validate(RecipeType<?> recipeType) {
-		if (!uidMap.containsKey(recipeType.getUid())) {
-			throw new IllegalStateException("There is no recipe type registered for: " + recipeType.getUid());
+		if (!uidMap.containsKey(recipeType)) {
+			throw new IllegalStateException("There is no recipe type registered for: " + recipeType);
 		}
 	}
 
 	public Optional<RecipeType<?>> getType(ResourceLocation recipeTypeUid) {
-		RecipeTypeData<?> data = uidMap.get(recipeTypeUid);
-		return Optional.ofNullable(data)
-			.map(RecipeTypeData::getRecipeCategory)
-			.map(IRecipeCategory::getRecipeType);
+		return uidMap.keySet()
+			.stream()
+			.filter(recipeType -> recipeType.getUid().equals(recipeTypeUid))
+			.findFirst();
+	}
+
+	public <T> Optional<RecipeType<T>> getType(ResourceLocation recipeTypeUid, Class<? extends T> recipeClass) {
+		return uidMap.keySet()
+			.stream()
+			.filter(recipeType -> recipeType.getUid().equals(recipeTypeUid) && recipeType.getRecipeClass().equals(recipeClass))
+			.map(recipeType -> {
+				@SuppressWarnings("unchecked")
+				RecipeType<T> castRecipeType = (RecipeType<T>) recipeType;
+				return castRecipeType;
+			})
+			.findFirst();
 	}
 }

@@ -70,9 +70,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 
 	@Override
 	public boolean isSelected(IRecipeCategory<?> selectedCategory) {
-		ResourceLocation categoryUid = category.getRecipeType().getUid();
-		ResourceLocation selectedCategoryUid = selectedCategory.getRecipeType().getUid();
-		return categoryUid.equals(selectedCategoryUid);
+		return category.getRecipeType().equals(selectedCategory.getRecipeType());
 	}
 
 	@Override

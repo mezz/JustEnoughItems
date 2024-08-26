@@ -116,7 +116,7 @@ public class JeiInternalPlugin implements IModPlugin {
 	}
 
 	private static RecipeType<ITagInfoRecipe> createTagInfoRecipeType(ResourceLocation registryLocation) {
-		return RecipeType.create(registryLocation.getNamespace(), registryLocation.getPath(), ITagInfoRecipe.class);
+		return RecipeType.create(registryLocation.getNamespace(), "tag_recipes/" + registryLocation.getPath(), ITagInfoRecipe.class);
 	}
 
 	private static <B, I> boolean createAndRegisterTagCategory(

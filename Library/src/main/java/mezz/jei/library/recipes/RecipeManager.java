@@ -156,6 +156,11 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
+	public <T> Optional<RecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass) {
+		return internal.getRecipeType(recipeUid, recipeClass);
+	}
+
+	@Override
 	public Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid) {
 		return internal.getRecipeType(recipeUid);
 	}

@@ -165,7 +165,7 @@ public final class ErrorUtil {
 		Class<?> recipeClass = recipeType.getRecipeClass();
 		for (T recipe : recipes) {
 			if (!recipeClass.isInstance(recipe)) {
-				throw new IllegalArgumentException(recipeType.getUid() + " recipes must be an instance of " + recipeClass + ". Instead got: " + recipe.getClass());
+				throw new IllegalArgumentException(recipeType + " recipes must be an instance of " + recipeClass + ". Instead got: " + recipe.getClass());
 			}
 		}
 	}

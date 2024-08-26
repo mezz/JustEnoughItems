@@ -144,7 +144,7 @@ public class PluginLoader {
 
 		RecipeCatalystRegistration recipeCatalystRegistration = new RecipeCatalystRegistration(ingredientManager, jeiHelpers);
 		PluginCaller.callOnPlugins("Registering recipe catalysts", plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration));
-		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
+		ImmutableListMultimap<RecipeType<?>, ITypedIngredient<?>> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
 
 		IJeiFeatures jeiFeatures = Internal.getJeiFeatures();
 		AdvancedRegistration advancedRegistration = new AdvancedRegistration(jeiHelpers, jeiFeatures);

@@ -55,7 +55,7 @@ public class RecipeManagerInternal {
 
 	public RecipeManagerInternal(
 		List<IRecipeCategory<?>> recipeCategories,
-		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
+		ImmutableListMultimap<RecipeType<?>, ITypedIngredient<?>> recipeCatalysts,
 		ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
 		IIngredientManager ingredientManager,
 		List<IRecipeManagerPlugin> plugins,
@@ -86,9 +86,9 @@ public class RecipeManagerInternal {
 
 		RecipeCatalystBuilder recipeCatalystBuilder = new RecipeCatalystBuilder(this.recipeMaps.get(RecipeIngredientRole.CATALYST));
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
-			ResourceLocation recipeCategoryUid = recipeCategory.getRecipeType().getUid();
-			if (recipeCatalysts.containsKey(recipeCategoryUid)) {
-				List<ITypedIngredient<?>> catalysts = recipeCatalysts.get(recipeCategoryUid);
+			RecipeType<?> recipeType = recipeCategory.getRecipeType();
+			if (recipeCatalysts.containsKey(recipeType)) {
+				List<ITypedIngredient<?>> catalysts = recipeCatalysts.get(recipeType);
 				recipeCatalystBuilder.addCategoryCatalysts(recipeCategory, catalysts);
 			}
 		}
@@ -104,7 +104,7 @@ public class RecipeManagerInternal {
 	}
 
 	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
-		LOGGER.debug("Adding recipes: {}", recipeType.getUid());
+		LOGGER.debug("Adding recipes: {}", recipeType);
 		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipeType);
 		IRecipeCategory<T> recipeCategory = recipeTypeData.getRecipeCategory();
 		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
@@ -265,6 +265,10 @@ public class RecipeManagerInternal {
 		recipeTypeDataMap.validate(recipeType);
 		hiddenRecipeTypes.remove(recipeType);
 		recipeCategoriesVisibleCache = null;
+	}
+
+	public <T> Optional<RecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass) {
+		return recipeTypeDataMap.getType(recipeUid, recipeClass);
 	}
 
 	public Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid) {

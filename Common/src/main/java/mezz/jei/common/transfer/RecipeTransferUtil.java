@@ -74,7 +74,7 @@ public final class RecipeTransferUtil {
 		} catch (RuntimeException e) {
 			LOGGER.error(
 				"Recipe transfer handler '{}' for container '{}' and recipe type '{}' threw an error: ",
-				transferHandler.getClass(), transferHandler.getContainerClass(), recipeCategory.getRecipeType().getUid(), e
+				transferHandler.getClass(), transferHandler.getContainerClass(), recipeCategory.getRecipeType(), e
 			);
 			return Optional.of(RecipeTransferErrorInternal.INSTANCE);
 		}

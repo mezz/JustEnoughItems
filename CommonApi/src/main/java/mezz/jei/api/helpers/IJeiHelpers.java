@@ -59,6 +59,17 @@ public interface IJeiHelpers {
 	 * recipe types directly from their API.
 	 *
 	 * @see RecipeType#getUid()
+	 * @since 19.11.0
+	 */
+	<T> Optional<RecipeType<T>> getRecipeType(ResourceLocation uid, Class<? extends T> recipeClass);
+
+	/**
+	 * Get the registered recipe type for the given unique id.
+	 * <p>
+	 * This is useful for integrating with other mods that do not share their
+	 * recipe types directly from their API.
+	 *
+	 * @see RecipeType#getUid()
 	 * @since 11.4.0
 	 */
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
