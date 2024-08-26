@@ -75,6 +75,7 @@ public class RecipeManager implements IRecipeManager {
 	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(recipes, "recipes");
+		ErrorUtil.validateRecipes(recipeType, recipes);
 		ErrorUtil.assertMainThread();
 
 		internal.addRecipes(recipeType, recipes);
@@ -240,6 +241,7 @@ public class RecipeManager implements IRecipeManager {
 	public <T> void hideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {
 		ErrorUtil.checkNotNull(recipes, "recipe");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
+		ErrorUtil.validateRecipes(recipeType, recipes);
 		ErrorUtil.assertMainThread();
 		internal.hideRecipes(recipeType, recipes);
 	}
@@ -258,6 +260,7 @@ public class RecipeManager implements IRecipeManager {
 	public <T> void unhideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {
 		ErrorUtil.checkNotNull(recipes, "recipe");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
+		ErrorUtil.validateRecipes(recipeType, recipes);
 		ErrorUtil.assertMainThread();
 		internal.unhideRecipes(recipeType, recipes);
 	}
