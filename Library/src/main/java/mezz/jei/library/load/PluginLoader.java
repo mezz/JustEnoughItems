@@ -20,6 +20,7 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.StackHelper;
@@ -62,7 +63,12 @@ public class PluginLoader {
 	private final IIngredientManager ingredientManager;
 	private final JeiHelpers jeiHelpers;
 
-	public PluginLoader(StartData data, IModIdFormatConfig modIdFormatConfig, IColorHelper colorHelper) {
+	public PluginLoader(
+		StartData data,
+		IModIdFormatConfig modIdFormatConfig,
+		IIngredientFilterConfig ingredientFilterConfig,
+		IColorHelper colorHelper
+	) {
 		this.data = data;
 		this.timer = new LoggedTimer();
 
@@ -78,11 +84,21 @@ public class PluginLoader {
 
 		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
+
+		if (ingredientFilterConfig.getSearchIngredientAliases()) {
+			PluginCaller.callOnPlugins("Registering search ingredient aliases", plugins, p -> p.registerIngredientAliases(ingredientManagerBuilder));
+		}
+
 		this.ingredientManager = ingredientManagerBuilder.build();
 
-		ModInfoRegistration modInfoRegistration = new ModInfoRegistration();
-		PluginCaller.callOnPlugins("Registering Mod Info", plugins, p -> p.registerModInfo(modInfoRegistration));
-		ImmutableSetMultimap<String, String> modAliases = modInfoRegistration.getModAliases();
+		ImmutableSetMultimap<String, String> modAliases;
+		if (ingredientFilterConfig.getSearchModAliases()) {
+			ModInfoRegistration modInfoRegistration = new ModInfoRegistration();
+			PluginCaller.callOnPlugins("Registering Mod Info", plugins, p -> p.registerModInfo(modInfoRegistration));
+			modAliases = modInfoRegistration.getModAliases();
+		} else {
+			modAliases = ImmutableSetMultimap.of();
+		}
 
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(ingredientManager);

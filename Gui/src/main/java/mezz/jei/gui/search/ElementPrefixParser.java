@@ -26,7 +26,7 @@ public class ElementPrefixParser {
 	public static final PrefixInfo<IListElementInfo<?>> NO_PREFIX = new PrefixInfo<>(
 			'\0',
 			() -> SearchMode.ENABLED,
-			i -> List.of(i.getName()),
+			IListElementInfo::getNames,
 			GeneralizedSuffixTree::new
 	);
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
