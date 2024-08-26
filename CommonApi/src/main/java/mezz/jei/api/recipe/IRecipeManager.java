@@ -179,7 +179,7 @@ public interface IRecipeManager {
 	 * recipe types directly from their API.
 	 *
 	 * @see RecipeType#getUid()
-	 * @since 15.3.0
+	 * @since 15.13.0
 	 */
 	<T> Optional<RecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass);
 
@@ -193,6 +193,6 @@ public interface IRecipeManager {
 	 * @since 11.2.3
 	 * @deprecated use {@link #getRecipeType(ResourceLocation, Class)}
 	 */
-	@Deprecated(since = "15.3.0", forRemoval = true)
+	@Deprecated(since = "15.13.0", forRemoval = true)
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid);
 }
