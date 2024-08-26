@@ -20,6 +20,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -66,8 +67,30 @@ public final class IngredientGridTooltipHelper {
 			addColorSearchInfoToTooltip(tooltip, ingredient, ingredientHelper);
 		}
 
+		if (ingredientFilterConfig.getSearchIngredientAliases()) {
+			addIngredientAliasesToTooltip(tooltip, typedIngredient, ingredientManager);
+		}
+
 		if (worldConfig.isEditModeEnabled()) {
 			addEditModeInfoToTooltip(tooltip, keyBindings);
+		}
+	}
+
+	private <T> void addIngredientAliasesToTooltip(JeiTooltip tooltip, ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
+		Collection<String> aliases = ingredientManager.getIngredientAliases(typedIngredient);
+		if (aliases.isEmpty()) {
+			return;
+		}
+		tooltip.add(Component.empty());
+		tooltip.add(
+			Component.translatable("jei.tooltip.item.search.aliases")
+				.withStyle(ChatFormatting.GRAY)
+		);
+		for (String alias : aliases) {
+			tooltip.add(
+				Component.literal("- " + alias)
+					.withStyle(ChatFormatting.GRAY)
+			);
 		}
 	}
 
@@ -110,6 +133,10 @@ public final class IngredientGridTooltipHelper {
 
 		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
 			addColorSearchInfoToTooltip(tooltip, typedIngredient.getIngredient(), ingredientHelper);
+		}
+
+		if (ingredientFilterConfig.getSearchIngredientAliases()) {
+			addIngredientAliasesToTooltip(tooltip, typedIngredient, ingredientManager);
 		}
 
 		if (worldConfig.isEditModeEnabled()) {

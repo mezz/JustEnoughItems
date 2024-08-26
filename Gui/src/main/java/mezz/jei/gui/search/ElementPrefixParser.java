@@ -30,6 +30,7 @@ public class ElementPrefixParser {
 		GeneralizedSuffixTree::new
 	);
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
+	private static final Pattern MOD_NAME_SEPARATOR_PATTERN = Pattern.compile("(?=[A-Z_-])|\\s+");
 
 	private final Char2ObjectMap<PrefixInfo<IListElementInfo<?>, IListElement<?>>> map = new Char2ObjectOpenHashMap<>();
 
@@ -39,6 +40,17 @@ public class ElementPrefixParser {
 			config::getModNameSearchMode,
 			info -> {
 				Set<String> modNames = new HashSet<>(info.getModNames());
+
+				if (config.getSearchModIds()) {
+					modNames.addAll(info.getModIds());
+				}
+
+				if (config.getSearchShortModNames()) {
+					for (String modName : info.getModNames()) {
+						List<String> shortModNames = getShortModNames(modName);
+						modNames.addAll(shortModNames);
+					}
+				}
 
 				Set<String> sanitizedModNames = new HashSet<>();
 				for (String modName : modNames) {
@@ -109,5 +121,25 @@ public class ElementPrefixParser {
 			return Optional.empty();
 		}
 		return Optional.of(new TokenInfo(token.substring(1), prefixInfo));
+	}
+
+	private static List<String> getShortModNames(String modName) {
+		String[] words = MOD_NAME_SEPARATOR_PATTERN.split(modName);
+		if (words.length <= 1) {
+			return List.of();
+		}
+		return List.of(
+			combineFirstLetters(words, 1),
+			combineFirstLetters(words, 2)
+		);
+	}
+
+	private static String combineFirstLetters(String[] words, final int count) {
+		StringBuilder sb = new StringBuilder();
+		for (String word : words) {
+			int end = Math.min(count, word.length());
+			sb.append(word, 0, end);
+		}
+		return sb.toString();
 	}
 }

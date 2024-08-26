@@ -18,6 +18,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.LoggedTimer;
@@ -57,7 +58,12 @@ public class PluginLoader {
 	private final IIngredientManager ingredientManager;
 	private final JeiHelpers jeiHelpers;
 
-	public PluginLoader(StartData data, IModIdFormatConfig modIdFormatConfig, IColorHelper colorHelper) {
+	public PluginLoader(
+		StartData data,
+		IModIdFormatConfig modIdFormatConfig,
+		IIngredientFilterConfig ingredientFilterConfig,
+		IColorHelper colorHelper
+	) {
 		this.data = data;
 		this.timer = new LoggedTimer();
 
@@ -73,6 +79,11 @@ public class PluginLoader {
 
 		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
+
+		if (ingredientFilterConfig.getSearchIngredientAliases()) {
+			PluginCaller.callOnPlugins("Registering search ingredient aliases", plugins, p -> p.registerIngredientAliases(ingredientManagerBuilder));
+		}
+
 		this.ingredientManager = ingredientManagerBuilder.build();
 		Internal.setIngredientManager(ingredientManager);
 
