@@ -14,6 +14,9 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	public final Supplier<SearchMode> colorSearchMode;
 	public final Supplier<SearchMode> resourceLocationSearchMode;
 	public final Supplier<Boolean> searchAdvancedTooltips;
+	public final Supplier<Boolean> searchModIds;
+	public final Supplier<Boolean> searchShortModNames;
+	public final Supplier<Boolean> searchIngredientAliases;
 
 	public IngredientFilterConfig(IConfigSchemaBuilder builder) {
 		IConfigCategoryBuilder search = builder.addCategory("search");
@@ -52,6 +55,21 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 			false,
 			"Search in advanced tooltips (visible with F3 + H)."
 		);
+		searchModIds = search.addBoolean(
+			"SearchModIds",
+			true,
+			"Search mod IDs in addition to mod names."
+		);
+		searchShortModNames = search.addBoolean(
+			"SearchShortModNames",
+			true,
+			"Search by the shorthand first letters of a mod's name."
+		);
+		searchIngredientAliases = search.addBoolean(
+			"SearchIngredientAliases",
+			true,
+			"Search ingredient aliases (alternative names) that are added by plugins, in addition to ingredient names."
+		);
 	}
 
 	@Override
@@ -89,4 +107,18 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 		return searchAdvancedTooltips.get();
 	}
 
+	@Override
+	public boolean getSearchModIds() {
+		return searchModIds.get();
+	}
+
+	@Override
+	public boolean getSearchIngredientAliases() {
+		return searchIngredientAliases.get();
+	}
+
+	@Override
+	public boolean getSearchShortModNames() {
+		return searchShortModNames.get();
+	}
 }

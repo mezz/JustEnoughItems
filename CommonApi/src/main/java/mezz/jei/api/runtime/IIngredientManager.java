@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.ApiStatus;
@@ -139,6 +140,16 @@ public interface IIngredientManager {
 	default <V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
 		return Optional.empty();
 	}
+
+	/**
+	 * Get localized search aliases for ingredients.
+	 * Registered by mods with {@link IIngredientAliasRegistration#addAlias}.
+	 *
+	 * If search aliases are disabled by the player in the configs, this will return an empty collection.
+	 *
+	 * @since 10.8.0
+	 */
+	Collection<String> getIngredientAliases(ITypedIngredient<?> ingredient);
 
 	/**
 	 * Add a listener to receive updates when ingredients are added or removed from the ingredient manager.

@@ -4,6 +4,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.common.util.ErrorUtil;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,13 +23,12 @@ public class RegisteredIngredients {
 	/** for looking up types by ingredient class */
 	private final Map<Class<?>, IIngredientType<?>> classToType;
 
-	public RegisteredIngredients(List<IngredientInfo<?>> ingredientInfoList) {
-		this.orderedTypes = ingredientInfoList.stream()
+	public RegisteredIngredients(LinkedHashMap<IIngredientType<?>, IngredientInfo<?>> ingredientInfoList) {
+		this.orderedTypes = ingredientInfoList.values().stream()
 			.<IIngredientType<?>>map(IngredientInfo::getIngredientType)
 			.toList();
 
-		this.typeToInfo = ingredientInfoList.stream()
-			.collect(Collectors.toUnmodifiableMap(IngredientInfo::getIngredientType, Function.identity()));
+		this.typeToInfo = Map.copyOf(ingredientInfoList);
 
 		this.classToType = this.orderedTypes.stream()
 			.collect(Collectors.toMap(IIngredientType::getIngredientClass, Function.identity()));
