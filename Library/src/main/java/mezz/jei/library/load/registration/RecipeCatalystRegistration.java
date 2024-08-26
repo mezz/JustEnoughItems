@@ -10,10 +10,9 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.collect.ListMultiMap;
 import mezz.jei.library.ingredients.TypedIngredient;
-import net.minecraft.resources.ResourceLocation;
 
 public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
-	private final ListMultiMap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts = new ListMultiMap<>();
+	private final ListMultiMap<RecipeType<?>, ITypedIngredient<?>> recipeCatalysts = new ListMultiMap<>();
 	private final IIngredientManager ingredientManager;
 	private final IJeiHelpers jeiHelpers;
 
@@ -42,11 +41,11 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 			ErrorUtil.checkNotNull(recipeType, "recipeType");
 			ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, true)
 				.orElseThrow(() -> new IllegalArgumentException("Recipe catalyst must be valid"));
-			this.recipeCatalysts.put(recipeType.getUid(), typedIngredient);
+			this.recipeCatalysts.put(recipeType, typedIngredient);
 		}
 	}
 
-	public ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> getRecipeCatalysts() {
+	public ImmutableListMultimap<RecipeType<?>, ITypedIngredient<?>> getRecipeCatalysts() {
 		return recipeCatalysts.toImmutable();
 	}
 }
