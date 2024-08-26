@@ -5,8 +5,10 @@ pluginManagement {
 				forRepository { maven(url) }
 				filter(filter)
 			}
-		exclusiveMaven("https://maven.minecraftforge.net") {
-			includeGroupByRegex("net\\.minecraftforge.*")
+		maven("https://maven.minecraftforge.net") {
+			content {
+				includeGroupByRegex("net\\.minecraftforge.*")
+			}
 		}
 		exclusiveMaven("https://maven.parchmentmc.org") {
 			includeGroupByRegex("org\\.parchmentmc.*")
@@ -20,8 +22,11 @@ pluginManagement {
 			includeGroup("codechicken")
 			includeGroup("net.covers1624")
 		}
-		exclusiveMaven("https://repo.spongepowered.org/repository/maven-public/") {
-			includeGroupByRegex("org\\.spongepowered.*")
+		maven("https://repo.spongepowered.org/repository/maven-public/") {
+			content {
+				includeGroupByRegex("org\\.spongepowered.*")
+				includeGroupByRegex("net\\.minecraftforge.*")
+			}
 		}
 		gradlePluginPortal()
 	}
