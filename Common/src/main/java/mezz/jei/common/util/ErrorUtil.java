@@ -4,6 +4,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
@@ -150,6 +151,15 @@ public final class ErrorUtil {
 					currentThread + "\n" +
 					"It must be called on the main thread by using Minecraft.addScheduledTask."
 			);
+		}
+	}
+
+	public static <T> void validateRecipes(RecipeType<T> recipeType, Iterable<? extends T> recipes) {
+		Class<?> recipeClass = recipeType.getRecipeClass();
+		for (T recipe : recipes) {
+			if (!recipeClass.isInstance(recipe)) {
+				throw new IllegalArgumentException(recipeType + " recipes must be an instance of " + recipeClass + ". Instead got: " + recipe.getClass());
+			}
 		}
 	}
 
