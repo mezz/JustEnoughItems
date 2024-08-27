@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay.elements;
 
+import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -10,7 +11,7 @@ import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.overlay.IngredientGridTooltipHelper;
 import mezz.jei.gui.util.FocusUtil;
-import net.minecraft.client.gui.GuiGraphics;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +34,8 @@ public class IngredientElement<T> implements IElement<T> {
 	}
 
 	@Override
-	public void renderExtras(GuiGraphics guiGraphics, int xPosition, int yPosition) {
-
+	public @Nullable IDrawable createRenderOverlay() {
+		return null;
 	}
 
 	@Override

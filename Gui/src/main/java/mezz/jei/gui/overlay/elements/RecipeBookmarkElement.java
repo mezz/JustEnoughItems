@@ -58,7 +58,6 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	private final EnumMap<BookmarkTooltipFeature, TooltipComponent> cache = new EnumMap<>(BookmarkTooltipFeature.class);
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	private @Nullable Optional<IRecipeLayoutDrawable<R>> cachedLayoutDrawable;
-	private @Nullable IDrawable icon;
 
 	public RecipeBookmarkElement(RecipeBookmark<R, I> recipeBookmark) {
 		this.recipeBookmark = recipeBookmark;
@@ -76,30 +75,9 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	}
 
 	@Override
-	public void renderExtras(GuiGraphics guiGraphics, int xPosition, int yPosition) {
-		if (icon == null) {
-			IRecipeCategory<R> recipeCategory = recipeBookmark.getRecipeCategory();
-			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
-			IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
-			IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
-			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
-			icon = RecipeCategoryIconUtil.create(
-				recipeCategory,
-				recipeManager,
-				guiHelper
-			);
-		}
-		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
-		{
-			// this z level seems to be the sweet spot so that
-			// 2D icons draw above the items, and
-			// 3D icons draw still draw under tooltips.
-			poseStack.translate(8 + xPosition, 8 + yPosition, 200);
-			poseStack.scale(0.5f, 0.5f, 0.5f);
-			icon.draw(guiGraphics);
-		}
-		poseStack.popPose();
+	public IDrawable createRenderOverlay() {
+		IRecipeCategory<R> recipeCategory = recipeBookmark.getRecipeCategory();
+		return new RecipeBookmarkIcon(recipeCategory);
 	}
 
 	@Override
@@ -273,5 +251,46 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	@Override
 	public boolean isVisible() {
 		return recipeBookmark.isVisible();
+	}
+
+	private static class RecipeBookmarkIcon implements IDrawable {
+		private final IDrawable icon;
+
+		public RecipeBookmarkIcon(IRecipeCategory<?> recipeCategory) {
+			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+			IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
+			IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
+			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+			icon = RecipeCategoryIconUtil.create(
+				recipeCategory,
+				recipeManager,
+				guiHelper
+			);
+		}
+
+		@Override
+		public int getWidth() {
+			return 16;
+		}
+
+		@Override
+		public int getHeight() {
+			return 16;
+		}
+
+		@Override
+		public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+			var poseStack = guiGraphics.pose();
+			poseStack.pushPose();
+			{
+				// this z level seems to be the sweet spot so that
+				// 2D icons draw above the items, and
+				// 3D icons draw still draw under tooltips.
+				poseStack.translate(8 + xOffset, 8 + yOffset, 200);
+				poseStack.scale(0.5f, 0.5f, 0.5f);
+				icon.draw(guiGraphics);
+			}
+			poseStack.popPose();
+		}
 	}
 }

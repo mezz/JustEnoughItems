@@ -66,6 +66,7 @@ public final class ErrorUtil {
 		return item.getClass().getName();
 	}
 
+	@SuppressWarnings("ConstantValue")
 	private static String getBlockName(BlockItem blockItem) {
 		Block block = blockItem.getBlock();
 		if (block == null) {
@@ -171,21 +172,23 @@ public final class ErrorUtil {
 	}
 
 	public static <T> CrashReport createIngredientCrashReport(Throwable throwable, String title, IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
+		return createIngredientCrashReport(throwable, title, ingredientManager, typedIngredient.getType(), typedIngredient.getIngredient());
+	}
+
+	public static <T> CrashReport createIngredientCrashReport(Throwable throwable, String title, IIngredientManager ingredientManager, IIngredientType<T> ingredientType, T ingredient) {
 		CrashReport crashReport = CrashReport.forThrowable(throwable, title);
 		CrashReportCategory category = crashReport.addCategory("Ingredient");
-		setIngredientCategoryDetails(category, typedIngredient, ingredientManager);
+		setIngredientCategoryDetails(category, ingredientType, ingredient, ingredientManager);
 		return crashReport;
 	}
 
-	public static <T> void logIngredientCrash(Throwable throwable, String title, IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
+	public static <T> void logIngredientCrash(Throwable throwable, String title, IIngredientManager ingredientManager, IIngredientType<T> ingredientType, T ingredient) {
 		CrashReportCategory category = new CrashReportCategory("Ingredient");
-		setIngredientCategoryDetails(category, typedIngredient, ingredientManager);
+		setIngredientCategoryDetails(category, ingredientType, ingredient, ingredientManager);
 		LOGGER.error(crashReportToString(throwable, title, category));
 	}
 
-	private static <T> void setIngredientCategoryDetails(CrashReportCategory category, ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
-		T ingredient = typedIngredient.getIngredient();
-		IIngredientType<T> ingredientType = typedIngredient.getType();
+	private static <T> void setIngredientCategoryDetails(CrashReportCategory category, IIngredientType<T> ingredientType, T ingredient, IIngredientManager ingredientManager) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		Codec<T> ingredientCodec = ingredientManager.getIngredientCodec(ingredientType);
 
