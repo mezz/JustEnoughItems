@@ -2,10 +2,14 @@ package mezz.jei.library.ingredients;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.library.ingredients.itemStacks.NormalizedTypedItemStack;
+import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
+import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -28,8 +32,31 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		}
 	}
 
+	public static <T> ITypedIngredient<T> normalize(ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
+		IIngredientType<T> type = typedIngredient.getType();
+
+		if (type == VanillaTypes.ITEM_STACK) {
+			@SuppressWarnings("unchecked")
+			ITypedIngredient<ItemStack> cast = (ITypedIngredient<ItemStack>) typedIngredient;
+			ITypedIngredient<ItemStack> normalized = NormalizedTypedItemStack.normalize(cast);
+			@SuppressWarnings("unchecked")
+			ITypedIngredient<T> castNormalized = (ITypedIngredient<T>) normalized;
+			return castNormalized;
+		}
+
+		T ingredient = typedIngredient.getIngredient();
+		T normalized = ingredientHelper.normalizeIngredient(ingredient);
+		return createUnvalidated(type, normalized);
+	}
+
 	public static <T> ITypedIngredient<T> createUnvalidated(IIngredientType<T> ingredientType, T ingredient) {
-		checkParameters(ingredientType, ingredient);
+		if (ingredientType == VanillaTypes.ITEM_STACK) {
+			ITypedIngredient<ItemStack> typedIngredient = TypedItemStack.create((ItemStack) ingredient);
+			@SuppressWarnings("unchecked")
+			ITypedIngredient<T> castIngredient = (ITypedIngredient<T>) typedIngredient;
+			return castIngredient;
+		}
+
 		return new TypedIngredient<>(ingredientType, ingredient);
 	}
 
@@ -54,7 +81,6 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		if (ingredient == null) {
 			return Optional.empty();
 		}
-		checkParameters(ingredientType, ingredient);
 
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		return createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
@@ -102,7 +128,7 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 			throw new IllegalArgumentException("Crashed when checking if ingredient is valid. Ingredient Info: " + ingredientInfo, e);
 		}
 
-		TypedIngredient<T> typedIngredient = new TypedIngredient<>(ingredientType, ingredient);
+		ITypedIngredient<T> typedIngredient = createUnvalidated(ingredientType, ingredient);
 		return Optional.of(typedIngredient);
 	}
 
@@ -116,6 +142,7 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	private final T ingredient;
 
 	private TypedIngredient(IIngredientType<T> ingredientType, T ingredient) {
+		checkParameters(ingredientType, ingredient);
 		this.ingredientType = ingredientType;
 		this.ingredient = ingredient;
 	}
