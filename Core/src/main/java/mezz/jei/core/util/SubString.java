@@ -3,9 +3,9 @@ package mezz.jei.core.util;
 import javax.annotation.Nonnegative;
 
 public class SubString {
-	private final String string;
-	private final int offset;
-	private final int length;
+	private String string;
+	private int offset;
+	private int length;
 
 	public SubString(String string) {
 		this(string, 0, string.length(), false);
@@ -90,6 +90,12 @@ public class SubString {
 	@Nonnegative
 	public int length() {
 		return length;
+	}
+
+	public void set(SubString other) {
+		string = other.string;
+		offset = other.offset;
+		length = other.length;
 	}
 
 	@Override
