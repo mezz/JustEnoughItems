@@ -19,6 +19,7 @@ public final class DebugConfig {
 	private final Supplier<Boolean> debugInputsEnabled;
 	private final Supplier<Boolean> debugInfoTooltipsEnabled;
 	private final Supplier<Boolean> crashingTestIngredientsEnabled;
+	private final Supplier<Boolean> logSuffixTreeStats;
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
 		IConfigCategoryBuilder advanced = schema.addCategory("debug");
@@ -46,6 +47,11 @@ public final class DebugConfig {
 			"CrashingTestItemsEnabled",
 			false,
 			"Adds ingredients to JEI that intentionally crash, to help debug JEI."
+		);
+		logSuffixTreeStats = advanced.addBoolean(
+			"logSuffixTreeStats",
+			false,
+			"Log information about the suffix trees used for searching, to help debug JEI"
 		);
 	}
 
@@ -82,5 +88,12 @@ public final class DebugConfig {
 			return false;
 		}
 		return instance.crashingTestIngredientsEnabled.get();
+	}
+
+	public static boolean isLogSuffixTreeStatsEnabled() {
+		if (instance == null) {
+			return false;
+		}
+		return instance.logSuffixTreeStats.get();
 	}
 }

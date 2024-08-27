@@ -82,6 +82,9 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			addIngredient(ingredient);
 		}
 		LOGGER.info("Added {} ingredients", ingredients.size());
+		if (DebugConfig.isLogSuffixTreeStatsEnabled()) {
+			this.elementSearch.logStatistics();
+		}
 
 		this.filterTextSource.addListener(filterText -> {
 			ingredientListCached = null;
