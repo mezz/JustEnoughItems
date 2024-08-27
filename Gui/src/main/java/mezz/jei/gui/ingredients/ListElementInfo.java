@@ -24,20 +24,22 @@ import java.util.stream.Stream;
 
 public class ListElementInfo<V> implements IListElementInfo<V> {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static int elementCount = 0;
 
 	private final IListElement<V> element;
 	private final List<String> names;
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final ResourceLocation resourceLocation;
-	private int sortedIndex = Integer.MAX_VALUE;
+	private final int createdIndex;
 
 	@Nullable
-	public static <V> IListElementInfo<V> create(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
-		ITypedIngredient<V> value = element.getTypedIngredient();
+	public static <V> IListElementInfo<V> create(ITypedIngredient<V> value, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+		int createdIndex = elementCount++;
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
+		ListElement<V> element = new ListElement<>(value, createdIndex);
 		try {
-			return new ListElementInfo<>(element, ingredientHelper, ingredientManager, modIdHelper);
+			return new ListElementInfo<>(element, ingredientHelper, ingredientManager, modIdHelper, createdIndex);
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
@@ -49,7 +51,9 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		}
 	}
 
-	protected ListElementInfo(IListElement<V> element, IIngredientHelper<V> ingredientHelper, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	protected ListElementInfo(IListElement<V> element, IIngredientHelper<V> ingredientHelper, IIngredientManager ingredientManager, IModIdHelper modIdHelper, int createdIndex) {
+		this.createdIndex = createdIndex;
+
 		this.element = element;
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		V ingredient = value.getIngredient();
@@ -161,13 +165,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public void setSortedIndex(int sortIndex) {
-		this.sortedIndex = sortIndex;
+	public int getCreatedIndex() {
+		return createdIndex;
 	}
-
-	@Override
-	public int getSortedIndex() {
-		return sortedIndex;
-	}
-
 }

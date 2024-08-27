@@ -10,6 +10,7 @@ import mezz.jei.core.search.LimitedStringStorage;
 import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.core.search.SearchMode;
 import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
+import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
 public class ElementPrefixParser {
-	public static final PrefixInfo<IListElementInfo<?>> NO_PREFIX = new PrefixInfo<>(
+	public static final PrefixInfo<IListElementInfo<?>, IListElement<?>> NO_PREFIX = new PrefixInfo<>(
 			'\0',
 			() -> SearchMode.ENABLED,
 			IListElementInfo::getNames,
@@ -31,7 +32,7 @@ public class ElementPrefixParser {
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
 	private static final Pattern MOD_NAME_SEPARATOR_PATTERN = Pattern.compile("(?=[A-Z_-])|\\s+");
 
-	private final Char2ObjectMap<PrefixInfo<IListElementInfo<?>>> map = new Char2ObjectOpenHashMap<>();
+	private final Char2ObjectMap<PrefixInfo<IListElementInfo<?>, IListElement<?>>> map = new Char2ObjectOpenHashMap<>();
 
 	public ElementPrefixParser(IIngredientManager ingredientManager, IIngredientFilterConfig config, IColorHelper colorHelper) {
 		addPrefix(new PrefixInfo<>(
@@ -95,24 +96,24 @@ public class ElementPrefixParser {
 		));
 	}
 
-	private void addPrefix(PrefixInfo<IListElementInfo<?>> info) {
+	private void addPrefix(PrefixInfo<IListElementInfo<?>, IListElement<?>> info) {
 		this.map.put(info.getPrefix(), info);
 	}
 
-	public Collection<PrefixInfo<IListElementInfo<?>>> allPrefixInfos() {
-		Collection<PrefixInfo<IListElementInfo<?>>> values = new ArrayList<>(map.values());
+	public Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> allPrefixInfos() {
+		Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> values = new ArrayList<>(map.values());
 		values.add(NO_PREFIX);
 		return values;
 	}
 
-	public record TokenInfo(String token, PrefixInfo<IListElementInfo<?>> prefixInfo) {}
+	public record TokenInfo(String token, PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo) {}
 
 	public Optional<TokenInfo> parseToken(String token) {
 		if (token.isEmpty()) {
 			return Optional.empty();
 		}
 		char firstChar = token.charAt(0);
-		PrefixInfo<IListElementInfo<?>> prefixInfo = map.get(firstChar);
+		PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = map.get(firstChar);
 		if (prefixInfo == null || prefixInfo.getMode() == SearchMode.DISABLED) {
 			return Optional.of(new TokenInfo(token, NO_PREFIX));
 		}
