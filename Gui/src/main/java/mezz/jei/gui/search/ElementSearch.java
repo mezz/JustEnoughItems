@@ -6,6 +6,7 @@ import mezz.jei.core.search.ISearchable;
 import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.core.search.PrefixedSearchable;
 import mezz.jei.core.search.SearchMode;
+import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,12 +20,12 @@ import java.util.Set;
 public class ElementSearch implements IElementSearch {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final Map<PrefixInfo<IListElementInfo<?>>, PrefixedSearchable<IListElementInfo<?>>> prefixedSearchables = new IdentityHashMap<>();
-	private final CombinedSearchables<IListElementInfo<?>> combinedSearchables = new CombinedSearchables<>();
+	private final Map<PrefixInfo<IListElementInfo<?>, IListElement<?>>, PrefixedSearchable<IListElementInfo<?>, IListElement<?>>> prefixedSearchables = new IdentityHashMap<>();
+	private final CombinedSearchables<IListElement<?>> combinedSearchables = new CombinedSearchables<>();
 
 	public ElementSearch(ElementPrefixParser elementPrefixParser) {
-		for (PrefixInfo<IListElementInfo<?>> prefixInfo : elementPrefixParser.allPrefixInfos()) {
-			ISearchStorage<IListElementInfo<?>> storage = prefixInfo.createStorage();
+		for (PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo : elementPrefixParser.allPrefixInfos()) {
+			ISearchStorage<IListElement<?>> storage = prefixInfo.createStorage();
 			var prefixedSearchable = new PrefixedSearchable<>(storage, prefixInfo);
 			this.prefixedSearchables.put(prefixInfo, prefixedSearchable);
 			this.combinedSearchables.addSearchable(prefixedSearchable);
@@ -32,20 +33,20 @@ public class ElementSearch implements IElementSearch {
 	}
 
 	@Override
-	public Set<IListElementInfo<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo) {
+	public Set<IListElement<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo) {
 		String token = tokenInfo.token();
 		if (token.isEmpty()) {
 			return Set.of();
 		}
 
-		Set<IListElementInfo<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
+		Set<IListElement<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
 
-		PrefixInfo<IListElementInfo<?>> prefixInfo = tokenInfo.prefixInfo();
+		PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = tokenInfo.prefixInfo();
 		if (prefixInfo == ElementPrefixParser.NO_PREFIX) {
 			combinedSearchables.getSearchResults(token, results::addAll);
 			return results;
 		}
-		final ISearchable<IListElementInfo<?>> searchable = this.prefixedSearchables.get(prefixInfo);
+		final ISearchable<IListElement<?>> searchable = this.prefixedSearchables.get(prefixInfo);
 		if (searchable == null || searchable.getMode() == SearchMode.DISABLED) {
 			combinedSearchables.getSearchResults(token, results::addAll);
 			return results;
@@ -56,13 +57,13 @@ public class ElementSearch implements IElementSearch {
 
 	@Override
 	public void add(IListElementInfo<?> info) {
-		for (PrefixedSearchable<IListElementInfo<?>> prefixedSearchable : this.prefixedSearchables.values()) {
+		for (PrefixedSearchable<IListElementInfo<?>, IListElement<?>> prefixedSearchable : this.prefixedSearchables.values()) {
 			SearchMode searchMode = prefixedSearchable.getMode();
 			if (searchMode != SearchMode.DISABLED) {
 				Collection<String> strings = prefixedSearchable.getStrings(info);
-				ISearchStorage<IListElementInfo<?>> storage = prefixedSearchable.getSearchStorage();
+				ISearchStorage<IListElement<?>> storage = prefixedSearchable.getSearchStorage();
 				for (String string : strings) {
-					storage.put(string, info);
+					storage.put(string, info.getElement());
 				}
 			}
 		}
@@ -70,14 +71,14 @@ public class ElementSearch implements IElementSearch {
 
 	@Override
 	public void addAll(Collection<IListElementInfo<?>> infos) {
-		for (PrefixedSearchable<IListElementInfo<?>> prefixedSearchable : this.prefixedSearchables.values()) {
+		for (PrefixedSearchable<IListElementInfo<?>, IListElement<?>> prefixedSearchable : this.prefixedSearchables.values()) {
 			SearchMode searchMode = prefixedSearchable.getMode();
 			if (searchMode != SearchMode.DISABLED) {
-				ISearchStorage<IListElementInfo<?>> storage = prefixedSearchable.getSearchStorage();
+				ISearchStorage<IListElement<?>> storage = prefixedSearchable.getSearchStorage();
 				for (IListElementInfo<?> info : infos) {
 					Collection<String> strings = prefixedSearchable.getStrings(info);
 					for (String string : strings) {
-						storage.put(string, info);
+						storage.put(string, info.getElement());
 					}
 				}
 			}
@@ -85,9 +86,9 @@ public class ElementSearch implements IElementSearch {
 	}
 
 	@Override
-	public Set<IListElementInfo<?>> getAllIngredients() {
-		Set<IListElementInfo<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
-		PrefixedSearchable<IListElementInfo<?>> noPrefixSearchables = this.prefixedSearchables.get(ElementPrefixParser.NO_PREFIX);
+	public Set<IListElement<?>> getAllIngredients() {
+		Set<IListElement<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
+		PrefixedSearchable<IListElementInfo<?>, IListElement<?>> noPrefixSearchables = this.prefixedSearchables.get(ElementPrefixParser.NO_PREFIX);
 		noPrefixSearchables.getAllElements(results::addAll);
 		return results;
 	}
@@ -96,7 +97,7 @@ public class ElementSearch implements IElementSearch {
 	public void logStatistics() {
 		this.prefixedSearchables.forEach((prefixInfo, value) -> {
 			if (prefixInfo.getMode() != SearchMode.DISABLED) {
-				ISearchStorage<IListElementInfo<?>> storage = value.getSearchStorage();
+				ISearchStorage<IListElement<?>> storage = value.getSearchStorage();
 				LOGGER.info("ElementSearch {} Storage Stats: {}", prefixInfo, storage.statistics());
 			}
 		});

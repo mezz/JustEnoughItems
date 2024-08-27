@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,19 +22,20 @@ public class ElementSearchLowMem implements IElementSearch {
 	}
 
 	@Override
-	public Set<IListElementInfo<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo) {
+	public Set<IListElement<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo) {
 		String token = tokenInfo.token();
 		if (token.isEmpty()) {
 			return Set.of();
 		}
 
-		PrefixInfo<IListElementInfo<?>> prefixInfo = tokenInfo.prefixInfo();
+		PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = tokenInfo.prefixInfo();
 		return this.elementInfoList.stream()
 			.filter(elementInfo -> matches(token, prefixInfo, elementInfo))
+			.map(IListElementInfo::getElement)
 			.collect(Collectors.toSet());
 	}
 
-	private static boolean matches(String word, PrefixInfo<IListElementInfo<?>> prefixInfo, IListElementInfo<?> elementInfo) {
+	private static boolean matches(String word, PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo, IListElementInfo<?> elementInfo) {
 		IListElement<?> element = elementInfo.getElement();
 		if (element.isVisible()) {
 			Collection<String> strings = prefixInfo.getStrings(elementInfo);
@@ -59,8 +59,10 @@ public class ElementSearchLowMem implements IElementSearch {
 	}
 
 	@Override
-	public List<IListElementInfo<?>> getAllIngredients() {
-		return Collections.unmodifiableList(this.elementInfoList);
+	public List<IListElement<?>> getAllIngredients() {
+		return this.elementInfoList.stream()
+			.<IListElement<?>>map(IListElementInfo::getElement)
+			.toList();
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Allows registration of search aliases for ingredients.

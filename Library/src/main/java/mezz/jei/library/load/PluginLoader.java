@@ -51,7 +51,6 @@ import mezz.jei.library.recipes.RecipeManagerInternal;
 import mezz.jei.library.runtime.JeiHelpers;
 import mezz.jei.library.startup.StartData;
 import mezz.jei.library.transfer.RecipeTransferHandlerHelper;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Unmodifiable;
 
