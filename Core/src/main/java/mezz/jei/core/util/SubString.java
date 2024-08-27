@@ -25,7 +25,7 @@ public class SubString {
 		assert offset >= 0;
 		assert offset + length <= string.length();
 
-		this.string = string;
+		this.string = string.intern();
 		this.offset = offset;
 		this.length = length;
 	}
