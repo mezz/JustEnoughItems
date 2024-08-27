@@ -15,6 +15,5 @@ public interface IElementSearch {
 
 	Set<IListElement<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo);
 
-	@SuppressWarnings("unused") // used for debugging
 	void logStatistics();
 }
