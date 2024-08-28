@@ -20,6 +20,7 @@ val curseProjectId: String by extra
 val neoforgeVersion: String by extra
 val jUnitVersion: String by extra
 val minecraftVersion: String by extra
+val minecraftExtraCompatibleVersion: String by extra
 val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
@@ -167,6 +168,7 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
 	mainFile.addJavaVersion("Java $modJavaVersion")
 	mainFile.addGameVersion(minecraftVersion)
+	mainFile.addGameVersion(minecraftExtraCompatibleVersion)
 	mainFile.addModLoader("NeoForge")
 
 	doLast {
@@ -182,6 +184,7 @@ modrinth {
 	versionType.set("beta")
 	uploadFile.set(tasks.jar.get())
 	changelog.set(provider { file("../Changelog/changelog.md").readText() })
+	gameVersions.set(listOf(minecraftVersion, minecraftExtraCompatibleVersion))
 }
 tasks.modrinth.get().dependsOn(tasks.jar)
 tasks.modrinth.get().dependsOn(":Changelog:makeMarkdownChangelog")
