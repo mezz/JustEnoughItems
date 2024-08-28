@@ -29,7 +29,8 @@ public enum BookmarkType {
 		private static <R> Codec<? extends RecipeBookmark<R, ?>> getCodec(
 			IRecipeCategory<R> recipeCategory,
 			ICodecHelper codecHelper,
-			IRecipeManager recipeManager
+			IRecipeManager recipeManager,
+			IIngredientManager ingredientManager
 		) {
 			return recipeCategory.getCodec(codecHelper, recipeManager)
 				.flatXmap(
@@ -44,6 +45,7 @@ public enum BookmarkType {
 							return DataResult.error(() -> "Recipe has no outputs");
 						}
 						ITypedIngredient<?> output = outputs.getFirst();
+						output = ingredientManager.normalizeTypedIngredient(output);
 						RecipeBookmark<R, ?> bookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output);
 						return DataResult.success(bookmark);
 					},
@@ -62,7 +64,7 @@ public enum BookmarkType {
 					bookmark -> bookmark.getRecipeCategory().getRecipeType(),
 					recipeType -> {
 						IRecipeCategory<?> recipeCategory = recipeManager.getRecipeCategory(recipeType);
-						return getCodec(recipeCategory, codecHelper, recipeManager)
+						return getCodec(recipeCategory, codecHelper, recipeManager, ingredientManager)
 							.fieldOf("recipe");
 					}
 				);
