@@ -4,9 +4,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.rendering.BatchRenderElement;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.library.render.batch.ItemStackBatchRendererCache;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -25,6 +27,7 @@ import java.util.List;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private final ItemStackBatchRendererCache batchRenderer = new ItemStackBatchRendererCache();
 
 	@Override
 	public void render(PoseStack poseStack, @Nullable ItemStack ingredient) {
@@ -52,6 +55,11 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			// Restore model-view matrix now that the item has been rendered
 			RenderSystem.applyModelViewMatrix();
 		}
+	}
+
+	@Override
+	public void renderBatch(PoseStack poseStack, List<BatchRenderElement<ItemStack>> batchRenderElements) {
+		batchRenderer.renderBatch(poseStack, batchRenderElements);
 	}
 
 	@SuppressWarnings("removal")
