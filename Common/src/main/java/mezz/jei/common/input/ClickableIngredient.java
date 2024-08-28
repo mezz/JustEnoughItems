@@ -23,13 +23,11 @@ public class ClickableIngredient<V> implements IClickableIngredient<V> {
 		return value;
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public IIngredientType<V> getIngredientType() {
 		return value.getType();
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public V getIngredient() {
 		return value.getIngredient();
