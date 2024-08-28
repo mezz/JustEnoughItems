@@ -113,6 +113,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isShowCreativeTabNamesEnabled() {
+		return false;
+	}
+
+	@Override
 	public int getMaxRecipeGuiHeight() {
 		return 500;
 	}
