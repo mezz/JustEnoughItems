@@ -16,6 +16,7 @@ import mezz.jei.gui.util.CommandUtil;
 import mezz.jei.gui.util.FocusUtil;
 import mezz.jei.gui.util.GiveAmount;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -54,12 +55,20 @@ public class FocusInputHandler implements IUserInputHandler {
 		}
 
 		if (toggleState.isCheatItemsEnabled()) {
-			if (input.is(keyBindings.getCheatItemStack())) {
-				return handleGive(input, keyBindings, GiveAmount.MAX);
-			}
+			if (screen instanceof AbstractContainerScreen) {
+				if (input.is(keyBindings.getCheatItemStack())) {
+					Optional<IUserInputHandler> handler = handleGive(input, keyBindings, GiveAmount.MAX);
+					if (handler.isPresent()) {
+						return handler;
+					}
+				}
 
-			if (input.is(keyBindings.getCheatOneItem())) {
-				return handleGive(input, keyBindings, GiveAmount.ONE);
+				if (input.is(keyBindings.getCheatOneItem())) {
+					Optional<IUserInputHandler> handler = handleGive(input, keyBindings, GiveAmount.ONE);
+					if (handler.isPresent()) {
+						return handler;
+					}
+				}
 			}
 		}
 
