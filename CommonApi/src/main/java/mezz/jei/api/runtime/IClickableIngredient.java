@@ -20,8 +20,9 @@ public interface IClickableIngredient<T> {
 	 * Get the typed ingredient that can be looked up by JEI for recipes.
 	 *
 	 * @since 10.3.0
+	 * @deprecated use {@link #getIngredient()} and {@link #getIngredientType()} instead.
 	 */
-	@Deprecated(since = "10.5.0")
+	@Deprecated(since = "10.5.0", forRemoval = true)
 	ITypedIngredient<T> getTypedIngredient();
 
 	/**
