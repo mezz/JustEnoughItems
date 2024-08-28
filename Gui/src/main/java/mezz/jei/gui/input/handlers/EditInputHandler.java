@@ -11,6 +11,7 @@ import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
+import java.util.Set;
 
 public class EditInputHandler implements IUserInputHandler {
 	private final CombinedRecipeFocusSource focusSource;
@@ -53,7 +54,8 @@ public class EditInputHandler implements IUserInputHandler {
 
 	private <V> void execute(IClickableIngredientInternal<V> clicked, IEditModeConfig.HideMode hideMode) {
 		ITypedIngredient<?> typedIngredient = clicked.getTypedIngredient();
-		if (editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient)) {
+		Set<IEditModeConfig.HideMode> hideModes = editModeConfig.getIngredientHiddenUsingConfigFile(typedIngredient);
+		if (hideModes.contains(hideMode)) {
 			editModeConfig.showIngredientUsingConfigFile(typedIngredient, hideMode);
 		} else {
 			editModeConfig.hideIngredientUsingConfigFile(typedIngredient, hideMode);

@@ -10,6 +10,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.IIngredientGridSource;
@@ -37,7 +38,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class IngredientFilter implements IIngredientGridSource, IIngredientManager.IIngredientListener {
+public class IngredientFilter implements
+	IIngredientGridSource,
+	IIngredientManager.IIngredientListener,
+	IIngredientVisibility.IListener,
+	IClientToggleState.IEditModeListener
+{
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
@@ -65,7 +71,8 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		List<IListElementInfo<?>> ingredients,
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
-		IColorHelper colorHelper
+		IColorHelper colorHelper,
+		IClientToggleState clientToggleState
 	) {
 		this.filterTextSource = filterTextSource;
 		this.clientConfig = clientConfig;
@@ -90,6 +97,8 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			ingredientListCached = null;
 			notifyListenersOfChange();
 		});
+
+		clientToggleState.addEditModeToggleListener(this);
 	}
 
 	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser) {
@@ -139,6 +148,11 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			.findFirst();
 	}
 
+	@Override
+	public void onEditModeChanged() {
+		updateHidden();
+	}
+
 	public void updateHidden() {
 		boolean changed = false;
 		for (IListElement<?> element : this.elementSearch.getAllIngredients()) {
@@ -160,6 +174,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		return false;
 	}
 
+	@Override
 	public <V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible) {
 		IIngredientType<V> ingredientType = ingredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);

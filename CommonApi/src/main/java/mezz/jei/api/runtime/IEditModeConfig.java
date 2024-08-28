@@ -70,7 +70,7 @@ public interface IEditModeConfig {
 		SINGLE,
 		/**
 		 * Hides or shows a single item based on its Wildcard UID.
-		 * See {@link IIngredientHelper#getWildcardId(Object)}.
+		 * See {@link IIngredientHelper#getGroupingUid}.
 		 *
 		 * @since 11.5.0
 		 */

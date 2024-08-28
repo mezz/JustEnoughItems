@@ -76,6 +76,12 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
+	public Object getGroupingUid(T ingredient) {
+		return fluidType.getBase(ingredient);
+	}
+
+	@SuppressWarnings("removal")
+	@Override
 	public String getWildcardId(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
 		ResourceLocation registryName = getRegistryName(ingredient, fluid);

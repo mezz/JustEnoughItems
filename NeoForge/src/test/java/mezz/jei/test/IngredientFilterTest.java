@@ -98,7 +98,7 @@ public class IngredientFilterTest {
 		this.ingredientManager.registerIngredientListener(blacklist);
 		this.ingredientManager.registerIngredientListener(ingredientFilter);
 
-		this.ingredientVisibility.registerListener(this.ingredientFilter::onIngredientVisibilityChanged);
+		this.ingredientVisibility.registerListener(this.ingredientFilter);
 	}
 
 	@Test

@@ -15,8 +15,11 @@ import mezz.jei.gui.overlay.IngredientGridTooltipHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 
+import java.util.Set;
+
 public class ElementRenderer<T> implements IElementRenderer<T> {
-	private static final int BLACKLIST_COLOR = 0xFFFF0000;
+	private static final int BLACKLIST_COLOR = 0xDDFF0000;
+	private static final int WILDCARD_BLACKLIST_COLOR = 0xDDFFA500;
 
 	private final IIngredientRenderer<T> ingredientRenderer;
 
@@ -41,15 +44,28 @@ public class ElementRenderer<T> implements IElementRenderer<T> {
 
 	private static <T> void renderEditMode(GuiGraphics guiGraphics, ImmutableRect2i area, int padding, ITypedIngredient<T> typedIngredient) {
 		IEditModeConfig editModeConfig = Internal.getJeiRuntime().getEditModeConfig();
-		if (editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient)) {
-			guiGraphics.fill(
-				RenderType.guiOverlay(),
-				area.getX() + padding,
-				area.getY() + padding,
-				area.getX() + 16 + padding,
-				area.getY() + 16 + padding,
-				BLACKLIST_COLOR
-			);
+		Set<IEditModeConfig.HideMode> hideModes = editModeConfig.getIngredientHiddenUsingConfigFile(typedIngredient);
+		if (!hideModes.isEmpty()) {
+			if (hideModes.contains(IEditModeConfig.HideMode.WILDCARD)) {
+				guiGraphics.fill(
+					RenderType.guiOverlay(),
+					area.getX() + padding,
+					area.getY() + padding,
+					area.getX() + 16 + padding,
+					area.getY() + 16 + padding,
+					WILDCARD_BLACKLIST_COLOR
+				);
+			}
+			if (hideModes.contains(IEditModeConfig.HideMode.SINGLE)) {
+				guiGraphics.fill(
+					RenderType.guiOverlay(),
+					area.getX() + padding,
+					area.getY() + padding,
+					area.getX() + 16 + padding,
+					area.getY() + 16 + padding,
+					BLACKLIST_COLOR
+				);
+			}
 			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 		}
 	}

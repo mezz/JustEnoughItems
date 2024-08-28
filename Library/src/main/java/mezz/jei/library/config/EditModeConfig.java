@@ -8,6 +8,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -16,21 +17,22 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.codecs.EnumCodec;
-import mezz.jei.core.util.WeakList;
+import mezz.jei.library.ingredients.IngredientVisibility;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class EditModeConfig implements IEditModeConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -38,7 +40,7 @@ public class EditModeConfig implements IEditModeConfig {
 	private final Map<Object, Pair<HideMode, ITypedIngredient<?>>> blacklist = new LinkedHashMap<>();
 	private final ISerializer serializer;
 	private final IIngredientManager ingredientManager;
-	private final WeakList<IListener> listeners = new WeakList<>();
+	private WeakReference<IngredientVisibility> ingredientVisibilityRef = new WeakReference<>(null);
 
 	public EditModeConfig(ISerializer serializer, IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
@@ -107,9 +109,23 @@ public class EditModeConfig implements IEditModeConfig {
 	}
 
 	private <V> Set<HideMode> getIngredientOnConfigBlacklist(ITypedIngredient<V> ingredient, IIngredientHelper<V> ingredientHelper) {
-		return Arrays.stream(HideMode.values())
-			.filter(hideMode -> isIngredientOnConfigBlacklist(ingredient, hideMode, ingredientHelper))
-			.collect(Collectors.toUnmodifiableSet());
+		final Object singleUid = getIngredientUid(ingredient, HideMode.SINGLE, ingredientHelper);
+		final Object wildcardUid = getIngredientUid(ingredient, HideMode.WILDCARD, ingredientHelper);
+		if (singleUid.equals(wildcardUid)) {
+			if (blacklist.containsKey(singleUid)) {
+				return Set.of(HideMode.SINGLE);
+			}
+			return Set.of();
+		}
+
+		Set<HideMode> set = new HashSet<>();
+		if (blacklist.containsKey(singleUid)) {
+			set.add(HideMode.SINGLE);
+		}
+		if (blacklist.containsKey(wildcardUid)) {
+			set.add(HideMode.WILDCARD);
+		}
+		return Collections.unmodifiableSet(set);
 	}
 
 	public <V> boolean isIngredientOnConfigBlacklist(ITypedIngredient<V> typedIngredient, HideMode blacklistType, IIngredientHelper<V> ingredientHelper) {
@@ -121,7 +137,7 @@ public class EditModeConfig implements IEditModeConfig {
 		final V ingredient = typedIngredient.getIngredient();
 		return switch (blacklistType) {
 			case SINGLE -> ingredientHelper.getUid(ingredient, UidContext.Ingredient);
-			case WILDCARD -> ingredientHelper.getWildcardId(ingredient);
+			case WILDCARD -> ingredientHelper.getGroupingUid(ingredient);
 		};
 	}
 
@@ -153,8 +169,8 @@ public class EditModeConfig implements IEditModeConfig {
 		removeIngredientFromConfigBlacklist(ingredient, hideMode, ingredientHelper);
 	}
 
-	public void registerListener(IListener listener) {
-		this.listeners.add(listener);
+	public void registerListener(IngredientVisibility ingredientVisibility) {
+		this.ingredientVisibilityRef = new WeakReference<>(ingredientVisibility);
 	}
 
 	public interface ISerializer {
@@ -170,12 +186,17 @@ public class EditModeConfig implements IEditModeConfig {
 
 		public FileSerializer(Path path, RegistryAccess registryAccess, ICodecHelper codecHelper) {
 			this.path = path;
-			this.listCodec = Codec.list(
-				Codec.pair(
-					EnumCodec.create(HideMode.class, HideMode::valueOf),
+			Codec<Pair<HideMode, ITypedIngredient<?>>> elementCodec = RecordCodecBuilder.create(builder -> {
+				return builder.group(
+					EnumCodec.create(HideMode.class, HideMode::valueOf)
+						.fieldOf("hide_mode")
+						.forGetter(Pair::getFirst),
 					codecHelper.getTypedIngredientCodec().codec()
-				)
-			);
+						.fieldOf("ingredient")
+						.forGetter(Pair::getSecond)
+				).apply(builder, Pair::new);
+			});
+			this.listCodec = Codec.list(elementCodec);
 			this.registryOps = registryAccess.createSerializationContext(JsonOps.COMPRESSED);
 		}
 
@@ -233,11 +254,10 @@ public class EditModeConfig implements IEditModeConfig {
 		}
 	}
 
-	public interface IListener {
-		<V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible);
-	}
-
 	private <T> void notifyListenersOfVisibilityChange(ITypedIngredient<T> ingredient, boolean visible) {
-		listeners.forEach(listener -> listener.onIngredientVisibilityChanged(ingredient, visible));
+		IngredientVisibility ingredientVisibility = this.ingredientVisibilityRef.get();
+		if (ingredientVisibility != null) {
+			ingredientVisibility.notifyListeners(ingredient, visible);
+		}
 	}
 }

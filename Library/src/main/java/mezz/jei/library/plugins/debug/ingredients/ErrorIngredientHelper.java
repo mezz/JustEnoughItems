@@ -37,6 +37,11 @@ public class ErrorIngredientHelper implements IIngredientHelper<ErrorIngredient>
 	}
 
 	@Override
+	public Object getGroupingUid(ErrorIngredient ingredient) {
+		return IIngredientHelper.super.getGroupingUid(ingredient);
+	}
+
+	@Override
 	public ResourceLocation getResourceLocation(ErrorIngredient ingredient) {
 		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "error_" + ingredient.crashType().toString().toLowerCase(Locale.ROOT));
 	}

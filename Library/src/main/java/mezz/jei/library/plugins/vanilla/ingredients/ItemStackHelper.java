@@ -75,11 +75,17 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	public Object getGroupingUid(ItemStack ingredient) {
+		return ingredient.getItem();
+	}
+
+	@Override
 	public boolean hasSubtypes(ItemStack ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		return stackHelper.hasSubtypes(ingredient);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getWildcardId(ItemStack ingredient) {
 		ErrorUtil.checkNotEmpty(ingredient);

@@ -20,4 +20,10 @@ public interface IClientToggleState {
 	void toggleBookmarkEnabled();
 
 	void setBookmarkEnabled(boolean value);
+
+	void addEditModeToggleListener(IEditModeListener listener);
+
+	interface IEditModeListener {
+		void onEditModeChanged();
+	}
 }
