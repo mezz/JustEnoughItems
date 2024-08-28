@@ -149,12 +149,13 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 
 		Node<T> s = root;
 
+		final SubString keyString = new SubString(key);
 		// proceed with tree construction (closely related to procedure in Ukkonen's paper)
-		SubString text = new SubString(key, 0, 0);
+		SubString text = keyString.shorten(keyString.length());
 		// iterate over the string, one char at a time
-		for (int i = 0; i < key.length(); i++) {
+		for (int i = 0; i < keyString.length(); i++) {
 			// line 6, line 7: update the tree with the new transitions due to this new char
-			SubString rest = new SubString(key, i);
+			SubString rest = keyString.substring(i);
 			Pair<Node<T>, SubString> active = update(s, text, key.charAt(i), rest, value);
 
 			s = active.first();
