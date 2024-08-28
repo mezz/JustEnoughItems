@@ -195,6 +195,19 @@ public class ElementSearchIngredientsTest {
 		Assertions.assertEquals(numbers(0, 1), results);
 	}
 
+	@Test
+	public void creativeTabSearchFindsIngredient() {
+		SearchFixture fixture = createFixture();
+		addAll(
+			fixture.search,
+			fixture.createInfos(Arrays.asList(new TestIngredient(21), new TestIngredient(22)))
+		);
+
+		Set<Integer> results = fixture.searchIngredientNumbers("%test tab 22");
+
+		Assertions.assertEquals(numbers(22), results);
+	}
+
 	private static SearchFixture createFixture() {
 		TestPlugin testPlugin = new TestPlugin();
 		SubtypeRegistration subtypeRegistration = new SubtypeRegistration();
