@@ -84,7 +84,7 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 		List<IBookmark> bookmarks) {
 		List<String> strings = new ArrayList<>();
 		TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer);
+		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, ingredientManager);
 		for (IBookmark bookmark : bookmarks) {
 			if (bookmark instanceof IngredientBookmark<?> ingredientBookmark) {
 				ITypedIngredient<?> typedIngredient = ingredientBookmark.getIngredient();
@@ -138,7 +138,7 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 				}
 
 				TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer);
+				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, ingredientManager);
 
 				IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 				List<IBookmark> bookmarks = new ArrayList<>();
