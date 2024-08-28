@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -150,6 +152,22 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		V ingredient = value.getIngredient();
 		return ingredientHelper.getColors(ingredient);
+	}
+
+	@Override
+	public @Unmodifiable Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager) {
+		ITypedIngredient<V> value = element.getTypedIngredient();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
+		V ingredient = value.getIngredient();
+		Set<String> creativeTabStrings = new HashSet<>();
+		for (String creativeTabName : ingredientHelper.getCreativeTabNames(ingredient)) {
+			String name = Translator.toLowercaseWithLocale(creativeTabName);
+			Collections.addAll(creativeTabStrings, name.split(" "));
+		}
+		if (creativeTabStrings.isEmpty()) {
+			return List.of();
+		}
+		return Collections.unmodifiableSet(creativeTabStrings);
 	}
 
 	@Override
