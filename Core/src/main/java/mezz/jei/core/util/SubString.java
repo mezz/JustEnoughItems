@@ -8,11 +8,11 @@ public class SubString {
 	private int length;
 
 	public SubString(String string) {
-		this(string, 0, string.length());
+		this(string, 0, string.length(), false);
 	}
 
 	public SubString(SubString subString) {
-		this(subString.string, subString.offset, subString.length);
+		this(subString.string, subString.offset, subString.length, true);
 	}
 
 	public SubString(String string, int offset) {
@@ -21,28 +21,37 @@ public class SubString {
 
 	@SuppressWarnings("ConstantConditions")
 	public SubString(String string, @Nonnegative int offset, @Nonnegative int length) {
+		this(string, offset, length, false);
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	private SubString(String string, @Nonnegative int offset, @Nonnegative int length, boolean fromSubString) {
 		assert length >= 0;
 		assert offset >= 0;
 		assert offset + length <= string.length();
 
-		this.string = string.intern();
+		if (fromSubString) {
+			this.string = string;
+		} else {
+			this.string = string.intern();
+		}
 		this.offset = offset;
 		this.length = length;
 	}
 
 	public SubString substring(int offset) {
-		return new SubString(string, this.offset + offset, this.length - offset);
+		return new SubString(string, this.offset + offset, this.length - offset, true);
 	}
 
 	public SubString shorten(int amount) {
-		return new SubString(string, this.offset, this.length - amount);
+		return new SubString(string, this.offset, this.length - amount, true);
 	}
 
 	public SubString append(char newChar) {
 		assert this.offset + this.length < this.string.length();
 		assert charAt(this.length) == newChar;
 
-		return new SubString(string, this.offset, this.length + 1);
+		return new SubString(string, this.offset, this.length + 1, true);
 	}
 
 	public boolean isEmpty() {
