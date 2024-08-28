@@ -112,7 +112,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 		Collection<IBookmark> bookmarks
 	) {
 		TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper);
+		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, ingredientManager, guiHelper);
 
 		List<JsonElement> jsonElements = new ArrayList<>();
 		for (IBookmark bookmark : bookmarks) {
@@ -193,7 +193,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 		}
 
 		TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper, recipeTransferService);
+		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, ingredientManager, guiHelper, recipeTransferService);
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 
 		List<IBookmark> bookmarks = new ArrayList<>();
@@ -290,7 +290,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 		}
 
 		TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper, recipeTransferService);
+		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, ingredientManager, guiHelper, recipeTransferService);
 
 		Collection<IIngredientType<?>> otherIngredientTypes = ingredientManager.getRegisteredIngredientTypes()
 			.stream()

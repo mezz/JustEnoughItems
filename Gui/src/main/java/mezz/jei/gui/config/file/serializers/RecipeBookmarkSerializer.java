@@ -9,6 +9,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.common.config.file.serializers.DeserializeResult;
 import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
@@ -30,6 +31,7 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 	private final IRecipeManager recipeManager;
 	private final IFocusFactory focusFactory;
 	private final TypedIngredientSerializer ingredientSerializer;
+	private final IIngredientManager ingredientManager;
 	private final IGuiHelper guiHelper;
 	private final @Nullable RecipeTransferService recipeTransferService;
 
@@ -37,21 +39,24 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
 		TypedIngredientSerializer ingredientSerializer,
+		IIngredientManager ingredientManager,
 		IGuiHelper guiHelper
 	) {
-		this(recipeManager, focusFactory, ingredientSerializer, guiHelper, null);
+		this(recipeManager, focusFactory, ingredientSerializer, ingredientManager, guiHelper, null);
 	}
 
 	public RecipeBookmarkSerializer(
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
 		TypedIngredientSerializer ingredientSerializer,
+		IIngredientManager ingredientManager,
 		IGuiHelper guiHelper,
 		RecipeTransferService recipeTransferService
 	) {
 		this.recipeManager = recipeManager;
 		this.focusFactory = focusFactory;
 		this.ingredientSerializer = ingredientSerializer;
+		this.ingredientManager = ingredientManager;
 		this.guiHelper = guiHelper;
 		this.recipeTransferService = recipeTransferService;
 	}
@@ -118,7 +123,7 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 			}
 		}
 
-		ITypedIngredient<?> output = outputResult.get();
+		ITypedIngredient<?> output = ingredientManager.normalizeTypedIngredient(outputResult.get());
 		RecipeType<?> recipeType = recipeTypeResult.get();
 
 		IRecipeCategory<?> recipeCategory = recipeManager.getRecipeCategory(recipeType);
