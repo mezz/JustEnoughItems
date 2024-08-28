@@ -3,6 +3,7 @@ package mezz.jei.api.ingredients;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ import java.util.Optional;
  *
  * @since 9.3.0
  */
+@ApiStatus.NonExtendable
 public interface ITypedIngredient<T> {
 	/**
 	 * @return the type of this ingredient
