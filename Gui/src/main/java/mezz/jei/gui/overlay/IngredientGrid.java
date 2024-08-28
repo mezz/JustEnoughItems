@@ -1,12 +1,14 @@
 package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
@@ -26,10 +28,15 @@ import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.DeleteItemInputHandler;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.util.AlignmentUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -48,6 +55,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 
 	private final IIngredientManager ingredientManager;
 	private final IIngredientGridConfig gridConfig;
+	private final boolean searchable;
 	private final IngredientListRenderer ingredientListRenderer;
 	private final DeleteItemInputHandler deleteItemHandler;
 	private final IngredientGridTooltipHelper tooltipHelper;
@@ -63,11 +71,12 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		IConnectionToServer serverConnection,
 		IInternalKeyMappings keyBindings,
 		IColorHelper colorHelper,
-		boolean supportsEditMode
+		boolean searchable
 	) {
 		this.ingredientManager = ingredientManager;
 		this.gridConfig = gridConfig;
-		this.ingredientListRenderer = new IngredientListRenderer(ingredientManager, supportsEditMode);
+		this.searchable = searchable;
+		this.ingredientListRenderer = new IngredientListRenderer(ingredientManager, searchable);
 		this.tooltipHelper = new IngredientGridTooltipHelper(ingredientManager, ingredientFilterConfig, toggleState, keyBindings, colorHelper);
 		this.deleteItemHandler = new DeleteItemInputHandler(this, toggleState, clientConfig, serverConnection, ingredientManager);
 	}
@@ -201,7 +210,32 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 
 		JeiTooltip tooltip = new JeiTooltip();
 		element.getTooltip(tooltip, tooltipHelper, ingredientRenderer, ingredientHelper);
+		if (searchable) {
+			addCreativeTabs(tooltip, typedIngredient);
+		}
 		tooltip.draw(guiGraphics, mouseX, mouseY, typedIngredient, ingredientRenderer, ingredientManager);
+	}
+
+	private <T> void addCreativeTabs(ITooltipBuilder tooltipBuilder, ITypedIngredient<T> typedIngredient) {
+		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		if (!clientConfig.isShowTagRecipesEnabled()) {
+			return;
+		}
+
+		ItemStack itemStack = typedIngredient.getItemStack().orElse(ItemStack.EMPTY);
+		if (itemStack.isEmpty()) {
+			return;
+		}
+
+		for (CreativeModeTab itemGroup : CreativeModeTabs.allTabs()) {
+			if (!itemGroup.shouldDisplay() || itemGroup.getType() != CreativeModeTab.Type.CATEGORY) {
+				continue;
+			}
+			if (itemGroup.contains(itemStack)) {
+				Component displayName = itemGroup.getDisplayName();
+				tooltipBuilder.add(displayName.copy().withStyle(ChatFormatting.BLUE));
+			}
+		}
 	}
 
 	@Override

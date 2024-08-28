@@ -84,6 +84,12 @@ public class ElementPrefixParser {
 			LimitedStringStorage::new
 		));
 		addPrefix(new PrefixInfo<>(
+			'%',
+			config::getCreativeTabSearchMode,
+			e -> e.getCreativeTabsStrings(ingredientManager),
+			LimitedStringStorage::new
+		));
+		addPrefix(new PrefixInfo<>(
 			'^',
 			config::getColorSearchMode,
 			e -> {

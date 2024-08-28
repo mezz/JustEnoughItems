@@ -12,6 +12,7 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	public final Supplier<SearchMode> tagSearchMode;
 	public final Supplier<SearchMode> colorSearchMode;
 	public final Supplier<SearchMode> resourceLocationSearchMode;
+	public final Supplier<SearchMode> creativeTabSearchMode;
 	public final Supplier<Boolean> searchAdvancedTooltips;
 	public final Supplier<Boolean> searchModIds;
 	public final Supplier<Boolean> searchModAliases;
@@ -44,6 +45,11 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 			"ResourceLocationSearchMode",
 			SearchMode.DISABLED,
 			"Search mode for resources locations (prefix: &)"
+		);
+		creativeTabSearchMode = search.addEnum(
+			"CreativeTabSearchMode",
+			SearchMode.DISABLED,
+			"Search mode for Creative Tabs (prefix: %)"
 		);
 		searchAdvancedTooltips = search.addBoolean(
 			"SearchAdvancedTooltips",
@@ -95,6 +101,11 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	@Override
 	public SearchMode getResourceLocationSearchMode() {
 		return resourceLocationSearchMode.get();
+	}
+
+	@Override
+	public SearchMode getCreativeTabSearchMode() {
+		return creativeTabSearchMode.get();
 	}
 
 	@Override

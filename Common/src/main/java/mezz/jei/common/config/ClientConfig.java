@@ -39,6 +39,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> lookupFluidContentsEnabled;
 	private final Supplier<Boolean> lookupBlockTagsEnabled;
 	private final Supplier<Boolean> showTagRecipesEnabled;
+	private final Supplier<Boolean> showCreativeTabNamesEnabled;
 
 	// input
 	private final Supplier<Integer> dragDelayMs;
@@ -136,6 +137,11 @@ public final class ClientConfig implements IClientConfig {
 			"showTagRecipesEnabled",
 			isDev,
 			"Show recipes for ingredient tags, like Item Tags and Block Tags"
+		);
+		showCreativeTabNamesEnabled = advanced.addBoolean(
+			"showCreativeTabNamesEnabled",
+			true,
+			"Show creative tab names in ingredient tooltips."
 		);
 
 		IConfigCategoryBuilder input = schema.addCategory("input");
@@ -308,5 +314,10 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isShowTagRecipesEnabled() {
 		return showTagRecipesEnabled.get();
+	}
+
+	@Override
+	public boolean isShowCreativeTabNamesEnabled() {
+		return showCreativeTabNamesEnabled.get();
 	}
 }
