@@ -122,7 +122,14 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public DisplayIngredientAcceptor addOptionalTypedIngredients(List<Optional<ITypedIngredient<?>>> ingredients) {
 		ErrorUtil.checkNotNull(ingredients, "ingredients");
 
-		this.ingredients.addAll(ingredients);
+		for (Optional<ITypedIngredient<?>> o : ingredients) {
+			if (o.isPresent()) {
+				this.addTypedIngredient(o.get());
+			} else {
+				this.ingredients.add(o);
+			}
+		}
+
 		return this;
 	}
 

@@ -9,6 +9,7 @@ import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IAdvancedRegistration;
@@ -275,9 +276,20 @@ public class JeiDebugPlugin implements IModPlugin {
 		Rect2i area
 	) implements IClickableIngredient<T> {
 
+		@SuppressWarnings("removal")
 		@Override
 		public ITypedIngredient<T> getTypedIngredient() {
 			return typedIngredient;
+		}
+
+		@Override
+		public IIngredientType<T> getIngredientType() {
+			return typedIngredient.getType();
+		}
+
+		@Override
+		public T getIngredient() {
+			return typedIngredient.getIngredient();
 		}
 
 		@Override

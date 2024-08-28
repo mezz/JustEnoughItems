@@ -1,5 +1,6 @@
 package mezz.jei.common.input;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.common.util.ErrorUtil;
@@ -16,9 +17,20 @@ public class ClickableIngredient<V> implements IClickableIngredient<V> {
 		this.area = area;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public ITypedIngredient<V> getTypedIngredient() {
 		return value;
+	}
+
+	@Override
+	public IIngredientType<V> getIngredientType() {
+		return value.getType();
+	}
+
+	@Override
+	public V getIngredient() {
+		return value.getIngredient();
 	}
 
 	@Override

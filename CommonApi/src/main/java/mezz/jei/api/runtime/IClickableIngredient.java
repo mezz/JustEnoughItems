@@ -1,5 +1,6 @@
 package mezz.jei.api.runtime;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
 
@@ -16,8 +17,25 @@ public interface IClickableIngredient<T> {
 	 * Get the typed ingredient that can be looked up by JEI for recipes.
 	 *
 	 * @since 11.5.0
+	 * @deprecated use {@link #getIngredient()} and {@link #getIngredientType()} instead.
 	 */
+	@Deprecated(since = "19.12.0", forRemoval = true)
 	ITypedIngredient<T> getTypedIngredient();
+
+	/**
+	 * @since 19.12.0
+	 */
+	default IIngredientType<T> getIngredientType() {
+		return getTypedIngredient().getType();
+	}
+
+	/**
+	 * @since 19.12.0
+	 */
+	default T getIngredient() {
+		ITypedIngredient<T> typedIngredient = getTypedIngredient();
+		return typedIngredient.getIngredient();
+	}
 
 	/**
 	 * Get the area that this clickable ingredient is drawn in, in absolute screen coordinates.

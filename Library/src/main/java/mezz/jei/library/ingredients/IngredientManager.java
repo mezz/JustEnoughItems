@@ -156,7 +156,7 @@ public class IngredientManager implements IIngredientManager {
 
 		if (!this.listeners.isEmpty()) {
 			List<ITypedIngredient<V>> typedIngredients = ingredients.stream()
-				.map(i -> TypedIngredient.createUnvalidated(ingredientType, i))
+				.flatMap(i -> TypedIngredient.createAndFilterInvalid(this, ingredientType, i, false).stream())
 				.toList();
 
 			IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
@@ -185,7 +185,6 @@ public class IngredientManager implements IIngredientManager {
 		return TypedIngredient.createUnvalidated(type, normalized);
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	@Deprecated
 	public <V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {

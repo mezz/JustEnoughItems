@@ -122,8 +122,8 @@ public interface IIngredientManager {
 	/**
 	 * Create a typed ingredient, if the given ingredient is valid.
 	 *
-	 * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient}
-	 * cannot be created into {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
+	 * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient})
+	 * cannot be used in {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
 	 * This helps turn all special cases like {@link ItemStack#EMPTY} into {@link Optional#empty()} instead.
 	 *
 	 * @since 11.5.0
