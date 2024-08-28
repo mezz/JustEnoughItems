@@ -47,7 +47,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
@@ -79,7 +78,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final RecipeGuiLayouts layouts;
 
 	private String pageString = "1/1";
-	private Component title = CommonComponents.EMPTY;
 	private final DrawableNineSliceTexture background;
 
 	private final RecipeCatalysts recipeCatalysts;
@@ -105,8 +103,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	 * stretches to fit large recipes.
 	 */
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
-	private ImmutableRect2i titleArea = ImmutableRect2i.EMPTY;
-	private ImmutableRect2i titleStringArea = ImmutableRect2i.EMPTY;
+
+	private RecipeCategoryTitle recipeCategoryTitle = new RecipeCategoryTitle();
 
 	private boolean init = false;
 
@@ -219,9 +217,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		previousPage.setY(pageButtonTop);
 
 		this.headerHeight = (pageButtonTop + smallButtonHeight) - guiTop;
-		this.titleArea = MathUtil.union(previousRecipeCategory.getArea(), nextRecipeCategory.getArea())
-			.cropLeft(previousRecipeCategory.getWidth() + titleInnerPadding)
-			.cropRight(nextRecipeCategory.getWidth() + titleInnerPadding);
 
 		this.init = true;
 		updateLayout();
@@ -257,7 +252,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-		StringUtil.drawCenteredStringWithShadow(guiGraphics, font, title, titleArea);
+		this.recipeCategoryTitle.draw(guiGraphics, font);
 
 		ImmutableRect2i pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
 		StringUtil.drawCenteredStringWithShadow(guiGraphics, font, pageString, pageArea);
@@ -288,9 +283,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		});
 		RenderSystem.enableDepthTest();
 
-		if (titleStringArea.contains(mouseX, mouseY) && !logic.hasAllCategories()) {
+		if (recipeCategoryTitle.isMouseOver(mouseX, mouseY)) {
 			JeiTooltip tooltip = new JeiTooltip();
-			tooltip.add(Component.translatable("jei.tooltip.show.all.recipes"));
+			recipeCategoryTitle.getTooltip(tooltip);
+			if (!logic.hasAllCategories()) {
+				tooltip.addKeyUsageComponent("jei.tooltip.show.all.recipes.hotkey", keyBindings.getLeftClick());
+			}
 			tooltip.draw(guiGraphics, mouseX, mouseY);
 		}
 
@@ -509,13 +507,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			return;
 		}
 
+		ImmutableRect2i titleArea = MathUtil.union(previousRecipeCategory.getArea(), nextRecipeCategory.getArea())
+			.cropLeft(previousRecipeCategory.getWidth() + titleInnerPadding)
+			.cropRight(nextRecipeCategory.getWidth() + titleInnerPadding);
 		IRecipeCategory<?> recipeCategory = logic.getSelectedRecipeCategory();
-		title = StringUtil.stripStyling(recipeCategory.getTitle());
-		final int availableTitleWidth = titleArea.getWidth();
-		if (font.width(title) > availableTitleWidth) {
-			title = StringUtil.truncateStringToWidth(title, availableTitleWidth, font);
-		}
-		this.titleStringArea = MathUtil.centerTextArea(this.titleArea, font, title);
+		this.recipeCategoryTitle = RecipeCategoryTitle.create(recipeCategory, font, titleArea);
 
 		ImmutableRect2i recipeLayoutsArea = getRecipeLayoutsArea();
 		final int availableHeight = recipeLayoutsArea.getHeight();
@@ -616,7 +612,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			double mouseX = input.getMouseX();
 			double mouseY = input.getMouseY();
 			if (recipesGui.isMouseOver(mouseX, mouseY)) {
-				if (recipesGui.titleStringArea.contains(mouseX, mouseY)) {
+				if (recipesGui.recipeCategoryTitle.isMouseOver(mouseX, mouseY)) {
 					if (input.is(keyBindings.getLeftClick()) && recipesGui.logic.showAllRecipes()) {
 						return Optional.of(this);
 					}
