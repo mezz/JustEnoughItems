@@ -30,6 +30,9 @@ public interface IListElementInfo<V> {
 
 	Iterable<Integer> getColors(IIngredientManager ingredientManager);
 
+	@Unmodifiable
+	Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager);
+
 	ResourceLocation getResourceLocation();
 
 	IListElement<V> getElement();
