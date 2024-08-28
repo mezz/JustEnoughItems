@@ -15,6 +15,7 @@
  */
 package mezz.jei.core.search.suffixtree;
 
+import it.unimi.dsi.fastutil.chars.Char2ObjectArrayMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMaps;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
@@ -127,6 +128,12 @@ public class Node<T> extends SubString {
 		switch (edges.size()) {
 			case 0 -> edges = Char2ObjectMaps.singleton(firstChar, edge);
 			case 1 -> {
+				Char2ObjectMap<Node<T>> newEdges = new Char2ObjectArrayMap<>(2);
+				newEdges.putAll(edges);
+				newEdges.put(firstChar, edge);
+				edges = newEdges;
+			}
+			case 8 -> {
 				Char2ObjectMap<Node<T>> newEdges = new Char2ObjectOpenHashMap<>(edges);
 				newEdges.put(firstChar, edge);
 				edges = newEdges;
