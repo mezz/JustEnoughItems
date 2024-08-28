@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 
-public class SmithingCategoryExtension<R extends SmithingRecipe> implements ISmithingCategoryExtension<R> {
+public abstract class SmithingCategoryExtension<R extends SmithingRecipe> implements ISmithingCategoryExtension<R> {
 	private final IPlatformRecipeHelper recipeHelper;
 
 	public SmithingCategoryExtension(IPlatformRecipeHelper recipeHelper) {

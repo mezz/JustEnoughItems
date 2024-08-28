@@ -37,8 +37,9 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
-import mezz.jei.library.plugins.vanilla.anvil.SmithingCategoryExtension;
 import mezz.jei.library.plugins.vanilla.anvil.SmithingRecipeCategory;
+import mezz.jei.library.plugins.vanilla.anvil.SmithingTransformCategoryExtension;
+import mezz.jei.library.plugins.vanilla.anvil.SmithingTrimCategoryExtension;
 import mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.compostable.CompostableRecipeCategory;
 import mezz.jei.library.plugins.vanilla.compostable.CompostingRecipeMaker;
@@ -101,7 +102,8 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
 import net.minecraft.world.item.crafting.ShulkerBoxColoring;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
-import net.minecraft.world.item.crafting.SmithingRecipe;
+import net.minecraft.world.item.crafting.SmithingTransformRecipe;
+import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.SuspiciousStewRecipe;
@@ -212,9 +214,8 @@ public class VanillaPlugin implements IModPlugin {
 
 		IExtendableSmithingRecipeCategory smithingCategory = registration.getSmithingCategory();
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
-		for (Class<? extends SmithingRecipe> recipeClass : recipeHelper.getSupportedSmithingRecipeClasses()) {
-			smithingCategory.addExtension(recipeClass, new SmithingCategoryExtension<>(recipeHelper));
-		}
+		smithingCategory.addExtension(SmithingTransformRecipe.class, new SmithingTransformCategoryExtension(recipeHelper));
+		smithingCategory.addExtension(SmithingTrimRecipe.class, new SmithingTrimCategoryExtension(recipeHelper));
 	}
 
 	@Override
