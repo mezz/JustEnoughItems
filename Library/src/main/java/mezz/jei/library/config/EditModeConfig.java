@@ -1,7 +1,6 @@
 package mezz.jei.library.config;
 
 
-import com.mojang.datafixers.util.Pair;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;

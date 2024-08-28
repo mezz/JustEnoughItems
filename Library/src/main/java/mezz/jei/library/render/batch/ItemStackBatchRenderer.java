@@ -1,0 +1,129 @@
+package mezz.jei.library.render.batch;
+
+import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.rendering.BatchRenderElement;
+import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.common.platform.Services;
+import net.minecraft.CrashReport;
+import net.minecraft.CrashReportCategory;
+import net.minecraft.ReportedException;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix4f;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public final class ItemStackBatchRenderer {
+	private final List<BatchRenderElement<ItemStack>> elements;
+	private final List<ElementWithModel> useBlockLight;
+	private final List<ElementWithModel> noBlockLight;
+	private final List<ElementWithModel> customRender;
+
+	public ItemStackBatchRenderer(Minecraft minecraft, List<BatchRenderElement<ItemStack>> elements) {
+		this.elements = elements;
+		this.useBlockLight = new ArrayList<>();
+		this.noBlockLight = new ArrayList<>();
+		this.customRender = new ArrayList<>();
+
+		ClientLevel level = minecraft.level;
+		ItemRenderer itemRenderer = minecraft.getItemRenderer();
+
+		for (BatchRenderElement<ItemStack> element : elements) {
+			ItemStack itemStack = element.ingredient();
+			if (!itemStack.isEmpty()) {
+				BakedModel bakedmodel = itemRenderer.getModel(itemStack, level, null, 0);
+				if (bakedmodel.isCustomRenderer()) {
+					ElementWithModel elementWithModel = new ElementWithModel(bakedmodel, itemStack, element.x(), element.y());
+					customRender.add(elementWithModel);
+				} else if (bakedmodel.usesBlockLight()) {
+					ElementWithModel elementWithModel = new ElementWithModel(bakedmodel, itemStack, element.x(), element.y());
+					useBlockLight.add(elementWithModel);
+				} else {
+					if (!bakedmodel.isGui3d()) {
+						bakedmodel = new LimitedQuadItemModel(bakedmodel);
+					}
+					ElementWithModel elementWithModel = new ElementWithModel(bakedmodel, itemStack, element.x(), element.y());
+					noBlockLight.add(elementWithModel);
+				}
+			}
+		}
+	}
+
+	public void render(GuiGraphics guiGraphics, Minecraft minecraft, ItemRenderer itemRenderer) {
+		if (!noBlockLight.isEmpty()) {
+			Lighting.setupForFlatItems();
+			for (ElementWithModel element : noBlockLight) {
+				renderItem(guiGraphics, itemRenderer, element.model(), element.stack(), element.x(), element.y());
+			}
+			guiGraphics.flush();
+			Lighting.setupFor3DItems();
+		}
+
+		if (!useBlockLight.isEmpty()) {
+			for (ElementWithModel element : useBlockLight) {
+				renderItem(guiGraphics, itemRenderer, element.model(), element.stack(), element.x(), element.y());
+			}
+			guiGraphics.flush();
+		}
+
+		for (ElementWithModel element : customRender) {
+			renderItem(guiGraphics, itemRenderer, element.model(), element.stack(), element.x(), element.y());
+			guiGraphics.flush();
+		}
+
+		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+		for (BatchRenderElement<ItemStack> element : elements) {
+			ItemStack ingredient = element.ingredient();
+			Font font = renderHelper.getFontRenderer(minecraft, ingredient);
+			guiGraphics.renderItemDecorations(font, ingredient, element.x(), element.y());
+		}
+		RenderSystem.disableBlend();
+	}
+
+	private void renderItem(
+		GuiGraphics guiGraphics,
+		ItemRenderer itemRenderer,
+		BakedModel bakedmodel,
+		ItemStack itemStack,
+		int x,
+		int y
+	) {
+		PoseStack poseStack = guiGraphics.pose();
+		poseStack.pushPose();
+		poseStack.translate((float) (x + 8), (float) (y + 8), 150f);
+		poseStack.mulPoseMatrix((new Matrix4f()).scaling(1.0F, -1.0F, 1.0F));
+		poseStack.scale(16.0F, 16.0F, 16.0F);
+
+		try {
+			itemRenderer.render(
+				itemStack,
+				ItemDisplayContext.GUI,
+				false,
+				poseStack,
+				guiGraphics.bufferSource(),
+				0xf000f0,
+				OverlayTexture.NO_OVERLAY,
+				bakedmodel
+			);
+		} catch (Throwable throwable) {
+			CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering item");
+			CrashReportCategory crashreportcategory = crashreport.addCategory("Item being rendered");
+			crashreportcategory.setDetail("Item Type", () -> String.valueOf(itemStack.getItem()));
+			crashreportcategory.setDetail("Item NBT", () -> String.valueOf(itemStack.getTag()));
+			crashreportcategory.setDetail("Item Foil", () -> String.valueOf(itemStack.hasFoil()));
+			throw new ReportedException(crashreport);
+		}
+
+		poseStack.popPose();
+	}
+}

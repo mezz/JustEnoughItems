@@ -191,7 +191,6 @@ public interface IRecipeManager {
 	 *
 	 * @see RecipeType#getUid()
 	 * @since 11.2.3
-	 * @deprecated use {@link #getRecipeType(ResourceLocation, Class)}
 	 */
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid);
 }

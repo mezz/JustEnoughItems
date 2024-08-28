@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay.elements;
 
+import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -11,7 +12,7 @@ import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.IngredientGridTooltipHelper;
 import mezz.jei.gui.util.FocusUtil;
-import net.minecraft.client.gui.GuiGraphics;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,8 @@ public interface IElement<T> {
 	 */
 	Optional<IBookmark> getBookmark();
 
-	void renderExtras(GuiGraphics guiGraphics, int xPosition, int yPosition);
+	@Nullable
+	IDrawable createRenderOverlay();
 
 	void show(IRecipesGui recipesGui, FocusUtil focusUtil, List<RecipeIngredientRole> roles);
 

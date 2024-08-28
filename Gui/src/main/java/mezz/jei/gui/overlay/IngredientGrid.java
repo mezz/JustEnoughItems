@@ -2,12 +2,16 @@ package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.helpers.IColorHelper;
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutablePoint2i;
@@ -42,6 +46,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	public static final int INGREDIENT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
 	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
 
+	private final IIngredientManager ingredientManager;
 	private final IIngredientGridConfig gridConfig;
 	private final IngredientListRenderer ingredientListRenderer;
 	private final DeleteItemInputHandler deleteItemHandler;
@@ -57,10 +62,12 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		IClientToggleState toggleState,
 		IConnectionToServer serverConnection,
 		IInternalKeyMappings keyBindings,
-		IColorHelper colorHelper
+		IColorHelper colorHelper,
+		boolean supportsEditMode
 	) {
+		this.ingredientManager = ingredientManager;
 		this.gridConfig = gridConfig;
-		this.ingredientListRenderer = new IngredientListRenderer();
+		this.ingredientListRenderer = new IngredientListRenderer(ingredientManager, supportsEditMode);
 		this.tooltipHelper = new IngredientGridTooltipHelper(ingredientManager, ingredientFilterConfig, toggleState, keyBindings, colorHelper);
 		this.deleteItemHandler = new DeleteItemInputHandler(this, toggleState, clientConfig, serverConnection, ingredientManager);
 	}
@@ -145,7 +152,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 			if (!this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				ingredientListRenderer.getSlots()
 					.filter(s -> s.getArea().contains(mouseX, mouseY))
-					.filter(s -> s.getElement().isPresent())
+					.filter(s -> s.getOptionalElement().isPresent())
 					.findFirst()
 					.ifPresent(s -> drawHighlight(guiGraphics, s.getArea()));
 			}
@@ -176,11 +183,25 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 			} else {
 				ingredientListRenderer.getSlots()
 					.filter(s -> s.isMouseOver(mouseX, mouseY))
-					.filter(s -> s.getElement().isPresent())
+					.map(IngredientListSlot::getOptionalElement)
+					.flatMap(Optional::stream)
 					.findFirst()
-					.ifPresent(s -> s.drawTooltip(guiGraphics, mouseX, mouseY, tooltipHelper));
+					.ifPresent(element -> {
+						drawTooltip(guiGraphics, mouseX, mouseY, element);
+					});
 			}
 		}
+	}
+
+	private <T> void drawTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY, IElement<T> element) {
+		ITypedIngredient<T> typedIngredient = element.getTypedIngredient();
+		IIngredientType<T> ingredientType = typedIngredient.getType();
+		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+
+		JeiTooltip tooltip = new JeiTooltip();
+		element.getTooltip(tooltip, tooltipHelper, ingredientRenderer, ingredientHelper);
+		tooltip.draw(guiGraphics, mouseX, mouseY, typedIngredient, ingredientRenderer, ingredientManager);
 	}
 
 	@Override
@@ -212,7 +233,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 
 	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
 		return this.ingredientListRenderer.getSlots()
-			.map(IngredientListSlot::getElement)
+			.map(IngredientListSlot::getOptionalElement)
 			.flatMap(Optional::stream)
 			.map(IElement::getTypedIngredient)
 			.map(i -> i.getIngredient(ingredientType))

@@ -258,7 +258,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	private Optional<DragTarget> createDragTarget(IngredientListSlot ingredientListSlot) {
-		return ingredientListSlot.getElement()
+		return ingredientListSlot.getOptionalElement()
 			.flatMap(IElement::getBookmark)
 			.map(bookmark -> new DragTarget(ingredientListSlot.getArea(), bookmark, bookmarkList, 0));
 	}

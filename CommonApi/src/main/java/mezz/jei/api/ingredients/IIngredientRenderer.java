@@ -1,17 +1,17 @@
 package mezz.jei.api.ingredients;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.ingredients.rendering.BatchRenderElement;
+import mezz.jei.api.registration.IModIngredientRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
 
-import mezz.jei.api.registration.IModIngredientRegistration;
-import net.minecraft.network.chat.Component;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Renders a type of ingredient in JEI's item list and recipes.
@@ -49,6 +49,18 @@ public interface IIngredientRenderer<T> {
 			render(guiGraphics, ingredient);
 		}
 		poseStack.popPose();
+	}
+
+	/**
+	 * Render a batch of ingredients.
+	 * Implementing this is not necessary, but can be used to optimize rendering many ingredients at once.
+	 *
+	 * @since 15.16.0
+	 */
+	default void renderBatch(GuiGraphics guiGraphics, List<BatchRenderElement<T>> elements) {
+		for (BatchRenderElement<T> element : elements) {
+			render(guiGraphics, element.ingredient(), element.x(), element.y());
+		}
 	}
 
 	/**

@@ -13,6 +13,7 @@ import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -49,17 +50,7 @@ public final class ErrorUtil {
 			.map(ResourceLocation::toString)
 			.orElseGet(() -> {
 				if (item instanceof BlockItem blockItem) {
-					final String blockName;
-					Block block = blockItem.getBlock();
-					//noinspection ConstantValue
-					if (block == null) {
-						blockName = "null";
-					} else {
-						IPlatformRegistry<Block> blockRegistry = Services.PLATFORM.getRegistry(Registries.BLOCK);
-						blockName = blockRegistry.getRegistryName(block)
-							.map(ResourceLocation::toString)
-							.orElseGet(() -> block.getClass().getName());
-					}
+					final String blockName = getBlockName(blockItem);
 					return "BlockItem(" + blockName + ")";
 				} else {
 					return item.getClass().getName();
@@ -72,6 +63,21 @@ public final class ErrorUtil {
 		}
 		return itemStack + " " + itemName;
 	}
+
+	@SuppressWarnings("ConstantValue")
+	private static String getBlockName(BlockItem blockItem) {
+		Block block = blockItem.getBlock();
+		if (block == null) {
+			return "null";
+		}
+		Registry<Block> blockRegistry = RegistryUtil.getRegistry(Registries.BLOCK);
+		ResourceLocation key = blockRegistry.getKey(block);
+		if (key != null) {
+			return key.toString();
+		}
+		return block.getClass().getName();
+	}
+
 
 	@SuppressWarnings("ConstantConditions")
 	public static void checkNotEmpty(ItemStack itemStack) {
@@ -164,28 +170,24 @@ public final class ErrorUtil {
 	}
 
 	public static <T> CrashReport createIngredientCrashReport(Throwable throwable, String title, IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
+		return createIngredientCrashReport(throwable, title, ingredientManager, typedIngredient.getType(), typedIngredient.getIngredient());
+	}
+
+	public static <T> CrashReport createIngredientCrashReport(Throwable throwable, String title, IIngredientManager ingredientManager, IIngredientType<T> ingredientType, T ingredient) {
 		CrashReport crashReport = CrashReport.forThrowable(throwable, title);
-
-		IIngredientType<T> ingredientType = typedIngredient.getType();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-
 		CrashReportCategory category = crashReport.addCategory("Ingredient");
-		setIngredientCategoryDetails(category, typedIngredient, ingredientHelper);
+		setIngredientCategoryDetails(category, ingredientType, ingredient, ingredientManager);
 		return crashReport;
 	}
 
-	public static <T> void logIngredientCrash(Throwable throwable, String title, IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
+	public static <T> void logIngredientCrash(Throwable throwable, String title, IIngredientManager ingredientManager, IIngredientType<T> ingredientType, T ingredient) {
 		CrashReportCategory category = new CrashReportCategory("Ingredient");
-		IIngredientType<T> ingredientType = typedIngredient.getType();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		setIngredientCategoryDetails(category, typedIngredient, ingredientHelper);
+		setIngredientCategoryDetails(category, ingredientType, ingredient, ingredientManager);
 		LOGGER.error(crashReportToString(throwable, title, category));
 	}
 
-	private static <T> void setIngredientCategoryDetails(CrashReportCategory category, ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
-		T ingredient = typedIngredient.getIngredient();
-		IIngredientType<T> ingredientType = typedIngredient.getType();
-
+	private static <T> void setIngredientCategoryDetails(CrashReportCategory category, IIngredientType<T> ingredientType, T ingredient, IIngredientManager ingredientManager) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
 
 		category.setDetail("Name", () -> ingredientHelper.getDisplayName(ingredient));
