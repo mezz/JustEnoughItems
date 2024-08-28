@@ -7,14 +7,12 @@ import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface IPlatformRecipeHelper {
 	Ingredient getBase(SmithingRecipe recipe);
 	Ingredient getAddition(SmithingRecipe recipe);
 	Ingredient getTemplate(SmithingRecipe recipe);
-	Collection<Class<? extends SmithingRecipe>> getSupportedSmithingRecipeClasses();
 
 	List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory, PotionBrewing potionBrewing);
 }
