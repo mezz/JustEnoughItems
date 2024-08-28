@@ -32,13 +32,13 @@ public class IngredientListRenderer {
 	private final ListMultiMap<IIngredientType<?>, BatchRenderElement<?>> renderElementsByType = new ListMultiMap<>();
 	private final List<IDrawable> renderOverlays = new ArrayList<>();
 	private final IIngredientManager ingredientManager;
-	private final boolean supportsEditMode;
+	private final boolean searchable;
 
 	private int blocked = 0;
 
-	public IngredientListRenderer(IIngredientManager ingredientManager, boolean supportsEditMode) {
+	public IngredientListRenderer(IIngredientManager ingredientManager, boolean searchable) {
 		this.ingredientManager = ingredientManager;
-		this.supportsEditMode = supportsEditMode;
+		this.searchable = searchable;
 	}
 
 	public void clear() {
@@ -106,7 +106,7 @@ public class IngredientListRenderer {
 	}
 
 	public void render(GuiGraphics guiGraphics) {
-		if (supportsEditMode && Internal.getClientToggleState().isEditModeEnabled()) {
+		if (searchable && Internal.getClientToggleState().isEditModeEnabled()) {
 			renderEditMode(guiGraphics);
 		}
 

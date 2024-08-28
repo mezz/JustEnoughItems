@@ -7,8 +7,12 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.util.SafeIngredientUtil;
+import mezz.jei.common.util.StringUtil;
 import mezz.jei.common.util.Translator;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +21,8 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -147,6 +153,27 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		V ingredient = value.getIngredient();
 		return ingredientHelper.getColors(ingredient);
+	}
+
+	@Override
+	public @Unmodifiable Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager) {
+		ItemStack itemStack = element.getTypedIngredient().getItemStack().orElse(ItemStack.EMPTY);
+		if (itemStack.isEmpty()) {
+			return List.of();
+		}
+		Set<String> creativeTabStrings = new HashSet<>();
+		for (CreativeModeTab itemGroup : CreativeModeTabs.allTabs()) {
+			if (!itemGroup.shouldDisplay() || itemGroup.getType() != CreativeModeTab.Type.CATEGORY) {
+				continue;
+			}
+			if (itemGroup.contains(itemStack)) {
+				String name = itemGroup.getDisplayName().getString();
+				name = StringUtil.removeChatFormatting(name);
+				name = Translator.toLowercaseWithLocale(name);
+				Collections.addAll(creativeTabStrings, name.split(" "));
+			}
+		}
+		return creativeTabStrings;
 	}
 
 	@Override
