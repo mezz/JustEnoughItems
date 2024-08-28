@@ -4,24 +4,20 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.core.util.WeakList;
 
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 public class IngredientBlacklistInternal implements IIngredientManager.IIngredientListener {
-	public interface IListener {
-		<V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible);
-	}
-
-	private final Set<String> ingredientBlacklist = new HashSet<>();
-	private final WeakList<IListener> listeners = new WeakList<>();
+	private final Set<String> uidBlacklist = new HashSet<>();
+	private WeakReference<IngredientVisibility> ingredientVisibilityRef = new WeakReference<>(null);
 
 	public <V> void addIngredientToBlacklist(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
 		V ingredient = typedIngredient.getIngredient();
 		String uniqueName = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-		if (ingredientBlacklist.add(uniqueName)) {
+		if (uidBlacklist.add(uniqueName)) {
 			notifyListenersOfVisibilityChange(typedIngredient, false);
 		}
 	}
@@ -29,7 +25,7 @@ public class IngredientBlacklistInternal implements IIngredientManager.IIngredie
 	public <V> void removeIngredientFromBlacklist(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
 		V ingredient = typedIngredient.getIngredient();
 		String uniqueName = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-		if (ingredientBlacklist.remove(uniqueName)) {
+		if (uidBlacklist.remove(uniqueName)) {
 			notifyListenersOfVisibilityChange(typedIngredient, true);
 		}
 	}
@@ -40,13 +36,13 @@ public class IngredientBlacklistInternal implements IIngredientManager.IIngredie
 		String uidWild = ingredientHelper.getWildcardId(ingredient);
 
 		if (uid.equals(uidWild)) {
-			return ingredientBlacklist.contains(uid);
+			return uidBlacklist.contains(uid);
 		}
-		return ingredientBlacklist.contains(uid) || ingredientBlacklist.contains(uidWild);
+		return uidBlacklist.contains(uid) || uidBlacklist.contains(uidWild);
 	}
 
-	public void registerListener(IListener listener) {
-		this.listeners.add(listener);
+	public void registerListener(IngredientVisibility ingredientVisibility) {
+		this.ingredientVisibilityRef = new WeakReference<>(ingredientVisibility);
 	}
 
 	@Override
@@ -64,6 +60,9 @@ public class IngredientBlacklistInternal implements IIngredientManager.IIngredie
 	}
 
 	private <T> void notifyListenersOfVisibilityChange(ITypedIngredient<T> ingredient, boolean visible) {
-		listeners.forEach(listener -> listener.onIngredientVisibilityChanged(ingredient, visible));
+		IngredientVisibility ingredientVisibility = ingredientVisibilityRef.get();
+		if (ingredientVisibility != null) {
+			ingredientVisibility.notifyListeners(ingredient, visible);
+		}
 	}
 }

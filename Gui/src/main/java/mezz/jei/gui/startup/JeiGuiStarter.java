@@ -127,10 +127,11 @@ public class JeiGuiStarter {
 			ingredientList,
 			modIdHelper,
 			ingredientVisibility,
-			colorHelper
+			colorHelper,
+			toggleState
 		);
 		ingredientManager.registerIngredientListener(ingredientFilter);
-		ingredientVisibility.registerListener(ingredientFilter::onIngredientVisibilityChanged);
+		ingredientVisibility.registerListener(ingredientFilter);
 		timer.stop();
 
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);

@@ -1,6 +1,10 @@
 package mezz.jei.common.config;
 
+import mezz.jei.core.util.WeakList;
+
 public class ClientToggleState implements IClientToggleState {
+	private final WeakList<IEditModeListener> editModeListeners = new WeakList<>();
+
 	private boolean overlayEnabled = true;
 	private boolean cheatItemsEnabled = false;
 	private boolean editModeEnabled = false;
@@ -56,5 +60,11 @@ public class ClientToggleState implements IClientToggleState {
 	@Override
 	public void toggleEditModeEnabled() {
 		this.editModeEnabled = !this.editModeEnabled;
+		editModeListeners.forEach(IEditModeListener::onEditModeChanged);
+	}
+
+	@Override
+	public void addEditModeToggleListener(IEditModeListener listener) {
+		editModeListeners.add(listener);
 	}
 }

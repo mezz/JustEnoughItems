@@ -1,37 +1,36 @@
 package mezz.jei.library.config;
 
+
+import com.mojang.datafixers.util.Pair;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.core.util.WeakList;
+import mezz.jei.library.ingredients.IngredientVisibility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class EditModeConfig implements IEditModeConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String[] defaultBlacklist = new String[]{};
 
-	private final Set<String> blacklist = new LinkedHashSet<>();
+	private final Set<String> blacklist = new HashSet<>();
 	private final ISerializer serializer;
 	private final IIngredientManager ingredientManager;
-	private final WeakList<IListener> listeners = new WeakList<>();
+	private WeakReference<IngredientVisibility> ingredientVisibilityRef = new WeakReference<>(null);
 
 	public EditModeConfig(ISerializer serializer, IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
-		Collections.addAll(blacklist, defaultBlacklist);
 		this.serializer = serializer;
 		this.serializer.initialize(this);
 		this.serializer.load(this);
@@ -49,16 +48,15 @@ public class EditModeConfig implements IEditModeConfig {
 		HideMode blacklistType,
 		IIngredientHelper<V> ingredientHelper
 	) {
+		String uid = getIngredientUid(typedIngredient, HideMode.SINGLE, ingredientHelper);
 		String wildcardUid = getIngredientUid(typedIngredient, HideMode.WILDCARD, ingredientHelper);
 
+		if (wildcardUid.equals(uid)) {
+			// there's only one type of this ingredient, adding it as SINGLE is the same as adding it as WILDCARD.
+			blacklistType = HideMode.WILDCARD;
+		}
+
 		if (blacklistType == HideMode.SINGLE) {
-			String uid = getIngredientUid(typedIngredient, blacklistType, ingredientHelper);
-
-			if (wildcardUid.equals(uid)) {
-				// there's only one type of this ingredient, adding it as ITEM the same as adding it as WILDCARD.
-				return blacklist.add(wildcardUid);
-			}
-
 			return blacklist.add(uid);
 		} else if (blacklistType == HideMode.WILDCARD) {
 			return blacklist.add(wildcardUid);
@@ -89,9 +87,23 @@ public class EditModeConfig implements IEditModeConfig {
 	}
 
 	private <V> Set<HideMode> getIngredientOnConfigBlacklist(ITypedIngredient<V> ingredient, IIngredientHelper<V> ingredientHelper) {
-		return Arrays.stream(HideMode.values())
-			.filter(hideMode -> isIngredientOnConfigBlacklist(ingredient, hideMode, ingredientHelper))
-			.collect(Collectors.toUnmodifiableSet());
+		final String singleUid = getIngredientUid(ingredient, HideMode.SINGLE, ingredientHelper);
+		final String wildcardUid = getIngredientUid(ingredient, HideMode.WILDCARD, ingredientHelper);
+		if (singleUid.equals(wildcardUid)) {
+			if (blacklist.contains(singleUid)) {
+				return Set.of(HideMode.SINGLE);
+			}
+			return Set.of();
+		}
+
+		Set<HideMode> set = new HashSet<>();
+		if (blacklist.contains(singleUid)) {
+			set.add(HideMode.SINGLE);
+		}
+		if (blacklist.contains(wildcardUid)) {
+			set.add(HideMode.WILDCARD);
+		}
+		return Collections.unmodifiableSet(set);
 	}
 
 	public <V> boolean isIngredientOnConfigBlacklist(ITypedIngredient<V> typedIngredient, HideMode blacklistType, IIngredientHelper<V> ingredientHelper) {
@@ -135,8 +147,8 @@ public class EditModeConfig implements IEditModeConfig {
 		removeIngredientFromConfigBlacklist(ingredient, hideMode, ingredientHelper);
 	}
 
-	public void registerListener(IListener listener) {
-		this.listeners.add(listener);
+	public void registerListener(IngredientVisibility ingredientVisibility) {
+		this.ingredientVisibilityRef = new WeakReference<>(ingredientVisibility);
 	}
 
 	public interface ISerializer {
@@ -184,11 +196,10 @@ public class EditModeConfig implements IEditModeConfig {
 		}
 	}
 
-	public interface IListener {
-		<V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible);
-	}
-
 	private <T> void notifyListenersOfVisibilityChange(ITypedIngredient<T> ingredient, boolean visible) {
-		listeners.forEach(listener -> listener.onIngredientVisibilityChanged(ingredient, visible));
+		IngredientVisibility ingredientVisibility = this.ingredientVisibilityRef.get();
+		if (ingredientVisibility != null) {
+			ingredientVisibility.notifyListeners(ingredient, visible);
+		}
 	}
 }

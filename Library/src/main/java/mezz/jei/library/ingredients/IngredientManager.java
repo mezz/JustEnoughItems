@@ -184,6 +184,7 @@ public class IngredientManager implements IIngredientManager {
 		return TypedIngredient.createUnvalidated(type, normalized);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	@Deprecated
 	public <V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
