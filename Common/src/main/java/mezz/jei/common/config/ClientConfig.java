@@ -140,7 +140,7 @@ public final class ClientConfig implements IClientConfig {
 		);
 		showCreativeTabNamesEnabled = advanced.addBoolean(
 			"showCreativeTabNamesEnabled",
-			true,
+			false,
 			"Show creative tab names in ingredient tooltips."
 		);
 

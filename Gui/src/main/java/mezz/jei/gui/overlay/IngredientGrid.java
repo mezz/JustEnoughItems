@@ -218,7 +218,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 
 	private <T> void addCreativeTabs(ITooltipBuilder tooltipBuilder, ITypedIngredient<T> typedIngredient) {
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (!clientConfig.isShowTagRecipesEnabled()) {
+		if (!clientConfig.isShowCreativeTabNamesEnabled()) {
 			return;
 		}
 
