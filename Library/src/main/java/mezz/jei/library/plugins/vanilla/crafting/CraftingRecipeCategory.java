@@ -7,6 +7,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.ICodecHelper;
@@ -72,6 +73,12 @@ public class CraftingRecipeCategory implements IExtendableCraftingRecipeCategory
 	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<CraftingRecipe> recipeHolder, IFocusGroup focuses) {
 		var recipeExtension = this.extendableHelper.getRecipeExtension(recipeHolder);
 		recipeExtension.setRecipe(recipeHolder, builder, craftingGridHelper, focuses);
+	}
+
+	@Override
+	public void onDisplayedIngredientsUpdate(RecipeHolder<CraftingRecipe> recipeHolder, List<IRecipeSlotDrawable> recipeSlots, IFocusGroup focuses) {
+		var recipeExtension = this.extendableHelper.getRecipeExtension(recipeHolder);
+		recipeExtension.onDisplayedIngredientsUpdate(recipeHolder, recipeSlots, focuses);
 	}
 
 	@Override
