@@ -3,6 +3,7 @@ package mezz.jei.api.recipe.category.extensions.vanilla.crafting;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -11,8 +12,8 @@ import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.resources.ResourceLocation;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 /**
@@ -36,6 +37,32 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	default void setRecipe(IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
 		// if this new method is not implemented, call the legacy method
 		setRecipe(builder, craftingGridHelper, focuses.getAllFocuses());
+	}
+
+	/**
+	 * Called every time JEI updates the cycling displayed ingredients on a recipe.
+	 *
+	 * Use this (for example) to compute recipe outputs that result from complex relationships between ingredients.
+	 *
+	 * Use {@link IRecipeSlotDrawable#getDisplayedIngredient()} from your regular slots to see what is
+	 * currently being drawn, and calculate what you need from there.
+	 * You can override any slot's displayed ingredient with {@link IRecipeSlotDrawable#createDisplayOverrides()}.
+	 *
+	 * Note that overrides set this way are not searchable via recipe lookups in JEI,
+	 * it is only for displaying things too complex for normal lookups to handle.
+	 *
+	 * @param recipeSlots the current recipe slots being drawn.
+	 * @param focuses the current focuses
+	 *
+	 * @see IRecipeCategory#onDisplayedIngredientsUpdate
+	 *
+	 * @since 10.40.0
+	 */
+	default void onDisplayedIngredientsUpdate(
+		List<IRecipeSlotDrawable> recipeSlots,
+		IFocusGroup focuses
+	) {
+
 	}
 
 	/**
