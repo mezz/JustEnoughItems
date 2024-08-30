@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.library.render.ItemStackRenderer;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
@@ -23,13 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ItemStackBatchRenderer {
-	private final List<BatchRenderElement<ItemStack>> elements;
 	private final List<ElementWithModel> useBlockLight;
 	private final List<ElementWithModel> noBlockLight;
-	private final List<ElementWithModel> customRender;
+	private final List<BatchRenderElement<ItemStack>> customRender;
 
 	public ItemStackBatchRenderer(Minecraft minecraft, List<BatchRenderElement<ItemStack>> elements) {
-		this.elements = elements;
 		this.useBlockLight = new ArrayList<>();
 		this.noBlockLight = new ArrayList<>();
 		this.customRender = new ArrayList<>();
@@ -42,8 +41,7 @@ public final class ItemStackBatchRenderer {
 			if (!itemStack.isEmpty()) {
 				BakedModel bakedmodel = itemRenderer.getModel(itemStack, level, null, 0);
 				if (bakedmodel.isCustomRenderer()) {
-					ElementWithModel elementWithModel = new ElementWithModel(bakedmodel, itemStack, element.x(), element.y());
-					customRender.add(elementWithModel);
+					customRender.add(element);
 				} else if (bakedmodel.usesBlockLight()) {
 					ElementWithModel elementWithModel = new ElementWithModel(bakedmodel, itemStack, element.x(), element.y());
 					useBlockLight.add(elementWithModel);
@@ -56,7 +54,7 @@ public final class ItemStackBatchRenderer {
 		}
 	}
 
-	public void render(GuiGraphics guiGraphics, Minecraft minecraft, ItemRenderer itemRenderer) {
+	public void render(GuiGraphics guiGraphics, Minecraft minecraft, ItemRenderer itemRenderer, ItemStackRenderer itemStackRenderer) {
 		if (!noBlockLight.isEmpty()) {
 			Lighting.setupForFlatItems();
 			for (ElementWithModel element : noBlockLight) {
@@ -74,16 +72,22 @@ public final class ItemStackBatchRenderer {
 			guiGraphics.flush();
 		}
 
-		for (ElementWithModel element : customRender) {
-			renderItem(guiGraphics, itemRenderer, element.model(), element.stack(), element.x(), element.y());
-			guiGraphics.flush();
-		}
-
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-		for (BatchRenderElement<ItemStack> element : elements) {
-			ItemStack ingredient = element.ingredient();
+		for (ElementWithModel element : useBlockLight) {
+			ItemStack ingredient = element.stack();
 			Font font = renderHelper.getFontRenderer(minecraft, ingredient);
 			guiGraphics.renderItemDecorations(font, ingredient, element.x(), element.y());
+		}
+		for (ElementWithModel element : noBlockLight) {
+			ItemStack ingredient = element.stack();
+			Font font = renderHelper.getFontRenderer(minecraft, ingredient);
+			guiGraphics.renderItemDecorations(font, ingredient, element.x(), element.y());
+		}
+		RenderSystem.disableBlend();
+		for (BatchRenderElement<ItemStack> element : customRender) {
+			ItemStack ingredient = element.ingredient();
+			itemStackRenderer.render(guiGraphics, ingredient);
+			RenderSystem.disableBlend();
 		}
 		RenderSystem.disableBlend();
 	}
