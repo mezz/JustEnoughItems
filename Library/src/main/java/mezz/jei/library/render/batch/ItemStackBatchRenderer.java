@@ -46,7 +46,9 @@ public final class ItemStackBatchRenderer {
 					ElementWithModel elementWithModel = new ElementWithModel(bakedmodel, itemStack, element.x(), element.y());
 					useBlockLight.add(elementWithModel);
 				} else {
-					bakedmodel = new LimitedQuadItemModel(bakedmodel);
+					if (!bakedmodel.isGui3d()) {
+						bakedmodel = new LimitedQuadItemModel(bakedmodel);
+					}
 					ElementWithModel elementWithModel = new ElementWithModel(bakedmodel, itemStack, element.x(), element.y());
 					noBlockLight.add(elementWithModel);
 				}
