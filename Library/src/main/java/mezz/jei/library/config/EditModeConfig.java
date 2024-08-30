@@ -69,15 +69,13 @@ public class EditModeConfig implements IEditModeConfig {
 		IIngredientHelper<V> ingredientHelper
 	) {
 		Object wildcardUid = getIngredientUid(typedIngredient, HideMode.WILDCARD, ingredientHelper);
+		Object uid = getIngredientUid(typedIngredient, HideMode.SINGLE, ingredientHelper);
+		if (wildcardUid.equals(uid)) {
+			// there's only one type of this ingredient, adding it as SINGLE is the same as adding it as WILDCARD.
+			blacklistType = HideMode.WILDCARD;
+		}
 
 		if (blacklistType == HideMode.SINGLE) {
-			Object uid = getIngredientUid(typedIngredient, blacklistType, ingredientHelper);
-
-			if (wildcardUid.equals(uid)) {
-				// there's only one type of this ingredient, adding it as ITEM the same as adding it as WILDCARD.
-				return blacklist.put(wildcardUid, new Pair<>(blacklistType, typedIngredient)) == null;
-			}
-
 			return blacklist.put(uid, new Pair<>(blacklistType, typedIngredient)) == null;
 		} else if (blacklistType == HideMode.WILDCARD) {
 			return blacklist.put(wildcardUid, new Pair<>(blacklistType, typedIngredient)) == null;
@@ -112,7 +110,8 @@ public class EditModeConfig implements IEditModeConfig {
 		final Object wildcardUid = getIngredientUid(ingredient, HideMode.WILDCARD, ingredientHelper);
 		if (singleUid.equals(wildcardUid)) {
 			if (blacklist.containsKey(singleUid)) {
-				return Set.of(HideMode.SINGLE);
+				// there's only one type of this ingredient, adding it as SINGLE is the same as adding it as WILDCARD.
+				return Set.of(HideMode.SINGLE, HideMode.WILDCARD);
 			}
 			return Set.of();
 		}
