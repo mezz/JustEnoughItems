@@ -148,7 +148,7 @@ public final class JeiStarter {
 		ingredientManager.registerIngredientListener(blacklist);
 
 		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
-		EditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.cfg")), ingredientManager);
+		EditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.json"), configDir.resolve("blacklist.cfg")), ingredientManager);
 
 		IngredientVisibility ingredientVisibility = new IngredientVisibility(
 			blacklist,
