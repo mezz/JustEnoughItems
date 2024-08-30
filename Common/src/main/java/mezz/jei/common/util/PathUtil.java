@@ -51,7 +51,7 @@ public class PathUtil {
 		}
 	}
 
-	private static Path moveAtomicReplace(Path source, Path target) throws IOException {
+	public static Path moveAtomicReplace(Path source, Path target) throws IOException {
 		if (atomicMoveSupported) {
 			try {
 				return Files.move(source, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
