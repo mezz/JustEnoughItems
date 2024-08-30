@@ -59,7 +59,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 	@Override
 	public void renderBatch(PoseStack poseStack, List<BatchRenderElement<ItemStack>> batchRenderElements) {
-		batchRenderer.renderBatch(poseStack, batchRenderElements);
+		batchRenderer.renderBatch(poseStack, this, batchRenderElements);
 	}
 
 	@SuppressWarnings("removal")

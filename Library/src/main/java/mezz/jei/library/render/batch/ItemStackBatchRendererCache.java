@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
+import mezz.jei.library.render.ItemStackRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.item.ItemStack;
@@ -23,12 +24,12 @@ public class ItemStackBatchRendererCache {
 				}
 			});
 
-	public void renderBatch(PoseStack poseStack, List<BatchRenderElement<ItemStack>> elements) {
+	public void renderBatch(PoseStack poseStack, ItemStackRenderer itemStackRenderer, List<BatchRenderElement<ItemStack>> elements) {
 		ItemStackBatchRenderer batchData = cache.getUnchecked(elements);
 
 		Minecraft minecraft = Minecraft.getInstance();
 		ItemRenderer itemRenderer = minecraft.getItemRenderer();
-		batchData.render(poseStack, minecraft, itemRenderer);
+		batchData.render(poseStack, minecraft, itemRenderer, itemStackRenderer);
 	}
 
 }
