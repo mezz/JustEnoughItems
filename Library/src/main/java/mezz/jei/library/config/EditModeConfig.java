@@ -90,7 +90,8 @@ public class EditModeConfig implements IEditModeConfig {
 		final String wildcardUid = getIngredientUid(ingredient, HideMode.WILDCARD, ingredientHelper);
 		if (singleUid.equals(wildcardUid)) {
 			if (blacklist.contains(singleUid)) {
-				return Set.of(HideMode.SINGLE);
+				// there's only one type of this ingredient, adding it as SINGLE is the same as adding it as WILDCARD.
+				return Set.of(HideMode.SINGLE, HideMode.WILDCARD);
 			}
 			return Set.of();
 		}

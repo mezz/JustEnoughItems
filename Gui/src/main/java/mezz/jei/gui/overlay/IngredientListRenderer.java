@@ -144,7 +144,26 @@ public class IngredientListRenderer {
 	private static <T> void renderEditMode(GuiGraphics guiGraphics, ImmutableRect2i area, int padding, ITypedIngredient<T> typedIngredient, IEditModeConfig config) {
 		Set<IEditModeConfig.HideMode> hideModes = config.getIngredientHiddenUsingConfigFile(typedIngredient);
 		if (!hideModes.isEmpty()) {
-			if (hideModes.contains(IEditModeConfig.HideMode.WILDCARD)) {
+			boolean wildcard = hideModes.contains(IEditModeConfig.HideMode.WILDCARD);
+			boolean single = hideModes.contains(IEditModeConfig.HideMode.SINGLE);
+			if (wildcard && single) {
+				guiGraphics.fill(
+					RenderType.guiOverlay(),
+					area.getX() + padding,
+					area.getY() + padding,
+					area.getX() + 16 + padding,
+					area.getY() + 8 + padding,
+					WILDCARD_BLACKLIST_COLOR
+				);
+				guiGraphics.fill(
+					RenderType.guiOverlay(),
+					area.getX() + padding,
+					area.getY() + 8 + padding,
+					area.getX() + 16 + padding,
+					area.getY() + 16 + padding,
+					BLACKLIST_COLOR
+				);
+			} else if (wildcard) {
 				guiGraphics.fill(
 					RenderType.guiOverlay(),
 					area.getX() + padding,
@@ -153,8 +172,7 @@ public class IngredientListRenderer {
 					area.getY() + 16 + padding,
 					WILDCARD_BLACKLIST_COLOR
 				);
-			}
-			if (hideModes.contains(IEditModeConfig.HideMode.SINGLE)) {
+			} else if (single) {
 				guiGraphics.fill(
 					RenderType.guiOverlay(),
 					area.getX() + padding,
