@@ -1,12 +1,7 @@
 package mezz.jei.gui.config;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonWriter;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import mezz.jei.api.helpers.ICodecHelper;
@@ -15,6 +10,7 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.codecs.EnumCodec;
+import mezz.jei.common.config.file.JsonArrayFileHelper;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.core.util.PathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
@@ -27,6 +23,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -92,27 +90,18 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 		return getPath(jeiConfigurationDir)
 			.map(path -> {
 				Codec<IBookmark> bookmarkCodec = getBookmarkCodec(codecHelper, ingredientManager, recipeManager).codec();
-				Codec<List<IBookmark>> listCodec = Codec.list(bookmarkCodec);
 				RegistryOps<JsonElement> registryOps = getRegistryOps(registryAccess);
-				DataResult<JsonElement> results = listCodec.encodeStart(registryOps, bookmarks);
-				results.ifError(error -> {
-					LOGGER.error("Encountered errors when saving the bookmarks config to file {}\n{}", path, error);
-				});
 
-				if (results.hasResultOrPartial()) {
-					try (JsonWriter jsonWriter = new JsonWriter(Files.newBufferedWriter(path))) {
-						Gson gson = new Gson();
-						JsonElement jsonElement = results.getPartialOrThrow();
-						gson.toJson(jsonElement, jsonWriter);
-						jsonWriter.flush();
-						LOGGER.debug("Saved bookmarks config to file: {}", path);
-						return true;
-					} catch (IOException e) {
-						LOGGER.error("Failed to save bookmarks config to file {}", path, e);
-						return false;
-					}
+				try (BufferedWriter out = Files.newBufferedWriter(path)) {
+					JsonArrayFileHelper.write(out, bookmarks, bookmarkCodec, registryOps, error -> {
+						LOGGER.error("Encountered an error when saving the bookmarks config to file {}\n{}", path, error);
+					});
+					LOGGER.debug("Saved bookmarks config to file: {}", path);
+					return true;
+				} catch (IOException e) {
+					LOGGER.error("Failed to save bookmarks config to file {}", path, e);
+					return false;
 				}
-				return false;
 			})
 			.orElse(false);
 	}
@@ -165,24 +154,19 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 					return List.of();
 				}
 
-				List<IBookmark> bookmarks = new ArrayList<>();
+				List<IBookmark> bookmarks;
 				Codec<IBookmark> bookmarkCodec = getBookmarkCodec(codecHelper, ingredientManager, recipeManager).codec();
-				Codec<List<IBookmark>> listCodec = Codec.list(bookmarkCodec);
 				RegistryOps<JsonElement> registryOps = getRegistryOps(registryAccess);
 
-				try {
-					JsonElement jsonElement = JsonParser.parseReader(Files.newBufferedReader(path));
-					DataResult<Pair<List<IBookmark>, JsonElement>> results = listCodec.decode(registryOps, jsonElement);
-					results.ifError(error -> {
-						LOGGER.error("Encountered errors when loading the bookmark config from file {}\n{}", path, error);
+				try (BufferedReader reader = Files.newBufferedReader(path)) {
+					bookmarks = JsonArrayFileHelper.read(reader, bookmarkCodec, registryOps, (element, error) -> {
+						LOGGER.error("Encountered error when loading the bookmark config from file {}\n{}\n{}", path, element, error);
 					});
-
-					if (results.hasResultOrPartial()) {
-						bookmarks = results.getPartialOrThrow().getFirst();
-					}
 				} catch (IOException | IllegalArgumentException e) {
 					LOGGER.error("Failed to load bookmarks from file {}", path, e);
+					bookmarks = new ArrayList<>();
 				}
+
 				return bookmarks;
 			})
 			.orElseGet(List::of);
