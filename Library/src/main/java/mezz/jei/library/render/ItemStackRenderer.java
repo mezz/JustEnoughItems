@@ -41,7 +41,7 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 
 	@Override
 	public void renderBatch(GuiGraphics guiGraphics, List<BatchRenderElement<ItemStack>> batchRenderElements) {
-		batchRenderer.renderBatch(guiGraphics, batchRenderElements);
+		batchRenderer.renderBatch(guiGraphics, this, batchRenderElements);
 	}
 
 	@SuppressWarnings("removal")
