@@ -88,7 +88,7 @@ public final class ItemStackBatchRenderer {
 		RenderSystem.disableBlend();
 		for (BatchRenderElement<ItemStack> element : customRender) {
 			ItemStack ingredient = element.ingredient();
-			itemStackRenderer.render(guiGraphics, ingredient);
+			itemStackRenderer.render(guiGraphics, ingredient, element.x(), element.y());
 			RenderSystem.disableBlend();
 		}
 		RenderSystem.disableBlend();
