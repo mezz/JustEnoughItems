@@ -44,8 +44,8 @@ public interface ICodecHelper {
 	<T> Codec<ITypedIngredient<T>> getTypedIngredientCodec(IIngredientType<T> ingredientType);
 
 	/**
-	 * Gets a codec that uses {@link RecipeHolder} ids and
-	 * looks them up with the vanilla RecipeManager.
+	 * Gets a codec that uses {@link RecipeHolder} ids and looks them up with the vanilla RecipeManager.
+	 * If the recipe is not stored in the RecipeManager, this will use the recipe codec from the RecipeManager.
 	 *
 	 * @return a codec for any {@link RecipeHolder}.
 	 *

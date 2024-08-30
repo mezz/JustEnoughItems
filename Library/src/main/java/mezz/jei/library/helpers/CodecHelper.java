@@ -1,5 +1,7 @@
 package mezz.jei.library.helpers;
 
+import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
@@ -15,11 +17,12 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.codecs.TupleCodec;
 import mezz.jei.common.codecs.TypedIngredientCodecs;
-import mezz.jei.core.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import org.jetbrains.annotations.Nullable;
@@ -27,21 +30,46 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class CodecHelper implements ICodecHelper {
 	private static final Codec<RecipeHolder<?>> RECIPE_HOLDER_CODEC = Codec.lazyInitialized(() -> {
-		return ResourceLocation.CODEC.flatXmap(
-			resourceLocation -> {
-				Minecraft minecraft = Minecraft.getInstance();
-				ClientLevel level = minecraft.level;
-				assert level != null;
-				RecipeManager recipeManager = level.getRecipeManager();
-				return recipeManager.byKey(resourceLocation)
-					.map(DataResult::success)
-					.orElseGet(() -> DataResult.error(() -> "Could not find recipe for key: " + resourceLocation));
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientLevel level = minecraft.level;
+		assert level != null;
+		RecipeManager recipeManager = level.getRecipeManager();
+
+		return Codec.either(
+			ResourceLocation.CODEC,
+			TupleCodec.of(
+				ResourceLocation.CODEC,
+				Recipe.CODEC
+			)
+		)
+		.flatXmap(
+			either -> {
+				return either.map(
+					recipeHolderId -> {
+						return recipeManager.byKey(recipeHolderId)
+							.map(DataResult::success)
+							.orElseGet(() -> DataResult.error(() -> "Could not find recipe for key: " + recipeHolderId));
+					},
+					pair -> {
+						ResourceLocation recipeHolderId = pair.getFirst();
+						Recipe<?> recipe = pair.getSecond();
+						RecipeHolder<?> recipeHolder = new RecipeHolder<>(recipeHolderId, recipe);
+						return DataResult.success(recipeHolder);
+					}
+				);
 			},
 			recipeHolder -> {
-				return DataResult.success(recipeHolder.id());
+				ResourceLocation recipeHolderId = recipeHolder.id();
+				Optional<RecipeHolder<?>> found = recipeManager.byKey(recipeHolderId);
+				if (found.isPresent() && found.get().equals(recipeHolder)) {
+					return DataResult.success(Either.left(recipeHolderId));
+				}
+				Recipe<?> recipe = recipeHolder.value();
+				return DataResult.success(Either.right(Pair.of(recipeHolderId, recipe)));
 			}
 		);
 	});
@@ -91,18 +119,25 @@ public class CodecHelper implements ICodecHelper {
 	}
 
 	private <T> Codec<T> createDefaultRecipeCategoryCodec(IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
-		return RecordCodecBuilder.<Pair<ResourceLocation, ITypedIngredient<?>>>create((builder) -> {
+		Codec<Pair<ResourceLocation, ITypedIngredient<?>>> legacyPairCodec = RecordCodecBuilder.create((builder) -> {
 			return builder.group(
 				ResourceLocation.CODEC.fieldOf("resourceLocation")
-					.forGetter(Pair::first),
+					.forGetter(Pair::getFirst),
 				getTypedIngredientCodec().codec().fieldOf("output")
-					.forGetter(Pair::second)
+					.forGetter(Pair::getSecond)
 			).apply(builder, Pair::new);
-		})
+		});
+
+		Codec<Pair<ResourceLocation, ITypedIngredient<?>>> tupleCodec = TupleCodec.of(
+			ResourceLocation.CODEC,
+			getTypedIngredientCodec().codec()
+		);
+
+		return Codec.withAlternative(tupleCodec, legacyPairCodec)
 		.flatXmap(
 			pair -> {
-				ResourceLocation registryName = pair.first();
-				ITypedIngredient<?> output = pair.second();
+				ResourceLocation registryName = pair.getFirst();
+				ITypedIngredient<?> output = pair.getSecond();
 				IFocus<?> focus = focusFactory.createFocus(RecipeIngredientRole.OUTPUT, output);
 
 				RecipeType<T> recipeType = recipeCategory.getRecipeType();

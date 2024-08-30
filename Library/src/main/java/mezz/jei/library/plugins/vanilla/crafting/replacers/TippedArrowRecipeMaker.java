@@ -5,7 +5,7 @@ import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.RegistryUtil;
-import net.minecraft.core.NonNullList;
+import mezz.jei.library.plugins.vanilla.crafting.FakeShapedRecipeBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -17,11 +17,8 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraft.world.item.crafting.ShapedRecipePattern;
 
 import java.util.List;
-import java.util.Optional;
 
 public final class TippedArrowRecipeMaker {
 
@@ -39,14 +36,15 @@ public final class TippedArrowRecipeMaker {
 				output.setCount(8);
 
 				Ingredient potionIngredient = ingredientHelper.createNbtIngredient(input, stackHelper);
-				NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY,
-					arrowIngredient, arrowIngredient, arrowIngredient,
-					arrowIngredient, potionIngredient, arrowIngredient,
-					arrowIngredient, arrowIngredient, arrowIngredient
-				);
 				ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + output.getDescriptionId());
-				ShapedRecipePattern pattern = new ShapedRecipePattern(3, 3, inputs, Optional.empty());
-				CraftingRecipe recipe = new ShapedRecipe(group, CraftingBookCategory.MISC, pattern, output);
+				CraftingRecipe recipe = new FakeShapedRecipeBuilder(CraftingBookCategory.MISC, output)
+					.group(group)
+					.define('a', arrowIngredient)
+					.define('p', potionIngredient)
+					.pattern("aaa")
+					.pattern("apa")
+					.pattern("aaa")
+					.build();
 				return new RecipeHolder<>(id, recipe);
 			})
 			.toList();
