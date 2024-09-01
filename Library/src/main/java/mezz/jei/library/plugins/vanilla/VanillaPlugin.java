@@ -8,7 +8,6 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -238,13 +237,12 @@ public class VanillaPlugin implements IModPlugin {
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 		VanillaRecipes vanillaRecipes = new VanillaRecipes(ingredientManager);
 
 		Map<Boolean, List<CraftingRecipe>> craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
 		List<CraftingRecipe> handledCraftingRecipes = craftingRecipes.get(true);
 		List<CraftingRecipe> unhandledCraftingRecipes = craftingRecipes.get(false);
-		List<CraftingRecipe> specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, stackHelper);
+		List<CraftingRecipe> specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, jeiHelpers);
 
 		registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);
 		registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);
@@ -343,7 +341,7 @@ public class VanillaPlugin implements IModPlugin {
 	 * If a special recipe we know how to replace is not present (because it has been removed),
 	 * we do not replace it.
 	 */
-	private static List<CraftingRecipe> replaceSpecialCraftingRecipes(List<CraftingRecipe> unhandledCraftingRecipes, IStackHelper stackHelper) {
+	private static List<CraftingRecipe> replaceSpecialCraftingRecipes(List<CraftingRecipe> unhandledCraftingRecipes, IJeiHelpers jeiHelpers) {
 		List<CraftingRecipe> recipes = new ArrayList<>();
 		boolean tippedArrowRecipesAdded = false;
 		boolean shulkerBoxColoringRecipesAdded = false;
@@ -352,7 +350,7 @@ public class VanillaPlugin implements IModPlugin {
 		for (CraftingRecipe recipe : unhandledCraftingRecipes) {
 			if (recipe instanceof TippedArrowRecipe && !tippedArrowRecipesAdded) {
 				try {
-					recipes.addAll(TippedArrowRecipeMaker.createRecipes(stackHelper));
+					recipes.addAll(TippedArrowRecipeMaker.createRecipes(jeiHelpers));
 					tippedArrowRecipesAdded = true;
 				} catch (RuntimeException e) {
 					LOGGER.error("Failed to create JEI recipes for {}", recipe.getClass(), e);

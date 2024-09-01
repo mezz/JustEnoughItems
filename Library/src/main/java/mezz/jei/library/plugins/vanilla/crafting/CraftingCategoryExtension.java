@@ -10,7 +10,6 @@ import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,12 +46,18 @@ public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICra
 
 	@Override
 	public int getWidth() {
+		if (recipe instanceof JeiShapedRecipe shapedRecipe) {
+			return shapedRecipe.getWidth();
+		}
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		return recipeHelper.getWidth(recipe);
 	}
 
 	@Override
 	public int getHeight() {
+		if (recipe instanceof JeiShapedRecipe shapedRecipe) {
+			return shapedRecipe.getHeight();
+		}
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		return recipeHelper.getHeight(recipe);
 	}

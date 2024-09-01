@@ -2,9 +2,11 @@ package mezz.jei.api.recipe.vanilla;
 
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +14,7 @@ import java.util.List;
 
 /**
  * The {@link IVanillaRecipeFactory} allows creation of vanilla recipes.
- * Get the instance from {@link IJeiHelpers#getStackHelper()} or {@link IRecipeRegistration#getVanillaRecipeFactory()}.
+ * Get the instance from {@link IJeiHelpers#getVanillaRecipeFactory()} or {@link IRecipeRegistration#getVanillaRecipeFactory()}.
  * <p>
  * Use {@link IRecipeRegistration#addRecipes(RecipeType, List)} to add the recipe.
  */
@@ -85,6 +87,14 @@ public interface IVanillaRecipeFactory {
 	 * @since 15.5.0
 	 */
 	IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, List<ItemStack> potionInputs, ItemStack potionOutput, ResourceLocation uid);
+
+	/**
+	 * Builds a serializable ShapedRecipe that isn't registered with the vanilla game.
+	 * Useful for generating crafting recipes from {@link IRecipeManagerPlugin}.
+	 *
+	 * @since 15.41.0
+	 */
+	IJeiShapedRecipeBuilder createShapedRecipeBuilder(CraftingBookCategory category, List<ItemStack> results);
 
 	/**
 	 * Create an anvil recipe for the given inputs and output.
