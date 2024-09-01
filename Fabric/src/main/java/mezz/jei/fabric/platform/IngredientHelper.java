@@ -1,7 +1,7 @@
 package mezz.jei.fabric.platform;
 
-import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
+import mezz.jei.api.helpers.IStackHelper;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;

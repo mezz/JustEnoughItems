@@ -1,6 +1,8 @@
 package mezz.jei.forge;
 
+import com.google.gson.JsonObject;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.IngredientTooltipComponent;
 import mezz.jei.gui.config.InternalKeyMappings;
@@ -20,19 +22,29 @@ import mezz.jei.forge.startup.StartEventObserver;
 import mezz.jei.gui.overlay.bookmarks.IngredientsTooltipComponent;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
 import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
+import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
+import mezz.jei.library.recipes.RecipeSerializers;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class JustEnoughItemsClient {
 	private final NetworkHandler networkHandler;
@@ -55,6 +67,39 @@ public class JustEnoughItemsClient {
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RecipesUpdatedEvent.class, this::onRecipesUpdatedEvent);
 		Runtime.getRuntime().addShutdownHook(new Thread(this::onGameShuttingDown, "JEI Client Shutdown"));
+
+		IEventBus modEventBus = subscriptions.getModEventBus();
+		DeferredRegister<RecipeSerializer<?>> deferredRegister = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, ModIds.JEI_ID);
+		deferredRegister.register(modEventBus);
+
+		Supplier<RecipeSerializer<?>> jeiShaped = deferredRegister.register(
+			"jei_shaped",
+			() -> new ForgeRecipeSerializer<>(new JeiShapedRecipe.Serializer())
+		);
+		RecipeSerializers.register(jeiShaped);
+	}
+
+	private static class ForgeRecipeSerializer<T extends Recipe<?>> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
+		private final RecipeSerializer<T> delegate;
+
+		private ForgeRecipeSerializer(RecipeSerializer<T> delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public T fromJson(ResourceLocation recipeId, JsonObject json) {
+			return delegate.fromJson(recipeId, json);
+		}
+
+		@Override
+		public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+			return delegate.fromNetwork(recipeId, buffer);
+		}
+
+		@Override
+		public void toNetwork(FriendlyByteBuf buffer, T recipe) {
+			delegate.toNetwork(buffer, recipe);
+		}
 	}
 
 	private void onGameShuttingDown() {

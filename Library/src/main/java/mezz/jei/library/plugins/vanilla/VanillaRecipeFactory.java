@@ -3,12 +3,14 @@ package mezz.jei.library.plugins.vanilla;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
+import mezz.jei.api.recipe.vanilla.IJeiShapedRecipeBuilder;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipe;
 import mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeUtil;
 import mezz.jei.library.plugins.vanilla.brewing.JeiBrewingRecipe;
 import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipe;
+import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -107,5 +109,12 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotEmpty(potionOutput, "potionOutput");
 
 		return new JeiBrewingRecipe(ingredients, potionInputs, potionOutput, null, brewingRecipeUtil);
+	}
+
+	@Override
+	public IJeiShapedRecipeBuilder createShapedRecipeBuilder(List<ItemStack> results) {
+		ErrorUtil.checkNotEmpty(results, "results");
+
+		return new JeiShapedRecipeBuilder(List.copyOf(results));
 	}
 }
