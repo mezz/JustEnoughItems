@@ -57,6 +57,9 @@ public class CodecHelper implements ICodecHelper {
 					pair -> {
 						ResourceLocation recipeHolderId = pair.getFirst();
 						Recipe<?> recipe = pair.getSecond();
+						if (recipe == null) {
+							return DataResult.error(() -> "Could not find recipe for key: " + recipeHolderId);
+						}
 						RecipeHolder<?> recipeHolder = new RecipeHolder<>(recipeHolderId, recipe);
 						return DataResult.success(recipeHolder);
 					}

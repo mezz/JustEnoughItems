@@ -1,5 +1,8 @@
 package mezz.jei.common.config.file;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 
@@ -7,6 +10,7 @@ import java.io.IOException;
  * Writes lines to a json array in a file, with newlines for each element.
  */
 public class JsonArrayWriter {
+	private final Gson gson = new Gson();
 	private final BufferedWriter out;
 	private boolean firstLine = true;
 
@@ -20,14 +24,14 @@ public class JsonArrayWriter {
 		this.out = out;
 	}
 
-	public void add(String line) throws IOException {
+	public void add(JsonElement line) throws IOException {
 		if (firstLine) {
 			out.write("  ");
 			firstLine = false;
 		} else {
 			out.write(",\n  ");
 		}
-		out.write(line);
+		gson.toJson(line, out);
 	}
 
 	public void end() throws IOException {

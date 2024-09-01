@@ -1,6 +1,8 @@
 package mezz.jei.library.config;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
@@ -35,6 +37,7 @@ import java.util.Set;
 
 public class EditModeConfig implements IEditModeConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int VERSION = 2;
 
 	private final Map<Object, Pair<HideMode, ITypedIngredient<?>>> blacklist = new LinkedHashMap<>();
 	private final ISerializer serializer;
@@ -194,7 +197,7 @@ public class EditModeConfig implements IEditModeConfig {
 						.forGetter(Pair::getSecond)
 				).apply(builder, Pair::new);
 			});
-			this.registryOps = registryAccess.createSerializationContext(JsonOps.COMPRESSED);
+			this.registryOps = registryAccess.createSerializationContext(JsonOps.INSTANCE);
 		}
 
 		@Override
@@ -207,9 +210,19 @@ public class EditModeConfig implements IEditModeConfig {
 		@Override
 		public void save(EditModeConfig config) {
 			try (BufferedWriter out = Files.newBufferedWriter(path)) {
-				JsonArrayFileHelper.write(out, config.blacklist.values(), codec, registryOps, error -> {
-					LOGGER.error("Encountered error when saving the blacklist config to file {}\n{}", path, error);
-				});
+				JsonArrayFileHelper.write(
+					out,
+					VERSION,
+					config.blacklist.values(),
+					codec,
+					registryOps,
+					error -> {
+						LOGGER.error("Encountered an error when saving the blacklist config to file {}\n{}", path, error);
+					},
+					(element, exception) -> {
+						LOGGER.error("Encountered an exception when saving the blacklist config to file {}\n{}", path, element, exception);
+					}
+				);
 				LOGGER.debug("Saved blacklist config to file: {}", path);
 			} catch (IOException e) {
 				LOGGER.error("Failed to save blacklist config to file {}", path, e);
@@ -223,10 +236,19 @@ public class EditModeConfig implements IEditModeConfig {
 			}
 			List<Pair<HideMode, ITypedIngredient<?>>> results;
 			try (BufferedReader reader = Files.newBufferedReader(path)) {
-				results = JsonArrayFileHelper.read(reader, codec, registryOps, (element, error) -> {
-					LOGGER.error("Encountered errors when loading the blacklist config from file {}\n{}\n{}", path, element, error);
-				});
-			} catch (IOException | IllegalArgumentException e) {
+				results = JsonArrayFileHelper.read(
+					reader,
+					VERSION,
+					codec,
+					registryOps,
+					(element, error) -> {
+						LOGGER.error("Encountered an error when loading the blacklist config from file {}\n{}\n{}", path, element, error);
+					},
+					(element, exception) -> {
+						LOGGER.error("Encountered an exception when loading the blacklist config from file {}\n{}", path, element, exception);
+					}
+				);
+			} catch (JsonIOException | JsonSyntaxException | IOException | IllegalArgumentException e) {
 				LOGGER.error("Failed to load blacklist from file {}", path, e);
 				results = List.of();
 			}
