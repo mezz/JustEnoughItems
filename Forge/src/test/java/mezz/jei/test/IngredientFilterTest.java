@@ -93,7 +93,8 @@ public class IngredientFilterTest {
 			baseList,
 			modIdHelper,
 			ingredientVisibility,
-			colorHelper
+			colorHelper,
+			toggleState
 		);
 
 		this.ingredientManager.registerIngredientListener(blacklist);
