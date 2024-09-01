@@ -6,7 +6,7 @@
   "jei.tooltip.delete.item": "クリックで削除",
   "jei.tooltip.liquid.amount.with.capacity": "%s／%s mB",
   "jei.tooltip.liquid.amount": "%s mB",
-  "jei.tooltip.liquid.flowing": "%s（流）",
+  "jei.tooltip.liquid.flowing": "%s流",
   "jei.tooltip.transfer": "アイテムを配置",
   "jei.tooltip.recipe.tag": "以下のすべてで：%s",
   "jei.tooltip.item.colors": "色：%s",
