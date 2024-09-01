@@ -2,31 +2,30 @@ package mezz.jei.library.plugins.vanilla.crafting;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import mezz.jei.api.recipe.vanilla.IJeiShapedRecipeBuilder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-public class FakeShapedRecipeBuilder {
+public class JeiShapedRecipeBuilder implements IJeiShapedRecipeBuilder {
 	private final CraftingBookCategory category;
-	private final ItemStack result;
+	private final List<ItemStack> results;
 	private final List<String> rows = Lists.newArrayList();
 	private final Map<Character, Ingredient> key = Maps.newLinkedHashMap();
-	@Nullable
-	private String group;
+	private String group = "";
 
-	public FakeShapedRecipeBuilder(CraftingBookCategory category, ItemStack result) {
+	public JeiShapedRecipeBuilder(CraftingBookCategory category, List<ItemStack> results) {
 		this.category = category;
-		this.result = result.copy();
+		this.results = results;
 	}
 
-	public FakeShapedRecipeBuilder define(Character $$0, Ingredient $$1) {
+	@Override
+	public JeiShapedRecipeBuilder define(Character $$0, Ingredient $$1) {
 		if (this.key.containsKey($$0)) {
 			throw new IllegalArgumentException("Symbol '" + $$0 + "' is already defined!");
 		} else if ($$0 == ' ') {
@@ -37,7 +36,8 @@ public class FakeShapedRecipeBuilder {
 		}
 	}
 
-	public FakeShapedRecipeBuilder pattern(String $$0) {
+	@Override
+	public JeiShapedRecipeBuilder pattern(String $$0) {
 		if (!this.rows.isEmpty() && $$0.length() != this.rows.getFirst().length()) {
 			throw new IllegalArgumentException("Pattern must be the same width on every line!");
 		} else {
@@ -46,19 +46,20 @@ public class FakeShapedRecipeBuilder {
 		}
 	}
 
-	public FakeShapedRecipeBuilder group(@Nullable String $$0) {
+	@Override
+	public JeiShapedRecipeBuilder group(String $$0) {
 		this.group = $$0;
 		return this;
 	}
 
-	public ShapedRecipe build() {
+	@Override
+	public CraftingRecipe build() {
 		ShapedRecipePattern pattern = ShapedRecipePattern.of(this.key, this.rows);
-		return new ShapedRecipe(
-			Objects.requireNonNullElse(this.group, ""),
+		return new JeiShapedRecipe(
+			group,
 			category,
 			pattern,
-			result,
-			false
+			results
 		);
 	}
 }

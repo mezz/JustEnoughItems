@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.resources.ResourceLocation;
 
@@ -94,4 +95,11 @@ public interface IJeiHelpers {
 	 * @since 19.9.0
 	 */
 	ICodecHelper getCodecHelper();
+
+	/**
+	 * The {@link IVanillaRecipeFactory} allows creation of vanilla recipes.
+	 *
+	 * @since 19.15.0
+	 */
+	IVanillaRecipeFactory getVanillaRecipeFactory();
 }

@@ -99,11 +99,13 @@ public class PluginLoader {
 			modAliases = ImmutableSetMultimap.of();
 		}
 
+		VanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory(ingredientManager);
+
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(ingredientManager);
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
 		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager, modAliases);
-		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager);
+		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager, vanillaRecipeFactory);
 	}
 
 	@Unmodifiable
@@ -163,8 +165,7 @@ public class PluginLoader {
 		);
 		timer.stop();
 
-		VanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory(ingredientManager);
-		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, ingredientVisibility, vanillaRecipeFactory, recipeManagerInternal);
+		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, ingredientVisibility, recipeManagerInternal);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
 		recipeManagerInternal.compact();

@@ -9,7 +9,6 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -253,13 +252,12 @@ public class VanillaPlugin implements IModPlugin {
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 		VanillaRecipes vanillaRecipes = new VanillaRecipes(ingredientManager);
 
 		var craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
 		var handledCraftingRecipes = craftingRecipes.get(true);
 		var unhandledCraftingRecipes = craftingRecipes.get(false);
-		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, stackHelper);
+		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, jeiHelpers);
 
 		registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);
 		registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);
@@ -354,9 +352,9 @@ public class VanillaPlugin implements IModPlugin {
 	 * If a special recipe we know how to replace is not present (because it has been removed),
 	 * we do not replace it.
 	 */
-	private static List<RecipeHolder<CraftingRecipe>> replaceSpecialCraftingRecipes(List<RecipeHolder<CraftingRecipe>> unhandledCraftingRecipes, IStackHelper stackHelper) {
+	private static List<RecipeHolder<CraftingRecipe>> replaceSpecialCraftingRecipes(List<RecipeHolder<CraftingRecipe>> unhandledCraftingRecipes, IJeiHelpers jeiHelpers) {
 		Map<Class<? extends CraftingRecipe>, Supplier<List<RecipeHolder<CraftingRecipe>>>> replacers = new IdentityHashMap<>();
-		replacers.put(TippedArrowRecipe.class, () -> TippedArrowRecipeMaker.createRecipes(stackHelper));
+		replacers.put(TippedArrowRecipe.class, () -> TippedArrowRecipeMaker.createRecipes(jeiHelpers));
 		replacers.put(ShulkerBoxColoring.class, ShulkerBoxColoringRecipeMaker::createRecipes);
 		replacers.put(SuspiciousStewRecipe.class, SuspiciousStewRecipeMaker::createRecipes);
 		replacers.put(ShieldDecorationRecipe.class, ShieldDecorationRecipeMaker::createRecipes);

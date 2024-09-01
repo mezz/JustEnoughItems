@@ -26,4 +26,8 @@ public class PermanentEventSubscriptions {
 			eventBus.addListener(EventPriority.NORMAL, false, eventType, listener);
 		}
 	}
+
+	public IEventBus getModEventBus() {
+		return modEventBus;
+	}
 }

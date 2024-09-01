@@ -45,6 +45,9 @@ public class CraftingCategoryExtension implements ICraftingCategoryExtension<Cra
 		if (recipe instanceof ShapedRecipe shapedRecipe) {
 			return shapedRecipe.getWidth();
 		}
+		if (recipe instanceof JeiShapedRecipe shapedRecipe) {
+			return shapedRecipe.getWidth();
+		}
 		return 0;
 	}
 
@@ -52,6 +55,9 @@ public class CraftingCategoryExtension implements ICraftingCategoryExtension<Cra
 	public int getHeight(RecipeHolder<CraftingRecipe> recipeHolder) {
 		CraftingRecipe recipe = recipeHolder.value();
 		if (recipe instanceof ShapedRecipe shapedRecipe) {
+			return shapedRecipe.getHeight();
+		}
+		if (recipe instanceof JeiShapedRecipe shapedRecipe) {
 			return shapedRecipe.getHeight();
 		}
 		return 0;

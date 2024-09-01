@@ -1,9 +1,7 @@
 package mezz.jei.forge.platform;
 
-import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.util.RegistryUtil;
-import mezz.jei.forge.ingredients.JeiIngredient;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -41,11 +39,6 @@ public class IngredientHelper implements IPlatformIngredientHelper {
 		// we need to specify both in case someone removes the dye item from the dye tag
 		// as the item will still be valid for this recipe.
 		return Ingredient.fromValues(colorIngredientStream);
-	}
-
-	@Override
-	public Ingredient createNbtIngredient(ItemStack stack, IStackHelper stackHelper) {
-		return new JeiIngredient(stack, stackHelper);
 	}
 
 	@Override

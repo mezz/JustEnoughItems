@@ -10,6 +10,7 @@ import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.gui.helpers.GuiHelper;
@@ -29,6 +30,7 @@ public class JeiHelpers implements IJeiHelpers {
 	private final IFocusFactory focusFactory;
 	private final IColorHelper colorHelper;
 	private final IIngredientManager ingredientManager;
+	private final IVanillaRecipeFactory vanillaRecipeFactory;
 	private final IPlatformFluidHelper<?> platformFluidHelper;
 	private final ICodecHelper codecHelper;
 	private @Nullable Collection<IRecipeCategory<?>> recipeCategories;
@@ -39,7 +41,8 @@ public class JeiHelpers implements IJeiHelpers {
 		IModIdHelper modIdHelper,
 		IFocusFactory focusFactory,
 		IColorHelper colorHelper,
-		IIngredientManager ingredientManager
+		IIngredientManager ingredientManager,
+		IVanillaRecipeFactory vanillaRecipeFactory
 	) {
 		this.guiHelper = guiHelper;
 		this.stackHelper = stackHelper;
@@ -47,6 +50,7 @@ public class JeiHelpers implements IJeiHelpers {
 		this.focusFactory = focusFactory;
 		this.colorHelper = colorHelper;
 		this.ingredientManager = ingredientManager;
+		this.vanillaRecipeFactory = vanillaRecipeFactory;
 		this.platformFluidHelper = Services.PLATFORM.getFluidHelper();
 		this.codecHelper = new CodecHelper(ingredientManager, focusFactory);
 	}
@@ -128,5 +132,10 @@ public class JeiHelpers implements IJeiHelpers {
 	@Override
 	public ICodecHelper getCodecHelper() {
 		return codecHelper;
+	}
+
+	@Override
+	public IVanillaRecipeFactory getVanillaRecipeFactory() {
+		return vanillaRecipeFactory;
 	}
 }
