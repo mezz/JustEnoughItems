@@ -15,6 +15,8 @@ import mezz.jei.api.registration.IAdvancedRegistration;
  * Implementing your own Recipe Registry Plugin offers total control of lookups, but it must be fast.
  *
  * Add your plugin with {@link IAdvancedRegistration#addRecipeManagerPlugin(IRecipeManagerPlugin)}
+ *
+ * Get help with the implementation using {@link IRecipeManagerPluginHelper}.
  */
 public interface IRecipeManagerPlugin {
 	/**

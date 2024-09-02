@@ -9,7 +9,6 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.library.recipes.collect.RecipeTypeData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +21,10 @@ import java.util.stream.Stream;
 public class PluginManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private @Unmodifiable List<IRecipeManagerPlugin> plugins = new ArrayList<>();
+	private List<IRecipeManagerPlugin> plugins = new ArrayList<>();
 
-	public PluginManager(IRecipeManagerPlugin internalRecipeManagerPlugin, List<IRecipeManagerPlugin> plugins) {
+	public PluginManager(IRecipeManagerPlugin internalRecipeManagerPlugin) {
 		this.plugins.add(internalRecipeManagerPlugin);
-		this.plugins.addAll(plugins);
 	}
 
 	public <T> Stream<T> getRecipes(RecipeTypeData<T> recipeTypeData, IFocusGroup focusGroup, boolean includeHidden) {
@@ -106,5 +104,9 @@ public class PluginManager {
 			this.plugins.remove(plugin);
 			return defaultValue;
 		}
+	}
+
+	public void addAll(List<IRecipeManagerPlugin> plugins) {
+		this.plugins.addAll(plugins);
 	}
 }

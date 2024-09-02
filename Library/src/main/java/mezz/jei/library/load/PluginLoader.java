@@ -38,6 +38,7 @@ import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import mezz.jei.library.load.registration.ModInfoRegistration;
 import mezz.jei.library.load.registration.RecipeCatalystRegistration;
 import mezz.jei.library.load.registration.RecipeCategoryRegistration;
+import mezz.jei.library.load.registration.RecipeManagerPluginHelper;
 import mezz.jei.library.load.registration.RecipeRegistration;
 import mezz.jei.library.load.registration.RecipeTransferRegistration;
 import mezz.jei.library.load.registration.SubtypeRegistration;
@@ -147,23 +148,25 @@ public class PluginLoader {
 		PluginCaller.callOnPlugins("Registering recipe catalysts", plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration));
 		ImmutableListMultimap<RecipeType<?>, ITypedIngredient<?>> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
 
-		IJeiFeatures jeiFeatures = Internal.getJeiFeatures();
-		AdvancedRegistration advancedRegistration = new AdvancedRegistration(jeiHelpers, jeiFeatures);
-		PluginCaller.callOnPlugins("Registering advanced plugins", plugins, p -> p.registerAdvanced(advancedRegistration));
-		List<IRecipeManagerPlugin> recipeManagerPlugins = advancedRegistration.getRecipeManagerPlugins();
-		ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryExtensions = advancedRegistration.getRecipeCategoryDecorators();
-
 		timer.start("Building recipe registry");
 		RecipeManagerInternal recipeManagerInternal = new RecipeManagerInternal(
 			recipeCategories,
 			recipeCatalysts,
-			recipeCategoryExtensions,
 			ingredientManager,
-			recipeManagerPlugins,
 			recipeCategorySortingConfig,
 			ingredientVisibility
 		);
 		timer.stop();
+
+		IJeiFeatures jeiFeatures = Internal.getJeiFeatures();
+		RecipeManagerPluginHelper recipeManagerPluginHelper = new RecipeManagerPluginHelper(recipeManagerInternal);
+		AdvancedRegistration advancedRegistration = new AdvancedRegistration(jeiHelpers, jeiFeatures, recipeManagerPluginHelper);
+		PluginCaller.callOnPlugins("Registering advanced plugins", plugins, p -> p.registerAdvanced(advancedRegistration));
+
+		List<IRecipeManagerPlugin> recipeManagerPlugins = advancedRegistration.getRecipeManagerPlugins();
+		ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators = advancedRegistration.getRecipeCategoryDecorators();
+		recipeManagerInternal.addPlugins(recipeManagerPlugins);
+		recipeManagerInternal.addDecorators(recipeCategoryDecorators);
 
 		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, ingredientVisibility, recipeManagerInternal);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
