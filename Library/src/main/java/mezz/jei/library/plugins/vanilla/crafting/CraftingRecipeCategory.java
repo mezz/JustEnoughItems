@@ -18,6 +18,7 @@ import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.library.deprecated.ingredients.Ingredients;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import mezz.jei.library.recipes.ExtendableRecipeCategoryHelper;
@@ -148,5 +149,16 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<CraftingRecip
 		return this.extendableHelper.getOptionalRecipeExtension(recipe)
 			.flatMap(extension -> Optional.ofNullable(extension.getRegistryName()))
 			.orElseGet(recipe::getId);
+	}
+
+	public ImmutableSize2i getRecipeSize(CraftingRecipe recipe) {
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		return this.extendableHelper.getOptionalRecipeExtension(recipe)
+			.map(extension -> {
+				int width = extension.getWidth();
+				int height = extension.getHeight();
+				return new ImmutableSize2i(width, height);
+			})
+			.orElse(ImmutableSize2i.EMPTY);
 	}
 }

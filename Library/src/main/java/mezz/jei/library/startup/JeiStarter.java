@@ -178,6 +178,7 @@ public final class JeiStarter {
 		);
 		IRecipeTransferManager recipeTransferManager = PluginLoader.createRecipeTransferManager(
 			plugins,
+			vanillaPlugin,
 			jeiHelpers,
 			data.serverConnection()
 		);
