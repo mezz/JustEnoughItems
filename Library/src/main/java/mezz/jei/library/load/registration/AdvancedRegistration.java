@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
+import mezz.jei.api.recipe.advanced.IRecipeManagerPluginHelper;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.runtime.IJeiFeatures;
@@ -23,10 +24,12 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	private final ListMultiMap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators = new ListMultiMap<>();
 	private final IJeiHelpers jeiHelpers;
 	private final IJeiFeatures jeiFeatures;
+	private final IRecipeManagerPluginHelper pluginHelper;
 
-	public AdvancedRegistration(IJeiHelpers jeiHelpers, IJeiFeatures jeiFeatures) {
+	public AdvancedRegistration(IJeiHelpers jeiHelpers, IJeiFeatures jeiFeatures, IRecipeManagerPluginHelper pluginHelper) {
 		this.jeiHelpers = jeiHelpers;
 		this.jeiFeatures = jeiFeatures;
+		this.pluginHelper = pluginHelper;
 	}
 
 	@Override
@@ -54,6 +57,11 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	@Override
 	public IJeiFeatures getJeiFeatures() {
 		return jeiFeatures;
+	}
+
+	@Override
+	public IRecipeManagerPluginHelper getRecipeManagerPluginHelper() {
+		return pluginHelper;
 	}
 
 	@Unmodifiable
