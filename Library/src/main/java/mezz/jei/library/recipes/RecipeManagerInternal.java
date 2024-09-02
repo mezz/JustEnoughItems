@@ -3,6 +3,7 @@ package mezz.jei.library.recipes;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
@@ -40,7 +41,6 @@ public class RecipeManagerInternal {
 
 	@Unmodifiable
 	private final List<IRecipeCategory<?>> recipeCategories;
-	private final ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 	private final IIngredientManager ingredientManager;
 	private final RecipeTypeDataMap recipeTypeDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
@@ -48,6 +48,7 @@ public class RecipeManagerInternal {
 	private final PluginManager pluginManager;
 	private final Set<RecipeType<?>> hiddenRecipeTypes = new HashSet<>();
 	private final IIngredientVisibility ingredientVisibility;
+	private ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 
 	@Nullable
 	@Unmodifiable
@@ -56,15 +57,13 @@ public class RecipeManagerInternal {
 	public RecipeManagerInternal(
 		List<IRecipeCategory<?>> recipeCategories,
 		ImmutableListMultimap<RecipeType<?>, ITypedIngredient<?>> recipeCatalysts,
-		ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
 		IIngredientManager ingredientManager,
-		List<IRecipeManagerPlugin> plugins,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		IIngredientVisibility ingredientVisibility
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
-		this.recipeCategoryDecorators = recipeCategoryDecorators;
+		this.recipeCategoryDecorators = ImmutableListMultimap.of();
 		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
 
@@ -100,7 +99,15 @@ public class RecipeManagerInternal {
 			recipeTypeDataMap,
 			recipeMaps
 		);
-		this.pluginManager = new PluginManager(internalRecipeManagerPlugin, plugins);
+		this.pluginManager = new PluginManager(internalRecipeManagerPlugin);
+	}
+
+	public void addPlugins(List<IRecipeManagerPlugin> plugins) {
+		this.pluginManager.addAll(plugins);
+	}
+
+	public void addDecorators(ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> decorators) {
+		this.recipeCategoryDecorators = decorators;
 	}
 
 	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
@@ -287,5 +294,10 @@ public class RecipeManagerInternal {
 
 	public void compact() {
 		recipeMaps.values().forEach(RecipeMap::compact);
+	}
+
+	public boolean isRecipeCatalyst(RecipeType<?> recipeType, IFocus<?> focus) {
+		RecipeMap recipeMap = recipeMaps.get(focus.getRole());
+		return recipeMap.isCatalystForRecipeCategory(recipeType, focus.getTypedValue());
 	}
 }
