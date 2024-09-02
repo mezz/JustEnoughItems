@@ -148,11 +148,14 @@ public final class PluginLoader {
 
 	public static IRecipeTransferManager createRecipeTransferManager(
 		List<IModPlugin> plugins,
+		VanillaPlugin vanillaPlugin,
 		JeiHelpers jeiHelpers,
 		IConnectionToServer connectionToServer
 	) {
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
-		IRecipeTransferHandlerHelper handlerHelper = new RecipeTransferHandlerHelper(stackHelper);
+		CraftingRecipeCategory craftingCategory = vanillaPlugin.getCraftingCategory()
+			.orElseThrow(() -> new NullPointerException("vanilla crafting category"));
+		IRecipeTransferHandlerHelper handlerHelper = new RecipeTransferHandlerHelper(stackHelper, craftingCategory);
 		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(stackHelper, handlerHelper, jeiHelpers, connectionToServer);
 		PluginCaller.callOnPlugins("Registering recipes transfer handlers", plugins, p -> p.registerRecipeTransferHandlers(recipeTransferRegistration));
 		return recipeTransferRegistration.createRecipeTransferManager();

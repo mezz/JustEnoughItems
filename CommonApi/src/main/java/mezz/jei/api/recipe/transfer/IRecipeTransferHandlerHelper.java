@@ -1,5 +1,6 @@
 package mezz.jei.api.recipe.transfer;
 
+import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.RecipeType;
@@ -8,15 +9,20 @@ import mezz.jei.api.registration.IRecipeTransferRegistration;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Helper functions for implementing an {@link IRecipeTransferHandler}.
  * Get an instance from {@link IRecipeTransferRegistration#getTransferHelper()}.
  */
+@ApiStatus.NonExtendable
 public interface IRecipeTransferHandlerHelper {
 	/**
 	 * Create an error with {@link Type#INTERNAL}.
@@ -84,4 +90,17 @@ public interface IRecipeTransferHandlerHelper {
 	 * @since 11.3.0
 	 */
 	boolean recipeTransferHasServerSupport();
+
+	/**
+	 * Get the original ingredients from a crafting recipe, indexed by the original gui slots and
+	 * not the {@link IRecipeSlotsView} indexes JEI uses.
+	 * Used to help with optimizing crafting recipe transfer and for displaying errors.
+	 *
+	 * These indexes do not always match because JEI places smaller recipes into the 3x3 crafting grid
+	 * so that they are centered horizontally, and some will be aligned to the bottom. (i.e. slab recipes).
+	 * This logic is controlled by {@link ICraftingGridHelper}.
+	 *
+	 * @since 15.42.0
+	 */
+	Map<Integer, Ingredient> getGuiSlotIndexToIngredientMap(CraftingRecipe recipe);
 }
