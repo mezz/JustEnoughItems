@@ -335,10 +335,14 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void registerAdvanced(IAdvancedRegistration registration) {
 		if (DebugConfig.isDebugModeEnabled()) {
-			registration.getJeiHelpers()
+			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+
+			jeiHelpers
 				.getAllRecipeTypes()
 				.filter(r -> r.getUid().getNamespace().equals(ModIds.JEI_ID))
 				.forEach(r -> registration.addRecipeCategoryDecorator(r, DebugCategoryDecorator.getInstance()));
+
+			registration.addTypedRecipeManagerPlugin(RecipeTypes.CRAFTING, new DebugSimpleRecipeManagerPlugin(jeiHelpers));
 		}
 	}
 
