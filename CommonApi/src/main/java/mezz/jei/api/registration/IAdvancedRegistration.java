@@ -5,6 +5,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPluginHelper;
+import mezz.jei.api.recipe.advanced.ISimpleRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IJeiFeatures;
 import org.jetbrains.annotations.ApiStatus;
@@ -30,6 +31,13 @@ public interface IAdvancedRegistration {
 	 * Register your own {@link IRecipeManagerPlugin} here.
 	 */
 	void addRecipeManagerPlugin(IRecipeManagerPlugin recipeManagerPlugin);
+
+	/**
+	 * Register your own {@link ISimpleRecipeManagerPlugin} here.
+	 *
+	 * @since 11.35.0
+	 */
+	<T> void addTypedRecipeManagerPlugin(RecipeType<T> recipeType, ISimpleRecipeManagerPlugin<T> recipeManagerPlugin);
 
 	/**
 	 * Register a {@link IRecipeCategoryDecorator} for a recipe type.

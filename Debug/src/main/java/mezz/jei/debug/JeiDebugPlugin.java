@@ -325,6 +325,7 @@ public class JeiDebugPlugin implements IModPlugin {
 			.getAllRecipeTypes()
 			.filter(r -> r.getUid().getNamespace().equals(ModIds.JEI_ID))
 			.forEach(r -> registration.addRecipeCategoryDecorator(r, DebugCategoryDecorator.getInstance()));
+		registration.addTypedRecipeManagerPlugin(RecipeTypes.CRAFTING, new DebugSimpleRecipeManagerPlugin());
 	}
 
 	@Override
