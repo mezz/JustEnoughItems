@@ -61,7 +61,9 @@ public class TypedRecipeManagerPluginAdapter<T> implements IRecipeManagerPlugin 
 
 	@Override
 	public <T2, V> List<T2> getRecipes(IRecipeCategory<T2> recipeCategory, IFocus<V> focus) {
-		if (recipeCategory.getRecipeType().equals(recipeType)) {
+		if (recipeCategory.getRecipeType().equals(recipeType) &&
+			isHandled(focus)
+		) {
 			List<T> recipes = getRecipes(focus);
 			@SuppressWarnings("unchecked")
 			List<T2> castRecipes = (List<T2>) recipes;
@@ -71,6 +73,9 @@ public class TypedRecipeManagerPluginAdapter<T> implements IRecipeManagerPlugin 
 	}
 
 	private List<T> getRecipes(IFocus<?> focus) {
+		if (!isHandled(focus)) {
+			return List.of();
+		}
 		switch (focus.getRole()) {
 			case INPUT -> {
 				List<T> recipesForInput = plugin.getRecipesForInput(focus.getTypedValue());
