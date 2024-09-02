@@ -91,7 +91,10 @@ public class TypedRecipeManagerPluginAdapter<T> implements IRecipeManagerPlugin 
 				return recipesForOutput;
 			}
 			case CATALYST -> {
-				return plugin.getAllRecipes();
+				if (helper.isRecipeCatalyst(recipeType, focus)) {
+					return plugin.getAllRecipes();
+				}
+				return List.of();
 			}
 		}
 		return List.of();
