@@ -10,7 +10,7 @@ import mezz.jei.api.recipe.RecipeType;
  */
 public interface IRecipeManagerPluginHelper {
 	/**
-	 * @return true if the given focus is a catalyst of this recipe type.
+	 * @return true if the given focus should be treated as a catalyst of this recipe type.
 	 * @since 15.16.3
 	 */
 	boolean isRecipeCatalyst(RecipeType<?> recipeType, IFocus<?> focus);
