@@ -41,7 +41,6 @@ public class RecipeManagerInternal {
 
 	@Unmodifiable
 	private final List<IRecipeCategory<?>> recipeCategories;
-	private final ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 	private final IIngredientManager ingredientManager;
 	private final RecipeTypeDataMap recipeTypeDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
@@ -49,6 +48,7 @@ public class RecipeManagerInternal {
 	private final PluginManager pluginManager;
 	private final Set<RecipeType<?>> hiddenRecipeTypes = new HashSet<>();
 	private final IIngredientVisibility ingredientVisibility;
+	private ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 
 	@Nullable
 	@Unmodifiable
@@ -57,14 +57,13 @@ public class RecipeManagerInternal {
 	public RecipeManagerInternal(
 		List<IRecipeCategory<?>> recipeCategories,
 		ImmutableListMultimap<RecipeType<?>, ITypedIngredient<?>> recipeCatalysts,
-		ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
 		IIngredientManager ingredientManager,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		IIngredientVisibility ingredientVisibility
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
-		this.recipeCategoryDecorators = recipeCategoryDecorators;
+		this.recipeCategoryDecorators = ImmutableListMultimap.of();
 		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
 
@@ -105,6 +104,10 @@ public class RecipeManagerInternal {
 
 	public void addPlugins(List<IRecipeManagerPlugin> plugins) {
 		this.pluginManager.addAll(plugins);
+	}
+
+	public void addDecorators(ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> decorators) {
+		this.recipeCategoryDecorators = decorators;
 	}
 
 	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {

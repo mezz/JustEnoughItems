@@ -4,6 +4,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
+import mezz.jei.api.recipe.advanced.IRecipeManagerPluginHelper;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IJeiFeatures;
 import org.jetbrains.annotations.ApiStatus;
@@ -17,6 +18,13 @@ public interface IAdvancedRegistration {
 	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
 	 */
 	IJeiHelpers getJeiHelpers();
+
+	/**
+	 * Helpers for implementing {@link IRecipeManagerPlugin}s.
+	 *
+	 * @since 11.34.8
+	 */
+	IRecipeManagerPluginHelper getRecipeManagerPluginHelper();
 
 	/**
 	 * Register your own {@link IRecipeManagerPlugin} here.

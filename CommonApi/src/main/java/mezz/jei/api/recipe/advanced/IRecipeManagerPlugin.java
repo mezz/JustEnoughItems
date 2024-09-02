@@ -1,13 +1,12 @@
 package mezz.jei.api.recipe.advanced;
 
-import java.util.List;
-
-import mezz.jei.api.recipe.RecipeType;
-
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IAdvancedRegistration;
+
+import java.util.List;
 
 /**
  * {@link IRecipeManagerPlugin}s are used by the {@link IRecipeManager} to look up recipes.
@@ -15,6 +14,8 @@ import mezz.jei.api.registration.IAdvancedRegistration;
  * Implementing your own Recipe Registry Plugin offers total control of lookups, but it must be fast.
  *
  * Add your plugin with {@link IAdvancedRegistration#addRecipeManagerPlugin(IRecipeManagerPlugin)}
+ *
+ * Get help with the implementation using {@link IRecipeManagerPluginHelper}.
  */
 public interface IRecipeManagerPlugin {
 	/**
