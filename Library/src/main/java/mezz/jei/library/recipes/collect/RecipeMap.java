@@ -26,7 +26,7 @@ import java.util.stream.Stream;
  */
 public class RecipeMap {
 	private final RecipeIngredientTable recipeTable = new RecipeIngredientTable();
-	private final Multimap<Object, RecipeType<?>> ingredientUidToCategoryMap = Multimaps.newSetMultimap(new Object2ObjectOpenHashMap<>(), ObjectOpenHashSet::new);
+	private final Multimap<Object, RecipeType<?>> ingredientUidToCategoryMap = Multimaps.newSetMultimap(new Object2ObjectOpenHashMap<>(), () -> new ObjectOpenHashSet<>(2));
 	private final Multimap<Object, RecipeType<?>> categoryCatalystUidToRecipeCategoryMap = Multimaps.newSetMultimap(new Object2ObjectOpenHashMap<>(), ObjectOpenHashSet::new);
 	private final Comparator<RecipeType<?>> recipeTypeComparator;
 	private final IIngredientManager ingredientManager;
