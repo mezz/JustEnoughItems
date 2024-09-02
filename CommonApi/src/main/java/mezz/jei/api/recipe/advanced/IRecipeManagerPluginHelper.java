@@ -12,7 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.NonExtendable
 public interface IRecipeManagerPluginHelper {
 	/**
-	 * @return true if the given focus is a catalyst of this recipe type.
+	 * @return true if the given focus should be treated as a catalyst of this recipe type.
 	 * @since 10.41.0
 	 */
 	boolean isRecipeCatalyst(RecipeType<?> recipeType, IFocus<?> focus);

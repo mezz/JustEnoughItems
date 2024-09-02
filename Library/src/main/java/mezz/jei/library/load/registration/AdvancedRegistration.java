@@ -5,6 +5,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPluginHelper;
+import mezz.jei.api.recipe.advanced.ISimpleRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.runtime.IJeiFeatures;
@@ -38,6 +39,16 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 
 		LOGGER.info("Added recipe manager plugin: {}", recipeManagerPlugin.getClass());
 		recipeManagerPlugins.add(recipeManagerPlugin);
+	}
+
+	@Override
+	public <T> void addTypedRecipeManagerPlugin(RecipeType<T> recipeType, ISimpleRecipeManagerPlugin<T> recipeManagerPlugin) {
+		ErrorUtil.checkNotNull(recipeType, "recipeType");
+		ErrorUtil.checkNotNull(recipeManagerPlugin, "recipeManagerPlugin");
+
+		TypedRecipeManagerPluginAdapter<T> adapter = new TypedRecipeManagerPluginAdapter<>(pluginHelper, recipeType, recipeManagerPlugin);
+		LOGGER.info("Added typed recipe manager plugin: {}", recipeManagerPlugin.getClass());
+		recipeManagerPlugins.add(adapter);
 	}
 
 	@Override
