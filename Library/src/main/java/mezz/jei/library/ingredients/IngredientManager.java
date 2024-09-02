@@ -178,11 +178,10 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public <V> ITypedIngredient<V> normalizeTypedIngredient(ITypedIngredient<V> typedIngredient) {
+		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 		IIngredientType<V> type = typedIngredient.getType();
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(type);
-		V ingredient = typedIngredient.getIngredient();
-		V normalized = ingredientHelper.normalizeIngredient(ingredient);
-		return TypedIngredient.createUnvalidated(type, normalized);
+		return TypedIngredient.normalize(typedIngredient, ingredientHelper);
 	}
 
 	@SuppressWarnings("removal")
