@@ -144,7 +144,7 @@ public final class JeiStarter {
 			ingredientVisibility
 		);
 		ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers =
-			pluginLoader.createRecipeTransferHandlers(plugins);
+			pluginLoader.createRecipeTransferHandlers(vanillaPlugin, plugins);
 		IRecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
 
 		LoggedTimer timer = new LoggedTimer();

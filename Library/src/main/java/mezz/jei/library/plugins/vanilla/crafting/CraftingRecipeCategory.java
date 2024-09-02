@@ -20,6 +20,7 @@ import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategor
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.IExtendableCraftingRecipeCategory;
 import mezz.jei.common.Constants;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.library.recipes.CraftingExtensionHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -140,5 +141,16 @@ public class CraftingRecipeCategory implements IExtendableCraftingRecipeCategory
 	@Override
 	public Codec<RecipeHolder<CraftingRecipe>> getCodec(ICodecHelper codecHelper, IRecipeManager recipeManager) {
 		return codecHelper.getRecipeHolderCodec();
+	}
+
+	public ImmutableSize2i getRecipeSize(RecipeHolder<CraftingRecipe> recipeHolder) {
+		ErrorUtil.checkNotNull(recipeHolder, "recipeHolder");
+		return this.extendableHelper.getOptionalRecipeExtension(recipeHolder)
+			.map(extension -> {
+				int width = extension.getWidth(recipeHolder);
+				int height = extension.getHeight(recipeHolder);
+				return new ImmutableSize2i(width, height);
+			})
+			.orElse(ImmutableSize2i.EMPTY);
 	}
 }

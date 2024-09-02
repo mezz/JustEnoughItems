@@ -128,9 +128,11 @@ public class PluginLoader {
 		return guiHandlerRegistration.createGuiScreenHelper(ingredientManager);
 	}
 
-	public ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> createRecipeTransferHandlers(List<IModPlugin> plugins) {
+	public ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> createRecipeTransferHandlers(VanillaPlugin vanillaPlugin, List<IModPlugin> plugins) {
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
-		IRecipeTransferHandlerHelper handlerHelper = new RecipeTransferHandlerHelper(stackHelper);
+		CraftingRecipeCategory craftingCategory = vanillaPlugin.getCraftingCategory()
+			.orElseThrow(() -> new NullPointerException("vanilla crafting category"));
+		IRecipeTransferHandlerHelper handlerHelper = new RecipeTransferHandlerHelper(stackHelper, craftingCategory);
 		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(stackHelper, handlerHelper, this.jeiHelpers, data.serverConnection());
 		PluginCaller.callOnPlugins("Registering recipes transfer handlers", plugins, p -> p.registerRecipeTransferHandlers(recipeTransferRegistration));
 		return recipeTransferRegistration.getRecipeTransferHandlers();
