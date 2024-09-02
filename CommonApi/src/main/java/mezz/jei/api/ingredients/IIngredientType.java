@@ -36,8 +36,9 @@ public interface IIngredientType<T> {
 	 */
 	default Optional<T> castIngredient(@Nullable Object ingredient) {
 		Class<? extends T> ingredientClass = getIngredientClass();
-		return Optional.ofNullable(ingredient)
-			.filter(ingredientClass::isInstance)
-			.map(ingredientClass::cast);
+		if (ingredientClass.isInstance(ingredient)) {
+			return Optional.of(ingredientClass.cast(ingredient));
+		}
+		return Optional.empty();
 	}
 }
