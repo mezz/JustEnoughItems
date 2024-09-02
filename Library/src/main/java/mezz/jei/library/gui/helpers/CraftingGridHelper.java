@@ -1,16 +1,20 @@
 package mezz.jei.library.gui.helpers;
 
+import com.mojang.datafixers.util.Pair;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-
-import com.mojang.datafixers.util.Pair;
+import java.util.Map;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
 	public static final CraftingGridHelper INSTANCE = new CraftingGridHelper();
@@ -117,6 +121,23 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	@Override
 	public <T> void setOutputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, @Nullable List<@Nullable T> outputs) {
 		createAndSetOutputs(builder, ingredientType, outputs);
+	}
+
+	public static Map<Integer, Ingredient> getGuiSlotToIngredientMap(CraftingRecipe recipe, int width, int height) {
+		NonNullList<Ingredient> ingredients = recipe.getIngredients();
+		if (width <= 0 || height <= 0) {
+			width = height = getShapelessSize(ingredients.size());
+		}
+
+		Map<Integer, Ingredient> result = new LinkedHashMap<>(ingredients.size());
+		for (int i = 0; i < ingredients.size(); i++) {
+			Ingredient ingredient = ingredients.get(i);
+			if (!ingredient.isEmpty()) {
+				int craftingIndex = CraftingGridHelper.getCraftingIndex(i, width, height);
+				result.put(craftingIndex, ingredient);
+			}
+		}
+		return result;
 	}
 
 	private static int getShapelessSize(int total) {

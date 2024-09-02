@@ -12,28 +12,48 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.ImmutableSize2i;
+import mezz.jei.library.gui.helpers.CraftingGridHelper;
+import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper {
 	private final IStackHelper stackHelper;
 	private final IConnectionToServer serverConnection;
+	private final @Nullable CraftingRecipeCategory craftingRecipeCategory;
 
 	public RecipeTransferHandlerHelper(IStackHelper stackHelper) {
-		this(stackHelper, Internal.getServerConnection());
+		this(stackHelper, Internal.getServerConnection(), null);
 	}
 
 	public RecipeTransferHandlerHelper(
 		IStackHelper stackHelper,
 		IConnectionToServer serverConnection
 	) {
+		this(stackHelper, serverConnection, null);
+	}
+
+	public RecipeTransferHandlerHelper(IStackHelper stackHelper, CraftingRecipeCategory craftingRecipeCategory) {
+		this(stackHelper, Internal.getServerConnection(), craftingRecipeCategory);
+	}
+
+	public RecipeTransferHandlerHelper(
+		IStackHelper stackHelper,
+		IConnectionToServer serverConnection,
+		@Nullable CraftingRecipeCategory craftingRecipeCategory
+	) {
 		this.stackHelper = stackHelper;
 		this.serverConnection = serverConnection;
+		this.craftingRecipeCategory = craftingRecipeCategory;
 	}
 
 	@Override
@@ -86,5 +106,13 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	@Override
 	public boolean recipeTransferHasServerSupport() {
 		return serverConnection.isJeiOnServer();
+	}
+
+	@Override
+	public Map<Integer, Ingredient> getGuiSlotIndexToIngredientMap(CraftingRecipe recipe) {
+		ImmutableSize2i recipeSize = craftingRecipeCategory == null ?
+			ImmutableSize2i.EMPTY :
+			craftingRecipeCategory.getRecipeSize(recipe);
+		return CraftingGridHelper.getGuiSlotToIngredientMap(recipe, recipeSize.width(), recipeSize.height());
 	}
 }
