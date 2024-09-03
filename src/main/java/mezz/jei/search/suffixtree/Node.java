@@ -22,12 +22,12 @@ import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMaps;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import mezz.jei.util.SubString;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Set;
@@ -172,7 +172,7 @@ class Node<T> {
 		} else if (data.size() == 16) {
 			// "upgrade" data to a Set once it's getting bigger,
 			// to improve its `contains` performance.
-			Collection<T> newData = Collections.newSetFromMap(new IdentityHashMap<>());
+			Collection<T> newData = new ReferenceOpenHashSet<>(17);
 			newData.addAll(data);
 			newData.add(value);
 			data = newData;
