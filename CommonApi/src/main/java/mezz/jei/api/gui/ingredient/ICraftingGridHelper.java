@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +24,22 @@ import org.jetbrains.annotations.Nullable;
  */
 @ApiStatus.NonExtendable
 public interface ICraftingGridHelper {
+	/**
+	 * Create and place input ingredients onto the crafting grid in a consistent way.
+	 * For shapeless recipes, use a width and height of 0.
+	 *
+	 * @since 11.49.0
+	 */
+	List<IRecipeSlotBuilder> createAndSetNamedIngredients(IRecipeLayoutBuilder builder, List<Pair<String, Ingredient>> namedIngredients, int width, int height);
+
+	/**
+	 * Create and place input ingredients onto the crafting grid in a consistent way.
+	 * For shapeless recipes, use a width and height of 0.
+	 *
+	 * @since 11.49.0
+	 */
+	void createAndSetIngredients(IRecipeLayoutBuilder builder, List<Ingredient> ingredients, int width, int height);
+
 	/**
 	 * Create and place input ingredients onto the crafting grid in a consistent way.
 	 * For shapeless recipes, use a width and height of 0.
