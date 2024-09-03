@@ -10,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mojang.datafixers.util.Pair;
+
 public class CraftingGridHelper implements ICraftingGridHelper {
 	public static final CraftingGridHelper INSTANCE = new CraftingGridHelper();
 
@@ -42,6 +44,26 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	}
 
 	@Override
+	public <T> List<IRecipeSlotBuilder> createAndSetNamedInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable Pair<String, List<@Nullable T>>> namedInputs, int width, int height) {
+		if (width <= 0 || height <= 0) {
+			builder.setShapeless();
+		}
+
+		List<IRecipeSlotBuilder> inputSlots = new ArrayList<>();
+		for (int y = 0; y < 3; ++y) {
+			for (int x = 0; x < 3; ++x) {
+				IRecipeSlotBuilder slot = builder.addSlot(RecipeIngredientRole.INPUT, x * 18 + 1, y * 18 + 1)
+					.setStandardSlotBackground();
+				inputSlots.add(slot);
+			}
+		}
+
+		setNamedInputs(inputSlots, ingredientType, namedInputs, width, height);
+
+		return inputSlots;
+	}
+
+	@Override
 	public <T> void setInputs(List<IRecipeSlotBuilder> slotBuilders, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height) {
 		if (width <= 0 || height <= 0) {
 			width = height = getShapelessSize(inputs.size());
@@ -57,6 +79,26 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 			@Nullable List<@Nullable T> ingredients = inputs.get(i);
 			if (ingredients != null) {
 				slot.addIngredients(ingredientType, ingredients);
+			}
+		}
+	}
+
+	private <T> void setNamedInputs(List<IRecipeSlotBuilder> slotBuilders, IIngredientType<T> ingredientType, List<@Nullable Pair<String, List<@Nullable T>>> namedInputs, int width, int height) {
+		if (width <= 0 || height <= 0) {
+			width = height = getShapelessSize(namedInputs.size());
+		}
+		if (slotBuilders.size() < width * height) {
+			throw new IllegalArgumentException(String.format("There are not enough slots (%s) to hold a recipe of this size. (%sx%s)", slotBuilders.size(), width, height));
+		}
+
+		for (int i = 0; i < namedInputs.size(); i++) {
+			int index = getCraftingIndex(i, width, height);
+			IRecipeSlotBuilder slot = slotBuilders.get(index);
+
+			@Nullable Pair<String, List<@Nullable T>> value = namedInputs.get(i);
+			if (value != null) {
+				slot.setSlotName(value.getFirst())
+					.addIngredients(ingredientType, value.getSecond());
 			}
 		}
 	}
