@@ -5,6 +5,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
  *
  * @since 15.8.4
  */
+@ApiStatus.NonExtendable
 public interface ITooltipBuilder {
 	/**
 	 * Add a {@link FormattedText} line to this tooltip
@@ -51,6 +53,13 @@ public interface ITooltipBuilder {
 	 * @since 15.8.4
 	 */
 	void setIngredient(ITypedIngredient<?> typedIngredient);
+
+	/**
+	 * Remove all the lines and ingredients from this tooltip.
+	 *
+	 * @since 15.39.0
+	 */
+	void clear();
 
 	/**
 	 * @deprecated this is only for legacy tooltip support and will be removed
