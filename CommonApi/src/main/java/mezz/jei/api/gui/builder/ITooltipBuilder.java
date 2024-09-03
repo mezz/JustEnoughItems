@@ -53,6 +53,13 @@ public interface ITooltipBuilder {
 	void setIngredient(ITypedIngredient<?> typedIngredient);
 
 	/**
+	 * Remove all the lines and ingredients from this tooltip.
+	 *
+	 * @since 19.16.4
+	 */
+	void clear();
+
+	/**
 	 * @deprecated this is only for legacy tooltip support and will be removed
 	 */
 	@Deprecated(since = "19.8.4", forRemoval = true)

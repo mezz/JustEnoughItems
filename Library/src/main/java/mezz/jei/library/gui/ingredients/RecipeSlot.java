@@ -185,12 +185,11 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
+		addTagNameTooltip(tooltip, ingredientManager, typedIngredient);
+		addIngredientsToTooltip(tooltip, typedIngredient);
 		for (IRecipeSlotRichTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onRichTooltip(this, tooltip);
 		}
-
-		addTagNameTooltip(tooltip, ingredientManager, typedIngredient);
-		addIngredientsToTooltip(tooltip, typedIngredient);
 	}
 
 	private <T> List<Component> legacyGetTooltip(ITypedIngredient<T> typedIngredient) {

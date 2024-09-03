@@ -39,6 +39,11 @@ public class ListElementInfoTooltip implements ITooltipBuilder {
 		// ignored for the purposes of searching tooltips
 	}
 
+	@Override
+	public void clear() {
+		tooltip.clear();
+	}
+
 	@SuppressWarnings("removal")
 	@Override
 	public List<Component> toLegacyToComponents() {
