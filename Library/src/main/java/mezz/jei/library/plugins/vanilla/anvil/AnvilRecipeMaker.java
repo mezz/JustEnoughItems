@@ -1,5 +1,6 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
+import com.google.common.collect.Lists;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -61,9 +62,11 @@ public final class AnvilRecipeMaker {
 
 		public List<ItemStack> getEnchantedBooks(ItemStack ingredient) {
 			IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
-			return enchantedBooks.stream()
+			var list = enchantedBooks.stream()
 				.filter(enchantedBook -> itemStackHelper.isBookEnchantable(ingredient, enchantedBook))
 				.toList();
+			// avoid using copy of list if it contains the exact same items
+			return list.size() == enchantedBooks.size() ? enchantedBooks : list;
 		}
 
 		private boolean canEnchant(ItemStack ingredient) {
@@ -109,6 +112,7 @@ public final class AnvilRecipeMaker {
 		IIngredientHelper<ItemStack> ingredientHelper,
 		ItemStack ingredient
 	) {
+		var ingredientSingletonList = List.of(ingredient);
 		return enchantmentDatas.stream()
 			.filter(data -> data.canEnchant(ingredient))
 			.map(data -> data.getEnchantedBooks(ingredient))
@@ -118,15 +122,16 @@ public final class AnvilRecipeMaker {
 				String ingredientId = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
 				String ingredientIdPath = ResourceLocationUtil.sanitizePath(ingredientId);
 				String id = "enchantment." + ingredientIdPath;
+
 				ResourceLocation uid = new ResourceLocation(ModIds.MINECRAFT_ID, id);
-				return vanillaRecipeFactory.createAnvilRecipe(ingredient, enchantedBooks, outputs, uid);
+				// All lists given here are immutable, and we want to keep the transforming list from outputs,
+				// so we call the AnvilRecipe constructor directly
+				return new AnvilRecipe(ingredientSingletonList, enchantedBooks, outputs, uid);
 			});
 	}
 
 	private static List<ItemStack> getEnchantedIngredients(ItemStack ingredient, List<ItemStack> enchantedBooks) {
-		return enchantedBooks.stream()
-			.map(enchantedBook -> getEnchantedIngredient(ingredient, enchantedBook))
-			.toList();
+		return Lists.transform(enchantedBooks, enchantedBook -> getEnchantedIngredient(ingredient, enchantedBook));
 	}
 
 	private static ItemStack getEnchantedIngredient(ItemStack ingredient, ItemStack enchantedBook) {
@@ -271,9 +276,11 @@ public final class AnvilRecipeMaker {
 				ItemStack damagedHalf = itemStack.copy();
 				damagedHalf.setDamageValue(damagedHalf.getMaxDamage() / 2);
 
+				var damagedThreeQuartersSingletonList = List.of(damagedThreeQuarters);
+
 				IJeiAnvilRecipe repairWithSame = vanillaRecipeFactory.createAnvilRecipe(
-					List.of(damagedThreeQuarters),
-					List.of(damagedThreeQuarters),
+					damagedThreeQuartersSingletonList,
+					damagedThreeQuartersSingletonList,
 					List.of(damagedHalf),
 					new ResourceLocation(itemModId, "self_repair." + ingredientIdPath)
 				);
@@ -285,7 +292,7 @@ public final class AnvilRecipeMaker {
 					IJeiAnvilRecipe repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(
 						List.of(damagedFully),
 						repairMaterials,
-						List.of(damagedThreeQuarters),
+						damagedThreeQuartersSingletonList,
 						new ResourceLocation(itemModId, "materials_repair." + ingredientIdPath)
 					);
 					consumer.accept(repairWithMaterial);

@@ -30,7 +30,7 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 		ErrorUtil.checkNotNull(uid, "uid");
 
-		return new AnvilRecipe(List.of(leftInput), rightInputs, outputs, uid);
+		return new AnvilRecipe(List.of(leftInput), List.copyOf(rightInputs), List.copyOf(outputs), uid);
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotNull(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 
-		return new AnvilRecipe(List.of(leftInput), rightInputs, outputs, null);
+		return new AnvilRecipe(List.of(leftInput), List.copyOf(rightInputs), List.copyOf(outputs), null);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 		ErrorUtil.checkNotNull(uid, "uid");
 
-		return new AnvilRecipe(leftInputs, rightInputs, outputs, uid);
+		return new AnvilRecipe(List.copyOf(leftInputs), List.copyOf(rightInputs), List.copyOf(outputs), uid);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotNull(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 
-		return new AnvilRecipe(leftInputs, rightInputs, outputs, null);
+		return new AnvilRecipe(List.copyOf(leftInputs), List.copyOf(rightInputs), List.copyOf(outputs), null);
 	}
 
 	@Override
