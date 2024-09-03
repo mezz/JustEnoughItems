@@ -61,8 +61,8 @@ public final class ItemStackListFactory {
 			throw new NullPointerException("minecraft.level must be set before JEI fetches ingredients");
 		}
 		RegistryAccess registryAccess = level.registryAccess();
-		final CreativeModeTab.ItemDisplayParameters displayParameters =
-			new CreativeModeTab.ItemDisplayParameters(features, hasOperatorItemsTabPermissions, registryAccess);
+
+		CreativeModeTabs.tryRebuildTabContents(features, hasOperatorItemsTabPermissions, registryAccess);
 
 		for (CreativeModeTab itemGroup : CreativeModeTabs.allTabs()) {
 			if (itemGroup.getType() != CreativeModeTab.Type.CATEGORY) {
@@ -70,17 +70,6 @@ public final class ItemStackListFactory {
 					"Skipping creative tab: '{}' because it is type: {}",
 					itemGroup.getDisplayName().getString(),
 					itemGroup.getType()
-				);
-				continue;
-			}
-			try {
-				itemGroup.buildContents(displayParameters);
-			} catch (RuntimeException | LinkageError e) {
-				LOGGER.error(
-					"Item Group crashed while building contents." +
-					"Items from this group will be missing from the JEI ingredient list: {}",
-					itemGroup.getDisplayName().getString(),
-					e
 				);
 				continue;
 			}
