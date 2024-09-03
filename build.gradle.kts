@@ -4,7 +4,7 @@ plugins {
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/
     id("fabric-loom") version("1.7.3") apply(false)
     // https://projects.neoforged.net/neoforged/neogradle
-    id("net.neoforged.gradle.userdev") version("7.0.157") apply(false)
+    id("net.neoforged.gradle.userdev") version("7.0.162") apply(false)
     // https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/gradle/vanilla/org.spongepowered.gradle.vanilla.gradle.plugin/
     id("org.spongepowered.gradle.vanilla") version("0.2.1-SNAPSHOT") apply(false)
 }
