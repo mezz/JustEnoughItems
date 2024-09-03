@@ -55,6 +55,12 @@ tasks.withType<JavaCompile> {
     }
 }
 
+tasks.withType<Jar> {
+    manifest {
+        attributes["Fabric-Loom-Remap"] = true
+    }
+}
+
 publishing {
     publications {
         register<MavenPublication>("commonApiJar") {
