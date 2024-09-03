@@ -1,5 +1,6 @@
 package mezz.jei.library.gui.helpers;
 
+import com.mojang.datafixers.util.Pair;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
@@ -22,22 +23,42 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	private CraftingGridHelper() {}
 
 	@Override
+	public List<IRecipeSlotBuilder> createAndSetNamedIngredients(IRecipeLayoutBuilder builder, List<Pair<String, Ingredient>> namedIngredients, int width, int height) {
+		List<IRecipeSlotBuilder> inputSlots = createInputSlots(builder, width, height);
+		setNamedIngredients(inputSlots, namedIngredients, width, height);
+		return inputSlots;
+	}
+
+	@Override
+	public void createAndSetIngredients(IRecipeLayoutBuilder builder, List<Ingredient> ingredients, int width, int height) {
+		List<IRecipeSlotBuilder> inputSlots = createInputSlots(builder, width, height);
+		setIngredients(inputSlots, ingredients, width, height);
+	}
+
+	@Override
 	public <T> List<IRecipeSlotBuilder> createAndSetInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height) {
+		List<IRecipeSlotBuilder> inputSlots = createInputSlots(builder, width, height);
+		setInputs(inputSlots, ingredientType, inputs, width, height);
+		return inputSlots;
+	}
+
+	public void setIngredients(List<IRecipeSlotBuilder> slotBuilders, List<Ingredient> ingredients, int width, int height) {
 		if (width <= 0 || height <= 0) {
-			builder.setShapeless();
+			width = height = getShapelessSize(ingredients.size());
+		}
+		if (slotBuilders.size() < width * height) {
+			throw new IllegalArgumentException(String.format("There are not enough slots (%s) to hold a recipe of this size. (%sx%s)", slotBuilders.size(), width, height));
 		}
 
-		List<IRecipeSlotBuilder> inputSlots = new ArrayList<>();
-		for (int y = 0; y < 3; ++y) {
-			for (int x = 0; x < 3; ++x) {
-				IRecipeSlotBuilder slot = builder.addSlot(RecipeIngredientRole.INPUT, x * 18 + 1, y * 18 + 1);
-				inputSlots.add(slot);
+		for (int i = 0; i < ingredients.size(); i++) {
+			int index = getCraftingIndex(i, width, height);
+			IRecipeSlotBuilder slot = slotBuilders.get(index);
+
+			Ingredient ingredient = ingredients.get(i);
+			if (ingredient != null) {
+				slot.addIngredients(ingredient);
 			}
 		}
-
-		setInputs(inputSlots, ingredientType, inputs, width, height);
-
-		return inputSlots;
 	}
 
 	@Override
@@ -67,6 +88,41 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 			outputSlot.addIngredients(ingredientType, outputs);
 		}
 		return outputSlot;
+	}
+
+	private static List<IRecipeSlotBuilder> createInputSlots(IRecipeLayoutBuilder builder, int width, int height) {
+		if (width <= 0 || height <= 0) {
+			builder.setShapeless();
+		}
+
+		List<IRecipeSlotBuilder> inputSlots = new ArrayList<>();
+		for (int y = 0; y < 3; ++y) {
+			for (int x = 0; x < 3; ++x) {
+				IRecipeSlotBuilder slot = builder.addSlot(RecipeIngredientRole.INPUT, x * 18 + 1, y * 18 + 1);
+				inputSlots.add(slot);
+			}
+		}
+		return inputSlots;
+	}
+
+	private static void setNamedIngredients(List<IRecipeSlotBuilder> slotBuilders, List<Pair<String, Ingredient>> namedIngredients, int width, int height) {
+		if (width <= 0 || height <= 0) {
+			width = height = getShapelessSize(namedIngredients.size());
+		}
+		if (slotBuilders.size() < width * height) {
+			throw new IllegalArgumentException(String.format("There are not enough slots (%s) to hold a recipe of this size. (%sx%s)", slotBuilders.size(), width, height));
+		}
+
+		for (int i = 0; i < namedIngredients.size(); i++) {
+			int index = getCraftingIndex(i, width, height);
+			IRecipeSlotBuilder slot = slotBuilders.get(index);
+
+			Pair<String, Ingredient> value = namedIngredients.get(i);
+			if (value != null) {
+				slot.setSlotName(value.getFirst())
+					.addIngredients(value.getSecond());
+			}
+		}
 	}
 
 	public static Map<Integer, Ingredient> getGuiSlotToIngredientMap(RecipeHolder<CraftingRecipe> recipeHolder, int width, int height) {
