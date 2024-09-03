@@ -43,6 +43,24 @@ public interface ICraftingGridHelper {
 	 * Create and place input ingredients onto the crafting grid in a consistent way.
 	 * For shapeless recipes, use a width and height of 0.
 	 *
+	 * @since 19.16.3
+	 */
+	default List<IRecipeSlotBuilder> createAndSetNamedInputs(IRecipeLayoutBuilder builder, List<@Nullable Pair<String, List<@Nullable ItemStack>>> namedInputs, int width, int height) {
+		return createAndSetNamedInputs(builder, VanillaTypes.ITEM_STACK, namedInputs, width, height);
+	}
+
+	/**
+	 * Create and place input ingredients onto the crafting grid in a consistent way.
+	 * For shapeless recipes, use a width and height of 0.
+	 *
+	 * @since 19.16.3
+	 */
+	<T> List<IRecipeSlotBuilder> createAndSetNamedInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable Pair<String, List<@Nullable T>>> namedInputs, int width, int height);
+
+	/**
+	 * Create and place input ingredients onto the crafting grid in a consistent way.
+	 * For shapeless recipes, use a width and height of 0.
+	 *
 	 * @see #createAndSetInputs(IRecipeLayoutBuilder, IIngredientType, List, int, int) to set other ingredient types.
 	 * @since 11.1.1
 	 */
