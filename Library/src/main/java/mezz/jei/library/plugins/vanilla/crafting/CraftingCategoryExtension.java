@@ -10,10 +10,8 @@ import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICraftingCategoryExtension {
@@ -25,17 +23,12 @@ public class CraftingCategoryExtension<T extends CraftingRecipe> implements ICra
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
-		List<List<ItemStack>> inputs = new ArrayList<>();
-		for (Ingredient ingredient : recipe.getIngredients()) {
-			List<ItemStack> items = List.of(ingredient.getItems());
-			inputs.add(items);
-		}
 		ItemStack resultItem = RecipeUtil.getResultItem(recipe);
 
 		int width = getWidth();
 		int height = getHeight();
 		craftingGridHelper.createAndSetOutputs(builder, List.of(resultItem));
-		craftingGridHelper.createAndSetInputs(builder, inputs, width, height);
+		craftingGridHelper.createAndSetIngredients(builder, recipe.getIngredients(), width, height);
 	}
 
 	@Nullable
