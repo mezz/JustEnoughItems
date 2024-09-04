@@ -31,6 +31,7 @@ public class ErrorIngredientHelper implements IIngredientHelper<ErrorIngredient>
 		return ingredient.crashType();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getWildcardId(ErrorIngredient ingredient) {
 		return "JEI_error";
