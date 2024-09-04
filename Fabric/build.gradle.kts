@@ -222,6 +222,8 @@ modrinth {
     versionType.set("beta")
     uploadFile.set(tasks.remapJar.get())
     changelog.set(provider { file("../Changelog/changelog.md").readText() })
+    detectLoaders.set(false)
+    loaders.add("fabric")
 }
 tasks.modrinth.get().dependsOn(tasks.remapJar)
 tasks.modrinth.get().dependsOn(":Changelog:makeMarkdownChangelog")

@@ -178,6 +178,8 @@ modrinth {
 	uploadFile.set(tasks.jar.get())
 	changelog.set(provider { file("../Changelog/changelog.md").readText() })
 	gameVersions.set(listOf(minecraftVersion, minecraftExtraCompatibleVersion))
+	detectLoaders.set(false)
+	loaders.add("neoforge")
 }
 tasks.modrinth.get().dependsOn(tasks.jar)
 tasks.modrinth.get().dependsOn(":Changelog:makeMarkdownChangelog")
