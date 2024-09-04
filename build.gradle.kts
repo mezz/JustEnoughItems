@@ -3,7 +3,7 @@ plugins {
     id("com.dorongold.task-tree") version("2.1.0")
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/
     id("fabric-loom") version("1.7.3") apply(false)
-    // https://projects.neoforged.net/neoforged/neogradle
+    // https://projects.neoforged.net/neoforged/moddevgradle
     id("net.neoforged.moddev") version("2.0.26-beta") apply(false)
 }
 apply {
