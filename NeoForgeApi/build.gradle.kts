@@ -1,7 +1,7 @@
 plugins {
 	id("java")
 	id("maven-publish")
-	id("net.neoforged.gradle.userdev")
+	id("net.neoforged.moddev")
 }
 
 // gradle.properties
@@ -47,22 +47,14 @@ java {
 }
 
 dependencies {
-	implementation(
-		group = "net.neoforged",
-		name = "neoforge",
-		version = neoforgeVersion
-	)
 	dependencyProjects.forEach {
 		implementation(it)
 	}
 }
 
-minecraft {
-	accessTransformers {
-		// All minecraft configurations in the multi-project must be identical, including ATs,
-		// because of a ForgeGradle bug https://github.com/MinecraftForge/ForgeGradle/issues/844
-		file("../Forge/src/main/resources/META-INF/accesstransformer.cfg")
-	}
+neoForge {
+	version = neoforgeVersion
+	accessTransformers.from(file("../NeoForge/src/main/resources/META-INF/accesstransformer.cfg"))
 }
 
 val sourcesJar = tasks.named<Jar>("sourcesJar")
