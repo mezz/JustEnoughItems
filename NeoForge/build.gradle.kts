@@ -93,6 +93,8 @@ dependencies {
 neoForge {
 	version = neoforgeVersion
 
+	addModdingDependenciesTo(sourceSets.test.get())
+
 	mods {
 		create("jei") {
 			sourceSet(sourceSets.main.get())
