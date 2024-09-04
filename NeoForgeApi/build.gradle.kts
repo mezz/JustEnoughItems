@@ -55,7 +55,7 @@ dependencies {
 neoForge {
 	version = neoforgeVersion
 	// We don't need the AT, but this allows MDG to share the recompiled Minecraft artifacts with the NeoForge project.
-	accessTransformers.from(file("../NeoForge/src/main/resources/META-INF/accesstransformer.cfg"))
+	setAccessTransformers("../NeoForge/src/main/resources/META-INF/accesstransformer.cfg")
 }
 
 val sourcesJar = tasks.named<Jar>("sourcesJar")

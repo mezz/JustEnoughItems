@@ -92,6 +92,8 @@ dependencies {
 
 neoForge {
 	version = neoforgeVersion
+	// MDG already defaults to this, but override it for clarity.
+	setAccessTransformers("src/main/resources/META-INF/accesstransformer.cfg")
 
 	addModdingDependenciesTo(sourceSets.test.get())
 
