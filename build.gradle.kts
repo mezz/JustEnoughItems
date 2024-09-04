@@ -5,8 +5,6 @@ plugins {
     id("fabric-loom") version("1.7.3") apply(false)
     // https://projects.neoforged.net/neoforged/neogradle
     id("net.neoforged.moddev") version("2.0.26-beta") apply(false)
-    // https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/gradle/vanilla/org.spongepowered.gradle.vanilla.gradle.plugin/
-    id("org.spongepowered.gradle.vanilla") version("0.2.1-SNAPSHOT") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")

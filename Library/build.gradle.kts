@@ -3,13 +3,14 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java
-    id("org.spongepowered.gradle.vanilla")
+    id("net.neoforged.moddev")
     `maven-publish`
 }
 
 // gradle.properties
 val jUnitVersion: String by extra
 val minecraftVersion: String by extra
+val neoformTimestamp: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 
@@ -28,9 +29,8 @@ dependencyProjects.forEach {
     project.evaluationDependsOn(it.path)
 }
 
-minecraft {
-    version(minecraftVersion)
-    // no runs are configured for Library
+neoForge {
+    neoFormVersion = "$minecraftVersion-$neoformTimestamp"
 }
 
 sourceSets {
