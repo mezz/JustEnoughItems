@@ -8,8 +8,8 @@ plugins {
 	id("idea")
 	id("eclipse")
 	id("maven-publish")
-	id("net.darkhax.curseforgegradle") version("1.0.8")
-	id("com.modrinth.minotaur") version("2.+")
+	id("net.darkhax.curseforgegradle")
+	id("com.modrinth.minotaur")
 	id("net.neoforged.moddev")
 }
 

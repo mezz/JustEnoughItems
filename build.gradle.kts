@@ -1,10 +1,27 @@
 plugins {
+    // https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
 	id("com.diffplug.spotless") version("6.25.0")
-    id("com.dorongold.task-tree") version("2.1.0")
+
+    // https://plugins.gradle.org/plugin/com.dorongold.task-tree
+    id("com.dorongold.task-tree") version("4.0.0")
+
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/
     id("fabric-loom") version("1.7.3") apply(false)
+
     // https://projects.neoforged.net/neoforged/moddevgradle
     id("net.neoforged.moddev") version("2.0.26-beta") apply(false)
+
+    // https://plugins.gradle.org/plugin/net.darkhax.curseforgegradle
+    id("net.darkhax.curseforgegradle") version("1.1.25") apply(false)
+
+    // https://plugins.gradle.org/plugin/com.modrinth.minotaur
+    id("com.modrinth.minotaur") version("2.8.7") apply(false)
+
+    // https://files.minecraftforge.net/net/minecraftforge/gradle/ForgeGradle/index.html
+    id("net.minecraftforge.gradle") version("6.0.26") apply(false)
+
+    // https://mvnrepository.com/artifact/org.parchmentmc.librarian.forgegradle/org.parchmentmc.librarian.forgegradle.gradle.plugin
+    id("org.parchmentmc.librarian.forgegradle") version("1.2.0") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
