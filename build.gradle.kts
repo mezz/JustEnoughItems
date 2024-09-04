@@ -3,10 +3,8 @@ plugins {
     id("com.dorongold.task-tree") version("2.1.0")
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/
     id("fabric-loom") version("1.7.3") apply(false)
-    // https://projects.neoforged.net/neoforged/neogradle
-    id("net.neoforged.gradle.userdev") version("7.0.162") apply(false)
-    // https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/gradle/vanilla/org.spongepowered.gradle.vanilla.gradle.plugin/
-    id("org.spongepowered.gradle.vanilla") version("0.2.1-SNAPSHOT") apply(false)
+    // https://projects.neoforged.net/neoforged/moddevgradle
+    id("net.neoforged.moddev") version("2.0.26-beta") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")

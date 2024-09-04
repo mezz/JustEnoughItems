@@ -1,12 +1,13 @@
 plugins {
     java
-    id("org.spongepowered.gradle.vanilla")
+    id("net.neoforged.moddev")
     `maven-publish`
 }
 
 
 // gradle.properties
 val minecraftVersion: String by extra
+val neoformTimestamp: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 
@@ -15,9 +16,8 @@ base {
     archivesName.set(baseArchivesName)
 }
 
-minecraft {
-    version(minecraftVersion)
-    // no runs are configured for Common API
+neoForge {
+    neoFormVersion = "$minecraftVersion-$neoformTimestamp"
 }
 
 sourceSets {
