@@ -179,6 +179,8 @@ modrinth {
 	versionType.set("beta")
 	uploadFile.set(tasks.jar.get())
 	changelog.set(provider { file("../Changelog/changelog.md").readText() })
+	detectLoaders.set(false)
+	loaders.add("forge")
 }
 tasks.modrinth.get().dependsOn(tasks.jar)
 tasks.modrinth.get().dependsOn(":Changelog:makeMarkdownChangelog")
