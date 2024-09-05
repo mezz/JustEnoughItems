@@ -13,6 +13,9 @@ val minecraftVersion: String by extra
 val neoformTimestamp: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val modName: String by extra
+
+val resourceProperties = mapOf("modName" to modName)
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 base {
@@ -85,6 +88,15 @@ tasks.withType<JavaCompile> {
         compilerFor {
             languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
         }
+    }
+}
+
+tasks.withType<ProcessResources> {
+    // this will ensure that this task is redone when the versions change.
+    inputs.properties(resourceProperties)
+
+    filesMatching("pack.mcmeta") {
+        expand(resourceProperties)
     }
 }
 

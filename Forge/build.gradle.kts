@@ -1,4 +1,5 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
+import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import net.darkhax.curseforgegradle.Constants as CFG_Constants
@@ -24,6 +25,8 @@ val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentVersionForge: String by extra
+
+val resourceProperties: Map<String, String> by rootProject.extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -148,10 +151,18 @@ tasks.withType<JavaCompile>().configureEach {
     }
 }
 
-tasks.processResources {
+tasks.withType<ProcessResources> {
     dependencyProjects.forEach {
+		inputs.files(it.sourceSets.main.get().resources)
         from(it.sourceSets.main.get().resources)
     }
+
+	// this will ensure that this task is redone when the versions change.
+	inputs.properties(resourceProperties)
+
+	filesMatching("META-INF/mods.toml") {
+		expand(resourceProperties)
+	}
 }
 
 tasks.jar {
@@ -246,4 +257,8 @@ sourceSets.forEach {
     val outputDir = layout.buildDirectory.file("sourcesSets/${it.name}").get().asFile
     it.output.setResourcesDir(outputDir)
     it.java.destinationDirectory.set(outputDir)
+}
+
+tasks.withType<DownloadMavenArtifact> {
+	notCompatibleWithConfigurationCache("uses Task.project at execution time")
 }

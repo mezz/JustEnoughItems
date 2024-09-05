@@ -35,6 +35,8 @@ val modJavaVersion: String by extra
 val parchmentVersionFabric: String by extra
 val parchmentMinecraftVersion: String by extra
 
+val resourceProperties: Map<String, String> by rootProject.extra
+
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
 
@@ -69,6 +71,15 @@ tasks.withType<JavaCompile> {
         compilerFor {
             languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
         }
+    }
+}
+
+tasks.withType<ProcessResources> {
+    // this will ensure that this task is redone when the versions change.
+    inputs.properties(resourceProperties)
+
+    filesMatching( "fabric.mod.json") {
+        expand(resourceProperties)
     }
 }
 

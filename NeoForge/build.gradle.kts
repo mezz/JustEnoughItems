@@ -24,6 +24,8 @@ val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 
+val resourceProperties: Map<String, String> by rootProject.extra
+
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
 
@@ -61,10 +63,18 @@ tasks.withType<JavaCompile>().configureEach {
     }
 }
 
-tasks.withType<ProcessResources>().configureEach {
+tasks.withType<ProcessResources> {
     dependencyProjects.forEach {
+		inputs.files(it.sourceSets.main.get().resources)
         from(it.sourceSets.main.get().resources)
     }
+
+	// this will ensure that this task is redone when the properties change.
+	inputs.properties(resourceProperties)
+
+	filesMatching("META-INF/neoforge.mods.toml") {
+		expand(resourceProperties)
+	}
 }
 
 java {
