@@ -20,8 +20,8 @@ plugins {
     // https://plugins.gradle.org/plugin/com.modrinth.minotaur
     id("com.modrinth.minotaur") version("2.8.7") apply(false)
 
-    // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/
-    id("fabric-loom") version("1.7.3") apply(false)
+    // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
+    id("fabric-loom") version("1.8.0-alpha.16") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
