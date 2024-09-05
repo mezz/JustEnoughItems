@@ -96,7 +96,7 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements ISlo
 
 	@Override
 	protected float calculateScrollAmount(double scrollDeltaY) {
-		int totalSlots = slots.size();
-		return (float) (scrollDeltaY / (double) totalSlots);
+		int hiddenRows = getHiddenAmount();
+		return (float) (scrollDeltaY / (double) hiddenRows);
 	}
 }
