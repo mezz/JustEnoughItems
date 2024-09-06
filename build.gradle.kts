@@ -6,7 +6,8 @@ plugins {
     id("org.parchmentmc.librarian.forgegradle") version ("1.2.0") apply(false)
     id("net.darkhax.curseforgegradle") version("1.0.8") apply(false)
     id("com.modrinth.minotaur") version("2.8.7") apply(false)
-    id("fabric-loom") version("0.12-SNAPSHOT") apply(false)
+    // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/
+    id("fabric-loom") version("1.7.3") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")

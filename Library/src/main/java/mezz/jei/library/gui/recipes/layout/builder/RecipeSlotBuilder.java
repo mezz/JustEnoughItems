@@ -5,7 +5,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -19,7 +19,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.library.gui.ingredients.ICycler;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RendererOverrides;
-import mezz.jei.library.ingredients.IngredientAcceptor;
+import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
@@ -33,9 +33,9 @@ import java.util.Optional;
 import java.util.Set;
 
 public class RecipeSlotBuilder implements IRecipeSlotBuilder {
-	private final IngredientAcceptor ingredients;
+	private final DisplayIngredientAcceptor ingredients;
 	private final RecipeIngredientRole role;
-	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
+	private final List<IRecipeSlotRichTooltipCallback> tooltipCallbacks = new ArrayList<>();
 	private ImmutableRect2i rect;
 	private @Nullable RendererOverrides rendererOverrides;
 	private @Nullable IDrawable background;
@@ -44,7 +44,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private @Nullable ISlottedWidgetFactory<?> assignedWidgetFactory;
 
 	public RecipeSlotBuilder(IIngredientManager ingredientManager, RecipeIngredientRole role, int x, int y) {
-		this.ingredients = new IngredientAcceptor(ingredientManager);
+		this.ingredients = new DisplayIngredientAcceptor(ingredientManager);
 		this.rect = new ImmutableRect2i(x, y, 16, 16);
 		this.role = role;
 	}
@@ -134,8 +134,17 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		return this;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
-	public IRecipeSlotBuilder addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
+	public IRecipeSlotBuilder addTooltipCallback(mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback tooltipCallback) {
+		ErrorUtil.checkNotNull(tooltipCallback, "tooltipCallback");
+
+		this.tooltipCallbacks.add(new LegacyTooltipCallbackAdapter(tooltipCallback));
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder addRichTooltipCallback(IRecipeSlotRichTooltipCallback tooltipCallback) {
 		ErrorUtil.checkNotNull(tooltipCallback, "tooltipCallback");
 
 		this.tooltipCallbacks.add(tooltipCallback);
@@ -200,7 +209,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		return this.ingredients.getMatches(focuses, role);
 	}
 
-	public IngredientAcceptor getIngredientAcceptor() {
+	public DisplayIngredientAcceptor getIngredientAcceptor() {
 		return ingredients;
 	}
 

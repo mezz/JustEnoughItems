@@ -3,7 +3,6 @@ package mezz.jei.library.ingredients;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.IClientToggleState;
@@ -13,7 +12,7 @@ import mezz.jei.library.config.EditModeConfig;
 public class IngredientVisibility implements IIngredientVisibility {
 	private final IngredientBlacklistInternal blacklist;
 	private final IClientToggleState toggleState;
-	private final IEditModeConfig editModeConfig;
+	private final EditModeConfig editModeConfig;
 	private final IIngredientManager ingredientManager;
 	private final WeakList<IListener> listeners = new WeakList<>();
 
@@ -28,8 +27,8 @@ public class IngredientVisibility implements IIngredientVisibility {
 		this.editModeConfig = editModeConfig;
 		this.ingredientManager = ingredientManager;
 
-		blacklist.registerListener(this::notifyListenersOfVisibilityChange);
-		editModeConfig.registerListener(this::notifyListenersOfVisibilityChange);
+		editModeConfig.registerListener(this);
+		blacklist.registerListener(this);
 	}
 
 	@Override
@@ -62,7 +61,7 @@ public class IngredientVisibility implements IIngredientVisibility {
 		this.listeners.add(listener);
 	}
 
-	private <T> void notifyListenersOfVisibilityChange(ITypedIngredient<T> ingredient, boolean visible) {
+	public <V> void notifyListeners(ITypedIngredient<V> ingredient, boolean visible) {
 		listeners.forEach(listener -> listener.onIngredientVisibilityChanged(ingredient, visible));
 	}
 }

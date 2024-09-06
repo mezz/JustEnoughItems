@@ -146,8 +146,12 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		if (ingredient.getCount() == 1) {
 			return ingredient;
 		}
+		// Temporarily setting the count on the original stack this way can "recover" some empty ItemStacks.
+		// Copying it first results in the copy being a hard-coded ItemStack#EMPTY that cannot be recovered.
+		int originalCount = ingredient.getCount();
+		ingredient.setCount(1);
 		ItemStack copy = ingredient.copy();
-		copy.setCount(1);
+		ingredient.setCount(originalCount);
 		return copy;
 	}
 

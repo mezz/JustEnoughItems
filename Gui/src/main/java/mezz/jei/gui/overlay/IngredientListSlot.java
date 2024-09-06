@@ -6,8 +6,6 @@ import mezz.jei.gui.input.DraggableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.overlay.elements.IElement;
-import mezz.jei.gui.overlay.elements.RenderableElement;
-import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -17,50 +15,49 @@ public class IngredientListSlot {
 	private final int padding;
 	private boolean blocked = false;
 	@Nullable
-	private RenderableElement<?> renderableElement;
+	private IElement<?> element;
 
 	public IngredientListSlot(int xPosition, int yPosition, int width, int height, int padding) {
 		this.area = new ImmutableRect2i(xPosition, yPosition, width, height);
 		this.padding = padding;
 	}
 
-	public Optional<IElement<?>> getElement() {
-		return Optional.ofNullable(renderableElement)
-			.map(RenderableElement::getElement);
+	public Optional<IElement<?>> getOptionalElement() {
+		return Optional.ofNullable(element);
+	}
+
+	public @Nullable IElement<?> getElement() {
+		return element;
 	}
 
 	public Optional<IClickableIngredientInternal<?>> getClickableIngredient() {
-		return Optional.ofNullable(renderableElement)
-			.map(RenderableElement::getElement)
+		return Optional.ofNullable(element)
 			.map(element -> new ClickableIngredientInternal<>(element, this::isMouseOver, true, true));
 	}
 
 	public Optional<IDraggableIngredientInternal<?>> getDraggableIngredient() {
-		return Optional.ofNullable(renderableElement)
-			.map(RenderableElement::getElement)
+		return Optional.ofNullable(element)
 			.map(element -> new DraggableIngredientInternal<>(element, area));
 	}
 
-	public void render(GuiGraphics guiGraphics) {
-		if (!blocked && renderableElement != null) {
-			renderableElement.render(guiGraphics, area, padding);
-		}
-	}
-
 	public void clear() {
-		this.renderableElement = null;
+		this.element = null;
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return (this.renderableElement != null) && area.contains(mouseX, mouseY);
+		return (this.element != null) && area.contains(mouseX, mouseY);
 	}
 
-	public void setElement(RenderableElement<?> renderableElement) {
-		this.renderableElement = renderableElement;
+	public void setElement(IElement<?> element) {
+		this.element = element;
 	}
 
 	public ImmutableRect2i getArea() {
 		return area;
+	}
+
+	public ImmutableRect2i getRenderArea() {
+		return area.insetBy(padding);
 	}
 
 	/**
@@ -74,9 +71,7 @@ public class IngredientListSlot {
 		return blocked;
 	}
 
-	public void drawTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY, IngredientGridTooltipHelper tooltipHelper) {
-		if (renderableElement != null) {
-			renderableElement.drawTooltip(guiGraphics, mouseX, mouseY, tooltipHelper);
-		}
+	public int getPadding() {
+		return padding;
 	}
 }

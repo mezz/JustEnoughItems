@@ -28,7 +28,7 @@ import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.ShapelessIcon;
-import mezz.jei.library.ingredients.IngredientAcceptor;
+import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -95,7 +95,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 		if (recipeName != null) {
 			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName);
-			slot.addTooltipCallback(callback);
+			slot.addRichTooltipCallback(callback);
 		}
 	}
 
@@ -152,8 +152,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 			RecipeSlotBuilder builder = (RecipeSlotBuilder) slot;
 			builders.add(builder);
 
-			IngredientAcceptor ingredientAcceptor = builder.getIngredientAcceptor();
-			List<Optional<ITypedIngredient<?>>> allIngredients = ingredientAcceptor.getAllIngredients();
+			DisplayIngredientAcceptor displayIngredientAcceptor = builder.getIngredientAcceptor();
+			List<Optional<ITypedIngredient<?>>> allIngredients = displayIngredientAcceptor.getAllIngredients();
 			int ingredientCount = allIngredients.size();
 			if (count == -1) {
 				count = ingredientCount;
@@ -161,7 +161,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 				IntSummaryStatistics stats = Arrays.stream(slots)
 					.map(RecipeSlotBuilder.class::cast)
 					.map(RecipeSlotBuilder::getIngredientAcceptor)
-					.map(IngredientAcceptor::getAllIngredients)
+					.map(DisplayIngredientAcceptor::getAllIngredients)
 					.mapToInt(Collection::size)
 					.summaryStatistics();
 				throw new IllegalArgumentException(

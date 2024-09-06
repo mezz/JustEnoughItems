@@ -49,4 +49,8 @@ public interface IClientConfig {
 	boolean isTagContentTooltipEnabled();
 
 	boolean isHideSingleIngredientTagsEnabled();
+
+	boolean isShowTagRecipesEnabled();
+
+	boolean isShowCreativeTabNamesEnabled();
 }

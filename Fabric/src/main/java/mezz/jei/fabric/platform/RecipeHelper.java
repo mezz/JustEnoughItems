@@ -13,13 +13,10 @@ import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 public class RecipeHelper implements IPlatformRecipeHelper {
-	private final List<Class<? extends SmithingRecipe>> supportedSmithingRecipeClasses = List.of(SmithingTransformRecipe.class, SmithingTrimRecipe.class);
-
 	@Override
 	public <T extends CraftingRecipe> int getWidth(T recipe) {
 		if (recipe instanceof ShapedRecipe shapedRecipe) {
@@ -69,12 +66,7 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 		return Ingredient.EMPTY;
 	}
 
-	@Override
-	public Collection<Class<? extends SmithingRecipe>> getSupportedSmithingRecipeClasses() {
-		return supportedSmithingRecipeClasses;
-	}
-
-	@SuppressWarnings("DataFlowIssue")
+	@SuppressWarnings("OptionalOfNullableMisuse")
 	@Override
 	public Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe) {
 		ResourceLocation id = recipe.getId();

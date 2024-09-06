@@ -2,6 +2,9 @@ package mezz.jei.api.recipe.category.extensions.vanilla.smithing;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.world.item.crafting.SmithingRecipe;
@@ -61,6 +64,40 @@ public interface ISmithingCategoryExtension<R extends SmithingRecipe> {
 	 * @since 15.12.1
 	 */
 	default <T extends IIngredientAcceptor<T>> void setOutput(R recipe, T ingredientAcceptor) {
+
+	}
+
+	/**
+	 * Called every time JEI updates the cycling displayed ingredients on a recipe.
+	 *
+	 * Use this (for example) to compute recipe outputs that result from complex relationships between ingredients.
+	 *
+	 * Use {@link IRecipeSlotDrawable#getDisplayedIngredient()} from your regular slots to see what is
+	 * currently being drawn, and calculate what you need from there.
+	 * You can override any slot's displayed ingredient with {@link IRecipeSlotDrawable#createDisplayOverrides()}.
+	 *
+	 * Note that overrides set this way are not searchable via recipe lookups in JEI,
+	 * it is only for displaying things too complex for normal lookups to handle.
+	 *
+	 * @param recipe the current smithing recipe being drawn.
+	 * @param templateSlot the current smithing recipe template slot being drawn.
+	 * @param baseSlot the current smithing recipe base slot being drawn.
+	 * @param additionSlot the current smithing recipe addition slot being drawn.
+	 * @param outputSlot the current smithing recipe output slot being drawn.
+	 * @param focuses the current focuses
+	 *
+	 * @see IRecipeCategory#onDisplayedIngredientsUpdate
+	 *
+	 * @since 15.16.1
+	 */
+	default void onDisplayedIngredientsUpdate(
+		R recipe,
+		IRecipeSlotDrawable templateSlot,
+		IRecipeSlotDrawable baseSlot,
+		IRecipeSlotDrawable additionSlot,
+		IRecipeSlotDrawable outputSlot,
+		IFocusGroup focuses
+	) {
 
 	}
 }

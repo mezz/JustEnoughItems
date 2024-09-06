@@ -13,6 +13,8 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.plugins.jei.info.IngredientInfoRecipeCategory;
@@ -48,19 +50,28 @@ public class JeiInternalPlugin implements IModPlugin {
 		registration.addRecipeCategories(new IngredientInfoRecipeCategory(guiHelper, textures));
 
 		tagInfoRecipeMakers.clear();
-		RegistryUtil.getRegistryAccess()
-			.registries()
-			.forEach(entry -> {
-				Registry<?> registry = entry.value();
-				createAndRegisterTagCategory(registration, tagInfoRecipeMakers, ingredientManager, registry);
-			});
+		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+		if (clientConfig.isShowTagRecipesEnabled()) {
+			RegistryUtil.getRegistryAccess()
+				.registries()
+				.forEach(entry -> {
+					Registry<?> registry = entry.value();
+					createAndRegisterTagCategory(registration, tagInfoRecipeMakers, ingredientManager, registry);
+				});
+		}
 	}
 
 	@Override
 	public void registerRecipes(IRecipeRegistration registration) {
-		for (TagInfoRecipeMaker<?, ?> data : tagInfoRecipeMakers) {
-			data.addRecipes(registration);
+		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+		if (clientConfig.isShowTagRecipesEnabled()) {
+			for (TagInfoRecipeMaker<?, ?> data : tagInfoRecipeMakers) {
+				data.addRecipes(registration);
+			}
 		}
+		tagInfoRecipeMakers.clear();
 	}
 
 	private static <B> void createAndRegisterTagCategory(
@@ -106,7 +117,7 @@ public class JeiInternalPlugin implements IModPlugin {
 	}
 
 	private static RecipeType<ITagInfoRecipe> createTagInfoRecipeType(ResourceLocation registryLocation) {
-		return RecipeType.create(registryLocation.getNamespace(), registryLocation.getPath(), ITagInfoRecipe.class);
+		return RecipeType.create(registryLocation.getNamespace(), "tag_recipes/" + registryLocation.getPath(), ITagInfoRecipe.class);
 	}
 
 	private static <B, I> boolean createAndRegisterTagCategory(

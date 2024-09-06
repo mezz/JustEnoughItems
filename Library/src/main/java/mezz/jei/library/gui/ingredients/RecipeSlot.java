@@ -5,7 +5,7 @@ import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -22,7 +22,8 @@ import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
-import mezz.jei.library.ingredients.IngredientAcceptor;
+import mezz.jei.library.gui.recipes.layout.builder.LegacyTooltipCallbackAdapter;
+import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
@@ -41,7 +42,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	private final RecipeIngredientRole role;
 	private final ICycler cycler;
-	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks;
+	private final List<IRecipeSlotRichTooltipCallback> tooltipCallbacks;
 	private final @Nullable RendererOverrides rendererOverrides;
 	private final @Nullable IDrawable background;
 	private final @Nullable IDrawable overlay;
@@ -64,13 +65,13 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private List<Optional<ITypedIngredient<?>>> displayIngredients;
 
 	@Nullable
-	private IngredientAcceptor displayOverrides;
+	private DisplayIngredientAcceptor displayOverrides;
 
 	public RecipeSlot(
 		RecipeIngredientRole role,
 		ImmutableRect2i rect,
 		ICycler cycler,
-		List<IRecipeSlotTooltipCallback> tooltipCallbacks,
+		List<IRecipeSlotRichTooltipCallback> tooltipCallbacks,
 		List<Optional<ITypedIngredient<?>>> allIngredients,
 		@Nullable List<Optional<ITypedIngredient<?>>> focusedIngredients,
 		@Nullable IDrawable background,
@@ -184,7 +185,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
-		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
+		for (IRecipeSlotRichTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onRichTooltip(this, tooltip);
 		}
 
@@ -202,12 +203,10 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 		addTagNameTooltip(tooltip, ingredientManager, typedIngredient);
 
-		List<Component> legacyTooltip = tooltip.toLegacyToComponents();
-		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
-			//noinspection removal
-			tooltipCallback.onTooltip(this, legacyTooltip);
+		for (IRecipeSlotRichTooltipCallback tooltipCallback : this.tooltipCallbacks) {
+			tooltipCallback.onRichTooltip(this, tooltip);
 		}
-		return legacyTooltip;
+		return tooltip.toLegacyToComponents();
 	}
 
 	private <T> void addTagNameTooltip(ITooltipBuilder tooltip, IIngredientManager ingredientManager, ITypedIngredient<T> ingredient) {
@@ -256,8 +255,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	@SuppressWarnings("removal")
 	@Override
-	public void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
-		this.tooltipCallbacks.add(tooltipCallback);
+	public void addTooltipCallback(mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback tooltipCallback) {
+		this.tooltipCallbacks.add(new LegacyTooltipCallbackAdapter(tooltipCallback));
 	}
 
 	private <T> IIngredientRenderer<T> getIngredientRenderer(IIngredientType<T> ingredientType) {
@@ -344,7 +343,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	public IIngredientConsumer createDisplayOverrides() {
 		if (displayOverrides == null) {
 			IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-			displayOverrides = new IngredientAcceptor(ingredientManager);
+			displayOverrides = new DisplayIngredientAcceptor(ingredientManager);
 		}
 		return displayOverrides;
 	}

@@ -7,7 +7,6 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
@@ -17,12 +16,9 @@ import mezz.jei.api.recipe.category.extensions.vanilla.smithing.ISmithingCategor
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.level.block.Blocks;
@@ -94,43 +90,23 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe>, 
 
 	@Override
 	public void onDisplayedIngredientsUpdate(SmithingRecipe recipe, List<IRecipeSlotDrawable> recipeSlots, IFocusGroup focuses) {
+		ISmithingCategoryExtension<? super SmithingRecipe> extension = getExtension(recipe);
+		if (extension == null) {
+			return;
+		}
+
 		IRecipeSlotDrawable templateSlot = recipeSlots.get(0);
 		IRecipeSlotDrawable baseSlot = recipeSlots.get(1);
 		IRecipeSlotDrawable additionSlot = recipeSlots.get(2);
 		IRecipeSlotDrawable outputSlot = recipeSlots.get(3);
-
-		List<IFocus<?>> outputFocuses = focuses.getFocuses(RecipeIngredientRole.OUTPUT).toList();
-		if (outputFocuses.isEmpty()) {
-			ItemStack template = templateSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
-			ItemStack base = baseSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
-			ItemStack addition = additionSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
-
-			Container recipeInput = createInput(template, base, addition);
-			ItemStack output = RecipeUtil.assembleResultItem(recipeInput, recipe);
-			outputSlot.createDisplayOverrides()
-				.addItemStack(output);
-		} else {
-			ItemStack output = outputSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
-			ItemStack base = new ItemStack(output.getItem());
-			ItemStack template = templateSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
-			ItemStack addition = additionSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
-
-			baseSlot.createDisplayOverrides()
-				.addItemStack(base);
-
-			Container recipeInput = createInput(template, base, addition);
-			output = RecipeUtil.assembleResultItem(recipeInput, recipe);
-			outputSlot.createDisplayOverrides()
-				.addItemStack(output);
-		}
-	}
-
-	private static Container createInput(ItemStack template, ItemStack base, ItemStack addition) {
-		Container container = new SimpleContainer(3);
-		container.setItem(0, template);
-		container.setItem(1, base);
-		container.setItem(2, addition);
-		return container;
+		extension.onDisplayedIngredientsUpdate(
+			recipe,
+			templateSlot,
+			baseSlot,
+			additionSlot,
+			outputSlot,
+			focuses
+		);
 	}
 
 	@Override

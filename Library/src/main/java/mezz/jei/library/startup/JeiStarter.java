@@ -13,6 +13,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.JeiClientConfigs;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.FileWatcher;
@@ -57,6 +58,7 @@ public final class JeiStarter {
 	@SuppressWarnings("FieldCanBeLocal")
 	private final FileWatcher fileWatcher = new FileWatcher("JEI Config File Watcher");
 	private final ConfigManager configManager;
+	private final JeiClientConfigs jeiClientConfigs;
 
 	public JeiStarter(StartData data) {
 		ErrorUtil.checkNotEmpty(data.plugins(), "plugins");
@@ -84,7 +86,7 @@ public final class JeiStarter {
 		this.colorNameConfig = new ColorNameConfig(colorFileBuilder);
 		colorFileBuilder.build().register(fileWatcher, configManager);
 
-		JeiClientConfigs jeiClientConfigs = new JeiClientConfigs(configDir.resolve("jei-client.ini"));
+		this.jeiClientConfigs = new JeiClientConfigs(configDir.resolve("jei-client.ini"));
 		jeiClientConfigs.register(fileWatcher, configManager);
 		Internal.setJeiClientConfigs(jeiClientConfigs);
 
@@ -109,7 +111,8 @@ public final class JeiStarter {
 
 		IClientToggleState toggleState = Internal.getClientToggleState();
 
-		PluginLoader pluginLoader = new PluginLoader(data, modIdFormatConfig, colorHelper);
+		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
+		PluginLoader pluginLoader = new PluginLoader(data, modIdFormatConfig, ingredientFilterConfig, colorHelper);
 		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 
 		IIngredientManager ingredientManager = pluginLoader.getIngredientManager();

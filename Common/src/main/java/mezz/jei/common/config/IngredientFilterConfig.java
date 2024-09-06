@@ -12,9 +12,11 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	public final Supplier<SearchMode> tagSearchMode;
 	public final Supplier<SearchMode> colorSearchMode;
 	public final Supplier<SearchMode> resourceLocationSearchMode;
+	public final Supplier<SearchMode> creativeTabSearchMode;
 	public final Supplier<Boolean> searchAdvancedTooltips;
 	public final Supplier<Boolean> searchModIds;
 	public final Supplier<Boolean> searchShortModNames;
+	public final Supplier<Boolean> searchIngredientAliases;
 
 	public IngredientFilterConfig(IConfigSchemaBuilder builder) {
 		IConfigCategoryBuilder search = builder.addCategory("search");
@@ -43,6 +45,11 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 				SearchMode.DISABLED,
 				"Search mode for resources locations (prefix: &)"
 		);
+		creativeTabSearchMode = search.addEnum(
+			"CreativeTabSearchMode",
+			SearchMode.DISABLED,
+			"Search mode for Creative Tabs (prefix: %)"
+		);
 		searchAdvancedTooltips = search.addBoolean(
 				"SearchAdvancedTooltips",
 				false,
@@ -57,6 +64,11 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 				"SearchShortModNames",
 				true,
 				"Search by the shorthand first letters of a mod's name"
+		);
+		searchIngredientAliases = search.addBoolean(
+			"SearchIngredientAliases",
+			true,
+			"Search ingredient aliases (alternative names) that are added by plugins, in addition to ingredient names"
 		);
 	}
 
@@ -86,6 +98,11 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	}
 
 	@Override
+	public SearchMode getCreativeTabSearchMode() {
+		return creativeTabSearchMode.get();
+	}
+
+	@Override
 	public boolean getSearchAdvancedTooltips() {
 		return searchAdvancedTooltips.get();
 	}
@@ -93,6 +110,11 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	@Override
 	public boolean getSearchModIds() {
 		return searchModIds.get();
+	}
+
+	@Override
+	public boolean getSearchIngredientAliases() {
+		return searchIngredientAliases.get();
 	}
 
 	@Override

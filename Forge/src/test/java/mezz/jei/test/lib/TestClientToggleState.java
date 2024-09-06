@@ -52,4 +52,9 @@ public class TestClientToggleState implements IClientToggleState {
 	public void setBookmarkEnabled(boolean value) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void addEditModeToggleListener(IEditModeListener listener) {
+
+	}
 }

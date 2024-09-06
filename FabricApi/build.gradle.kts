@@ -81,6 +81,11 @@ dependencies {
         name = "fabric-api",
         version = fabricApiVersion,
     )
+    implementation(
+        group = "com.google.code.findbugs",
+        name = "jsr305",
+        version = "3.0.1"
+    )
     dependencyProjects.forEach {
         implementation(it)
     }

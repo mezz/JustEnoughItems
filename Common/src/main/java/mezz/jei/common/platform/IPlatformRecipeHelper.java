@@ -9,7 +9,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +19,6 @@ public interface IPlatformRecipeHelper {
 	Ingredient getBase(SmithingRecipe recipe);
 	Ingredient getAddition(SmithingRecipe recipe);
 	Ingredient getTemplate(SmithingRecipe recipe);
-	Collection<Class<? extends SmithingRecipe>> getSupportedSmithingRecipeClasses();
 
 	Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe);
 

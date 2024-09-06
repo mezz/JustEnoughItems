@@ -107,7 +107,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			);
 			return Optional.of(recipeLayout);
 		} catch (RuntimeException | LinkageError e) {
-			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getRecipeType().getUid(), e);
+			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getRecipeType(), e);
 		}
 		return Optional.empty();
 	}
@@ -190,10 +190,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			// defensive push/pop to protect against recipe categories changing the last pose
 			poseStack.pushPose();
 			{
+				recipeCategory.draw(recipe, recipeCategorySlotsView, guiGraphics, recipeMouseX, recipeMouseY);
 				for (IRecipeSlotDrawable slot : recipeCategorySlots) {
 					slot.draw(guiGraphics);
 				}
-				recipeCategory.draw(recipe, recipeCategorySlotsView, guiGraphics, recipeMouseX, recipeMouseY);
 				for (IRecipeWidget widget : allWidgets) {
 					ScreenPosition position = widget.getPosition();
 					poseStack.pushPose();

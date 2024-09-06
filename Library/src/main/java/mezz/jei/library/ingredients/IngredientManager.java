@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.Translator;
 import mezz.jei.core.util.WeakList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -154,7 +155,7 @@ public class IngredientManager implements IIngredientManager {
 
 		if (!this.listeners.isEmpty()) {
 			List<ITypedIngredient<V>> typedIngredients = ingredients.stream()
-				.map(i -> TypedIngredient.createUnvalidated(ingredientType, i))
+				.flatMap(i -> TypedIngredient.createAndFilterInvalid(this, ingredientType, i, false).stream())
 				.toList();
 
 			IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
@@ -176,11 +177,10 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public <V> ITypedIngredient<V> normalizeTypedIngredient(ITypedIngredient<V> typedIngredient) {
+		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 		IIngredientType<V> type = typedIngredient.getType();
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(type);
-		V ingredient = typedIngredient.getIngredient();
-		V normalized = ingredientHelper.normalizeIngredient(ingredient);
-		return TypedIngredient.createUnvalidated(type, normalized);
+		return TypedIngredient.normalize(typedIngredient, ingredientHelper);
 	}
 
 	@SuppressWarnings("removal")
@@ -198,5 +198,20 @@ public class IngredientManager implements IIngredientManager {
 			.getIngredientInfo(ingredientType)
 			.getIngredientByUid(ingredientUuid)
 			.flatMap(i -> TypedIngredient.createAndFilterInvalid(this, ingredientType, i, true));
+	}
+
+	@Override
+	public Collection<String> getIngredientAliases(ITypedIngredient<?> ingredient) {
+		return getIngredientAliasesInternal(ingredient);
+	}
+
+	private <T> Collection<String> getIngredientAliasesInternal(ITypedIngredient<T> typedIngredient) {
+		return registeredIngredients
+			.getIngredientInfo(typedIngredient.getType())
+			.getIngredientAliases(typedIngredient.getIngredient())
+			.stream()
+			.map(Translator::translateToLocal)
+			.sorted(String::compareToIgnoreCase)
+			.toList();
 	}
 }

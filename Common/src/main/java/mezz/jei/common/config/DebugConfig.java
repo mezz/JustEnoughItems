@@ -2,8 +2,6 @@ package mezz.jei.common.config;
 
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
-import mezz.jei.common.platform.IPlatformModHelper;
-import mezz.jei.common.platform.Services;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
@@ -19,13 +17,11 @@ public final class DebugConfig {
 	private final Supplier<Boolean> debugModeEnabled;
 	private final Supplier<Boolean> debugGuisEnabled;
 	private final Supplier<Boolean> debugInputsEnabled;
-	private final Supplier<Boolean> debugIngredientsEnabled;
+	private final Supplier<Boolean> debugInfoTooltipsEnabled;
 	private final Supplier<Boolean> crashingTestIngredientsEnabled;
+	private final Supplier<Boolean> logSuffixTreeStats;
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
-		IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
-		boolean inDev = modHelper.isInDev();
-
 		IConfigCategoryBuilder advanced = schema.addCategory("debug");
 		debugModeEnabled = advanced.addBoolean(
 			"DebugMode",
@@ -42,15 +38,20 @@ public final class DebugConfig {
 			false,
 			"Debug inputs enabled"
 		);
-		debugIngredientsEnabled = advanced.addBoolean(
-			"DebugIngredients",
-			inDev,
-			"Debug ingredients enabled"
+		debugInfoTooltipsEnabled = advanced.addBoolean(
+			"debugInfoTooltipsEnabled",
+			false,
+			"Add debug information to ingredient tooltips when advanced tooltips are enabled"
 		);
 		crashingTestIngredientsEnabled = advanced.addBoolean(
 			"CrashingTestItemsEnabled",
 			false,
 			"Adds ingredients to JEI that intentionally crash, to help debug JEI."
+		);
+		logSuffixTreeStats = advanced.addBoolean(
+			"logSuffixTreeStats",
+			false,
+			"Log information about the suffix trees used for searching, to help debug JEI"
 		);
 	}
 
@@ -75,11 +76,11 @@ public final class DebugConfig {
 		return instance.debugInputsEnabled.get();
 	}
 
-	public static boolean isDebugIngredientsEnabled() {
+	public static boolean isDebugInfoTooltipsEnabled() {
 		if (instance == null) {
 			return false;
 		}
-		return instance.debugIngredientsEnabled.get();
+		return instance.debugInfoTooltipsEnabled.get();
 	}
 
 	public static boolean isCrashingTestIngredientsEnabled() {
@@ -87,5 +88,12 @@ public final class DebugConfig {
 			return false;
 		}
 		return instance.crashingTestIngredientsEnabled.get();
+	}
+
+	public static boolean isLogSuffixTreeStatsEnabled() {
+		if (instance == null) {
+			return false;
+		}
+		return instance.logSuffixTreeStats.get();
 	}
 }

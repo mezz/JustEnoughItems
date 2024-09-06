@@ -9,6 +9,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -112,8 +113,8 @@ public interface IIngredientManager {
 	/**
 	 * Create a typed ingredient, if the given ingredient is valid.
 	 *
-	 * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient}
-	 * cannot be created into {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
+	 * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient})
+	 * cannot be used in {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
 	 * This helps turn all special cases like {@link ItemStack#EMPTY} into {@link Optional#empty()} instead.
 	 *
 	 * @since 11.5.0
@@ -162,6 +163,16 @@ public interface IIngredientManager {
 	 * @since 15.5.0
 	 */
 	<V> Optional<ITypedIngredient<V>> getTypedIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid);
+
+	/**
+	 * Get localized search aliases for ingredients.
+	 * Registered by mods with {@link IIngredientAliasRegistration#addAlias}.
+	 *
+	 * If search aliases are disabled by the player in the configs, this will return an empty collection.
+	 *
+	 * @since 15.15.0
+	 */
+	Collection<String> getIngredientAliases(ITypedIngredient<?> ingredient);
 
 	/**
 	 * Add a listener to receive updates when ingredients are added or removed from the ingredient manager.

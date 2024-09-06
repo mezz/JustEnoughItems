@@ -4,6 +4,7 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import net.minecraft.network.chat.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,16 +14,18 @@ import java.util.List;
  * {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
  *
  * @since 9.3.0
+ * @deprecated use {@link IRecipeSlotRichTooltipCallback}
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "15.12.3", forRemoval = true)
 @FunctionalInterface
 public interface IRecipeSlotTooltipCallback {
 	/**
 	 * Change the tooltip for an ingredient.
 	 *
 	 * @since 9.3.0
-	 * @deprecated in favor of {@link #onRichTooltip(IRecipeSlotView, ITooltipBuilder)}
+	 * @deprecated in favor of {@link IRecipeSlotRichTooltipCallback}
 	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(since = "15.8.4", forRemoval = true)
 	void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip);
 
@@ -30,8 +33,17 @@ public interface IRecipeSlotTooltipCallback {
 	 * Add to the tooltip for an ingredient.
 	 *
 	 * @since 15.8.4
+	 * @deprecated in favor of {@link IRecipeSlotRichTooltipCallback}
 	 */
+	@Deprecated(since = "15.12.3", forRemoval = true)
+	@SuppressWarnings("removal")
 	default void onRichTooltip(IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
-
+		List<Component> components = tooltip.toLegacyToComponents();
+		List<Component> changedComponents = new ArrayList<>(components);
+		onTooltip(recipeSlotView, changedComponents);
+		if (!components.equals(changedComponents)) {
+			tooltip.removeAll(components);
+			tooltip.addAll(changedComponents);
+		}
 	}
 }

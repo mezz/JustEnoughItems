@@ -52,7 +52,7 @@ public class EventRegistration {
 
 		ScreenKeyboardEvents.allowKeyPress(screen).register(this::allowKeyPress);
 		ScreenMouseEvents.allowMouseClick(screen).register(this::allowMouseClick);
-		ScreenMouseEvents.beforeMouseRelease(screen).register(this::beforeMouseRelease);
+		ScreenMouseEvents.allowMouseRelease(screen).register(this::allowMouseRelease);
 		ScreenMouseEvents.allowMouseScroll(screen).register(this::allowMouseScroll);
 		ScreenEvents.afterRender(screen).register(this::afterRender);
 	}
@@ -66,8 +66,7 @@ public class EventRegistration {
 			.orElse(true);
 	}
 
-	@SuppressWarnings("UnusedReturnValue")
-	private boolean beforeMouseRelease(Screen screen, double mouseX, double mouseY, int button) {
+	private boolean allowMouseRelease(Screen screen, double mouseX, double mouseY, int button) {
 		if (clientInputHandler == null) {
 			return true;
 		}
