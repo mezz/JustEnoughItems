@@ -1,12 +1,15 @@
 import me.modmuss50.mpp.PublishModTask
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import net.darkhax.curseforgegradle.Constants as CFG_Constants
 
 plugins {
     java
     idea
     `maven-publish`
     id("fabric-loom")
+    id("net.darkhax.curseforgegradle")
     id("me.modmuss50.mod-publish-plugin")
 }
 
@@ -37,8 +40,6 @@ val modrinthId: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
-// set by ORG_GRADLE_PROJECT_curseforgeApikey in Jenkinsfile
-val curseforgeApikey: String? by project
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric"
 base {
@@ -197,6 +198,24 @@ tasks.named<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
 }
 
+tasks.register<TaskPublishCurseForge>("publishCurseForge") {
+    dependsOn(tasks.remapJar)
+    dependsOn(":Changelog:makeChangelog")
+
+    disableVersionDetection()
+
+    apiToken = project.findProperty("curseforge_apikey") ?: "0"
+
+    val mainFile = upload(curseProjectId, tasks.remapJar.get().archiveFile)
+    mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
+    mainFile.changelog = file("../Changelog/changelog.html")
+    mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
+    mainFile.addJavaVersion("Java $modJavaVersion")
+    mainFile.addGameVersion(minecraftVersion)
+    mainFile.addGameVersion(minecraftVersionRangeStart)
+    mainFile.addModLoader("Fabric")
+}
+
 publishMods {
     file.set(tasks.remapJar.get().archiveFile)
     changelog.set(provider { file("../Changelog/changelog.md").readText() })
@@ -204,17 +223,6 @@ publishMods {
     modLoaders.add("fabric")
     displayName.set("${project.version} for Fabric $minecraftVersion")
     version.set(project.version.toString())
-
-    curseforge {
-        projectId = curseProjectId
-        accessToken.set(curseforgeApikey ?: "0")
-        changelog.set(provider { file("../Changelog/changelog.html").readText() })
-        minecraftVersionRange {
-            start = minecraftVersionRangeStart
-            end = minecraftVersion
-        }
-        javaVersions.add(JavaVersion.toVersion(modJavaVersion))
-    }
 
     modrinth {
         projectId = modrinthId
@@ -226,7 +234,7 @@ publishMods {
     }
 }
 tasks.withType<PublishModTask> {
-    dependsOn(tasks.jar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
+    dependsOn(tasks.jar, ":Changelog:makeMarkdownChangelog")
 }
 
 tasks.named<Test>("test") {
