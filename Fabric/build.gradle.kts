@@ -221,6 +221,7 @@ publishMods {
     type = BETA
     modLoaders.add("fabric")
     displayName.set("${project.version} for Fabric $minecraftVersion")
+    version.set(project.version.toString())
 
     modrinth {
         projectId = "jei"

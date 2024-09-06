@@ -197,6 +197,7 @@ publishMods {
 	type = BETA
 	modLoaders.add("forge")
 	displayName.set("${project.version} for Forge $minecraftVersion")
+	version.set(project.version.toString())
 
 	modrinth {
 		projectId = "jei"

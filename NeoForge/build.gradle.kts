@@ -174,6 +174,7 @@ publishMods {
 	type = BETA
 	modLoaders.add("neoforge")
 	displayName.set("${project.version} for NeoForge $minecraftVersion")
+	version.set(project.version.toString())
 
 	modrinth {
 		projectId = "jei"
