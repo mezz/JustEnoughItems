@@ -173,6 +173,7 @@ publishMods {
 	changelog.set(provider { file("../Changelog/changelog.md").readText() })
 	type = BETA
 	modLoaders.add("neoforge")
+	displayName.set("${project.version} for NeoForge $minecraftVersion")
 
 	modrinth {
 		projectId = "jei"

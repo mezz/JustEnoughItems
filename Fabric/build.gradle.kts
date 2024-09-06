@@ -220,6 +220,7 @@ publishMods {
     changelog.set(provider { file("../Changelog/changelog.md").readText() })
     type = BETA
     modLoaders.add("fabric")
+    displayName.set("${project.version} for Fabric $minecraftVersion")
 
     modrinth {
         projectId = "jei"

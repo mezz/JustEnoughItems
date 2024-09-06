@@ -196,6 +196,7 @@ publishMods {
 	changelog.set(provider { file("../Changelog/changelog.md").readText() })
 	type = BETA
 	modLoaders.add("forge")
+	displayName.set("${project.version} for Forge $minecraftVersion")
 
 	modrinth {
 		projectId = "jei"
