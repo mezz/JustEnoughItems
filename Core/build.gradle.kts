@@ -1,5 +1,6 @@
 plugins {
     java
+    idea
     `maven-publish`
 }
 
@@ -90,4 +91,12 @@ base {
 artifacts {
     archives(tasks.jar.get())
     archives(sourcesJarTask.get())
+}
+
+idea {
+    module {
+        for (fileName in listOf("build", "run", "out", "logs")) {
+            excludeDirs.add(file(fileName))
+        }
+    }
 }

@@ -1,5 +1,6 @@
 plugins {
     java
+    idea
     id("org.spongepowered.gradle.vanilla")
     `maven-publish`
 }
@@ -81,6 +82,14 @@ tasks.withType<JavaCompile> {
     javaToolchains {
         compilerFor {
             languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
+        }
+    }
+}
+
+idea {
+    module {
+        for (fileName in listOf("build", "run", "out", "logs")) {
+            excludeDirs.add(file(fileName))
         }
     }
 }
