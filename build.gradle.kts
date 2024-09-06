@@ -59,7 +59,7 @@ if (buildNumber == null) {
 }
 val stringVersion = "${specificationVersion}.${buildNumber}"
 
-val resourceProperties by extra(mapOf(
+val resourceProperties by ext(mapOf(
     "curseHomepageUrl" to curseHomepageUrl,
     "fabricApiVersion" to fabricApiVersion,
     "fabricLoaderVersion" to fabricLoaderVersion,

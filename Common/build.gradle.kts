@@ -13,9 +13,7 @@ val minecraftVersion: String by extra
 val neoformTimestamp: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
-val modName: String by extra
-
-val resourceProperties = mapOf("modName" to modName)
+//val modName: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 base {
@@ -91,12 +89,17 @@ tasks.withType<JavaCompile> {
     }
 }
 
+val modName = providers.gradleProperty("modName")
+
 tasks.withType<ProcessResources> {
-    // this will ensure that this task is redone when the versions change.
-    inputs.properties(resourceProperties)
+//    val resourceProperties = mapOf("modName" to modName)
+//    val modName = providers.gradleProperty("modName")
+//
+//    // this will ensure that this task is redone when the properties change.
+//    inputs.property("modName", modName)
 
     filesMatching("pack.mcmeta") {
-        expand(resourceProperties)
+        expand(mapOf("modName" to modName))
     }
 }
 

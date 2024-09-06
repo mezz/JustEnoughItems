@@ -35,8 +35,6 @@ val modJavaVersion: String by extra
 val parchmentVersionFabric: String by extra
 val parchmentMinecraftVersion: String by extra
 
-val resourceProperties: Map<String, String> by rootProject.extra
-
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
 
@@ -74,12 +72,34 @@ tasks.withType<JavaCompile> {
     }
 }
 
+val resourceProperties: Map<String, String> = rootProject.ext.get("resourceProperties") as Map<String, String>
+
+val githubUrl = providers.gradleProperty("githubUrl")
+val modAuthor = providers.gradleProperty("modAuthor")
+val modDescription = providers.gradleProperty("modDescription")
+val modName = providers.gradleProperty("modName")
+val versionProvider = provider {
+    version
+}
+
 tasks.withType<ProcessResources> {
-    // this will ensure that this task is redone when the versions change.
-    inputs.properties(resourceProperties)
+
+//    // this will ensure that this task is redone when the properties change.
+//    inputs.properties(resourceProperties)
 
     filesMatching( "fabric.mod.json") {
-        expand(resourceProperties)
+        expand(mapOf(
+            "curseHomepageUrl" to curseHomepageUrl,
+            "fabricApiVersion" to fabricApiVersion,
+            "fabricLoaderVersion" to fabricLoaderVersion,
+            "githubUrl" to githubUrl,
+            "modAuthor" to modAuthor,
+            "modDescription" to modDescription,
+            "modId" to modId,
+            "modJavaVersion" to modJavaVersion,
+            "modName" to modName,
+            "version" to versionProvider,
+        ))
     }
 }
 

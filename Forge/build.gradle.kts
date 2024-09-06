@@ -157,7 +157,7 @@ tasks.withType<ProcessResources> {
         from(it.sourceSets.main.get().resources)
     }
 
-	// this will ensure that this task is redone when the versions change.
+	// this will ensure that this task is redone when the properties change.
 	inputs.properties(resourceProperties)
 
 	filesMatching("META-INF/mods.toml") {
