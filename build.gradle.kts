@@ -52,32 +52,6 @@ val modJavaVersion: String by extra
 val modName: String by extra
 val specificationVersion: String by extra
 
-//adds the build number to the end of the version string if on a build server
-var buildNumber = project.findProperty("BUILD_NUMBER")
-if (buildNumber == null) {
-    buildNumber = "9999"
-}
-val stringVersion = "${specificationVersion}.${buildNumber}"
-
-val resourceProperties by ext(mapOf(
-    "curseHomepageUrl" to curseHomepageUrl,
-    "fabricApiVersion" to fabricApiVersion,
-    "fabricLoaderVersion" to fabricLoaderVersion,
-    "forgeVersionRange" to forgeVersionRange,
-    "githubUrl" to githubUrl,
-    "forgeLoaderVersionRange" to forgeLoaderVersionRange,
-    "neoforgeVersionRange" to neoforgeVersionRange,
-    "neoforgeLoaderVersionRange" to neoforgeLoaderVersionRange,
-    "minecraftVersion" to minecraftVersion,
-    "minecraftVersionRange" to minecraftVersionRange,
-    "modAuthor" to modAuthor,
-    "modDescription" to modDescription,
-    "modId" to modId,
-    "modJavaVersion" to modJavaVersion,
-    "modName" to modName,
-    "version" to stringVersion,
-))
-
 spotless {
 	java {
 		target("*/src/*/java/mezz/jei/**/*.java")
@@ -97,6 +71,7 @@ subprojects {
     if (buildNumber == null) {
         buildNumber = "9999"
     }
+    
     version = "${specificationVersion}.${buildNumber}"
     group = modGroup
 
