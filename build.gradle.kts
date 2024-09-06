@@ -11,9 +11,6 @@ plugins {
     // https://projects.neoforged.net/neoforged/moddevgradle
     id("net.neoforged.moddev") version("2.0.26-beta") apply(false)
 
-    // https://plugins.gradle.org/plugin/net.darkhax.curseforgegradle
-    id("net.darkhax.curseforgegradle") version("1.1.25") apply(false)
-
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
     id("me.modmuss50.mod-publish-plugin") version("0.7.2") apply(false)
 
