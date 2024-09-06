@@ -71,7 +71,7 @@ subprojects {
     if (buildNumber == null) {
         buildNumber = "9999"
     }
-    
+
     version = "${specificationVersion}.${buildNumber}"
     group = modGroup
 
