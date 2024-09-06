@@ -153,7 +153,6 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.withType<ProcessResources> {
     dependencyProjects.forEach {
-		inputs.files(it.sourceSets.main.get().resources)
         from(it.sourceSets.main.get().resources)
     }
 }
