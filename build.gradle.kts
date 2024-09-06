@@ -101,28 +101,27 @@ subprojects {
     }
 
     tasks.withType<ProcessResources> {
-        // this will ensure that this task is redone when the versions change.
-        inputs.property("version", version)
-
+        val properties = mapOf(
+            "curseHomepageUrl" to curseHomepageUrl,
+            "fabricApiVersion" to fabricApiVersion,
+            "fabricLoaderVersion" to fabricLoaderVersion,
+            "forgeVersionRange" to forgeVersionRange,
+            "githubUrl" to githubUrl,
+            "forgeLoaderVersionRange" to forgeLoaderVersionRange,
+            "neoforgeVersionRange" to neoforgeVersionRange,
+            "neoforgeLoaderVersionRange" to neoforgeLoaderVersionRange,
+            "minecraftVersion" to minecraftVersion,
+            "minecraftVersionRange" to minecraftVersionRange,
+            "modAuthor" to modAuthor,
+            "modDescription" to modDescription,
+            "modId" to modId,
+            "modJavaVersion" to modJavaVersion,
+            "modName" to modName,
+            "version" to version,
+        )
+        inputs.properties(properties)
         filesMatching(listOf("META-INF/mods.toml", "META-INF/neoforge.mods.toml", "pack.mcmeta", "fabric.mod.json")) {
-            expand(mapOf(
-                "curseHomepageUrl" to curseHomepageUrl,
-                "fabricApiVersion" to fabricApiVersion,
-                "fabricLoaderVersion" to fabricLoaderVersion,
-                "forgeVersionRange" to forgeVersionRange,
-                "githubUrl" to githubUrl,
-                "forgeLoaderVersionRange" to forgeLoaderVersionRange,
-                "neoforgeVersionRange" to neoforgeVersionRange,
-                "neoforgeLoaderVersionRange" to neoforgeLoaderVersionRange,
-                "minecraftVersion" to minecraftVersion,
-                "minecraftVersionRange" to minecraftVersionRange,
-                "modAuthor" to modAuthor,
-                "modDescription" to modDescription,
-                "modId" to modId,
-                "modJavaVersion" to modJavaVersion,
-                "modName" to modName,
-                "version" to version,
-            ))
+            expand(properties)
         }
     }
 

@@ -1,3 +1,5 @@
+import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
+
 plugins {
 	id("java")
 	id("idea")
@@ -119,4 +121,8 @@ publishing {
 			maven(deployDir)
 		}
 	}
+}
+
+tasks.withType<DownloadMavenArtifact> {
+	notCompatibleWithConfigurationCache("uses Task.project at execution time")
 }

@@ -61,7 +61,7 @@ tasks.withType<JavaCompile>().configureEach {
     }
 }
 
-tasks.withType<ProcessResources>().configureEach {
+tasks.withType<ProcessResources> {
     dependencyProjects.forEach {
         from(it.sourceSets.main.get().resources)
     }
