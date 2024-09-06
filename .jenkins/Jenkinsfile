@@ -58,9 +58,9 @@ pipeline {
 
         stage('Publish Modrinth') {
             steps {
-                sh "./gradlew :Fabric:modrinth"
-                sh "./gradlew :Forge:modrinth"
-                sh "./gradlew :NeoForge:modrinth"
+                sh "./gradlew :Fabric:publishModrinth"
+                sh "./gradlew :Forge:publishModrinth"
+                sh "./gradlew :NeoForge:publishModrinth"
             }
         }
 
