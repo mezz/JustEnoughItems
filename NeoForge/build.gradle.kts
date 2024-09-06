@@ -24,8 +24,6 @@ val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 
-val resourceProperties: Map<String, String> by rootProject.extra
-
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
 
