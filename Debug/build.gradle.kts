@@ -1,5 +1,6 @@
 plugins {
 	java
+	idea
 	id("org.spongepowered.gradle.vanilla")
 }
 
@@ -63,7 +64,6 @@ tasks.withType<JavaCompile> {
 		}
 	}
 }
-
 val copyModMetadataToClasses = tasks.register<Copy>("copyModMetadataToClasses") {
 	// Forge dev runs expose classes and resources as separate mod roots on this branch.
 	from(layout.buildDirectory.dir("resources/main/META-INF")) {
@@ -86,4 +86,12 @@ tasks.named(sourceSets.main.get().classesTaskName) {
 
 tasks.named<Jar>("jar") {
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+idea {
+	module {
+		for (fileName in listOf("build", "run", "out", "logs")) {
+			excludeDirs.add(file(fileName))
+		}
+	}
 }
