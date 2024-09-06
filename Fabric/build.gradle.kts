@@ -212,10 +212,6 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
     mainFile.addGameVersion(minecraftVersion)
     mainFile.addGameVersion(minecraftExtraCompatibleVersion)
     mainFile.addModLoader("Fabric")
-
-    doLast {
-        project.ext.set("curse_file_url", "${curseHomepageUrl}/files/${mainFile.curseFileId}")
-    }
 }
 
 modrinth {

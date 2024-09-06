@@ -186,10 +186,6 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 	mainFile.addJavaVersion("Java $modJavaVersion")
 	mainFile.addGameVersion(minecraftVersion)
 	mainFile.addModLoader("Forge")
-
-	doLast {
-		project.ext.set("curse_file_url", "${curseHomepageUrl}/files/${mainFile.curseFileId}")
-	}
 }
 
 modrinth {
