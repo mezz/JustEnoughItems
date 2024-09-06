@@ -1,3 +1,4 @@
+import me.modmuss50.mpp.PublishModTask
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -9,7 +10,7 @@ plugins {
 	id("eclipse")
 	id("maven-publish")
 	id("net.darkhax.curseforgegradle")
-	id("com.modrinth.minotaur")
+	id("me.modmuss50.mod-publish-plugin")
 	id("net.neoforged.moddev")
 }
 
@@ -19,7 +20,7 @@ val curseProjectId: String by extra
 val neoforgeVersion: String by extra
 val jUnitVersion: String by extra
 val minecraftVersion: String by extra
-val minecraftExtraCompatibleVersion: String by extra
+val minecraftVersionRangeStart: String by extra
 val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
@@ -163,24 +164,28 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
 	mainFile.addJavaVersion("Java $modJavaVersion")
 	mainFile.addGameVersion(minecraftVersion)
-	mainFile.addGameVersion(minecraftExtraCompatibleVersion)
+	mainFile.addGameVersion(minecraftVersionRangeStart)
 	mainFile.addModLoader("NeoForge")
 }
 
-modrinth {
-	token.set(modrinthToken)
-	projectId.set("jei")
-	versionNumber.set("${project.version}")
-	versionName.set("${project.version} for NeoForge $minecraftVersion")
-	versionType.set("beta")
-	uploadFile.set(tasks.jar.get())
+publishMods {
+	file.set(tasks.jar.get().archiveFile)
 	changelog.set(provider { file("../Changelog/changelog.md").readText() })
-	gameVersions.set(listOf(minecraftVersion, minecraftExtraCompatibleVersion))
-	detectLoaders.set(false)
-	loaders.add("neoforge")
+	type = BETA
+	modLoaders.add("neoforge")
+
+	modrinth {
+		projectId = "jei"
+		accessToken = modrinthToken
+		minecraftVersionRange {
+			start = minecraftVersionRangeStart
+			end = minecraftVersion
+		}
+	}
 }
-tasks.modrinth.get().dependsOn(tasks.jar)
-tasks.modrinth.get().dependsOn(":Changelog:makeMarkdownChangelog")
+tasks.withType<PublishModTask> {
+	dependsOn(tasks.jar, ":Changelog:makeMarkdownChangelog")
+}
 
 tasks.named<Test>("test") {
 	useJUnitPlatform()

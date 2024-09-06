@@ -1,3 +1,4 @@
+import me.modmuss50.mpp.PublishModTask
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
 import net.minecraftforge.gradle.common.tasks.JarExec
@@ -13,7 +14,7 @@ plugins {
 	id("net.minecraftforge.gradle")
 	id("org.parchmentmc.librarian.forgegradle")
 	id("net.darkhax.curseforgegradle")
-	id("com.modrinth.minotaur")
+	id("me.modmuss50.mod-publish-plugin")
 }
 
 // gradle.properties
@@ -22,6 +23,7 @@ val curseProjectId: String by extra
 val forgeVersion: String by extra
 val jUnitVersion: String by extra
 val minecraftVersion: String by extra
+val minecraftVersionRangeStart: String by extra
 val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
@@ -185,22 +187,28 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
 	mainFile.addJavaVersion("Java $modJavaVersion")
 	mainFile.addGameVersion(minecraftVersion)
+	mainFile.addGameVersion(minecraftVersionRangeStart)
 	mainFile.addModLoader("Forge")
 }
 
-modrinth {
-	token.set(modrinthToken)
-	projectId.set("jei")
-	versionNumber.set("${project.version}")
-	versionName.set("${project.version} for Forge $minecraftVersion")
-	versionType.set("beta")
-	uploadFile.set(tasks.jar.get())
+publishMods {
+	file.set(tasks.jar.get().archiveFile)
 	changelog.set(provider { file("../Changelog/changelog.md").readText() })
-	detectLoaders.set(false)
-	loaders.add("forge")
+	type = BETA
+	modLoaders.add("forge")
+
+	modrinth {
+		projectId = "jei"
+		accessToken = modrinthToken
+		minecraftVersionRange {
+			start = minecraftVersionRangeStart
+			end = minecraftVersion
+		}
+	}
 }
-tasks.modrinth.get().dependsOn(tasks.jar)
-tasks.modrinth.get().dependsOn(":Changelog:makeMarkdownChangelog")
+tasks.withType<PublishModTask> {
+	dependsOn(tasks.jar, ":Changelog:makeMarkdownChangelog")
+}
 
 tasks.named<Test>("test") {
 	useJUnitPlatform()

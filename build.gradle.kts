@@ -14,8 +14,8 @@ plugins {
     // https://plugins.gradle.org/plugin/net.darkhax.curseforgegradle
     id("net.darkhax.curseforgegradle") version("1.1.25") apply(false)
 
-    // https://plugins.gradle.org/plugin/com.modrinth.minotaur
-    id("com.modrinth.minotaur") version("2.8.7") apply(false)
+    // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
+    id("me.modmuss50.mod-publish-plugin") version("0.7.2") apply(false)
 
     // https://files.minecraftforge.net/net/minecraftforge/gradle/ForgeGradle/index.html
     id("net.minecraftforge.gradle") version("6.0.26") apply(false)
