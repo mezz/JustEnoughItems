@@ -36,6 +36,7 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentMinecraftVersion: String by extra
 val parchmentVersionFabric: String by extra
+val modrinthId: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -224,7 +225,7 @@ publishMods {
     version.set(project.version.toString())
 
     modrinth {
-        projectId = "jei"
+        projectId = modrinthId
         accessToken = modrinthToken
         minecraftVersionRange {
             start = minecraftVersionRangeStart
