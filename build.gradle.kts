@@ -14,11 +14,8 @@ plugins {
     // https://mvnrepository.com/artifact/org.parchmentmc.librarian.forgegradle/org.parchmentmc.librarian.forgegradle.gradle.plugin
     id("org.parchmentmc.librarian.forgegradle") version("1.2.0") apply(false)
 
-    // https://plugins.gradle.org/plugin/net.darkhax.curseforgegradle
-    id("net.darkhax.curseforgegradle") version("1.1.25") apply(false)
-
-    // https://plugins.gradle.org/plugin/com.modrinth.minotaur
-    id("com.modrinth.minotaur") version("2.8.7") apply(false)
+    // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
+    id("me.modmuss50.mod-publish-plugin") version("0.7.3") apply(false)
 
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
     id("fabric-loom") version("1.8.0-alpha.16") apply(false)
