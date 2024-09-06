@@ -175,6 +175,8 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 	dependsOn(tasks.jar)
 	dependsOn(":Changelog:makeChangelog")
 
+	disableVersionDetection()
+
 	apiToken = project.findProperty("curseforge_apikey") ?: "0"
 
 	val mainFile = upload(curseProjectId, tasks.jar.get().archiveFile)
