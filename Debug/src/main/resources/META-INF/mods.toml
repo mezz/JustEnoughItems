@@ -1,5 +1,5 @@
 modLoader="lowcodefml"
-loaderVersion="${loaderVersionRange}"
+loaderVersion="${forgeLoaderVersionRange}"
 license="MIT"
 
 [[mods]]

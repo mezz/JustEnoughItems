@@ -25,3 +25,7 @@ tasks.register<GitChangelogTask>("makeMarkdownChangelog") {
 	toRevision.set("HEAD")
 	templateContent.set(file("changelog-markdown.mustache").readText())
 }
+
+tasks.withType<GitChangelogTask> {
+	notCompatibleWithConfigurationCache("invocation of 'Task.project' at execution time is unsupported")
+}

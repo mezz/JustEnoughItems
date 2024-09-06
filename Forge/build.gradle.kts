@@ -1,4 +1,6 @@
 import me.modmuss50.mpp.PublishModTask
+import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
+import net.minecraftforge.gradle.common.tasks.JarExec
 import java.util.function.Supplier
 
 plugins {
@@ -208,6 +210,14 @@ publishMods {
 }
 tasks.withType<PublishModTask> {
 	dependsOn(shadedJar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
+}
+
+tasks.withType<DownloadMavenArtifact> {
+	notCompatibleWithConfigurationCache("uses Task.project at execution time")
+}
+
+tasks.withType<JarExec> {
+	notCompatibleWithConfigurationCache("uses external process at execution time")
 }
 
 tasks.named<Test>("test") {
