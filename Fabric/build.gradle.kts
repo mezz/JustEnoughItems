@@ -216,7 +216,7 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 }
 
 publishMods {
-    file.set(tasks.jar.get().archiveFile)
+    file.set(tasks.remapJar.get().archiveFile)
     changelog.set(provider { file("../Changelog/changelog.md").readText() })
     type = BETA
     modLoaders.add("fabric")
