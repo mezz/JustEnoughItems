@@ -1,4 +1,6 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
+import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
+import net.minecraftforge.gradle.common.tasks.JarExec
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import net.darkhax.curseforgegradle.Constants as CFG_Constants
@@ -156,6 +158,8 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 	dependsOn(tasks.jar)
 	dependsOn(":Changelog:makeChangelog")
 
+	disableVersionDetection()
+
 	apiToken = project.findProperty("curseforge_apikey") ?: "0"
 
 	val mainFile = upload(curseProjectId, tasks.jar.get().archiveFile)
@@ -165,10 +169,6 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
 	mainFile.addJavaVersion("Java $modJavaVersion")
 	mainFile.addGameVersion(minecraftVersion)
 	mainFile.addModLoader("Forge")
-
-	doLast {
-		project.ext.set("curse_file_url", "${curseHomepageUrl}/files/${mainFile.curseFileId}")
-	}
 }
 
 modrinth {
@@ -233,4 +233,12 @@ idea {
 			excludeDirs.add(file(fileName))
 		}
 	}
+}
+
+tasks.withType<DownloadMavenArtifact> {
+	notCompatibleWithConfigurationCache("uses Task.project at execution time")
+}
+
+tasks.withType<JarExec> {
+	notCompatibleWithConfigurationCache("uses external process at execution time")
 }

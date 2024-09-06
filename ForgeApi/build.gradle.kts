@@ -1,3 +1,5 @@
+import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
+
 plugins {
 	id("java")
 	id("maven-publish")
@@ -89,13 +91,21 @@ publishing {
 			artifact(tasks.jar)
 			artifact(sourcesJar)
 
+			val dependencyInfos = dependencyProjects.map {
+				mapOf(
+					"groupId" to it.group,
+					"artifactId" to it.base.archivesName.get(),
+					"version" to it.version
+				)
+			}
+
 			pom.withXml {
 				val dependenciesNode = asNode().appendNode("dependencies")
-				dependencyProjects.forEach {
+				dependencyInfos.forEach {
 					val dependencyNode = dependenciesNode.appendNode("dependency")
-					dependencyNode.appendNode("groupId", it.group)
-					dependencyNode.appendNode("artifactId", it.base.archivesName.get())
-					dependencyNode.appendNode("version", it.version)
+					it.forEach { (key, value) ->
+						dependencyNode.appendNode(key, value)
+					}
 				}
 			}
 		}
@@ -106,4 +116,8 @@ publishing {
 			maven(deployDir)
 		}
 	}
+}
+
+tasks.withType<DownloadMavenArtifact> {
+	notCompatibleWithConfigurationCache("uses Task.project at execution time")
 }

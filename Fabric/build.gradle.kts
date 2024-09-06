@@ -28,12 +28,13 @@ val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
 val fabricApiVersion: String by extra
 val fabricLoaderVersion: String by extra
+val minecraftExtraCompatibleVersion: String by extra
 val minecraftVersion: String by extra
 val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
-val parchmentVersionFabric: String by extra
 val parchmentMinecraftVersion: String by extra
+val parchmentVersionFabric: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -172,6 +173,8 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
     dependsOn(tasks.remapJar)
     dependsOn(":Changelog:makeChangelog")
 
+    disableVersionDetection()
+
     apiToken = project.findProperty("curseforge_apikey") ?: "0"
 
     val mainFile = upload(curseProjectId, tasks.remapJar.get().archiveFile)
@@ -180,11 +183,8 @@ tasks.register<TaskPublishCurseForge>("publishCurseForge") {
     mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
     mainFile.addJavaVersion("Java $modJavaVersion")
     mainFile.addGameVersion(minecraftVersion)
+    mainFile.addGameVersion(minecraftExtraCompatibleVersion)
     mainFile.addModLoader("Fabric")
-
-    doLast {
-        project.ext.set("curse_file_url", "${curseHomepageUrl}/files/${mainFile.curseFileId}")
-    }
 }
 
 modrinth {
@@ -226,13 +226,21 @@ publishing {
             artifact(tasks.remapJar)
             artifact(tasks.remapSourcesJar)
 
+            val dependencyInfos = dependencyProjects.map {
+                mapOf(
+                    "groupId" to it.group,
+                    "artifactId" to it.dependencyProject.base.archivesName.get(),
+                    "version" to it.version
+                )
+            }
+
             pom.withXml {
                 val dependenciesNode = asNode().appendNode("dependencies")
-                dependencyProjects.forEach {
+                dependencyInfos.forEach {
                     val dependencyNode = dependenciesNode.appendNode("dependency")
-                    dependencyNode.appendNode("groupId", it.group)
-                    dependencyNode.appendNode("artifactId", it.dependencyProject.base.archivesName.get())
-                    dependencyNode.appendNode("version", it.version)
+                    it.forEach { (key, value) ->
+                        dependencyNode.appendNode(key, value)
+                    }
                 }
             }
         }

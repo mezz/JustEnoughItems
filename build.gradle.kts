@@ -37,8 +37,8 @@ val fabricApiVersion: String by extra
 val fabricLoaderVersion: String by extra
 val forgeVersion: String by extra
 val forgeVersionRange: String by extra
+val forgeLoaderVersionRange: String by extra
 val githubUrl: String by extra
-val loaderVersionRange: String by extra
 val parchmentVersionForge: String by extra
 val minecraftVersion: String by extra
 val minecraftVersionRange: String by extra
@@ -99,26 +99,25 @@ subprojects {
     }
 
     tasks.withType<ProcessResources> {
-        // this will ensure that this task is redone when the versions change.
-        inputs.property("version", version)
-
+        val properties = mapOf(
+            "curseHomepageUrl" to curseHomepageUrl,
+            "fabricApiVersion" to fabricApiVersion,
+            "fabricLoaderVersion" to fabricLoaderVersion,
+            "forgeVersionRange" to forgeVersionRange,
+            "githubUrl" to githubUrl,
+            "forgeLoaderVersionRange" to forgeLoaderVersionRange,
+            "minecraftVersion" to minecraftVersion,
+            "minecraftVersionRange" to minecraftVersionRange,
+            "modAuthor" to modAuthor,
+            "modDescription" to modDescription,
+            "modId" to modId,
+            "modJavaVersion" to modJavaVersion,
+            "modName" to modName,
+            "version" to version,
+        )
+        inputs.properties(properties)
         filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta", "fabric.mod.json")) {
-            expand(mapOf(
-                "curseHomepageUrl" to curseHomepageUrl,
-                "fabricApiVersion" to fabricApiVersion,
-                "fabricLoaderVersion" to fabricLoaderVersion,
-                "forgeVersionRange" to forgeVersionRange,
-                "githubUrl" to githubUrl,
-                "loaderVersionRange" to loaderVersionRange,
-                "minecraftVersion" to minecraftVersion,
-                "minecraftVersionRange" to minecraftVersionRange,
-                "modAuthor" to modAuthor,
-                "modDescription" to modDescription,
-                "modId" to modId,
-                "modJavaVersion" to modJavaVersion,
-                "modName" to modName,
-                "version" to version,
-            ))
+            expand(properties)
         }
     }
 
