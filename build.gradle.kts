@@ -92,7 +92,12 @@ spotless {
 }
 
 subprojects {
-    version = stringVersion
+    //adds the build number to the end of the version string if on a build server
+    var buildNumber = project.findProperty("BUILD_NUMBER")
+    if (buildNumber == null) {
+        buildNumber = "9999"
+    }
+    version = "${specificationVersion}.${buildNumber}"
     group = modGroup
 
     tasks.withType<Javadoc> {
@@ -117,6 +122,31 @@ subprojects {
                 "Implementation-Version" to archiveVersion,
                 "Implementation-Vendor" to modAuthor
             ))
+        }
+    }
+
+    tasks.withType<ProcessResources> {
+        val properties = mapOf(
+            "curseHomepageUrl" to curseHomepageUrl,
+            "fabricApiVersion" to fabricApiVersion,
+            "fabricLoaderVersion" to fabricLoaderVersion,
+            "forgeVersionRange" to forgeVersionRange,
+            "githubUrl" to githubUrl,
+            "forgeLoaderVersionRange" to forgeLoaderVersionRange,
+            "neoforgeVersionRange" to neoforgeVersionRange,
+            "neoforgeLoaderVersionRange" to neoforgeLoaderVersionRange,
+            "minecraftVersion" to minecraftVersion,
+            "minecraftVersionRange" to minecraftVersionRange,
+            "modAuthor" to modAuthor,
+            "modDescription" to modDescription,
+            "modId" to modId,
+            "modJavaVersion" to modJavaVersion,
+            "modName" to modName,
+            "version" to version,
+        )
+        inputs.properties(properties)
+        filesMatching(listOf("META-INF/mods.toml", "META-INF/neoforge.mods.toml", "pack.mcmeta", "fabric.mod.json")) {
+            expand(properties)
         }
     }
 

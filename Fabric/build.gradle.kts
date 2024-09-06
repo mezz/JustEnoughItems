@@ -72,37 +72,6 @@ tasks.withType<JavaCompile> {
     }
 }
 
-val resourceProperties: Map<String, String> = rootProject.ext.get("resourceProperties") as Map<String, String>
-
-val githubUrl = providers.gradleProperty("githubUrl")
-val modAuthor = providers.gradleProperty("modAuthor")
-val modDescription = providers.gradleProperty("modDescription")
-val modName = providers.gradleProperty("modName")
-val versionProvider = provider {
-    version
-}
-
-tasks.withType<ProcessResources> {
-
-//    // this will ensure that this task is redone when the properties change.
-//    inputs.properties(resourceProperties)
-
-    filesMatching( "fabric.mod.json") {
-        expand(mapOf(
-            "curseHomepageUrl" to curseHomepageUrl,
-            "fabricApiVersion" to fabricApiVersion,
-            "fabricLoaderVersion" to fabricLoaderVersion,
-            "githubUrl" to githubUrl,
-            "modAuthor" to modAuthor,
-            "modDescription" to modDescription,
-            "modId" to modId,
-            "modJavaVersion" to modJavaVersion,
-            "modName" to modName,
-            "version" to versionProvider,
-        ))
-    }
-}
-
 dependencies {
     minecraft(
         group = "com.mojang",

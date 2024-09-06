@@ -68,13 +68,6 @@ tasks.withType<ProcessResources> {
 		inputs.files(it.sourceSets.main.get().resources)
         from(it.sourceSets.main.get().resources)
     }
-
-	// this will ensure that this task is redone when the properties change.
-	inputs.properties(resourceProperties)
-
-	filesMatching("META-INF/neoforge.mods.toml") {
-		expand(resourceProperties)
-	}
 }
 
 java {
