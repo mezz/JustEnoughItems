@@ -1,5 +1,6 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
+import net.minecraftforge.gradle.common.tasks.JarExec
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import net.darkhax.curseforgegradle.Constants as CFG_Constants
@@ -251,4 +252,8 @@ sourceSets.forEach {
 
 tasks.withType<DownloadMavenArtifact> {
 	notCompatibleWithConfigurationCache("uses Task.project at execution time")
+}
+
+tasks.withType<JarExec> {
+	notCompatibleWithConfigurationCache("uses external process at execution time")
 }
