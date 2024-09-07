@@ -161,6 +161,7 @@ publishMods {
 		projectId = curseProjectId
 		accessToken.set(curseforgeApikey ?: "0")
 		changelog.set(provider { file("../Changelog/changelog.html").readText() })
+		changelogType = "html"
 		minecraftVersionRange {
 			start = minecraftVersionRangeStart
 			end = minecraftVersion

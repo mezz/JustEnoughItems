@@ -12,7 +12,7 @@ plugins {
     id("net.neoforged.moddev") version("2.0.26-beta") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
-    id("me.modmuss50.mod-publish-plugin") version("0.7.2") apply(false)
+    id("me.modmuss50.mod-publish-plugin") version("0.7.3") apply(false)
 
     // https://files.minecraftforge.net/net/minecraftforge/gradle/ForgeGradle/index.html
     id("net.minecraftforge.gradle") version("6.0.26") apply(false)
