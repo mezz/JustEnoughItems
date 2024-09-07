@@ -1,11 +1,14 @@
 package mezz.jei.api.recipe;
 
+import com.google.common.base.Suppliers;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+
+import java.util.function.Supplier;
 
 /**
  * Identifies a type of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
@@ -34,9 +37,31 @@ public final class RecipeType<T> {
 		if (uid == null) {
 			throw new IllegalArgumentException("Vanilla Recipe Type must be registered before using it here. %s".formatted(vanillaRecipeType));
 		}
+		return createRecipeHolderType(uid);
+	}
+
+	/**
+	 * Create a JEI RecipeType from a Vanilla RecipeType's registered uid.
+	 * Returns a RecipeType that uses {@link RecipeHolder} to hold recipes.
+	 * @since 19.16.5
+	 */
+	public static <R extends Recipe<?>> RecipeType<RecipeHolder<R>> createRecipeHolderType(ResourceLocation uid) {
 		@SuppressWarnings({"unchecked", "RedundantCast"})
 		Class<? extends RecipeHolder<R>> holderClass = (Class<? extends RecipeHolder<R>>) (Object) RecipeHolder.class;
 		return new RecipeType<>(uid, holderClass);
+	}
+
+	/**
+	 * Create a Deferred Supplier for a JEI RecipeType from a Deferred Vanilla RecipeType.
+	 *
+	 * This is useful when you register vanilla recipe types using a deferred registration system.
+	 *
+	 * @since 19.16.5
+	 */
+	public static <R extends Recipe<?>> Supplier<RecipeType<RecipeHolder<R>>> createFromDeferredVanilla(
+		Supplier<net.minecraft.world.item.crafting.RecipeType<R>> deferredVanillaRecipeType
+	) {
+		return Suppliers.memoize(() -> createFromVanilla(deferredVanillaRecipeType.get()));
 	}
 
 	private final ResourceLocation uid;
