@@ -1,15 +1,12 @@
 import me.modmuss50.mpp.PublishModTask
-import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import net.darkhax.curseforgegradle.Constants as CFG_Constants
 
 plugins {
 	id("java")
 	id("idea")
 	id("eclipse")
 	id("maven-publish")
-	id("net.darkhax.curseforgegradle")
 	id("me.modmuss50.mod-publish-plugin")
 	id("net.neoforged.moddev")
 }
@@ -28,6 +25,8 @@ val modrinthId: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
+// set by ORG_GRADLE_PROJECT_curseforgeApikey in Jenkinsfile
+val curseforgeApikey: String? by project
 
 val baseArchivesName = "${modId}-${minecraftVersion}-neoforge"
 base {
@@ -151,35 +150,28 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	archiveClassifier.set("sources")
 }
 
-tasks.register<TaskPublishCurseForge>("publishCurseForge") {
-	dependsOn(tasks.jar)
-	dependsOn(":Changelog:makeChangelog")
-
-	disableVersionDetection()
-
-	apiToken = project.findProperty("curseforge_apikey") ?: "0"
-
-	val mainFile = upload(curseProjectId, tasks.jar.get().archiveFile)
-	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
-	mainFile.changelog = file("../Changelog/changelog.html")
-	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
-	mainFile.addJavaVersion("Java $modJavaVersion")
-	mainFile.addGameVersion(minecraftVersion)
-	mainFile.addGameVersion(minecraftVersionRangeStart)
-	mainFile.addModLoader("NeoForge")
-}
-
 publishMods {
 	file.set(tasks.jar.get().archiveFile)
-	changelog.set(provider { file("../Changelog/changelog.md").readText() })
 	type = BETA
 	modLoaders.add("neoforge")
 	displayName.set("${project.version} for NeoForge $minecraftVersion")
 	version.set(project.version.toString())
 
+	curseforge {
+		projectId = curseProjectId
+		accessToken.set(curseforgeApikey ?: "0")
+		changelog.set(provider { file("../Changelog/changelog.html").readText() })
+		minecraftVersionRange {
+			start = minecraftVersionRangeStart
+			end = minecraftVersion
+		}
+		javaVersions.add(JavaVersion.toVersion(modJavaVersion))
+	}
+
 	modrinth {
 		projectId = modrinthId
 		accessToken = modrinthToken
+		changelog.set(provider { file("../Changelog/changelog.md").readText() })
 		minecraftVersionRange {
 			start = minecraftVersionRangeStart
 			end = minecraftVersion
@@ -187,7 +179,7 @@ publishMods {
 	}
 }
 tasks.withType<PublishModTask> {
-	dependsOn(tasks.jar, ":Changelog:makeMarkdownChangelog")
+	dependsOn(tasks.jar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
 }
 
 tasks.named<Test>("test") {
