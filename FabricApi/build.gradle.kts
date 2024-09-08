@@ -128,8 +128,6 @@ publishing {
     publications {
         register<MavenPublication>("commonApiIntermediary") {
             artifactId = commonApiIntermediaryJar.archiveBaseName.get()
-            @Suppress("UnstableApiUsage")
-            loom.disableDeprecatedPomGeneration(this)
             artifact(commonApiIntermediaryJar)
             artifact(commonApiIntermediarySourcesJar)
         }
