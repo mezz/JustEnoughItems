@@ -5,8 +5,8 @@ plugins {
     // https://plugins.gradle.org/plugin/com.dorongold.task-tree
     id("com.dorongold.task-tree") version("4.0.0")
 
-    // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/
-    id("fabric-loom") version("1.8.0-alpha.9") apply(false)
+    // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
+    id("fabric-loom") version("1.8.0-alpha.16") apply(false)
 
     // https://projects.neoforged.net/neoforged/moddevgradle
     id("net.neoforged.moddev") version("2.0.26-beta") apply(false)
