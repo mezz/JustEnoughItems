@@ -26,6 +26,7 @@ val parchmentMinecraftVersion: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val modGroup: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric-api"
 base {
@@ -49,6 +50,7 @@ val commonApiIntermediaryJar = tasks.create<RemapJarTask>("commonApiIntermediary
     inputFile.set(commonJar)
     archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
     archiveClassifier.set("jar")
+    group = modGroup
 }
 
 val commonApiIntermediarySourcesJar = tasks.create<RemapJarTask>("commonApiIntermediarySourcesJar") {
@@ -57,6 +59,7 @@ val commonApiIntermediarySourcesJar = tasks.create<RemapJarTask>("commonApiInter
     inputFile.set(commonSourcesJar)
     archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
     archiveClassifier.set("sources")
+    group = modGroup
 }
 
 tasks.withType<JavaCompile> {
