@@ -1,3 +1,6 @@
+import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.RemapSourcesJarTask
+
 repositories {
     maven("https://maven.parchmentmc.org")
 }
@@ -16,25 +19,47 @@ val parchmentVersionFabric: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val modGroup: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric-api"
 base {
     archivesName.set(baseArchivesName)
 }
 
-val dependencyProjects: List<Project> = listOf(
-    project(":CommonApi"),
-)
+val commonApi = project(":CommonApi")
 
-dependencyProjects.forEach {
-    project.evaluationDependsOn(it.path)
-}
+project.evaluationDependsOn(commonApi.path)
 
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
     }
     withSourcesJar()
+}
+
+val commonApiIntermediaryJar = tasks.create<RemapJarTask>("commonApiIntermediaryJar") {
+    val commonApiJarTask = commonApi.tasks.jar.get()
+    commonApiJarTask.manifest {
+        attributes["Fabric-Loom-Remap"] = true
+    }
+    val commonApiJar = commonApiJarTask.archiveFile
+    val commonApiBaseArchivesName = commonApi.base.archivesName
+    inputFile.set(commonApiJar)
+    archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
+    group = modGroup
+}
+
+val commonApiIntermediarySourcesJar = tasks.create<RemapSourcesJarTask>("commonApiIntermediarySourcesJar") {
+    val commonApiSourcesJarTask = commonApi.tasks.named<Jar>("sourcesJar").get()
+    commonApiSourcesJarTask.manifest {
+        attributes["Fabric-Loom-Remap"] = true
+    }
+    val commonSourcesJar = commonApiSourcesJarTask.archiveFile
+    val commonApiBaseArchivesName = commonApi.base.archivesName
+    inputFile.set(commonSourcesJar)
+    archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
+    archiveClassifier.set("sources")
+    group = modGroup
 }
 
 tasks.withType<JavaCompile> {
@@ -78,9 +103,7 @@ dependencies {
         name = "jsr305",
         version = "3.0.2"
     )
-    dependencyProjects.forEach {
-        implementation(it)
-    }
+    implementation(commonApi)
 }
 
 sourceSets {
@@ -97,10 +120,17 @@ sourceSets {
 artifacts {
     archives(tasks.remapJar)
     archives(tasks.remapSourcesJar)
+    archives(commonApiIntermediaryJar)
+    archives(commonApiIntermediarySourcesJar)
 }
 
 publishing {
     publications {
+        register<MavenPublication>("commonApiIntermediary") {
+            artifactId = commonApiIntermediaryJar.archiveBaseName.get()
+            artifact(commonApiIntermediaryJar)
+            artifact(commonApiIntermediarySourcesJar)
+        }
         register<MavenPublication>("fabricApi") {
             artifactId = baseArchivesName
             @Suppress("UnstableApiUsage")
@@ -108,13 +138,17 @@ publishing {
             artifact(tasks.remapJar)
             artifact(tasks.remapSourcesJar)
 
+            val dependencyInfo = mapOf(
+                "groupId" to commonApiIntermediaryJar.group,
+                "artifactId" to commonApiIntermediaryJar.archiveBaseName.get(),
+                "version" to commonApi.version
+            )
+
             pom.withXml {
                 val dependenciesNode = asNode().appendNode("dependencies")
-                dependencyProjects.forEach {
-                    val dependencyNode = dependenciesNode.appendNode("dependency")
-                    dependencyNode.appendNode("groupId", it.group)
-                    dependencyNode.appendNode("artifactId", it.base.archivesName.get())
-                    dependencyNode.appendNode("version", it.version)
+                val dependencyNode = dependenciesNode.appendNode("dependency")
+                dependencyInfo.forEach { (key, value) ->
+                    dependencyNode.appendNode(key, value)
                 }
             }
         }
