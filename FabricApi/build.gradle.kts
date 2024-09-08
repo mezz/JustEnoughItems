@@ -1,4 +1,5 @@
 import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.RemapSourcesJarTask
 
 plugins {
     java
@@ -45,16 +46,23 @@ java {
 }
 
 val commonApiIntermediaryJar = tasks.create<RemapJarTask>("commonApiIntermediaryJar") {
-    val commonJar = commonApi.tasks.jar.get().archiveFile
+    val commonApiJarTask = commonApi.tasks.jar.get()
+    commonApiJarTask.manifest {
+        attributes["Fabric-Loom-Remap"] = true
+    }
+    val commonApiJar = commonApiJarTask.archiveFile
     val commonApiBaseArchivesName = commonApi.base.archivesName;
-    inputFile.set(commonJar)
+    inputFile.set(commonApiJar)
     archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
-    archiveClassifier.set("jar")
     group = modGroup
 }
 
-val commonApiIntermediarySourcesJar = tasks.create<RemapJarTask>("commonApiIntermediarySourcesJar") {
-    val commonSourcesJar = commonApi.tasks.named<Jar>("sourcesJar").get().archiveFile;
+val commonApiIntermediarySourcesJar = tasks.create<RemapSourcesJarTask>("commonApiIntermediarySourcesJar") {
+    val commonApiSourcesJarTask = commonApi.tasks.named<Jar>("sourcesJar").get()
+    commonApiSourcesJarTask.manifest {
+        attributes["Fabric-Loom-Remap"] = true
+    }
+    val commonSourcesJar = commonApiSourcesJarTask.archiveFile;
     val commonApiBaseArchivesName = commonApi.base.archivesName;
     inputFile.set(commonSourcesJar)
     archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
