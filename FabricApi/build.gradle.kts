@@ -48,13 +48,15 @@ val commonApiIntermediaryJar = tasks.create<RemapJarTask>("commonApiIntermediary
     val commonApiBaseArchivesName = commonApi.base.archivesName;
     inputFile.set(commonJar)
     archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
+    archiveClassifier.set("jar")
 }
 
 val commonApiIntermediarySourcesJar = tasks.create<RemapJarTask>("commonApiIntermediarySourcesJar") {
     val commonSourcesJar = commonApi.tasks.named<Jar>("sourcesJar").get().archiveFile;
     val commonApiBaseArchivesName = commonApi.base.archivesName;
     inputFile.set(commonSourcesJar)
-    archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary-sources" })
+    archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
+    archiveClassifier.set("sources")
 }
 
 tasks.withType<JavaCompile> {
