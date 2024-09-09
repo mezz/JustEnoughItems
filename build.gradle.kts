@@ -31,7 +31,9 @@ repositories {
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
 val fabricApiVersion: String by extra
+val fabricApiVersionRange: String by extra
 val fabricLoaderVersion: String by extra
+val fabricLoaderVersionRange: String by extra
 val forgeVersion: String by extra
 val forgeVersionRange: String by extra
 val githubUrl: String by extra
@@ -101,7 +103,9 @@ subprojects {
         val properties = mapOf(
             "curseHomepageUrl" to curseHomepageUrl,
             "fabricApiVersion" to fabricApiVersion,
+            "fabricApiVersionRange" to fabricApiVersionRange,
             "fabricLoaderVersion" to fabricLoaderVersion,
+            "fabricLoaderVersionRange" to fabricLoaderVersionRange,
             "forgeVersionRange" to forgeVersionRange,
             "githubUrl" to githubUrl,
             "forgeLoaderVersionRange" to forgeLoaderVersionRange,
