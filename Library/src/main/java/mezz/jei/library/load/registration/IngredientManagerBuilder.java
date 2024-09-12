@@ -47,7 +47,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 				"ingredients in the ingredient list, and it must have a height of 16"
 		);
 		if (ingredientInfos.containsKey(ingredientType)) {
-			throw new IllegalArgumentException("Ingredient type has already been registered: " + ingredientType.getIngredientClass());
+			throw new IllegalArgumentException("Ingredient type has already been registered: " + ingredientType.getUid());
 		}
 
 		ingredientInfos.put(ingredientType, new IngredientInfo<>(ingredientType, allIngredients, ingredientHelper, ingredientRenderer));
@@ -60,7 +60,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 
 		IngredientInfo<?> ingredientInfo = ingredientInfos.get(ingredientType);
 		if (ingredientInfo == null) {
-			throw new IllegalArgumentException("Ingredient type has not been registered: " + ingredientType.getIngredientClass());
+			throw new IllegalArgumentException("Ingredient type has not been registered: " + ingredientType.getUid());
 		}
 		@SuppressWarnings("unchecked")
 		IngredientInfo<V> castIngredientInfo = (IngredientInfo<V>) ingredientInfo;
