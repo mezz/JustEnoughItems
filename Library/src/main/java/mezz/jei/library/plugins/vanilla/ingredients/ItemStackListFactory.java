@@ -11,11 +11,13 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,69 +35,48 @@ public final class ItemStackListFactory {
 		final List<ItemStack> itemList = new ArrayList<>();
 		final Set<Object> itemUidSet = new HashSet<>();
 
-		for (CreativeModeTab itemGroup : CreativeModeTab.TABS) {
-			if (itemGroup == CreativeModeTab.TAB_HOTBAR || itemGroup == CreativeModeTab.TAB_INVENTORY) {
+		for (CreativeModeTab tab : CreativeModeTab.TABS) {
+			if (tab == CreativeModeTab.TAB_HOTBAR || tab == CreativeModeTab.TAB_INVENTORY) {
 				if (debug) {
 					LOGGER.debug(
 						"Skipping creative tab: '{}'",
-						itemGroup.getDisplayName().getString()
+						tab.getDisplayName().getString()
 					);
 				}
 				continue;
 			}
-			NonNullList<ItemStack> creativeTabItemStacks = NonNullList.create();
+
+			NonNullList<ItemStack> displayItems = NonNullList.create();
 			try {
-				itemGroup.fillItemList(creativeTabItemStacks);
+				tab.fillItemList(displayItems);
 			} catch (RuntimeException | LinkageError e) {
 				LOGGER.error(
 					"Item Group crashed while getting items." +
 					"Items from this group will be missing from the JEI ingredient list: {}",
-					itemGroup.getDisplayName().getString(),
+					tab.getDisplayName().getString(),
 					e
 				);
 				continue;
 			}
 
-			int added = 0;
-			Set<Object> tabUidSet = new HashSet<>();
-			Set<Object> duplicateInTab = new HashSet<>();
-			int duplicateInTabCount = 0;
-			for (ItemStack itemStack : creativeTabItemStacks) {
-				if (itemStack.isEmpty()) {
-					LOGGER.error("Found an empty itemStack from creative tab: {}", itemGroup);
-				} else {
-					Object itemKey = getItemKey(stackHelper, itemStack);
-					if (itemKey != null) {
-						if (!tabUidSet.add(itemKey)) {
-							duplicateInTab.add(itemKey);
-							duplicateInTabCount++;
-						}
-						if (itemUidSet.add(itemKey)) {
-							itemList.add(itemStack);
-							added++;
-						}
-					}
-				}
-			}
-			if (debug) {
-				LOGGER.debug(
-					"Added {}/{} new items from creative tab: {}",
-					added,
-					creativeTabItemStacks.size(),
-					itemGroup.getDisplayName().getString()
-				);
-			}
-			if (duplicateInTabCount > 0) {
+			if (displayItems.isEmpty()) {
 				LOGGER.warn(
-					"""
-						{} duplicate items were found in creative tab: {}
-						This may indicate that these types of item need a subtype interpreter added to JEI:
-						{}""",
-					duplicateInTabCount,
-					itemGroup.getDisplayName().getString(),
-					duplicateInTab.stream().map(Object::toString).collect(Collectors.joining(", ", "[", "]"))
+					"Item Group has no display items. " +
+					"Items from this group will be missing from the JEI ingredient list. {}",
+					tab.getDisplayName().getString()
 				);
+				continue;
 			}
+
+			addFromTab(
+				displayItems,
+				"displayItems",
+				tab,
+				stackHelper,
+				itemList,
+				itemUidSet,
+				debug
+			);
 		}
 
 		if (showHidden) {
@@ -103,6 +84,59 @@ public final class ItemStackListFactory {
 		}
 
 		return itemList;
+	}
+
+	private static void addFromTab(
+		Collection<ItemStack> tabDisplayItems,
+		String displayType,
+		CreativeModeTab tab,
+		StackHelper stackHelper,
+		List<ItemStack> itemList,
+		Set<Object> itemUidSet,
+		boolean debug
+	) {
+		Set<Object> tabUidSet = new HashSet<>();
+		int added = 0;
+		Set<Object> duplicateInTab = new HashSet<>();
+		int duplicateInTabCount = 0;
+		for (ItemStack itemStack : tabDisplayItems) {
+			if (itemStack.isEmpty()) {
+				LOGGER.error("Found an empty itemStack in '{}' creative tab's {}", tab, displayType);
+			} else {
+				Object itemKey = safeGetUid(stackHelper, itemStack);
+				if (itemKey != null) {
+					if (!tabUidSet.add(itemKey)) {
+						duplicateInTab.add(itemKey);
+						duplicateInTabCount++;
+					}
+					if (itemUidSet.add(itemKey)) {
+						itemList.add(itemStack);
+						added++;
+					}
+				}
+			}
+		}
+		if (debug) {
+			LOGGER.debug(
+				"Added {}/{} new items from '{}' creative tab's {}",
+				StringUtils.leftPad(Integer.toString(added), 4, ' '),
+				StringUtils.leftPad(Integer.toString(tabDisplayItems.size()), 4, ' '),
+				tab.getDisplayName().getString(),
+				displayType
+			);
+		}
+		if (duplicateInTabCount > 0) {
+			LOGGER.warn(
+				"""
+					{} duplicate items were found in '{}' creative tab's: {}
+					This may indicate that these types of item need a subtype interpreter added to JEI:
+					{}""",
+				duplicateInTabCount,
+				tab.getDisplayName().getString(),
+				displayType,
+				duplicateInTab.stream().map(Object::toString).collect(Collectors.joining(", ", "[", "]"))
+			);
+		}
 	}
 
 	private static void addItemsFromRegistries(
@@ -119,7 +153,7 @@ public final class ItemStackListFactory {
 
 			int added = 0;
 			for (ItemStack itemStack : itemStacks) {
-				Object itemKey = getItemKey(stackHelper, itemStack);
+				Object itemKey = safeGetUid(stackHelper, itemStack);
 				if (itemKey != null && itemUidSet.add(itemKey)) {
 					itemList.add(itemStack);
 					added++;
@@ -143,7 +177,7 @@ public final class ItemStackListFactory {
 
 			int added = 0;
 			for (ItemStack itemStack : itemStacks) {
-				Object itemKey = getItemKey(stackHelper, itemStack);
+				Object itemKey = safeGetUid(stackHelper, itemStack);
 				if (itemKey != null && itemUidSet.add(itemKey)) {
 					itemList.add(itemStack);
 					added++;
@@ -161,7 +195,7 @@ public final class ItemStackListFactory {
 	}
 
 	@Nullable
-	private static Object getItemKey(StackHelper stackHelper, ItemStack stack) {
+	private static Object safeGetUid(StackHelper stackHelper, ItemStack stack) {
 		if (stackHelper.hasSubtypes(stack)) {
 			try {
 				return stackHelper.getUniqueIdentifierForStack(stack, UidContext.Ingredient);
