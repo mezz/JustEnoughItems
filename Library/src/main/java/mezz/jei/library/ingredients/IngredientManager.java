@@ -12,6 +12,7 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.Translator;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class IngredientManager implements IIngredientManager {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -95,10 +97,17 @@ public class IngredientManager implements IIngredientManager {
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
 		IngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
+		IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 
 		LOGGER.info("Ingredients are being added at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
+		if (LOGGER.isDebugEnabled()) {
+			String ingredientStrings = ingredients.stream()
+				.map(ingredientHelper::getResourceLocation)
+				.map(ResourceLocation::toString)
+				.collect(Collectors.joining("\n", "[", "]"));
+			LOGGER.debug("Ingredients added at runtime: {}", ingredientStrings);
+		}
 
-		IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 		Collection<V> validIngredients = ingredients.stream()
 			.filter(i -> {
 				if (!ingredientHelper.isValidIngredient(i)) {
@@ -167,8 +176,16 @@ public class IngredientManager implements IIngredientManager {
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
 		IngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
+		IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 
 		LOGGER.info("Ingredients are being removed at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
+		if (LOGGER.isDebugEnabled()) {
+			String ingredientStrings = ingredients.stream()
+				.map(ingredientHelper::getResourceLocation)
+				.map(ResourceLocation::toString)
+				.collect(Collectors.joining(", ", "[", "]"));
+			LOGGER.debug("Ingredients removed at runtime: {}", ingredientStrings);
+		}
 
 		ingredientInfo.removeIngredients(ingredients);
 
@@ -176,8 +193,6 @@ public class IngredientManager implements IIngredientManager {
 			List<ITypedIngredient<V>> typedIngredients = ingredients.stream()
 				.flatMap(i -> TypedIngredient.createAndFilterInvalid(this, ingredientType, i, false).stream())
 				.toList();
-
-			IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 
 			this.listeners.forEach(listener -> listener.onIngredientsRemoved(ingredientHelper, typedIngredients));
 		}
