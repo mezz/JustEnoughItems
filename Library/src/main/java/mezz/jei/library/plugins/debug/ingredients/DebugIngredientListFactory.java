@@ -8,9 +8,9 @@ public final class DebugIngredientListFactory {
 	private DebugIngredientListFactory() {
 	}
 
-	public static Collection<DebugIngredient> create() {
+	public static Collection<DebugIngredient> create(int start, int end) {
 		List<DebugIngredient> ingredients = new ArrayList<>();
-		for (int i = 0; i < 10; i++) {
+		for (int i = start; i < end; i++) {
 			DebugIngredient debugIngredient = new DebugIngredient(i);
 			ingredients.add(debugIngredient);
 		}

@@ -2,6 +2,7 @@ package mezz.jei.api;
 
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.registration.IAdvancedRegistration;
+import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
@@ -49,6 +50,16 @@ public interface IModPlugin {
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
 	 */
 	default void registerIngredients(IModIngredientRegistration registration) {
+
+	}
+
+	/**
+	 * Register extra ItemStacks that are not in the creative menu,
+	 * or FluidStacks that are different from the default ones available via the fluid registry.
+	 *
+	 * @since 15.19.0
+	 */
+	default void registerExtraIngredients(IExtraIngredientRegistration registration) {
 
 	}
 
