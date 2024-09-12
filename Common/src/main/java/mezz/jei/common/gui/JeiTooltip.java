@@ -16,10 +16,8 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.SafeIngredientUtil;
 import net.minecraft.ChatFormatting;
-import net.minecraft.CrashReport;
-import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
@@ -33,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -222,15 +221,18 @@ public class JeiTooltip implements ITooltipBuilder {
 		if (isEmpty()) {
 			return;
 		}
-		try {
-			IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-			renderHelper.renderTooltip(screen, poseStack, elements, x, y, font, itemStack);
-		} catch (RuntimeException e) {
-			CrashReport crashReport = ErrorUtil.createIngredientCrashReport(e, "Rendering ingredient tooltip", ingredientManager, typedIngredient);
-			crashReport.addCategory("tooltip")
-				.setDetail("value", this);
-			throw new ReportedException(crashReport);
-		}
+
+		SafeIngredientUtil.renderTooltip(
+			screen,
+			poseStack,
+			this,
+			x,
+			y,
+			font,
+			itemStack,
+			typedIngredient,
+			ingredientManager
+		);
 	}
 
 	private <T> void addDebugInfo(IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
@@ -264,5 +266,9 @@ public class JeiTooltip implements ITooltipBuilder {
 	@Override
 	public List<Component> getLegacyComponents() {
 		return lines;
+	}
+
+	public List<Either<FormattedText, TooltipComponent>> getElements() {
+		return Collections.unmodifiableList(elements);
 	}
 }

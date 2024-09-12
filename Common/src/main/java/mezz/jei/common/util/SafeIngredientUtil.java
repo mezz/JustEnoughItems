@@ -11,14 +11,19 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.common.platform.Services;
 import net.minecraft.ChatFormatting;
 import net.minecraft.CrashReport;
+import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,6 +71,37 @@ public final class SafeIngredientUtil {
 			CRASHING_INGREDIENT_TOOLTIPS.add(ingredient);
 			ErrorUtil.logIngredientCrash(e, "Caught an error getting an Ingredient's tooltip", ingredientManager, typedIngredient.getType(), ingredient);
 			getTooltipErrorTooltip(tooltip);
+		}
+	}
+
+	public static <T> void renderTooltip(
+		Screen screen,
+		PoseStack poseStack,
+		JeiTooltip tooltip,
+		int x,
+		int y,
+		Font font,
+		ItemStack itemStack,
+		ITypedIngredient<T> typedIngredient,
+		IIngredientManager ingredientManager
+	) {
+		T ingredient = typedIngredient.getIngredient();
+		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+
+		if (CRASHING_INGREDIENT_TOOLTIPS.contains(ingredient)) {
+			JeiTooltip errorTooltip = new JeiTooltip();
+			getTooltipErrorTooltip(errorTooltip);
+			renderHelper.renderTooltip(screen, poseStack, errorTooltip.getElements(), x, y, font, ItemStack.EMPTY);
+			return;
+		}
+
+		try {
+			renderHelper.renderTooltip(screen, poseStack, tooltip.getElements(), x, y, font, itemStack);
+		} catch (RuntimeException | LinkageError e) {
+			CRASHING_INGREDIENT_TOOLTIPS.add(ingredient);
+			CrashReportCategory category = new CrashReportCategory("tooltip");
+			category.setDetail("value", tooltip);
+			ErrorUtil.logIngredientCrash(e, "Rendering ingredient tooltip", ingredientManager, typedIngredient.getType(), ingredient, category);
 		}
 	}
 
