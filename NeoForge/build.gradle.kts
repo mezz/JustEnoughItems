@@ -1,6 +1,7 @@
 import me.modmuss50.mpp.PublishModTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.slf4j.event.Level
 
 plugins {
 	id("java")
@@ -112,22 +113,20 @@ neoForge {
 			client()
 			systemProperty("forge.logging.console.level", "debug")
 			gameDirectory = file("run/client/Dev")
+			logLevel = Level.DEBUG
 		}
 		create("client_01") {
 			client()
 			gameDirectory = file("run/client/Player01")
 			programArguments.addAll("--username", "Player01")
-		}
-		create("client_02") {
-			client()
-			gameDirectory = file("run/client/Player02")
-			programArguments.addAll("--username", "Player02")
+			logLevel = Level.DEBUG
 		}
 		create("server") {
 			server()
 			systemProperty("forge.logging.console.level", "debug")
 			gameDirectory = file("run/server")
 			programArguments.addAll("nogui")
+			logLevel = Level.DEBUG
 		}
 	}
 }
