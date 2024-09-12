@@ -3,6 +3,12 @@ import net.darkhax.curseforgegradle.Constants as CFG_Constants
 
 repositories {
     maven("https://maven.parchmentmc.org")
+    maven("https://maven.siphalor.de/") {
+        // for optional AMECS integration
+        content {
+            includeGroupByRegex("de\\.siphalor.*")
+        }
+    }
 }
 
 plugins {
@@ -25,6 +31,8 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentVersionFabric: String by extra
 val parchmentMinecraftVersion: String by extra
+val amecsVersionFabric: String by extra
+val amecsMinecraftVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -96,6 +104,13 @@ dependencies {
         name = "fabric-api",
         version = fabricApiVersion,
     )
+    modCompileOnly(
+        group = "de.siphalor",
+        name = "amecsapi-${amecsMinecraftVersion}",
+        version = amecsVersionFabric
+    ) {
+        exclude(group = "de.siphalor", module = "nmuk-${amecsMinecraftVersion}")
+    }
     dependencyProjects.forEach {
         implementation(it)
     }

@@ -8,10 +8,9 @@ import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 
 public class FabricJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
-	private final String category;
-	private final String description;
-	private JeiKeyConflictContext context = JeiKeyConflictContext.UNIVERSAL;
-	private JeiKeyModifier modifier = JeiKeyModifier.NONE;
+	protected final String category;
+	protected final String description;
+	protected JeiKeyConflictContext context = JeiKeyConflictContext.UNIVERSAL;
 
 	public FabricJeiKeyMappingBuilder(String category, String description) {
 		this.category = category;
@@ -26,31 +25,30 @@ public class FabricJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
 
 	@Override
 	public IJeiKeyMappingBuilder setModifier(JeiKeyModifier modifier) {
-		this.modifier = modifier;
 		return this;
 	}
 
 	@Override
 	protected IJeiKeyMappingInternal buildMouse(int mouseButton) {
-		return new FabricJeiKeyMapping(
-			category,
+		FabricKeyMapping keyMapping = new FabricKeyMapping(
 			description,
-			context,
-			modifier,
 			InputConstants.Type.MOUSE,
-			mouseButton
+			mouseButton,
+			category,
+			context
 		);
+		return new FabricJeiKeyMapping(keyMapping, context);
 	}
 
 	@Override
 	public IJeiKeyMappingInternal buildKeyboardKey(int key) {
-		return new FabricJeiKeyMapping(
-			category,
+		FabricKeyMapping keyMapping = new FabricKeyMapping(
 			description,
-			context,
-			modifier,
 			InputConstants.Type.KEYSYM,
-			key
+			key,
+			category,
+			context
 		);
+		return new FabricJeiKeyMapping(keyMapping, context);
 	}
 }
