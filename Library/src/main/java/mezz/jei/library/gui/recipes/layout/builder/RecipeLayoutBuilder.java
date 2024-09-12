@@ -94,8 +94,11 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 	private void addOutputSlotTooltipCallback(RecipeSlotBuilder slot) {
 		ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 		if (recipeName != null) {
-			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName);
-			slot.addRichTooltipCallback(callback);
+			ResourceLocation recipeTypeUid = recipeCategory.getRecipeType().getUid();
+			if (!recipeTypeUid.getNamespace().equals(recipeName.getNamespace())) {
+				OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName);
+				slot.addRichTooltipCallback(callback);
+			}
 		}
 	}
 
