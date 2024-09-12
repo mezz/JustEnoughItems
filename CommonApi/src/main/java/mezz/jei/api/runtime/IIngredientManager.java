@@ -11,6 +11,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
@@ -86,6 +87,10 @@ public interface IIngredientManager {
 	/**
 	 * Add new ingredients to JEI at runtime.
 	 * Used by mods that have items created while the game is running, or use the server to define items.
+	 *
+	 * If you just want to add ingredients to an existing type
+	 * (like adding more ItemStacks or FluidStacks, not at runtime),
+	 * use {@link IExtraIngredientRegistration#addExtraIngredients} instead.
 	 */
 	<V> void addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients);
 

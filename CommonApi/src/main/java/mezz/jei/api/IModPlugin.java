@@ -8,6 +8,7 @@ import mezz.jei.api.runtime.config.IJeiConfigManager;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.registration.IAdvancedRegistration;
+import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -51,6 +52,16 @@ public interface IModPlugin {
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
 	 */
 	default void registerIngredients(IModIngredientRegistration registration) {
+
+	}
+
+	/**
+	 * Register extra ItemStacks that are not in the creative menu,
+	 * or FluidStacks that are different from the default ones available via the fluid registry.
+	 *
+	 * @since 19.18.0
+	 */
+	default void registerExtraIngredients(IExtraIngredientRegistration registration) {
 
 	}
 
