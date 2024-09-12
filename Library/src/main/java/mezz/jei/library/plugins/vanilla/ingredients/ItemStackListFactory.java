@@ -11,10 +11,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
@@ -32,7 +30,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class ItemStackListFactory {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -64,23 +61,8 @@ public final class ItemStackListFactory {
 			throw new NullPointerException("minecraft.level must be set before JEI fetches ingredients");
 		}
 		RegistryAccess registryAccess = level.registryAccess();
-
-		// hack:
-		// The creative menu search will call CreativeModeTabs.tryRebuildTabContents and not run
-		// if the CreativeModeTabs.CACHED_PARAMETERS exactly match its parameters.
-		// Using a "different" RegistryAccess here ensures the parameters don't match.
-		RegistryAccess jeiRegistryAccess = new RegistryAccess() {
-			@Override
-			public <E> Optional<Registry<E>> registry(ResourceKey<? extends Registry<? extends E>> resourceKey) {
-				return registryAccess.registry(resourceKey);
-			}
-
-			@Override
-			public Stream<RegistryEntry<?>> registries() {
-				return registryAccess.registries();
-			}
-		};
-		CreativeModeTabs.tryRebuildTabContents(features, hasOperatorItemsTabPermissions, jeiRegistryAccess);
+		final CreativeModeTab.ItemDisplayParameters displayParameters =
+			new CreativeModeTab.ItemDisplayParameters(features, hasOperatorItemsTabPermissions, registryAccess);
 
 		for (CreativeModeTab itemGroup : CreativeModeTabs.allTabs()) {
 			if (itemGroup.getType() != CreativeModeTab.Type.CATEGORY) {
@@ -88,6 +70,17 @@ public final class ItemStackListFactory {
 					"Skipping creative tab: '{}' because it is type: {}",
 					itemGroup.getDisplayName().getString(),
 					itemGroup.getType()
+				);
+				continue;
+			}
+			try {
+				itemGroup.buildContents(displayParameters);
+			} catch (RuntimeException | LinkageError e) {
+				LOGGER.error(
+					"Item Group crashed while building contents." +
+					"Items from this group will be missing from the JEI ingredient list: {}",
+					itemGroup.getDisplayName().getString(),
+					e
 				);
 				continue;
 			}
