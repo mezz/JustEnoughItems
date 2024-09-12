@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
+import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -18,7 +19,7 @@ import mezz.jei.library.ingredients.RegisteredIngredients;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
-public class IngredientManagerBuilder implements IModIngredientRegistration, IIngredientAliasRegistration {
+public class IngredientManagerBuilder implements IModIngredientRegistration, IIngredientAliasRegistration, IExtraIngredientRegistration {
 	private final LinkedHashMap<IIngredientType<?>, IngredientInfo<?>> ingredientInfos = new LinkedHashMap<>();
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
@@ -47,6 +48,20 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		}
 
 		ingredientInfos.put(ingredientType, new IngredientInfo<>(ingredientType, allIngredients, ingredientHelper, ingredientRenderer));
+	}
+
+	@Override
+	public <V> void addExtraIngredients(IIngredientType<V> ingredientType, Collection<V> extraIngredients) {
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
+		ErrorUtil.checkNotNull(extraIngredients, "extraIngredients");
+
+		IngredientInfo<?> ingredientInfo = ingredientInfos.get(ingredientType);
+		if (ingredientInfo == null) {
+			throw new IllegalArgumentException("Ingredient type has not been registered: " + ingredientType.getIngredientClass());
+		}
+		@SuppressWarnings("unchecked")
+		IngredientInfo<V> castIngredientInfo = (IngredientInfo<V>) ingredientInfo;
+		castIngredientInfo.addIngredients(extraIngredients);
 	}
 
 	@Override
