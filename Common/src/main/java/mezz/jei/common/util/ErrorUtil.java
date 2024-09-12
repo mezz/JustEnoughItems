@@ -2,7 +2,6 @@ package mezz.jei.common.util;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -26,7 +25,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public final class ErrorUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -169,10 +170,6 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static <T> CrashReport createIngredientCrashReport(Throwable throwable, String title, IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
-		return createIngredientCrashReport(throwable, title, ingredientManager, typedIngredient.getType(), typedIngredient.getIngredient());
-	}
-
 	public static <T> CrashReport createIngredientCrashReport(Throwable throwable, String title, IIngredientManager ingredientManager, IIngredientType<T> ingredientType, T ingredient) {
 		CrashReport crashReport = CrashReport.forThrowable(throwable, title);
 		CrashReportCategory category = crashReport.addCategory("Ingredient");
@@ -183,7 +180,23 @@ public final class ErrorUtil {
 	public static <T> void logIngredientCrash(Throwable throwable, String title, IIngredientManager ingredientManager, IIngredientType<T> ingredientType, T ingredient) {
 		CrashReportCategory category = new CrashReportCategory("Ingredient");
 		setIngredientCategoryDetails(category, ingredientType, ingredient, ingredientManager);
-		LOGGER.error(crashReportToString(throwable, title, category));
+		LOGGER.error(crashReportToString(throwable, title, List.of(category)));
+	}
+
+	public static <T> void logIngredientCrash(
+		Throwable throwable,
+		String title,
+		IIngredientManager ingredientManager,
+		IIngredientType<T> ingredientType,
+		T ingredient,
+		CrashReportCategory... extraCategories
+	) {
+		CrashReportCategory category = new CrashReportCategory("Ingredient");
+		setIngredientCategoryDetails(category, ingredientType, ingredient, ingredientManager);
+		List<CrashReportCategory> categoryList = new ArrayList<>();
+		categoryList.add(category);
+		categoryList.addAll(List.of(extraCategories));
+		LOGGER.error(crashReportToString(throwable, title, categoryList));
 	}
 
 	private static <T> void setIngredientCategoryDetails(CrashReportCategory category, IIngredientType<T> ingredientType, T ingredient, IIngredientManager ingredientManager) {
@@ -203,7 +216,7 @@ public final class ErrorUtil {
 		category.setDetail("Error Info gathered from JEI", () -> ingredientHelper.getErrorInfo(ingredient));
 	}
 
-	private static String crashReportToString(Throwable t, String title, CrashReportCategory... categories) {
+	public static String crashReportToString(Throwable t, String title, Collection<CrashReportCategory> categories) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(title);
 		sb.append(":\n\n");
