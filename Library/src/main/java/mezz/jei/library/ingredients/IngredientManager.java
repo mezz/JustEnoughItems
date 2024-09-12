@@ -183,7 +183,6 @@ public class IngredientManager implements IIngredientManager {
 		return TypedIngredient.normalize(typedIngredient, ingredientHelper);
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	@Deprecated
 	public <V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
