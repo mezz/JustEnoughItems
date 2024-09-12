@@ -19,6 +19,12 @@ repositories {
     exclusiveMaven("https://maven.parchmentmc.org") {
         includeGroupByRegex("org\\.parchmentmc.*")
     }
+    maven("https://maven.siphalor.de/") {
+        // for optional AMECS integration
+        content {
+            includeGroup("de.siphalor")
+        }
+    }
 }
 
 // gradle.properties
@@ -34,6 +40,8 @@ val modJavaVersion: String by extra
 val parchmentMinecraftVersion: String by extra
 val parchmentVersionFabric: String by extra
 val modrinthId: String by extra
+val amecsVersionFabric: String by extra
+val amecsMinecraftVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -98,6 +106,11 @@ dependencies {
         group = "com.google.code.findbugs",
         name = "jsr305",
         version = "3.0.1"
+    )
+    modImplementation(
+        group = "de.siphalor",
+        name = "amecsapi-${amecsMinecraftVersion}",
+        version = amecsVersionFabric
     )
     dependencyProjects.forEach {
         implementation(it)
