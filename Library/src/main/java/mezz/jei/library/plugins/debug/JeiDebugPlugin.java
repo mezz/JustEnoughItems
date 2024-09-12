@@ -11,6 +11,7 @@ import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IAdvancedRegistration;
+import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
@@ -65,6 +66,13 @@ public class JeiDebugPlugin implements IModPlugin {
 			DebugIngredientHelper ingredientHelper = new DebugIngredientHelper();
 			DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer(ingredientHelper);
 			registration.register(DebugIngredient.TYPE, Collections.emptyList(), ingredientHelper, ingredientRenderer);
+		}
+	}
+
+	@Override
+	public void registerExtraIngredients(IExtraIngredientRegistration registration) {
+		if (DebugConfig.isDebugModeEnabled()) {
+			registration.addExtraIngredients(DebugIngredient.TYPE, DebugIngredientListFactory.create(0, 10));
 		}
 	}
 
@@ -298,7 +306,7 @@ public class JeiDebugPlugin implements IModPlugin {
 				debugRecipeCategory.setRuntime(jeiRuntime);
 			}
 			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
-			ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create());
+			ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create(10, 20));
 		}
 	}
 }
