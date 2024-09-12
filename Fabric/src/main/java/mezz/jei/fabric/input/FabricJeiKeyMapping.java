@@ -15,8 +15,7 @@ public class FabricJeiKeyMapping extends AbstractJeiKeyMapping {
 		return this.fabricMapping;
 	}
 
-	protected InputConstants.Key getMappedKey()
-	{
+	protected InputConstants.Key getMappedKey() {
 		return this.fabricMapping.realKey;
 	}
 }

@@ -20,8 +20,7 @@ public class AmecsJeiKeyMapping extends AbstractJeiKeyMapping {
 		return this.amecsMapping;
 	}
 
-	protected InputConstants.Key getMappedKey()
-	{
+	protected InputConstants.Key getMappedKey() {
 		return KeyBindingHelper.getBoundKeyOf(this.amecsMapping);
 	}
 
@@ -33,12 +32,23 @@ public class AmecsJeiKeyMapping extends AbstractJeiKeyMapping {
 		if (!this.getMappedKey().equals(key)) {
 			return false;
 		}
-		if (!context.isActive()) return false;
+		if (!context.isActive()) {
+			return false;
+		}
+
 		KeyModifiers modifier = KeyBindingUtils.getBoundModifiers(this.amecsMapping);
-		if (modifier.getControl() && !JeiKeyModifier.CONTROL_OR_COMMAND.isActive(context)) return false;
-		if (modifier.getShift() && !JeiKeyModifier.SHIFT.isActive(context)) return false;
-		if (modifier.getAlt() && !JeiKeyModifier.ALT.isActive(context)) return false;
-		if (modifier.isUnset() && !JeiKeyModifier.NONE.isActive(context)) return false;
+		if (modifier.getControl() && !JeiKeyModifier.CONTROL_OR_COMMAND.isActive(context)) {
+			return false;
+		}
+		if (modifier.getShift() && !JeiKeyModifier.SHIFT.isActive(context)) {
+			return false;
+		}
+		if (modifier.getAlt() && !JeiKeyModifier.ALT.isActive(context)) {
+			return false;
+		}
+		if (modifier.isUnset() && !JeiKeyModifier.NONE.isActive(context)) {
+			return false;
+		}
 		return true;
 	}
 }
