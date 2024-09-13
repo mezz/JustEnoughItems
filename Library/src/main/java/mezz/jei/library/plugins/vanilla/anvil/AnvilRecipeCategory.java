@@ -36,7 +36,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18)
 			.addPadding(0, 20, 0, 0)
 			.build();
-		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.ANVIL));
+		icon = guiHelper.createDrawableItemLike(Blocks.ANVIL);
 	}
 
 	@Override

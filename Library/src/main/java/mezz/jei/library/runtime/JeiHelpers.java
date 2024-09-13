@@ -104,6 +104,7 @@ public class JeiHelpers implements IJeiHelpers {
 			);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public Optional<RecipeType<?>> getRecipeType(ResourceLocation uid) {
 		return Optional.ofNullable(this.recipeCategories)

@@ -65,6 +65,12 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	}
 
 	@Override
+	public IRecipeSlotBuilder addFluidStack(Fluid fluid) {
+		this.ingredients.addFluidStack(fluid);
+		return this;
+	}
+
+	@Override
 	public IRecipeSlotBuilder addFluidStack(Fluid fluid, long amount) {
 		this.ingredients.addFluidStack(fluid, amount);
 		return this;

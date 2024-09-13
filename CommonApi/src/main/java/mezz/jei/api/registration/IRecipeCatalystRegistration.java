@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 
 public interface IRecipeCatalystRegistration {
 	/**
@@ -19,6 +20,23 @@ public interface IRecipeCatalystRegistration {
 	 * @since 11.4.0
 	 */
 	IJeiHelpers getJeiHelpers();
+
+	/**
+	 * Add an association between an {@link ItemStack} and what it can craft.
+	 * (i.e. Furnace ItemStack can craft Smelting and Fuel Recipes)
+	 * Allows players to see what ingredient they need to craft in order to make recipes from a recipe category.
+	 *
+	 * @param itemLike    the {@link ItemLike} that can craft recipes (like a furnace or crafting table)
+	 * @param recipeTypes the types of recipe that the ingredient is a catalyst for
+	 *
+	 * @see #addRecipeCatalyst(ItemStack, RecipeType...) to add {@link ItemStack} catalysts.
+	 * @see #addRecipeCatalyst(IIngredientType, Object, RecipeType...) to add non-{@link ItemLike} catalysts.
+	 *
+	 * @since 15.19.4
+	 */
+	default void addRecipeCatalyst(ItemLike itemLike, RecipeType<?>... recipeTypes) {
+		addRecipeCatalyst(VanillaTypes.ITEM_STACK, itemLike.asItem().getDefaultInstance(), recipeTypes);
+	}
 
 	/**
 	 * Add an association between an {@link ItemStack} and what it can craft.

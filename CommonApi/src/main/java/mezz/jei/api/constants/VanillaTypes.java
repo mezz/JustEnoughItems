@@ -35,7 +35,7 @@ public final class VanillaTypes {
 
 		@Override
 		public ItemStack getDefaultIngredient(Item base) {
-			return new ItemStack(base);
+			return base.getDefaultInstance();
 		}
 	};
 

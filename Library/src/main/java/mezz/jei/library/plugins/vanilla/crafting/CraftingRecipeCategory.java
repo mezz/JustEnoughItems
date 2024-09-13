@@ -20,7 +20,6 @@ import mezz.jei.library.recipes.ExtendableRecipeCategoryHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Blocks;
@@ -43,7 +42,7 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 60, width, height);
-		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.CRAFTING_TABLE));
+		icon = guiHelper.createDrawableItemLike(Blocks.CRAFTING_TABLE);
 		localizedName = Component.translatable("gui.jei.category.craftingTable");
 		craftingGridHelper = guiHelper.createCraftingGridHelper();
 	}

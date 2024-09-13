@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -101,6 +102,26 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> ext
 	default THIS addItemStack(ItemStack itemStack) {
 		return addIngredient(VanillaTypes.ITEM_STACK, itemStack);
 	}
+
+	/**
+	 * Convenience function to add one {@link ItemLike}.
+	 *
+	 * @since 15.19.4
+	 */
+	default IIngredientConsumer addItemLike(ItemLike itemLike) {
+		return addItemStack(itemLike.asItem().getDefaultInstance());
+	}
+
+	/**
+	 * Convenience helper to add one Fluid ingredient with the default amount (one bucket).
+	 *
+	 * To add multiple Fluid ingredients, you can call this multiple times.
+	 *
+	 * @see #addFluidStack(Fluid, long) to add a Fluid with an amount.
+	 * @see #addFluidStack(Fluid, long, CompoundTag) to add a Fluid with a {@link CompoundTag}.
+	 * @since 15.19.4
+	 */
+	THIS addFluidStack(Fluid fluid);
 
 	/**
 	 * Convenience helper to add one Fluid ingredient.

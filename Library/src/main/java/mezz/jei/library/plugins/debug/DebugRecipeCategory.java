@@ -133,6 +133,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 		guiGraphics.drawString(minecraft.font, jeiUid, 50, 52, 0, false);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, DebugRecipe recipe, IFocusGroup focuses) {
 		// ITEM type

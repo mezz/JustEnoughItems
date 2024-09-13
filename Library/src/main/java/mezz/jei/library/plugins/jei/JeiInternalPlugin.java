@@ -24,7 +24,6 @@ import mezz.jei.library.plugins.jei.tags.TagInfoRecipeMaker;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
 import java.util.ArrayList;
@@ -163,7 +162,7 @@ public class JeiInternalPlugin implements IModPlugin {
 		tagInfoRecipeMakers.add(new TagInfoRecipeMaker<>(
 			VanillaTypes.ITEM_STACK,
 			recipeType,
-			ItemStack::new,
+			i -> i.asItem().getDefaultInstance(),
 			registryKey
 		));
 		return true;
