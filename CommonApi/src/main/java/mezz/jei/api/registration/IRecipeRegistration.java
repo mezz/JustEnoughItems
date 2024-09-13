@@ -84,7 +84,7 @@ public interface IRecipeRegistration {
 	 * @since 19.18.3
 	 */
 	default void addIngredientInfo(ItemLike itemLike, Component... descriptionComponents) {
-		addIngredientInfo(new ItemStack(itemLike), VanillaTypes.ITEM_STACK, descriptionComponents);
+		addIngredientInfo(itemLike.asItem().getDefaultInstance(), VanillaTypes.ITEM_STACK, descriptionComponents);
 	}
 
 	/**

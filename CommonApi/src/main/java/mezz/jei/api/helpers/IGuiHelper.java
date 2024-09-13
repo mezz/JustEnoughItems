@@ -80,7 +80,7 @@ public interface IGuiHelper {
 	 * @since 19.18.1
 	 */
 	default IDrawable createDrawableItemLike(ItemLike itemLike) {
-		return createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(itemLike));
+		return createDrawableIngredient(VanillaTypes.ITEM_STACK, itemLike.asItem().getDefaultInstance());
 	}
 
 	/**

@@ -26,7 +26,6 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.apache.commons.lang3.StringUtils;
 
@@ -46,7 +45,7 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 
 	public TagInfoRecipeCategory(IGuiHelper guiHelper, T recipeType, ResourceLocation registryLocation) {
 		this.background = guiHelper.createBlankDrawable(WIDTH, HEIGHT);
-		this.icon = guiHelper.createDrawableItemStack(new ItemStack(Items.NAME_TAG));
+		this.icon = guiHelper.createDrawableItemLike(Items.NAME_TAG);
 		this.slotDrawable = guiHelper.getSlotDrawable();
 		this.recipeType = recipeType;
 		Component registryName = Component.translatableWithFallback(

@@ -12,7 +12,6 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.resources.ResourceLocation;
 
@@ -32,7 +31,7 @@ public class StoneCuttingRecipeCategory implements IRecipeCategory<RecipeHolder<
 	public StoneCuttingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 220, width, height);
-		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.STONECUTTER));
+		icon = guiHelper.createDrawableItemLike(Blocks.STONECUTTER);
 		localizedName = Component.translatable("gui.jei.category.stoneCutter");
 	}
 

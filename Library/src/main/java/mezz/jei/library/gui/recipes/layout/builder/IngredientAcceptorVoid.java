@@ -1,7 +1,6 @@
 package mezz.jei.library.gui.recipes.layout.builder;
 
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
-import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.core.component.DataComponentPatch;

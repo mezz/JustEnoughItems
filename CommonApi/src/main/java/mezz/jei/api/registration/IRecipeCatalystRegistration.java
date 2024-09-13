@@ -35,7 +35,7 @@ public interface IRecipeCatalystRegistration {
 	 * @since 19.18.2
 	 */
 	default void addRecipeCatalyst(ItemLike itemLike, RecipeType<?>... recipeTypes) {
-		addRecipeCatalyst(VanillaTypes.ITEM_STACK, new ItemStack(itemLike), recipeTypes);
+		addRecipeCatalyst(VanillaTypes.ITEM_STACK, itemLike.asItem().getDefaultInstance(), recipeTypes);
 	}
 
 	/**

@@ -2,10 +2,7 @@ package mezz.jei.library.plugins.vanilla.crafting.replacers;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
-import mezz.jei.common.platform.IPlatformIngredientHelper;
-import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -24,7 +21,6 @@ import java.util.List;
 public final class TippedArrowRecipeMaker {
 
 	public static List<RecipeHolder<CraftingRecipe>> createRecipes(IJeiHelpers jeiHelpers) {
-		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 		IVanillaRecipeFactory vanillaRecipeFactory = jeiHelpers.getVanillaRecipeFactory();
 
 		String group = "jei.tipped.arrow";
@@ -32,7 +28,6 @@ public final class TippedArrowRecipeMaker {
 		Ingredient arrowIngredient = Ingredient.of(arrowStack);
 
 		Registry<Potion> potionRegistry = RegistryUtil.getRegistry(Registries.POTION);
-		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
 		return potionRegistry.holders()
 			.map(potion -> {
 				ItemStack input = PotionContents.createItemStack(Items.LINGERING_POTION, potion);

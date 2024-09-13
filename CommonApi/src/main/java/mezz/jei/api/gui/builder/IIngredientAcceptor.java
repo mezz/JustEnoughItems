@@ -109,7 +109,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> ext
 	 * @since 19.18.1
 	 */
 	default IIngredientConsumer addItemLike(ItemLike itemLike) {
-		return addItemStack(new ItemStack(itemLike));
+		return addItemStack(itemLike.asItem().getDefaultInstance());
 	}
 
 	/**

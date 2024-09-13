@@ -2,7 +2,6 @@ package mezz.jei.library.gui.recipes.layout.builder;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;

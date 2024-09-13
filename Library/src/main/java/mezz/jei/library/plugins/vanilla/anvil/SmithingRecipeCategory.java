@@ -22,7 +22,6 @@ import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.level.block.Blocks;
@@ -42,7 +41,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<RecipeHolder<Smit
 	public SmithingRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(108, 28);
 		slot = guiHelper.getSlotDrawable();
-		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.SMITHING_TABLE));
+		icon = guiHelper.createDrawableItemLike(Blocks.SMITHING_TABLE);
 		Textures textures = Internal.getTextures();
 		recipeArrow = textures.getRecipeArrow();
 	}
