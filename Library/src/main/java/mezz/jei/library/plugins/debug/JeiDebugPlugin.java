@@ -327,7 +327,7 @@ public class JeiDebugPlugin implements IModPlugin {
 
 		registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
 		registration.addRecipeCatalyst(fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume), DebugRecipeCategory.TYPE);
-		registration.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
+		registration.addRecipeCatalyst(Items.STICK, DebugRecipeCategory.TYPE);
 
 		RegistryUtil.getRegistry(Registries.ITEM)
 			.stream()

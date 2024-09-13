@@ -322,19 +322,19 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-		registration.addRecipeCatalyst(new ItemStack(Blocks.CRAFTING_TABLE), RecipeTypes.CRAFTING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.CRAFTER), RecipeTypes.CRAFTING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.STONECUTTER), RecipeTypes.STONECUTTING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.FURNACE), RecipeTypes.SMELTING, RecipeTypes.FUELING);
+		registration.addRecipeCatalyst(Blocks.CRAFTING_TABLE, RecipeTypes.CRAFTING);
+		registration.addRecipeCatalyst(Blocks.CRAFTER, RecipeTypes.CRAFTING);
+		registration.addRecipeCatalyst(Blocks.STONECUTTER, RecipeTypes.STONECUTTING);
+		registration.addRecipeCatalyst(Blocks.FURNACE, RecipeTypes.SMELTING, RecipeTypes.FUELING);
 
-		registration.addRecipeCatalyst(new ItemStack(Blocks.SMOKER), RecipeTypes.SMOKING, RecipeTypes.FUELING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.BLAST_FURNACE), RecipeTypes.BLASTING, RecipeTypes.FUELING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.CAMPFIRE), RecipeTypes.CAMPFIRE_COOKING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.SOUL_CAMPFIRE), RecipeTypes.CAMPFIRE_COOKING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.BREWING_STAND), RecipeTypes.BREWING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), RecipeTypes.ANVIL);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.SMITHING_TABLE), RecipeTypes.SMITHING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.COMPOSTER), RecipeTypes.COMPOSTING);
+		registration.addRecipeCatalyst(Blocks.SMOKER, RecipeTypes.SMOKING, RecipeTypes.FUELING);
+		registration.addRecipeCatalyst(Blocks.BLAST_FURNACE, RecipeTypes.BLASTING, RecipeTypes.FUELING);
+		registration.addRecipeCatalyst(Blocks.CAMPFIRE, RecipeTypes.CAMPFIRE_COOKING);
+		registration.addRecipeCatalyst(Blocks.SOUL_CAMPFIRE, RecipeTypes.CAMPFIRE_COOKING);
+		registration.addRecipeCatalyst(Blocks.BREWING_STAND, RecipeTypes.BREWING);
+		registration.addRecipeCatalyst(Blocks.ANVIL, RecipeTypes.ANVIL);
+		registration.addRecipeCatalyst(Blocks.SMITHING_TABLE, RecipeTypes.SMITHING);
+		registration.addRecipeCatalyst(Blocks.COMPOSTER, RecipeTypes.COMPOSTING);
 	}
 
 	public Optional<CraftingRecipeCategory> getCraftingCategory() {
