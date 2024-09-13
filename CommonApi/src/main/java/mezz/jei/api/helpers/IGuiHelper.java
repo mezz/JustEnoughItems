@@ -18,6 +18,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -106,6 +107,17 @@ public interface IGuiHelper {
 	 */
 	default IDrawable createDrawableItemStack(ItemStack ingredient) {
 		return createDrawableIngredient(VanillaTypes.ITEM_STACK, ingredient);
+	}
+
+	/**
+	 * Returns a 16x16 drawable for the given ItemLike,
+	 * matching the one JEI draws in the ingredient list.
+	 *
+	 * @see #createDrawableIngredient(IIngredientType, Object) for other ingredient types.
+	 * @since 11.37.3
+	 */
+	default IDrawable createDrawableItemLike(ItemLike itemLike) {
+		return createDrawableIngredient(VanillaTypes.ITEM_STACK, itemLike.asItem().getDefaultInstance());
 	}
 
 	/**

@@ -41,6 +41,11 @@ public class IngredientAcceptorVoid implements IIngredientAcceptor<IngredientAcc
 	}
 
 	@Override
+	public IngredientAcceptorVoid addFluidStack(Fluid fluid) {
+		return this;
+	}
+
+	@Override
 	public IngredientAcceptorVoid addFluidStack(Fluid fluid, long amount) {
 		return this;
 	}
