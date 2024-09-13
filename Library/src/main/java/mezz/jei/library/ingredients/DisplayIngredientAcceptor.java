@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
+import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
@@ -85,6 +86,13 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		this.ingredients.add(copy.map(Function.identity()));
 
 		return this;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public DisplayIngredientAcceptor addFluidStack(Fluid fluid) {
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		return addFluidInternal(fluidHelper, fluid.builtInRegistryHolder(), fluidHelper.bucketVolume(), DataComponentPatch.EMPTY);
 	}
 
 	@SuppressWarnings("deprecation")

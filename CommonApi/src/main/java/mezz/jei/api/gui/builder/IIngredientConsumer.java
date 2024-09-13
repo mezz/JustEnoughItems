@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -105,10 +106,31 @@ public interface IIngredientConsumer {
 	}
 
 	/**
+	 * Convenience function to add one {@link ItemLike}.
+	 *
+	 * @since 19.18.1
+	 */
+	default IIngredientConsumer addItemLike(ItemLike itemLike) {
+		return addItemStack(new ItemStack(itemLike));
+	}
+
+	/**
+	 * Convenience helper to add one Fluid ingredient with the default amount (one bucket).
+	 *
+	 * To add multiple Fluid ingredients, you can call this multiple times.
+	 *
+	 * @see #addFluidStack(Fluid, long) to add a Fluid with an amount.
+	 * @see #addFluidStack(Fluid, long, DataComponentPatch) to add a Fluid with a {@link DataComponentPatch}.
+	 * @since 19.18.1
+	 */
+	IIngredientConsumer addFluidStack(Fluid fluid);
+
+	/**
 	 * Convenience helper to add one Fluid ingredient.
 	 *
 	 * To add multiple Fluid ingredients, you can call this multiple times.
 	 *
+	 * @see #addFluidStack(Fluid, long) to add a Fluid with the default amount.
 	 * @see #addFluidStack(Fluid, long, DataComponentPatch) to add a Fluid with a {@link DataComponentPatch}.
 	 * @since 19.8.3
 	 */
@@ -119,6 +141,7 @@ public interface IIngredientConsumer {
 	 *
 	 * To add multiple Fluid ingredients, you can call this multiple times.
 	 *
+	 * @see #addFluidStack(Fluid, long) to add a Fluid with the default amount.
 	 * @see #addFluidStack(Fluid, long) to add a Fluid without a {@link DataComponentPatch}.
 	 * @since 19.8.3
 	 */

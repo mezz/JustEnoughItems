@@ -2,6 +2,7 @@ package mezz.jei.library.gui.recipes.layout.builder;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
@@ -59,6 +60,12 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	@Override
 	public <I> IRecipeSlotBuilder addIngredient(IIngredientType<I> ingredientType, I ingredient) {
 		this.ingredients.addIngredient(ingredientType, ingredient);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder addFluidStack(Fluid fluid) {
+		this.ingredients.addFluidStack(fluid);
 		return this;
 	}
 

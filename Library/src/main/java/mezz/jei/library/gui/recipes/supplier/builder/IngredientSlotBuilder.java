@@ -1,5 +1,6 @@
 package mezz.jei.library.gui.recipes.supplier.builder;
 
+import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
@@ -36,6 +37,12 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 	@Override
 	public <I> IRecipeSlotBuilder addIngredient(IIngredientType<I> ingredientType, I ingredient) {
 		this.ingredients.addIngredient(ingredientType, ingredient);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder addFluidStack(Fluid fluid) {
+		this.ingredients.addFluidStack(fluid);
 		return this;
 	}
 

@@ -2,6 +2,7 @@ package mezz.jei.library.ingredients;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
+import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -82,6 +83,13 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		}
 
 		return this;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public SimpleIngredientAcceptor addFluidStack(Fluid fluid) {
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		return addFluidInternal(fluidHelper, fluid.builtInRegistryHolder(), fluidHelper.bucketVolume(), DataComponentPatch.EMPTY);
 	}
 
 	@SuppressWarnings("deprecation")
