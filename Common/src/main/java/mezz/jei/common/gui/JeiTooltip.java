@@ -224,6 +224,6 @@ public class JeiTooltip implements ITooltipBuilder {
 	}
 
 	public List<Either<FormattedText, TooltipComponent>> getLines() {
-		return Collections.unmodifiableList(lines);
+		return new ArrayList<>(lines);
 	}
 }
