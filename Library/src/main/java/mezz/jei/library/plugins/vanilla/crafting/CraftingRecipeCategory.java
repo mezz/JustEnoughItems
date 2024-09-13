@@ -49,7 +49,7 @@ public class CraftingRecipeCategory implements ExtendableRecipeCategoryWithType<
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
 		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
 		background = guiHelper.createDrawable(location, 0, 60, width, height);
-		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.CRAFTING_TABLE));
+		icon = guiHelper.createDrawableItemLike(Blocks.CRAFTING_TABLE);
 		localizedName = new TranslatableComponent("gui.jei.category.craftingTable");
 		craftingGridHelper = guiHelper.createCraftingGridHelper(craftInputSlot1);
 	}

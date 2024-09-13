@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.level.block.Block;
 
@@ -34,7 +33,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		super(guiHelper);
 		this.background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 114, 82, 54);
 		this.regularCookTime = regularCookTime;
-		this.icon = guiHelper.createDrawableItemStack(new ItemStack(icon));
+		this.icon = guiHelper.createDrawableItemLike(icon);
 		this.localizedName = new TranslatableComponent(translationKey);
 		this.guiHelper = guiHelper;
 	}

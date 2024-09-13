@@ -134,6 +134,7 @@ public class DebugRecipeCategory<F> implements RecipeCategoryWithType<DebugRecip
 		minecraft.font.draw(poseStack, jeiUid, 50, 52, 0);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, DebugRecipe recipe, IFocusGroup focuses) {
 		// ITEM type

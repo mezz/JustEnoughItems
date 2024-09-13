@@ -87,6 +87,12 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	@Override
+	public DisplayIngredientAcceptor addFluidStack(Fluid fluid) {
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		return addFluidInternal(fluidHelper, fluid, fluidHelper.bucketVolume(), null);
+	}
+
+	@Override
 	public DisplayIngredientAcceptor addFluidStack(Fluid fluid, long amount) {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		return addFluidInternal(fluidHelper, fluid, amount, null);

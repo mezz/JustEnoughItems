@@ -131,7 +131,7 @@ public class FluidIngredientHelper<T> implements IngredientHelperWithResourceLoc
 	public ItemStack getCheatItemStack(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
 		Item filledBucket = fluid.getBucket();
-		return new ItemStack(filledBucket);
+		return filledBucket.getDefaultInstance();
 	}
 
 	@Override
