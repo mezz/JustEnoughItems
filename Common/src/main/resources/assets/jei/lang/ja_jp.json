@@ -176,9 +176,6 @@
   "gui.jei.category.compostable": "堆肥化",
   "gui.jei.category.compostable.chance": "確率：%s%%",
   "gui.jei.category.itemInformation": "説明",
-  "gui.jei.category.registry.block": "ブロック",
-  "gui.jei.category.registry.item": "アイテム",
-  "gui.jei.category.registry.fluid": "流体",
   "gui.jei.category.tagInformation": "%sタグ",
 
   "_comment": "Messages",
