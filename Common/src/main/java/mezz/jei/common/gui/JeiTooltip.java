@@ -31,7 +31,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -269,6 +268,6 @@ public class JeiTooltip implements ITooltipBuilder {
 	}
 
 	public List<Either<FormattedText, TooltipComponent>> getElements() {
-		return Collections.unmodifiableList(elements);
+		return new ArrayList<>(elements);
 	}
 }
