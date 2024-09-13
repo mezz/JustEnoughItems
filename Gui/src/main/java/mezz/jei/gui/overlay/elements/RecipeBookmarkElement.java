@@ -66,7 +66,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 
 	@Override
 	public ITypedIngredient<I> getTypedIngredient() {
-		return recipeBookmark.getRecipeOutput();
+		return recipeBookmark.getDisplayIngredient();
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 
 	@Override
 	public void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<I> ingredientRenderer, IIngredientHelper<I> ingredientHelper) {
-		ITypedIngredient<I> recipeOutput = recipeBookmark.getRecipeOutput();
+		ITypedIngredient<I> displayIngredient = recipeBookmark.getDisplayIngredient();
 		R recipe = recipeBookmark.getRecipe();
 
 		IRecipeCategory<R> recipeCategory = recipeBookmark.getRecipeCategory();
@@ -128,25 +128,27 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 
 		addBookmarkTooltipFeaturesIfEnabled(tooltip);
 
-		IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
-		IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
-		IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
+		if (recipeBookmark.isDisplayIsOutput()) {
+			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
+			IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
 
-		ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
-		if (recipeName != null) {
-			String recipeModId = recipeName.getNamespace();
-			ResourceLocation ingredientName = ingredientHelper.getResourceLocation(recipeOutput.getIngredient());
-			String ingredientModId = ingredientName.getNamespace();
-			if (!recipeModId.equals(ingredientModId)) {
-				String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
-				MutableComponent recipeBy = Component.translatable("jei.tooltip.recipe.by", modName);
-				tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
+			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
+			if (recipeName != null) {
+				String recipeModId = recipeName.getNamespace();
+				ResourceLocation ingredientName = ingredientHelper.getResourceLocation(displayIngredient.getIngredient());
+				String ingredientModId = ingredientName.getNamespace();
+				if (!recipeModId.equals(ingredientModId)) {
+					String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
+					MutableComponent recipeBy = Component.translatable("jei.tooltip.recipe.by", modName);
+					tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
+				}
 			}
+
+			tooltip.add(Component.empty());
+
+			SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, displayIngredient);
 		}
-
-		tooltip.add(Component.empty());
-
-		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
 	}
 
 	private void addBookmarkTooltipFeaturesIfEnabled(JeiTooltip tooltip) {

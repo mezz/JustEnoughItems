@@ -17,6 +17,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.codecs.EnumCodec;
 import mezz.jei.common.codecs.TupleCodec;
 import mezz.jei.common.codecs.TypedIngredientCodecs;
 import net.minecraft.client.Minecraft;
@@ -122,9 +123,61 @@ public class CodecHelper implements ICodecHelper {
 	}
 
 	private <T> Codec<T> createDefaultRecipeCategoryCodec(IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
+		Codec<Data> dataCodec = RecordCodecBuilder.create((builder) -> {
+			return builder.group(
+				ResourceLocation.CODEC.fieldOf("registryName")
+					.forGetter(Data::registryName),
+				getTypedIngredientCodec().codec().fieldOf("ingredient")
+					.forGetter(Data::ingredient),
+				EnumCodec.create(RecipeIngredientRole.class, RecipeIngredientRole::valueOf).fieldOf("ingredient_role")
+					.forGetter(Data::ingredientRole)
+			).apply(builder, Data::new);
+		});
+		Codec<T> codec = dataCodec.flatXmap(
+			data -> {
+				ResourceLocation registryName = data.registryName();
+				ITypedIngredient<?> ingredient = data.ingredient();
+				IFocus<?> focus = focusFactory.createFocus(data.ingredientRole(), ingredient);
+
+				RecipeType<T> recipeType = recipeCategory.getRecipeType();
+
+				return recipeManager.createRecipeLookup(recipeType)
+					.limitFocus(List.of(focus))
+					.get()
+					.filter(recipe -> registryName.equals(recipeCategory.getRegistryName(recipe)))
+					.findFirst()
+					.map(DataResult::success)
+					.orElseGet(() -> DataResult.error(() -> "No recipe found for registry name: " + registryName));
+			},
+			recipe -> {
+				ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
+				if (registryName == null) {
+					return DataResult.error(() -> "No registry name for recipe");
+				}
+				IIngredientSupplier ingredients = recipeManager.getRecipeIngredients(recipeCategory, recipe);
+				List<ITypedIngredient<?>> outputs = ingredients.getIngredients(RecipeIngredientRole.OUTPUT);
+				if (!outputs.isEmpty()) {
+					Data result = new Data(registryName, outputs.getFirst(), RecipeIngredientRole.OUTPUT);
+					return DataResult.success(result);
+				}
+				List<ITypedIngredient<?>> inputs = ingredients.getIngredients(RecipeIngredientRole.INPUT);
+				if (!inputs.isEmpty()) {
+					Data result = new Data(registryName, inputs.getFirst(), RecipeIngredientRole.INPUT);
+					return DataResult.success(result);
+				}
+				return DataResult.error(() -> "No inputs or outputs for recipe");
+			}
+		);
+
+		return Codec.withAlternative(codec, createLegacyDefaultRecipeCategoryCodec(recipeManager, recipeCategory));
+	}
+
+	private record Data(ResourceLocation registryName, ITypedIngredient<?> ingredient, RecipeIngredientRole ingredientRole) {}
+
+	private <T> Codec<T> createLegacyDefaultRecipeCategoryCodec(IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
 		Codec<Pair<ResourceLocation, ITypedIngredient<?>>> legacyPairCodec = RecordCodecBuilder.create((builder) -> {
 			return builder.group(
-				ResourceLocation.CODEC.fieldOf("resourceLocation")
+				ResourceLocation.CODEC.fieldOf("registryName")
 					.forGetter(Pair::getFirst),
 				getTypedIngredientCodec().codec().fieldOf("output")
 					.forGetter(Pair::getSecond)

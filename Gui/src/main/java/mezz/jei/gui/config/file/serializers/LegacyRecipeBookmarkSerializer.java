@@ -84,7 +84,7 @@ public class LegacyRecipeBookmarkSerializer {
 		}
 
 		T recipe = recipeResult.get();
-		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output);
+		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, true);
 		return new DeserializeResult<>(recipeBookmark);
 	}
 

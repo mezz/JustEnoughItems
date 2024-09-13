@@ -11,7 +11,6 @@ import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -20,7 +19,8 @@ public class RecipeBookmark<R, I> implements IBookmark {
 	private final IRecipeCategory<R> recipeCategory;
 	private final R recipe;
 	private final ResourceLocation recipeUid;
-	private final ITypedIngredient<I> recipeOutput;
+	private final ITypedIngredient<I> displayIngredient;
+	private final boolean displayIsOutput;
 	private boolean visible = true;
 
 	public static <T> Optional<RecipeBookmark<T, ?>> create(
@@ -35,16 +35,28 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		}
 
 		IRecipeSlotsView recipeSlotsView = recipeLayoutDrawable.getRecipeSlotsView();
-		List<IRecipeSlotView> outputSlots = recipeSlotsView.getSlotViews(RecipeIngredientRole.OUTPUT);
-		for (IRecipeSlotView slotView : outputSlots) {
-			Optional<ITypedIngredient<?>> outputOptional = slotView.getAllIngredients().findFirst();
-			if (outputOptional.isEmpty()) {
-				continue;
+		{
+			Optional<ITypedIngredient<?>> outputOptional = recipeSlotsView.getSlotViews(RecipeIngredientRole.OUTPUT).stream()
+				.flatMap(IRecipeSlotView::getAllIngredients)
+				.findFirst();
+			if (outputOptional.isPresent()) {
+				ITypedIngredient<?> output = outputOptional.get();
+				output = ingredientManager.normalizeTypedIngredient(output);
+				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, true));
 			}
-			ITypedIngredient<?> output = outputOptional.get();
-			output = ingredientManager.normalizeTypedIngredient(output);
-			return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output));
 		}
+
+		{
+			Optional<ITypedIngredient<?>> inputOptional = recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT).stream()
+				.flatMap(IRecipeSlotView::getAllIngredients)
+				.findFirst();
+			if (inputOptional.isPresent()) {
+				ITypedIngredient<?> input = inputOptional.get();
+				input = ingredientManager.normalizeTypedIngredient(input);
+				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, input, false));
+			}
+		}
+
 		return Optional.empty();
 	}
 
@@ -52,13 +64,15 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		IRecipeCategory<R> recipeCategory,
 		R recipe,
 		ResourceLocation recipeUid,
-		ITypedIngredient<I> recipeOutput
+		ITypedIngredient<I> displayIngredient,
+		boolean displayIsOutput
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipe = recipe;
 		this.recipeUid = recipeUid;
-		this.recipeOutput = recipeOutput;
+		this.displayIngredient = displayIngredient;
 		this.element = new RecipeBookmarkElement<>(this);
+		this.displayIsOutput = displayIsOutput;
 	}
 
 	@Override
@@ -74,8 +88,12 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		return recipe;
 	}
 
-	public ITypedIngredient<I> getRecipeOutput() {
-		return recipeOutput;
+	public ITypedIngredient<I> getDisplayIngredient() {
+		return displayIngredient;
+	}
+
+	public boolean isDisplayIsOutput() {
+		return displayIsOutput;
 	}
 
 	@Override
@@ -113,7 +131,7 @@ public class RecipeBookmark<R, I> implements IBookmark {
 			"recipeCategory=" + recipeCategory.getRecipeType() +
 			", recipe=" + recipe +
 			", recipeUid=" + recipeUid +
-			", recipeOutput=" + recipeOutput +
+			", displayIngredient=" + displayIngredient +
 			", visible=" + visible +
 			'}';
 	}
