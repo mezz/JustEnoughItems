@@ -127,7 +127,7 @@
   "config.jei.search.tagSearchMode": "$タグ",
   "config.jei.search.tagSearchMode.comment": "タグでの検索モード （接頭辞：$）",
   "config.jei.search.creativeTabSearchMode": "%%クリエイティブタブ",
-  "config.jei.search.creativeTabSearchMode.comment": "クリエイティブ名での検索モード（接頭辞：%）",
+  "config.jei.search.creativeTabSearchMode.comment": "クリエイティブタブ名での検索モード（接頭辞：%）",
   "config.jei.search.colorSearchMode": "^色",
   "config.jei.search.colorSearchMode.comment": "色での検索モード（接頭辞：^）",
   "config.jei.search.resourceIdSearchMode": "&リソースID",
