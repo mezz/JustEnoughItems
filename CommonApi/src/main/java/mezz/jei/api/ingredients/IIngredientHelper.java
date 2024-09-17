@@ -3,6 +3,7 @@ package mezz.jei.api.ingredients;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +35,18 @@ public interface IIngredientHelper<V> {
 	 * @since 7.3.0
 	 */
 	String getUniqueId(V ingredient, UidContext context);
+
+	/**
+	 * Return true if the given ingredient can have subtypes.
+	 * For example in the vanilla game an enchanted book may have subtypes, but an apple does not.
+	 * <p>
+	 * This is used as an optimization to skip some processing for ingredients that never have subtypes.
+	 *
+	 * @since 11.7.0
+	 */
+	default boolean hasSubtypes(V ingredient) {
+		return getIngredientType() instanceof IIngredientTypeWithSubtypes<?,?>;
+	}
 
 	/**
 	 * Wildcard ID for use in comparing, blacklisting, and looking up ingredients.
@@ -159,8 +172,20 @@ public interface IIngredientHelper<V> {
 	 * returns that tag's resource location.
 	 *
 	 * @since 9.3.0
+	 * @deprecated use {@link #getTagKeyEquivalent}
 	 */
+	@Deprecated(since = "11.7.0", forRemoval = true)
 	default Optional<ResourceLocation> getTagEquivalent(Collection<V> ingredients) {
+		return getTagKeyEquivalent(ingredients)
+			.map(TagKey::location);
+	}
+
+	/**
+	 * If these ingredients represent everything from a single tag, returns that tag.
+	 *
+	 * @since 11.7.0
+	 */
+	default Optional<TagKey<?>> getTagKeyEquivalent(Collection<V> ingredients) {
 		return Optional.empty();
 	}
 }

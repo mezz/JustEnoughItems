@@ -1,6 +1,7 @@
 package mezz.jei.api.helpers;
 
 import java.util.List;
+import java.util.Optional;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -43,4 +44,14 @@ public interface IModIdHelper {
 	 * @since 11.5.0
 	 */
 	<T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient);
+
+	/**
+	 * Gets the mod name for the tooltip with color formatting.
+	 *
+	 * If {@link #isDisplayingModNameEnabled()} is false,
+	 * or another mod already adds the mod name, this will return {@link Optional#empty}.
+	 *
+	 * @since 11.7.0
+	 */
+	<T> Optional<Component> getModNameForTooltip(ITypedIngredient<T> typedIngredient);
 }

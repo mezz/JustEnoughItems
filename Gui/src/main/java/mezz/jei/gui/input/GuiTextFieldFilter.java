@@ -2,14 +2,14 @@ package mezz.jei.gui.input;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.gui.input.handlers.TextFieldInputHandler;
-import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.util.TextHistory;
+import mezz.jei.gui.input.handlers.TextFieldInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
@@ -18,24 +18,27 @@ import net.minecraft.network.chat.CommonComponents;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 public class GuiTextFieldFilter extends EditBox {
 	private static final int maxSearchLength = 128;
 	private static final TextHistory history = new TextHistory();
+	private final BooleanSupplier filterEmpty;
 
 	private ImmutableRect2i area;
 	private final DrawableNineSliceTexture background;
 	private ImmutableRect2i backgroundBounds;
 
-	private boolean previousKeyboardRepeatEnabled;
 	private @Nullable AbstractWidget previouslyFocusedWidget;
 
-	public GuiTextFieldFilter(Textures textures) {
+	public GuiTextFieldFilter(BooleanSupplier filterEmpty) {
 		// TODO narrator string
 		super(Minecraft.getInstance().font, 0, 0, 0, 0, CommonComponents.EMPTY);
+		this.filterEmpty = filterEmpty;
 
 		setMaxLength(maxSearchLength);
 		this.area = ImmutableRect2i.EMPTY;
+		Textures textures = Internal.getTextures();
 		this.background = textures.getSearchBackground();
 		this.backgroundBounds = ImmutableRect2i.EMPTY;
 		setBordered(false);
@@ -43,11 +46,15 @@ public class GuiTextFieldFilter extends EditBox {
 
 	public void updateBounds(ImmutableRect2i area) {
 		this.backgroundBounds = area;
-		this.x = area.getX() + 4;
-		this.y = area.getY() + (area.getHeight() - 8) / 2;
+		setX(area.getX() + 4);
+		setY(area.getY() + (area.getHeight() - 8) / 2);
 		this.width = area.getWidth() - 12;
 		this.height = area.getHeight();
 		this.area = area;
+	}
+
+	public void setY(int y) {
+		this.y = y;
 	}
 
 	@Override
@@ -55,6 +62,8 @@ public class GuiTextFieldFilter extends EditBox {
 		if (!filterText.equals(getValue())) {
 			super.setValue(filterText);
 		}
+		int color = filterEmpty.getAsBoolean() ? 0xFFFF0000 : 0xFFFFFFFF;
+		setTextColor(color);
 	}
 
 	public Optional<String> getHistory(TextHistory.Direction direction) {
@@ -79,9 +88,6 @@ public class GuiTextFieldFilter extends EditBox {
 		if (previousFocus != keyboardFocus) {
 			Minecraft minecraft = Minecraft.getInstance();
 			if (keyboardFocus) {
-				IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
-				previousKeyboardRepeatEnabled = inputHelper.isSendRepeatsToGui(minecraft.keyboardHandler);
-				minecraft.keyboardHandler.setSendRepeatsToGui(true);
 				Screen screen = minecraft.screen;
 				if (screen != null) {
 					if (screen.getFocused() instanceof AbstractWidget widget) {
@@ -101,7 +107,6 @@ public class GuiTextFieldFilter extends EditBox {
 					}
 					previouslyFocusedWidget = null;
 				}
-				minecraft.keyboardHandler.setSendRepeatsToGui(previousKeyboardRepeatEnabled);
 			}
 
 			String text = getValue();
@@ -116,9 +121,5 @@ public class GuiTextFieldFilter extends EditBox {
 			background.draw(poseStack, this.backgroundBounds);
 		}
 		super.renderButton(poseStack, mouseX, mouseY, partialTicks);
-	}
-
-	public ImmutableRect2i getArea() {
-		return area;
 	}
 }

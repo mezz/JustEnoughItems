@@ -1,15 +1,23 @@
 package mezz.jei.gui.input.handlers;
 
-import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.gui.input.CombinedRecipeFocusSource;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.gui.input.CombinedRecipeFocusSource;
+import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.util.CommandUtil;
+import mezz.jei.gui.util.FocusUtil;
+import mezz.jei.gui.util.GiveAmount;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,16 +25,53 @@ import java.util.Optional;
 public class FocusInputHandler implements IUserInputHandler {
 	private final CombinedRecipeFocusSource focusSource;
 	private final IRecipesGui recipesGui;
-	private final IFocusFactory focusFactory;
+	private final FocusUtil focusUtil;
+	private final IIngredientManager ingredientManager;
+	private final IWorldConfig worldConfig;
+	private final CommandUtil commandUtil;
 
-	public FocusInputHandler(CombinedRecipeFocusSource focusSource, IRecipesGui recipesGui, IFocusFactory focusFactory) {
+	public FocusInputHandler(
+		CombinedRecipeFocusSource focusSource,
+		IRecipesGui recipesGui,
+		FocusUtil focusUtil,
+		IClientConfig clientConfig,
+		IIngredientManager ingredientManager,
+		IWorldConfig worldConfig,
+		IConnectionToServer serverConnection
+	) {
 		this.focusSource = focusSource;
 		this.recipesGui = recipesGui;
-		this.focusFactory = focusFactory;
+		this.focusUtil = focusUtil;
+		this.ingredientManager = ingredientManager;
+		this.worldConfig = worldConfig;
+		this.commandUtil = new CommandUtil(clientConfig, serverConnection);
 	}
 
 	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+		Optional<IUserInputHandler> handledClick = handleClick(input, keyBindings);
+		if (handledClick.isPresent()) {
+			return handledClick;
+		}
+
+		if (worldConfig.isCheatItemsEnabled()) {
+			if (screen instanceof AbstractContainerScreen) {
+				if (input.is(keyBindings.getCheatItemStack())) {
+					Optional<IUserInputHandler> handler = handleGive(input, keyBindings, GiveAmount.MAX);
+					if (handler.isPresent()) {
+						return handler;
+					}
+				}
+
+				if (input.is(keyBindings.getCheatOneItem())) {
+					Optional<IUserInputHandler> handler = handleGive(input, keyBindings, GiveAmount.ONE);
+					if (handler.isPresent()) {
+						return handler;
+					}
+				}
+			}
+		}
+
 		if (input.is(keyBindings.getShowRecipe())) {
 			return handleShow(input, List.of(RecipeIngredientRole.OUTPUT), keyBindings);
 		}
@@ -38,18 +83,45 @@ public class FocusInputHandler implements IUserInputHandler {
 		return Optional.empty();
 	}
 
+	private Optional<IUserInputHandler> handleClick(UserInput input, IInternalKeyMappings keyBindings) {
+		List<IClickableIngredientInternal<?>> ingredientUnderMouse = focusSource.getIngredientUnderMouse(input, keyBindings)
+			.toList();
+
+		for (IClickableIngredientInternal<?> clicked : ingredientUnderMouse) {
+			IElement<?> element = clicked.getElement();
+			if (element.handleClick(input, keyBindings)) {
+				IUserInputHandler result = new SameElementInputHandler(this, clicked::isMouseOver);
+				return Optional.of(result);
+			}
+		}
+		return Optional.empty();
+	}
+
 	private Optional<IUserInputHandler> handleShow(UserInput input, List<RecipeIngredientRole> roles, IInternalKeyMappings keyBindings) {
 		return focusSource.getIngredientUnderMouse(input, keyBindings)
+			.filter(clicked -> clicked.getElement().isVisible())
 			.findFirst()
 			.map(clicked -> {
 				if (!input.isSimulate()) {
-					List<IFocus<?>> focuses = roles.stream()
-						.<IFocus<?>>map(role -> focusFactory.createFocus(role, clicked.getTypedIngredient()))
-						.toList();
-					recipesGui.show(focuses);
+					IElement<?> element = clicked.getElement();
+					element.show(recipesGui, focusUtil, roles);
 				}
-				ImmutableRect2i area = clicked.getArea();
-				return LimitedAreaInputHandler.create(this, area);
+				return new SameElementInputHandler(this, clicked::isMouseOver);
 			});
+	}
+
+	private Optional<IUserInputHandler> handleGive(UserInput input, IInternalKeyMappings keyBindings, GiveAmount giveAmount) {
+		return focusSource.getIngredientUnderMouse(input, keyBindings)
+			.<IUserInputHandler>mapMulti((clicked, consumer) -> {
+				ItemStack itemStack = clicked.getCheatItemStack(ingredientManager);
+				if (!itemStack.isEmpty()) {
+					if (!input.isSimulate()) {
+						commandUtil.giveStack(itemStack, giveAmount);
+					}
+					IUserInputHandler handler = new SameElementInputHandler(this, clicked::isMouseOver);
+					consumer.accept(handler);
+				}
+			})
+			.findFirst();
 	}
 }

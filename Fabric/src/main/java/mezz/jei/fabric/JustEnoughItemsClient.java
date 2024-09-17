@@ -7,11 +7,13 @@ import mezz.jei.core.config.IServerConfig;
 import mezz.jei.fabric.config.ServerConfig;
 import mezz.jei.fabric.events.JeiIdentifiableResourceReloadListener;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
+import mezz.jei.fabric.plugins.fabric.FabricGuiPlugin;
 import mezz.jei.fabric.startup.ClientLifecycleHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
 public class JustEnoughItemsClient implements ClientModInitializer {
 	@Override
@@ -30,7 +32,17 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 
 				ResourceManagerHelper.get(PackType.SERVER_DATA)
 						.registerReloadListener(new JeiIdentifiableResourceReloadListener("lifecycle", clientLifecycleHandler.getReloadListener()));
+
+				ResourceManagerHelper.get(PackType.CLIENT_RESOURCES)
+					.registerReloadListener(new JeiIdentifiableResourceReloadListener("resources_reload", createReloadListener()));
 			});
 		});
+	}
+
+	public ResourceManagerReloadListener createReloadListener() {
+		return (resourceManager) -> {
+			FabricGuiPlugin.getResourceReloadHandler()
+				.ifPresent(r -> r.onResourceManagerReload(resourceManager));
+		};
 	}
 }

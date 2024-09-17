@@ -3,7 +3,7 @@ package mezz.jei.gui.ingredients;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.core.config.IngredientSortStage;
+import mezz.jei.common.config.IngredientSortStage;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
 import net.minecraft.core.HolderSet.ListBacked;
@@ -21,21 +21,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class IngredientSorterComparators {
-	private final IngredientFilter ingredientFilter;
 	private final IIngredientManager ingredientManager;
 	private final ModNameSortingConfig modNameSortingConfig;
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
+	private final Set<String> modNames;
 
 	public IngredientSorterComparators(
-		IngredientFilter ingredientFilter,
 		IIngredientManager ingredientManager,
 		ModNameSortingConfig modNameSortingConfig,
-		IngredientTypeSortingConfig ingredientTypeSortingConfig
+		IngredientTypeSortingConfig ingredientTypeSortingConfig,
+		Set<String> modNames
 	) {
-		this.ingredientFilter = ingredientFilter;
 		this.ingredientManager = ingredientManager;
 		this.modNameSortingConfig = modNameSortingConfig;
 		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
+		this.modNames = modNames;
 	}
 
 	public Comparator<IListElementInfo<?>> getComparator(List<IngredientSortStage> ingredientSorterStages) {
@@ -64,18 +64,14 @@ public class IngredientSorterComparators {
 	}
 
 	private static Comparator<IListElementInfo<?>> getCreativeMenuComparator() {
-		return Comparator.comparingInt(o -> {
-			IListElement<?> element = o.getElement();
-			return element.getOrderIndex();
-		});
+		return Comparator.comparingInt(IListElementInfo::getCreatedIndex);
 	}
 
 	private static Comparator<IListElementInfo<?>> getAlphabeticalComparator() {
-		return Comparator.comparing(IListElementInfo::getName);
+		return Comparator.comparing(i -> i.getNames().get(0));
 	}
 
 	private Comparator<IListElementInfo<?>> getModNameComparator() {
-		Set<String> modNames = this.ingredientFilter.getModNamesForSorting();
 		return this.modNameSortingConfig.getComparatorFromMappedValues(modNames);
 	}
 

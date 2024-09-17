@@ -1,13 +1,13 @@
 package mezz.jei.gui.overlay;
 
-import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.gui.overlay.elements.IElement;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
 public interface IIngredientGridSource {
 	@Unmodifiable
-	List<ITypedIngredient<?>> getIngredientList();
+	List<IElement<?>> getElements();
 
 	void addSourceListChangedListener(SourceListChangedListener listener);
 

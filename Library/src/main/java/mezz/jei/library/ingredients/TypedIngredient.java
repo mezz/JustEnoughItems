@@ -6,11 +6,17 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public final class TypedIngredient<T> implements ITypedIngredient<T> {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private static <T> void checkParameters(IIngredientType<T> ingredientType, T ingredient) {
 		Preconditions.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredient, "ingredient");
@@ -22,28 +28,59 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		}
 	}
 
+	public static <T> ITypedIngredient<T> normalize(ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
+		IIngredientType<T> type = typedIngredient.getType();
+		T ingredient = typedIngredient.getIngredient();
+		T normalized = ingredientHelper.normalizeIngredient(ingredient);
+		return createUnvalidated(type, normalized);
+	}
+
 	public static <T> ITypedIngredient<T> createUnvalidated(IIngredientType<T> ingredientType, T ingredient) {
 		checkParameters(ingredientType, ingredient);
 		return new TypedIngredient<>(ingredientType, ingredient);
 	}
 
-	public static <T> Optional<ITypedIngredient<?>> createAndFilterInvalid(IIngredientManager ingredientManager, @Nullable T ingredient) {
+	public static <T> Optional<ITypedIngredient<?>> createAndFilterInvalid(IIngredientManager ingredientManager, @Nullable T ingredient, boolean normalize) {
 		if (ingredient == null) {
 			return Optional.empty();
 		}
 		return ingredientManager.getIngredientTypeChecked(ingredient)
-			.flatMap(ingredientType -> createAndFilterInvalid(ingredientManager, ingredientType, ingredient));
+			.flatMap(ingredientType -> {
+				IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+				return createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
+			});
 	}
 
-	public static <T> Optional<ITypedIngredient<T>> createAndFilterInvalid(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, @Nullable T ingredient) {
+	public static <T> Optional<ITypedIngredient<T>> createAndFilterInvalid(
+		IIngredientManager ingredientManager,
+		IIngredientType<T> ingredientType,
+		@Nullable T ingredient,
+		boolean normalize
+	) {
 		if (ingredient == null) {
 			return Optional.empty();
 		}
-		checkParameters(ingredientType, ingredient);
 
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		return createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
+	}
+
+	public static <T> Optional<ITypedIngredient<T>> createAndFilterInvalid(
+		IIngredientHelper<T> ingredientHelper,
+		IIngredientType<T> ingredientType,
+		T ingredient,
+		boolean normalize
+	) {
 		try {
+			if (normalize) {
+				ingredient = ingredientHelper.normalizeIngredient(ingredient);
+			}
 			if (!ingredientHelper.isValidIngredient(ingredient)) {
+				return Optional.empty();
+			}
+			if (!ingredientHelper.isIngredientOnServer(ingredient)) {
+				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
+				LOGGER.warn("Ignoring ingredient that isn't on the server: {}", errorInfo);
 				return Optional.empty();
 			}
 		} catch (RuntimeException e) {
@@ -51,14 +88,33 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 			throw new IllegalArgumentException("Crashed when checking if ingredient is valid. Ingredient Info: " + ingredientInfo, e);
 		}
 
-		TypedIngredient<T> typedIngredient = new TypedIngredient<>(ingredientType, ingredient);
+		ITypedIngredient<T> typedIngredient = createUnvalidated(ingredientType, ingredient);
 		return Optional.of(typedIngredient);
 	}
 
 	public static <T> Optional<ITypedIngredient<T>> deepCopy(IIngredientManager ingredientManager, ITypedIngredient<T> value) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		T ingredient = ingredientHelper.copyIngredient(value.getIngredient());
-		return TypedIngredient.createAndFilterInvalid(ingredientManager, value.getType(), ingredient);
+		return createAndFilterInvalid(ingredientHelper, value.getType(), ingredient, false);
+	}
+
+	public static <T> List<Optional<ITypedIngredient<T>>> createAndFilterInvalidList(
+		IIngredientManager ingredientManager,
+		IIngredientType<T> ingredientType,
+		List<@Nullable T> ingredients,
+		boolean normalize
+	) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		List<Optional<ITypedIngredient<T>>> results = new ArrayList<>(ingredients.size());
+		for (T ingredient : ingredients) {
+			if (ingredient == null) {
+				results.add(Optional.empty());
+			} else {
+				Optional<ITypedIngredient<T>> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
+				results.add(result);
+			}
+		}
+		return results;
 	}
 
 	private final IIngredientType<T> ingredientType;

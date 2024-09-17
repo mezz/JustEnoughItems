@@ -1,5 +1,6 @@
 package mezz.jei.gui.search;
 
+import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 
 import java.util.Collection;
@@ -8,10 +9,11 @@ import java.util.Set;
 public interface IElementSearch {
 	void add(IListElementInfo<?> info);
 
-	Collection<IListElementInfo<?>> getAllIngredients();
+	void addAll(Collection<IListElementInfo<?>> infos);
 
-	Set<IListElementInfo<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo);
+	Collection<IListElement<?>> getAllIngredients();
 
-	@SuppressWarnings("unused") // used for debugging
+	Set<IListElement<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo);
+
 	void logStatistics();
 }

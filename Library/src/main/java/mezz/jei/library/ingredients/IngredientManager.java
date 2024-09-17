@@ -35,7 +35,6 @@ public class IngredientManager implements IIngredientManager {
 			.getAllIngredients();
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public <V> IIngredientHelper<V> getIngredientHelper(V ingredient) {
 		return getIngredientTypeChecked(ingredient)
@@ -52,7 +51,6 @@ public class IngredientManager implements IIngredientManager {
 			.getIngredientHelper();
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public <V> IIngredientRenderer<V> getIngredientRenderer(V ingredient) {
 		return getIngredientTypeChecked(ingredient)
@@ -92,6 +90,11 @@ public class IngredientManager implements IIngredientManager {
 					LOGGER.error("Attempted to add an invalid Ingredient: {}", errorInfo);
 					return false;
 				}
+				if (!ingredientHelper.isIngredientOnServer(i)) {
+					String errorInfo = ingredientHelper.getErrorInfo(i);
+					LOGGER.error("Attempted to add an Ingredient that is not on the server: {}", errorInfo);
+					return false;
+				}
 				return true;
 			})
 			.toList();
@@ -107,17 +110,24 @@ public class IngredientManager implements IIngredientManager {
 		}
 	}
 
+	@Override
+	public <V> Optional<IIngredientType<V>> getIngredientTypeChecked(V ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		return this.registeredIngredients.getIngredientType(ingredient);
+	}
+
+	@Override
+	public <V> Optional<IIngredientType<V>> getIngredientTypeChecked(Class<? extends V> ingredientClass) {
+		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
+
+		return this.registeredIngredients.getIngredientType(ingredientClass);
+	}
+
 	@SuppressWarnings("removal")
 	@Override
 	public <V> IIngredientType<V> getIngredientType(V ingredient) {
 		return getIngredientTypeChecked(ingredient)
 			.orElseThrow(() -> new IllegalArgumentException("Unknown ingredient class: " + ingredient.getClass()));
-	}
-
-	@Override
-	public <V> Optional<IIngredientType<V>> getIngredientTypeChecked(V ingredient) {
-		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		return this.registeredIngredients.getIngredientType(ingredient);
 	}
 
 	@SuppressWarnings("removal")
@@ -126,13 +136,6 @@ public class IngredientManager implements IIngredientManager {
 		Optional<IIngredientType<V>> ingredientType = getIngredientTypeChecked(ingredientClass);
 		return ingredientType
 			.orElseThrow(() -> new IllegalArgumentException("Unknown ingredient class: " + ingredientClass));
-	}
-
-	@Override
-	public <V> Optional<IIngredientType<V>> getIngredientTypeChecked(Class<? extends V> ingredientClass) {
-		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
-
-		return this.registeredIngredients.getIngredientType(ingredientClass);
 	}
 
 	@Override
@@ -149,7 +152,7 @@ public class IngredientManager implements IIngredientManager {
 
 		if (!this.listeners.isEmpty()) {
 			List<ITypedIngredient<V>> typedIngredients = ingredients.stream()
-				.map(i -> TypedIngredient.createUnvalidated(ingredientType, i))
+				.flatMap(i -> TypedIngredient.createAndFilterInvalid(this, ingredientType, i, false).stream())
 				.toList();
 
 			IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
@@ -166,10 +169,19 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public <V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient) {
-		return TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient);
+		return TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, false);
 	}
 
 	@Override
+	public <V> ITypedIngredient<V> normalizeTypedIngredient(ITypedIngredient<V> typedIngredient) {
+		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
+		IIngredientType<V> type = typedIngredient.getType();
+		IIngredientHelper<V> ingredientHelper = getIngredientHelper(type);
+		return TypedIngredient.normalize(typedIngredient, ingredientHelper);
+	}
+
+	@Override
+	@Deprecated
 	public <V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
 		return registeredIngredients
 			.getIngredientInfo(ingredientType)

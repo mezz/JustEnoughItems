@@ -3,7 +3,9 @@ package mezz.jei.api.gui.ingredient;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +23,7 @@ public interface IRecipeSlotsView {
 	 *
 	 * @since 9.3.0
 	 */
+	@Unmodifiable
 	List<IRecipeSlotView> getSlotViews();
 
 	/**
@@ -28,12 +31,28 @@ public interface IRecipeSlotsView {
 	 *
 	 * @since 9.3.0
 	 */
-	List<IRecipeSlotView> getSlotViews(RecipeIngredientRole role);
+	default List<IRecipeSlotView> getSlotViews(RecipeIngredientRole role) {
+		List<IRecipeSlotView> list = new ArrayList<>();
+		for (IRecipeSlotView slotView : getSlotViews()) {
+			if (slotView.getRole() == role) {
+				list.add(slotView);
+			}
+		}
+		return list;
+	}
 
 	/**
 	 * Get a recipe slot by its name set with {@link IRecipeSlotBuilder#setSlotName(String)}.
 	 *
 	 * @since 9.3.0
 	 */
-	Optional<IRecipeSlotView> findSlotByName(String slotName);
+	default Optional<IRecipeSlotView> findSlotByName(String slotName) {
+		return getSlotViews().stream()
+			.filter(slot ->
+				slot.getSlotName()
+					.map(slotName::equals)
+					.orElse(false)
+			)
+			.findFirst();
+	}
 }

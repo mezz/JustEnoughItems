@@ -1,9 +1,6 @@
 package mezz.jei.library.recipes;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
@@ -40,10 +37,7 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 		ITypedIngredient<V> ingredient = focus.getTypedValue();
 		RecipeIngredientRole role = focus.getRole();
 		RecipeMap recipeMap = this.recipeMaps.get(role);
-		IIngredientType<V> ingredientType = ingredient.getType();
-		IIngredientHelper<V> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredientType);
-		String ingredientUid = ingredientHelper.getUniqueId(ingredient.getIngredient(), UidContext.Recipe);
-		return recipeMap.getRecipeTypes(ingredientUid)
+		return recipeMap.getRecipeTypes(ingredient)
 			.toList();
 	}
 
@@ -53,13 +47,10 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 		ITypedIngredient<V> ingredient = focus.getTypedValue();
 		RecipeIngredientRole role = focus.getRole();
 
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredient.getType());
-		String ingredientUid = ingredientHelper.getUniqueId(ingredient.getIngredient(), UidContext.Recipe);
-
 		RecipeMap recipeMap = this.recipeMaps.get(role);
 		RecipeType<T> recipeType = recipeCategory.getRecipeType();
-		List<T> recipes = recipeMap.getRecipes(recipeType, ingredientUid);
-		if (recipeMap.isCatalystForRecipeCategory(recipeType, ingredientUid)) {
+		List<T> recipes = recipeMap.getRecipes(recipeType, ingredient);
+		if (recipeMap.isCatalystForRecipeCategory(recipeType, ingredient)) {
 			List<T> recipesForCategory = getRecipes(recipeCategory);
 			return Stream.concat(recipes.stream(), recipesForCategory.stream())
 				.distinct()

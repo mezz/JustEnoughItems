@@ -35,7 +35,11 @@ public interface IRecipeSlotView {
 	 *
 	 * @since 9.3.0
 	 */
-	<T> Stream<T> getIngredients(IIngredientType<T> ingredientType);
+	default <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
+		return getAllIngredients()
+			.map(i -> i.getIngredient(ingredientType))
+			.flatMap(Optional::stream);
+	}
 
 	/**
 	 * All ingredient variations of the given type that can be shown.
@@ -64,7 +68,9 @@ public interface IRecipeSlotView {
 	 *
 	 * @since 9.3.0
 	 */
-	boolean isEmpty();
+	default boolean isEmpty() {
+		return getAllIngredients().findAny().isEmpty();
+	}
 
 	/**
 	 * The ItemStack variation that is shown at this moment.
@@ -85,7 +91,10 @@ public interface IRecipeSlotView {
 	 *
 	 * @since 9.3.0
 	 */
-	<T> Optional<T> getDisplayedIngredient(IIngredientType<T> ingredientType);
+	default <T> Optional<T> getDisplayedIngredient(IIngredientType<T> ingredientType) {
+		return getDisplayedIngredient()
+			.flatMap(i -> i.getIngredient(ingredientType));
+	}
 
 	/**
 	 * The ingredient variation that is shown at this moment.

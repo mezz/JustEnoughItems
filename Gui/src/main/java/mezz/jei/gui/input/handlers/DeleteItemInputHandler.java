@@ -1,19 +1,19 @@
 package mezz.jei.gui.input.handlers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.common.gui.TooltipRenderer;
-import mezz.jei.gui.overlay.IIngredientGrid;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.UserInput;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketJei;
-import mezz.jei.gui.util.CheatUtil;
 import mezz.jei.common.util.ServerCommandUtil;
-import mezz.jei.core.config.GiveMode;
-import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.common.config.GiveMode;
 import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.gui.input.UserInput;
+import mezz.jei.gui.overlay.IIngredientGrid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
@@ -21,7 +21,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
 import java.util.Optional;
 
 public class DeleteItemInputHandler implements IUserInputHandler {
@@ -29,20 +28,20 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 	private final IWorldConfig worldConfig;
 	private final IClientConfig clientConfig;
 	private final IConnectionToServer serverConnection;
-	private final CheatUtil cheatUtil;
+	private final IIngredientManager ingredientManager;
 
 	public DeleteItemInputHandler(
 		IIngredientGrid ingredientGrid,
 		IWorldConfig worldConfig,
 		IClientConfig clientConfig,
 		IConnectionToServer serverConnection,
-		CheatUtil cheatUtil
+		IIngredientManager ingredientManager
 	) {
 		this.ingredientGrid = ingredientGrid;
 		this.worldConfig = worldConfig;
 		this.clientConfig = clientConfig;
 		this.serverConnection = serverConnection;
-		this.cheatUtil = cheatUtil;
+		this.ingredientManager = ingredientManager;
 	}
 
 	@Override
@@ -77,8 +76,9 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 
 	@SuppressWarnings("MethodMayBeStatic")
 	public void drawTooltips(PoseStack poseStack, int mouseX, int mouseY) {
-		Component deleteItem = Component.translatable("jei.tooltip.delete.item");
-		TooltipRenderer.drawHoveringText(poseStack, List.of(deleteItem), mouseX, mouseY);
+		JeiTooltip tooltip = new JeiTooltip();
+		tooltip.add(Component.translatable("jei.tooltip.delete.item"));
+		tooltip.draw(poseStack, mouseX, mouseY);
 	}
 
 	public boolean shouldDeleteItemOnClick(Minecraft minecraft, double mouseX, double mouseY) {
@@ -97,7 +97,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 		if (giveMode == GiveMode.MOUSE_PICKUP) {
 			return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY)
 				.findFirst()
-				.map(cheatUtil::getCheatItemStack)
+				.map(c -> c.getCheatItemStack(ingredientManager))
 				.map(i -> !ServerCommandUtil.canStack(itemStack, i))
 				.orElse(true);
 		}

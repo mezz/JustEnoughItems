@@ -8,6 +8,7 @@ import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -71,6 +72,13 @@ public interface IGuiHelper {
 	 * @since 9.1.1
 	 */
 	<V> IDrawable createDrawableIngredient(IIngredientType<V> type, V ingredient);
+
+	/**
+	 * Returns a 16x16 drawable for the given ingredient,
+	 * matching the one JEI draws in the ingredient list.
+	 * @since 11.7.0
+	 */
+	<V> IDrawable createDrawableIngredient(ITypedIngredient<V> ingredient);
 
 	/**
 	 * Create a crafting grid helper.

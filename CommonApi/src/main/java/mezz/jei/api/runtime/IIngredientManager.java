@@ -135,6 +135,15 @@ public interface IIngredientManager {
 	void registerIngredientListener(IIngredientListener listener);
 
 	/**
+	 * Normalize a typed ingredient.
+	 *
+	 * @see IIngredientHelper#normalizeIngredient
+	 *
+	 * @since 11.7.0
+	 */
+	<V> ITypedIngredient<V> normalizeTypedIngredient(ITypedIngredient<V> typedIngredient);
+
+	/**
 	 * A listener that receives updates when ingredients are added or removed from the ingredient manager.
 	 *
 	 * @since 11.5.0

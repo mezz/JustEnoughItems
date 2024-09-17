@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.DebugConfig;
-import mezz.jei.common.gui.TooltipRenderer;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -25,7 +25,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,13 +51,23 @@ public class GuiEventHandler {
 		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
 			.map(ImmutableRect2i::new)
 			.collect(Collectors.toUnmodifiableSet());
-		ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
-		bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
+		ingredientListOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
+		bookmarkOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
 	}
 
 	public void onGuiOpen(Screen screen) {
-		ingredientListOverlay.updateScreen(screen, null);
-		bookmarkOverlay.updateScreen(screen, null);
+		ingredientListOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.update();
+		bookmarkOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.update();
 	}
 
 	public void onDrawBackgroundPost(Screen screen, PoseStack poseStack) {
@@ -66,8 +75,15 @@ public class GuiEventHandler {
 		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
 			.map(ImmutableRect2i::new)
 			.collect(Collectors.toUnmodifiableSet());
-		ingredientListOverlay.updateScreen(screen, guiExclusionAreas);
-		bookmarkOverlay.updateScreen(screen, guiExclusionAreas);
+
+		ingredientListOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
+		bookmarkOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
 
 		drawnOnBackground = true;
 		double mouseX = MouseUtil.getX();
@@ -80,13 +96,12 @@ public class GuiEventHandler {
 	 * Draws above most ContainerScreen elements, but below the tooltips.
 	 */
 	public void onDrawForeground(AbstractContainerScreen<?> screen, PoseStack poseStack, int mouseX, int mouseY) {
-		Minecraft minecraft = Minecraft.getInstance();
 		poseStack.pushPose();
 		{
 			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 			poseStack.translate(-screenHelper.getGuiLeft(screen), -screenHelper.getGuiTop(screen), 0);
-			bookmarkOverlay.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
-			ingredientListOverlay.drawOnForeground(minecraft, poseStack, mouseX, mouseY);
+			bookmarkOverlay.drawOnForeground(poseStack, mouseX, mouseY);
+			ingredientListOverlay.drawOnForeground(poseStack, mouseX, mouseY);
 		}
 		poseStack.popPose();
 	}
@@ -94,8 +109,17 @@ public class GuiEventHandler {
 	public void onDrawScreenPost(Screen screen, PoseStack poseStack, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
 
-		ingredientListOverlay.updateScreen(screen, null);
-		bookmarkOverlay.updateScreen(screen, null);
+		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
+			.map(ImmutableRect2i::new)
+			.collect(Collectors.toUnmodifiableSet());
+		ingredientListOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
+		bookmarkOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
 
 		if (!drawnOnBackground) {
 			if (screen instanceof AbstractContainerScreen) {
@@ -113,20 +137,21 @@ public class GuiEventHandler {
 			int guiTop = screenHelper.getGuiTop(guiContainer);
 			this.screenHelper.getGuiClickableArea(guiContainer, mouseX - guiLeft, mouseY - guiTop)
 				.filter(IGuiClickableArea::isTooltipEnabled)
-				.map(IGuiClickableArea::getTooltipStrings)
 				.findFirst()
-				.ifPresent(tooltipStrings -> {
-					if (tooltipStrings.isEmpty()) {
-						tooltipStrings = List.of(Component.translatable("jei.tooltip.show.recipes"));
+				.ifPresent(area -> {
+					JeiTooltip tooltip = new JeiTooltip();
+					tooltip.addAll(area.getTooltipStrings());
+					if (tooltip.isEmpty()) {
+						tooltip.add(Component.translatable("jei.tooltip.show.recipes"));
 					}
-					TooltipRenderer.drawHoveringText(poseStack, tooltipStrings, mouseX, mouseY);
+					tooltip.draw(poseStack, mouseX, mouseY);
 				});
 		}
 
 		ingredientListOverlay.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 		bookmarkOverlay.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 
-		if (DebugConfig.isDebugModeEnabled()) {
+		if (DebugConfig.isDebugGuisEnabled()) {
 			drawDebugInfoForScreen(screen, poseStack);
 		}
 	}

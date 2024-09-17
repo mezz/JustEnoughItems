@@ -2,6 +2,7 @@ package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -9,6 +10,7 @@ import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A chainable interface that accepts typed ingredients.
@@ -89,4 +91,33 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 * @since 11.1.0
 	 */
 	THIS addFluidStack(Fluid fluid, long amount, CompoundTag tag);
+
+	/**
+	 * Add one typed ingredient.
+	 *
+	 * @since 11.7.0
+	 */
+	default <I> THIS addTypedIngredient(ITypedIngredient<I> typedIngredient) {
+		return addIngredient(typedIngredient.getType(), typedIngredient.getIngredient());
+	}
+
+	/**
+	 * Convenience function to add an ordered non-null list of typed ingredients.
+	 *
+	 * @param ingredients a non-null list of ingredients for the slot
+	 *
+	 * @since 11.7.0
+	 */
+	THIS addTypedIngredients(List<ITypedIngredient<?>> ingredients);
+
+	/**
+	 * Convenience function to add an ordered non-null list of typed ingredients.
+	 * {@link Optional#empty()} ingredients will be shown as blank in the rotation.
+	 *
+	 * @param ingredients a non-null list of optional ingredients for the slot
+	 *
+	 * @since 11.7.0
+	 */
+	THIS addOptionalTypedIngredients(List<Optional<ITypedIngredient<?>>> ingredients);
+
 }

@@ -160,7 +160,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
-	public Optional<ResourceLocation> getTagEquivalent(Collection<T> ingredients) {
+	public Optional<TagKey<?>> getTagKeyEquivalent(Collection<T> ingredients) {
 		return TagUtil.getTagEquivalent(ingredients, fluidType::getBase, Registry.FLUID::getTags);
 	}
 }

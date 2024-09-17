@@ -9,6 +9,7 @@ import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableBlank;
@@ -56,6 +57,14 @@ public class GuiHelper implements IGuiHelper {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
 		return new DrawableIngredient<>(ingredient, ingredientRenderer);
+	}
+
+	@Override
+	public <V> IDrawable createDrawableIngredient(ITypedIngredient<V> ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		IIngredientType<V> type = ingredient.getType();
+		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
+		return new DrawableIngredient<>(ingredient.getIngredient(), ingredientRenderer);
 	}
 
 	@Override

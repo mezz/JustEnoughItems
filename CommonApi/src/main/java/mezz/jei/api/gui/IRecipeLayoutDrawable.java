@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
@@ -70,6 +72,12 @@ public interface IRecipeLayoutDrawable<R> {
 	Rect2i getRect();
 
 	/**
+	 * Get position and size for the recipe, including the border drawn around it, in absolute screen coordinates.
+	 * @since 11.7.0
+	 */
+	Rect2i getRectWithBorder();
+
+	/**
 	 * Get the position of the recipe transfer button area, relative to the recipe layout drawable.
 	 * @since 11.5.0
 	 */
@@ -82,6 +90,15 @@ public interface IRecipeLayoutDrawable<R> {
 	IRecipeSlotsView getRecipeSlotsView();
 
 	/**
+	 * Get the recipe slot currently under the mouse, if there is one.
+	 *
+	 * @return the slot under the mouse, with an offset
+	 *
+	 * @since 11.7.0
+	 */
+	Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY);
+
+	/**
 	 * Get the recipe category that this recipe layout is a part of.
 	 * @since 11.5.0
 	 */
@@ -92,4 +109,11 @@ public interface IRecipeLayoutDrawable<R> {
 	 * @since 11.5.0
 	 */
 	R getRecipe();
+
+	/**
+	 * Get the input handler for this recipe layout.
+	 *
+	 * @since 11.7.0
+	 */
+	IJeiInputHandler getInputHandler();
 }

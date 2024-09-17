@@ -1,10 +1,12 @@
 package mezz.jei.gui.recipes;
 
-import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
@@ -14,13 +16,13 @@ public interface IRecipeGuiLogic {
 
 	String getPageString();
 
-	void setRecipesPerPage(int recipesPerPage);
-
 	boolean hasMultipleCategories();
 
 	boolean hasAllCategories();
 
 	void previousRecipeCategory();
+
+	int getRecipesPerPage();
 
 	void nextRecipeCategory();
 
@@ -28,19 +30,25 @@ public interface IRecipeGuiLogic {
 
 	boolean hasMultiplePages();
 
+	void goToFirstPage();
+
 	void previousPage();
 
 	void nextPage();
 
-	boolean setFocus(IFocusGroup focuses);
+	void tick();
+
+	boolean showFocus(IFocusGroup focuses);
+
+	boolean showRecipes(IFocusedRecipes<?> recipes, IFocusGroup focuses);
 
 	boolean back();
 
 	void clearHistory();
 
-	boolean setCategoryFocus();
+	boolean showAllRecipes();
 
-	boolean setCategoryFocus(List<RecipeType<?>> recipeTypes);
+	boolean showCategories(List<RecipeType<?>> recipeTypes);
 
 	IRecipeCategory<?> getSelectedRecipeCategory();
 
@@ -50,5 +58,9 @@ public interface IRecipeGuiLogic {
 	Stream<ITypedIngredient<?>> getRecipeCatalysts();
 	Stream<ITypedIngredient<?>> getRecipeCatalysts(IRecipeCategory<?> recipeCategory);
 
-	List<IRecipeLayoutDrawable<?>> getRecipeLayouts();
+	List<RecipeLayoutWithButtons<?>> getVisibleRecipeLayoutsWithButtons(
+		int availableHeight,
+		int minRecipePadding,
+		@Nullable AbstractContainerMenu container
+	);
 }
