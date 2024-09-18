@@ -9,7 +9,6 @@ import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.library.gui.BookmarkOverlayDummy;
@@ -22,7 +21,6 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 	private final IJeiHelpers jeiHelpers;
 	private final IEditModeConfig editModeConfig;
 	private final IIngredientManager ingredientManager;
-	private final IIngredientVisibility ingredientVisibility;
 	private final IRecipeTransferManager recipeTransferManager;
 	private final IScreenHelper screenHelper;
 
@@ -36,7 +34,6 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 		IJeiHelpers jeiHelpers,
 		IEditModeConfig editModeConfig,
 		IIngredientManager ingredientManager,
-		IIngredientVisibility ingredientVisibility,
 		IRecipeTransferManager recipeTransferManager,
 		IScreenHelper screenHelper
 	) {
@@ -44,7 +41,6 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 		this.jeiHelpers = jeiHelpers;
 		this.editModeConfig = editModeConfig;
 		this.ingredientManager = ingredientManager;
-		this.ingredientVisibility = ingredientVisibility;
 		this.recipeTransferManager = recipeTransferManager;
 		this.screenHelper = screenHelper;
 	}
@@ -82,11 +78,6 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 	@Override
 	public IIngredientManager getIngredientManager() {
 		return this.ingredientManager;
-	}
-
-	@Override
-	public IIngredientVisibility getIngredientVisibility() {
-		return this.ingredientVisibility;
 	}
 
 	@Override

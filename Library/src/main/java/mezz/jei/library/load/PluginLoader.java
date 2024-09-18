@@ -1,7 +1,6 @@
 package mezz.jei.library.load;
 
 import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
@@ -12,23 +11,28 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.core.util.LoggedTimer;
+import mezz.jei.library.config.EditModeConfig;
 import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.focus.FocusFactory;
 import mezz.jei.library.gui.helpers.GuiHelper;
 import mezz.jei.library.helpers.ModIdHelper;
+import mezz.jei.library.ingredients.IngredientBlacklistInternal;
+import mezz.jei.library.ingredients.IngredientVisibility;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.AdvancedRegistration;
@@ -50,26 +54,14 @@ import mezz.jei.library.recipes.RecipeManagerInternal;
 import mezz.jei.library.runtime.JeiHelpers;
 import mezz.jei.library.startup.StartData;
 import mezz.jei.library.transfer.RecipeTransferHandlerHelper;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
-public class PluginLoader {
-	private final StartData data;
-	private final LoggedTimer timer;
-	private final IIngredientManager ingredientManager;
-	private final JeiHelpers jeiHelpers;
+public final class PluginLoader {
+	private PluginLoader() {}
 
-	public PluginLoader(
-		StartData data,
-		IModIdFormatConfig modIdFormatConfig,
-		IIngredientFilterConfig ingredientFilterConfig,
-		IColorHelper colorHelper
-	) {
-		this.data = data;
-		this.timer = new LoggedTimer();
-
+	public static SubtypeManager registerSubtypes(StartData data) {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		List<IModPlugin> plugins = data.plugins();
 		SubtypeRegistration subtypeRegistration = new SubtypeRegistration();
@@ -78,8 +70,11 @@ public class PluginLoader {
 			p.registerFluidSubtypes(subtypeRegistration, fluidHelper)
 		);
 		SubtypeInterpreters subtypeInterpreters = subtypeRegistration.getInterpreters();
-		SubtypeManager subtypeManager = new SubtypeManager(subtypeInterpreters);
+		return new SubtypeManager(subtypeInterpreters);
+	}
 
+	public static IIngredientManager registerIngredients(StartData data, SubtypeManager subtypeManager, IColorHelper colorHelper, IIngredientFilterConfig ingredientFilterConfig) {
+		List<IModPlugin> plugins = data.plugins();
 		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
 		PluginCaller.callOnPlugins("Registering extra ingredients", plugins, p -> p.registerExtraIngredients(ingredientManagerBuilder));
@@ -87,18 +82,39 @@ public class PluginLoader {
 		if (ingredientFilterConfig.getSearchIngredientAliases()) {
 			PluginCaller.callOnPlugins("Registering search ingredient aliases", plugins, p -> p.registerIngredientAliases(ingredientManagerBuilder));
 		}
+		return ingredientManagerBuilder.build();
+	}
 
-		this.ingredientManager = ingredientManagerBuilder.build();
-
+	public static JeiHelpers createJeiHelpers(
+		IModIdFormatConfig modIdFormatConfig,
+		IColorHelper colorHelper,
+		EditModeConfig editModeConfig,
+		FocusFactory focusFactory,
+		IIngredientManager ingredientManager,
+		SubtypeManager subtypeManager
+	) {
+		VanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory(ingredientManager);
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(ingredientManager);
-		FocusFactory focusFactory = new FocusFactory(ingredientManager);
+
 		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager);
-		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager);
+
+		IClientToggleState toggleState = Internal.getClientToggleState();
+		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
+		ingredientManager.registerIngredientListener(blacklist);
+
+		IIngredientVisibility ingredientVisibility = new IngredientVisibility(
+			blacklist,
+			toggleState,
+			editModeConfig,
+			ingredientManager
+		);
+
+		return new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager, vanillaRecipeFactory, ingredientVisibility);
 	}
 
 	@Unmodifiable
-	private List<IRecipeCategory<?>> createRecipeCategories(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin) {
+	private static List<IRecipeCategory<?>> createRecipeCategories(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin, JeiHelpers jeiHelpers) {
 		RecipeCategoryRegistration recipeCategoryRegistration = new RecipeCategoryRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering categories", plugins, p -> p.registerCategories(recipeCategoryRegistration));
 		CraftingRecipeCategory craftingCategory = vanillaPlugin.getCraftingCategory()
@@ -110,43 +126,47 @@ public class PluginLoader {
 		return recipeCategoryRegistration.getRecipeCategories();
 	}
 
-	public IScreenHelper createGuiScreenHelper(List<IModPlugin> plugins, IJeiHelpers jeiHelpers) {
+	public static IScreenHelper createGuiScreenHelper(List<IModPlugin> plugins, IJeiHelpers jeiHelpers, IIngredientManager ingredientManager) {
 		GuiHandlerRegistration guiHandlerRegistration = new GuiHandlerRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering gui handlers", plugins, p -> p.registerGuiHandlers(guiHandlerRegistration));
 		return guiHandlerRegistration.createGuiScreenHelper(ingredientManager);
 	}
 
-	public ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> createRecipeTransferHandlers(List<IModPlugin> plugins) {
+	public static IRecipeTransferManager createRecipeTransferManager(
+		List<IModPlugin> plugins,
+		JeiHelpers jeiHelpers,
+		IConnectionToServer connectionToServer
+	) {
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 		IRecipeTransferHandlerHelper handlerHelper = new RecipeTransferHandlerHelper(stackHelper);
-		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(stackHelper, handlerHelper, this.jeiHelpers, data.serverConnection());
+		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(stackHelper, handlerHelper, jeiHelpers, connectionToServer);
 		PluginCaller.callOnPlugins("Registering recipes transfer handlers", plugins, p -> p.registerRecipeTransferHandlers(recipeTransferRegistration));
-		return recipeTransferRegistration.getRecipeTransferHandlers();
+		return recipeTransferRegistration.createRecipeTransferManager();
 	}
 
-	public RecipeManager createRecipeManager(
+	public static RecipeManager createRecipeManager(
 		List<IModPlugin> plugins,
 		VanillaPlugin vanillaPlugin,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
-		IIngredientVisibility ingredientVisibility
+		JeiHelpers jeiHelpers,
+		IIngredientManager ingredientManager
 	) {
-		List<IRecipeCategory<?>> recipeCategories = createRecipeCategories(plugins, vanillaPlugin);
+		List<IRecipeCategory<?>> recipeCategories = createRecipeCategories(plugins, vanillaPlugin, jeiHelpers);
 
 		RecipeCatalystRegistration recipeCatalystRegistration = new RecipeCatalystRegistration(ingredientManager, jeiHelpers);
 		PluginCaller.callOnPlugins("Registering recipe catalysts", plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration));
 		ImmutableListMultimap<RecipeType<?>, ITypedIngredient<?>> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
 
+		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building recipe registry");
 		RecipeManagerInternal recipeManagerInternal = new RecipeManagerInternal(
 			recipeCategories,
 			recipeCatalysts,
 			ingredientManager,
 			recipeCategorySortingConfig,
-			ingredientVisibility
+			jeiHelpers.getIngredientVisibility()
 		);
 		timer.stop();
-
-		VanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory(ingredientManager);
 
 		IJeiFeatures jeiFeatures = Internal.getJeiFeatures();
 		RecipeManagerPluginHelper recipeManagerPluginHelper = new RecipeManagerPluginHelper(recipeManagerInternal);
@@ -158,19 +178,11 @@ public class PluginLoader {
 		recipeManagerInternal.addPlugins(recipeManagerPlugins);
 		recipeManagerInternal.addDecorators(recipeCategoryDecorators);
 
-		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, ingredientVisibility, vanillaRecipeFactory, recipeManagerInternal);
+		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, recipeManagerInternal);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
 		recipeManagerInternal.compact();
 
 		return new RecipeManager(recipeManagerInternal, ingredientManager);
-	}
-
-	public IIngredientManager getIngredientManager() {
-		return ingredientManager;
-	}
-
-	public JeiHelpers getJeiHelpers() {
-		return jeiHelpers;
 	}
 }

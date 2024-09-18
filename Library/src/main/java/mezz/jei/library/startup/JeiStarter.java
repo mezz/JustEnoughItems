@@ -1,18 +1,13 @@
 package mezz.jei.library.startup;
 
-import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
-import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.JeiClientConfigs;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
@@ -26,8 +21,8 @@ import mezz.jei.library.config.ColorNameConfig;
 import mezz.jei.library.config.EditModeConfig;
 import mezz.jei.library.config.ModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
-import mezz.jei.library.ingredients.IngredientBlacklistInternal;
-import mezz.jei.library.ingredients.IngredientVisibility;
+import mezz.jei.library.focus.FocusFactory;
+import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.PluginCaller;
 import mezz.jei.library.load.PluginHelper;
 import mezz.jei.library.load.PluginLoader;
@@ -35,11 +30,9 @@ import mezz.jei.library.load.registration.RuntimeRegistration;
 import mezz.jei.library.plugins.jei.JeiInternalPlugin;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import mezz.jei.library.recipes.RecipeManager;
-import mezz.jei.library.recipes.RecipeTransferManager;
 import mezz.jei.library.runtime.JeiHelpers;
 import mezz.jei.library.runtime.JeiRuntime;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -108,48 +101,39 @@ public final class JeiStarter {
 		totalTime.start("Starting JEI");
 
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
-
-		IClientToggleState toggleState = Internal.getClientToggleState();
-
 		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
-		PluginLoader pluginLoader = new PluginLoader(data, modIdFormatConfig, ingredientFilterConfig, colorHelper);
-		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
+		SubtypeManager subtypeManager = PluginLoader.registerSubtypes(data);
+		IIngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper, ingredientFilterConfig);
 
-		IIngredientManager ingredientManager = pluginLoader.getIngredientManager();
-
-		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
-		ingredientManager.registerIngredientListener(blacklist);
+		FocusFactory focusFactory = new FocusFactory(ingredientManager);
 
 		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
 		EditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.cfg")), ingredientManager);
 
-		IIngredientVisibility ingredientVisibility = new IngredientVisibility(
-			blacklist,
-			toggleState,
-			editModeConfig,
-			ingredientManager
-		);
+		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(modIdFormatConfig, colorHelper, editModeConfig, focusFactory, ingredientManager, subtypeManager);
 
-		RecipeManager recipeManager = pluginLoader.createRecipeManager(
+		RecipeManager recipeManager = PluginLoader.createRecipeManager(
 			plugins,
 			vanillaPlugin,
 			recipeCategorySortingConfig,
-			ingredientVisibility
+			jeiHelpers,
+			ingredientManager
 		);
-		ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers =
-			pluginLoader.createRecipeTransferHandlers(plugins);
-		IRecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
+		IRecipeTransferManager recipeTransferManager = PluginLoader.createRecipeTransferManager(
+			plugins,
+			jeiHelpers,
+			data.serverConnection()
+		);
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
-		IScreenHelper screenHelper = pluginLoader.createGuiScreenHelper(plugins, jeiHelpers);
+		IScreenHelper screenHelper = PluginLoader.createGuiScreenHelper(plugins, jeiHelpers, ingredientManager);
 
 		RuntimeRegistration runtimeRegistration = new RuntimeRegistration(
 			recipeManager,
 			jeiHelpers,
 			editModeConfig,
 			ingredientManager,
-			ingredientVisibility,
 			recipeTransferManager,
 			screenHelper
 		);
@@ -158,7 +142,6 @@ public final class JeiStarter {
 		JeiRuntime jeiRuntime = new JeiRuntime(
 			recipeManager,
 			ingredientManager,
-			ingredientVisibility,
 			data.keyBindings(),
 			jeiHelpers,
 			screenHelper,

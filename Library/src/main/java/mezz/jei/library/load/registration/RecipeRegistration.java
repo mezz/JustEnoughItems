@@ -8,7 +8,6 @@ import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.plugins.jei.info.IngredientInfoRecipe;
 import mezz.jei.library.recipes.RecipeManagerInternal;
@@ -19,21 +18,15 @@ import java.util.List;
 public class RecipeRegistration implements IRecipeRegistration {
 	private final IJeiHelpers jeiHelpers;
 	private final IIngredientManager ingredientManager;
-	private final IIngredientVisibility ingredientVisibility;
-	private final IVanillaRecipeFactory vanillaRecipeFactory;
 	private final RecipeManagerInternal recipeManager;
 
 	public RecipeRegistration(
 		IJeiHelpers jeiHelpers,
 		IIngredientManager ingredientManager,
-		IIngredientVisibility ingredientVisibility,
-		IVanillaRecipeFactory vanillaRecipeFactory,
 		RecipeManagerInternal recipeManager
 	) {
 		this.jeiHelpers = jeiHelpers;
 		this.ingredientManager = ingredientManager;
-		this.ingredientVisibility = ingredientVisibility;
-		this.vanillaRecipeFactory = vanillaRecipeFactory;
 		this.recipeManager = recipeManager;
 	}
 
@@ -49,12 +42,7 @@ public class RecipeRegistration implements IRecipeRegistration {
 
 	@Override
 	public IVanillaRecipeFactory getVanillaRecipeFactory() {
-		return vanillaRecipeFactory;
-	}
-
-	@Override
-	public IIngredientVisibility getIngredientVisibility() {
-		return ingredientVisibility;
+		return jeiHelpers.getVanillaRecipeFactory();
 	}
 
 	@Override
