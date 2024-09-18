@@ -189,7 +189,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 
 		List<Pair<Integer, IRecipeSlotDrawable>> recipeCategorySlotPairs = new ArrayList<>();
 		List<Pair<Integer, IRecipeSlotDrawable>> allSlotPairs = new ArrayList<>();
-		ListMultiMap<ISlottedWidgetFactory<?>, IRecipeSlotDrawable> widgetSlots = new ListMultiMap<>();
+		ListMultiMap<ISlottedWidgetFactory<?>, Pair<Integer, IRecipeSlotDrawable>> widgetSlots = new ListMultiMap<>();
 		CycleTicker cycleTicker = CycleTicker.createWithRandomOffset();
 
 		Set<RecipeSlotBuilder> focusLinkedSlots = new HashSet<>();
@@ -203,13 +203,14 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 					continue;
 				}
 				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focusMatches, cycleTicker);
+				Pair<Integer, IRecipeSlotDrawable> indexedSlot = new Pair<>(slotBuilder.getIndex(), slotDrawable);
 				ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
 				if (assignedWidget == null) {
-					recipeCategorySlotPairs.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
+					recipeCategorySlotPairs.add(indexedSlot);
 				} else {
-					widgetSlots.put(assignedWidget, slotDrawable);
+					widgetSlots.put(assignedWidget, indexedSlot);
 				}
-				allSlotPairs.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
+				allSlotPairs.add(indexedSlot);
 			}
 			focusLinkedSlots.addAll(linkedSlots);
 		}
@@ -217,21 +218,22 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		for (RecipeSlotBuilder slotBuilder : visibleSlots) {
 			if (!focusLinkedSlots.contains(slotBuilder)) {
 				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focuses, cycleTicker);
+				Pair<Integer, IRecipeSlotDrawable> indexedSlot = new Pair<>(slotBuilder.getIndex(), slotDrawable);
 				ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
 				if (assignedWidget == null) {
-					recipeCategorySlotPairs.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
+					recipeCategorySlotPairs.add(indexedSlot);
 				} else {
-					widgetSlots.put(assignedWidget, slotDrawable);
+					widgetSlots.put(assignedWidget, indexedSlot);
 				}
-				allSlotPairs.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
+				allSlotPairs.add(indexedSlot);
 			}
 		}
 
-		for (Map.Entry<ISlottedWidgetFactory<?>, List<IRecipeSlotDrawable>> e : widgetSlots.entrySet()) {
+		for (Map.Entry<ISlottedWidgetFactory<?>, List<Pair<Integer, IRecipeSlotDrawable>>> e : widgetSlots.entrySet()) {
 			// TODO: breaking change: add a type parameter to IRecipeLayoutBuilder to avoid this cast
 			@SuppressWarnings("unchecked")
 			ISlottedWidgetFactory<T> factory = (ISlottedWidgetFactory<T>) e.getKey();
-			List<IRecipeSlotDrawable> slots = e.getValue();
+			List<IRecipeSlotDrawable> slots = sortSlots(e.getValue());
 			factory.createWidgetForSlots(this, recipe, slots);
 		}
 
@@ -242,14 +244,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 			}
 		}
 
-		List<IRecipeSlotDrawable> recipeCategorySlots = recipeCategorySlotPairs.stream()
-			.sorted(Comparator.comparingInt(Pair::first))
-			.map(Pair::second)
-			.toList();
-		List<IRecipeSlotDrawable> allSlots = allSlotPairs.stream()
-			.sorted(Comparator.comparingInt(Pair::first))
-			.map(Pair::second)
-			.toList();
+		List<IRecipeSlotDrawable> recipeCategorySlots = sortSlots(recipeCategorySlotPairs);
+		List<IRecipeSlotDrawable> allSlots = sortSlots(allSlotPairs);
 
 		return new RecipeLayout<>(
 			recipeCategory,
@@ -268,6 +264,13 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 			cycleTicker,
 			focuses
 		);
+	}
+
+	private static List<IRecipeSlotDrawable> sortSlots(List<Pair<Integer, IRecipeSlotDrawable>> indexedSlots) {
+		return indexedSlots.stream()
+			.sorted(Comparator.comparingInt(Pair::first))
+			.map(Pair::second)
+			.toList();
 	}
 
 	@Nullable
