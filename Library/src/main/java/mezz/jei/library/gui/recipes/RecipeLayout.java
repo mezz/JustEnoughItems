@@ -18,7 +18,6 @@ import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import net.minecraft.client.renderer.Rect2i;
 import org.apache.logging.log4j.LogManager;
@@ -40,12 +39,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	 * Slots handled by the recipe category directly.
 	 */
 	private final List<IRecipeSlotDrawable> recipeCategorySlots;
-	/**
-	 * All slots, including slots handled by the recipe category and widgets.
-	 */
-	private final List<IRecipeSlotDrawable> allSlots;
-	private final CycleTicker cycleTicker;
-	private final IFocusGroup focuses;
 	private final R recipe;
 	private final IScalableDrawable recipeBackground;
 	private final int recipeBorderPadding;
@@ -102,18 +95,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		int recipeBorderPadding,
 		@Nullable ShapelessIcon shapelessIcon,
 		ImmutablePoint2i recipeTransferButtonPos,
-		List<IRecipeSlotDrawable> recipeCategorySlots,
-		List<IRecipeSlotDrawable> allSlots,
-		CycleTicker cycleTicker,
-		IFocusGroup focuses
+		List<IRecipeSlotDrawable> recipeCategorySlots
 	) {
 		this.recipeCategory = recipeCategory;
-		this.cycleTicker = cycleTicker;
-		this.focuses = focuses;
 		this.inputHandler = new RecipeLayoutInputHandler<>(this);
 
 		this.recipeCategorySlots = recipeCategorySlots;
-		this.allSlots = Collections.unmodifiableList(allSlots);
 		this.recipeBorderPadding = recipeBorderPadding;
 		this.area = new ImmutableRect2i(
 			0,
@@ -267,10 +254,9 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		return recipeTransferButtonArea.toMutable();
 	}
 
-	@SuppressWarnings("RedundantUnmodifiable")
 	@Override
 	public IRecipeSlotsView getRecipeSlotsView() {
-		return () -> Collections.unmodifiableList(allSlots);
+		return () -> Collections.unmodifiableList(recipeCategorySlots);
 	}
 
 	@Override

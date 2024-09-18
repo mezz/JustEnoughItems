@@ -90,7 +90,7 @@ public class RecipeManager implements IRecipeManager {
 
 	@Override
 	public IRecipeSlotDrawable createRecipeSlotDrawable(RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusedIngredients, int xPos, int yPos, int ingredientCycleOffset) {
-		RecipeSlotBuilder builder = new RecipeSlotBuilder(ingredientManager, role, xPos, yPos);
+		RecipeSlotBuilder builder = new RecipeSlotBuilder(ingredientManager, 0, role, xPos, yPos);
 		builder.addOptionalTypedIngredients(ingredients);
 		CycleTimer cycleTimer = CycleTimer.create(ingredientCycleOffset);
 		return builder.build(focusedIngredients, cycleTimer);

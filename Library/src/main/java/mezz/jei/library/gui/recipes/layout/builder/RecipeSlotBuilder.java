@@ -35,16 +35,18 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private final DisplayIngredientAcceptor ingredients;
 	private final RecipeIngredientRole role;
 	private final List<IRecipeSlotTooltipCallback> tooltipCallbacks = new ArrayList<>();
+	private final int index;
 	private ImmutableRect2i rect;
 	private @Nullable RendererOverrides rendererOverrides;
 	private @Nullable IDrawable background;
 	private @Nullable IDrawable overlay;
 	private @Nullable String slotName;
 
-	public RecipeSlotBuilder(IIngredientManager ingredientManager, RecipeIngredientRole role, int x, int y) {
+	public RecipeSlotBuilder(IIngredientManager ingredientManager, int index, RecipeIngredientRole role, int x, int y) {
 		this.ingredients = new DisplayIngredientAcceptor(ingredientManager);
 		this.rect = new ImmutableRect2i(x, y, 16, 16);
 		this.role = role;
+		this.index = index;
 	}
 
 	@Override
@@ -146,6 +148,10 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 
 		this.slotName = slotName;
 		return this;
+	}
+
+	public int getIndex() {
+		return index;
 	}
 
 	public IRecipeSlotDrawable build(IFocusGroup focusGroup, ICycler cycler) {
