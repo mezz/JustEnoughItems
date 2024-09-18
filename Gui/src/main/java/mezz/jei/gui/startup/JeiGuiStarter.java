@@ -76,11 +76,11 @@ public class JeiGuiStarter {
 		IScreenHelper screenHelper = registration.getScreenHelper();
 		IRecipeTransferManager recipeTransferManager = registration.getRecipeTransferManager();
 		IRecipeManager recipeManager = registration.getRecipeManager();
-		IIngredientVisibility ingredientVisibility = registration.getIngredientVisibility();
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IEditModeConfig editModeConfig = registration.getEditModeConfig();
 
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+		IIngredientVisibility ingredientVisibility = jeiHelpers.getIngredientVisibility();
 		IColorHelper colorHelper = jeiHelpers.getColorHelper();
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 		IFocusFactory focusFactory = jeiHelpers.getFocusFactory();

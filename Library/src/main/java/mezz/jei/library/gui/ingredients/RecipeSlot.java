@@ -120,7 +120,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		// hide invisible ingredients if there are any
 		// try scanning through all the ingredients without building the list of visible ingredients.
 		// if an invisible ingredient is found, start building the list of visible ingredients
-		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getIngredientVisibility();
+		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
 		for (int i = 0; i < allIngredients.size() && visibleIngredients.size() < MAX_DISPLAYED_INGREDIENTS; i++) {
 			Optional<ITypedIngredient<?>> ingredient = allIngredients.get(i);
 			boolean visible = ingredient.isEmpty() || ingredientVisibility.isIngredientVisible(ingredient.get());

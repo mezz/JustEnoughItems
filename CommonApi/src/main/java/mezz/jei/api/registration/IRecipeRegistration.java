@@ -34,8 +34,12 @@ public interface IRecipeRegistration {
 	 * ingredients based on what is visible in JEI.
 	 *
 	 * @since 9.3.1
+	 * @deprecated use {@link IJeiHelpers#getIngredientVisibility()}
 	 */
-	IIngredientVisibility getIngredientVisibility();
+	@Deprecated(since = "19.18.4", forRemoval = true)
+	default IIngredientVisibility getIngredientVisibility() {
+		return getJeiHelpers().getIngredientVisibility();
+	}
 
 	/**
 	 * Add the recipes provided by your plugin.
