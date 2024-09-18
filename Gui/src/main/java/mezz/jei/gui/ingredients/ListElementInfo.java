@@ -37,18 +37,23 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final ResourceLocation resourceLocation;
-	private final int createdIndex;
 
 	@Nullable
 	public static <V> IListElementInfo<V> create(ITypedIngredient<V> value, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		int createdIndex = elementCount++;
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		ListElement<V> element = new ListElement<>(value, createdIndex);
+		return createFromElement(element, ingredientManager, modIdHelper);
+	}
+
+	@Nullable
+	public static <V> IListElementInfo<V> createFromElement(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		try {
-			return new ListElementInfo<>(element, ingredientHelper, ingredientManager, modIdHelper, createdIndex);
+			return new ListElementInfo<>(element, ingredientManager, modIdHelper);
 		} catch (RuntimeException e) {
 			try {
-				String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
+				ITypedIngredient<V> typedIngredient = element.getTypedIngredient();
+				IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
+				String ingredientInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
 				LOGGER.warn("Found a broken ingredient {}", ingredientInfo, e);
 			} catch (RuntimeException e2) {
 				LOGGER.warn("Found a broken ingredient.", e2);
@@ -57,12 +62,11 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		}
 	}
 
-	protected ListElementInfo(IListElement<V> element, IIngredientHelper<V> ingredientHelper, IIngredientManager ingredientManager, IModIdHelper modIdHelper, int createdIndex) {
-		this.createdIndex = createdIndex;
-
+	protected ListElementInfo(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		this.element = element;
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		V ingredient = value.getIngredient();
+		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		this.resourceLocation = ingredientHelper.getResourceLocation(ingredient);
 		String displayModId = ingredientHelper.getDisplayModId(ingredient);
 		String modId = this.resourceLocation.getNamespace();
@@ -193,6 +197,6 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 
 	@Override
 	public int getCreatedIndex() {
-		return createdIndex;
+		return element.getCreatedIndex();
 	}
 }
