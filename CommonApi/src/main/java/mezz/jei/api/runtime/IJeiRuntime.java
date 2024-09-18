@@ -70,8 +70,12 @@ public interface IJeiRuntime {
 	 * ingredients based on what is visible in JEI.
 	 *
 	 * @since 9.3.0
+	 * @deprecated use {@link IJeiHelpers#getIngredientVisibility()}
 	 */
-	IIngredientVisibility getIngredientVisibility();
+	@Deprecated(since = "10.43.0", forRemoval = true)
+	default IIngredientVisibility getIngredientVisibility() {
+		return getJeiHelpers().getIngredientVisibility();
+	}
 
 	/**
 	 * The {@link IJeiKeyMappings} gives access to key mappings used by JEI.

@@ -4,7 +4,9 @@ import org.jetbrains.annotations.ApiStatus;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -91,4 +93,19 @@ public interface IJeiHelpers {
 	 * @since 10.3.0
 	 */
 	IIngredientManager getIngredientManager();
+
+	/**
+	 * The {@link IVanillaRecipeFactory} allows creation of vanilla recipes.
+	 *
+	 * @since 10.43.0
+	 */
+	IVanillaRecipeFactory getVanillaRecipeFactory();
+
+	/**
+	 * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
+	 * ingredients based on what is visible in JEI.
+	 *
+	 * @since 10.43.0
+	 */
+	IIngredientVisibility getIngredientVisibility();
 }
