@@ -98,7 +98,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 		return registry.getRegistryName(fluid)
 			.orElseThrow(() -> {
 				String ingredientInfo = getErrorInfo(ingredient);
-				throw new IllegalStateException("null registry name for: " + ingredientInfo);
+				return new IllegalStateException("null registry name for: " + ingredientInfo);
 			});
 	}
 

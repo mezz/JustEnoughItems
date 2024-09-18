@@ -57,7 +57,7 @@ public class StackHelper implements IStackHelper {
 			.map(ResourceLocation::toString)
 			.orElseThrow(() -> {
 				String stackInfo = ErrorUtil.getItemStackInfo(stack);
-				throw new IllegalStateException("Item has no registry name: " + stackInfo);
+				return new IllegalStateException("Item has no registry name: " + stackInfo);
 			});
 	}
 }

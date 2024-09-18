@@ -17,8 +17,6 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
-import mezz.jei.common.platform.IPlatformRenderHelper;
-import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
@@ -44,7 +42,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private final @Nullable IDrawable background;
 	private final @Nullable IDrawable overlay;
 	private final @Nullable String slotName;
-	private ImmutableRect2i rect;
+	private final ImmutableRect2i rect;
 
 	/**
 	 * All ingredients, ignoring focus and visibility
@@ -162,18 +160,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 
-	private <T> void getTooltip(ITooltipBuilder tooltip, ITypedIngredient<T> typedIngredient) {
-		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-
-		IIngredientType<T> ingredientType = typedIngredient.getType();
-		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
-		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
-		addTagNameTooltip(tooltip, ingredientManager, typedIngredient);
-		for (IRecipeSlotTooltipCallback tooltipCallback : this.tooltipCallbacks) {
-			tooltipCallback.onTooltip(this, tooltip.getLegacyComponents());
-		}
-	}
-
 	private <T> List<Component> legacyGetTooltip(ITypedIngredient<T> typedIngredient) {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 
@@ -210,7 +196,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 					Component.translatable("jei.tooltip.recipe.tag", "")
 						.withStyle(ChatFormatting.GRAY)
 				);
-				IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 				Component tagName = Component.literal(tagKeyEquivalent.location().toString());
 				tooltip.add(
 					tagName.copy().withStyle(ChatFormatting.GRAY)
@@ -288,11 +273,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.rect.contains(mouseX, mouseY);
-	}
-
-	@Override
-	public void setPosition(int x, int y) {
-		this.rect = this.rect.setPosition(x, y);
 	}
 
 	@Override

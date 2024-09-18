@@ -56,13 +56,4 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 * @since 11.7.0
 	 */
 	boolean isMouseOver(double mouseX, double mouseY);
-
-	/**
-	 * Move this slot to the given position.
-	 * @param x the new x coordinate, relative to its parent element.
-	 * @param y the new y coordinate, relative to its parent element.
-	 *
-	 * @since 11.7.0
-	 */
-	void setPosition(int x, int y);
 }
