@@ -79,6 +79,7 @@ public interface IScreenHelper {
 	 * ghost ingredient handlers via {@link IGuiHandlerRegistration#addGhostIngredientHandler}
 	 *
 	 * @since 11.5.0
+	 * @deprecated use {@link #getGhostIngredientHandlers}
 	 */
 	@Deprecated(since = "11.7.0", forRemoval = true)
 	default <T extends Screen> Optional<IGhostIngredientHandler<T>> getGhostIngredientHandler(T guiScreen) {
