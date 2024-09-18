@@ -4,12 +4,14 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 
 public class ListElement<V> implements IListElement<V> {
 	private final ITypedIngredient<V> ingredient;
+	private final int createdIndex;
 	private int sortIndex;
 	private boolean visible = true;
 
-	public ListElement(ITypedIngredient<V> ingredient, int sortIndex) {
+	public ListElement(ITypedIngredient<V> ingredient, int createdIndex) {
 		this.ingredient = ingredient;
-		this.sortIndex = sortIndex;
+		this.createdIndex = createdIndex;
+		this.sortIndex = createdIndex;
 	}
 
 	@Override
@@ -25,6 +27,11 @@ public class ListElement<V> implements IListElement<V> {
 	@Override
 	public void setSortedIndex(int sortIndex) {
 		this.sortIndex = sortIndex;
+	}
+
+	@Override
+	public int getCreatedIndex() {
+		return createdIndex;
 	}
 
 	@Override
