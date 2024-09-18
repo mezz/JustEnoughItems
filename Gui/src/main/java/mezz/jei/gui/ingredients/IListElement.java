@@ -9,6 +9,8 @@ public interface IListElement<V> {
 
 	void setSortedIndex(int sortIndex);
 
+	int getCreatedIndex();
+
 	boolean isVisible();
 
 	void setVisible(boolean visible);

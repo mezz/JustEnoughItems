@@ -38,12 +38,11 @@ public final class IngredientListElementFactory {
 			.toList();
 	}
 
-	public static List<IListElementInfo<?>> rebuildList(IIngredientManager ingredientManager, Collection<IListElement<?>> ingredients, IModIdHelper modIdHelper) {
+	public static List<IListElementInfo<?>> rebuildList(IIngredientManager ingredientManager, Collection<IListElement<?>> elements, IModIdHelper modIdHelper) {
 		List<IListElementInfo<?>> results = new ArrayList<>();
 
-		for (IListElement<?> ingredient : ingredients) {
-			ITypedIngredient<?> typedIngredient = ingredient.getTypedIngredient();
-			IListElementInfo<?> orderedElement = ListElementInfo.create(typedIngredient, ingredientManager, modIdHelper);
+		for (IListElement<?> element : elements) {
+			IListElementInfo<?> orderedElement = ListElementInfo.createFromElement(element, ingredientManager, modIdHelper);
 			if (orderedElement != null) {
 				results.add(orderedElement);
 			}
