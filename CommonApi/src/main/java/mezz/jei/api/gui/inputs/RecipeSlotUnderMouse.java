@@ -19,7 +19,7 @@ public record RecipeSlotUnderMouse(IRecipeSlotDrawable slot, int x, int y) {
 	 * Convenience function to create a new {@link RecipeSlotUnderMouse} by adding the given integer offsets.
 	 * This is useful when passing slots up a stack of nested widgets.
 	 *
-	 * @since 19.6.0
+	 * @since 11.7.0
 	 */
 	public RecipeSlotUnderMouse addOffset(int xOffset, int yOffset) {
 		return new RecipeSlotUnderMouse(slot, this.x() + xOffset, this.y() + yOffset);
@@ -28,7 +28,7 @@ public record RecipeSlotUnderMouse(IRecipeSlotDrawable slot, int x, int y) {
 	/**
 	 * Check if the mouse is still over this slot, from the perspective of the caller.
 	 *
-	 * @since 19.6.0
+	 * @since 11.7.0
 	 */
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		double relativeMouseX = mouseX - x();
