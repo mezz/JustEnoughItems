@@ -5,7 +5,6 @@ import net.minecraft.client.renderer.Rect2i;
 
 /**
  * An interface for things that want to receive user inputs like other JEI elements.
- * If you want to do vanilla-like input handling instead, use {@link IJeiGuiEventListener}.
  *
  * @since 11.7.0
  */
