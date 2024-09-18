@@ -15,6 +15,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ImmutablePoint2i;
+import mezz.jei.core.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
@@ -26,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.IntSummaryStatistics;
 import java.util.List;
@@ -150,8 +152,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 		ShapelessIcon shapelessIcon = createShapelessIcon(recipeCategory);
 		ImmutablePoint2i recipeTransferButtonPosition = getRecipeTransferButtonPosition(recipeCategory, recipeBorderPadding);
 
-		List<IRecipeSlotDrawable> recipeCategorySlots = new ArrayList<>();
-		List<IRecipeSlotDrawable> allSlots = new ArrayList<>(recipeCategorySlots);
+		List<Pair<Integer, IRecipeSlotDrawable>> recipeCategorySlots = new ArrayList<>();
 
 		CycleTicker cycleTicker = CycleTicker.createWithRandomOffset();
 
@@ -163,8 +164,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			}
 			for (RecipeSlotBuilder slotBuilder : linkedSlots) {
 				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focusMatches, cycleTicker);
-				recipeCategorySlots.add(slotDrawable);
-				allSlots.add(slotDrawable);
+				recipeCategorySlots.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
 			}
 			focusLinkedSlots.addAll(linkedSlots);
 		}
@@ -172,10 +172,14 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 		for (RecipeSlotBuilder slotBuilder : slots) {
 			if (!focusLinkedSlots.contains(slotBuilder)) {
 				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focuses, cycleTicker);
-				recipeCategorySlots.add(slotDrawable);
-				allSlots.add(slotDrawable);
+				recipeCategorySlots.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
 			}
 		}
+
+		List<IRecipeSlotDrawable> slots = recipeCategorySlots.stream()
+			.sorted(Comparator.comparingInt(Pair::first))
+			.map(Pair::second)
+			.toList();
 
 		return new RecipeLayout<>(
 			recipeCategory,
@@ -184,9 +188,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			recipeBorderPadding,
 			shapelessIcon,
 			recipeTransferButtonPosition,
-			recipeCategorySlots,
-			allSlots,
-			cycleTicker,
+			slots,
 			focuses,
 			ingredientManager
 		);

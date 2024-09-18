@@ -23,7 +23,6 @@ import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.library.deprecated.gui.recipes.layout.RecipeLayoutLegacyAdapter;
-import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RecipeSlots;
 import mezz.jei.library.gui.ingredients.RecipeSlotsView;
@@ -33,7 +32,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,11 +46,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	 * Slots handled by the recipe category directly.
 	 */
 	private final List<IRecipeSlotDrawable> recipeCategorySlots;
-	/**
-	 * All slots, including slots handled by the recipe category and widgets.
-	 */
-	private final List<IRecipeSlotDrawable> allSlots;
-	private final CycleTicker cycleTicker;
 	private final IFocusGroup focuses;
 	private final IIngredientManager ingredientManager;
 	private final R recipe;
@@ -121,19 +114,15 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		@Nullable ShapelessIcon shapelessIcon,
 		ImmutablePoint2i recipeTransferButtonPos,
 		List<IRecipeSlotDrawable> recipeCategorySlots,
-		List<IRecipeSlotDrawable> allSlots,
-		CycleTicker cycleTicker,
 		IFocusGroup focuses,
 		IIngredientManager ingredientManager
 	) {
 		this.recipeCategory = recipeCategory;
-		this.cycleTicker = cycleTicker;
 		this.focuses = focuses;
 		this.ingredientManager = ingredientManager;
 		this.inputHandler = new RecipeLayoutInputHandler<>(this);
 
 		this.recipeCategorySlots = recipeCategorySlots;
-		this.allSlots = allSlots;
 		this.recipeBorderPadding = recipeBorderPadding;
 		this.area = new ImmutableRect2i(
 			0,
@@ -156,7 +145,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 
 	private void addLegacyRecipeSlots(List<RecipeSlot> recipeSlots) {
 		this.recipeCategorySlots.addAll(recipeSlots);
-		this.allSlots.addAll(recipeSlots);
 	}
 
 	@Override
@@ -294,10 +282,9 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		return recipeTransferButtonArea.toMutable();
 	}
 
-	@SuppressWarnings("RedundantUnmodifiable")
 	@Override
 	public IRecipeSlotsView getRecipeSlotsView() {
-		return new RecipeSlotsView(allSlots);
+		return new RecipeSlotsView(recipeCategorySlots);
 	}
 
 	@Override
