@@ -39,6 +39,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -61,10 +62,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 	/**
 	 * Slots handled by the recipe category directly.
 	 */
+	@Unmodifiable
 	private final List<IRecipeSlotDrawable> recipeCategorySlots;
 	/**
 	 * All slots, including slots handled by the recipe category and widgets.
 	 */
+	@Unmodifiable
 	private final List<IRecipeSlotDrawable> allSlots;
 	private final List<ISlottedRecipeWidget> slottedWidgets;
 	private final CycleTicker cycleTicker;
