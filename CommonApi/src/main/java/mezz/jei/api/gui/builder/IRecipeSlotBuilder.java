@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IModIngredientRegistration;
 
+
 /**
  * Allows setting properties of a slot on a {@link IRecipeLayoutBuilder}.
  * Implements {@link IIngredientAcceptor} to add ingredients to the slot.

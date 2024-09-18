@@ -46,4 +46,14 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 * @since 11.5.0
 	 */
 	void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback);
+
+	/**
+	 * Return true if the mouse is over the slot.
+	 *
+	 * @param mouseX relative to its parent element.
+	 * @param mouseY relative to its parent element.
+	 *
+	 * @since 11.7.0
+	 */
+	boolean isMouseOver(double mouseX, double mouseY);
 }

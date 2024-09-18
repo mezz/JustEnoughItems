@@ -1,12 +1,12 @@
 package mezz.jei.library.ingredients;
 
-import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 public interface IIngredientSupplier {
-	Stream<? extends IIngredientType<?>> getIngredientTypes(RecipeIngredientRole role);
-
-	<T> Stream<T> getIngredientStream(IIngredientType<T> ingredientType, RecipeIngredientRole role);
+	@Unmodifiable
+	List<ITypedIngredient<?>> getIngredients(RecipeIngredientRole role);
 }

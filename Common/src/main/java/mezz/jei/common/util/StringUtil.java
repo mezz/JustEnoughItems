@@ -1,8 +1,11 @@
 package mezz.jei.common.util;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
@@ -24,6 +27,11 @@ public final class StringUtil {
 			text.append(stripStyling(sibling));
 		}
 		return text;
+	}
+
+	public static String removeChatFormatting(String string) {
+		String result = ChatFormatting.stripFormatting(string);
+		return result == null ? "" : result;
 	}
 
 	public static Component truncateStringToWidth(Component text, int width, Font fontRenderer) {
@@ -61,5 +69,16 @@ public final class StringUtil {
 			.sorted()
 			.map(i -> Integer.toString(i))
 			.collect(Collectors.joining(", "));
+	}
+
+
+	public static void drawCenteredStringWithShadow(PoseStack poseStack, Font font, String string, ImmutableRect2i area) {
+		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, string);
+		Screen.drawString(poseStack, font, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
+	}
+
+	public static void drawCenteredStringWithShadow(PoseStack poseStack, Font font, Component text, ImmutableRect2i area) {
+		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, text);
+		Screen.drawString(poseStack, font, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 }

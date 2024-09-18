@@ -1,62 +1,50 @@
 package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.core.config.IngredientSortStage;
-import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IngredientSortStage;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public final class IngredientSorter implements IIngredientSorter {
-	private static final Comparator<IListElementInfo<?>> PRE_SORTED =
-		Comparator.comparing(IListElementInfo::getSortedIndex);
+public final class IngredientSorter {
+	private static final Comparator<IListElement<?>> COMPARE_SORT_INDEX =
+		Comparator.comparing(IListElement::getSortedIndex);
 
-	private final IClientConfig clientConfig;
-	private final ModNameSortingConfig modNameSortingConfig;
-	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
+	public static Comparator<IListElement<?>> sortIngredients(
+		IClientConfig clientConfig,
+		ModNameSortingConfig modNameSortingConfig,
+		IngredientTypeSortingConfig ingredientTypeSortingConfig,
+		IIngredientManager ingredientManager,
+		List<IListElementInfo<?>> ingredients
+	) {
+		Set<String> modNames = ingredients.stream()
+			.map(IListElementInfo::getModNameForSorting)
+			.collect(Collectors.toSet());
 
-	private boolean isCacheValid;
+		IngredientSorterComparators comparators = new IngredientSorterComparators(ingredientManager, modNameSortingConfig, ingredientTypeSortingConfig, modNames);
 
-	public IngredientSorter(IClientConfig clientConfig, ModNameSortingConfig modNameSortingConfig, IngredientTypeSortingConfig ingredientTypeSortingConfig) {
-		this.clientConfig = clientConfig;
-		this.modNameSortingConfig = modNameSortingConfig;
-		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
-		this.isCacheValid = false;
-	}
-
-	@Override
-	public void doPreSort(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
-		IngredientSorterComparators comparators = new IngredientSorterComparators(ingredientFilter, ingredientManager, this.modNameSortingConfig, this.ingredientTypeSortingConfig);
-
-		List<IngredientSortStage> ingredientSorterStages = this.clientConfig.getIngredientSorterStages();
+		List<IngredientSortStage> ingredientSorterStages = clientConfig.getIngredientSorterStages();
 
 		Comparator<IListElementInfo<?>> completeComparator = comparators.getComparator(ingredientSorterStages);
 
 		// Get all of the items sorted with our custom comparator.
-		List<IListElementInfo<?>> results = ingredientFilter.getIngredientListPreSort(completeComparator);
+		ingredients.sort(completeComparator);
 
 		// Go through all of the items and set their sorted index.
-		for (int i = 0, resultsSize = results.size(); i < resultsSize; i++) {
-			IListElementInfo<?> element = results.get(i);
+		final int size = ingredients.size();
+		for (int i = 0; i < size; i++) {
+			IListElementInfo<?> elementInfo = ingredients.get(i);
+			IListElement<?> element = elementInfo.getElement();
 			element.setSortedIndex(i);
 		}
-		this.isCacheValid = true;
-	}
 
-	@Override
-	public Comparator<IListElementInfo<?>> getComparator(IngredientFilter ingredientFilter, IIngredientManager ingredientManager) {
-		if (!this.isCacheValid) {
-			doPreSort(ingredientFilter, ingredientManager);
-		}
 		//Now the comparator just uses that index value to order everything.
-		return PRE_SORTED;
-	}
-
-	@Override
-	public void invalidateCache() {
-		this.isCacheValid = false;
+		return COMPARE_SORT_INDEX;
 	}
 
 }

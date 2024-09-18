@@ -2,6 +2,7 @@ package mezz.jei.gui.input;
 
 import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
@@ -10,7 +11,7 @@ import net.minecraft.client.KeyMapping;
 
 import java.util.Optional;
 
-public class UserInput {
+public class UserInput implements IJeiUserInput {
 	@FunctionalInterface
 	public interface KeyPressable {
 		boolean keyPressed(int keyCode, int scanCode, int modifiers);
@@ -54,8 +55,14 @@ public class UserInput {
 		this.clickState = clickState;
 	}
 
+	@Override
 	public InputConstants.Key getKey() {
 		return key;
+	}
+
+	@Override
+	public int getModifiers() {
+		return modifiers;
 	}
 
 	public double getMouseX() {
@@ -70,6 +77,7 @@ public class UserInput {
 		return clickState;
 	}
 
+	@Override
 	public boolean isSimulate() {
 		return clickState == InputType.SIMULATE;
 	}
@@ -86,10 +94,12 @@ public class UserInput {
 		return isKeyboard() && SharedConstants.isAllowedChatCharacter((char) this.key.getValue());
 	}
 
+	@Override
 	public boolean is(IJeiKeyMapping keyMapping) {
 		return keyMapping.isActiveAndMatches(this.key);
 	}
 
+	@Override
 	public boolean is(KeyMapping keyMapping) {
 		IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
 		return inputHelper.isActiveAndMatches(keyMapping, this.key);

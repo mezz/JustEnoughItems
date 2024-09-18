@@ -181,7 +181,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 			return tooltip;
 		} catch (RuntimeException e) {
 			Component displayName = fluidHelper.getDisplayName(fluidStack);
-			LOGGER.error("Failed to get tooltip for fluid: " + displayName, e);
+			LOGGER.error("Failed to get tooltip for fluid: {}", displayName, e);
 		}
 
 		return new ArrayList<>();

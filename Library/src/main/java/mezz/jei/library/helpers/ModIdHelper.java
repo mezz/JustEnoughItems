@@ -1,5 +1,6 @@
 package mezz.jei.library.helpers;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -9,6 +10,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.StringUtil;
 import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.ModIdFormatConfig;
 import net.minecraft.ChatFormatting;
@@ -20,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class ModIdHelper implements IModIdHelper {
 	private final IModIdFormatConfig modIdFormattingConfig;
@@ -63,9 +66,24 @@ public final class ModIdHelper implements IModIdHelper {
 		return addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);
 	}
 
-	private static String removeChatFormatting(String string) {
-		String withoutFormattingCodes = ChatFormatting.stripFormatting(string);
-		return (withoutFormattingCodes == null) ? "" : withoutFormattingCodes;
+	@Override
+	public <T> Optional<Component> getModNameForTooltip(ITypedIngredient<T> typedIngredient) {
+		if (!isDisplayingModNameEnabled()) {
+			return Optional.empty();
+		}
+
+		IIngredientType<T> type = typedIngredient.getType();
+
+		if (modIdFormattingConfig.isModNameFormatOverrideActive() && type == VanillaTypes.ITEM_STACK) {
+			// we detected that another mod is adding the mod name already
+			return Optional.empty();
+		}
+
+		T ingredient = typedIngredient.getIngredient();
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
+		String modId = ingredientHelper.getDisplayModId(ingredient);
+		String modName = getFormattedModNameForModId(modId);
+		return Optional.of(Component.literal(modName));
 	}
 
 	private static <T> List<Component> addDebugInfo(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
@@ -82,7 +100,7 @@ public final class ModIdHelper implements IModIdHelper {
 	@Override
 	public String getFormattedModNameForModId(String modId) {
 		String modName = getModNameForModId(modId);
-		modName = removeChatFormatting(modName); // some crazy mod has formatting in the name
+		modName = StringUtil.removeChatFormatting(modName); // some crazy mod has formatting in the name
 		String modNameFormat = modIdFormattingConfig.getModNameFormat();
 		if (!modNameFormat.isEmpty()) {
 			if (modNameFormat.contains(ModIdFormatConfig.MOD_NAME_FORMAT_CODE)) {

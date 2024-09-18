@@ -7,14 +7,17 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.ClickableIngredientInternal;
-import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.gui.input.ClickableIngredientInternal;
+import mezz.jei.gui.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
-import net.minecraft.client.renderer.Rect2i;
+import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.overlay.elements.IngredientElement;
 
 import javax.annotation.Nonnegative;
 import java.util.ArrayList;
@@ -41,9 +44,10 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	private int width = 0;
 	private int height = 0;
 
-	public RecipeCatalysts(Textures textures, IRecipeManager recipeManager) {
+	public RecipeCatalysts(IRecipeManager recipeManager) {
 		this.recipeManager = recipeManager;
 		recipeSlots = new ArrayList<>();
+		Textures textures = Internal.getTextures();
 		backgroundTab = textures.getCatalystTab();
 		slotBackground = textures.getRecipeCatalystSlotBackground();
 	}
@@ -111,8 +115,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 			IRecipeSlotDrawable hovered = null;
 			for (IRecipeSlotDrawable recipeSlot : this.recipeSlots) {
-				Rect2i rect = recipeSlot.getRect();
-				if (MathUtil.contains(rect, mouseX, mouseY)) {
+				if (recipeSlot.isMouseOver(mouseX, mouseY)) {
 					hovered = recipeSlot;
 				}
 				recipeSlot.draw(poseStack);
@@ -124,10 +127,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 	private Stream<IRecipeSlotDrawable> getHovered(double mouseX, double mouseY) {
 		return this.recipeSlots.stream()
-			.filter(recipeSlot -> {
-				Rect2i rect = recipeSlot.getRect();
-				return MathUtil.contains(rect, mouseX, mouseY);
-			});
+			.filter(recipeSlot -> recipeSlot.isMouseOver(mouseX, mouseY));
 	}
 
 	@Override
@@ -136,9 +136,14 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 			.map(recipeSlot ->
 				recipeSlot.getDisplayedIngredient()
 					.map(i -> {
-						Rect2i rect = recipeSlot.getRect();
-						return new ClickableIngredientInternal<>(i, new ImmutableRect2i(rect), false, true);
+						IElement<?> element = new IngredientElement<>(i);
+						return new ClickableIngredientInternal<>(element, recipeSlot::isMouseOver, false, true);
 					}))
 			.flatMap(Optional::stream);
+	}
+
+	@Override
+	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		return Stream.empty();
 	}
 }

@@ -1,8 +1,8 @@
 package mezz.jei.test.lib;
 
-import mezz.jei.core.config.GiveMode;
-import mezz.jei.core.config.IngredientSortStage;
-import mezz.jei.gui.config.IClientConfig;
+import mezz.jei.common.config.GiveMode;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IngredientSortStage;
 
 import java.util.List;
 
@@ -24,18 +24,43 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isCatchRenderErrorsEnabled() {
+		return false;
+	}
+
+	@Override
 	public boolean isCheatToHotbarUsingHotkeysEnabled() {
 		return false;
 	}
 
 	@Override
-	public boolean isAddingBookmarksToFront() {
+	public boolean isAddingBookmarksToFrontEnabled() {
+		return false;
+	}
+
+	@Override
+	public boolean isLookupFluidContentsEnabled() {
 		return false;
 	}
 
 	@Override
 	public GiveMode getGiveMode() {
 		return GiveMode.INVENTORY;
+	}
+
+	@Override
+	public boolean isDragToRearrangeBookmarksEnabled() {
+		return false;
+	}
+
+	@Override
+	public int getDragDelayMs() {
+		return 0;
+	}
+
+	@Override
+	public boolean isHideSingleIngredientTagsEnabled() {
+		return true;
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * This is more memory-efficient than {@link GeneralizedSuffixTree}
@@ -21,18 +22,18 @@ public class LimitedStringStorage<T> implements ISearchStorage<T> {
 	private final GeneralizedSuffixTree<Set<T>> generalizedSuffixTree = new GeneralizedSuffixTree<>();
 
 	@Override
-	public void getSearchResults(String token, Set<T> results) {
-		Set<Set<T>> intermediateResults = Collections.newSetFromMap(new IdentityHashMap<>());
-		generalizedSuffixTree.getSearchResults(token, intermediateResults);
-		for (Set<T> set : intermediateResults) {
-			results.addAll(set);
-		}
+	public void getSearchResults(String token, Consumer<Collection<T>> resultsConsumer) {
+		generalizedSuffixTree.getSearchResults(token, resultSet -> {
+			for (Collection<T> result : resultSet) {
+				resultsConsumer.accept(result);
+			}
+		});
 	}
 
 	@Override
-	public void getAllElements(Set<T> results) {
+	public void getAllElements(Consumer<Collection<T>> resultsConsumer) {
 		Collection<T> values = multiMap.allValues();
-		results.addAll(values);
+		resultsConsumer.accept(values);
 	}
 
 	@Override

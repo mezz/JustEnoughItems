@@ -19,8 +19,8 @@ public class UserInputRouter {
 	private final CombinedInputHandler combinedInputHandler;
 	private final Map<InputConstants.Key, IUserInputHandler> pending = new HashMap<>();
 
-	public UserInputRouter(IUserInputHandler... inputHandlers) {
-		this.combinedInputHandler = new CombinedInputHandler(inputHandlers);
+	public UserInputRouter(String debugName, IUserInputHandler... inputHandlers) {
+		this.combinedInputHandler = new CombinedInputHandler(debugName, inputHandlers);
 	}
 
 	public boolean handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
@@ -100,9 +100,7 @@ public class UserInputRouter {
 		if (DebugConfig.isDebugInputsEnabled()) {
 			LOGGER.debug("The GUI has changed, clearing all pending clicks");
 		}
-		for (InputConstants.Key key : this.pending.keySet()) {
-			this.combinedInputHandler.handleMouseClickedOut(key);
-		}
+		this.combinedInputHandler.unfocus();
 		this.pending.clear();
 	}
 

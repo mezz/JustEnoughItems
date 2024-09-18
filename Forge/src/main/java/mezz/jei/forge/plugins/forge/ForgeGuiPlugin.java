@@ -4,22 +4,25 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IRuntimeRegistration;
-import mezz.jei.core.config.file.FileWatcher;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
+import mezz.jei.gui.startup.ResourceReloadHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.jetbrains.annotations.Nullable;
+import java.util.Optional;
+
 @JeiPlugin
 public class ForgeGuiPlugin implements IModPlugin {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static @Nullable ResourceReloadHandler resourceReloadHandler;
 
 	private final RuntimeEventSubscriptions runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
-	private final FileWatcher fileWatcher = new FileWatcher("JEI GUI Config file watcher");
 
 	@Override
 	public ResourceLocation getPluginUid() {
@@ -33,16 +36,20 @@ public class ForgeGuiPlugin implements IModPlugin {
 			runtimeSubscriptions.clear();
 		}
 
-		JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, fileWatcher);
+		JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
+		resourceReloadHandler = eventHandlers.resourceReloadHandler();
 
 		EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
-		fileWatcher.start();
 	}
 
 	@Override
 	public void onRuntimeUnavailable() {
 		LOGGER.info("Stopping JEI GUI");
 		runtimeSubscriptions.clear();
-		fileWatcher.reset();
+		resourceReloadHandler = null;
+	}
+
+	public static Optional<ResourceReloadHandler> getResourceReloadHandler() {
+		return Optional.ofNullable(resourceReloadHandler);
 	}
 }

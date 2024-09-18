@@ -3,6 +3,7 @@ package mezz.jei.forge.platform;
 import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
@@ -20,8 +21,10 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
@@ -146,5 +149,12 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 		FluidStack copy = this.copy(ingredient);
 		copy.setAmount(FluidType.BUCKET_VOLUME);
 		return copy;
+	}
+
+	@Override
+	public Optional<FluidStack> getContainedFluid(ITypedIngredient<?> ingredient) {
+		return ingredient.getItemStack()
+			.flatMap(i -> i.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve())
+			.map(c -> c.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE));
 	}
 }

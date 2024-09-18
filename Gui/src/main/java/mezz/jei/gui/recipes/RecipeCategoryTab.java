@@ -1,19 +1,16 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
@@ -28,13 +25,22 @@ import java.util.Optional;
 public class RecipeCategoryTab extends RecipeGuiTab {
 	private final IRecipeGuiLogic logic;
 	private final IRecipeCategory<?> category;
-	private final IIngredientManager ingredientManager;
+	private final IRecipeManager recipeManager;
+	private final IGuiHelper guiHelper;
 
-	public RecipeCategoryTab(IRecipeGuiLogic logic, IRecipeCategory<?> category, Textures textures, int x, int y, IIngredientManager ingredientManager) {
-		super(textures, x, y);
+	public RecipeCategoryTab(
+		IRecipeGuiLogic logic,
+		IRecipeCategory<?> category,
+		int x,
+		int y,
+		IRecipeManager recipeManager,
+		IGuiHelper guiHelper
+	) {
+		super(x, y);
 		this.logic = logic;
 		this.category = category;
-		this.ingredientManager = ingredientManager;
+		this.recipeManager = recipeManager;
+		this.guiHelper = guiHelper;
 	}
 
 	@Override
@@ -57,56 +63,19 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	public void draw(boolean selected, PoseStack poseStack, int mouseX, int mouseY) {
 		super.draw(selected, poseStack, mouseX, mouseY);
 
-		int iconX = x + 4;
-		int iconY = y + 4;
-
-		IDrawable icon = category.getIcon();
-		//noinspection ConstantConditions
-		if (icon != null) {
-			iconX += (16 - icon.getWidth()) / 2;
-			iconY += (16 - icon.getHeight()) / 2;
-			icon.draw(poseStack, iconX, iconY);
-		} else {
-			Optional<ITypedIngredient<?>> firstCatalyst = logic.getRecipeCatalysts(category)
-				.findFirst();
-			if (firstCatalyst.isPresent()) {
-				ITypedIngredient<?> ingredient = firstCatalyst.get();
-				renderIngredient(poseStack, iconX, iconY, ingredient, ingredientManager);
-			} else {
-				String text = category.getTitle().getString().substring(0, 2);
-				Minecraft minecraft = Minecraft.getInstance();
-				Font fontRenderer = minecraft.font;
-				int textCenterX = x + (TAB_WIDTH / 2);
-				int textCenterY = y + (TAB_HEIGHT / 2) - 3;
-				int color = isMouseOver(mouseX, mouseY) ? 0xFFFFA0 : 0xE0E0E0;
-				int stringCenter = fontRenderer.width(text) / 2;
-				fontRenderer.drawShadow(poseStack, text, textCenterX - stringCenter, textCenterY, color);
-				RenderSystem.setShaderColor(1, 1, 1, 1);
-			}
-		}
-	}
-
-	private static <T> void renderIngredient(PoseStack poseStack, int iconX, int iconY, ITypedIngredient<T> ingredient, IIngredientManager ingredientManager) {
-		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient.getType());
-		poseStack.pushPose();
-		{
-			poseStack.translate(iconX, iconY, 0);
-			RenderSystem.enableDepthTest();
-			ingredientRenderer.render(poseStack, ingredient.getIngredient());
-			RenderSystem.disableDepthTest();
-		}
-		poseStack.popPose();
+		IDrawable icon = RecipeCategoryIconUtil.create(category, recipeManager, guiHelper);
+		int iconX = x + (TAB_WIDTH - icon.getWidth()) / 2;
+		int iconY = y + (TAB_HEIGHT - icon.getHeight()) / 2;
+		icon.draw(poseStack, iconX, iconY);
 	}
 
 	@Override
 	public boolean isSelected(IRecipeCategory<?> selectedCategory) {
-		ResourceLocation categoryUid = category.getRecipeType().getUid();
-		ResourceLocation selectedCategoryUid = selectedCategory.getRecipeType().getUid();
-		return categoryUid.equals(selectedCategoryUid);
+		return category.getRecipeType().equals(selectedCategory.getRecipeType());
 	}
 
 	@Override
-	public List<Component> getTooltip(IModIdHelper modIdHelper) {
+	public List<Component> getTooltip() {
 		List<Component> tooltip = new ArrayList<>();
 		Component title = category.getTitle();
 		//noinspection ConstantConditions
@@ -116,6 +85,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 
 		ResourceLocation uid = category.getRecipeType().getUid();
 		String modId = uid.getNamespace();
+		IModIdHelper modIdHelper = Internal.getJeiRuntime().getJeiHelpers().getModIdHelper();
 		if (modIdHelper.isDisplayingModNameEnabled()) {
 			String modName = modIdHelper.getFormattedModNameForModId(modId);
 			tooltip.add(Component.literal(modName));

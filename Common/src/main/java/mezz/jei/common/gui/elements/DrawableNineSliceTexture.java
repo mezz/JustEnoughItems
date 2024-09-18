@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.common.Constants;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -18,7 +19,7 @@ import net.minecraft.resources.ResourceLocation;
  * Breaks a texture into 9 pieces so that it can be scaled to any size.
  * Draws the corners and then repeats any middle textures to fill the remaining area.
  */
-public class DrawableNineSliceTexture {
+public class DrawableNineSliceTexture implements IScalableDrawable {
 	private final JeiSpriteUploader spriteUploader;
 	private final ResourceLocation location;
 	private final int width;
@@ -44,6 +45,7 @@ public class DrawableNineSliceTexture {
 		draw(poseStack, area.getX(), area.getY(), area.getWidth(), area.getHeight());
 	}
 
+	@Override
 	public void draw(PoseStack poseStack, int xOffset, int yOffset, int width, int height) {
 		TextureAtlasSprite sprite = spriteUploader.getSprite(location);
 		int leftWidth = sliceLeft;

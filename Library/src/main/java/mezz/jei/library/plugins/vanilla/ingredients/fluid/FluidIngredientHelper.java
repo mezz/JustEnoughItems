@@ -98,7 +98,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 		return registry.getRegistryName(fluid)
 			.orElseThrow(() -> {
 				String ingredientInfo = getErrorInfo(ingredient);
-				throw new IllegalStateException("null registry name for: " + ingredientInfo);
+				return new IllegalStateException("null registry name for: " + ingredientInfo);
 			});
 	}
 
@@ -160,7 +160,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
-	public Optional<ResourceLocation> getTagEquivalent(Collection<T> ingredients) {
+	public Optional<TagKey<?>> getTagKeyEquivalent(Collection<T> ingredients) {
 		return TagUtil.getTagEquivalent(ingredients, fluidType::getBase, Registry.FLUID::getTags);
 	}
 }
