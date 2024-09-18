@@ -22,29 +22,23 @@ public final class ClientConfig implements IClientConfig {
 	// cheat_mode
 	private final Supplier<GiveMode> giveMode;
 	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
-	private final Supplier<Boolean> showHiddenItemsEnabled;
 
 	// bookmarks
 	private final Supplier<Boolean> addBookmarksToFrontEnabled;
-	private final Supplier<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
 	private final Supplier<Boolean> dragToRearrangeBookmarksEnabled;
 
 	// advanced
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> catchRenderErrorsEnabled;
 	private final Supplier<Boolean> lookupFluidContentsEnabled;
-	private final Supplier<Boolean> showTagRecipesEnabled;
-	private final Supplier<Boolean> showCreativeTabNamesEnabled;
 
 	// input
 	private final Supplier<Integer> dragDelayMs;
-	private final Supplier<Integer> smoothScrollRate;
 
 	// sorting
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
 
 	// tags
-	private final Supplier<Boolean> tagContentTooltipEnabled;
 	private final Supplier<Boolean> hideSingleIngredientTagsEnabled;
 
 	public ClientConfig(IConfigSchemaBuilder schema) {
@@ -77,22 +71,12 @@ public final class ClientConfig implements IClientConfig {
 			false,
 			"Enable cheating items into the hotbar by using the shift+number keys."
 		);
-		showHiddenItemsEnabled = cheatMode.addBoolean(
-			"ShowHiddenItems",
-			false,
-			"Enable showing items that are not in the creative menu."
-		);
 
 		IConfigCategoryBuilder bookmarks = schema.addCategory("bookmarks");
 		addBookmarksToFrontEnabled = bookmarks.addBoolean(
 			"AddBookmarksToFrontEnabled",
 			false,
 			"Add new bookmarks to the front of the bookmark list instead of the end."
-		);
-		holdShiftToShowBookmarkTooltipFeaturesEnabled = bookmarks.addBoolean(
-			"HoldShiftToShowBookmarkTooltipFeatures",
-			true,
-			"Hold shift to show bookmark tooltip features"
 		);
 		dragToRearrangeBookmarksEnabled = bookmarks.addBoolean(
 			"DragToRearrangeBookmarksEnabled",
@@ -116,16 +100,6 @@ public final class ClientConfig implements IClientConfig {
 			false,
 			"When looking up recipes with items that contain fluids, also look up recipes for the fluids."
 		);
-		showTagRecipesEnabled = advanced.addBoolean(
-			"showTagRecipesEnabled",
-			isDev,
-			"Show recipes for ingredient tags, like Item Tags and Block Tags"
-		);
-		showCreativeTabNamesEnabled = advanced.addBoolean(
-			"showCreativeTabNamesEnabled",
-			false,
-			"Show creative tab names in ingredient tooltips."
-		);
 
 		IConfigCategoryBuilder input = schema.addCategory("input");
 		dragDelayMs = input.addInteger(
@@ -134,13 +108,6 @@ public final class ClientConfig implements IClientConfig {
 			0,
 			1000,
 			"Number of milliseconds before a long mouse click is considered to become a drag operation"
-		);
-		smoothScrollRate = input.addInteger(
-			"smoothScrollRate",
-			9,
-			1,
-			50,
-			"Scroll rate for scrolling the mouse wheel in smooth-scrolling scroll boxes. Measured in pixels."
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
@@ -152,11 +119,6 @@ public final class ClientConfig implements IClientConfig {
 		);
 
 		IConfigCategoryBuilder tags = schema.addCategory("tags");
-		tagContentTooltipEnabled = tags.addBoolean(
-			"TagContentTooltipEnabled",
-			true,
-			"Show tag content in tooltips"
-		);
 		hideSingleIngredientTagsEnabled = tags.addBoolean(
 			"HideSingleIngredientTagsEnabled",
 			true,
@@ -209,16 +171,6 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isShowHiddenItemsEnabled() {
-		return showHiddenItemsEnabled.get();
-	}
-
-	@Override
-	public boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled() {
-		return holdShiftToShowBookmarkTooltipFeaturesEnabled.get();
-	}
-
-	@Override
 	public boolean isDragToRearrangeBookmarksEnabled() {
 		return dragToRearrangeBookmarksEnabled.get();
 	}
@@ -226,11 +178,6 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public int getDragDelayMs() {
 		return dragDelayMs.get();
-	}
-
-	@Override
-	public int getSmoothScrollRate() {
-		return smoothScrollRate.get();
 	}
 
 	@Override
@@ -244,22 +191,7 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isTagContentTooltipEnabled() {
-		return tagContentTooltipEnabled.get();
-	}
-
-	@Override
 	public boolean isHideSingleIngredientTagsEnabled() {
 		return hideSingleIngredientTagsEnabled.get();
-	}
-
-	@Override
-	public boolean isShowTagRecipesEnabled() {
-		return showTagRecipesEnabled.get();
-	}
-
-	@Override
-	public boolean isShowCreativeTabNamesEnabled() {
-		return showCreativeTabNamesEnabled.get();
 	}
 }
