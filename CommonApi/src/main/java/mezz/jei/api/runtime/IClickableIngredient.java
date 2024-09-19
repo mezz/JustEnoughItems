@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.Rect2i;
  * This can be an ingredient drawn in a GUI container slot, a fluid tank,
  * or anything else that holds ingredients.
  *
- * Create one with {@link IClickableIngredientFactory}.
+ * Create one with {@link IIngredientManager#createClickableIngredient} or {@link IClickableIngredientFactory}.
  *
  * @since 10.3.0
  */
