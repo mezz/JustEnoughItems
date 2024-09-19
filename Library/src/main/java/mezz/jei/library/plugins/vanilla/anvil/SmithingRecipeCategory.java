@@ -34,13 +34,11 @@ import java.util.Map;
 public class SmithingRecipeCategory implements IRecipeCategory<RecipeHolder<SmithingRecipe>>, IExtendableSmithingRecipeCategory {
 	private final IDrawable background;
 	private final IDrawable icon;
-	private final IDrawable slot;
 	private final IDrawable recipeArrow;
 	private final Map<Class<? extends SmithingRecipe>, ISmithingCategoryExtension<?>> extensions = new HashMap<>();
 
 	public SmithingRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(108, 28);
-		slot = guiHelper.getSlotDrawable();
 		icon = guiHelper.createDrawableItemLike(Blocks.SMITHING_TABLE);
 		Textures textures = Internal.getTextures();
 		recipeArrow = textures.getRecipeArrow();
@@ -76,16 +74,16 @@ public class SmithingRecipeCategory implements IRecipeCategory<RecipeHolder<Smit
 		}
 
 		IRecipeSlotBuilder templateSlot = builder.addSlot(RecipeIngredientRole.INPUT, 1, 6)
-			.setBackground(slot, -1, -1);
+			.setStandardSlotBackground();
 
 		IRecipeSlotBuilder baseSlot = builder.addSlot(RecipeIngredientRole.INPUT, 19, 6)
-			.setBackground(slot, -1, -1);
+			.setStandardSlotBackground();
 
 		IRecipeSlotBuilder additionSlot = builder.addSlot(RecipeIngredientRole.INPUT, 37, 6)
-			.setBackground(slot, -1, -1);
+			.setStandardSlotBackground();
 
 		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 91, 6)
-			.setBackground(slot, -1, -1);
+			.setStandardSlotBackground();
 
 		extension.setTemplate(recipe, templateSlot);
 		extension.setBase(recipe, baseSlot);

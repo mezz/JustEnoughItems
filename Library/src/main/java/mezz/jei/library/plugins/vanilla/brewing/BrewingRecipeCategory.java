@@ -27,7 +27,6 @@ import java.util.List;
 public class BrewingRecipeCategory implements IRecipeCategory<IJeiBrewingRecipe> {
 	private final IDrawable background;
 	private final IDrawable icon;
-	private final IDrawable slotDrawable;
 	private final Component localizedName;
 	private final IDrawableAnimated arrow;
 	private final IDrawableAnimated bubbles;
@@ -49,8 +48,6 @@ public class BrewingRecipeCategory implements IRecipeCategory<IJeiBrewingRecipe>
 			.buildAnimated(bubblesTickTimer, IDrawableAnimated.StartDirection.BOTTOM);
 
 		blazeHeat = guiHelper.createDrawable(location, 64, 29, 18, 4);
-
-		slotDrawable = guiHelper.getSlotDrawable();
 	}
 
 	@Override
@@ -104,7 +101,7 @@ public class BrewingRecipeCategory implements IRecipeCategory<IJeiBrewingRecipe>
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 81, 3)
 			.addItemStack(recipe.getPotionOutput())
-			.setBackground(slotDrawable, -1, -1);
+			.setStandardSlotBackground();
 	}
 
 	@Override
