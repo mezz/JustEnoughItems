@@ -141,24 +141,6 @@ public final class RecipeTransferUtil {
 			}
 		}
 
-		// check that all slots are interactable (can be picked up, and not output slots)
-		{
-			List<Integer> invalidModificationSlots = Stream.concat(
-					craftingSlots.stream(),
-					inventorySlots.stream()
-				)
-				.filter(s -> !s.allowModification(player))
-				.map(slot -> slot.index)
-				.toList();
-			if (!invalidModificationSlots.isEmpty()) {
-				LOGGER.error(
-					"Transfer request has invalid slots, they do not allow modification: {}",
-					StringUtil.intsToString(invalidModificationSlots)
-				);
-				return false;
-			}
-		}
-
 		// check that all slots are real (not output slots)
 		{
 			List<Integer> invalidFakeSlots = Stream.concat(
