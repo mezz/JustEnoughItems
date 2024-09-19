@@ -146,18 +146,18 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		Player player
 	) {
 		for (Slot slot : craftingSlots) {
-			if (!slot.allowModification(player)) {
+			if (!slot.mayPickup(player)) {
 				LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
-						"The Recipe Transfer Helper references crafting slot index [{}] but it does not allow modification.",
+						"The Recipe Transfer Helper references crafting slot index [{}] but the player cannot pickup from it.",
 					transferInfo.getClass(), container.getClass(), slot.index
 				);
 				return false;
 			}
 		}
 		for (Slot slot : inventorySlots) {
-			if (!slot.allowModification(player)) {
+			if (!slot.mayPickup(player)) {
 				LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
-						"The Recipe Transfer Helper references inventory slot index [{}] but it does not allow modification.",
+						"The Recipe Transfer Helper references inventory slot index [{}] but the player cannot pickup from it.",
 					transferInfo.getClass(), container.getClass(), slot.index
 				);
 				return false;
