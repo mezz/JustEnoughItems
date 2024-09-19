@@ -1,17 +1,17 @@
 package mezz.jei.common.gui.textures;
 
-import mezz.jei.common.gui.elements.HighResolutionDrawable;
-import net.minecraft.resources.ResourceLocation;
-
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.elements.DrawableSprite;
+import mezz.jei.common.gui.elements.HighResolutionDrawable;
+import net.minecraft.resources.ResourceLocation;
 
 public class Textures {
 	private final JeiSpriteUploader spriteUploader;
 
 	private final IDrawableStatic slot;
+	private final IDrawableStatic outputSlot;
 	private final DrawableNineSliceTexture recipeCatalystSlotBackground;
 	private final DrawableNineSliceTexture ingredientListSlotBackground;
 	private final DrawableNineSliceTexture bookmarkListSlotBackground;
@@ -44,14 +44,23 @@ public class Textures {
 	private final DrawableNineSliceTexture catalystTab;
 	private final DrawableNineSliceTexture recipeOptionsTab;
 	private final IDrawableStatic flameIcon;
+	private final IDrawableStatic flameEmptyIcon;
 	private final IDrawableStatic recipeArrow;
+	private final IDrawableStatic recipeArrowFilled;
+	private final IDrawableStatic recipePlusSign;
 	private final IDrawableStatic bookmarksFirst;
 	private final IDrawableStatic craftableFirst;
+
+	private final IDrawableStatic brewingStandBackground;
+	private final IDrawableStatic brewingStandBlazeHeat;
+	private final IDrawableStatic brewingStandBubbles;
+	private final IDrawableStatic brewingStandArrow;
 
 	public Textures(JeiSpriteUploader spriteUploader) {
 		this.spriteUploader = spriteUploader;
 
 		this.slot = registerGuiSprite("slot", 18, 18);
+		this.outputSlot = registerGuiSprite("output_slot", 26, 26);
 		this.recipeCatalystSlotBackground = registerNineSliceGuiSprite("recipe_catalyst_slot_background", 18, 18, 4, 4, 4, 4);
 		this.ingredientListSlotBackground = registerNineSliceGuiSprite("ingredient_list_slot_background", 18, 18, 4, 4, 4, 4);
 		this.bookmarkListSlotBackground = registerNineSliceGuiSprite("bookmark_list_slot_background", 18, 18, 4, 4, 4, 4);
@@ -72,7 +81,14 @@ public class Textures {
 		this.scrollbarMarker = registerNineSliceGuiSprite("scrollbar_marker", 12, 15, 2, 2, 2, 1);
 		this.catalystTab = registerNineSliceGuiSprite("catalyst_tab", 28, 28, 8, 9, 8, 8);
 		this.recipeOptionsTab = registerNineSliceGuiSprite("recipe_options_tab", 28, 28, 8, 9, 8, 8);
-		this.recipeArrow = registerGuiSprite("recipe_arrow", 22, 15);
+		this.recipeArrow = registerGuiSprite("recipe_arrow", 22, 16);
+		this.recipeArrowFilled = registerGuiSprite("recipe_arrow_filled", 22, 16);
+		this.recipePlusSign = registerGuiSprite("recipe_plus_sign", 13, 13);
+
+		this.brewingStandBackground = registerGuiSprite("brewing_stand_background", 64, 60);
+		this.brewingStandBlazeHeat = registerGuiSprite("brewing_stand_blaze_heat", 18, 4);
+		this.brewingStandBubbles = registerGuiSprite("brewing_stand_bubbles", 11, 28);
+		this.brewingStandArrow = registerGuiSprite("brewing_stand_arrow", 7, 27);
 
 		DrawableSprite rawShapelessIcon = registerGuiSprite("icons/shapeless_icon", 36, 36)
 			.trim(1, 2, 1, 1);
@@ -90,6 +106,7 @@ public class Textures {
 		this.bookmarkButtonEnabledIcon = registerGuiSprite("icons/bookmark_button_enabled", 16, 16);
 		this.infoIcon = registerGuiSprite("icons/info", 16, 16);
 		this.flameIcon = registerGuiSprite("icons/flame", 14, 14);
+		this.flameEmptyIcon = registerGuiSprite("icons/flame_empty", 14, 14);
 		this.bookmarksFirst = registerGuiSprite("icons/bookmarks_first", 16, 16);
 		this.craftableFirst = registerGuiSprite("icons/craftable_first", 16, 16);
 	}
@@ -110,8 +127,12 @@ public class Textures {
 		return new DrawableNineSliceTexture(spriteUploader, location, width, height, left, right, top, bottom);
 	}
 
-	public IDrawableStatic getSlotDrawable() {
+	public IDrawableStatic getSlot() {
 		return slot;
+	}
+
+	public IDrawableStatic getOutputSlot() {
+		return outputSlot;
 	}
 
 	public IDrawableStatic getTabSelected() {
@@ -221,6 +242,14 @@ public class Textures {
 		return recipeArrow;
 	}
 
+	public IDrawableStatic getRecipeArrowFilled() {
+		return recipeArrowFilled;
+	}
+
+	public IDrawableStatic getRecipePlusSign() {
+		return recipePlusSign;
+	}
+
 	public DrawableNineSliceTexture getRecipeCatalystSlotBackground() {
 		return recipeCatalystSlotBackground;
 	}
@@ -237,12 +266,32 @@ public class Textures {
 		return flameIcon;
 	}
 
+	public IDrawableStatic getFlameEmptyIcon() {
+		return flameEmptyIcon;
+	}
+
 	public DrawableNineSliceTexture getScrollbarMarker() {
 		return scrollbarMarker;
 	}
 
 	public DrawableNineSliceTexture getScrollbarBackground() {
 		return scrollbarBackground;
+	}
+
+	public IDrawableStatic getBrewingStandBackground() {
+		return brewingStandBackground;
+	}
+
+	public IDrawableStatic getBrewingStandBlazeHeat() {
+		return brewingStandBlazeHeat;
+	}
+
+	public IDrawableStatic getBrewingStandBubbles() {
+		return brewingStandBubbles;
+	}
+
+	public IDrawableStatic getBrewingStandArrow() {
+		return brewingStandArrow;
 	}
 
 	public JeiSpriteUploader getSpriteUploader() {

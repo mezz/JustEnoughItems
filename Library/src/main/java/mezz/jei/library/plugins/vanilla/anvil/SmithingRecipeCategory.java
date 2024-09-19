@@ -13,8 +13,6 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmithingRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.ISmithingCategoryExtension;
-import mezz.jei.common.Internal;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -28,16 +26,13 @@ import java.util.Map;
 public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe>, IExtendableSmithingRecipeCategory {
 	private final IDrawable background;
 	private final IDrawable icon;
-	private final IDrawable slot;
 	private final IDrawable recipeArrow;
 	private final Map<Class<? extends UpgradeRecipe>, ISmithingCategoryExtension<?>> extensions = new HashMap<>();
 
 	public SmithingRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(125, 28);
-		slot = guiHelper.getSlotDrawable();
 		icon = guiHelper.createDrawableItemLike(Blocks.SMITHING_TABLE);
-		Textures textures = Internal.getTextures();
-		recipeArrow = textures.getRecipeArrow();
+		recipeArrow = guiHelper.getRecipeArrow();
 	}
 
 	@Override
@@ -68,13 +63,13 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe>, I
 		}
 
 		IRecipeSlotBuilder base = builder.addSlot(RecipeIngredientRole.INPUT, 1, 6)
-			.setBackground(slot, -1, -1);
+			.setStandardSlotBackground();
 
 		IRecipeSlotBuilder addition = builder.addSlot(RecipeIngredientRole.INPUT, 50, 6)
-			.setBackground(slot, -1, -1);
+			.setStandardSlotBackground();
 
 		IRecipeSlotBuilder output = builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 6)
-			.setBackground(slot, -1, -1);
+			.setStandardSlotBackground();
 
 		extension.setBase(recipe, base);
 		extension.setAddition(recipe, addition);
@@ -83,7 +78,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe>, I
 
 	@Override
 	public void draw(UpgradeRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
-		recipeArrow.draw(stack, 79, 7);
+		recipeArrow.draw(stack, 79, 6);
 	}
 
 	@Override

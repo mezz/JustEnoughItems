@@ -87,7 +87,7 @@ public class IngredientInfoRecipeCategory implements IRecipeCategory<IJeiIngredi
 		int xPos = (recipeWidth - 16) / 2;
 
 		IRecipeSlotBuilder inputSlotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, xPos, 1)
-			.setBackground(slotBackground, -1, -1);
+			.setStandardSlotBackground();
 
 		IIngredientAcceptor<?> outputSlotBuilder = builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT);
 

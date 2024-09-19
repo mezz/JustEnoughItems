@@ -9,6 +9,7 @@ import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.gui.widgets.IScrollGridWidgetFactory;
 import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
@@ -89,9 +90,76 @@ public interface IGuiHelper {
 	IDrawableAnimated createAnimatedDrawable(IDrawableStatic drawable, int ticksPerCycle, IDrawableAnimated.StartDirection startDirection, boolean inverted);
 
 	/**
-	 * Returns a slot drawable for drawing extra slots on guis
+	 * Creates an animated texture for a gui, revealing the texture over time.
+	 *
+	 * @param drawable       the underlying texture to draw
+	 * @param tickTimer      a timer to help render things that normally depend on ticks
+	 * @param startDirection the direction that the animation starts drawing the texture
+	 *
+	 * @since 11.37.4
+	 */
+	IDrawableAnimated createAnimatedDrawable(IDrawableStatic drawable, ITickTimer tickTimer, IDrawableAnimated.StartDirection startDirection);
+
+	/**
+	 * Returns a vanilla-style slot for drawing on guis.
 	 */
 	IDrawableStatic getSlotDrawable();
+
+	/**
+	 * Returns a vanilla-style large output slot for drawing on guis.
+	 *
+	 * @since 11.37.4
+	 */
+	IDrawableStatic getOutputSlot();
+
+	/**
+	 * Returns a vanilla-style recipe arrow for drawing on guis.
+	 *
+	 * @since 11.37.4
+	 */
+	IDrawableStatic getRecipeArrow();
+
+	/**
+	 * Returns a vanilla-style filled (white) recipe arrow for drawing on guis.
+	 *
+	 * @since 11.37.4
+	 */
+	IDrawableStatic getRecipeArrowFilled();
+
+	/**
+	 * Returns a vanilla-style recipe arrow that fills over time, for drawing on guis.
+	 *
+	 * @since 11.37.4
+	 */
+	IDrawableAnimated createAnimatedRecipeArrow(int ticksPerCycle);
+
+	/**
+	 * Returns a vanilla-style grey plus sign for drawing on guis.
+	 *
+	 * @since 11.37.4
+	 */
+	IDrawableStatic getRecipePlusSign();
+
+	/**
+	 * Returns a vanilla-style recipe flame (red) for drawing on guis.
+	 *
+	 * @since 11.37.4
+	 */
+	IDrawableStatic getRecipeFlameFilled();
+
+	/**
+	 * Returns a vanilla-style recipe flame background (grey) for drawing on guis.
+	 *
+	 * @since 11.37.4
+	 */
+	IDrawableStatic getRecipeFlameEmpty();
+
+	/**
+	 * Returns a vanilla-style recipe flame that empties over time, for drawing on guis.
+	 *
+	 * @since 11.37.4
+	 */
+	IDrawableAnimated createAnimatedRecipeFlame(int ticksPerCycle);
 
 	/**
 	 * Returns a blank drawable for using as a blank recipe background.
@@ -164,6 +232,13 @@ public interface IGuiHelper {
 	 * @since 11.33.0
 	 */
 	int getScrollBoxScrollbarExtraWidth();
+
+	/**
+	 * Create a simple widget from an {@link IDrawable}
+	 *
+	 * @since 11.37.4
+	 */
+	IRecipeWidget createWidgetFromDrawable(IDrawable drawable, int xPos, int yPos);
 
 	/**
 	 * Create a timer to help with rendering things that normally depend on ticks.

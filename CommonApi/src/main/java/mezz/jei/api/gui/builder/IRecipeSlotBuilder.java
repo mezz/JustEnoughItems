@@ -5,6 +5,7 @@ import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -50,6 +51,26 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 * @since 9.3.0
 	 */
 	IRecipeSlotBuilder setSlotName(String slotName);
+
+	/**
+	 * Set a normal slot background to draw behind the slot's ingredients.
+	 * This background is 18x18 pixels and offset by (-1, -1) to match vanilla slots.
+	 *
+	 * @see IGuiHelper#getSlotDrawable() for the slot background drawable.
+	 *
+	 * @since 11.37.4
+	 */
+	IRecipeSlotBuilder setStandardSlotBackground();
+
+	/**
+	 * Set a normal slot background to draw behind the slot's ingredients.
+	 * This background is 26x26 pixels and offset by (-5, -5) to match vanilla output slots.
+	 *
+	 * @see IGuiHelper#getOutputSlot() for the slot background drawable.
+	 *
+	 * @since 11.37.4
+	 */
+	IRecipeSlotBuilder setOutputSlotBackground();
 
 	/**
 	 * Set a custom background to draw behind the slot's ingredients.

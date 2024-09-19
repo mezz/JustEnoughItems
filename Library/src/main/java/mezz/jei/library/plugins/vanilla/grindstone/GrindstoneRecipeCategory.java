@@ -12,7 +12,6 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
-import mezz.jei.common.Constants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -32,8 +31,8 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 
 	public GrindstoneRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(125, 52);
-		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.GRINDSTONE));
-		arrow = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 82, 128, 24, 17);
+		icon = guiHelper.createDrawableItemLike(Blocks.GRINDSTONE);
+		arrow = guiHelper.getRecipeArrow();
 		localizedName = Blocks.GRINDSTONE.getName();
 	}
 
