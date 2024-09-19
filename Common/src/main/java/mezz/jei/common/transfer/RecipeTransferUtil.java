@@ -96,15 +96,15 @@ public final class RecipeTransferUtil {
 		// check that all craftingTargetSlots are included in craftingSlots
 		{
 			List<Integer> invalidRecipeIndexes = transferOperations.stream()
-				.map(TransferOperation::craftingSlot)
+				.map(op -> op.craftingSlot(player.containerMenu))
 				.map(s -> s.index)
 				.filter(s -> !craftingSlotIndexes.contains(s))
 				.toList();
 			if (!invalidRecipeIndexes.isEmpty()) {
 				LOGGER.error(
-					"Transfer handler has invalid slots for the destination of the recipe, " +
-						"the slots are not included in the list of crafting slots. " +
-						StringUtil.intsToString(invalidRecipeIndexes)
+					"Transfer request has invalid slots for the destination of the recipe, " +
+					"the slots are not included in the list of crafting slots. {}",
+					StringUtil.intsToString(invalidRecipeIndexes)
 				);
 				return false;
 			}
@@ -113,7 +113,7 @@ public final class RecipeTransferUtil {
 		// check that all ingredientTargetSlots are included in inventorySlots or recipeSlots
 		{
 			List<Integer> invalidInventorySlotIndexes = transferOperations.stream()
-				.map(TransferOperation::inventorySlot)
+				.map(op -> op.inventorySlot(player.containerMenu))
 				.map(s -> s.index)
 				.filter(s -> !inventorySlotIndexes.contains(s) && !craftingSlotIndexes.contains(s))
 				.toList();
@@ -293,7 +293,7 @@ public final class RecipeTransferUtil {
 				Slot matchingSlot = matching.slot;
 				ItemStack matchingStack = matching.itemStack;
 				matchingStack.shrink(1);
-				transferOperations.results.add(new TransferOperation(matchingSlot, craftingSlot));
+				transferOperations.results.add(new TransferOperation(matchingSlot.index, craftingSlot.index));
 			}
 		}
 
