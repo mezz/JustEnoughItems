@@ -66,7 +66,7 @@ public final class BasicRecipeTransferHandlerServer {
 		List<ItemStack> clearedCraftingItems = clearCraftingGrid(craftingSlots, player);
 
 		// put items into the crafting grid
-		List<ItemStack> remainderItems = putItemsIntoCraftingGrid(recipeSlotToTakenStacks, requireCompleteSets, player);
+		List<ItemStack> remainderItems = putItemsIntoCraftingGrid(recipeSlotToTakenStacks, requireCompleteSets);
 
 		// put leftover items back into the inventory
 		stowItems(player, inventorySlots, clearedCraftingItems);
@@ -115,20 +115,15 @@ public final class BasicRecipeTransferHandlerServer {
 
 	private static List<ItemStack> putItemsIntoCraftingGrid(
 		Map<Slot, ItemStack> recipeSlotToTakenStacks,
-		boolean requireCompleteSets,
-		Player player
+		boolean requireCompleteSets
 	) {
 		final int slotStackLimit = getSlotStackLimit(recipeSlotToTakenStacks, requireCompleteSets);
 		List<ItemStack> remainderItems = new ArrayList<>();
 
 		recipeSlotToTakenStacks.forEach((slot, stack) -> {
-			if (slot.getItem().isEmpty() && slot.allowModification(player) && slot.mayPlace(stack)) {
-				ItemStack remainder = slot.safeInsert(stack, slotStackLimit);
-				if (!remainder.isEmpty()) {
-					remainderItems.add(remainder);
-				}
-			} else {
-				remainderItems.add(stack);
+			ItemStack remainder = slot.safeInsert(stack, slotStackLimit);
+			if (!remainder.isEmpty()) {
+				remainderItems.add(remainder);
 			}
 		});
 
