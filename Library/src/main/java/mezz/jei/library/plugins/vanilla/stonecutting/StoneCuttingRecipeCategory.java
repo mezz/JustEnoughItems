@@ -1,20 +1,21 @@
 package mezz.jei.library.plugins.vanilla.stonecutting;
 
 import net.minecraft.network.chat.TranslatableComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.library.plugins.RecipeCategoryWithType;
 import mezz.jei.api.recipe.RecipeType;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.item.crafting.StonecutterRecipe;
-import net.minecraft.resources.ResourceLocation;
-
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.common.Constants;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.StonecutterRecipe;
+import net.minecraft.world.level.block.Blocks;
 
 public class StoneCuttingRecipeCategory implements RecipeCategoryWithType<StonecutterRecipe> {
 	public static final int width = 82;
@@ -23,10 +24,11 @@ public class StoneCuttingRecipeCategory implements RecipeCategoryWithType<Stonec
 	private final IDrawable background;
 	private final IDrawable icon;
 	private final Component localizedName;
+	private final IGuiHelper guiHelper;
 
 	public StoneCuttingRecipeCategory(IGuiHelper guiHelper) {
-		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
-		background = guiHelper.createDrawable(location, 0, 220, width, height);
+		this.guiHelper = guiHelper;
+		background = guiHelper.createBlankDrawable(width, height);
 		icon = guiHelper.createDrawableItemLike(Blocks.STONECUTTER);
 		localizedName = new TranslatableComponent("gui.jei.category.stoneCutter");
 	}
@@ -54,10 +56,17 @@ public class StoneCuttingRecipeCategory implements RecipeCategoryWithType<Stonec
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, StonecutterRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 9)
+			.setStandardSlotBackground()
 			.addIngredients(recipe.getIngredients().get(0));
-
 		builder.addSlot(RecipeIngredientRole.OUTPUT, 61, 9)
+			.setOutputSlotBackground()
 			.addItemStack(recipe.getResultItem());
+	}
+
+	@Override
+	public void draw(StonecutterRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
+		IDrawableStatic recipeArrow = guiHelper.getRecipeArrow();
+		recipeArrow.draw(poseStack, 26, 9);
 	}
 
 	@Override

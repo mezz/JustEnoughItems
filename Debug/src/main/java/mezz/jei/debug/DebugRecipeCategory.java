@@ -4,7 +4,6 @@ import net.minecraft.network.chat.TextComponent;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
@@ -31,7 +30,6 @@ import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.common.Constants;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.debug.ingredients.DebugIngredient;
@@ -74,7 +72,7 @@ public class DebugRecipeCategory<F> implements RecipeCategoryWithType<DebugRecip
 		this.ingredientManager = ingredientManager;
 		this.localizedName = new TextComponent("debug");
 
-		ResourceLocation backgroundTexture = new ResourceLocation(ModIds.JEI_ID, Constants.TEXTURE_GUI_PATH + "debug.png");
+		ResourceLocation backgroundTexture = new ResourceLocation(ModIds.JEI_ID, "textures/jei/gui/debug.png");
 		this.tankBackground = guiHelper.createDrawable(backgroundTexture, 220, 196, 18, 60);
 		this.tankOverlay = guiHelper.createDrawable(backgroundTexture, 238, 196, 18, 60);
 		this.item = guiHelper.createDrawableItemStack(new ItemStack(Items.ACACIA_LEAVES));
@@ -182,7 +180,7 @@ public class DebugRecipeCategory<F> implements RecipeCategoryWithType<DebugRecip
 				platformFluidHelper.create(Fluids.LAVA, (int) ((1.0 + Math.random()) * bucketVolume)),
 				new ItemStack(Items.ACACIA_LEAVES)
 			))
-			.addTooltipCallback(new IRecipeSlotTooltipCallback() {
+			.addTooltipCallback(new mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback() {
 				@SuppressWarnings("removal")
 				@Override
 				public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
