@@ -90,7 +90,8 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 
 	@Override
 	public <T> IRecipeSlotBuilder createAndSetOutputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, @Nullable List<@Nullable T> outputs) {
-		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 95, 19);
+		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 95, 19)
+			.setOutputSlotBackground();
 		if (outputs != null) {
 			outputSlot.addIngredients(ingredientType, outputs);
 		}
@@ -105,7 +106,8 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		List<IRecipeSlotBuilder> inputSlots = new ArrayList<>();
 		for (int y = 0; y < 3; ++y) {
 			for (int x = 0; x < 3; ++x) {
-				IRecipeSlotBuilder slot = builder.addSlot(RecipeIngredientRole.INPUT, x * 18 + 1, y * 18 + 1);
+				IRecipeSlotBuilder slot = builder.addSlot(RecipeIngredientRole.INPUT, x * 18 + 1, y * 18 + 1)
+					.setStandardSlotBackground();
 				inputSlots.add(slot);
 			}
 		}

@@ -16,8 +16,6 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmithingRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.ISmithingCategoryExtension;
-import mezz.jei.common.Internal;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -40,8 +38,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<RecipeHolder<Smit
 	public SmithingRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(108, 28);
 		icon = guiHelper.createDrawableItemLike(Blocks.SMITHING_TABLE);
-		Textures textures = Internal.getTextures();
-		recipeArrow = textures.getRecipeArrow();
+		recipeArrow = guiHelper.getRecipeArrow();
 	}
 
 	@Override
@@ -115,7 +112,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<RecipeHolder<Smit
 
 	@Override
 	public void draw(RecipeHolder<SmithingRecipe> recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		recipeArrow.draw(guiGraphics, 61, 7);
+		recipeArrow.draw(guiGraphics, 61, 6);
 	}
 
 	@Override

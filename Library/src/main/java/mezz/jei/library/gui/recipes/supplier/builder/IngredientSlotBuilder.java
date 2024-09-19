@@ -81,6 +81,11 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 	}
 
 	@Override
+	public IRecipeSlotBuilder setOutputSlotBackground() {
+		return this;
+	}
+
+	@Override
 	public IRecipeSlotBuilder setBackground(IDrawable background, int xOffset, int yOffset) {
 		return this;
 	}

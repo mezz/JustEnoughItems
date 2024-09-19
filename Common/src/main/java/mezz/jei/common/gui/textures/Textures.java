@@ -12,6 +12,7 @@ public class Textures {
 	private final JeiSpriteUploader spriteUploader;
 
 	private final IDrawableStatic slot;
+	private final IDrawableStatic outputSlot;
 	private final DrawableNineSliceTexture recipeCatalystSlotBackground;
 	private final DrawableNineSliceTexture ingredientListSlotBackground;
 	private final DrawableNineSliceTexture bookmarkListSlotBackground;
@@ -44,14 +45,23 @@ public class Textures {
 	private final DrawableNineSliceTexture catalystTab;
 	private final DrawableNineSliceTexture recipeOptionsTab;
 	private final IDrawableStatic flameIcon;
+	private final IDrawableStatic flameEmptyIcon;
 	private final IDrawableStatic recipeArrow;
+	private final IDrawableStatic recipeArrowFilled;
+	private final IDrawableStatic recipePlusSign;
 	private final IDrawableStatic bookmarksFirst;
 	private final IDrawableStatic craftableFirst;
+
+	private final IDrawableStatic brewingStandBackground;
+	private final IDrawableStatic brewingStandBlazeHeat;
+	private final IDrawableStatic brewingStandBubbles;
+	private final IDrawableStatic brewingStandArrow;
 
 	public Textures(JeiSpriteUploader spriteUploader) {
 		this.spriteUploader = spriteUploader;
 
 		this.slot = createGuiSprite("slot", 18, 18);
+		this.outputSlot = createGuiSprite("output_slot", 26, 26);
 		this.recipeCatalystSlotBackground = createNineSliceGuiSprite("recipe_catalyst_slot_background", 18, 18, 4, 4, 4, 4);
 		this.ingredientListSlotBackground = createNineSliceGuiSprite("ingredient_list_slot_background", 18, 18, 4, 4, 4, 4);
 		this.bookmarkListSlotBackground = createNineSliceGuiSprite("bookmark_list_slot_background", 18, 18, 4, 4, 4, 4);
@@ -72,7 +82,14 @@ public class Textures {
 		this.scrollbarMarker = createNineSliceGuiSprite("scrollbar_marker", 12, 15, 2, 2, 2, 1);
 		this.catalystTab = createNineSliceGuiSprite("catalyst_tab", 28, 28, 8, 9, 8, 8);
 		this.recipeOptionsTab = createNineSliceGuiSprite("recipe_options_tab", 28, 28, 8, 9, 8, 8);
-		this.recipeArrow = createGuiSprite("recipe_arrow", 22, 15);
+		this.recipeArrow = createGuiSprite("recipe_arrow", 22, 16);
+		this.recipeArrowFilled = createGuiSprite("recipe_arrow_filled", 22, 16);
+		this.recipePlusSign = createGuiSprite("recipe_plus_sign", 13, 13);
+
+		this.brewingStandBackground = createGuiSprite("brewing_stand_background", 64, 60);
+		this.brewingStandBlazeHeat = createGuiSprite("brewing_stand_blaze_heat", 18, 4);
+		this.brewingStandBubbles = createGuiSprite("brewing_stand_bubbles", 11, 28);
+		this.brewingStandArrow = createGuiSprite("brewing_stand_arrow", 7, 27);
 
 		DrawableSprite rawShapelessIcon = createGuiSprite("icons/shapeless_icon", 36, 36)
 			.trim(1, 2, 1, 1);
@@ -90,6 +107,7 @@ public class Textures {
 		this.bookmarkButtonEnabledIcon = createGuiSprite("icons/bookmark_button_enabled", 16, 16);
 		this.infoIcon = createGuiSprite("icons/info", 16, 16);
 		this.flameIcon = createGuiSprite("icons/flame", 14, 14);
+		this.flameEmptyIcon = createGuiSprite("icons/flame_empty", 14, 14);
 		this.bookmarksFirst = createGuiSprite("icons/bookmarks_first", 16, 16);
 		this.craftableFirst = createGuiSprite("icons/craftable_first", 16, 16);
 	}
@@ -108,8 +126,12 @@ public class Textures {
 		return new DrawableNineSliceTexture(spriteUploader, location, width, height, left, right, top, bottom);
 	}
 
-	public IDrawableStatic getSlotDrawable() {
+	public IDrawableStatic getSlot() {
 		return slot;
+	}
+
+	public IDrawableStatic getOutputSlot() {
+		return outputSlot;
 	}
 
 	public IDrawableStatic getTabSelected() {
@@ -216,6 +238,14 @@ public class Textures {
 		return recipeArrow;
 	}
 
+	public IDrawableStatic getRecipeArrowFilled() {
+		return recipeArrowFilled;
+	}
+
+	public IDrawableStatic getRecipePlusSign() {
+		return recipePlusSign;
+	}
+
 	public DrawableNineSliceTexture getRecipeCatalystSlotBackground() {
 		return recipeCatalystSlotBackground;
 	}
@@ -232,12 +262,32 @@ public class Textures {
 		return flameIcon;
 	}
 
+	public IDrawableStatic getFlameEmptyIcon() {
+		return flameEmptyIcon;
+	}
+
 	public DrawableNineSliceTexture getScrollbarMarker() {
 		return scrollbarMarker;
 	}
 
 	public DrawableNineSliceTexture getScrollbarBackground() {
 		return scrollbarBackground;
+	}
+
+	public IDrawableStatic getBrewingStandBackground() {
+		return brewingStandBackground;
+	}
+
+	public IDrawableStatic getBrewingStandBlazeHeat() {
+		return brewingStandBlazeHeat;
+	}
+
+	public IDrawableStatic getBrewingStandBubbles() {
+		return brewingStandBubbles;
+	}
+
+	public IDrawableStatic getBrewingStandArrow() {
+		return brewingStandArrow;
 	}
 
 	public JeiSpriteUploader getSpriteUploader() {

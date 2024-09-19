@@ -1,6 +1,5 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -13,8 +12,8 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
-import mezz.jei.common.Constants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -29,14 +28,14 @@ import java.util.Optional;
 public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 	private final IDrawable background;
 	private final IDrawable icon;
+	private final IGuiHelper guiHelper;
 	private final String leftSlotName = "leftSlot";
 	private final String rightSlotName = "rightSlot";
 
 	public AnvilRecipeCategory(IGuiHelper guiHelper) {
-		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 168, 125, 18)
-			.addPadding(0, 20, 0, 0)
-			.build();
+		background = guiHelper.createBlankDrawable(125, 38);
 		icon = guiHelper.createDrawableItemLike(Blocks.ANVIL);
+		this.guiHelper = guiHelper;
 	}
 
 	@Override
@@ -67,13 +66,16 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 
 		IRecipeSlotBuilder leftInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.addItemStacks(leftInputs)
+			.setStandardSlotBackground()
 			.setSlotName(leftSlotName);
 
 		IRecipeSlotBuilder rightInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 50, 1)
 			.addItemStacks(rightInputs)
+			.setStandardSlotBackground()
 			.setSlotName(rightSlotName);
 
 		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 1)
+			.setStandardSlotBackground()
 			.addItemStacks(outputs);
 
 		if (leftInputs.size() == rightInputs.size()) {
@@ -89,6 +91,9 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 
 	@Override
 	public void draw(IJeiAnvilRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+		guiHelper.getRecipePlusSign().draw(guiGraphics, 27, 3);
+		guiHelper.getRecipeArrow().draw(guiGraphics, 76, 1);
+
 		Optional<ItemStack> leftStack = recipeSlotsView.findSlotByName(leftSlotName)
 			.flatMap(IRecipeSlotView::getDisplayedItemStack);
 

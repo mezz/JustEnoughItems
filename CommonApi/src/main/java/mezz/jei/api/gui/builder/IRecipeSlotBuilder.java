@@ -54,13 +54,23 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 
 	/**
 	 * Set a normal slot background to draw behind the slot's ingredients.
-	 * This background is 18x18 pixels and offset by -1, -1 to match vanilla slots.
+	 * This background is 18x18 pixels and offset by (-1, -1) to match vanilla slots.
 	 *
 	 * @see IGuiHelper#getSlotDrawable() for the slot background drawable.
 	 *
 	 * @since 19.18.7
 	 */
 	IRecipeSlotBuilder setStandardSlotBackground();
+
+	/**
+	 * Set a normal slot background to draw behind the slot's ingredients.
+	 * This background is 26x26 pixels and offset by (-5, -5) to match vanilla output slots.
+	 *
+	 * @see IGuiHelper#getOutputSlot() for the slot background drawable.
+	 *
+	 * @since 19.18.8
+	 */
+	IRecipeSlotBuilder setOutputSlotBackground();
 
 	/**
 	 * Set a custom background to draw behind the slot's ingredients.

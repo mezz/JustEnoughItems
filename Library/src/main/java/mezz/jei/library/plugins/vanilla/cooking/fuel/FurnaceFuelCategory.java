@@ -11,12 +11,11 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
-import mezz.jei.common.Constants;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
-import mezz.jei.library.plugins.vanilla.cooking.FurnaceVariantCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,15 +26,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
 
-public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecipe> {
+public class FurnaceFuelCategory implements IRecipeCategory<IJeiFuelingRecipe> {
 	private final IDrawableStatic background;
-	private final IDrawableStatic flameTransparentBackground;
+	private final IDrawableStatic flameIcon;
 	private final Component localizedName;
 	private final ImmutableRect2i textArea;
 	private final IGuiHelper guiHelper;
 
 	public FurnaceFuelCategory(IGuiHelper guiHelper, Textures textures) {
-		super(guiHelper);
 		this.guiHelper = guiHelper;
 
 		// width of the recipe depends on the text, which is different in each language
@@ -46,13 +44,11 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecip
 		int backgroundHeight = 34;
 		int textPadding = 20;
 
-		background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 134, 18, backgroundHeight)
-			.addPadding(0, 0, 0, textPadding + maxStringWidth)
-			.build();
+		background = guiHelper.createBlankDrawable(18 + textPadding + maxStringWidth, backgroundHeight);
 
 		textArea = new ImmutableRect2i(20, 0, textPadding + maxStringWidth, backgroundHeight);
 
-		flameTransparentBackground = textures.getFlameIcon();
+		flameIcon = textures.getFlameIcon();
 		localizedName = Component.translatable("gui.jei.category.fuel");
 	}
 
@@ -73,12 +69,13 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecip
 
 	@Override
 	public IDrawable getIcon() {
-		return flameTransparentBackground;
+		return flameIcon;
 	}
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, IJeiFuelingRecipe recipe, IFocusGroup focuses) {
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 17)
+			.setStandardSlotBackground()
 			.addItemStacks(recipe.getInputs());
 	}
 
@@ -99,8 +96,7 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecip
 		private final ScreenPosition screenPosition;
 
 		public RecipeWidget(IGuiHelper guiHelper, int burnTime, ImmutableRect2i textArea) {
-			this.flame = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 82, 114, 14, 14)
-				.buildAnimated(burnTime, IDrawableAnimated.StartDirection.TOP, true);
+			this.flame = guiHelper.createAnimatedRecipeFlame(burnTime);
 			this.smeltCountText = createSmeltCountText(burnTime);
 			this.textArea = textArea;
 			this.screenPosition = new ScreenPosition(0, 0);
