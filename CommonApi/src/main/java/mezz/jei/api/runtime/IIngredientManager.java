@@ -169,6 +169,24 @@ public interface IIngredientManager {
 	<V> Optional<IClickableIngredient<V>> createClickableIngredient(IIngredientType<V> ingredientType, V ingredient, Rect2i area, boolean normalize);
 
 	/**
+	 * Create a clickable ingredient.
+	 *
+	 * @see IClickableIngredient
+	 *
+	 * @param ingredient the ingredient being clicked
+	 * @param area the area that this clickable ingredient is drawn in, in absolute screen coordinates.
+	 * @param normalize set true to normalize the ingredient (see {@link IIngredientHelper#normalizeIngredient}
+	 *
+	 * @return a clickable ingredient, or {@link Optional#empty()} if the ingredient is invalid (see {@link IIngredientHelper#isValidIngredient}
+	 *
+	 * @since 15.19.3
+	 */
+	default <V> Optional<IClickableIngredient<V>> createClickableIngredient(V ingredient, Rect2i area, boolean normalize) {
+		return getIngredientTypeChecked(ingredient)
+			.flatMap(type -> createClickableIngredient(type, ingredient, area, normalize));
+	}
+
+	/**
 	 * Get an ingredient by the given unique id.
 	 * This uses the uids from {@link IIngredientHelper#getUniqueId(Object, UidContext)}
 	 *
