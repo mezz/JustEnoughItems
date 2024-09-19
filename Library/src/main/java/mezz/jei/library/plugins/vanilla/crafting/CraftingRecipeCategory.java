@@ -5,6 +5,7 @@ import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -14,7 +15,6 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
-import mezz.jei.common.Constants;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.recipes.ExtendableRecipeCategoryHelper;
 import net.minecraft.client.gui.GuiGraphics;
@@ -35,14 +35,15 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 
 	private final IDrawable background;
 	private final IDrawable icon;
+	private final IGuiHelper guiHelper;
 	private final Component localizedName;
 	private final ICraftingGridHelper craftingGridHelper;
 	private final ExtendableRecipeCategoryHelper<Recipe<?>, ICraftingCategoryExtension> extendableHelper = new ExtendableRecipeCategoryHelper<>(CraftingRecipe.class);
 
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
-		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
-		background = guiHelper.createDrawable(location, 0, 60, width, height);
+		background = guiHelper.createBlankDrawable(width, height);
 		icon = guiHelper.createDrawableItemLike(Blocks.CRAFTING_TABLE);
+		this.guiHelper = guiHelper;
 		localizedName = Component.translatable("gui.jei.category.craftingTable");
 		craftingGridHelper = guiHelper.createCraftingGridHelper();
 	}
@@ -91,6 +92,9 @@ public class CraftingRecipeCategory implements IExtendableRecipeCategory<Craftin
 		int recipeWidth = this.getWidth();
 		int recipeHeight = this.getHeight();
 		extension.drawInfo(recipeWidth, recipeHeight, guiGraphics, mouseX, mouseY);
+
+		IDrawableStatic recipeArrow = guiHelper.getRecipeArrow();
+		recipeArrow.draw(guiGraphics, 61, (height - recipeArrow.getHeight()) / 2);
 	}
 
 	@Override

@@ -73,13 +73,13 @@ public class ObnoxiouslyLargeCategory implements IRecipeCategory<ObnoxiouslyLarg
 				int yPos = yOffset + (y * slotHeight);
 				ItemStack stack = iterator.next();
 				builder.addSlot(RecipeIngredientRole.INPUT, xPos + 1, yPos + 1)
-					.setBackground(slotBackground, -1, -1)
+					.setStandardSlotBackground()
 					.addItemStack(stack);
 			}
 		}
 
 		builder.addSlot(RecipeIngredientRole.OUTPUT, WIDTH + slotWidth, HEIGHT / 2)
-			.setBackground(slotBackground, -1, -1)
+			.setStandardSlotBackground()
 			.addItemStack(iterator.next());
 	}
 

@@ -3,7 +3,6 @@ package mezz.jei.library.plugins.jei.tags;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.widgets.IScrollGridWidgetFactory;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -40,12 +39,10 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 	private final Component localizedName;
 	private final ImmutableRect2i nameArea;
 	private final IScrollGridWidgetFactory<?> scrollGridFactory;
-	private final IDrawableStatic slotDrawable;
 
 	public TagInfoRecipeCategory(IGuiHelper guiHelper, T recipeType, ResourceLocation registryLocation) {
 		this.background = guiHelper.createBlankDrawable(WIDTH, HEIGHT);
 		this.icon = guiHelper.createDrawableItemLike(Items.NAME_TAG);
-		this.slotDrawable = guiHelper.getSlotDrawable();
 		this.recipeType = recipeType;
 		String registryName = StringUtils.capitalize(registryLocation.getPath());
 		this.localizedName = Component.translatable("gui.jei.category.tagInformation", registryName);
@@ -85,7 +82,7 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 		ScreenRectangle gridArea = scrollGridFactory.getArea();
 		builder.addSlot(RecipeIngredientRole.INPUT, gridArea.position().x() + 1, 1)
 			.addTypedIngredients(recipe.getTypedIngredients())
-			.setBackground(slotDrawable, -1, -1);
+			.setStandardSlotBackground();
 
 		for (ITypedIngredient<?> stack : recipe.getTypedIngredients()) {
 			builder.addSlotToWidget(RecipeIngredientRole.OUTPUT, scrollGridFactory)

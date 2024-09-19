@@ -5,8 +5,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
-import mezz.jei.common.Internal;
-import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,11 +28,10 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements ISlo
 		);
 	}
 
-	public ScrollGridRecipeWidget(ScreenRectangle area, int columns, int visibleRows, List<IRecipeSlotDrawable> slots) {
+	public ScrollGridRecipeWidget(IGuiHelper guiHelper, ScreenRectangle area, int columns, int visibleRows, List<IRecipeSlotDrawable> slots) {
 		super(area);
 		this.slots = slots;
-		Textures textures = Internal.getTextures();
-		this.slotBackground = textures.getSlotDrawable();
+		this.slotBackground = guiHelper.getSlotDrawable();
 
 		this.columns = columns;
 		this.visibleRows = visibleRows;

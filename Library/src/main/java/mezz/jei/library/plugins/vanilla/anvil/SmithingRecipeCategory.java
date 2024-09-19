@@ -13,8 +13,6 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmithingRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.ISmithingCategoryExtension;
-import mezz.jei.common.Internal;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -30,16 +28,13 @@ import java.util.Map;
 public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe>, IExtendableSmithingRecipeCategory {
 	private final IDrawable background;
 	private final IDrawable icon;
-	private final IDrawable slot;
 	private final IDrawable recipeArrow;
 	private final Map<Class<? extends SmithingRecipe>, ISmithingCategoryExtension<?>> extensions = new HashMap<>();
 
 	public SmithingRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(108, 28);
-		slot = guiHelper.getSlotDrawable();
 		icon = guiHelper.createDrawableItemLike(Blocks.SMITHING_TABLE);
-		Textures textures = Internal.getTextures();
-		recipeArrow = textures.getRecipeArrow();
+		recipeArrow = guiHelper.getRecipeArrow();
 	}
 
 	@Override
@@ -70,16 +65,16 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe>, 
 		}
 
 		IRecipeSlotBuilder templateSlot = builder.addSlot(RecipeIngredientRole.INPUT, 1, 6)
-			.setBackground(slot, -1, -1);
+			.setStandardSlotBackground();
 
 		IRecipeSlotBuilder baseSlot = builder.addSlot(RecipeIngredientRole.INPUT, 19, 6)
-			.setBackground(slot, -1, -1);
+			.setStandardSlotBackground();
 
 		IRecipeSlotBuilder additionSlot = builder.addSlot(RecipeIngredientRole.INPUT, 37, 6)
-			.setBackground(slot, -1, -1);
+			.setStandardSlotBackground();
 
 		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 91, 6)
-			.setBackground(slot, -1, -1);
+			.setStandardSlotBackground();
 
 		extension.setTemplate(recipe, templateSlot);
 		extension.setBase(recipe, baseSlot);
@@ -110,7 +105,7 @@ public class SmithingRecipeCategory implements IRecipeCategory<SmithingRecipe>, 
 
 	@Override
 	public void draw(SmithingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		recipeArrow.draw(guiGraphics, 61, 7);
+		recipeArrow.draw(guiGraphics, 61, 6);
 	}
 
 	@Override

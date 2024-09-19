@@ -6,6 +6,7 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.gui.widgets.IScrollGridWidgetFactory;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -15,6 +16,8 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableAnimated;
+import mezz.jei.common.gui.elements.DrawableAnimatedRecipeArrow;
+import mezz.jei.common.gui.elements.DrawableAnimatedRecipeFlame;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableIngredient;
 import mezz.jei.common.gui.textures.Textures;
@@ -22,18 +25,16 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.TickTimer;
 import mezz.jei.library.gui.elements.DrawableBuilder;
 import mezz.jei.library.gui.widgets.AbstractScrollWidget;
+import mezz.jei.library.gui.widgets.DrawableWidget;
 import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
 import mezz.jei.library.gui.widgets.ScrollGridWidgetFactory;
 import net.minecraft.resources.ResourceLocation;
 
 public class GuiHelper implements IGuiHelper {
 	private final IIngredientManager ingredientManager;
-	private final IDrawableStatic slotDrawable;
 
 	public GuiHelper(IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
-		Textures textures = Internal.getTextures();
-		this.slotDrawable = textures.getSlotDrawable();
 	}
 
 	@Override
@@ -49,8 +50,68 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
+	public IDrawableAnimated createAnimatedDrawable(IDrawableStatic drawable, ITickTimer tickTimer, IDrawableAnimated.StartDirection startDirection) {
+		ErrorUtil.checkNotNull(drawable, "drawable");
+		ErrorUtil.checkNotNull(tickTimer, "tickTimer");
+		ErrorUtil.checkNotNull(startDirection, "startDirection");
+		return new DrawableAnimated(drawable, tickTimer, startDirection);
+	}
+
+	@Override
 	public IDrawableStatic getSlotDrawable() {
-		return slotDrawable;
+		Textures textures = Internal.getTextures();
+		return textures.getSlot();
+	}
+
+	@Override
+	public IDrawableStatic getOutputSlot() {
+		Textures textures = Internal.getTextures();
+		return textures.getOutputSlot();
+	}
+
+	@Override
+	public IDrawableStatic getRecipeArrow() {
+		Textures textures = Internal.getTextures();
+		return textures.getRecipeArrow();
+	}
+
+	@Override
+	public IDrawableStatic getRecipeArrowFilled() {
+		Textures textures = Internal.getTextures();
+		return textures.getRecipeArrowFilled();
+	}
+
+	@Override
+	public IDrawableAnimated createAnimatedRecipeArrow(int ticksPerCycle) {
+		return new DrawableAnimatedRecipeArrow(this, ticksPerCycle);
+	}
+
+	@Override
+	public IDrawableStatic getRecipePlusSign() {
+		Textures textures = Internal.getTextures();
+		return textures.getRecipePlusSign();
+	}
+
+	@Override
+	public IDrawableStatic getRecipeFlameEmpty() {
+		Textures textures = Internal.getTextures();
+		return textures.getFlameEmptyIcon();
+	}
+
+	@Override
+	public IDrawableStatic getRecipeFlameFilled() {
+		Textures textures = Internal.getTextures();
+		return textures.getFlameIcon();
+	}
+
+	@Override
+	public IDrawableAnimated createAnimatedRecipeFlame(int ticksPerCycle) {
+		return new DrawableAnimatedRecipeFlame(this, ticksPerCycle);
+	}
+
+	@Override
+	public IRecipeWidget createWidgetFromDrawable(IDrawable drawable, int xPos, int yPos) {
+		return new DrawableWidget(drawable, xPos, yPos);
 	}
 
 	@Override
@@ -86,7 +147,7 @@ public class GuiHelper implements IGuiHelper {
 
 	@Override
 	public IScrollGridWidgetFactory<?> createScrollGridFactory(int columns, int visibleRows) {
-		return new ScrollGridWidgetFactory<>(columns, visibleRows);
+		return new ScrollGridWidgetFactory<>(this, columns, visibleRows);
 	}
 
 	@Override
