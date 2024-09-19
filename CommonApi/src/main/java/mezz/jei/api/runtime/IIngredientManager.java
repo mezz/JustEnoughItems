@@ -13,6 +13,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -159,6 +160,22 @@ public interface IIngredientManager {
 	 * @since 19.1.0
 	 */
 	<V> ITypedIngredient<V> normalizeTypedIngredient(ITypedIngredient<V> typedIngredient);
+
+	/**
+	 * Create a clickable ingredient.
+	 *
+	 * @see IClickableIngredient
+	 *
+	 * @param ingredientType the type of the ingredient being clicked
+	 * @param ingredient the ingredient being clicked
+	 * @param area the area that this clickable ingredient is drawn in, in absolute screen coordinates.
+	 * @param normalize set true to normalize the ingredient (see {@link IIngredientHelper#normalizeIngredient}
+	 *
+	 * @return a clickable ingredient, or {@link Optional#empty()} if the ingredient is invalid (see {@link IIngredientHelper#isValidIngredient}
+	 *
+	 * @since 19.18.5
+	 */
+	<V> Optional<IClickableIngredient<V>> createClickableIngredient(IIngredientType<V> ingredientType, V ingredient, Rect2i area, boolean normalize);
 
 	/**
 	 * Get an ingredient by the given unique id.

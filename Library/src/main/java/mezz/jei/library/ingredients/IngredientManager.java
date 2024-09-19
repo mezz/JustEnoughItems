@@ -6,10 +6,14 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.input.ClickableIngredient;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.Translator;
 import mezz.jei.core.util.WeakList;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -197,6 +201,18 @@ public class IngredientManager implements IIngredientManager {
 		IIngredientType<V> type = typedIngredient.getType();
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(type);
 		return TypedIngredient.normalize(typedIngredient, ingredientHelper);
+	}
+
+	@Override
+	public <V> Optional<IClickableIngredient<V>> createClickableIngredient(IIngredientType<V> ingredientType, V ingredient, Rect2i area, boolean normalize) {
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		ErrorUtil.checkNotNull(area, "area");
+		return TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, normalize)
+			.map(typedIngredient -> {
+				ImmutableRect2i slotArea = new ImmutableRect2i(area);
+				return new ClickableIngredient<>(typedIngredient, slotArea);
+			});
 	}
 
 	@SuppressWarnings("removal")
