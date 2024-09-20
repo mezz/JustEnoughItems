@@ -1,28 +1,24 @@
 package mezz.jei.library.ingredients.itemStacks;
 
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Optional;
+final class NormalizedTypedItem extends TypedItemStack {
+	private final Holder<Item> itemHolder;
 
-record NormalizedTypedItem(Holder<Item> itemHolder) implements ITypedIngredient<ItemStack> {
+	NormalizedTypedItem(Holder<Item> itemHolder) {
+		this.itemHolder = itemHolder;
+	}
+
 	@Override
-	public ItemStack getIngredient() {
+	protected ItemStack createItemStackUncached() {
 		return new ItemStack(itemHolder);
 	}
 
 	@Override
-	public Optional<ItemStack> getItemStack() {
-		return Optional.of(getIngredient());
-	}
-
-	@Override
-	public IIngredientType<ItemStack> getType() {
-		return VanillaTypes.ITEM_STACK;
+	public TypedItemStack getNormalized() {
+		return this;
 	}
 
 	@Override
