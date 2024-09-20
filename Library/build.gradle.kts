@@ -2,9 +2,11 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
-    java
+    id("java")
+    id("idea")
+    id("eclipse")
+    id("maven-publish")
     id("net.neoforged.moddev")
-    `maven-publish`
 }
 
 // gradle.properties
@@ -102,6 +104,15 @@ publishing {
         val deployDir = project.findProperty("DEPLOY_DIR")
         if (deployDir != null) {
             maven(deployDir)
+        }
+    }
+}
+
+
+idea {
+    module {
+        for (fileName in listOf("build", "run", "out", "logs")) {
+            excludeDirs.add(file(fileName))
         }
     }
 }

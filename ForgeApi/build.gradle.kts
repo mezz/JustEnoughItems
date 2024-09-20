@@ -134,3 +134,12 @@ publishing {
 tasks.withType<DownloadMavenArtifact> {
 	notCompatibleWithConfigurationCache("uses Task.project at execution time")
 }
+
+
+idea {
+	module {
+		for (fileName in listOf("build", "run", "out", "logs")) {
+			excludeDirs.add(file(fileName))
+		}
+	}
+}

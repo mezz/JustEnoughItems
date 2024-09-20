@@ -2,8 +2,9 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
-    java
-    `maven-publish`
+    id("idea")
+    id("java")
+    id("maven-publish")
 }
 
 repositories {
@@ -114,3 +115,12 @@ publishing {
         }
     }
 }
+
+idea {
+    module {
+        for (fileName in listOf("build", "run", "out", "logs")) {
+            excludeDirs.add(file(fileName))
+        }
+    }
+}
+

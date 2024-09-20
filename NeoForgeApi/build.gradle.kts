@@ -1,4 +1,5 @@
 plugins {
+	id("idea")
 	id("java")
 	id("maven-publish")
 	id("net.neoforged.moddev")
@@ -95,6 +96,14 @@ publishing {
 		val deployDir = project.findProperty("DEPLOY_DIR")
 		if (deployDir != null) {
 			maven(deployDir)
+		}
+	}
+}
+
+idea {
+	module {
+		for (fileName in listOf("build", "run", "out", "logs")) {
+			excludeDirs.add(file(fileName))
 		}
 	}
 }

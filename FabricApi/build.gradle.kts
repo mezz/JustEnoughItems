@@ -168,3 +168,11 @@ publishing {
         }
     }
 }
+
+idea {
+    module {
+        for (fileName in listOf("build", "run", "out", "logs")) {
+            excludeDirs.add(file(fileName))
+        }
+    }
+}

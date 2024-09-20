@@ -1,7 +1,8 @@
 plugins {
-    java
+    id("idea")
+    id("java")
     id("net.neoforged.moddev")
-    `maven-publish`
+    id("maven-publish")
 }
 
 
@@ -70,3 +71,12 @@ publishing {
         }
     }
 }
+
+idea {
+    module {
+        for (fileName in listOf("build", "run", "out", "logs")) {
+            excludeDirs.add(file(fileName))
+        }
+    }
+}
+

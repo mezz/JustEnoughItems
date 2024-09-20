@@ -134,9 +134,7 @@ loom {
             }
 
         // loom 1.11 runDir takes a directory relative to the root directory
-        val loomRunDir = project.projectDir
-            .relativeTo(project.rootDir)
-            .resolve("run")
+        val loomRunDir = File("run")
 
         named("client") {
             client()
@@ -297,7 +295,7 @@ publishing {
 
 idea {
     module {
-        for (fileName in listOf("run", "out", "logs")) {
+        for (fileName in listOf("build", "run", "out", "logs")) {
             excludeDirs.add(file(fileName))
         }
     }
