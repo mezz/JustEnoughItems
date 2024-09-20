@@ -17,6 +17,7 @@ import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -97,11 +98,9 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 	private void addOutputSlotTooltipCallback(RecipeSlotBuilder slot) {
 		ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 		if (recipeName != null) {
-			ResourceLocation recipeTypeUid = recipeCategory.getRecipeType().getUid();
-			if (!recipeTypeUid.getNamespace().equals(recipeName.getNamespace())) {
-				OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName);
-				slot.addRichTooltipCallback(callback);
-			}
+			RecipeType<T> recipeType = recipeCategory.getRecipeType();
+			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName, recipeType);
+			slot.addRichTooltipCallback(callback);
 		}
 	}
 
