@@ -1,27 +1,26 @@
 package mezz.jei.fabric.input;
 
-import de.siphalor.amecs.api.AmecsKeyBinding;
+import com.mojang.blaze3d.platform.InputConstants;
 import de.siphalor.amecs.api.KeyBindingUtils;
 import de.siphalor.amecs.api.KeyModifiers;
-import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.client.KeyMapping;
+
+import java.util.List;
 
 public class AmecsJeiKeyMapping extends AbstractJeiKeyMapping {
-	protected final AmecsKeyBinding amecsMapping;
+	protected final KeyMapping amecsMapping;
 
-	public AmecsJeiKeyMapping(AmecsKeyBinding amecsMapping, JeiKeyConflictContext context) {
+	public AmecsJeiKeyMapping(AmecsKeyBindingWithContext amecsMapping, JeiKeyConflictContext context) {
 		super(context);
 		this.amecsMapping = amecsMapping;
 	}
 
-	protected AmecsKeyBinding getMapping() {
+	@Override
+	protected KeyMapping getMapping() {
 		return this.amecsMapping;
-	}
-
-	protected InputConstants.Key getMappedKey() {
-		return KeyBindingHelper.getBoundKeyOf(this.amecsMapping);
 	}
 
 	@Override
@@ -29,25 +28,19 @@ public class AmecsJeiKeyMapping extends AbstractJeiKeyMapping {
 		if (isUnbound()) {
 			return false;
 		}
-		if (!this.getMappedKey().equals(key)) {
+		if (!KeyBindingHelper.getBoundKeyOf(this.amecsMapping).equals(key)) {
 			return false;
 		}
 		if (!context.isActive()) {
 			return false;
 		}
 
-		KeyModifiers modifier = KeyBindingUtils.getBoundModifiers(this.amecsMapping);
-		if (modifier.getControl() && !JeiKeyModifier.CONTROL_OR_COMMAND.isActive(context)) {
-			return false;
-		}
-		if (modifier.getShift() && !JeiKeyModifier.SHIFT.isActive(context)) {
-			return false;
-		}
-		if (modifier.getAlt() && !JeiKeyModifier.ALT.isActive(context)) {
-			return false;
-		}
-		if (modifier.isUnset() && !JeiKeyModifier.NONE.isActive(context)) {
-			return false;
+		KeyModifiers modifiers = KeyBindingUtils.getBoundModifiers(this.amecsMapping);
+		List<JeiKeyModifier> jeiKeyModifiers = AmecsHelper.getJeiModifiers(modifiers);
+		for (JeiKeyModifier jeiKeyModifier : jeiKeyModifiers) {
+			if (!jeiKeyModifier.isActive(context)) {
+				return false;
+			}
 		}
 		return true;
 	}
