@@ -7,7 +7,6 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.library.ingredients.itemStacks.NormalizedTypedItemStack;
 import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +37,7 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		if (type == VanillaTypes.ITEM_STACK) {
 			@SuppressWarnings("unchecked")
 			ITypedIngredient<ItemStack> cast = (ITypedIngredient<ItemStack>) typedIngredient;
-			ITypedIngredient<ItemStack> normalized = NormalizedTypedItemStack.normalize(cast);
+			ITypedIngredient<ItemStack> normalized = TypedItemStack.normalize(cast);
 			@SuppressWarnings("unchecked")
 			ITypedIngredient<T> castNormalized = (ITypedIngredient<T>) normalized;
 			return castNormalized;
