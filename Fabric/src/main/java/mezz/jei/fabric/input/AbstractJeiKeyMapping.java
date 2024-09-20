@@ -1,11 +1,11 @@
 package mezz.jei.fabric.input;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import java.util.function.Consumer;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
+
+import java.util.function.Consumer;
 
 public abstract class AbstractJeiKeyMapping implements IJeiKeyMappingInternal {
 	protected final JeiKeyConflictContext context;
@@ -15,19 +15,6 @@ public abstract class AbstractJeiKeyMapping implements IJeiKeyMappingInternal {
 	}
 
 	protected abstract KeyMapping getMapping();
-
-	protected abstract InputConstants.Key getMappedKey();
-
-	@Override
-	public boolean isActiveAndMatches(InputConstants.Key key) {
-		if (isUnbound()) {
-			return false;
-		}
-		if (!this.getMappedKey().equals(key)) {
-			return false;
-		}
-		return context.isActive();
-	}
 
 	@Override
 	public boolean isUnbound() {
