@@ -11,11 +11,19 @@ public class FabricJeiKeyMapping extends AbstractJeiKeyMapping {
 		this.fabricMapping = fabricMapping;
 	}
 
+	@Override
 	protected FabricKeyMapping getMapping() {
 		return this.fabricMapping;
 	}
 
-	protected InputConstants.Key getMappedKey() {
-		return this.fabricMapping.realKey;
+	@Override
+	public boolean isActiveAndMatches(InputConstants.Key key) {
+		if (isUnbound()) {
+			return false;
+		}
+		if (!this.fabricMapping.realKey.equals(key)) {
+			return false;
+		}
+		return context.isActive();
 	}
 }
