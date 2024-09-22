@@ -259,7 +259,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			.map(recipe -> {
 				DrawableNineSliceTexture recipeBackground = Internal.getTextures().getRecipeBackground();
 				try {
-					return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
+					return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses(), recipeBackground, 4)
 						.orElseGet(() -> {
 							brokenRecipes.add(recipe);
 							return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, 4);
