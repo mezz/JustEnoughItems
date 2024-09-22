@@ -31,7 +31,9 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 		);
 	}
 
-	private final ScreenRectangle area;
+	protected final ScreenRectangle area;
+	protected final ScreenRectangle contentsArea;
+
 	private final ImmutableRect2i scrollArea;
 	private final DrawableNineSliceTexture scrollbarMarker;
 	private final DrawableNineSliceTexture scrollbarBackground;
@@ -50,6 +52,12 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 		Textures textures = Internal.getTextures();
 		this.scrollbarMarker = textures.getScrollbarMarker();
 		this.scrollbarBackground = textures.getScrollbarBackground();
+		this.contentsArea = new ScreenRectangle(
+			0,
+			0,
+			area.width() - getScrollBoxScrollbarExtraWidth(),
+			area.height()
+		);
 	}
 
 	protected ImmutableRect2i calculateScrollbarMarkerArea() {
