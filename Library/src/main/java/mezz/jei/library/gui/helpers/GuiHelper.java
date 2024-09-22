@@ -158,6 +158,11 @@ public class GuiHelper implements IGuiHelper {
 		return widget;
 	}
 
+	@Override
+	public IScrollBoxWidget createScrollBoxWidget(int width, int height, int xPos, int yPos) {
+		return new ScrollBoxRecipeWidget(width, height, xPos, yPos);
+	}
+
 	@SuppressWarnings("removal")
 	@Override
 	public int getScrollBoxScrollbarExtraWidth() {
