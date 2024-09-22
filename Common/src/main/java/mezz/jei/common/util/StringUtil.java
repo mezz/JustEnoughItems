@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class StringUtil {
 	private StringUtil() {
@@ -48,7 +49,12 @@ public final class StringUtil {
 		Font font = minecraft.font;
 		StringSplitter splitter = font.getSplitter();
 		return lines.stream()
-			.flatMap(text -> splitter.splitLines(text, width, Style.EMPTY).stream())
+			.flatMap(text -> {
+				if (text.getString().isEmpty()) {
+					return Stream.of(text);
+				}
+				return splitter.splitLines(text, width, Style.EMPTY).stream();
+			})
 			.toList();
 	}
 

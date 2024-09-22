@@ -180,6 +180,7 @@
   "gui.jei.category.registry.item": "Item",
   "gui.jei.category.registry.fluid": "Fluid",
   "gui.jei.category.tagInformation": "%s Tags",
+  "gui.jei.category.recipe.crashed": "This recipe crashed. Please see client logs for details.",
 
   "_comment": "Messages",
   "jei.message.configured": "Install the \"Configured\" mod to access the in-game config",
