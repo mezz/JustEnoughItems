@@ -12,6 +12,7 @@ import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
+import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
 import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -30,6 +31,7 @@ import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.ShapelessIcon;
+import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -126,6 +128,14 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 	public void addGuiEventListener(IJeiGuiEventListener guiEventListener) {
 		ErrorUtil.checkNotNull(guiEventListener, "guiEventListener");
 		this.guiEventListeners.add(guiEventListener);
+	}
+
+	@Override
+	public IScrollBoxWidget addScrollBoxWidget(int width, int height, int xPos, int yPos) {
+		ScrollBoxRecipeWidget widget = new ScrollBoxRecipeWidget(width, height, xPos, yPos);
+		addWidget(widget);
+		addInputHandler(widget);
+		return widget;
 	}
 
 	@Override

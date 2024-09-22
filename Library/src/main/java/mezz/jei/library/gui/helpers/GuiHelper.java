@@ -150,11 +150,15 @@ public class GuiHelper implements IGuiHelper {
 		return new ScrollGridWidgetFactory<>(this, columns, visibleRows);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public IScrollBoxWidget createScrollBoxWidget(IDrawable contents, int visibleHeight, int xPos, int yPos) {
-		return new ScrollBoxRecipeWidget(contents, visibleHeight, xPos, yPos);
+		ScrollBoxRecipeWidget widget = new ScrollBoxRecipeWidget(contents.getWidth() + getScrollBoxScrollbarExtraWidth(), visibleHeight, xPos, yPos);
+		widget.setContents(contents);
+		return widget;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public int getScrollBoxScrollbarExtraWidth() {
 		return AbstractScrollWidget.getScrollBoxScrollbarExtraWidth();

@@ -41,4 +41,14 @@ public interface IRecipeExtrasBuilder {
 	 * @since 15.9.0
 	 */
 	void addGuiEventListener(IJeiGuiEventListener guiEventListener);
+
+	/**
+	 * Create and add a new scroll box widget.
+	 * Handles displaying drawable contents in a scrolling area with a scrollbar.
+	 *
+	 * Set the contents by using the methods in {@link IScrollBoxWidget}.
+	 *
+	 * @since 15.19.6
+	 */
+	IScrollBoxWidget addScrollBoxWidget(int width, int height, int xPos, int yPos);
 }
