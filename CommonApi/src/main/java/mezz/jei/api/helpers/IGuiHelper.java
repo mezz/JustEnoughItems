@@ -9,6 +9,7 @@ import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.gui.widgets.IScrollGridWidgetFactory;
@@ -235,14 +236,18 @@ public interface IGuiHelper {
 	 * Handles displaying drawable contents in a scrolling area.
 	 *
 	 * @since 10.33.0
+	 * @deprecated use {@link IRecipeExtrasBuilder#addScrollBoxWidget}
 	 */
+	@Deprecated(since = "10.48.0", forRemoval = true)
 	IScrollBoxWidget createScrollBoxWidget(IDrawable contents, int visibleHeight, int xPos, int yPos);
 
 	/**
 	 * The amount of extra horizontal space that a {@link IScrollBoxWidget} takes up with its scroll bar.
 	 *
 	 * @since 10.33.0
+	 * @deprecated use {@link IRecipeExtrasBuilder#addScrollBoxWidget}
 	 */
+	@Deprecated(since = "10.48.0", forRemoval = true)
 	int getScrollBoxScrollbarExtraWidth();
 
 	/**

@@ -10,43 +10,53 @@ import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.gui.elements.DrawableBlank;
+import mezz.jei.common.gui.elements.DrawableWrappedText;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.FormattedText;
+
+import java.util.List;
 
 public class ScrollBoxRecipeWidget extends AbstractScrollWidget implements IScrollBoxWidget, IJeiInputHandler {
-	private final int visibleHeight;
-	private final int hiddenHeight;
-	private final ImmutableRect2i contentsArea;
-	private final IDrawable contents;
+	private IDrawable contents = DrawableBlank.EMPTY;
 
-	public ScrollBoxRecipeWidget(IDrawable contents, int visibleHeight, int xPos, int yPos) {
-		super(new Rect2i(
-			xPos,
-			yPos,
-			contents.getWidth() + AbstractScrollWidget.getScrollBoxScrollbarExtraWidth(),
-			visibleHeight
-		));
+	public ScrollBoxRecipeWidget(int width, int height, int xPos, int yPos) {
+		super(new Rect2i(xPos, yPos, width, height));
+	}
+
+	@Override
+	public int getContentAreaWidth() {
+		return contentsArea.width();
+	}
+
+	@Override
+	public int getContentAreaHeight() {
+		return contentsArea.height();
+	}
+
+	@Override
+	public IScrollBoxWidget setContents(IDrawable contents) {
 		this.contents = contents;
-		this.visibleHeight = visibleHeight;
-		this.contentsArea = new ImmutableRect2i(
-			0,
-			0,
-			contents.getWidth(),
-			visibleHeight
-		);
-		this.hiddenHeight = Math.max(contents.getHeight() - visibleHeight, 0);
+		return this;
+	}
+
+	@Override
+	public IScrollBoxWidget setContents(List<FormattedText> text) {
+		this.contents = new DrawableWrappedText(text, getContentAreaWidth());
+		return this;
 	}
 
 	@Override
 	protected int getVisibleAmount() {
-		return visibleHeight;
+		return contentsArea.height();
 	}
 
 	@Override
 	protected int getHiddenAmount() {
-		return hiddenHeight;
+		return Math.max(contents.getHeight() - contentsArea.height(), 0);
 	}
 
 	@Override
@@ -57,7 +67,7 @@ public class ScrollBoxRecipeWidget extends AbstractScrollWidget implements IScro
 		ImmutableRect2i scissorArea = MathUtil.transform(contentsArea, pose);
 		enableScissor(scissorArea);
 		poseStack.pushPose();
-		float scrollAmount = hiddenHeight * scrollOffsetY;
+		float scrollAmount = getHiddenAmount() * scrollOffsetY;
 		poseStack.translate(0.0, -scrollAmount, 0.0);
 		try {
 			contents.draw(poseStack);

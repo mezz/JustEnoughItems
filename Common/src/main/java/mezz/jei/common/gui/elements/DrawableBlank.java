@@ -5,6 +5,8 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 
 public record DrawableBlank(int width, int height) implements IDrawableStatic, IDrawableAnimated {
+	public static final DrawableBlank EMPTY = new DrawableBlank(0, 0);
+
 	@Override
 	public int getWidth() {
 		return width;
