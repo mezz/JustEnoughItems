@@ -22,7 +22,7 @@ public abstract class GuiIconToggleButton {
 	public GuiIconToggleButton(IDrawable offIcon, IDrawable onIcon) {
 		this.offIcon = offIcon;
 		this.onIcon = onIcon;
-		this.button = new GuiIconButton(new DrawableBlank(0, 0), b -> {});
+		this.button = new GuiIconButton(DrawableBlank.EMPTY, b -> {});
 		this.area = ImmutableRect2i.EMPTY;
 	}
 
