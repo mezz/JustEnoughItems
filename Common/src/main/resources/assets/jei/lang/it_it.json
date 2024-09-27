@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "Configurazione della JEI",
   "jei.tooltip.show.recipes": "Mostra ricette",
-  "jei.tooltip.show.all.recipes": "Mostra tutte le ricette",
   "jei.tooltip.delete.item": "Clicca per eliminare",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
@@ -26,9 +25,7 @@
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "Oggetti mancanti",
   "jei.tooltip.error.recipe.transfer.inventory.full": "L'inventario è pieno",
-  "jei.tooltip.error.recipe.transfer.unknown": "Errore sconosciuto, consultare i log",
   "jei.tooltip.error.recipe.transfer.no.server": "Nel server deve essere installata la JEI",
-  "jei.tooltip.error.recipe.transfer.disabled": "Nelle configurazioni del server lo spostamento delle ricette della JEI è disabilitato",
   "jei.tooltip.error.recipe.transfer.too.large.player.inventory": "La ricetta è troppo grande per essere fatta in una griglia 2x2.",
   "jei.tooltip.error.crash": "Errore suggerimento, guarda i log",
 
@@ -47,7 +44,7 @@
   "key.jei.previousPage": "Mostra la pagina precedente",
   "key.jei.nextPage": "Mostra la pagina successiva",
   "key.jei.toggleBookmarkOverlay": "Mostra/nascondi ingredienti aggiunto ai segnalibri",
-  
+
   "jei.key.category.recipe.gui": "JEI (Ricette)",
   "key.jei.recipeBack": "Mostra ricetta precedente",
   "key.jei.previousCategory": "Mostra categoria ricetta precedente",
@@ -55,7 +52,7 @@
   "key.jei.previousRecipePage": "Pagina Ricette precedente",
   "key.jei.nextRecipePage": "Pagina Ricette successiva",
 
-  "jei.key.category.cheat.mode": "JEI (Modalità Trucchi)",  
+  "jei.key.category.cheat.mode": "JEI (Modalità Trucchi)",
   "key.jei.toggleCheatMode": "Disabilitare/abilitare la modalità trucchi",
   "key.jei.cheatOneItem": "Ottieni 1 oggetto",
   "key.jei.cheatOneItem2": "Ottieni 1 oggetto",
@@ -64,12 +61,12 @@
 
   "jei.key.category.hover.config.button": "JEI (Tenendo il mouse sopra il pulsante di configurazione)",
   "key.jei.toggleCheatModeConfigButton": "Attiva/Disattiva modalità trucchi",
-  
+
   "jei.key.category.edit.mode": "JEI (Modalità Modifica)",
   "key.jei.toggleEditMode": "Attiva/Disattiva Modalità Nascondi Ingredienti",
   "key.jei.toggleHideIngredient": "Nascondi ingrediente",
   "key.jei.toggleWildcardHideIngredient": "Nascondi ingrediente (wildcard)",
-  
+
   "jei.key.category.mouse.hover": "JEI (Tenendo il mouse sopra)",
   "key.jei.bookmark": "Aggiungi/rimuovi ai segnalibri",
   "key.jei.showRecipe": "Mostra Ricetta",
@@ -110,7 +107,7 @@
   "config.jei.search.tooltipSearchMode.comment": "Modalità di ricerca per suggerimento (prefisso: #)",
   "config.jei.search.tagSearchMode": "$Tag",
   "config.jei.search.tagSearchMode.comment": "Modalità di ricerca per Tag (prefisso: $)",
-  "config.jei.search.creativeTabSearchMode": "%%CreativeTab",
+  "config.jei.search.creativeTabSearchMode": "%%CreativeModeTab",
   "config.jei.search.creativeTabSearchMode.comment": "Modalità di ricerca per i nomi della schermata creativa (prefisso: %)",
   "config.jei.search.colorSearchMode": "^Color",
   "config.jei.search.colorSearchMode.comment": "Modalità di ricerca per colori (prefisso: ^)",
@@ -164,11 +161,19 @@
   "jei.message.copy.recipe.id.success": "ID Ricetta Copiato nella clipboard: %s",
   "jei.message.copy.recipe.id.failure": "Impossibile Copiare l'ID Ricetta nella clipboard, l'ID Ricetta è sconosciuto",
 
-  "_comment": "DEBUG (for debug mode, do not need translation)",
-  "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",
+  "_comment": "Key Names",
+  "jei.key.combo.shift": "SHIFT + %s",
+  "jei.key.combo.control": "CTRL + %s",
+  "jei.key.combo.command": "CMD + %s",
+  "jei.key.combo.alt": "ALT + %s",
+
+  "_comment": "Debug (for a debug mode, do not need translation)",
+  "description.jei.wooden.door.1": "Wooden doors allow you to block monsters from entering your building.\\nTesting sentences.",
   "description.jei.wooden.door.2": "Clicking on a door changes its state from open to closed and vice versa.",
-  "description.jei.wooden.door.3": "Wooden Doors can be opened/closed via Redstone Circuits.",
+  "description.jei.wooden.door.3": "Wooden doors can be opened/closed via redstone circuits.",
   "description.jei.debug.formatting.1": "Testing %s formatting replacements.",
   "description.jei.debug.formatting.2": "Testing %s %s formatting replacements.",
-  "description.jei.debug.formatting.3": "%s nested"
+  "description.jei.debug.formatting.3": "%s nested",
+  "jei.alias.panda.spawn.egg": "endangered",
+  "jei.alias.villager.spawn.egg": "HMMM"
 }
