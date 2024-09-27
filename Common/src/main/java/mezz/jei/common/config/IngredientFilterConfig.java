@@ -24,57 +24,57 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 		modNameSearchMode = search.addEnum(
 			"ModNameSearchMode",
 			SearchMode.REQUIRE_PREFIX,
-			"Search mode for Mod Names (prefix: @)"
+			"Search mode for mod names (prefix: @)."
 		);
 		tooltipSearchMode = search.addEnum(
 			"TooltipSearchMode",
 			SearchMode.ENABLED,
-			"Search mode for Tooltips (prefix: #)"
+			"Search mode for tooltips (prefix: #)."
 		);
 		tagSearchMode = search.addEnum(
 			"TagSearchMode",
 			SearchMode.REQUIRE_PREFIX,
-			"Search mode for Tag Names (prefix: $)"
+			"Search mode for tags (prefix: $)."
 		);
 		colorSearchMode = search.addEnum(
 			"ColorSearchMode",
 			SearchMode.DISABLED,
-			"Search mode for Colors (prefix: ^)"
+			"Search mode for colors (prefix: ^)."
 		);
 		resourceLocationSearchMode = search.addEnum(
 			"ResourceLocationSearchMode",
 			SearchMode.DISABLED,
-			"Search mode for resources locations (prefix: &)"
+			"Search mode for resource IDs (prefix: &)."
 		);
 		creativeTabSearchMode = search.addEnum(
 			"CreativeTabSearchMode",
 			SearchMode.DISABLED,
-			"Search mode for Creative Tabs (prefix: %)"
+			"Search mode for creative mode tab names (prefix: %)."
 		);
 		searchAdvancedTooltips = search.addBoolean(
 			"SearchAdvancedTooltips",
 			false,
-			"Search advanced tooltips (visible with F3+H)"
+			"Search in advanced tooltips (visible with F3 + H)."
 		);
 		searchModIds = search.addBoolean(
 			"SearchModIds",
 			true,
-			"Search mod ids in addition to mod names"
+			"Search mod IDs in addition to mod names."
 		);
 		searchModAliases = search.addBoolean(
 			"SearchModAliases",
 			true,
-			"Search mod aliases (alternative names) that are added by plugins, in addition to mod names"
+			"Search mod aliases (alternative names) that are added by plugins, in addition to mod names."
 		);
 		searchShortModNames = search.addBoolean(
 			"SearchShortModNames",
 			true,
-			"Search by the shorthand first letters of a mod's name"
+			"Search by the shorthand first letters of a mod's name."
 		);
 		searchIngredientAliases = search.addBoolean(
 			"SearchIngredientAliases",
 			true,
-			"Search ingredient aliases (alternative names) that are added by plugins, in addition to ingredient names"
+			"Search ingredient aliases (alternative names) that are added by plugins, in addition to ingredient names."
 		);
 	}
 
