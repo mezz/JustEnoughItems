@@ -5,6 +5,7 @@ import com.mojang.math.Vector4f;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.phys.Vec2;
 
 import java.util.Collection;
@@ -70,6 +71,12 @@ public final class MathUtil {
 	}
 
 	public static ImmutableRect2i centerTextArea(ImmutableRect2i outer, Font fontRenderer, String text) {
+		int width = fontRenderer.width(text);
+		int height = fontRenderer.lineHeight;
+		return centerArea(outer, width, height);
+	}
+
+	public static ImmutableRect2i centerTextArea(ImmutableRect2i outer, Font fontRenderer, FormattedCharSequence text) {
 		int width = fontRenderer.width(text);
 		int height = fontRenderer.lineHeight;
 		return centerArea(outer, width, height);

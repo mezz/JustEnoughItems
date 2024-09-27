@@ -1,20 +1,16 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmithingRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.ISmithingCategoryExtension;
 import mezz.jei.common.util.ErrorUtil;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraft.world.level.block.Blocks;
@@ -23,36 +19,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe>, IExtendableSmithingRecipeCategory {
-	private final IDrawable background;
-	private final IDrawable icon;
-	private final IDrawable recipeArrow;
+public class SmithingRecipeCategory extends AbstractRecipeCategory<UpgradeRecipe> implements IExtendableSmithingRecipeCategory {
 	private final Map<Class<? extends UpgradeRecipe>, ISmithingCategoryExtension<?>> extensions = new HashMap<>();
 
 	public SmithingRecipeCategory(IGuiHelper guiHelper) {
-		background = guiHelper.createBlankDrawable(125, 28);
-		icon = guiHelper.createDrawableItemLike(Blocks.SMITHING_TABLE);
-		recipeArrow = guiHelper.getRecipeArrow();
-	}
-
-	@Override
-	public RecipeType<UpgradeRecipe> getRecipeType() {
-		return RecipeTypes.SMITHING;
-	}
-
-	@Override
-	public Component getTitle() {
-		return Blocks.SMITHING_TABLE.getName();
-	}
-
-	@Override
-	public IDrawable getBackground() {
-		return background;
-	}
-
-	@Override
-	public IDrawable getIcon() {
-		return icon;
+		super(
+			RecipeTypes.SMITHING,
+			Blocks.SMITHING_TABLE.getName(),
+			guiHelper.createDrawableItemLike(Blocks.SMITHING_TABLE),
+			125,
+			28
+		);
 	}
 
 	@Override
@@ -62,13 +39,13 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe>, I
 			return;
 		}
 
-		IRecipeSlotBuilder base = builder.addSlot(RecipeIngredientRole.INPUT, 1, 6)
+		IRecipeSlotBuilder base = builder.addInputSlot(1, 6)
 			.setStandardSlotBackground();
 
-		IRecipeSlotBuilder addition = builder.addSlot(RecipeIngredientRole.INPUT, 50, 6)
+		IRecipeSlotBuilder addition = builder.addInputSlot(50, 6)
 			.setStandardSlotBackground();
 
-		IRecipeSlotBuilder output = builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 6)
+		IRecipeSlotBuilder output = builder.addOutputSlot(108, 6)
 			.setStandardSlotBackground();
 
 		extension.setBase(recipe, base);
@@ -77,8 +54,8 @@ public class SmithingRecipeCategory implements IRecipeCategory<UpgradeRecipe>, I
 	}
 
 	@Override
-	public void draw(UpgradeRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
-		recipeArrow.draw(stack, 79, 6);
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, UpgradeRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+		builder.addRecipeArrow(79, 6);
 	}
 
 	@Override

@@ -87,7 +87,7 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 	}
 
 	@Override
-	public final void draw(PoseStack poseStack, double mouseX, double mouseY) {
+	public final void drawWidget(PoseStack poseStack, double mouseX, double mouseY) {
 		scrollbarBackground.draw(poseStack, scrollArea);
 
 		ImmutableRect2i scrollbarMarkerArea = calculateScrollbarMarkerArea();
