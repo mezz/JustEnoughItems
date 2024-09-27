@@ -39,6 +39,8 @@ public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 			} else {
 				recipeTypes.put(recipeTypeUid, recipeType);
 			}
+			Preconditions.checkArgument(recipeCategory.getWidth() > 0, "Width must be greater than 0");
+			Preconditions.checkArgument(recipeCategory.getHeight() > 0, "Height must be greater than 0");
 		}
 
 		Collections.addAll(this.recipeCategories, recipeCategories);

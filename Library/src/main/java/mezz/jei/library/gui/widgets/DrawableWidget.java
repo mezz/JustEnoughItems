@@ -20,7 +20,7 @@ public class DrawableWidget implements IRecipeWidget {
 	}
 
 	@Override
-	public void draw(PoseStack poseStack, double mouseX, double mouseY) {
+	public void drawWidget(PoseStack poseStack, double mouseX, double mouseY) {
 		drawable.draw(poseStack);
 	}
 }

@@ -55,8 +55,18 @@ public interface IRecipeCategory<T> {
 	 *
 	 * The size of the background determines how recipes are laid out by JEI,
 	 * make sure it is the right size to contains everything being displayed.
+	 *
+	 * @apiNote this became nullable in 10.50.0.
+	 * If the background is null, getWidth() and getHeight() must be overridden
+	 *
+	 * @deprecated you can optionally draw a background image in {@link #draw}, and specify the width and height with {@link #getWidth()} and {@link #getHeight()}
 	 */
-	IDrawable getBackground();
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "10.50.0", forRemoval = true)
+	@Nullable
+	default IDrawable getBackground() {
+		return null;
+	}
 
 	/**
 	 * Returns the width of recipe layouts that are drawn for this recipe category.
@@ -64,7 +74,11 @@ public interface IRecipeCategory<T> {
 	 * @since 10.3.0
 	 */
 	default int getWidth() {
-		return getBackground().getWidth();
+		IDrawable background = getBackground();
+		if (background == null) {
+			throw new IllegalStateException("getWidth() and getHeight() must be overridden if background is null");
+		}
+		return background.getWidth();
 	}
 
 	/**
@@ -73,7 +87,11 @@ public interface IRecipeCategory<T> {
 	 * @since 10.3.0
 	 */
 	default int getHeight() {
-		return getBackground().getHeight();
+		IDrawable background = getBackground();
+		if (background == null) {
+			throw new IllegalStateException("getWidth() and getHeight() must be overridden if background is null");
+		}
+		return background.getHeight();
 	}
 
 	/**
@@ -108,6 +126,21 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @since 10.31.0
 	 */
+	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+		createRecipeExtras(builder, recipe, focuses);
+	}
+
+	/**
+	 * Create per-recipe extras like {@link IRecipeWidget} and {@link IJeiInputHandler}.
+	 *
+	 * These have access to a specific recipe, and will persist as long as a recipe layout is on screen,
+	 * so they can be used for caching and displaying recipe-specific
+	 * information more easily than from the recipe category directly.
+	 *
+	 * @since 10.50.0
+	 * @deprecated use {@link #createRecipeExtras(IRecipeExtrasBuilder, Object, IRecipeSlotsView, IFocusGroup)}
+	 */
+	@Deprecated(since = "10.50.0", forRemoval = true)
 	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IFocusGroup focuses) {
 
 	}

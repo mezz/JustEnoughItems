@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
@@ -12,8 +14,11 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
+import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
+import mezz.jei.api.gui.widgets.ITextWidget;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -23,7 +28,11 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.OffsetDrawable;
+import mezz.jei.common.gui.elements.TextWidget;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.util.LimitedLogger;
@@ -33,8 +42,10 @@ import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RecipeSlots;
 import mezz.jei.library.gui.ingredients.RecipeSlotsView;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
+import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,13 +55,10 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
-public class RecipeLayout<R> implements IRecipeLayoutDrawable {
+public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuilder {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final LimitedLogger LIMITED_LOGGER = new LimitedLogger(LOGGER, Duration.ofSeconds(10));
 	private static final int DEFAULT_RECIPE_BORDER_PADDING = 4;
@@ -69,6 +77,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 	 */
 	@Unmodifiable
 	private final List<IRecipeSlotDrawable> allSlots;
+	private final List<IDrawable> drawables;
 	private final List<ISlottedRecipeWidget> slottedWidgets;
 	private final CycleTicker cycleTicker;
 	private final IFocusGroup focuses;
@@ -116,7 +125,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 		RecipeLayout<T> recipeLayout;
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
-			recipeCategory.createRecipeExtras(builder, recipe, focuses);
 			recipeLayout = builder.buildRecipeLayout(
 				focuses,
 				recipeCategoryDecorators,
@@ -130,6 +138,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 				}
 				recipeLayout.addLegacyRecipeSlots(legacyAdapter.getRecipeSlots().getSlots());
 			}
+			recipeCategory.createRecipeExtras(recipeLayout, recipe, recipeLayout.getRecipeSlotsView(), focuses);
 			return Optional.of(recipeLayout);
 		} catch (RuntimeException | LinkageError e) {
 			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getRecipeType(), e);
@@ -147,25 +156,19 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 		ImmutablePoint2i recipeTransferButtonPos,
 		List<IRecipeSlotDrawable> recipeCategorySlots,
 		List<IRecipeSlotDrawable> allSlots,
-		List<ISlottedRecipeWidget> slottedWidgets,
-		List<IRecipeWidget> widgets,
+		CycleTicker cycleTicker,
 		IFocusGroup focuses,
-		IIngredientManager ingredientManager,
-		List<IJeiInputHandler> inputHandlers,
-		List<IJeiGuiEventListener> guiEventListeners,
-		CycleTicker cycleTicker
+		IIngredientManager ingredientManager
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
-		this.slottedWidgets = Collections.unmodifiableList(slottedWidgets);
+		this.drawables = new ArrayList<>();
+		this.slottedWidgets = new ArrayList<>();
+		this.allWidgets = new ArrayList<>();
+		this.cycleTicker = cycleTicker;
 		this.focuses = focuses;
 		this.ingredientManager = ingredientManager;
-		this.cycleTicker = cycleTicker;
-		this.inputHandler = new RecipeLayoutInputHandler<>(this, inputHandlers, guiEventListeners);
-
-		Set<IRecipeWidget> allWidgets = new HashSet<>(widgets);
-		allWidgets.addAll(slottedWidgets);
-		this.allWidgets = List.copyOf(allWidgets);
+		this.inputHandler = new RecipeLayoutInputHandler<>(this);
 
 		this.recipeCategorySlots = new ArrayList<>(recipeCategorySlots);
 		this.allSlots = new ArrayList<>(allSlots);
@@ -203,6 +206,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 
 	@Override
 	public void drawRecipe(PoseStack poseStack, int mouseX, int mouseY) {
+		@SuppressWarnings("removal")
 		IDrawable background = recipeCategory.getBackground();
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -215,7 +219,9 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 		poseStack.pushPose();
 		{
 			poseStack.translate(area.getX(), area.getY(), 0);
-			background.draw(poseStack);
+			if (background != null) {
+				background.draw(poseStack);
+			}
 
 			// defensive push/pop to protect against recipe categories changing the last pose
 			poseStack.pushPose();
@@ -229,7 +235,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 					poseStack.pushPose();
 					{
 						poseStack.translate(widgetArea.getX(), widgetArea.getY(), 0);
-						widget.draw(poseStack, recipeMouseX, recipeMouseY);
+						widget.drawWidget(poseStack, recipeMouseX - widgetArea.getX(), recipeMouseY - widgetArea.getY());
 					}
 					poseStack.popPose();
 				}
@@ -239,13 +245,25 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 			}
 			poseStack.popPose();
 
+			for (IDrawable drawable : drawables) {
+				// defensive push/pop to protect against recipe category drawables changing the last pose
+				poseStack.pushPose();
+				{
+					drawable.draw(poseStack);
+
+					// rendered text often messes with the color, this clears it
+					RenderSystem.setShaderColor(1, 1, 1, 1);
+				}
+				poseStack.popPose();
+			}
+
 			for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
 				// defensive push/pop to protect against recipe category decorators changing the last pose
 				poseStack.pushPose();
 				{
 					decorator.draw(recipe, recipeCategory, recipeCategorySlotsView, poseStack, recipeMouseX, recipeMouseY);
 
-					// drawExtras and drawInfo often render text which messes with the color, this clears it
+					// rendered text often messes with the color, this clears it
 					RenderSystem.setShaderColor(1, 1, 1, 1);
 				}
 				poseStack.popPose();
@@ -289,6 +307,11 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 				}
 			} catch (RuntimeException e) {
 				LIMITED_LOGGER.log(Level.ERROR, "recipe.category.tooltip.crash", "Error while getting tooltip from recipe category '{}'", recipeCategory.getRecipeType(), e);
+			}
+
+			for (IRecipeWidget widget : allWidgets) {
+				Rect2i widgetArea = widget.getArea();
+				widget.getTooltip(tooltip, recipeMouseX - widgetArea.getX(), recipeMouseY - widgetArea.getY());
 			}
 
 			if (tooltip.isEmpty() && shapelessIcon != null) {
@@ -471,5 +494,77 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 			}
 			recipeCategory.onDisplayedIngredientsUpdate(recipe, recipeCategorySlots, focuses);
 		}
+	}
+
+	@Override
+	public void addDrawable(IDrawable drawable, int xPos, int yPos) {
+		this.drawables.add(OffsetDrawable.create(drawable, xPos, yPos));
+	}
+
+	@Override
+	public void addWidget(IRecipeWidget widget) {
+		this.allWidgets.add(widget);
+		if (widget instanceof ISlottedRecipeWidget slottedWidget) {
+			this.slottedWidgets.add(slottedWidget);
+		}
+	}
+
+	@Override
+	public void addInputHandler(IJeiInputHandler inputHandler) {
+		this.inputHandler.addInputHandler(inputHandler);
+	}
+
+	@Override
+	public void addGuiEventListener(IJeiGuiEventListener guiEventListener) {
+		this.inputHandler.addGuiEventListener(guiEventListener);
+	}
+
+	@Override
+	public IScrollBoxWidget addScrollBoxWidget(int width, int height, int xPos, int yPos) {
+		ScrollBoxRecipeWidget widget = new ScrollBoxRecipeWidget(width, height, xPos, yPos);
+		addWidget(widget);
+		addInputHandler(widget);
+		return widget;
+	}
+
+	@Override
+	public void addRecipeArrow(int xPos, int yPos) {
+		Textures textures = Internal.getTextures();
+		IDrawable drawable = textures.getRecipeArrow();
+		addDrawable(drawable, xPos, yPos);
+	}
+
+	@Override
+	public void addRecipePlusSign(int xPos, int yPos) {
+		Textures textures = Internal.getTextures();
+		IDrawable drawable = textures.getRecipePlusSign();
+		addDrawable(drawable, xPos, yPos);
+	}
+
+	@Override
+	public void addAnimatedRecipeArrow(int ticksPerCycle, int xPos, int yPos) {
+		Textures textures = Internal.getTextures();
+
+		IDrawableStatic recipeArrowFilled = textures.getRecipeArrowFilled();
+		IDrawableAnimated animatedFill = new DrawableAnimated(recipeArrowFilled, ticksPerCycle, IDrawableAnimated.StartDirection.LEFT, false);
+		addDrawable(textures.getRecipeArrow(), xPos, yPos);
+		addDrawable(animatedFill, xPos, yPos);
+	}
+
+	@Override
+	public void addAnimatedRecipeFlame(int cookTime, int xPos, int yPos) {
+		Textures textures = Internal.getTextures();
+
+		IDrawableStatic flameIcon = textures.getFlameIcon();
+		IDrawableAnimated animatedFill = new DrawableAnimated(flameIcon, cookTime, IDrawableAnimated.StartDirection.TOP, true);
+		addDrawable(textures.getFlameEmptyIcon(), xPos, yPos);
+		addDrawable(animatedFill, xPos, yPos);
+	}
+
+	@Override
+	public ITextWidget addText(List<FormattedText> text, int xPos, int yPos, int maxWidth, int maxHeight) {
+		TextWidget textWidget = new TextWidget(text, xPos, yPos, maxWidth, maxHeight);
+		addWidget(textWidget);
+		return textWidget;
 	}
 }

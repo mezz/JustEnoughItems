@@ -10,7 +10,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
@@ -45,7 +45,7 @@ public interface IRecipeCategoryExtension {
 	 * Get the tooltip for whatever is under the mouse.
 	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
 	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltip}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
@@ -60,7 +60,7 @@ public interface IRecipeCategoryExtension {
 	 * Get the tooltip for whatever is under the mouse.
 	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
 	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltip}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.

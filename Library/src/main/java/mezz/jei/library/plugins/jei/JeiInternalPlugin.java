@@ -43,10 +43,9 @@ public class JeiInternalPlugin implements IModPlugin {
 	public void registerCategories(IRecipeCategoryRegistration registration) {
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
-		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		Textures textures = Internal.getTextures();
 
-		registration.addRecipeCategories(new IngredientInfoRecipeCategory(guiHelper, textures));
+		registration.addRecipeCategories(new IngredientInfoRecipeCategory(textures));
 
 		tagInfoRecipeMakers.clear();
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
