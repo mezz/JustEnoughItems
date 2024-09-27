@@ -10,7 +10,7 @@ import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.Rect2i;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeLayoutInputHandler<T> implements IJeiInputHandler {
@@ -19,13 +19,11 @@ public class RecipeLayoutInputHandler<T> implements IJeiInputHandler {
 	private final List<IJeiGuiEventListener> guiEventListeners;
 
 	public RecipeLayoutInputHandler(
-		RecipeLayout<T> recipeLayout,
-		List<IJeiInputHandler> inputHandlers,
-		List<IJeiGuiEventListener> guiEventListeners
+		RecipeLayout<T> recipeLayout
 	) {
 		this.recipeLayout = recipeLayout;
-		this.inputHandlers = Collections.unmodifiableList(inputHandlers);
-		this.guiEventListeners = Collections.unmodifiableList(guiEventListeners);
+		this.inputHandlers = new ArrayList<>();
+		this.guiEventListeners = new ArrayList<>();
 	}
 
 	@Override
@@ -197,5 +195,13 @@ public class RecipeLayoutInputHandler<T> implements IJeiInputHandler {
 				guiEventListener.mouseMoved(relativeMouseX, relativeMouseY);
 			}
 		}
+	}
+
+	public void addInputHandler(IJeiInputHandler inputHandler) {
+		this.inputHandlers.add(inputHandler);
+	}
+
+	public void addGuiEventListener(IJeiGuiEventListener guiEventListener) {
+		this.guiEventListeners.add(guiEventListener);
 	}
 }

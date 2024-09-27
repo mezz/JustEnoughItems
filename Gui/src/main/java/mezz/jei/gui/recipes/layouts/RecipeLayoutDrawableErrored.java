@@ -80,7 +80,14 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 		poseStack.pushPose();
 		{
 			poseStack.translate(area.x(), area.y(), 0);
-			scrollBoxWidget.draw(guiGraphics, mouseX, mouseY);
+			int recipeMouseX = mouseX - area.x();
+			int recipeMouseY = mouseY - area.y();
+			ScreenPosition position = scrollBoxWidget.getPosition();
+			poseStack.pushPose();
+			{
+				poseStack.translate(position.x(), position.y(), 0);
+				scrollBoxWidget.drawWidget(guiGraphics, recipeMouseX - position.x(), recipeMouseY - position.y());
+			}
 		}
 		poseStack.popPose();
 	}

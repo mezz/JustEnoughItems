@@ -7,15 +7,13 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -25,21 +23,22 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BrewingRecipeCategory implements IRecipeCategory<IJeiBrewingRecipe> {
-	private final IDrawable backgroundArea;
-	private final IDrawable backgroundImage;
-	private final IDrawable icon;
-	private final Component localizedName;
+public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRecipe> {
+	private final IDrawable background;
 	private final IDrawableAnimated arrow;
 	private final IDrawableAnimated bubbles;
 	private final IDrawableStatic blazeHeat;
 
 	public BrewingRecipeCategory(IGuiHelper guiHelper) {
-		backgroundArea = guiHelper.createBlankDrawable(114, 61);
+		super(
+			RecipeTypes.BREWING,
+			Component.translatable("gui.jei.category.brewing"),
+			guiHelper.createDrawableItemLike(Blocks.BREWING_STAND),
+			114,
+			61
+		);
 		Textures textures = Internal.getTextures();
-		backgroundImage = textures.getBrewingStandBackground();
-		icon = guiHelper.createDrawableItemLike(Blocks.BREWING_STAND);
-		localizedName = Component.translatable("gui.jei.category.brewing");
+		background = textures.getBrewingStandBackground();
 
 		arrow = guiHelper.createAnimatedDrawable(textures.getBrewingStandArrow(),400, IDrawableAnimated.StartDirection.TOP, false);
 
@@ -50,56 +49,40 @@ public class BrewingRecipeCategory implements IRecipeCategory<IJeiBrewingRecipe>
 	}
 
 	@Override
-	public RecipeType<IJeiBrewingRecipe> getRecipeType() {
-		return RecipeTypes.BREWING;
-	}
-
-	@Override
-	public Component getTitle() {
-		return localizedName;
-	}
-
-	@Override
-	public IDrawable getBackground() {
-		return backgroundArea;
-	}
-
-	@Override
-	public IDrawable getIcon() {
-		return icon;
-	}
-
-	@Override
 	public void draw(IJeiBrewingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		backgroundImage.draw(guiGraphics, 0, 1);
+		background.draw(guiGraphics, 0, 1);
 		blazeHeat.draw(guiGraphics, 5, 30);
 		bubbles.draw(guiGraphics, 9, 1);
 		arrow.draw(guiGraphics, 43, 3);
+	}
 
+	@Override
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiBrewingRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
 		int brewingSteps = recipe.getBrewingSteps();
 		String brewingStepsString = brewingSteps < Integer.MAX_VALUE ? Integer.toString(brewingSteps) : "?";
 		Component steps = Component.translatable("gui.jei.category.brewing.steps", brewingStepsString);
-		Minecraft minecraft = Minecraft.getInstance();
-		guiGraphics.drawString(minecraft.font, steps, 70, 28, 0xFF808080, false);
+
+		builder.addText(steps, 70, 28, 42, 12)
+			.setColor(0xFF808080);
 	}
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, IJeiBrewingRecipe recipe, IFocusGroup focuses) {
 		List<ItemStack> potionInputs = recipe.getPotionInputs();
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 1, 37)
+		builder.addInputSlot(1, 37)
 			.addItemStacks(potionInputs);
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 24, 44)
+		builder.addInputSlot(24, 44)
 			.addItemStacks(potionInputs);
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 47, 37)
+		builder.addInputSlot(47, 37)
 			.addItemStacks(potionInputs);
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 24, 3)
+		builder.addInputSlot(24, 3)
 			.addItemStacks(recipe.getIngredients());
 
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 81, 3)
+		builder.addOutputSlot(81, 3)
 			.addItemStack(recipe.getPotionOutput())
 			.setStandardSlotBackground();
 	}

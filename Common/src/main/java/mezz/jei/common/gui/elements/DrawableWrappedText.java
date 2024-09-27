@@ -2,6 +2,7 @@ package mezz.jei.common.gui.elements;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.util.StringUtil;
+import mezz.jei.core.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,8 +22,10 @@ public class DrawableWrappedText implements IDrawable {
 
 	public DrawableWrappedText(List<FormattedText> text, int maxWidth) {
 		Minecraft minecraft = Minecraft.getInstance();
-		this.lineHeight = minecraft.font.lineHeight + lineSpacing;
-		this.descriptionLines = StringUtil.splitLines(text, maxWidth);
+		Font font = minecraft.font;
+		this.lineHeight = font.lineHeight + lineSpacing;
+		Pair<List<FormattedText>, Boolean> result = StringUtil.splitLines(font, text, maxWidth, Integer.MAX_VALUE);
+		this.descriptionLines = result.first();
 		this.width = maxWidth;
 		this.height = lineHeight * descriptionLines.size() - lineSpacing;
 	}

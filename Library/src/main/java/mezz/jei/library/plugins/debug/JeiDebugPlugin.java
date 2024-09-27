@@ -24,7 +24,9 @@ import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.IPlatformScreenHelper;
@@ -144,11 +146,12 @@ public class JeiDebugPlugin implements IModPlugin {
 			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 			IPlatformFluidHelper<?> platformFluidHelper = jeiHelpers.getPlatformFluidHelper();
 			IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
+			Textures textures = Internal.getTextures();
 			this.debugRecipeCategory = new DebugRecipeCategory<>(guiHelper, platformFluidHelper, ingredientManager);
 			registration.addRecipeCategories(
 				debugRecipeCategory,
-				new DebugFocusRecipeCategory<>(guiHelper, platformFluidHelper),
-				new ObnoxiouslyLargeCategory(guiHelper, ingredientManager)
+				new DebugFocusRecipeCategory<>(platformFluidHelper),
+				new ObnoxiouslyLargeCategory(guiHelper, textures, ingredientManager)
 			);
 		}
 	}

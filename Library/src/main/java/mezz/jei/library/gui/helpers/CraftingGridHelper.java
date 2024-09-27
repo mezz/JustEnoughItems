@@ -57,7 +57,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 
 	@Override
 	public <T> IRecipeSlotBuilder createAndSetOutputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, @Nullable List<@Nullable T> outputs) {
-		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 95, 19)
+		IRecipeSlotBuilder outputSlot = builder.addOutputSlot(95, 19)
 			.setOutputSlotBackground();
 		if (outputs != null) {
 			outputSlot.addIngredients(ingredientType, outputs);

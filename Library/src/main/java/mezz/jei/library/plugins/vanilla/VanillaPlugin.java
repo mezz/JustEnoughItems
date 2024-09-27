@@ -201,7 +201,7 @@ public class VanillaPlugin implements IModPlugin {
 			campfireCategory = new CampfireCookingCategory(guiHelper),
 			smithingCategory = new SmithingRecipeCategory(guiHelper),
 			new CompostableRecipeCategory(guiHelper),
-			new FurnaceFuelCategory(guiHelper, textures),
+			new FurnaceFuelCategory(textures),
 			new BrewingRecipeCategory(guiHelper),
 			new AnvilRecipeCategory(guiHelper)
 		);
