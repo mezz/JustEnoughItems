@@ -84,6 +84,7 @@ public interface IIngredientHelper<V> {
 	 *
 	 * @deprecated use {@link #getGroupingUid} instead
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(since = "19.13.0", forRemoval = true)
 	default String getWildcardId(V ingredient) {
 		return getUniqueId(ingredient, UidContext.Ingredient);

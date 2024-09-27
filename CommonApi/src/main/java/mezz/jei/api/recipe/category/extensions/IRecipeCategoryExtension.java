@@ -6,6 +6,7 @@ import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
@@ -70,6 +71,7 @@ public interface IRecipeCategoryExtension<T> {
 	 * @since 16.0.0
 	 * @deprecated use {@link #getTooltip}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(since = "19.5.4", forRemoval = true)
 	default List<Component> getTooltipStrings(T recipe, double mouseX, double mouseY) {
 		return getTooltipStrings(mouseX, mouseY);
@@ -82,8 +84,23 @@ public interface IRecipeCategoryExtension<T> {
 	 * so they can be used for caching and displaying recipe-specific
 	 * information more easily than from the recipe category directly.
 	 *
-	 * @since 19.6.0
+	 * @since 19.19.0
 	 */
+	default void createRecipeExtras(T recipe, IRecipeExtrasBuilder builder, IRecipeSlotsView recipeSlotsView, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
+		createRecipeExtras(recipe, builder, craftingGridHelper, focuses);
+	}
+
+	/**
+	 * Sets the extras for the recipe category, like input handlers and recipe widgets.
+	 *
+	 * Recipe Widgets persist as long as a recipe layout is on screen,
+	 * so they can be used for caching and displaying recipe-specific
+	 * information more easily than from the recipe category directly.
+	 *
+	 * @since 19.6.0
+	 * @deprecated use {@link #createRecipeExtras(Object, IRecipeExtrasBuilder, IRecipeSlotsView, ICraftingGridHelper, IFocusGroup)}
+	 */
+	@Deprecated(since = "19.19.0", forRemoval = true)
 	default void createRecipeExtras(T recipe, IRecipeExtrasBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
 
 	}

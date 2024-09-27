@@ -15,6 +15,32 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
  */
 public interface IRecipeLayoutBuilder {
 	/**
+	 * Convenience function to add an input slot that will be drawn at the given position relative to the recipe layout.
+	 *
+	 * @param x relative x position of the slot on the recipe layout.
+	 * @param y relative y position of the slot on the recipe layout.
+	 * @return a {@link IRecipeSlotBuilder} that has further methods for adding ingredients, etc.
+	 *
+	 * @since 19.19.0
+	 */
+	default IRecipeSlotBuilder addInputSlot(int x, int y) {
+		return addSlot(RecipeIngredientRole.INPUT, x, y);
+	}
+
+	/**
+	 * Convenience function to add an output slot that will be drawn at the given position relative to the recipe layout.
+	 *
+	 * @param x relative x position of the slot on the recipe layout.
+	 * @param y relative y position of the slot on the recipe layout.
+	 * @return a {@link IRecipeSlotBuilder} that has further methods for adding ingredients, etc.
+	 *
+	 * @since 19.19.0
+	 */
+	default IRecipeSlotBuilder addOutputSlot(int x, int y) {
+		return addSlot(RecipeIngredientRole.OUTPUT, x, y);
+	}
+
+	/**
 	 * Add a slot that will be drawn at the given position relative to the recipe layout.
 	 *
 	 * @param recipeIngredientRole the {@link RecipeIngredientRole} of this slot (for lookups).

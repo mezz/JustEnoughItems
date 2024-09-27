@@ -16,9 +16,8 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableAnimated;
-import mezz.jei.common.gui.elements.DrawableAnimatedRecipeArrow;
-import mezz.jei.common.gui.elements.DrawableAnimatedRecipeFlame;
 import mezz.jei.common.gui.elements.DrawableBlank;
+import mezz.jei.common.gui.elements.DrawableCombined;
 import mezz.jei.common.gui.elements.DrawableIngredient;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
@@ -83,7 +82,8 @@ public class GuiHelper implements IGuiHelper {
 
 	@Override
 	public IDrawableAnimated createAnimatedRecipeArrow(int ticksPerCycle) {
-		return new DrawableAnimatedRecipeArrow(this, ticksPerCycle);
+		IDrawableAnimated animatedFill = createAnimatedDrawable(getRecipeArrowFilled(), ticksPerCycle, IDrawableAnimated.StartDirection.LEFT, false);
+		return new DrawableCombined(getRecipeArrow(), animatedFill);
 	}
 
 	@Override
@@ -106,7 +106,8 @@ public class GuiHelper implements IGuiHelper {
 
 	@Override
 	public IDrawableAnimated createAnimatedRecipeFlame(int ticksPerCycle) {
-		return new DrawableAnimatedRecipeFlame(this, ticksPerCycle);
+		IDrawableAnimated animatedFill = createAnimatedDrawable(getRecipeFlameFilled(), ticksPerCycle, IDrawableAnimated.StartDirection.TOP, true);
+		return new DrawableCombined(getRecipeFlameEmpty(), animatedFill);
 	}
 
 	@Override

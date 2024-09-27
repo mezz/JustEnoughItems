@@ -3,19 +3,15 @@ package mezz.jei.library.plugins.vanilla.anvil;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -25,37 +21,18 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
-	private final IDrawable background;
-	private final IDrawable icon;
-	private final IGuiHelper guiHelper;
-	private final String leftSlotName = "leftSlot";
-	private final String rightSlotName = "rightSlot";
+public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe> {
+	private static final String leftSlotName = "leftSlot";
+	private static final String rightSlotName = "rightSlot";
 
 	public AnvilRecipeCategory(IGuiHelper guiHelper) {
-		background = guiHelper.createBlankDrawable(125, 38);
-		icon = guiHelper.createDrawableItemLike(Blocks.ANVIL);
-		this.guiHelper = guiHelper;
-	}
-
-	@Override
-	public RecipeType<IJeiAnvilRecipe> getRecipeType() {
-		return RecipeTypes.ANVIL;
-	}
-
-	@Override
-	public Component getTitle() {
-		return Blocks.ANVIL.getName();
-	}
-
-	@Override
-	public IDrawable getBackground() {
-		return background;
-	}
-
-	@Override
-	public IDrawable getIcon() {
-		return icon;
+		super(
+			RecipeTypes.ANVIL,
+			Blocks.ANVIL.getName(),
+			guiHelper.createDrawableItemLike(Blocks.ANVIL),
+			125,
+			38
+		);
 	}
 
 	@Override
@@ -64,17 +41,17 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 		List<ItemStack> rightInputs = recipe.getRightInputs();
 		List<ItemStack> outputs = recipe.getOutputs();
 
-		IRecipeSlotBuilder leftInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
+		IRecipeSlotBuilder leftInputSlot = builder.addInputSlot(1, 1)
 			.addItemStacks(leftInputs)
 			.setStandardSlotBackground()
 			.setSlotName(leftSlotName);
 
-		IRecipeSlotBuilder rightInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 50, 1)
+		IRecipeSlotBuilder rightInputSlot = builder.addInputSlot(50, 1)
 			.addItemStacks(rightInputs)
 			.setStandardSlotBackground()
 			.setSlotName(rightSlotName);
 
-		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 108, 1)
+		IRecipeSlotBuilder outputSlot = builder.addOutputSlot(108, 1)
 			.setStandardSlotBackground()
 			.addItemStacks(outputs);
 
@@ -90,10 +67,28 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 	}
 
 	@Override
-	public void draw(IJeiAnvilRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		guiHelper.getRecipePlusSign().draw(guiGraphics, 27, 3);
-		guiHelper.getRecipeArrow().draw(guiGraphics, 76, 1);
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiAnvilRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+		builder.addRecipePlusSign(27, 3);
+		builder.addRecipeArrow(76, 1);
 
+		Integer cost = getCost(recipeSlotsView);
+		if (cost != null) {
+			String costText = cost < 0 ? "err" : Integer.toString(cost);
+			Component text = Component.translatable("container.repair.cost", costText);
+
+			Minecraft minecraft = Minecraft.getInstance();
+			LocalPlayer player = minecraft.player;
+			// Show red if the player doesn't have enough levels
+			int textColor = playerHasEnoughLevels(player, cost) ? 0xFF80FF20 : 0xFFFF6060;
+
+			builder.addText(text, 2, 27, getWidth() - 4, 10)
+				.setColor(textColor)
+				.setShadow(true)
+				.alignHorizontalRight();
+		}
+	}
+
+	private @Nullable Integer getCost(IRecipeSlotsView recipeSlotsView) {
 		Optional<ItemStack> leftStack = recipeSlotsView.findSlotByName(leftSlotName)
 			.flatMap(IRecipeSlotView::getDisplayedItemStack);
 
@@ -101,18 +96,10 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 			.flatMap(IRecipeSlotView::getDisplayedItemStack);
 
 		if (leftStack.isEmpty() || rightStack.isEmpty()) {
-			return;
+			return null;
 		}
 
-		int cost = AnvilRecipeMaker.findLevelsCost(leftStack.get(), rightStack.get());
-		String costText = cost < 0 ? "err" : Integer.toString(cost);
-		String text = I18n.get("container.repair.cost", costText);
-
-		Minecraft minecraft = Minecraft.getInstance();
-		LocalPlayer player = minecraft.player;
-		// Show red if the player doesn't have enough levels
-		int mainColor = playerHasEnoughLevels(player, cost) ? 0xFF80FF20 : 0xFFFF6060;
-		drawRepairCost(minecraft, guiGraphics, text, mainColor);
+		return AnvilRecipeMaker.findLevelsCost(leftStack.get(), rightStack.get());
 	}
 
 	@Override
@@ -128,12 +115,5 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 			return true;
 		}
 		return cost < 40 && cost <= player.experienceLevel;
-	}
-
-	private void drawRepairCost(Minecraft minecraft, GuiGraphics guiGraphics, String text, int mainColor) {
-		int width = minecraft.font.width(text);
-		int x = getWidth() - 2 - width;
-		int y = 27;
-		guiGraphics.drawString(minecraft.font, text, x, y, mainColor);
 	}
 }

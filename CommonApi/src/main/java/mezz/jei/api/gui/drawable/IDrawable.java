@@ -12,7 +12,6 @@ import net.minecraft.client.gui.GuiGraphics;
  *
  * Useful for drawing miscellaneous things like in
  * {@link IRecipeCategory#draw(Object, IRecipeSlotsView, GuiGraphics, double, double)}.
- * {@link IRecipeCategory#getBackground()}
  * {@link IRecipeSlotBuilder#setBackground(IDrawable, int, int)}
  * {@link IRecipeSlotBuilder#setOverlay(IDrawable, int, int)}]
  * and anywhere else things are drawn on the screen.

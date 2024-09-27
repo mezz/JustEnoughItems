@@ -19,7 +19,7 @@ public class DrawableWidget implements IRecipeWidget {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	public void drawWidget(GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		drawable.draw(guiGraphics);
 	}
 }

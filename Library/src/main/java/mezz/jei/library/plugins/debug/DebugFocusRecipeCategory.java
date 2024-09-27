@@ -22,12 +22,10 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 	public static final RecipeType<DebugRecipe> TYPE = RecipeType.create(ModIds.JEI_ID, "debug_focus", DebugRecipe.class);
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
-	private final IDrawable background;
 	private final IPlatformFluidHelper<F> platformFluidHelper;
 	private final Component localizedName;
 
-	public DebugFocusRecipeCategory(IGuiHelper guiHelper, IPlatformFluidHelper<F> platformFluidHelper) {
-		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
+	public DebugFocusRecipeCategory(IPlatformFluidHelper<F> platformFluidHelper) {
 		this.platformFluidHelper = platformFluidHelper;
 		this.localizedName = Component.literal("debug_focus");
 	}
@@ -43,8 +41,13 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 	}
 
 	@Override
-	public IDrawable getBackground() {
-		return background;
+	public int getWidth() {
+		return RECIPE_WIDTH;
+	}
+
+	@Override
+	public int getHeight() {
+		return RECIPE_HEIGHT;
 	}
 
 	@Override
@@ -54,7 +57,7 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, DebugRecipe recipe, IFocusGroup focuses) {
-		IRecipeSlotBuilder inputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 0, 0)
+		IRecipeSlotBuilder inputSlot = builder.addInputSlot(0, 0)
 			.addItemStacks(List.of(
 				new ItemStack(Items.BUCKET),
 				new ItemStack(Items.WATER_BUCKET),
@@ -68,7 +71,7 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 			));
 
 		long bucketVolume = platformFluidHelper.bucketVolume();
-		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 20, 0)
+		IRecipeSlotBuilder outputSlot = builder.addOutputSlot(20, 0)
 			.addItemStack(ItemStack.EMPTY)
 			.addIngredients(platformFluidHelper.getFluidIngredientType(), List.of(
 				platformFluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume),

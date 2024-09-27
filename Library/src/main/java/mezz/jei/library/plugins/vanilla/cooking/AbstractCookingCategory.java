@@ -2,116 +2,95 @@ package mezz.jei.library.plugins.vanilla.cooking;
 
 import com.mojang.serialization.Codec;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
-import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.library.util.RecipeUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
 
-import static mezz.jei.api.recipe.RecipeIngredientRole.*;
-
-public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> implements IRecipeCategory<RecipeHolder<T>> {
-	private final IDrawable background;
-	private final IDrawable icon;
-	private final Component localizedName;
-	protected final IGuiHelper guiHelper;
+public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> extends AbstractRecipeCategory<RecipeHolder<T>> {
 	protected final int regularCookTime;
-	protected final IDrawableAnimated animatedFlame;
 
-	public AbstractCookingCategory(IGuiHelper guiHelper, Block icon, String translationKey, int regularCookTime) {
-		this(guiHelper, icon, translationKey, regularCookTime, 82, 54);
+	public AbstractCookingCategory(IGuiHelper guiHelper, RecipeType<RecipeHolder<T>> recipeType, Block icon, String translationKey, int regularCookTime) {
+		this(guiHelper, recipeType, icon, translationKey, regularCookTime, 82, 54);
 	}
 
-	public AbstractCookingCategory(IGuiHelper guiHelper, Block icon, String translationKey, int regularCookTime, int width, int height) {
-		this.background = guiHelper.createBlankDrawable(width, height);
+	public AbstractCookingCategory(IGuiHelper guiHelper, RecipeType<RecipeHolder<T>> recipeType, Block icon, String translationKey, int regularCookTime, int width, int height) {
+		super(
+			recipeType,
+			Component.translatable(translationKey),
+			guiHelper.createDrawableItemLike(icon),
+			width,
+			height
+		);
 		this.regularCookTime = regularCookTime;
-		this.icon = guiHelper.createDrawableItemLike(icon);
-		this.localizedName = Component.translatable(translationKey);
-		this.guiHelper = guiHelper;
-		this.animatedFlame = guiHelper.createAnimatedRecipeFlame(300);
-	}
-
-	@Override
-	public IDrawable getBackground() {
-		return background;
-	}
-
-	@Override
-	public IDrawable getIcon() {
-		return icon;
-	}
-
-	@Override
-	public void draw(RecipeHolder<T> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		animatedFlame.draw(guiGraphics, 1, 20);
-
-		drawExperience(recipeHolder, guiGraphics, 0);
-		drawCookTime(recipeHolder, guiGraphics, 45);
-	}
-
-	protected void drawExperience(RecipeHolder<T> recipeHolder, GuiGraphics guiGraphics, int y) {
-		T recipe = recipeHolder.value();
-		float experience = recipe.getExperience();
-		if (experience > 0) {
-			Component experienceString = Component.translatable("gui.jei.category.smelting.experience", experience);
-			Minecraft minecraft = Minecraft.getInstance();
-			Font fontRenderer = minecraft.font;
-			int stringWidth = fontRenderer.width(experienceString);
-			guiGraphics.drawString(fontRenderer, experienceString, getWidth() - stringWidth, y, 0xFF808080, false);
-		}
-	}
-
-	protected void drawCookTime(RecipeHolder<T> recipeHolder, GuiGraphics guiGraphics, int y) {
-		T recipe = recipeHolder.value();
-		int cookTime = recipe.getCookingTime();
-		if (cookTime > 0) {
-			int cookTimeSeconds = cookTime / 20;
-			Component timeString = Component.translatable("gui.jei.category.smelting.time.seconds", cookTimeSeconds);
-			Minecraft minecraft = Minecraft.getInstance();
-			Font fontRenderer = minecraft.font;
-			int stringWidth = fontRenderer.width(timeString);
-			guiGraphics.drawString(fontRenderer, timeString, getWidth() - stringWidth, y, 0xFF808080, false);
-		}
-	}
-
-	@Override
-	public Component getTitle() {
-		return localizedName;
 	}
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<T> recipeHolder, IFocusGroup focuses) {
 		T recipe = recipeHolder.value();
 
-		builder.addSlot(INPUT, 1, 1)
+		builder.addInputSlot(1, 1)
 			.setStandardSlotBackground()
 			.addIngredients(recipe.getIngredients().getFirst());
 
-		builder.addSlot(RENDER_ONLY, 1, 37)
+		builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 1, 37)
 			.setStandardSlotBackground();
 
-		builder.addSlot(OUTPUT, 61, 19)
+		builder.addOutputSlot(61, 19)
 			.setOutputSlotBackground()
 			.addItemStack(RecipeUtil.getResultItem(recipe));
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder acceptor, RecipeHolder<T> recipeHolder, IFocusGroup focuses) {
-		acceptor.addWidget(createCookingArrowWidget(recipeHolder, 26, 17));
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, RecipeHolder<T> recipeHolder, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+		T recipe = recipeHolder.value();
+		int cookTime = recipe.getCookingTime();
+		if (cookTime <= 0) {
+			cookTime = regularCookTime;
+		}
+		builder.addAnimatedRecipeArrow(cookTime, 26, 17);
+		builder.addAnimatedRecipeFlame(300, 1, 20);
+
+		addExperience(builder, recipeHolder);
+		addCookTime(builder, recipeHolder);
+	}
+
+	protected void addExperience(IRecipeExtrasBuilder builder, RecipeHolder<T> recipeHolder) {
+		T recipe = recipeHolder.value();
+		float experience = recipe.getExperience();
+		if (experience > 0) {
+			Component experienceString = Component.translatable("gui.jei.category.smelting.experience", experience);
+			builder.addText(experienceString, 20, 0, getWidth() - 20, 10)
+				.alignHorizontalRight()
+				.setColor(0xFF808080);
+		}
+	}
+
+	protected void addCookTime(IRecipeExtrasBuilder builder, RecipeHolder<T> recipeHolder) {
+		T recipe = recipeHolder.value();
+		int cookTime = recipe.getCookingTime();
+		if (cookTime <= 0) {
+			cookTime = regularCookTime;
+		}
+		if (cookTime > 0) {
+			int cookTimeSeconds = cookTime / 20;
+			Component timeString = Component.translatable("gui.jei.category.smelting.time.seconds", cookTimeSeconds);
+			builder.addText(timeString, 20, getHeight() - 10, getWidth() - 20, 10)
+				.alignHorizontalRight()
+				.alignVerticalBottom()
+				.setColor(0xFF808080);
+		}
 	}
 
 	@Override
@@ -128,15 +107,5 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> i
 	@Override
 	public Codec<RecipeHolder<T>> getCodec(ICodecHelper codecHelper, IRecipeManager recipeManager) {
 		return codecHelper.getRecipeHolderCodec();
-	}
-
-	protected IRecipeWidget createCookingArrowWidget(RecipeHolder<T> recipeHolder, int x, int y) {
-		T recipe = recipeHolder.value();
-		int cookTime = recipe.getCookingTime();
-		if (cookTime <= 0) {
-			cookTime = regularCookTime;
-		}
-		IDrawableAnimated recipeArrow = guiHelper.createAnimatedRecipeArrow(cookTime);
-		return guiHelper.createWidgetFromDrawable(recipeArrow, x, y);
 	}
 }
