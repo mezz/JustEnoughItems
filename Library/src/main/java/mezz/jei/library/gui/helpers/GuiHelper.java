@@ -8,7 +8,6 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
-import mezz.jei.api.gui.widgets.IScrollGridWidgetFactory;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -16,9 +15,8 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableAnimated;
-import mezz.jei.common.gui.elements.DrawableAnimatedRecipeArrow;
-import mezz.jei.common.gui.elements.DrawableAnimatedRecipeFlame;
 import mezz.jei.common.gui.elements.DrawableBlank;
+import mezz.jei.common.gui.elements.DrawableCombined;
 import mezz.jei.common.gui.elements.DrawableIngredient;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
@@ -83,7 +81,8 @@ public class GuiHelper implements IGuiHelper {
 
 	@Override
 	public IDrawableAnimated createAnimatedRecipeArrow(int ticksPerCycle) {
-		return new DrawableAnimatedRecipeArrow(this, ticksPerCycle);
+		IDrawableAnimated animatedFill = createAnimatedDrawable(getRecipeArrowFilled(), ticksPerCycle, IDrawableAnimated.StartDirection.LEFT, false);
+		return new DrawableCombined(getRecipeArrow(), animatedFill);
 	}
 
 	@Override
@@ -106,7 +105,8 @@ public class GuiHelper implements IGuiHelper {
 
 	@Override
 	public IDrawableAnimated createAnimatedRecipeFlame(int ticksPerCycle) {
-		return new DrawableAnimatedRecipeFlame(this, ticksPerCycle);
+		IDrawableAnimated animatedFill = createAnimatedDrawable(getRecipeFlameFilled(), ticksPerCycle, IDrawableAnimated.StartDirection.TOP, true);
+		return new DrawableCombined(getRecipeFlameEmpty(), animatedFill);
 	}
 
 	@Override
@@ -145,16 +145,26 @@ public class GuiHelper implements IGuiHelper {
 		return CraftingGridHelper.INSTANCE;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
-	public IScrollGridWidgetFactory<?> createScrollGridFactory(int columns, int visibleRows) {
-		return new ScrollGridWidgetFactory<>(this, columns, visibleRows);
+	public mezz.jei.api.gui.widgets.IScrollGridWidgetFactory<?> createScrollGridFactory(int columns, int visibleRows) {
+		return new ScrollGridWidgetFactory<>(columns, visibleRows);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public IScrollBoxWidget createScrollBoxWidget(IDrawable contents, int visibleHeight, int xPos, int yPos) {
-		return new ScrollBoxRecipeWidget(contents, visibleHeight, xPos, yPos);
+		ScrollBoxRecipeWidget widget = new ScrollBoxRecipeWidget(contents.getWidth() + getScrollBoxScrollbarExtraWidth(), visibleHeight, xPos, yPos);
+		widget.setContents(contents);
+		return widget;
 	}
 
+	@Override
+	public IScrollBoxWidget createScrollBoxWidget(int width, int height, int xPos, int yPos) {
+		return new ScrollBoxRecipeWidget(width, height, xPos, yPos);
+	}
+
+	@SuppressWarnings("removal")
 	@Override
 	public int getScrollBoxScrollbarExtraWidth() {
 		return AbstractScrollWidget.getScrollBoxScrollbarExtraWidth();

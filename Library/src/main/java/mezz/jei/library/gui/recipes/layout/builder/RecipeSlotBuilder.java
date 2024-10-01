@@ -7,7 +7,6 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
-import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -43,14 +42,15 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private final int slotIndex;
 	private ImmutableRect2i rect;
 	private @Nullable RendererOverrides rendererOverrides;
-	private @Nullable IDrawable background;
+	private @Nullable OffsetDrawable background;
 	private @Nullable IDrawable overlay;
 	private @Nullable String slotName;
-	private @Nullable ISlottedWidgetFactory<?> assignedWidgetFactory;
+	@SuppressWarnings("removal")
+	private @Nullable mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> assignedWidgetFactory;
 
-	public RecipeSlotBuilder(IIngredientManager ingredientManager, int slotIndex, RecipeIngredientRole role, int x, int y) {
+	public RecipeSlotBuilder(IIngredientManager ingredientManager, int slotIndex, RecipeIngredientRole role) {
 		this.ingredients = new DisplayIngredientAcceptor(ingredientManager);
-		this.rect = new ImmutableRect2i(x, y, 16, 16);
+		this.rect = new ImmutableRect2i(0, 0, 16, 16);
 		this.role = role;
 		this.slotIndex = slotIndex;
 	}
@@ -107,7 +107,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	public IRecipeSlotBuilder setStandardSlotBackground() {
 		IGuiHelper guiHelper = Internal.getJeiRuntime().getJeiHelpers().getGuiHelper();
 		IDrawableStatic background = guiHelper.getSlotDrawable();
-		this.background = OffsetDrawable.create(background, -1, -1);
+		this.background = new OffsetDrawable(background, -1, -1);
 		return this;
 	}
 
@@ -115,7 +115,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	public IRecipeSlotBuilder setOutputSlotBackground() {
 		IGuiHelper guiHelper = Internal.getJeiRuntime().getJeiHelpers().getGuiHelper();
 		IDrawableStatic background = guiHelper.getOutputSlot();
-		this.background = OffsetDrawable.create(background, -5, -5);
+		this.background = new OffsetDrawable(background, -5, -5);
 		return this;
 	}
 
@@ -123,7 +123,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	public IRecipeSlotBuilder setBackground(IDrawable background, int xOffset, int yOffset) {
 		ErrorUtil.checkNotNull(background, "background");
 
-		this.background = OffsetDrawable.create(background, xOffset, yOffset);
+		this.background = new OffsetDrawable(background, xOffset, yOffset);
 		return this;
 	}
 
@@ -187,15 +187,33 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		return this;
 	}
 
-	public RecipeSlotBuilder assignToWidgetFactory(ISlottedWidgetFactory<?> widgetFactory) {
+	@Override
+	public int getWidth() {
+		return this.rect.width();
+	}
+
+	@Override
+	public int getHeight() {
+		return this.rect.height();
+	}
+
+	@Override
+	public IRecipeSlotBuilder setPosition(int xPos, int yPos) {
+		this.rect = this.rect.setPosition(xPos, yPos);
+		return this;
+	}
+
+	@SuppressWarnings("removal")
+	public RecipeSlotBuilder assignToWidgetFactory(mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> widgetFactory) {
 		ErrorUtil.checkNotNull(widgetFactory, "widgetFactory");
 
 		this.assignedWidgetFactory = widgetFactory;
 		return this;
 	}
 
+	@SuppressWarnings("removal")
 	@Nullable
-	public ISlottedWidgetFactory<?> getAssignedWidget() {
+	public mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> getAssignedWidget() {
 		return assignedWidgetFactory;
 	}
 

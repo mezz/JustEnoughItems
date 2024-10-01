@@ -6,7 +6,7 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
@@ -46,8 +46,18 @@ public interface IRecipeCategory<T> {
 
 	/**
 	 * Returns the drawable background for a single recipe in this category.
+	 *
+	 * @apiNote this became nullable in 15.20.0.
+	 * If the background is null, getWidth() and getHeight() must be overridden
+	 *
+	 * @deprecated you can optionally draw a background image in {@link #draw}, and specify the width and height with {@link #getWidth()} and {@link #getHeight()}
 	 */
-	IDrawable getBackground();
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "15.20.0", forRemoval = true)
+	@Nullable
+	default IDrawable getBackground() {
+		return null;
+	}
 
 	/**
 	 * Returns the width of recipe layouts that are drawn for this recipe category.
@@ -55,8 +65,11 @@ public interface IRecipeCategory<T> {
 	 * @since 11.5.0
 	 */
 	default int getWidth() {
-		return getBackground()
-				.getWidth();
+		IDrawable background = getBackground();
+		if (background == null) {
+			throw new IllegalStateException("getWidth() and getHeight() must be overridden if background is null");
+		}
+		return background.getWidth();
 	}
 
 	/**
@@ -65,8 +78,11 @@ public interface IRecipeCategory<T> {
 	 * @since 11.5.0
 	 */
 	default int getHeight() {
-		return getBackground()
-				.getHeight();
+		IDrawable background = getBackground();
+		if (background == null) {
+			throw new IllegalStateException("getWidth() and getHeight() must be overridden if background is null");
+		}
+		return background.getHeight();
 	}
 
 	/**
@@ -149,7 +165,7 @@ public interface IRecipeCategory<T> {
 	 * Get the tooltip for whatever is under the mouse.
 	 * Ingredient tooltips from recipe slots are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
 	 *
 	 * @param recipe          the current recipe being drawn.
 	 * @param recipeSlotsView a view of the current recipe slots being drawn.
@@ -170,7 +186,7 @@ public interface IRecipeCategory<T> {
 	 * Get the tooltip for whatever is under the mouse.
 	 * Ingredient tooltips from recipe slots are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
 	 *
 	 * @param tooltip         a tooltip builder to add tooltip lines to
 	 * @param recipe          the current recipe being drawn.

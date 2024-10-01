@@ -3,6 +3,8 @@ package mezz.jei.library.gui.recipes.supplier.builder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -13,7 +15,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,7 +123,27 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 		return this;
 	}
 
-	public Collection<ITypedIngredient<?>> getAllIngredients() {
+	@Override
+	public int getWidth() {
+		return 16;
+	}
+
+	@Override
+	public int getHeight() {
+		return 16;
+	}
+
+	@Override
+	public IRecipeSlotBuilder setPosition(int xPos, int yPos) {
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder setPosition(int areaX, int areaY, int areaWidth, int areaHeight, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
+		return this;
+	}
+
+	public List<ITypedIngredient<?>> getAllIngredients() {
 		return this.ingredients.getAllIngredients();
 	}
 }

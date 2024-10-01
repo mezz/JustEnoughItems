@@ -1,20 +1,15 @@
 package mezz.jei.api.gui.widgets;
 
-import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Like {@link IRecipeWidget}, but it also manages {@link IRecipeSlotDrawable}s.
  *
- * These must be created by an {@link ISlottedWidgetFactory}.
- * Pass the factory to {@link IRecipeLayoutBuilder#addSlotToWidget}
- * when creating slots in {@link IRecipeCategory#setRecipe}
- *
- * Once the slots are built, the factory will be called to create your complete {@link ISlottedRecipeWidget}.
+ * Add one to a recipe category by using {@link IRecipeExtrasBuilder#addSlottedWidget(ISlottedRecipeWidget, List)}
  *
  * @since 15.10.0
  */

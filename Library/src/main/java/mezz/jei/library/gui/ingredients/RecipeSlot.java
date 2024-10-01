@@ -18,9 +18,11 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.library.gui.recipes.layout.builder.LegacyTooltipCallbackAdapter;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
@@ -44,7 +46,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private final ICycler cycler;
 	private final List<IRecipeSlotRichTooltipCallback> tooltipCallbacks;
 	private final @Nullable RendererOverrides rendererOverrides;
-	private final @Nullable IDrawable background;
+	private final @Nullable OffsetDrawable background;
 	private final @Nullable IDrawable overlay;
 	private final @Nullable String slotName;
 	private ImmutableRect2i rect;
@@ -74,7 +76,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		List<IRecipeSlotRichTooltipCallback> tooltipCallbacks,
 		List<Optional<ITypedIngredient<?>>> allIngredients,
 		@Nullable List<Optional<ITypedIngredient<?>>> focusedIngredients,
-		@Nullable IDrawable background,
+		@Nullable OffsetDrawable background,
 		@Nullable IDrawable overlay,
 		@Nullable String slotName,
 		@Nullable RendererOverrides rendererOverrides
@@ -352,6 +354,14 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Override
 	public Rect2i getRect() {
 		return rect.toMutable();
+	}
+
+	@Override
+	public Rect2i getAreaIncludingBackground() {
+		if (background == null) {
+			return rect.toMutable();
+		}
+		return MathUtil.union(rect, background.getArea()).toMutable();
 	}
 
 	@Override

@@ -19,7 +19,6 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IBookmarkOverlay;
@@ -55,7 +54,6 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	public static final RecipeType<DebugRecipe> TYPE = RecipeType.create(ModIds.JEI_ID, "debug", DebugRecipe.class);
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
-	private final IDrawable background;
 	private final IPlatformFluidHelper<F> platformFluidHelper;
 	private final IIngredientManager ingredientManager;
 	private final Component localizedName;
@@ -66,7 +64,6 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	private boolean hiddenRecipes;
 
 	public DebugRecipeCategory(IGuiHelper guiHelper, IPlatformFluidHelper<F> platformFluidHelper, IIngredientManager ingredientManager) {
-		this.background = guiHelper.createBlankDrawable(RECIPE_WIDTH, RECIPE_HEIGHT);
 		this.platformFluidHelper = platformFluidHelper;
 		this.ingredientManager = ingredientManager;
 		this.localizedName = Component.literal("debug");
@@ -92,8 +89,13 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public IDrawable getBackground() {
-		return background;
+	public int getWidth() {
+		return RECIPE_WIDTH;
+	}
+
+	@Override
+	public int getHeight() {
+		return RECIPE_HEIGHT;
 	}
 
 	@Override
@@ -135,11 +137,11 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, DebugRecipe recipe, IFocusGroup focuses) {
 		// ITEM type
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 70, 0)
+		builder.addOutputSlot(70, 0)
 			.addItemStack(new ItemStack(Items.FARMLAND))
 			.addItemStack(new ItemStack(Items.BUNDLE));
 
-		builder.addSlot(RecipeIngredientRole.INPUT, 110, 0)
+		builder.addInputSlot(110, 0)
 				.addIngredientsUnsafe(Arrays.asList(new ItemStack(Items.RABBIT), null));
 
 		// FLUID type
@@ -149,7 +151,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 			long capacity = 10 * bucketVolume;
 			// random amount between half capacity and full
 			long amount = (capacity / 2) + (int) ((Math.random() * capacity) / 2);
-			builder.addSlot(RecipeIngredientRole.OUTPUT, 90, 0)
+			builder.addOutputSlot(90, 0)
 				.setFluidRenderer(capacity, false, 16, 58)
 				.setOverlay(tankOverlay, -1, -1)
 				.setBackground(tankBackground, -1, -1)
@@ -160,20 +162,20 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 			long capacity = 2 * bucketVolume;
 			// random amount between half capacity and full
 			long amount = (capacity / 2) + (int) ((Math.random() * capacity) / 2);
-			builder.addSlot(RecipeIngredientRole.INPUT, 24, 0)
+			builder.addInputSlot(24, 0)
 				.setFluidRenderer(capacity, true, 12, 47)
 				.addIngredient(fluidType, platformFluidHelper.create(Fluids.LAVA, amount));
 		}
 
 		// DEBUG type
-		builder.addSlot(RecipeIngredientRole.INPUT, 40, 0)
+		builder.addInputSlot(40, 0)
 			.addIngredients(DebugIngredient.TYPE, List.of(new DebugIngredient(0), new DebugIngredient(1)));
 
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 40, 16)
+		builder.addOutputSlot(40, 16)
 			.addIngredient(DebugIngredient.TYPE, new DebugIngredient(2));
 
 		// mixed types
-		builder.addSlot(RecipeIngredientRole.INPUT, 40, 32)
+		builder.addInputSlot(40, 32)
 			.addIngredient(DebugIngredient.TYPE, new DebugIngredient(3))
 			.addIngredientsUnsafe(List.of(
 				platformFluidHelper.create(Fluids.LAVA, (int) ((1.0 + Math.random()) * bucketVolume)),

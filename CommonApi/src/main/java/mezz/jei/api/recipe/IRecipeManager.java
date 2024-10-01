@@ -158,19 +158,41 @@ public interface IRecipeManager {
 	 * @param role                  the recipe ingredient role of this slot
 	 * @param ingredients           a non-null list of optional ingredients for the slot
 	 * @param focusedIngredients    indexes of the focused ingredients in "ingredients"
+	 * @param ingredientCycleOffset the starting index for cycling the list of ingredients when rendering.
+	 * @since 15.20.0
+	 */
+	IRecipeSlotDrawable createRecipeSlotDrawable(
+		RecipeIngredientRole role,
+		List<Optional<ITypedIngredient<?>>> ingredients,
+		Set<Integer> focusedIngredients,
+		int ingredientCycleOffset
+	);
+
+	/**
+	 * Returns a drawable recipe slot, for addons that want to draw the slots somewhere.
+	 *
+	 * @param role                  the recipe ingredient role of this slot
+	 * @param ingredients           a non-null list of optional ingredients for the slot
+	 * @param focusedIngredients    indexes of the focused ingredients in "ingredients"
 	 * @param xPos                  the x position of the slot on the screen
 	 * @param yPos                  the y position of the slot on the screen
 	 * @param ingredientCycleOffset the starting index for cycling the list of ingredients when rendering.
 	 * @since 11.5.0
+	 * @deprecated use {@link #createRecipeSlotDrawable(RecipeIngredientRole, List, Set, int)} and then set the position
 	 */
-	IRecipeSlotDrawable createRecipeSlotDrawable(
+	@Deprecated(since = "15.20.0")
+	default IRecipeSlotDrawable createRecipeSlotDrawable(
 		RecipeIngredientRole role,
 		List<Optional<ITypedIngredient<?>>> ingredients,
 		Set<Integer> focusedIngredients,
 		int xPos,
 		int yPos,
 		int ingredientCycleOffset
-	);
+	) {
+		IRecipeSlotDrawable recipeSlotDrawable = createRecipeSlotDrawable(role, ingredients, focusedIngredients, ingredientCycleOffset);
+		recipeSlotDrawable.setPosition(xPos, yPos);
+		return recipeSlotDrawable;
+	}
 
 	/**
 	 * Get the registered recipe type for the given unique id.

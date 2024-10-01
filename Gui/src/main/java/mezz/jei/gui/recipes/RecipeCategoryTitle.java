@@ -7,35 +7,44 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.util.FormattedCharSequence;
+
+import javax.annotation.Nullable;
 
 public class RecipeCategoryTitle {
-	private final Component visibleString;
-	private final Component fullString;
+	private final FormattedCharSequence visibleString;
+	private final @Nullable Component tooltipString;
 	private final ImmutableRect2i area;
 
 	public static RecipeCategoryTitle create(IRecipeCategory<?> recipeCategory, Font font, ImmutableRect2i availableArea) {
 		Component fullString = StringUtil.stripStyling(recipeCategory.getTitle());
-		Component visibleString;
+		FormattedCharSequence visibleString;
+		@Nullable Component tooltipString;
 
 		final int availableTitleWidth = availableArea.getWidth();
 		if (font.width(fullString) > availableTitleWidth) {
-			visibleString = StringUtil.truncateStringToWidth(fullString, availableTitleWidth, font);
+			FormattedText formattedText = StringUtil.truncateStringToWidth(fullString, availableTitleWidth, font);
+			visibleString = Language.getInstance().getVisualOrder(formattedText);
+			tooltipString = fullString;
 		} else {
-			visibleString = fullString;
+			visibleString = fullString.getVisualOrderText();
+			tooltipString = null;
 		}
 
 		ImmutableRect2i area = MathUtil.centerTextArea(availableArea, font, visibleString);
-		return new RecipeCategoryTitle(visibleString, fullString, area);
+		return new RecipeCategoryTitle(visibleString, tooltipString, area);
 	}
 
 	public RecipeCategoryTitle() {
-		this(Component.empty(), Component.empty(), ImmutableRect2i.EMPTY);
+		this(FormattedCharSequence.EMPTY, Component.empty(), ImmutableRect2i.EMPTY);
 	}
 
-	public RecipeCategoryTitle(Component visibleString, Component fullString, ImmutableRect2i area) {
+	public RecipeCategoryTitle(FormattedCharSequence visibleString, @Nullable Component tooltipString, ImmutableRect2i area) {
 		this.visibleString = visibleString;
-		this.fullString = fullString;
+		this.tooltipString = tooltipString;
 		this.area = area;
 	}
 
@@ -44,8 +53,8 @@ public class RecipeCategoryTitle {
 	}
 
 	public void getTooltip(JeiTooltip tooltip) {
-		if (!visibleString.equals(fullString)) {
-			tooltip.add(fullString);
+		if (tooltipString != null) {
+			tooltip.add(tooltipString);
 		}
 	}
 

@@ -87,16 +87,17 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	private <T> IRecipeSlotDrawable createSlot(ITypedIngredient<T> typedIngredient, int index, int maxIngredientsPerColumn) {
 		int column = index / maxIngredientsPerColumn;
 		int row = index % maxIngredientsPerColumn;
-		int xPos = left + borderSize + (column * ingredientSize) + ingredientBorderSize;
-		int yPos = top + borderSize + (row * ingredientSize) + ingredientBorderSize;
-		return recipeManager.createRecipeSlotDrawable(
+		IRecipeSlotDrawable recipeSlotDrawable = recipeManager.createRecipeSlotDrawable(
 			RecipeIngredientRole.CATALYST,
 			List.of(Optional.of(typedIngredient)),
 			IntSet.of(0),
-			xPos,
-			yPos,
 			0
 		);
+		recipeSlotDrawable.setPosition(
+			left + borderSize + (column * ingredientSize) + ingredientBorderSize,
+			top + borderSize + (row * ingredientSize) + ingredientBorderSize
+		);
+		return recipeSlotDrawable;
 	}
 
 	public Optional<IRecipeSlotDrawable> draw(GuiGraphics guiGraphics, int mouseX, int mouseY) {
