@@ -9,6 +9,7 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableWrappedText;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -21,7 +22,7 @@ public class ScrollBoxRecipeWidget extends AbstractScrollWidget implements IScro
 	private IDrawable contents = DrawableBlank.EMPTY;
 
 	public ScrollBoxRecipeWidget(int width, int height, int xPos, int yPos) {
-		super(new ScreenRectangle(xPos, yPos, width, height));
+		super(new ImmutableRect2i(xPos, yPos, width, height));
 	}
 
 	@Override

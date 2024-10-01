@@ -55,7 +55,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, RecipeHolder<T> recipeHolder, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, RecipeHolder<T> recipeHolder, IFocusGroup focuses) {
 		T recipe = recipeHolder.value();
 		int cookTime = recipe.getCookingTime();
 		if (cookTime <= 0) {

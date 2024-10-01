@@ -7,6 +7,7 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawablesView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
@@ -15,6 +16,7 @@ import mezz.jei.api.gui.placement.IPlaceable;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
+import mezz.jei.api.gui.widgets.IScrollGridWidget;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
 import mezz.jei.api.gui.widgets.ITextWidget;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -36,6 +38,7 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
+import mezz.jei.library.gui.widgets.ScrollGridRecipeWidget;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.renderer.Rect2i;
@@ -62,7 +65,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	/**
 	 * Slots handled by the recipe category directly.
 	 */
-	@Unmodifiable
 	private final List<IRecipeSlotDrawable> recipeCategorySlots;
 	/**
 	 * All slots, including slots handled by the recipe category and widgets.
@@ -120,7 +122,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 				recipeBackground,
 				recipeBorderPadding
 			);
-			recipeCategory.createRecipeExtras(recipeLayout, recipe, recipeLayout.getRecipeSlotsView(), focuses);
+			recipeCategory.createRecipeExtras(recipeLayout, recipe, focuses);
 			return Optional.of(recipeLayout);
 		} catch (RuntimeException | LinkageError e) {
 			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getRecipeType(), e);
@@ -171,7 +173,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		this.recipeBackground = recipeBackground;
 		this.shapelessIcon = shapelessIcon;
 
-		recipeCategory.onDisplayedIngredientsUpdate(recipe, recipeCategorySlots, focuses);
+		recipeCategory.onDisplayedIngredientsUpdate(recipe, Collections.unmodifiableList(recipeCategorySlots), focuses);
 	}
 
 	@Override
@@ -378,6 +380,11 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
+	public IRecipeSlotDrawablesView getRecipeSlots() {
+		return () -> Collections.unmodifiableList(recipeCategorySlots);
+	}
+
+	@Override
 	public R getRecipe() {
 		return recipe;
 	}
@@ -421,6 +428,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
+	public void addSlottedWidget(ISlottedRecipeWidget widget, List<IRecipeSlotDrawable> slots) {
+		this.allWidgets.add(widget);
+		this.slottedWidgets.add(widget);
+		this.recipeCategorySlots.removeAll(slots);
+	}
+
+	@Override
 	public void addInputHandler(IJeiInputHandler inputHandler) {
 		this.inputHandler.addInputHandler(inputHandler);
 	}
@@ -434,6 +448,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	public IScrollBoxWidget addScrollBoxWidget(int width, int height, int xPos, int yPos) {
 		ScrollBoxRecipeWidget widget = new ScrollBoxRecipeWidget(width, height, xPos, yPos);
 		addWidget(widget);
+		addInputHandler(widget);
+		return widget;
+	}
+
+	@Override
+	public IScrollGridWidget addScrollGridWidget(List<IRecipeSlotDrawable> slots, int columns, int visibleRows) {
+		ScrollGridRecipeWidget widget = ScrollGridRecipeWidget.create(slots, columns, visibleRows);
+		addSlottedWidget(widget, slots);
 		addInputHandler(widget);
 		return widget;
 	}

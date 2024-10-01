@@ -85,9 +85,11 @@ public interface IRecipeCategoryExtension<T> {
 	 * information more easily than from the recipe category directly.
 	 *
 	 * @since 19.19.0
+	 * @deprecated use {@link #createRecipeExtras(Object, IRecipeExtrasBuilder, ICraftingGridHelper, IFocusGroup)}, the recipe slots are in {@link IRecipeExtrasBuilder#getRecipeSlots()} now.
 	 */
+	@Deprecated(since = "19.19.3", forRemoval = true)
 	default void createRecipeExtras(T recipe, IRecipeExtrasBuilder builder, IRecipeSlotsView recipeSlotsView, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
-		createRecipeExtras(recipe, builder, craftingGridHelper, focuses);
+
 	}
 
 	/**
@@ -98,11 +100,10 @@ public interface IRecipeCategoryExtension<T> {
 	 * information more easily than from the recipe category directly.
 	 *
 	 * @since 19.6.0
-	 * @deprecated use {@link #createRecipeExtras(Object, IRecipeExtrasBuilder, IRecipeSlotsView, ICraftingGridHelper, IFocusGroup)}
 	 */
-	@Deprecated(since = "19.19.0", forRemoval = true)
+	@SuppressWarnings("RedundantUnmodifiable")
 	default void createRecipeExtras(T recipe, IRecipeExtrasBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
-
+		createRecipeExtras(recipe, builder, () -> Collections.unmodifiableList(builder.getRecipeSlots().getSlots()), craftingGridHelper, focuses);
 	}
 
 	/**
