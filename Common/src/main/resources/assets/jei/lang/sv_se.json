@@ -171,9 +171,9 @@
   "gui.jei.category.compostable": "Kompostering",
   "gui.jei.category.compostable.chance": "Chans: %s %%",
   "gui.jei.category.itemInformation": "Information",
-  "gui.jei.category.registry.block": "Block",
-  "gui.jei.category.registry.item": "Föremål",
-  "gui.jei.category.registry.fluid": "Vätska",
+  "gui.jei.category.tagInformation.block": "Block taggar",
+  "gui.jei.category.tagInformation.fluid": "Vätska taggar",
+  "gui.jei.category.tagInformation.item": "Föremål taggar",
   "gui.jei.category.tagInformation": "%s taggar",
 
   "_comment": "Messages",

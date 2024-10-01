@@ -78,9 +78,9 @@
   "gui.jei.category.compostable": "Compostável",
   "gui.jei.category.compostable.chance": "Probabilidade: %s%%",
   "gui.jei.category.itemInformation": "Informação",
-  "gui.jei.category.registry.block": "Bloco",
-  "gui.jei.category.registry.item": "Item",
-  "gui.jei.category.registry.fluid": "Fluído",
+  "gui.jei.category.tagInformation.block": "Bloco Etiquetas",
+  "gui.jei.category.tagInformation.fluid": "Fluído Etiquetas",
+  "gui.jei.category.tagInformation.item": "Item Etiquetas",
   "gui.jei.category.tagInformation": "%s Etiquetas",
 
   "_comment": "Key Names",

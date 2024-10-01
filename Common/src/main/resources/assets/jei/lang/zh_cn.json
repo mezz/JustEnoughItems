@@ -173,9 +173,9 @@
   "gui.jei.category.compostable": "堆肥",
   "gui.jei.category.compostable.chance": "概率：%s%%",
   "gui.jei.category.itemInformation": "信息",
-  "gui.jei.category.registry.block": "方块",
-  "gui.jei.category.registry.item": "物品",
-  "gui.jei.category.registry.fluid": "液体",
+  "gui.jei.category.tagInformation.block": "方块 标签",
+  "gui.jei.category.tagInformation.fluid": "液体 标签",
+  "gui.jei.category.tagInformation.item": "物品 标签",
   "gui.jei.category.tagInformation": "%s 标签",
 
   "_comment": "Messages",

@@ -174,10 +174,10 @@
   "gui.jei.category.compostable": "Composting",
   "gui.jei.category.compostable.chance": "Chance: %s%%",
   "gui.jei.category.itemInformation": "Information",
-  "gui.jei.category.registry.block": "Block",
-  "gui.jei.category.registry.item": "Item",
-  "gui.jei.category.registry.fluid": "Fluid",
   "gui.jei.category.tagInformation": "%s Tags",
+  "gui.jei.category.tagInformation.block": "Block Tags",
+  "gui.jei.category.tagInformation.fluid": "Fluid Tags",
+  "gui.jei.category.tagInformation.item": "Item Tags",
   "gui.jei.category.recipe.crashed": "This recipe crashed. Please see the client logs for details.",
 
   "_comment": "Messages",
