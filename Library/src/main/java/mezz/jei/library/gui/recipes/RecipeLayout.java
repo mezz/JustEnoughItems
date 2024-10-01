@@ -11,6 +11,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.gui.placement.IPlaceable;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
@@ -24,6 +25,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableAnimated;
+import mezz.jei.common.gui.elements.DrawableCombined;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.gui.elements.TextWidget;
@@ -404,6 +406,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
+	public IPlaceable<?> addDrawable(IDrawable drawable) {
+		OffsetDrawable offsetDrawable = new OffsetDrawable(drawable, 0, 0);
+		this.drawables.add(offsetDrawable);
+		return offsetDrawable;
+	}
+
+	@Override
 	public void addWidget(IRecipeWidget widget) {
 		this.allWidgets.add(widget);
 		if (widget instanceof ISlottedRecipeWidget slottedWidget) {
@@ -430,42 +439,45 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
-	public void addRecipeArrow(int xPos, int yPos) {
+	public IPlaceable<?> addRecipeArrow() {
 		Textures textures = Internal.getTextures();
 		IDrawable drawable = textures.getRecipeArrow();
-		addDrawable(drawable, xPos, yPos);
+		return addDrawable(drawable);
 	}
 
 	@Override
-	public void addRecipePlusSign(int xPos, int yPos) {
+	public IPlaceable<?> addRecipePlusSign() {
 		Textures textures = Internal.getTextures();
 		IDrawable drawable = textures.getRecipePlusSign();
-		addDrawable(drawable, xPos, yPos);
+		return addDrawable(drawable);
 	}
 
 	@Override
-	public void addAnimatedRecipeArrow(int ticksPerCycle, int xPos, int yPos) {
+	public IPlaceable<?> addAnimatedRecipeArrow(int ticksPerCycle) {
 		Textures textures = Internal.getTextures();
 
 		IDrawableStatic recipeArrowFilled = textures.getRecipeArrowFilled();
-		IDrawableAnimated animatedFill = new DrawableAnimated(recipeArrowFilled, ticksPerCycle, IDrawableAnimated.StartDirection.LEFT, false);
-		addDrawable(textures.getRecipeArrow(), xPos, yPos);
-		addDrawable(animatedFill, xPos, yPos);
+		IDrawable animatedFill = new DrawableAnimated(recipeArrowFilled, ticksPerCycle, IDrawableAnimated.StartDirection.LEFT, false);
+		IDrawable drawableCombined = new DrawableCombined(textures.getRecipeArrow(), animatedFill);
+		OffsetDrawable offsetDrawable = new OffsetDrawable(drawableCombined, 0, 0);
+		return addDrawable(offsetDrawable);
 	}
 
 	@Override
-	public void addAnimatedRecipeFlame(int cookTime, int xPos, int yPos) {
+	public IPlaceable<?> addAnimatedRecipeFlame(int cookTime) {
 		Textures textures = Internal.getTextures();
 
 		IDrawableStatic flameIcon = textures.getFlameIcon();
 		IDrawableAnimated animatedFill = new DrawableAnimated(flameIcon, cookTime, IDrawableAnimated.StartDirection.TOP, true);
-		addDrawable(textures.getFlameEmptyIcon(), xPos, yPos);
-		addDrawable(animatedFill, xPos, yPos);
+
+		IDrawable drawableCombined = new DrawableCombined(textures.getFlameEmptyIcon(), animatedFill);
+		OffsetDrawable offsetDrawable = new OffsetDrawable(drawableCombined, 0, 0);
+		return addDrawable(offsetDrawable);
 	}
 
 	@Override
-	public ITextWidget addText(List<FormattedText> text, int xPos, int yPos, int maxWidth, int maxHeight) {
-		TextWidget textWidget = new TextWidget(text, xPos, yPos, maxWidth, maxHeight);
+	public ITextWidget addText(List<FormattedText> text, int maxWidth, int maxHeight) {
+		TextWidget textWidget = new TextWidget(text, 0, 0, maxWidth, maxHeight);
 		addWidget(textWidget);
 		return textWidget;
 	}

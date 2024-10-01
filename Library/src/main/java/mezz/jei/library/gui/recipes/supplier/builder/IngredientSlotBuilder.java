@@ -3,6 +3,8 @@ package mezz.jei.library.gui.recipes.supplier.builder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -118,6 +120,26 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 
 	@Override
 	public IRecipeSlotBuilder setSlotName(String slotName) {
+		return this;
+	}
+
+	@Override
+	public int getWidth() {
+		return 16;
+	}
+
+	@Override
+	public int getHeight() {
+		return 16;
+	}
+
+	@Override
+	public IRecipeSlotBuilder setPosition(int xPos, int yPos) {
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder setPosition(int areaX, int areaY, int areaWidth, int areaHeight, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
 		return this;
 	}
 

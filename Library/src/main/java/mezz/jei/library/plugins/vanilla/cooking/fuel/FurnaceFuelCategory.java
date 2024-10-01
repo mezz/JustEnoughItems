@@ -3,6 +3,8 @@ package mezz.jei.library.plugins.vanilla.cooking.fuel;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
@@ -47,12 +49,14 @@ public class FurnaceFuelCategory extends AbstractRecipeCategory<IJeiFuelingRecip
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiFuelingRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
 		int burnTime = recipe.getBurnTime();
-		builder.addAnimatedRecipeFlame(burnTime, 1, 0);
+		builder.addAnimatedRecipeFlame(burnTime)
+			.setPosition(1, 0);
 
 		Component smeltCountText = createSmeltCountText(burnTime);
-		builder.addText(smeltCountText, 20, 0, getWidth() - 20, getHeight())
-			.alignHorizontalCenter()
-			.alignVerticalCenter()
+		builder.addText(smeltCountText, getWidth() - 20, getHeight())
+			.setPosition(20, 0)
+			.setTextAlignment(HorizontalAlignment.CENTER)
+			.setTextAlignment(VerticalAlignment.CENTER)
 			.setColor(0xFF808080);
 	}
 

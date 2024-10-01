@@ -3,6 +3,8 @@ package mezz.jei.library.plugins.vanilla.compostable;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -35,9 +37,10 @@ public class CompostableRecipeCategory extends AbstractRecipeCategory<IJeiCompos
 		float chance = recipe.getChance();
 		int chancePercent = (int) Math.floor(chance * 100);
 		Component text = Component.translatable("gui.jei.category.compostable.chance", chancePercent);
-		builder.addText(text, 24, 0, getWidth() - 24, getHeight())
-			.alignVerticalCenter()
-			.alignHorizontalCenter()
+		builder.addText(text, getWidth() - 24, getHeight())
+			.setPosition(24, 0)
+			.setTextAlignment(HorizontalAlignment.CENTER)
+			.setTextAlignment(VerticalAlignment.CENTER)
 			.setColor(0xFF808080);
 	}
 

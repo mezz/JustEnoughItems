@@ -3,6 +3,8 @@ package mezz.jei.library.plugins.vanilla.cooking;
 import com.mojang.serialization.Codec;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -59,8 +61,10 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		if (cookTime <= 0) {
 			cookTime = regularCookTime;
 		}
-		builder.addAnimatedRecipeArrow(cookTime, 26, 17);
-		builder.addAnimatedRecipeFlame(300, 1, 20);
+		builder.addAnimatedRecipeArrow(cookTime)
+			.setPosition(26, 17);
+		builder.addAnimatedRecipeFlame(300)
+			.setPosition(1, 20);
 
 		addExperience(builder, recipeHolder);
 		addCookTime(builder, recipeHolder);
@@ -71,8 +75,9 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		float experience = recipe.getExperience();
 		if (experience > 0) {
 			Component experienceString = Component.translatable("gui.jei.category.smelting.experience", experience);
-			builder.addText(experienceString, 20, 0, getWidth() - 20, 10)
-				.alignHorizontalRight()
+			builder.addText(experienceString, getWidth() - 20, 10)
+				.setPosition(0, 0, getWidth(), getHeight(), HorizontalAlignment.RIGHT, VerticalAlignment.TOP)
+				.setTextAlignment(HorizontalAlignment.RIGHT)
 				.setColor(0xFF808080);
 		}
 	}
@@ -86,9 +91,10 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		if (cookTime > 0) {
 			int cookTimeSeconds = cookTime / 20;
 			Component timeString = Component.translatable("gui.jei.category.smelting.time.seconds", cookTimeSeconds);
-			builder.addText(timeString, 20, getHeight() - 10, getWidth() - 20, 10)
-				.alignHorizontalRight()
-				.alignVerticalBottom()
+			builder.addText(timeString, getWidth() - 20, 10)
+				.setPosition(0, 0, getWidth(), getHeight(), HorizontalAlignment.RIGHT, VerticalAlignment.BOTTOM)
+				.setTextAlignment(HorizontalAlignment.RIGHT)
+				.setTextAlignment(VerticalAlignment.BOTTOM)
 				.setColor(0xFF808080);
 		}
 	}
