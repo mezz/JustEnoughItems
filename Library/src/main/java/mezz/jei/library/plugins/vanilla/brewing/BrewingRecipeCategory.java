@@ -66,7 +66,8 @@ public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRec
 		}
 		Component steps = new TranslatableComponent("gui.jei.category.brewing.steps", brewingStepsString);
 
-		builder.addText(steps, 70, 28, 42, 12)
+		builder.addText(steps, 42, 12)
+			.setPosition(70, 28)
 			.setColor(0xFF808080);
 	}
 

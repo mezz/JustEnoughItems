@@ -5,6 +5,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -69,8 +70,8 @@ public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe>
 
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiAnvilRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
-		builder.addRecipePlusSign(27, 3);
-		builder.addRecipeArrow(76, 1);
+		builder.addRecipePlusSign().setPosition(27, 3);
+		builder.addRecipeArrow().setPosition(76, 1);
 
 		Integer cost = getCost(recipeSlotsView);
 		if (cost != null) {
@@ -92,10 +93,11 @@ public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe>
 				textColor = 0xFFFF6060;
 			}
 
-			builder.addText(text, 2, 27, getWidth() - 4, 10)
+			builder.addText(text, getWidth() - 4, 10)
+				.setPosition(2, 27)
 				.setColor(textColor)
 				.setShadow(true)
-				.alignHorizontalRight();
+				.setTextAlignment(HorizontalAlignment.RIGHT);
 		}
 	}
 

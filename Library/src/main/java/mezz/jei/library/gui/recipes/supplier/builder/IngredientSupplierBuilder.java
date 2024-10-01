@@ -36,6 +36,16 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 	}
 
 	@Override
+	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role) {
+		IngredientSlotBuilder slot = ingredientSlotBuilders.get(role);
+		if (slot == null) {
+			slot = new IngredientSlotBuilder(ingredientManager);
+			ingredientSlotBuilders.put(role, slot);
+		}
+		return slot;
+	}
+
+	@Override
 	public IRecipeSlotBuilder addSlotToWidget(RecipeIngredientRole role, ISlottedWidgetFactory<?> widgetFactory) {
 		return addSlot(role, 0, 0);
 	}
