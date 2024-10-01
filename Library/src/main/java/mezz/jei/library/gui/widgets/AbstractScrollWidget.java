@@ -30,7 +30,7 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 		);
 	}
 
-	protected final Rect2i area;
+	protected ImmutableRect2i area;
 	protected final ImmutableRect2i contentsArea;
 
 	private final ImmutableRect2i scrollArea;
@@ -45,7 +45,7 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 	 */
 	private float scrollOffsetY = 0;
 
-	public AbstractScrollWidget(Rect2i area) {
+	public AbstractScrollWidget(ImmutableRect2i area) {
 		this.area = area;
 		this.scrollArea = calculateScrollArea(area.getWidth(), area.getHeight());
 		Textures textures = Internal.getTextures();
@@ -83,7 +83,7 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 
 	@Override
 	public final Rect2i getArea() {
-		return area;
+		return area.toMutable();
 	}
 
 	@Override

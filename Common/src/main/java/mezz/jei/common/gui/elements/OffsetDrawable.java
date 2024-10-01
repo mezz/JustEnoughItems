@@ -3,6 +3,7 @@ package mezz.jei.common.gui.elements;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.placement.IPlaceable;
+import mezz.jei.common.util.ImmutableRect2i;
 
 /**
  * Draws with a built-in offset.
@@ -54,5 +55,9 @@ public class OffsetDrawable implements IDrawable, IPlaceable<OffsetDrawable> {
 		this.xOffset = xPos;
 		this.yOffset = yPos;
 		return this;
+	}
+
+	public ImmutableRect2i getArea() {
+		return new ImmutableRect2i(xOffset, yOffset, getWidth(), getHeight());
 	}
 }

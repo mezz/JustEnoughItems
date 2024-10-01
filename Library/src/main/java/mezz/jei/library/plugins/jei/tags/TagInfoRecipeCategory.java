@@ -1,11 +1,12 @@
 package mezz.jei.library.plugins.jei.tags;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawablesView;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
-import mezz.jei.api.gui.widgets.IScrollGridWidgetFactory;
+import mezz.jei.api.gui.widgets.IScrollGridWidget;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -14,9 +15,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
@@ -30,8 +29,6 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 	private static final int WIDTH = 142;
 	private static final int HEIGHT = 110;
 
-	private final IScrollGridWidgetFactory<?> scrollGridFactory;
-
 	public TagInfoRecipeCategory(IGuiHelper guiHelper, T recipeType, ResourceLocation registryLocation) {
 		super(
 			recipeType,
@@ -39,13 +36,6 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 			guiHelper.createDrawableItemLike(Items.NAME_TAG),
 			WIDTH,
 			HEIGHT
-		);
-
-		this.scrollGridFactory = guiHelper.createScrollGridFactory(7, 5);
-		Rect2i gridArea = this.scrollGridFactory.getArea();
-		this.scrollGridFactory.setPosition(
-			(WIDTH - gridArea.getWidth()) / 2,
-			20
 		);
 	}
 
@@ -56,19 +46,18 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, R recipe, IFocusGroup focuses) {
-		Rect2i gridArea = scrollGridFactory.getArea();
-		builder.addInputSlot(gridArea.getX() + 1, 1)
+		builder.addInputSlot()
 			.addTypedIngredients(recipe.getTypedIngredients())
 			.setStandardSlotBackground();
 
 		for (ITypedIngredient<?> stack : recipe.getTypedIngredients()) {
-			builder.addSlotToWidget(RecipeIngredientRole.OUTPUT, scrollGridFactory)
+			builder.addOutputSlot()
 				.addTypedIngredient(stack);
 		}
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, R recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, R recipe, IFocusGroup focuses) {
 		TagKey<?> tag = recipe.getTag();
 
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
@@ -83,6 +72,16 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 			.setLineSpacing(0)
 			.setTextAlignment(VerticalAlignment.CENTER)
 			.setTextAlignment(HorizontalAlignment.CENTER);
+
+		IRecipeSlotDrawablesView recipeSlots = builder.getRecipeSlots();
+		List<IRecipeSlotDrawable> outputSlots = recipeSlots.getSlots(RecipeIngredientRole.OUTPUT);
+
+		IScrollGridWidget scrollGridWidget = builder.addScrollGridWidget(outputSlots, 7, 5);
+		scrollGridWidget.setPosition(0, 0, getWidth(), getHeight(), HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM);
+
+		IRecipeSlotDrawable inputSlot = recipeSlots.getSlots(RecipeIngredientRole.INPUT)
+			.get(0);
+		inputSlot.setPosition(scrollGridWidget.getArea().getX() + 1, 1);
 	}
 
 	@Override

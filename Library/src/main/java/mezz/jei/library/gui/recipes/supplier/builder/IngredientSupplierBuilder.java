@@ -3,7 +3,6 @@ package mezz.jei.library.gui.recipes.supplier.builder;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.gui.recipes.RecipeLayoutIngredientSupplier;
@@ -27,12 +26,7 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 
 	@Override
 	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role, int x, int y) {
-		IngredientSlotBuilder slot = ingredientSlotBuilders.get(role);
-		if (slot == null) {
-			slot = new IngredientSlotBuilder(ingredientManager);
-			ingredientSlotBuilders.put(role, slot);
-		}
-		return slot;
+		return addSlot(role);
 	}
 
 	@Override
@@ -45,14 +39,15 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 		return slot;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
-	public IRecipeSlotBuilder addSlotToWidget(RecipeIngredientRole role, ISlottedWidgetFactory<?> widgetFactory) {
-		return addSlot(role, 0, 0);
+	public IRecipeSlotBuilder addSlotToWidget(RecipeIngredientRole role, mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> widgetFactory) {
+		return addSlot(role);
 	}
 
 	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
-		return addSlot(role, 0, 0);
+		return addSlot(role);
 	}
 
 	@Override

@@ -33,7 +33,7 @@ public class CompostableRecipeCategory extends AbstractRecipeCategory<IJeiCompos
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiCompostingRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiCompostingRecipe recipe, IFocusGroup focuses) {
 		float chance = recipe.getChance();
 		int chancePercent = (int) Math.floor(chance * 100);
 		Component text = Component.translatable("gui.jei.category.compostable.chance", chancePercent);

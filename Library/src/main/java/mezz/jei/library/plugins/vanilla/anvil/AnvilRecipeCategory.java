@@ -3,6 +3,7 @@ package mezz.jei.library.plugins.vanilla.anvil;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawablesView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
@@ -68,11 +69,11 @@ public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe>
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiAnvilRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiAnvilRecipe recipe, IFocusGroup focuses) {
 		builder.addRecipePlusSign().setPosition(27, 3);
 		builder.addRecipeArrow().setPosition(76, 1);
 
-		Integer cost = getCost(recipeSlotsView);
+		Integer cost = getCost(builder.getRecipeSlots());
 		if (cost != null) {
 			String costText = cost < 0 ? "err" : Integer.toString(cost);
 			Component text = Component.translatable("container.repair.cost", costText);
@@ -90,7 +91,7 @@ public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe>
 		}
 	}
 
-	private @Nullable Integer getCost(IRecipeSlotsView recipeSlotsView) {
+	private @Nullable Integer getCost(IRecipeSlotDrawablesView recipeSlotsView) {
 		Optional<ItemStack> leftStack = recipeSlotsView.findSlotByName(leftSlotName)
 			.flatMap(IRecipeSlotView::getDisplayedItemStack);
 

@@ -24,7 +24,7 @@ public class ScrollBoxRecipeWidget extends AbstractScrollWidget implements IScro
 	private IDrawable contents = DrawableBlank.EMPTY;
 
 	public ScrollBoxRecipeWidget(int width, int height, int xPos, int yPos) {
-		super(new Rect2i(xPos, yPos, width, height));
+		super(new ImmutableRect2i(xPos, yPos, width, height));
 	}
 
 	@Override

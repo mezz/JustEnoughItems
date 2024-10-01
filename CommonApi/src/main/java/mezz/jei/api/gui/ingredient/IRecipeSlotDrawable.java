@@ -115,4 +115,12 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 */
 	@Deprecated(since = "11.30.1", forRemoval = true)
 	void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback);
+
+	/**
+	 * Get the area that this recipe slot draws on, including the area covered by its background texture.
+	 * Useful for laying out other recipe elements relative to the slot.
+	 *
+	 * @since 11.38.3
+	 */
+	Rect2i getAreaIncludingBackground();
 }

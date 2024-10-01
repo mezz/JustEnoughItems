@@ -47,7 +47,7 @@ public class FurnaceFuelCategory extends AbstractRecipeCategory<IJeiFuelingRecip
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiFuelingRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiFuelingRecipe recipe, IFocusGroup focuses) {
 		int burnTime = recipe.getBurnTime();
 		builder.addAnimatedRecipeFlame(burnTime)
 			.setPosition(1, 0);
