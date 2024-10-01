@@ -32,8 +32,10 @@ public class CampfireCookingCategory extends AbstractCookingCategory<CampfireCoo
 		if (cookTime <= 0) {
 			cookTime = regularCookTime;
 		}
-		builder.addAnimatedRecipeArrow(cookTime, 26, 7);
-		builder.addAnimatedRecipeFlame(300, 1, 20);
+		builder.addAnimatedRecipeArrow(cookTime)
+			.setPosition(26, 7);
+		builder.addAnimatedRecipeFlame(300)
+			.setPosition(1, 20);
 
 		addCookTime(builder, recipe);
 	}

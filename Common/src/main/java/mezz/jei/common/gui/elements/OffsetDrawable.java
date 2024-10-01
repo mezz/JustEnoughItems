@@ -1,12 +1,13 @@
 package mezz.jei.common.gui.elements;
 
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.placement.IPlaceable;
+import net.minecraft.client.gui.GuiGraphics;
 
 /**
  * Draws with a built-in offset.
  */
-public class OffsetDrawable implements IDrawable {
+public class OffsetDrawable implements IDrawable, IPlaceable<OffsetDrawable> {
 	public static IDrawable create(IDrawable drawable, int xOffset, int yOffset) {
 		if (xOffset == 0 && yOffset == 0) {
 			return drawable;
@@ -15,10 +16,10 @@ public class OffsetDrawable implements IDrawable {
 	}
 
 	private final IDrawable drawable;
-	private final int xOffset;
-	private final int yOffset;
+	private int xOffset;
+	private int yOffset;
 
-	private OffsetDrawable(IDrawable drawable, int xOffset, int yOffset) {
+	public OffsetDrawable(IDrawable drawable, int xOffset, int yOffset) {
 		this.drawable = drawable;
 		this.xOffset = xOffset;
 		this.yOffset = yOffset;
@@ -46,5 +47,12 @@ public class OffsetDrawable implements IDrawable {
 	@Override
 	public void draw(GuiGraphics guiGraphics) {
 		this.drawable.draw(guiGraphics, this.xOffset, this.yOffset);
+	}
+
+	@Override
+	public OffsetDrawable setPosition(int xPos, int yPos) {
+		this.xOffset = xPos;
+		this.yOffset = yPos;
+		return this;
 	}
 }

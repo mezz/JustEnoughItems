@@ -1,5 +1,6 @@
 package mezz.jei.api.gui.builder;
 
+import mezz.jei.api.gui.placement.IPlaceable;
 import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -24,7 +25,8 @@ public interface IRecipeLayoutBuilder {
 	 * @since 15.20.0
 	 */
 	default IRecipeSlotBuilder addInputSlot(int x, int y) {
-		return addSlot(RecipeIngredientRole.INPUT, x, y);
+		return addSlot(RecipeIngredientRole.INPUT)
+			.setPosition(x, y);
 	}
 
 	/**
@@ -37,20 +39,34 @@ public interface IRecipeLayoutBuilder {
 	 * @since 15.20.0
 	 */
 	default IRecipeSlotBuilder addOutputSlot(int x, int y) {
-		return addSlot(RecipeIngredientRole.OUTPUT, x, y);
+		return addSlot(RecipeIngredientRole.OUTPUT)
+			.setPosition(x, y);
 	}
 
 	/**
 	 * Add a slot that will be drawn at the given position relative to the recipe layout.
 	 *
-	 * @param recipeIngredientRole the {@link RecipeIngredientRole} of this slot (for lookups).
+	 * @param role the {@link RecipeIngredientRole} of this slot (for lookups).
 	 * @param x relative x position of the slot on the recipe layout.
 	 * @param y relative y position of the slot on the recipe layout.
 	 * @return a {@link IRecipeSlotBuilder} that has further methods for adding ingredients, etc.
 	 *
 	 * @since 9.3.0
 	 */
-	IRecipeSlotBuilder addSlot(RecipeIngredientRole recipeIngredientRole, int x, int y);
+	default IRecipeSlotBuilder addSlot(RecipeIngredientRole role, int x, int y) {
+		return addSlot(role)
+			.setPosition(x, y);
+	}
+
+	/**
+	 * Add a slot and set its position using {@link IPlaceable} methods.
+	 *
+	 * @param role the {@link RecipeIngredientRole} of this slot (for lookups).
+	 * @return a {@link IRecipeSlotBuilder} that has further methods for adding ingredients, etc.
+	 *
+	 * @since 15.20.1
+	 */
+	IRecipeSlotBuilder addSlot(RecipeIngredientRole role);
 
 	/**
 	 * Assign this slot to a {@link ISlottedWidgetFactory},

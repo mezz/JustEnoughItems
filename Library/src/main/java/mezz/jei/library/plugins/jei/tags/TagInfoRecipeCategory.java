@@ -2,6 +2,8 @@ package mezz.jei.library.plugins.jei.tags;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IScrollGridWidgetFactory;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -78,11 +80,12 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 			tagName,
 			Component.literal(tag.location().toString()).withStyle(ChatFormatting.GRAY)
 		);
-		builder.addText(text, 22, 0, getWidth() - 22, 20)
+		builder.addText(text, getWidth() - 22, 20)
+			.setPosition(22, 0)
 			.setColor(0xFF505050)
 			.setLineSpacing(0)
-			.alignVerticalCenter()
-			.alignHorizontalCenter();
+			.setTextAlignment(VerticalAlignment.CENTER)
+			.setTextAlignment(HorizontalAlignment.CENTER);
 	}
 
 	@Override

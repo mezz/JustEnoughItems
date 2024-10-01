@@ -83,7 +83,7 @@ public class SmithingRecipeCategory extends AbstractRecipeCategory<SmithingRecip
 
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, SmithingRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
-		builder.addRecipeArrow(61, 6);
+		builder.addRecipeArrow().setPosition(61, 6);
 	}
 
 	@Override

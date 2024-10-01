@@ -48,9 +48,9 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private @Nullable String slotName;
 	private @Nullable ISlottedWidgetFactory<?> assignedWidgetFactory;
 
-	public RecipeSlotBuilder(IIngredientManager ingredientManager, int slotIndex, RecipeIngredientRole role, int x, int y) {
+	public RecipeSlotBuilder(IIngredientManager ingredientManager, int slotIndex, RecipeIngredientRole role) {
 		this.ingredients = new DisplayIngredientAcceptor(ingredientManager);
-		this.rect = new ImmutableRect2i(x, y, 16, 16);
+		this.rect = new ImmutableRect2i(0, 0, 16, 16);
 		this.role = role;
 		this.slotIndex = slotIndex;
 	}
@@ -184,6 +184,22 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		ErrorUtil.checkNotNull(slotName, "slotName");
 
 		this.slotName = slotName;
+		return this;
+	}
+
+	@Override
+	public int getWidth() {
+		return this.rect.width();
+	}
+
+	@Override
+	public int getHeight() {
+		return this.rect.height();
+	}
+
+	@Override
+	public IRecipeSlotBuilder setPosition(int xPos, int yPos) {
+		this.rect = this.rect.setPosition(xPos, yPos);
 		return this;
 	}
 
