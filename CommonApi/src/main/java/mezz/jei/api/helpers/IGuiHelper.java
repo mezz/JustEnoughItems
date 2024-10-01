@@ -217,7 +217,7 @@ public interface IGuiHelper {
 	 * @deprecated use {@link IRecipeExtrasBuilder#addScrollGridWidget} instead, it's much simpler
 	 */
 	@SuppressWarnings("removal")
-	@Deprecated(since = "11.38.3", forRemoval = true)
+	@Deprecated(since = "11.38.0", forRemoval = true)
 	mezz.jei.api.gui.widgets.IScrollGridWidgetFactory<?> createScrollGridFactory(int columns, int visibleRows);
 
 	/**
@@ -227,14 +227,14 @@ public interface IGuiHelper {
 	 * @since 11.33.0
 	 * @deprecated use {@link IRecipeExtrasBuilder#addScrollBoxWidget}
 	 */
-	@Deprecated(since = "11.37.5", forRemoval = true)
+	@Deprecated(since = "11.38.0", forRemoval = true)
 	IScrollBoxWidget createScrollBoxWidget(IDrawable contents, int visibleHeight, int xPos, int yPos);
 
 	/**
 	 * Create a scroll box widget.
 	 * Handles displaying drawable contents in a scrolling area.
 	 *
-	 * @since 11.37.6
+	 * @since 11.38.0
 	 */
 	IScrollBoxWidget createScrollBoxWidget(int width, int height, int xPos, int yPos);
 
@@ -244,7 +244,7 @@ public interface IGuiHelper {
 	 * @since 11.33.0
 	 * @deprecated use {@link IRecipeExtrasBuilder#addScrollBoxWidget}
 	 */
-	@Deprecated(since = "11.37.5", forRemoval = true)
+	@Deprecated(since = "11.38.0", forRemoval = true)
 	int getScrollBoxScrollbarExtraWidth();
 
 	/**

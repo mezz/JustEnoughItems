@@ -8,13 +8,13 @@ import net.minecraft.client.renderer.Rect2i;
  * Modeled after the vanilla creative menu.
  *
  * Create one with {@link IRecipeExtrasBuilder#addScrollGridWidget}.
- * @since 11.38.3
+ * @since 11.38.0
  */
 public interface IScrollGridWidget extends ISlottedRecipeWidget, IPlaceable<IScrollGridWidget> {
 	/**
 	 * Get the position and size of this widget, relative to its parent element.
 	 *
-	 * @since 11.38.3
+	 * @since 11.38.0
 	 */
 	@Override
 	Rect2i getArea();

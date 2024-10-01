@@ -2,7 +2,7 @@ package mezz.jei.api.gui.placement;
 
 /**
  * Represents a horizontal alignment of an element inside a larger area.
- * @since 11.38.1
+ * @since 11.38.0
  */
 public enum HorizontalAlignment {
 	LEFT {
@@ -26,7 +26,7 @@ public enum HorizontalAlignment {
 
 	/**
 	 * Calculate the x position needed to align an element with the given width inside the availableArea.
-	 * @since 11.38.1
+	 * @since 11.38.0
 	 */
 	public abstract int getXPos(int availableWidth, int elementWidth);
 }

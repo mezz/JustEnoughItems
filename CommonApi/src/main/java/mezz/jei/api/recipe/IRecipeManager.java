@@ -162,7 +162,7 @@ public interface IRecipeManager {
 	 * @param ingredients           a non-null list of optional ingredients for the slot
 	 * @param focusedIngredients    indexes of the focused ingredients in "ingredients"
 	 * @param ingredientCycleOffset the starting index for cycling the list of ingredients when rendering.
-	 * @since 11.38.1
+	 * @since 11.38.0
 	 */
 	IRecipeSlotDrawable createRecipeSlotDrawable(
 		RecipeIngredientRole role,
@@ -183,7 +183,7 @@ public interface IRecipeManager {
 	 * @since 11.5.0
 	 * @deprecated use {@link #createRecipeSlotDrawable(RecipeIngredientRole, List, Set, int)} and then set the position
 	 */
-	@Deprecated(since = "11.38.1")
+	@Deprecated(since = "11.38.0")
 	default IRecipeSlotDrawable createRecipeSlotDrawable(
 		RecipeIngredientRole role,
 		List<Optional<ITypedIngredient<?>>> ingredients,
