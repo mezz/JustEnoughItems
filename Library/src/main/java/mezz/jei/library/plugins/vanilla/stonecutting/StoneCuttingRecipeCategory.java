@@ -39,7 +39,7 @@ public class StoneCuttingRecipeCategory extends AbstractRecipeCategory<Stonecutt
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, StonecutterRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, StonecutterRecipe recipe, IFocusGroup focuses) {
 		builder.addRecipeArrow().setPosition(26, 9);
 	}
 

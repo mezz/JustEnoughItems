@@ -61,7 +61,7 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<CraftingRecip
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, CraftingRecipe recipe, IFocusGroup focuses) {
 		var recipeExtension = this.extendableHelper.getRecipeExtension(recipe);
 		recipeExtension.createRecipeExtras(builder, craftingGridHelper, focuses);
 	}

@@ -22,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -113,9 +114,11 @@ public interface IRecipeCategory<T> {
 	 * information more easily than from the recipe category directly.
 	 *
 	 * @since 15.20.0
+	 * @deprecated use {@link #createRecipeExtras(IRecipeExtrasBuilder, Object, IFocusGroup)}, the recipe slots are in {@link IRecipeExtrasBuilder#getRecipeSlots()} now.
 	 */
+	@Deprecated(since = "15.20.3", forRemoval = true)
 	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
-		createRecipeExtras(builder, recipe, focuses);
+
 	}
 
 	/**
@@ -126,11 +129,10 @@ public interface IRecipeCategory<T> {
 	 * information more easily than from the recipe category directly.
 	 *
 	 * @since 15.9.0
-	 * @deprecated use {@link #createRecipeExtras(IRecipeExtrasBuilder, Object, IRecipeSlotsView, IFocusGroup)}
 	 */
-	@Deprecated(since = "15.20.0", forRemoval = true)
+	@SuppressWarnings("RedundantUnmodifiable")
 	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IFocusGroup focuses) {
-
+		createRecipeExtras(builder, recipe, () -> Collections.unmodifiableList(builder.getRecipeSlots().getSlots()), focuses);
 	}
 
 	/**

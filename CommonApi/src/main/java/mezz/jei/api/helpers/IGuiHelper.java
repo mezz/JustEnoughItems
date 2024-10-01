@@ -11,8 +11,6 @@ import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
-import mezz.jei.api.gui.widgets.IScrollGridWidgetFactory;
-import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -176,11 +174,14 @@ public interface IGuiHelper {
 	 * Create a scroll grid widget factory.
 	 * Handles displaying a grid of ingredient slots in a scrolling area.
 	 *
-	 * Add ingredients to it using {@link IRecipeLayoutBuilder#addSlotToWidget(RecipeIngredientRole, ISlottedWidgetFactory)}
+	 * Add ingredients to it using {@link IRecipeLayoutBuilder#addSlotToWidget(RecipeIngredientRole, mezz.jei.api.gui.widgets.ISlottedWidgetFactory)}
 	 *
 	 * @since 15.10.0
+	 * @deprecated use {@link IRecipeExtrasBuilder#addScrollGridWidget} instead, it's much simpler
 	 */
-	IScrollGridWidgetFactory<?> createScrollGridFactory(int columns, int visibleRows);
+	@SuppressWarnings("removal")
+	@Deprecated(since = "15.20.3", forRemoval = true)
+	mezz.jei.api.gui.widgets.IScrollGridWidgetFactory<?> createScrollGridFactory(int columns, int visibleRows);
 
 	/**
 	 * Create a scroll box widget.

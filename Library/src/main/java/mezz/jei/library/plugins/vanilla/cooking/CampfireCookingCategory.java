@@ -27,7 +27,7 @@ public class CampfireCookingCategory extends AbstractCookingCategory<CampfireCoo
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, CampfireCookingRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, CampfireCookingRecipe recipe, IFocusGroup focuses) {
 		int cookTime = recipe.getCookingTime();
 		if (cookTime <= 0) {
 			cookTime = regularCookTime;

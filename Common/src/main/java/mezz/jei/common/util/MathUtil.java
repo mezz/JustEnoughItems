@@ -112,9 +112,9 @@ public final class MathUtil {
 	 * Illegal matrix math assumes the pose is only scaling and translation.
 	 * If we get rotating GUI elements we're doomed, I hope nobody wants those.
 	 */
-	public static ScreenRectangle transform(ScreenRectangle rect, Matrix4f pose) {
-		Vector3f topLeft = new Vector3f(rect.left(), rect.top(), 1.0f);
-		Vector3f bottomRight = new Vector3f(rect.right(), rect.bottom(), 1.0f);
+	public static ScreenRectangle transform(ImmutableRect2i rect, Matrix4f pose) {
+		Vector3f topLeft = new Vector3f(rect.x(), rect.y(), 1.0f);
+		Vector3f bottomRight = new Vector3f(rect.x() + rect.width(), rect.y() + rect.getHeight(), 1.0f);
 
 		topLeft = pose.transformPosition(topLeft);
 		bottomRight = pose.transformPosition(bottomRight);

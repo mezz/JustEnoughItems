@@ -46,7 +46,7 @@ public class IngredientInfoRecipeCategory extends AbstractRecipeCategory<IJeiIng
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiIngredientInfoRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiIngredientInfoRecipe recipe, IFocusGroup focuses) {
 		int yPos = 22;
 		int height = recipeHeight - yPos;
 		builder.addScrollBoxWidget(

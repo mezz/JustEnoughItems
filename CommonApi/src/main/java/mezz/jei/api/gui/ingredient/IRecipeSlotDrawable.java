@@ -107,4 +107,12 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	default void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
 
 	}
+
+	/**
+	 * Get the area that this recipe slot draws on, including the area covered by its background texture.
+	 * Useful for laying out other recipe elements relative to the slot.
+	 *
+	 * @since 15.20.3
+	 */
+	Rect2i getAreaIncludingBackground();
 }
