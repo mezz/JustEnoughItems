@@ -13,7 +13,10 @@ import java.util.List;
  * and then JEI will call {@link #createWidgetForSlots} after all the slots are built.
  *
  * @since 10.32.0
+ * @deprecated there are easier ways to create slotted widgets now. Use {@link IRecipeExtrasBuilder#addSlottedWidget}.
  */
+@SuppressWarnings({"DeprecatedIsStillUsed", "removal"})
+@Deprecated(since = "10.53.0", forRemoval = true)
 @FunctionalInterface
 public interface ISlottedWidgetFactory<R> {
 	/**
@@ -26,5 +29,7 @@ public interface ISlottedWidgetFactory<R> {
 	 *
 	 * @since 10.32.0
 	 */
+	@Deprecated(since = "10.53.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	void createWidgetForSlots(IRecipeExtrasBuilder builder, R recipe, List<IRecipeSlotDrawable> slots);
 }

@@ -3,7 +3,6 @@ package mezz.jei.library.plugins.vanilla.compostable;
 import net.minecraft.network.chat.TranslatableComponent;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
@@ -34,7 +33,7 @@ public class CompostableRecipeCategory extends AbstractRecipeCategory<IJeiCompos
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiCompostingRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiCompostingRecipe recipe, IFocusGroup focuses) {
 		float chance = recipe.getChance();
 		int chancePercent = (int) Math.floor(chance * 100);
 		Component text = new TranslatableComponent("gui.jei.category.compostable.chance", chancePercent);

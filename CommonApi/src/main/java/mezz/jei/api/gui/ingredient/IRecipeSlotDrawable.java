@@ -116,4 +116,12 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 * @since 10.36.0
 	 */
 	void clearDisplayOverrides();
+
+	/**
+	 * Get the area that this recipe slot draws on, including the area covered by its background texture.
+	 * Useful for laying out other recipe elements relative to the slot.
+	 *
+	 * @since 10.53.0
+	 */
+	Rect2i getAreaIncludingBackground();
 }

@@ -205,7 +205,7 @@ public class DebugRecipeCategory<F> implements RecipeCategoryWithType<DebugRecip
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, DebugRecipe recipe, IFocusGroup focuses) {
 		builder.addInputHandler(new JeiInputHandler(recipe, new Rect2i(0, 0, RECIPE_WIDTH, RECIPE_HEIGHT)));
 	}
 

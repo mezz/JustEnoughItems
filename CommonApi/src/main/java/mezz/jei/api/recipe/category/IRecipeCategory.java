@@ -125,9 +125,11 @@ public interface IRecipeCategory<T> {
 	 * information more easily than from the recipe category directly.
 	 *
 	 * @since 10.31.0
+	 * @deprecated use {@link #createRecipeExtras(IRecipeExtrasBuilder, Object, IFocusGroup)}, the recipe slots are in {@link IRecipeExtrasBuilder#getRecipeSlots()} now.
 	 */
+	@Deprecated(since = "10.53.0", forRemoval = true)
 	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
-		createRecipeExtras(builder, recipe, focuses);
+
 	}
 
 	/**
@@ -138,11 +140,10 @@ public interface IRecipeCategory<T> {
 	 * information more easily than from the recipe category directly.
 	 *
 	 * @since 10.50.0
-	 * @deprecated use {@link #createRecipeExtras(IRecipeExtrasBuilder, Object, IRecipeSlotsView, IFocusGroup)}
 	 */
-	@Deprecated(since = "10.50.0", forRemoval = true)
+	@SuppressWarnings("RedundantUnmodifiable")
 	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IFocusGroup focuses) {
-
+		createRecipeExtras(builder, recipe, () -> Collections.unmodifiableList(builder.getRecipeSlots().getSlots()), focuses);
 	}
 
 	/**

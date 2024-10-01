@@ -3,7 +3,6 @@ package mezz.jei.library.plugins.vanilla.stonecutting;
 import net.minecraft.network.chat.TranslatableComponent;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -38,7 +37,7 @@ public class StoneCuttingRecipeCategory extends AbstractRecipeCategory<Stonecutt
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, StonecutterRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, StonecutterRecipe recipe, IFocusGroup focuses) {
 		builder.addRecipeArrow().setPosition(26, 9);
 	}
 

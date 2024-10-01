@@ -19,10 +19,12 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.library.gui.recipes.layout.builder.LegacyTooltipCallbackAdapter;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
@@ -79,7 +81,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		List<IRecipeSlotRichTooltipCallback> tooltipCallbacks,
 		List<Optional<ITypedIngredient<?>>> allIngredients,
 		@Nullable List<Optional<ITypedIngredient<?>>> focusedIngredients,
-		@Nullable IDrawable background,
+		@Nullable OffsetDrawable background,
 		@Nullable IDrawable overlay,
 		@Nullable String slotName,
 		@Nullable RendererOverrides rendererOverrides
@@ -472,6 +474,18 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Override
 	public Rect2i getRect() {
 		return rect.toMutable();
+	}
+
+	@Override
+	public Rect2i getAreaIncludingBackground() {
+		if (background == null) {
+			return rect.toMutable();
+		}
+		if (background instanceof OffsetDrawable offsetDrawable) {
+			return MathUtil.union(rect, offsetDrawable.getArea()).toMutable();
+		}
+		ImmutableRect2i backgroundArea = new ImmutableRect2i(rect.getX(), rect.getY(), background.getWidth(), background.getHeight());
+		return MathUtil.union(rect, backgroundArea).toMutable();
 	}
 
 	@Override

@@ -1,6 +1,8 @@
 package mezz.jei.api.gui.widgets;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawablesView;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.placement.IPlaceable;
@@ -28,8 +30,16 @@ import java.util.List;
  */
 @ApiStatus.NonExtendable
 public interface IRecipeExtrasBuilder {
+
 	/**
-	 * Add a {@link IDrawable} for the recipe category.
+	 * Get the recipe slots that were created in {@link IRecipeCategory#setRecipe}.
+	 *
+	 * @since 10.53.0
+	 */
+	IRecipeSlotDrawablesView getRecipeSlots();
+
+	/**
+	 * Add a {@link IDrawable} for the recipe category at the given position.
 	 *
 	 * @since 10.50.0
 	 */
@@ -48,6 +58,14 @@ public interface IRecipeExtrasBuilder {
 	 * @since 10.32.0
 	 */
 	void addWidget(IRecipeWidget widget);
+
+	/**
+	 * Add a {@link ISlottedRecipeWidget} for the recipe category, and
+	 * mark that the slots are going to be handled by the slotted widget.
+	 *
+	 * @since 10.53.0
+	 */
+	void addSlottedWidget(ISlottedRecipeWidget widget, List<IRecipeSlotDrawable> slots);
 
 	/**
 	 * Add a {@link IJeiInputHandler} for the recipe category.
@@ -72,6 +90,18 @@ public interface IRecipeExtrasBuilder {
 	 * @since 10.48.0
 	 */
 	IScrollBoxWidget addScrollBoxWidget(int width, int height, int xPos, int yPos);
+
+	/**
+	 * Create and add a new scroll grid widget.
+	 * Handles displaying ingredients in a scrolling area with a scrollbar, similar to the vanilla creative menu.
+	 *
+	 * Get slots for this from {@link #getRecipeSlots()}.
+	 *
+	 * You can move the resulting grid by using the {@link IScrollGridWidget}'s {@link IPlaceable} methods.
+	 *
+	 * @since 10.53.0
+	 */
+	IScrollGridWidget addScrollGridWidget(List<IRecipeSlotDrawable> slots, int columns, int visibleRows);
 
 	/**
 	 * Add a vanilla-style recipe arrow to the recipe layout.

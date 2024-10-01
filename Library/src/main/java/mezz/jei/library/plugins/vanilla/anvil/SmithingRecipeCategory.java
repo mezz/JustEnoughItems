@@ -3,7 +3,6 @@ package mezz.jei.library.plugins.vanilla.anvil;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -54,7 +53,7 @@ public class SmithingRecipeCategory extends AbstractRecipeCategory<UpgradeRecipe
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, UpgradeRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, UpgradeRecipe recipe, IFocusGroup focuses) {
 		builder.addRecipeArrow()
 			.setPosition(79, 6);
 	}

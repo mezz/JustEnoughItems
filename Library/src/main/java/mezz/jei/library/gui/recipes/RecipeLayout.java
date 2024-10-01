@@ -10,6 +10,7 @@ import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawablesView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
@@ -18,6 +19,7 @@ import mezz.jei.api.gui.placement.IPlaceable;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
+import mezz.jei.api.gui.widgets.IScrollGridWidget;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
 import mezz.jei.api.gui.widgets.ITextWidget;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -45,6 +47,7 @@ import mezz.jei.library.gui.ingredients.RecipeSlots;
 import mezz.jei.library.gui.ingredients.RecipeSlotsView;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
+import mezz.jei.library.gui.widgets.ScrollGridRecipeWidget;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -57,6 +60,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,7 +76,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 	/**
 	 * Slots handled by the recipe category directly.
 	 */
-	@Unmodifiable
 	private final List<IRecipeSlotDrawable> recipeCategorySlots;
 	/**
 	 * All slots, including slots handled by the recipe category and widgets.
@@ -140,7 +143,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 				}
 				recipeLayout.addLegacyRecipeSlots(legacyAdapter.getRecipeSlots().getSlots());
 			}
-			recipeCategory.createRecipeExtras(recipeLayout, recipe, recipeLayout.getRecipeSlotsView(), focuses);
+			recipeCategory.createRecipeExtras(recipeLayout, recipe, focuses);
 			return Optional.of(recipeLayout);
 		} catch (RuntimeException | LinkageError e) {
 			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getRecipeType(), e);
@@ -193,7 +196,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 		this.recipeBackground = recipeBackground;
 		this.shapelessIcon = shapelessIcon;
 
-		recipeCategory.onDisplayedIngredientsUpdate(recipe, recipeCategorySlots, focuses);
+		recipeCategory.onDisplayedIngredientsUpdate(recipe, Collections.unmodifiableList(recipeCategorySlots), focuses);
 	}
 
 	private void addLegacyRecipeSlots(List<RecipeSlot> recipeSlots) {
@@ -416,6 +419,11 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 	}
 
 	@Override
+	public IRecipeSlotDrawablesView getRecipeSlots() {
+		return () -> Collections.unmodifiableList(recipeCategorySlots);
+	}
+
+	@Override
 	public R getRecipe() {
 		return recipe;
 	}
@@ -519,6 +527,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 	}
 
 	@Override
+	public void addSlottedWidget(ISlottedRecipeWidget widget, List<IRecipeSlotDrawable> slots) {
+		this.allWidgets.add(widget);
+		this.slottedWidgets.add(widget);
+		this.recipeCategorySlots.removeAll(slots);
+	}
+
+	@Override
 	public void addInputHandler(IJeiInputHandler inputHandler) {
 		this.inputHandler.addInputHandler(inputHandler);
 	}
@@ -532,6 +547,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 	public IScrollBoxWidget addScrollBoxWidget(int width, int height, int xPos, int yPos) {
 		ScrollBoxRecipeWidget widget = new ScrollBoxRecipeWidget(width, height, xPos, yPos);
 		addWidget(widget);
+		addInputHandler(widget);
+		return widget;
+	}
+
+	@Override
+	public IScrollGridWidget addScrollGridWidget(List<IRecipeSlotDrawable> slots, int columns, int visibleRows) {
+		ScrollGridRecipeWidget widget = ScrollGridRecipeWidget.create(slots, columns, visibleRows);
+		addSlottedWidget(widget, slots);
 		addInputHandler(widget);
 		return widget;
 	}
