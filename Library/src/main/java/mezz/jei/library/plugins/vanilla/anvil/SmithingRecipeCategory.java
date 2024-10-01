@@ -55,7 +55,8 @@ public class SmithingRecipeCategory extends AbstractRecipeCategory<UpgradeRecipe
 
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, UpgradeRecipe recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
-		builder.addRecipeArrow(79, 6);
+		builder.addRecipeArrow()
+			.setPosition(79, 6);
 	}
 
 	@Override

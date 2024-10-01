@@ -5,6 +5,7 @@ import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.placement.IPlaceable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @since 9.3.0
  */
 @ApiStatus.NonExtendable
-public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuilder> {
+public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuilder>, IPlaceable<IRecipeSlotBuilder> {
 	/**
 	 * Add a callback to alter the tooltip for these ingredients.
 	 *

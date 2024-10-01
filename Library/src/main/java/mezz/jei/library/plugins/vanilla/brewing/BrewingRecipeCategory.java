@@ -62,7 +62,8 @@ public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRec
 		String brewingStepsString = brewingSteps < Integer.MAX_VALUE ? Integer.toString(brewingSteps) : "?";
 		Component steps = Component.translatable("gui.jei.category.brewing.steps", brewingStepsString);
 
-		builder.addText(steps, 70, 28, 42, 12)
+		builder.addText(steps, 42, 12)
+			.setPosition(70, 28)
 			.setColor(0xFF808080);
 	}
 

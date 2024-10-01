@@ -62,8 +62,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	}
 
 	@Override
-	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role, int x, int y) {
-		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, nextSlotIndex++, role, x, y);
+	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role) {
+		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, nextSlotIndex++, role);
 
 		if (role == RecipeIngredientRole.OUTPUT) {
 			addOutputSlotTooltipCallback(slot);
@@ -75,7 +75,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 
 	@Override
 	public IRecipeSlotBuilder addSlotToWidget(RecipeIngredientRole role, ISlottedWidgetFactory<?> widgetFactory) {
-		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, nextSlotIndex++, role, 0, 0)
+		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, nextSlotIndex++, role)
 			.assignToWidgetFactory(widgetFactory);
 
 		if (role == RecipeIngredientRole.OUTPUT) {
