@@ -177,6 +177,9 @@
   "gui.jei.category.compostable.chance": "確率：%s%%",
   "gui.jei.category.itemInformation": "説明",
   "gui.jei.category.tagInformation": "%sタグ",
+  "gui.jei.category.tagInformation.block": "ブロックタグ",
+  "gui.jei.category.tagInformation.fluid": "流体タグ",
+  "gui.jei.category.tagInformation.item": "アイテムタグ",
 
   "_comment": "Messages",
   "jei.message.configured": "ゲーム内で設定にアクセスするには、\n\"Configured\" Modをインストールしてください",

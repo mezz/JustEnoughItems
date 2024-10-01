@@ -177,7 +177,10 @@
   "gui.jei.category.compostable.chance": "Chance: %s%%",
   "gui.jei.category.itemInformation": "Information",
   "gui.jei.category.tagInformation": "%s Tags",
-  "gui.jei.category.recipe.crashed": "This recipe crashed. Please see client logs for details.",
+  "gui.jei.category.tagInformation.block": "Block Tags",
+  "gui.jei.category.tagInformation.fluid": "Fluid Tags",
+  "gui.jei.category.tagInformation.item": "Item Tags",
+  "gui.jei.category.recipe.crashed": "This recipe crashed. Please see the client logs for details.",
 
   "_comment": "Messages",
   "jei.message.configured": "Install the \"Configured\" mod to access the in-game config",

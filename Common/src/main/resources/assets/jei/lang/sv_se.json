@@ -161,6 +161,10 @@
   "gui.jei.category.compostable": "Kompostering",
   "gui.jei.category.compostable.chance": "Chans: %s %%",
   "gui.jei.category.itemInformation": "Information",
+  "gui.jei.category.tagInformation.block": "Block taggar",
+  "gui.jei.category.tagInformation.fluid": "Vätska taggar",
+  "gui.jei.category.tagInformation.item": "Föremål taggar",
+  "gui.jei.category.tagInformation": "%s taggar",
 
   "_comment": "Messages",
   "jei.message.configured": "Installera modden \"Configured\" för att få åtkomst till konfigurationen i spelet",
