@@ -8,13 +8,13 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
  * Modeled after the vanilla creative menu.
  *
  * Create one with {@link IRecipeExtrasBuilder#addScrollGridWidget}.
- * @since 15.20.3
+ * @since 15.20.0
  */
 public interface IScrollGridWidget extends ISlottedRecipeWidget, IPlaceable<IScrollGridWidget> {
 	/**
 	 * Get the position and size of this widget, relative to its parent element.
 	 *
-	 * @since 15.20.3
+	 * @since 15.20.0
 	 */
 	ScreenRectangle getScreenRectangle();
 }

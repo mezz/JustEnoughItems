@@ -2,7 +2,7 @@ package mezz.jei.api.gui.placement;
 
 /**
  * Represents a vertical alignment of an element inside a larger box (availableArea).
- * @since 15.20.1
+ * @since 15.20.0
  */
 public enum VerticalAlignment {
 	TOP {
@@ -26,7 +26,7 @@ public enum VerticalAlignment {
 
 	/**
 	 * Calculate the y position needed to align an element with the given height inside the availableArea.
-	 * @since 15.20.1
+	 * @since 15.20.0
 	 */
 	public abstract int getYPos(int availableHeight, int elementHeight);
 }

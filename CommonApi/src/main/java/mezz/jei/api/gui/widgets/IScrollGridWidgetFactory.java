@@ -12,7 +12,7 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
  * @deprecated use {@link IRecipeExtrasBuilder#addScrollGridWidget} instead, it's much simpler
  */
 @SuppressWarnings({"DeprecatedIsStillUsed", "removal"})
-@Deprecated(since = "15.20.3", forRemoval = true)
+@Deprecated(since = "15.20.0", forRemoval = true)
 public interface IScrollGridWidgetFactory<R> extends ISlottedWidgetFactory<R> {
 	/**
 	 * @since 15.10.0

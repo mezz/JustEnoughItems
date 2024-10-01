@@ -16,7 +16,7 @@ import java.util.List;
  * @deprecated there are easier ways to create slotted widgets now. Use {@link IRecipeExtrasBuilder#addSlottedWidget}.
  */
 @SuppressWarnings({"DeprecatedIsStillUsed", "removal"})
-@Deprecated(since = "15.20.3", forRemoval = true)
+@Deprecated(since = "15.20.0", forRemoval = true)
 @FunctionalInterface
 public interface ISlottedWidgetFactory<R> {
 	/**
@@ -29,7 +29,7 @@ public interface ISlottedWidgetFactory<R> {
 	 *
 	 * @since 15.10.0
 	 */
-	@Deprecated(since = "15.20.3", forRemoval = true)
+	@Deprecated(since = "15.20.0", forRemoval = true)
 	@SuppressWarnings("removal")
 	void createWidgetForSlots(IRecipeExtrasBuilder builder, R recipe, List<IRecipeSlotDrawable> slots);
 }

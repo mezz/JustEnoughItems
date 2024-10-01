@@ -6,7 +6,7 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
@@ -22,7 +22,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -113,26 +112,10 @@ public interface IRecipeCategory<T> {
 	 * so they can be used for caching and displaying recipe-specific
 	 * information more easily than from the recipe category directly.
 	 *
-	 * @since 15.20.0
-	 * @deprecated use {@link #createRecipeExtras(IRecipeExtrasBuilder, Object, IFocusGroup)}, the recipe slots are in {@link IRecipeExtrasBuilder#getRecipeSlots()} now.
-	 */
-	@Deprecated(since = "15.20.3", forRemoval = true)
-	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
-
-	}
-
-	/**
-	 * Create per-recipe extras like {@link IRecipeWidget} and {@link IJeiInputHandler}.
-	 *
-	 * These have access to a specific recipe, and will persist as long as a recipe layout is on screen,
-	 * so they can be used for caching and displaying recipe-specific
-	 * information more easily than from the recipe category directly.
-	 *
 	 * @since 15.9.0
 	 */
-	@SuppressWarnings("RedundantUnmodifiable")
 	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IFocusGroup focuses) {
-		createRecipeExtras(builder, recipe, () -> Collections.unmodifiableList(builder.getRecipeSlots().getSlots()), focuses);
+
 	}
 
 	/**
@@ -182,7 +165,7 @@ public interface IRecipeCategory<T> {
 	 * Get the tooltip for whatever is under the mouse.
 	 * Ingredient tooltips from recipe slots are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
 	 *
 	 * @param recipe          the current recipe being drawn.
 	 * @param recipeSlotsView a view of the current recipe slots being drawn.
@@ -203,7 +186,7 @@ public interface IRecipeCategory<T> {
 	 * Get the tooltip for whatever is under the mouse.
 	 * Ingredient tooltips from recipe slots are already handled by JEI, this is for anything else.
 	 *
-	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addTooltipCallback(IRecipeSlotTooltipCallback)}
+	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
 	 *
 	 * @param tooltip         a tooltip builder to add tooltip lines to
 	 * @param recipe          the current recipe being drawn.

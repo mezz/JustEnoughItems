@@ -52,7 +52,7 @@ public interface ITextWidget extends IPlaceable<ITextWidget> {
 	 * Set the horizontal alignment of the text within the {@link #getWidth()} area.
 	 * The default setting is {@link HorizontalAlignment#LEFT}.
 	 *
-	 * @since 15.20.1
+	 * @since 15.20.0
 	 */
 	ITextWidget setTextAlignment(HorizontalAlignment horizontalAlignment);
 
@@ -60,73 +60,7 @@ public interface ITextWidget extends IPlaceable<ITextWidget> {
 	 * Set the vertical alignment of the text within the {@link #getHeight()} area.
 	 * The default setting is {@link VerticalAlignment#TOP}.
 	 *
-	 * @since 15.20.1
+	 * @since 15.20.0
 	 */
 	ITextWidget setTextAlignment(VerticalAlignment verticalAlignment);
-
-	/**
-	 * Horizontally align text to the left within the given bounds. (default)
-	 *
-	 * @since 15.20.0
-	 * @deprecated use {@link #setTextAlignment(HorizontalAlignment)}
-	 */
-	@Deprecated(since = "15.20.1", forRemoval = true)
-	default ITextWidget alignHorizontalLeft() {
-		return setTextAlignment(HorizontalAlignment.LEFT);
-	}
-
-	/**
-	 * Horizontally align text in the center of the given bounds.
-	 *
-	 * @since 15.20.0
-	 * @deprecated use {@link #setTextAlignment(HorizontalAlignment)}
-	 */
-	@Deprecated(since = "15.20.1", forRemoval = true)
-	default ITextWidget alignHorizontalCenter() {
-		return setTextAlignment(HorizontalAlignment.CENTER);
-	}
-
-	/**
-	 * Horizontally align text to the right within the given bounds.
-	 *
-	 * @since 15.20.0
-	 * @deprecated use {@link #setTextAlignment(HorizontalAlignment)}
-	 */
-	@Deprecated(since = "15.20.1", forRemoval = true)
-	default ITextWidget alignHorizontalRight() {
-		return setTextAlignment(HorizontalAlignment.RIGHT);
-	}
-
-	/**
-	 * Vertically align text to the top of the given bounds. (default)
-	 *
-	 * @since 15.20.0
-	 * @deprecated use {@link #setTextAlignment(VerticalAlignment)}
-	 */
-	@Deprecated(since = "15.20.1", forRemoval = true)
-	default ITextWidget alignVerticalTop() {
-		return setTextAlignment(VerticalAlignment.TOP);
-	}
-
-	/**
-	 * Vertically align text in the center of the given bounds.
-	 *
-	 * @since 15.20.0
-	 * @deprecated use {@link #setTextAlignment(VerticalAlignment)}
-	 */
-	@Deprecated(since = "15.20.1", forRemoval = true)
-	default ITextWidget alignVerticalCenter() {
-		return setTextAlignment(VerticalAlignment.CENTER);
-	}
-
-	/**
-	 * Vertically align text to the bottom of the given bounds.
-	 *
-	 * @since 15.20.0
-	 * @deprecated use {@link #setTextAlignment(VerticalAlignment)}
-	 */
-	@Deprecated(since = "15.20.1", forRemoval = true)
-	default ITextWidget alignVerticalBottom() {
-		return setTextAlignment(VerticalAlignment.BOTTOM);
-	}
 }

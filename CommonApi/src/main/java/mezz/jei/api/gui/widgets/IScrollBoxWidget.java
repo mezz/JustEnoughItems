@@ -18,7 +18,7 @@ public interface IScrollBoxWidget extends IRecipeWidget, IJeiInputHandler {
 	 * Get the width available for displaying contents in the scroll box.
 	 * The scroll bar takes up some of the space, so this can be used in order to create accurately-sized contents.
 	 *
-	 * @since 15.19.6
+	 * @since 15.20.0
 	 */
 	int getContentAreaWidth();
 
@@ -26,7 +26,7 @@ public interface IScrollBoxWidget extends IRecipeWidget, IJeiInputHandler {
 	 * Get the visible height for displaying contents in the scroll box.
 	 * The actual height of the contents can be taller, because the box can scroll to show more.
 	 *
-	 * @since 15.19.6
+	 * @since 15.20.0
 	 */
 	int getContentAreaHeight();
 
@@ -34,7 +34,7 @@ public interface IScrollBoxWidget extends IRecipeWidget, IJeiInputHandler {
 	 * Set the contents to display inside the scroll box.
 	 * The drawable width should match {@link #getContentAreaWidth()}, and the height can be any height.
 	 *
-	 * @since 15.19.6
+	 * @since 15.20.0
 	 */
 	IScrollBoxWidget setContents(IDrawable contents);
 
@@ -42,7 +42,7 @@ public interface IScrollBoxWidget extends IRecipeWidget, IJeiInputHandler {
 	 * Display text in the scroll box.
 	 * Text will be automatically wrapped in order to fit inside of {@link #getContentAreaWidth()}.
 	 *
-	 * @since 15.19.6
+	 * @since 15.20.0
 	 */
 	IScrollBoxWidget setContents(List<FormattedText> text);
 }

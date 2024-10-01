@@ -15,13 +15,13 @@ import java.util.Optional;
  *
  * @see IRecipeSlotsView for a view with less access to drawable properties of the slots.
  *
- * @since 15.20.3
+ * @since 15.20.0
  */
 public interface IRecipeSlotDrawablesView {
 	/**
 	 * Get all slots for a recipe.
 	 *
-	 * @since 15.20.3
+	 * @since 15.20.0
 	 */
 	@Unmodifiable
 	List<IRecipeSlotDrawable> getSlots();
@@ -29,7 +29,7 @@ public interface IRecipeSlotDrawablesView {
 	/**
 	 * Get the list of slots for the given {@link RecipeIngredientRole} for a recipe.
 	 *
-	 * @since 15.20.3
+	 * @since 15.20.0
 	 */
 	default List<IRecipeSlotDrawable> getSlots(RecipeIngredientRole role) {
 		List<IRecipeSlotDrawable> list = new ArrayList<>();
@@ -44,7 +44,7 @@ public interface IRecipeSlotDrawablesView {
 	/**
 	 * Get a recipe slot by its name set with {@link IRecipeSlotBuilder#setSlotName(String)}.
 	 *
-	 * @since 15.20.3
+	 * @since 15.20.0
 	 */
 	default Optional<IRecipeSlotDrawable> findSlotByName(String slotName) {
 		return getSlots().stream()
