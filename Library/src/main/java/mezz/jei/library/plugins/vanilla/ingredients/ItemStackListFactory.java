@@ -5,6 +5,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.StackHelper;
 import net.minecraft.core.NonNullList;
@@ -12,6 +13,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -126,7 +128,13 @@ public final class ItemStackListFactory {
 			);
 		}
 		if (duplicateInTabCount > 0) {
-			LOGGER.warn(
+			Level level;
+			if (Services.PLATFORM.getModHelper().isInDev()) {
+				level = Level.WARN;
+			} else {
+				level = Level.DEBUG;
+			}
+			LOGGER.log(level,
 				"""
 					{} duplicate items were found in '{}' creative tab's: {}
 					This may indicate that these types of item need a subtype interpreter added to JEI:
