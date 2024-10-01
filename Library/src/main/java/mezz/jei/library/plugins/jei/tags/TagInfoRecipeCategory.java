@@ -15,7 +15,9 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
@@ -40,8 +42,15 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 	}
 
 	private static Component createTitle(ResourceLocation registryLocation) {
-		Component registryName = Component.literal(StringUtils.capitalize(registryLocation.getPath()));
-		return Component.translatable("gui.jei.category.tagInformation", registryName);
+		String registryName = ResourceLocationUtil.sanitizePath(registryLocation.getPath());
+		String registryNameTranslationKey = "gui.jei.category.tagInformation." + registryName;
+
+		Language language = Language.getInstance();
+		if (language.has(registryNameTranslationKey)) {
+			return Component.translatable(registryNameTranslationKey);
+		}
+
+		return Component.translatable("gui.jei.category.tagInformation", StringUtils.capitalize(registryLocation.getPath()));
 	}
 
 	@Override
