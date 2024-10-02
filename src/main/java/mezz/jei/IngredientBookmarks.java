@@ -1,9 +1,6 @@
 package mezz.jei;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,63 +14,65 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 
 public class IngredientBookmarks implements IIngredientBookmarks {
-  private final IIngredientRegistry ingredientRegistry;
-  private List<String> bookmarkIds = new LinkedList<String>();
-  private HashMap<String, Object> bookmarkList = new HashMap<String, Object>();
+	private final IIngredientRegistry ingredientRegistry;
 
-  public IngredientBookmarks(IIngredientRegistry ingredientRegistry) {
-    this.ingredientRegistry = ingredientRegistry;
-  }
+	// Using both so cause linked list will retain order of insertion
+	private List<String> bookmarkIds = new LinkedList<String>();
+	private HashMap<String, Object> bookmarkList = new HashMap<String, Object>();
 
-  @Override
-  public <V> void  toggleIngredientBookmark(V ingredient) {
-    IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-    String uniqueId = ingredientHelper.getUniqueId(ingredient);
+	public IngredientBookmarks(IIngredientRegistry ingredientRegistry) {
+		this.ingredientRegistry = ingredientRegistry;
+	}
 
-    // find ingredient in registry
-    ImmutableCollection<Class> clazzes = ingredientRegistry.getRegisteredIngredientClasses();
-    for (Class<V> clazz: clazzes) {
-      ImmutableList<V> iList = ingredientRegistry.getIngredients(clazz);
-      IIngredientHelper<V> iHelper = ingredientRegistry.getIngredientHelper(clazz);
-      for (V i: iList) {
-        if (iHelper.getUniqueId(i).equals(uniqueId)) {
-          ingredient = i;
-          break;
-        }
-      }
-    }
+	@Override
+	public <V> void toggleIngredientBookmark(V ingredient) {
+		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+		String uniqueId = ingredientHelper.getUniqueId(ingredient);
 
-        // System.out.println(ingredientHelper.getUniqueId(ingredient));
-    if (bookmarkIds.contains(uniqueId)){
-      bookmarkIds.remove(uniqueId);
-      bookmarkList.remove(uniqueId);
-    } else {
-      bookmarkIds.add(uniqueId);
-      bookmarkList.put(uniqueId, ingredient);
-    }
-  }
+		// find ingredient in registry
+		ImmutableCollection<Class> clazzes = ingredientRegistry.getRegisteredIngredientClasses();
+		for (Class<V> clazz : clazzes) {
+			ImmutableList<V> iList = ingredientRegistry.getIngredients(clazz);
+			IIngredientHelper<V> iHelper = ingredientRegistry.getIngredientHelper(clazz);
+			for (V i : iList) {
+				if (iHelper.getUniqueId(i).equals(uniqueId)) {
+					ingredient = i;
+					break;
+				}
+			}
+		}
 
-  @Override
-  public List<IIngredientListElement> getIngredientList() {
-    List<IIngredientListElement> ingredientListElements = new LinkedList<IIngredientListElement>();
+		// System.out.println(ingredientHelper.getUniqueId(ingredient));
+		if (bookmarkIds.contains(uniqueId)) {
+			bookmarkIds.remove(uniqueId);
+			bookmarkList.remove(uniqueId);
+		} else {
+			bookmarkIds.add(uniqueId);
+			bookmarkList.put(uniqueId, ingredient);
+		}
+	}
 
-    for (String uniqueId : bookmarkIds) {
-      Object ingredient = bookmarkList.get(uniqueId);
+	@Override
+	public List<IIngredientListElement> getIngredientList() {
+		List<IIngredientListElement> ingredientListElements = new LinkedList<IIngredientListElement>();
 
-      IIngredientHelper<Object> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
-      IIngredientRenderer<Object> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
-      IngredientListElement<Object> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper,
-          ingredientRenderer);
-      if (ingredientListElement != null) {
-        ingredientListElements.add(ingredientListElement);
-      }
-    }
-    return ingredientListElements;
-  }
+		for (String uniqueId : bookmarkIds) {
+			Object ingredient = bookmarkList.get(uniqueId);
 
-  @Override
-  public void clear(){
-    bookmarkIds.clear();
-    bookmarkList.clear();
-  }
+			IIngredientHelper<Object> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+			IIngredientRenderer<Object> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
+			IngredientListElement<Object> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper,
+					ingredientRenderer);
+			if (ingredientListElement != null) {
+				ingredientListElements.add(ingredientListElement);
+			}
+		}
+		return ingredientListElements;
+	}
+
+	@Override
+	public void clear() {
+		bookmarkIds.clear();
+		bookmarkList.clear();
+	}
 }

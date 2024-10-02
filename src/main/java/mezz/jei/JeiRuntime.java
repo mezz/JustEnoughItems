@@ -13,66 +13,66 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 
 public class JeiRuntime implements IJeiRuntime {
 
-  private final RecipeRegistry recipeRegistry;
-  private final ItemListOverlay itemListOverlay;
-  private final RecipesGui recipesGui;
-  private final IngredientRegistry ingredientRegistry;
-  private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers;
-  private final IngredientBookmarks ingredientBookmarks;
+	private final RecipeRegistry recipeRegistry;
+	private final ItemListOverlay itemListOverlay;
+	private final RecipesGui recipesGui;
+	private final IngredientRegistry ingredientRegistry;
+	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers;
+	private final IngredientBookmarks ingredientBookmarks;
 
-  public JeiRuntime(RecipeRegistry recipeRegistry, ItemListOverlay itemListOverlay, RecipesGui recipesGui,
-      IngredientRegistry ingredientRegistry, List<IAdvancedGuiHandler<?>> advancedGuiHandlers,
-      IngredientBookmarks ingredientBookmarks) {
-    this.recipeRegistry = recipeRegistry;
-    this.itemListOverlay = itemListOverlay;
-    this.recipesGui = recipesGui;
-    this.ingredientRegistry = ingredientRegistry;
-    this.advancedGuiHandlers = advancedGuiHandlers;
-    this.ingredientBookmarks = ingredientBookmarks;
-  }
+	public JeiRuntime(RecipeRegistry recipeRegistry, ItemListOverlay itemListOverlay, RecipesGui recipesGui,
+			IngredientRegistry ingredientRegistry, List<IAdvancedGuiHandler<?>> advancedGuiHandlers,
+			IngredientBookmarks ingredientBookmarks) {
+		this.recipeRegistry = recipeRegistry;
+		this.itemListOverlay = itemListOverlay;
+		this.recipesGui = recipesGui;
+		this.ingredientRegistry = ingredientRegistry;
+		this.advancedGuiHandlers = advancedGuiHandlers;
+		this.ingredientBookmarks = ingredientBookmarks;
+	}
 
-  public void close() {
-    if (itemListOverlay.isOpen()) {
-      itemListOverlay.close();
-    }
-    if (recipesGui.isOpen()) {
-      recipesGui.close();
-    }
-  }
+	public void close() {
+		if (itemListOverlay.isOpen()) {
+			itemListOverlay.close();
+		}
+		if (recipesGui.isOpen()) {
+			recipesGui.close();
+		}
+	}
 
-  @Override
-  public RecipeRegistry getRecipeRegistry() {
-    return recipeRegistry;
-  }
+	@Override
+	public RecipeRegistry getRecipeRegistry() {
+		return recipeRegistry;
+	}
 
-  @Override
-  public ItemListOverlay getItemListOverlay() {
-    return itemListOverlay;
-  }
+	@Override
+	public ItemListOverlay getItemListOverlay() {
+		return itemListOverlay;
+	}
 
-  @Override
-  public RecipesGui getRecipesGui() {
-    return recipesGui;
-  }
+	@Override
+	public RecipesGui getRecipesGui() {
+		return recipesGui;
+	}
 
-  public IngredientRegistry getIngredientRegistry() {
-    return ingredientRegistry;
-  }
+	public IngredientRegistry getIngredientRegistry() {
+		return ingredientRegistry;
+	}
 
-  public IIngredientBookmarks getIngredientBookmarks() {
-    return ingredientBookmarks;
-  }
+	public IIngredientBookmarks getIngredientBookmarks() {
+		return ingredientBookmarks;
+	}
 
-  public List<IAdvancedGuiHandler<?>> getActiveAdvancedGuiHandlers(GuiScreen guiScreen) {
-    List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandler = new ArrayList<IAdvancedGuiHandler<?>>();
-    if (guiScreen instanceof GuiContainer) {
-      for (IAdvancedGuiHandler<?> advancedGuiHandler : advancedGuiHandlers) {
-        Class<?> guiContainerClass = advancedGuiHandler.getGuiContainerClass();
-        if (guiContainerClass.isInstance(guiScreen)) {
-          activeAdvancedGuiHandler.add(advancedGuiHandler);
-        }
-      }
-    }
-    return activeAdvancedGuiHandler;
-  }
+	public List<IAdvancedGuiHandler<?>> getActiveAdvancedGuiHandlers(GuiScreen guiScreen) {
+		List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandler = new ArrayList<IAdvancedGuiHandler<?>>();
+		if (guiScreen instanceof GuiContainer) {
+			for (IAdvancedGuiHandler<?> advancedGuiHandler : advancedGuiHandlers) {
+				Class<?> guiContainerClass = advancedGuiHandler.getGuiContainerClass();
+				if (guiContainerClass.isInstance(guiScreen)) {
+					activeAdvancedGuiHandler.add(advancedGuiHandler);
+				}
+			}
+		}
+		return activeAdvancedGuiHandler;
+	}
 }

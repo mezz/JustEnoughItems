@@ -118,10 +118,12 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
     final int buttonStartY = buttonSize + (2 * borderPadding) + (yItemButtonSpace - itemButtonsHeight) / 2;
     // this renders the items gui
     createItemButtons(guiIngredientList, guiAreas, leftEdge, buttonStartY, columns, rows);
+    // Alight with bottom of clear button
     createItemButtons(guiBookmarks, guiAreas, 0, guiProperties.getGuiTop() + buttonSize, columns, rows);
 
     nextButton = new GuiButton(0, rightEdge - buttonSize, borderPadding, buttonSize, buttonSize, nextLabel);
     backButton = new GuiButton(1, leftEdge, borderPadding, buttonSize, buttonSize, backLabel);
+    // align with the top of inventory gui
     clearButton = new GuiButton(3, 0, guiProperties.getGuiTop(), buttonSize * 3, buttonSize, "CLEAR");
 
     final int searchFieldX;
@@ -396,8 +398,11 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 
   @Override
   public boolean isMouseOver(int mouseX, int mouseY) {
+    // Clickable area is anywhere outside of the inventory screen. Should probably
+    // narrow this down, but I don't know how do detect other mods that might be
+    // using the screen.
     if (mouseX > guiProperties.getGuiLeft() && mouseX < guiProperties.getGuiLeft() + guiProperties.getGuiXSize()
-    && mouseY > guiProperties.getGuiTop() && mouseY < guiProperties.getGuiTop() + guiProperties.getGuiYSize()) {
+        && mouseY > guiProperties.getGuiTop() && mouseY < guiProperties.getGuiTop() + guiProperties.getGuiYSize()) {
       return false;
     }
     // if (mouseX < guiProperties.getGuiLeft() + guiProperties.getGuiXSize()) {

@@ -27,15 +27,9 @@ public class GuiIngredientFastList {
 
 	private final IIngredientRegistry ingredientRegistry;
 
-  private boolean sortDisabled = false;
-
 	public GuiIngredientFastList(IIngredientRegistry ingredientRegistry) {
 		this.ingredientRegistry = ingredientRegistry;
 	}
-
-  public void setSortDisabled(boolean sortDisabled) {
-    this.sortDisabled = sortDisabled;
-  }
 
 	public void clear() {
 		renderAll.clear();
