@@ -9,6 +9,8 @@ public interface IJeiRuntime {
 
 	IItemListOverlay getItemListOverlay();
 
+  IBookmarksOverlay getBookmarksOverlay();
+  
 	/**
 	 * @since JEI 3.2.12
 	 */

@@ -7,6 +7,7 @@ import java.util.List;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.gui.BookmarksOverlay;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.plugins.vanilla.VanillaPlugin;
@@ -60,8 +61,10 @@ public class JeiStarter {
 		start_time = System.currentTimeMillis();
 		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
 		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter, advancedGuiHandlers, ingredientRegistry);
+    BookmarksOverlay bookmarksOverlay = new BookmarksOverlay(advancedGuiHandlers, ingredientRegistry);
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
-		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay, recipesGui, ingredientRegistry, advancedGuiHandlers);
+    IngredientBookmarks ingredientBookmarks = new IngredientBookmarks(ingredientRegistry);
+		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay, recipesGui, ingredientRegistry, advancedGuiHandlers, ingredientBookmarks, bookmarksOverlay);
 		Internal.setRuntime(jeiRuntime);
 		Log.info("Built    runtime in {} ms", System.currentTimeMillis() - start_time);
 

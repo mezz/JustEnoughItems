@@ -67,6 +67,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	private final GuiButton nextButton;
 	private final GuiButton backButton;
 	private final GuiButton configButton;
+  private final GuiButton clearButton;
 	private final IDrawable configButtonIcon;
 	private final IDrawable configButtonCheatIcon;
 	private final HoverChecker configButtonHoverChecker;
@@ -115,6 +116,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 
 		nextButton = new GuiButton(0, rightEdge - buttonSize, borderPadding, buttonSize, buttonSize, nextLabel);
 		backButton = new GuiButton(1, leftEdge, borderPadding, buttonSize, buttonSize, backLabel);
+    clearButton = new GuiButton(3, 0, borderPadding, buttonSize, buttonSize, "CLR");
 
 		final int searchFieldX;
 		final int searchFieldY = guiProperties.getScreenHeight() - searchHeight - borderPadding - 2;
@@ -292,6 +294,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		nextButton.drawButton(minecraft, mouseX, mouseY);
 		backButton.drawButton(minecraft, mouseX, mouseY);
 		configButton.drawButton(minecraft, mouseX, mouseY);
+    clearButton.drawButton(minecraft, mouseX, mouseY);
 
 		IDrawable icon = Config.isCheatItemsEnabled() ? configButtonCheatIcon : configButtonIcon;
 		icon.draw(minecraft, configButton.xPosition + 2, configButton.yPosition + 2);

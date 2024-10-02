@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.INbtRegistry;
+import mezz.jei.api.INbtRegistry.INbtInterpreter;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.gui.GuiHelper;
