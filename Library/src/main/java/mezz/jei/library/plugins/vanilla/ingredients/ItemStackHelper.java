@@ -63,7 +63,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getUniqueId(ItemStack ingredient, UidContext context) {
-		ErrorUtil.checkNotEmpty(ingredient);
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		return stackHelper.getUniqueIdentifierForStack(ingredient, context);
 	}
 
@@ -75,7 +75,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getWildcardId(ItemStack ingredient) {
-		ErrorUtil.checkNotEmpty(ingredient);
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		return StackHelper.getRegistryNameForStack(ingredient);
 	}
 
@@ -91,7 +91,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public String getDisplayModId(ItemStack ingredient) {
-		ErrorUtil.checkNotEmpty(ingredient);
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
 		return itemStackHelper.getCreatorModId(ingredient)
@@ -127,7 +127,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public ResourceLocation getResourceLocation(ItemStack ingredient) {
-		ErrorUtil.checkNotEmpty(ingredient);
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		Item item = ingredient.getItem();
 		return Services.PLATFORM
