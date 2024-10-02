@@ -9,6 +9,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -77,6 +78,22 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	}
 
 	@Nullable
+	public static <T> ITypedIngredient<?> createAndFilterInvalidForDisplay(
+		IIngredientManager ingredientManager,
+		@Nullable T ingredient,
+		boolean normalize
+	) {
+		if (ingredient == null) {
+			return null;
+		}
+		IIngredientType<T> ingredientType = ingredientManager.getIngredientTypeOrNull(ingredient);
+		if (ingredientType == null) {
+			return null;
+		}
+		return createAndFilterInvalidForDisplay(ingredientManager, ingredientType, ingredient, normalize);
+	}
+
+	@Nullable
 	public static <T> ITypedIngredient<T> createAndFilterInvalid(
 		IIngredientManager ingredientManager,
 		IIngredientType<T> ingredientType,
@@ -89,6 +106,21 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		return createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
+	}
+
+	@Nullable
+	public static <T> ITypedIngredient<T> createAndFilterInvalidForDisplay(
+		IIngredientManager ingredientManager,
+		IIngredientType<T> ingredientType,
+		@Nullable T ingredient,
+		boolean normalize
+	) {
+		if (ingredient == null) {
+			return null;
+		}
+
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		return createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize, false);
 	}
 
 	public static <T> List<ITypedIngredient<T>> createAndFilterInvalidNonnullList(
@@ -105,6 +137,37 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 			if (result != null) {
 				results.add(result);
 			}
+		}
+		return results;
+	}
+
+	public static <T> List<@Nullable ITypedIngredient<T>> createAndFilterInvalidListForDisplay(
+		IIngredientManager ingredientManager,
+		IIngredientType<T> ingredientType,
+		List<@Nullable T> ingredients,
+		boolean normalize
+	) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		List<@Nullable ITypedIngredient<T>> results = new ArrayList<>(ingredients.size());
+		for (@Nullable T ingredient : ingredients) {
+			@Nullable ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize, false);
+			results.add(result);
+		}
+		return results;
+	}
+
+	public static List<@Nullable ITypedIngredient<ItemStack>> createAndFilterInvalidListForDisplay(
+		IIngredientManager ingredientManager,
+		Ingredient ingredient,
+		boolean normalize
+	) {
+		ItemStack[] itemStacks = ingredient.getItems();
+		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
+
+		List<@Nullable ITypedIngredient<ItemStack>> results = new ArrayList<>(itemStacks.length);
+		for (ItemStack itemStack : itemStacks) {
+			@Nullable ITypedIngredient<ItemStack> result = createAndFilterInvalid(ingredientHelper, VanillaTypes.ITEM_STACK, itemStack, normalize, false);
+			results.add(result);
 		}
 		return results;
 	}
@@ -134,6 +197,17 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		@Nullable T ingredient,
 		boolean normalize
 	) {
+		return createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize, true);
+	}
+
+	@Nullable
+	private static <T> ITypedIngredient<T> createAndFilterInvalid(
+		IIngredientHelper<T> ingredientHelper,
+		IIngredientType<T> ingredientType,
+		@Nullable T ingredient,
+		boolean normalize,
+		boolean checkServer
+	) {
 		if (ingredient == null) {
 			return null;
 		}
@@ -144,7 +218,7 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 			if (!ingredientHelper.isValidIngredient(ingredient)) {
 				return null;
 			}
-			if (!ingredientHelper.isIngredientOnServer(ingredient)) {
+			if (checkServer && !ingredientHelper.isIngredientOnServer(ingredient)) {
 				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
 				LOGGER.warn("Ignoring ingredient that isn't on the server: {}", errorInfo);
 				return null;
@@ -165,6 +239,16 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		T ingredient = ingredientHelper.copyIngredient(value.getIngredient());
 		return createAndFilterInvalid(ingredientHelper, value.getType(), ingredient, false);
+	}
+
+	@Nullable
+	public static <T> ITypedIngredient<T> defensivelyCopyTypedIngredientForDisplay(IIngredientManager ingredientManager, ITypedIngredient<T> value) {
+		if (value instanceof TypedItemStack || value instanceof TypedIngredient) {
+			return value;
+		}
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
+		T ingredient = ingredientHelper.copyIngredient(value.getIngredient());
+		return TypedIngredient.createAndFilterInvalidForDisplay(ingredientManager, value.getType(), ingredient, false);
 	}
 
 	private final IIngredientType<T> ingredientType;
