@@ -1,10 +1,10 @@
 package mezz.jei.common.config;
 
+import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.config.file.IConfigSchema;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
-import mezz.jei.common.util.HorizontalAlignment;
 
 import java.nio.file.Path;
 
