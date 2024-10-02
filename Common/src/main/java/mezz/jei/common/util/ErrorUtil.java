@@ -80,17 +80,6 @@ public final class ErrorUtil {
 		return block.getClass().getName();
 	}
 
-
-	@SuppressWarnings("ConstantConditions")
-	public static void checkNotEmpty(ItemStack itemStack) {
-		if (itemStack == null) {
-			throw new NullPointerException("ItemStack must not be null.");
-		} else if (itemStack.isEmpty()) {
-			String info = getItemStackInfo(itemStack);
-			throw new IllegalArgumentException("ItemStack value must not be empty. " + info);
-		}
-	}
-
 	@SuppressWarnings("ConstantConditions")
 	public static void checkNotEmpty(ItemStack itemStack, String name) {
 		if (itemStack == null) {

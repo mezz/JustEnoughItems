@@ -77,7 +77,7 @@ public class StackHelper implements IStackHelper {
 	}
 
 	public static String getRegistryNameForStack(ItemStack stack) {
-		ErrorUtil.checkNotEmpty(stack, "stack");
+		ErrorUtil.checkNotNull(stack, "stack");
 
 		Item item = stack.getItem();
 		ResourceLocation key = RegistryUtil
