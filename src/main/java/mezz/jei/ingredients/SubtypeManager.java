@@ -45,7 +45,7 @@ public class SubtypeManager implements ISubtypeManager {
 	@Nullable
 	@Override
 	public String getSubtypeInfo(ItemStack itemStack, UidContext context) {
-		ErrorUtil.checkNotEmpty(itemStack);
+		ErrorUtil.checkNotNull(itemStack, "itemStack");
 
 		Item item = itemStack.getItem();
 		IIngredientSubtypeInterpreter<ItemStack> subtypeInterpreter = itemInterpreters.get(item);
