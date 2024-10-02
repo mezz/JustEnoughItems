@@ -216,7 +216,6 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 		);
 
 		for (Map.Entry<mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?>, List<Pair<Integer, IRecipeSlotDrawable>>> e : widgetSlots.entrySet()) {
-			// TODO: breaking change: add a type parameter to IRecipeLayoutBuilder to avoid this cast
 			@SuppressWarnings("unchecked")
 			mezz.jei.api.gui.widgets.ISlottedWidgetFactory<T> factory = (mezz.jei.api.gui.widgets.ISlottedWidgetFactory<T>) e.getKey();
 			List<IRecipeSlotDrawable> slots = sortSlots(e.getValue());
