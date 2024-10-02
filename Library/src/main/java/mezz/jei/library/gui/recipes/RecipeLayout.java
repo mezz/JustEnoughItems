@@ -95,6 +95,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 	private @Nullable ShapelessIcon shapelessIcon;
 	private final RecipeLayoutInputHandler<R> inputHandler;
 	private @Nullable RecipeLayoutLegacyAdapter<R> legacyAdapter;
+	private boolean extrasCreated = false;
 
 	private ImmutableRect2i area;
 
@@ -143,7 +144,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 				}
 				recipeLayout.addLegacyRecipeSlots(legacyAdapter.getRecipeSlots().getSlots());
 			}
-			recipeCategory.createRecipeExtras(recipeLayout, recipe, focuses);
 			return Optional.of(recipeLayout);
 		} catch (RuntimeException | LinkageError e) {
 			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getRecipeType(), e);
@@ -204,6 +204,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 		this.allSlots.addAll(recipeSlots);
 	}
 
+	public void ensureRecipeExtrasAreCreated() {
+		if (!extrasCreated) {
+			extrasCreated = true;
+			recipeCategory.createRecipeExtras(this, recipe, focuses);
+		}
+	}
+
 	@Override
 	public void setPosition(int posX, int posY) {
 		area = area.setPosition(posX, posY);
@@ -211,6 +218,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 
 	@Override
 	public void drawRecipe(PoseStack poseStack, int mouseX, int mouseY) {
+		ensureRecipeExtrasAreCreated();
 		@SuppressWarnings("removal")
 		IDrawable background = recipeCategory.getBackground();
 
@@ -285,6 +293,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 
 	@Override
 	public void drawOverlays(PoseStack poseStack, int mouseX, int mouseY) {
+		ensureRecipeExtrasAreCreated();
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
 		final int recipeMouseX = mouseX - area.getX();
@@ -374,6 +383,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 
 	@Override
 	public Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
+		ensureRecipeExtrasAreCreated();
 		final double recipeMouseX = mouseX - area.getX();
 		final double recipeMouseY = mouseY - area.getY();
 
@@ -420,6 +430,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 
 	@Override
 	public IRecipeSlotDrawablesView getRecipeSlots() {
+		ensureRecipeExtrasAreCreated();
 		return () -> Collections.unmodifiableList(recipeCategorySlots);
 	}
 
@@ -495,6 +506,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 
 	@Override
 	public void tick() {
+		ensureRecipeExtrasAreCreated();
 		for (IRecipeWidget widget : allWidgets) {
 			widget.tick();
 		}
