@@ -18,6 +18,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.recipes.VanillaClientRecipeLoader;
 import mezz.jei.common.util.ChatUtil;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.Translator;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.core.config.IWorldConfig;
@@ -129,6 +130,7 @@ public final class JeiStarter {
 				level.getRecipeManager().replaceRecipes(vanillaRecipes);
 			}
 		}
+		RegistryUtil.setRegistryAccess(level.registryAccess());
 
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
@@ -275,5 +277,6 @@ public final class JeiStarter {
 			stopCallback.onRuntimeStopped();
 		}
 		stopCallbacks.clear();
+		RegistryUtil.setRegistryAccess(null);
 	}
 }
