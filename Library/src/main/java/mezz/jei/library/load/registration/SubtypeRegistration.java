@@ -60,7 +60,7 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 	@Override
 	@Deprecated
 	public boolean hasSubtypeInterpreter(ItemStack itemStack) {
-		ErrorUtil.checkNotEmpty(itemStack);
+		ErrorUtil.checkNotEmpty(itemStack, "itemStack");
 		return interpreters.contains(VanillaTypes.ITEM_STACK, itemStack);
 	}
 
