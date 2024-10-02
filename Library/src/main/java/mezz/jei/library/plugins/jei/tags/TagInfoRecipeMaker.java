@@ -1,6 +1,7 @@
 package mezz.jei.library.plugins.jei.tags;
 
 import mezz.jei.api.constants.Tags;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeType;
@@ -58,11 +59,14 @@ public record TagInfoRecipeMaker<B, I>(
 
 	private static <B, I> List<ITypedIngredient<I>> getIngredients(Registry<B> registry, TagKey<B> tagKey, IIngredientType<I> ingredientType, Function<B, I> baseToIngredient, IIngredientManager ingredientManager) {
 		List<ITypedIngredient<I>> ingredients = new ArrayList<>();
+		IIngredientHelper<I> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		for (Holder<B> i : registry.getTagOrEmpty(tagKey)) {
 			B value = i.value();
 			I ingredient = baseToIngredient.apply(value);
-			TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false)
-				.ifPresent(ingredients::add);
+			ITypedIngredient<I> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false);
+			if (typedIngredient != null && !ingredientHelper.isHiddenFromRecipeViewersByTags(typedIngredient)) {
+				ingredients.add(typedIngredient);
+			}
 		}
 
 		return ingredients;

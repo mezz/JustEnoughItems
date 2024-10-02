@@ -229,8 +229,9 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		if (ingredient == null) {
 			return Optional.empty();
 		}
-		return TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false)
-			.map(i -> i);
+		return Optional.ofNullable(
+			TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false)
+		);
 	}
 
 	private IntSet getMatches(IFocusGroup focuses, RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients) {

@@ -13,8 +13,9 @@ import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -96,6 +97,18 @@ public interface IIngredientManager {
 
 	/**
 	 * Helper method to get ingredient type for an ingredient.
+	 * Returns null if there is no known type for the given ingredient.
+	 *
+	 * @since 10.57.0
+	 */
+	@Nullable
+	default <V> IIngredientType<V> getIngredientTypeOrNull(V ingredient) {
+		return getIngredientTypeChecked(ingredient)
+			.orElse(null);
+	}
+
+	/**
+	 * Helper method to get ingredient type for an ingredient.
 	 * Returns {@link Optional#empty()} if there is no known type for the given ingredient.
 	 *
 	 * @since 10.3.0
@@ -165,8 +178,11 @@ public interface IIngredientManager {
 	 * @since 10.23.0
 	 */
 	default <V> Optional<ITypedIngredient<V>> createTypedIngredient(V ingredient) {
-		return getIngredientTypeChecked(ingredient)
-			.flatMap(ingredientType -> createTypedIngredient(ingredientType, ingredient));
+		IIngredientType<V> ingredientType = getIngredientTypeOrNull(ingredient);
+		if (ingredientType == null) {
+			return Optional.empty();
+		}
+		return createTypedIngredient(ingredientType, ingredient);
 	}
 
 	/**

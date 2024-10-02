@@ -5,8 +5,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -41,9 +41,7 @@ public abstract class TypedItemStack implements ITypedIngredient<ItemStack> {
 
 	public static ITypedIngredient<ItemStack> create(ItemLike itemLike) {
 		Item item = itemLike.asItem();
-		@SuppressWarnings("deprecation")
-		Holder.Reference<Item> itemHolder = item.builtInRegistryHolder();
-		return new NormalizedTypedItem(itemHolder);
+		return new NormalizedTypedItem(item);
 	}
 
 	public static ITypedIngredient<ItemStack> normalize(ITypedIngredient<ItemStack> typedIngredient) {
@@ -65,9 +63,18 @@ public abstract class TypedItemStack implements ITypedIngredient<ItemStack> {
 	}
 
 	@Override
+	public final <B> B getBaseIngredient(IIngredientTypeWithSubtypes<B, ItemStack> ingredientType) {
+		Item item = getItem();
+		Class<? extends B> ingredientBaseClass = ingredientType.getIngredientBaseClass();
+		return ingredientBaseClass.cast(item);
+	}
+
+	@Override
 	public final IIngredientType<ItemStack> getType() {
 		return VanillaTypes.ITEM_STACK;
 	}
+
+	protected abstract Item getItem();
 
 	protected abstract TypedItemStack getNormalized();
 

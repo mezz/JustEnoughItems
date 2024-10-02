@@ -82,6 +82,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 	 */
 	@Unmodifiable
 	private final List<IRecipeSlotDrawable> allSlots;
+	private final IRecipeSlotsView recipeSlotsView;
 	private final List<IDrawable> drawables;
 	private final List<ISlottedRecipeWidget> slottedWidgets;
 	private final CycleTicker cycleTicker;
@@ -177,6 +178,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 
 		this.recipeCategorySlots = new ArrayList<>(recipeCategorySlots);
 		this.allSlots = new ArrayList<>(allSlots);
+		this.recipeSlotsView = new RecipeSlotsView(Collections.unmodifiableList(this.allSlots));
 		this.recipeBorderPadding = recipeBorderPadding;
 		this.area = new ImmutableRect2i(
 			0,
@@ -422,10 +424,9 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 		return area;
 	}
 
-	@SuppressWarnings("RedundantUnmodifiable")
 	@Override
 	public IRecipeSlotsView getRecipeSlotsView() {
-		return new RecipeSlotsView(allSlots);
+		return recipeSlotsView;
 	}
 
 	@Override
@@ -614,4 +615,5 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 		addWidget(textWidget);
 		return textWidget;
 	}
+
 }

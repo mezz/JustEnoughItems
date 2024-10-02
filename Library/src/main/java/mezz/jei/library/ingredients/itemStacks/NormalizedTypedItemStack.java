@@ -37,6 +37,11 @@ final class NormalizedTypedItemStack extends TypedItemStack {
 	}
 
 	@Override
+	protected Item getItem() {
+		return item;
+	}
+
+	@Override
 	public String toString() {
 		return "NormalizedTypedItemStack{" +
 			"item=" + item +
