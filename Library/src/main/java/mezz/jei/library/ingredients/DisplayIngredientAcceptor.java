@@ -18,6 +18,8 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -26,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIngredientAcceptor> {
 	private final IIngredientManager ingredientManager;
@@ -57,13 +58,22 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
-		List<Optional<ITypedIngredient<T>>> typedIngredients = TypedIngredient.createAndFilterInvalidList(this.ingredientManager, ingredientType, ingredients, false);
+		List<Optional<ITypedIngredient<T>>> typedIngredients = TypedIngredient.createUnvalidatedList(ingredientType, ingredients);
+		@SuppressWarnings("unchecked")
+		List<Optional<ITypedIngredient<?>>> castTypedIngredients = (List<Optional<ITypedIngredient<?>>>) (Object) typedIngredients;
+		this.ingredients.addAll(castTypedIngredients);
 
-		if (!typedIngredients.isEmpty()) {
-			for (Optional<ITypedIngredient<T>> typedIngredientOptional : typedIngredients) {
-				this.ingredients.add(typedIngredientOptional.map(Function.identity()));
-			}
-		}
+		return this;
+	}
+
+	@Override
+	public DisplayIngredientAcceptor addIngredients(Ingredient ingredient) {
+		Preconditions.checkNotNull(ingredient, "ingredient");
+
+		List<Optional<ITypedIngredient<ItemStack>>> typedIngredients = TypedIngredient.createUnvalidatedList(ingredient);
+		@SuppressWarnings("unchecked")
+		List<Optional<ITypedIngredient<?>>> castTypedIngredients = (List<Optional<ITypedIngredient<?>>>) (Object) typedIngredients;
+		this.ingredients.addAll(castTypedIngredients);
 
 		return this;
 	}
@@ -81,8 +91,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public <I> DisplayIngredientAcceptor addTypedIngredient(ITypedIngredient<I> typedIngredient) {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
-		Optional<ITypedIngredient<I>> copy = TypedIngredient.deepCopy(ingredientManager, typedIngredient);
-		this.ingredients.add(copy.map(Function.identity()));
+		this.ingredients.add(Optional.of(typedIngredient));
 
 		return this;
 	}
@@ -141,8 +150,12 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
-		Optional<ITypedIngredient<T>> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, false);
-		this.ingredients.add(typedIngredient.map(Function.identity()));
+		if (ingredient == null) {
+			this.ingredients.add(Optional.empty());
+		} else {
+			ITypedIngredient<T> typedIngredient = TypedIngredient.createUnvalidated(ingredientType, ingredient);
+			this.ingredients.add(Optional.of(typedIngredient));
+		}
 	}
 
 	@UnmodifiableView

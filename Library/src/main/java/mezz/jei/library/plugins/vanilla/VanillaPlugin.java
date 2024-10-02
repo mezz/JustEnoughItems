@@ -172,11 +172,11 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void registerIngredients(IModIngredientRegistration registration) {
 		ISubtypeManager subtypeManager = registration.getSubtypeManager();
-		StackHelper stackHelper = new StackHelper(subtypeManager);
-
-		List<ItemStack> itemStacks = ItemStackListFactory.create(stackHelper);
 		IColorHelper colorHelper = registration.getColorHelper();
+
+		StackHelper stackHelper = new StackHelper(subtypeManager);
 		ItemStackHelper itemStackHelper = new ItemStackHelper(stackHelper, colorHelper);
+		List<ItemStack> itemStacks = ItemStackListFactory.create(stackHelper, itemStackHelper);
 		ItemStackRenderer itemStackRenderer = new ItemStackRenderer();
 		registration.register(
 			VanillaTypes.ITEM_STACK,

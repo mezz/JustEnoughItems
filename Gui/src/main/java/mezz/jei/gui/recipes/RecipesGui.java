@@ -613,30 +613,43 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			double mouseY = input.getMouseY();
 			if (recipesGui.isMouseOver(mouseX, mouseY)) {
 				if (recipesGui.recipeCategoryTitle.isMouseOver(mouseX, mouseY)) {
-					if (input.is(keyBindings.getLeftClick()) && recipesGui.logic.showAllRecipes()) {
-						return Optional.of(this);
-					}
+					if (input.is(keyBindings.getLeftClick()))
+						if (input.isSimulate() || recipesGui.logic.showAllRecipes()) {
+							return Optional.of(this);
+						}
 				}
 			}
 
 			Minecraft minecraft = Minecraft.getInstance();
 			if (input.is(keyBindings.getCloseRecipeGui()) || input.is(minecraft.options.keyInventory)) {
-				recipesGui.onClose();
+				if (!input.isSimulate()) {
+					recipesGui.onClose();
+				}
 				return Optional.of(this);
 			} else if (input.is(keyBindings.getRecipeBack())) {
-				recipesGui.back();
+				if (!input.isSimulate()) {
+					recipesGui.back();
+				}
 				return Optional.of(this);
 			} else if (input.is(keyBindings.getNextCategory())) {
-				recipesGui.logic.nextRecipeCategory();
+				if (!input.isSimulate()) {
+					recipesGui.logic.nextRecipeCategory();
+				}
 				return Optional.of(this);
 			} else if (input.is(keyBindings.getPreviousCategory())) {
-				recipesGui.logic.previousRecipeCategory();
+				if (!input.isSimulate()) {
+					recipesGui.logic.previousRecipeCategory();
+				}
 				return Optional.of(this);
 			} else if (input.is(keyBindings.getNextRecipePage())) {
-				recipesGui.logic.nextPage();
+				if (!input.isSimulate()) {
+					recipesGui.logic.nextPage();
+				}
 				return Optional.of(this);
 			} else if (input.is(keyBindings.getPreviousRecipePage())) {
-				recipesGui.logic.previousPage();
+				if (!input.isSimulate()) {
+					recipesGui.logic.previousPage();
+				}
 				return Optional.of(this);
 			}
 

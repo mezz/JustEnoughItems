@@ -9,8 +9,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.world.item.ItemStack;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -18,8 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 public final class TypedIngredient<T> implements ITypedIngredient<T> {
-	private static final Logger LOGGER = LogManager.getLogger();
-
 	private static <T> void checkParameters(IIngredientType<T> ingredientType, T ingredient) {
 		Preconditions.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredient, "ingredient");
@@ -104,6 +101,33 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return results;
 	}
 
+	public static <T> List<Optional<ITypedIngredient<T>>> createUnvalidatedList(
+		IIngredientType<T> ingredientType,
+		List<@Nullable T> ingredients
+	) {
+		List<Optional<ITypedIngredient<T>>> results = new ArrayList<>(ingredients.size());
+		for (T ingredient : ingredients) {
+			if (ingredient == null) {
+				results.add(Optional.empty());
+			} else {
+				ITypedIngredient<T> result = createUnvalidated(ingredientType, ingredient);
+				results.add(Optional.of(result));
+			}
+		}
+		return results;
+	}
+
+	public static List<Optional<ITypedIngredient<ItemStack>>> createUnvalidatedList(Ingredient ingredient) {
+		ItemStack[] itemStacks = ingredient.getItems();
+
+		List<Optional<ITypedIngredient<ItemStack>>> results = new ArrayList<>(itemStacks.length);
+		for (ItemStack itemStack : itemStacks) {
+			ITypedIngredient<ItemStack> result = TypedItemStack.create(itemStack);
+			results.add(Optional.of(result));
+		}
+		return results;
+	}
+
 	public static <T> Optional<ITypedIngredient<T>> createAndFilterInvalid(
 		IIngredientHelper<T> ingredientHelper,
 		IIngredientType<T> ingredientType,
@@ -115,11 +139,6 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 				ingredient = ingredientHelper.normalizeIngredient(ingredient);
 			}
 			if (!ingredientHelper.isValidIngredient(ingredient)) {
-				return Optional.empty();
-			}
-			if (!ingredientHelper.isIngredientOnServer(ingredient)) {
-				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
-				LOGGER.warn("Ignoring ingredient that isn't on the server: {}", errorInfo);
 				return Optional.empty();
 			}
 		} catch (RuntimeException e) {
