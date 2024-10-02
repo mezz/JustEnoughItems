@@ -16,6 +16,7 @@ import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.library.color.ColorHelper;
 import mezz.jei.library.config.ColorNameConfig;
@@ -100,6 +101,7 @@ public final class JeiStarter {
 			return;
 		}
 		RegistryAccess registryAccess = minecraft.level.registryAccess();
+		RegistryUtil.setRegistryAccess(registryAccess);
 
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
@@ -178,5 +180,6 @@ public final class JeiStarter {
 		List<IModPlugin> plugins = data.plugins();
 		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
 		Internal.setRuntime(null);
+		RegistryUtil.setRegistryAccess(null);
 	}
 }
