@@ -1,6 +1,9 @@
 package mezz.jei.api.ingredients;
 
+import java.util.List;
+
 import mezz.jei.api.IJeiHelpers;
+import mezz.jei.gui.ingredients.IIngredientListElement;
 
 /**
  * The Ingredient bookmaks allows mods add and remove ingredients from JEI's
@@ -13,6 +16,9 @@ public interface IIngredientBookmarks {
   /**
    * Toggles visibility of ingredient in the bookmark list.
    */
-  void toggleIngredientBookmark(Object ingredient);
+  <V> void toggleIngredientBookmark(V ingredient);
 
+  List<IIngredientListElement> getIngredientList();
+
+  void clear();
 }

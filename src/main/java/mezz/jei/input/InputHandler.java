@@ -237,8 +237,9 @@ public class InputHandler {
         IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
         if (clicked != null) {
           ingredientBookmarks.toggleIngredientBookmark(clicked.getValue());
+          itemListOverlayInternal.updateLayout();
+          return true;
         }
-        return true;
       }
 
       if (itemListOverlayInternal != null && itemListOverlayInternal.onKeyPressed(typedChar, eventKey)) {

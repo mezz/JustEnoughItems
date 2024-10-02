@@ -1,35 +1,79 @@
 package mezz.jei;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import mezz.jei.api.ingredients.IIngredientBookmarks;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.gui.ingredients.IIngredientListElement;
+import mezz.jei.util.IngredientListElement;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 
 public class IngredientBookmarks implements IIngredientBookmarks {
   private final IIngredientRegistry ingredientRegistry;
-  private HashSet<String> bookmarkList = new HashSet<String>();
+  private List<String> bookmarkIds = new LinkedList<String>();
+  private HashMap<String, Object> bookmarkList = new HashMap<String, Object>();
 
   public IngredientBookmarks(IIngredientRegistry ingredientRegistry) {
     this.ingredientRegistry = ingredientRegistry;
   }
 
   @Override
-  public  void toggleIngredientBookmark(Object ingredient) {
-    IIngredientHelper<Object> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+  public <V> void  toggleIngredientBookmark(V ingredient) {
+    IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
     String uniqueId = ingredientHelper.getUniqueId(ingredient);
-    // System.out.println(ingredientHelper.getUniqueId(ingredient));
-    if (bookmarkList.contains(uniqueId)) {
-      bookmarkList.remove(uniqueId);
-    } else {
-      bookmarkList.add(uniqueId);
+
+    // find ingredient in registry
+    ImmutableCollection<Class> clazzes = ingredientRegistry.getRegisteredIngredientClasses();
+    for (Class<V> clazz: clazzes) {
+      ImmutableList<V> iList = ingredientRegistry.getIngredients(clazz);
+      IIngredientHelper<V> iHelper = ingredientRegistry.getIngredientHelper(clazz);
+      for (V i: iList) {
+        if (iHelper.getUniqueId(i).equals(uniqueId)) {
+          ingredient = i;
+          break;
+        }
+      }
     }
 
-    Iterator<String> iterator = bookmarkList.iterator();
-    System.out.println("Dumping bookmarks");
-    while(iterator.hasNext()) {
-      System.out.println(iterator.next());
+        // System.out.println(ingredientHelper.getUniqueId(ingredient));
+    if (bookmarkIds.contains(uniqueId)){
+      bookmarkIds.remove(uniqueId);
+      bookmarkList.remove(uniqueId);
+    } else {
+      bookmarkIds.add(uniqueId);
+      bookmarkList.put(uniqueId, ingredient);
     }
+  }
+
+  @Override
+  public List<IIngredientListElement> getIngredientList() {
+    List<IIngredientListElement> ingredientListElements = new LinkedList<IIngredientListElement>();
+
+    for (String uniqueId : bookmarkIds) {
+      Object ingredient = bookmarkList.get(uniqueId);
+
+      IIngredientHelper<Object> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
+      IIngredientRenderer<Object> ingredientRenderer = ingredientRegistry.getIngredientRenderer(ingredient);
+      IngredientListElement<Object> ingredientListElement = IngredientListElement.create(ingredient, ingredientHelper,
+          ingredientRenderer);
+      if (ingredientListElement != null) {
+        ingredientListElements.add(ingredientListElement);
+      }
+    }
+    return ingredientListElements;
+  }
+
+  @Override
+  public void clear(){
+    bookmarkIds.clear();
+    bookmarkList.clear();
   }
 }

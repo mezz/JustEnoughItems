@@ -4,8 +4,6 @@ import javax.annotation.Nullable;
 
 import mezz.jei.config.Config;
 import mezz.jei.config.OverlayToggleEvent;
-import mezz.jei.gui.BookmarksOverlay;
-import mezz.jei.gui.BookmarksOverlayInternal;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.ItemListOverlayInternal;
 import mezz.jei.gui.TooltipRenderer;
@@ -49,8 +47,6 @@ public class GuiEventHandler {
     if (screen instanceof GuiContainer || screen instanceof RecipesGui) {
       ItemListOverlay itemListOverlay = runtime.getItemListOverlay();
       ItemListOverlayInternal itemListOverlayInternal = itemListOverlay.create(screen);
-      BookmarksOverlay bookmarksOverlay = runtime.getBookmarksOverlay();
-      BookmarksOverlayInternal bookmarksOverlayInternal = bookmarksOverlay.create(screen);
       inputHandler = new InputHandler(runtime, itemListOverlayInternal);
     } else {
       inputHandler = null;
@@ -93,20 +89,6 @@ public class GuiEventHandler {
         itemListOverlayInternal.drawScreen(gui.mc, event.getMouseX(), event.getMouseY());
       }
     }
-    BookmarksOverlay bookmarksOverlay = runtime.getBookmarksOverlay();
-    BookmarksOverlayInternal bookmarksOverlayInternal = bookmarksOverlay.getInternal();
-    if (bookmarksOverlayInternal != null) {
-      GuiScreen gui = event.getGui();
-      if (bookmarksOverlayInternal.hasScreenChanged(gui)) {
-        bookmarksOverlayInternal = bookmarksOverlay.create(gui);
-        // TODO: inputHandler = new InputHandler(runtime, bookmarksOverlayInternal);
-      }
-
-      if (bookmarksOverlayInternal != null) {
-        bookmarksOverlayInternal.drawScreen(gui.mc, event.getMouseX(), event.getMouseY());
-      }
-    }
-
   }
 
   @SubscribeEvent
