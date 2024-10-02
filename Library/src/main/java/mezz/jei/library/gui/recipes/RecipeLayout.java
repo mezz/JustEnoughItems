@@ -9,6 +9,7 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawablesView;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
@@ -72,8 +73,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	/**
 	 * All slots, including slots handled by the recipe category and widgets.
 	 */
-	@Unmodifiable
-	private final List<IRecipeSlotDrawable> allSlots;
+	private final IRecipeSlotsView recipeSlotsView;
 	private final List<IDrawable> drawables;
 	private final List<ISlottedRecipeWidget> slottedWidgets;
 	private final CycleTicker cycleTicker;
@@ -156,7 +156,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		this.inputHandler = new RecipeLayoutInputHandler<>(this);
 
 		this.recipeCategorySlots = recipeCategorySlots;
-		this.allSlots = Collections.unmodifiableList(allSlots);
+		this.recipeSlotsView = new RecipeSlotsView(Collections.unmodifiableList(allSlots));
 		this.recipeBorderPadding = recipeBorderPadding;
 		this.area = new ImmutableRect2i(
 			0,
@@ -396,10 +396,9 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		return area;
 	}
 
-	@SuppressWarnings("RedundantUnmodifiable")
 	@Override
 	public IRecipeSlotsView getRecipeSlotsView() {
-		return () -> Collections.unmodifiableList(allSlots);
+		return recipeSlotsView;
 	}
 
 	@Override
@@ -527,5 +526,12 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		TextWidget textWidget = new TextWidget(text, 0, 0, maxWidth, maxHeight);
 		addWidget(textWidget);
 		return textWidget;
+	}
+
+	private record RecipeSlotsView(@Unmodifiable List<IRecipeSlotView> allSlots) implements IRecipeSlotsView {
+		@Override
+		public @Unmodifiable List<IRecipeSlotView> getSlotViews() {
+			return allSlots;
+		}
 	}
 }

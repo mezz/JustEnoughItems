@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.ingredients.TypedIngredient;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -69,21 +70,20 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 	}
 
 	public static <V> Focus<V> createFromApi(IIngredientManager ingredientManager, RecipeIngredientRole role, IIngredientType<V> ingredientType, V value) {
-		Optional<ITypedIngredient<V>> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, value, false)
-			.flatMap(i -> TypedIngredient.deepCopy(ingredientManager, i));
+		@Nullable ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, value, false);
 
-		if (typedIngredient.isEmpty()) {
+		if (typedIngredient == null) {
 			throw new IllegalArgumentException("Focus value is invalid: " + ErrorUtil.getIngredientInfo(value, ingredientType, ingredientManager));
 		}
-		return new Focus<>(role, typedIngredient.get());
+		return new Focus<>(role, typedIngredient);
 	}
 
 	public static <V> Focus<V> createFromApi(IIngredientManager ingredientManager, RecipeIngredientRole role, ITypedIngredient<V> typedIngredient) {
-		Optional<ITypedIngredient<V>> typedIngredientCopy = TypedIngredient.deepCopy(ingredientManager, typedIngredient);
-		if (typedIngredientCopy.isEmpty()) {
+		@Nullable ITypedIngredient<V> typedIngredientCopy = TypedIngredient.defensivelyCopyTypedIngredientFromApi(ingredientManager, typedIngredient);
+		if (typedIngredientCopy == null) {
 			throw new IllegalArgumentException("Focus value is invalid: " + ErrorUtil.getIngredientInfo(typedIngredient.getIngredient(), typedIngredient.getType(), ingredientManager));
 		}
-		return new Focus<>(role, typedIngredientCopy.get());
+		return new Focus<>(role, typedIngredientCopy);
 	}
 
 	@Override

@@ -38,6 +38,15 @@ public interface IIngredientHelper<V> {
 	String getUniqueId(V ingredient, UidContext context);
 
 	/**
+	 * Unique ID for use in comparing, blacklisting, and looking up ingredients.
+	 *
+	 * @since 11.41.0
+	 */
+	default String getUniqueId(ITypedIngredient<V> typedIngredient, UidContext context) {
+		return getUniqueId(typedIngredient.getIngredient(), context);
+	}
+
+	/**
 	 * Return true if the given ingredient can have subtypes.
 	 * For example in the vanilla game an enchanted book may have subtypes, but an apple does not.
 	 * <p>
@@ -56,6 +65,26 @@ public interface IIngredientHelper<V> {
 	 */
 	default String getWildcardId(V ingredient) {
 		return getUniqueId(ingredient, UidContext.Ingredient);
+	}
+
+	/**
+	 * Unique ID for use in grouping ingredients together.
+	 * This is used for hiding groups of ingredients together at once.
+	 *
+	 * @since 11.41.0
+	 */
+	default String getGroupingUid(V ingredient) {
+		return getWildcardId(ingredient);
+	}
+
+	/**
+	 * Unique ID for use in grouping ingredients together.
+	 * This is used for hiding groups of ingredients together at once.
+	 *
+	 * @since 11.41.0
+	 */
+	default String getGroupingUid(ITypedIngredient<V> typedIngredient) {
+		return getGroupingUid(typedIngredient.getIngredient());
 	}
 
 	/**
@@ -197,6 +226,17 @@ public interface IIngredientHelper<V> {
 	default boolean isHiddenFromRecipeViewersByTags(V ingredient) {
 		return getTagStream(ingredient)
 			.anyMatch(Tags.HIDDEN_FROM_RECIPE_VIEWERS::equals);
+	}
+
+	/**
+	 * Return true if the given ingredient is hidden from recipe viewers by its tags.
+	 *
+	 * @see Tags#HIDDEN_FROM_RECIPE_VIEWERS
+	 *
+	 * @since 11.41.0
+	 */
+	default boolean isHiddenFromRecipeViewersByTags(ITypedIngredient<V> ingredient) {
+		return isHiddenFromRecipeViewersByTags(ingredient.getIngredient());
 	}
 
 	/**

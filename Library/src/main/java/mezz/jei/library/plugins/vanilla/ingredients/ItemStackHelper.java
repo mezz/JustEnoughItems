@@ -6,6 +6,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
@@ -14,6 +15,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.common.util.TagUtil;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -75,6 +77,16 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	public String getWildcardId(ItemStack ingredient) {
 		ErrorUtil.checkNotEmpty(ingredient);
 		return StackHelper.getRegistryNameForStack(ingredient);
+	}
+
+	@Override
+	public String getGroupingUid(ITypedIngredient<ItemStack> typedIngredient) {
+		Item item = typedIngredient.getBaseIngredient(VanillaTypes.ITEM_STACK);
+		return Services.PLATFORM
+			.getRegistry(Registry.ITEM_REGISTRY)
+			.getRegistryName(item)
+			.map(ResourceLocation::toString)
+			.orElseThrow(() -> new IllegalStateException("item has no key in the Item registry: " + item));
 	}
 
 	@Override
@@ -200,10 +212,22 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public boolean isHiddenFromRecipeViewersByTags(ItemStack ingredient) {
-		if (ingredient.is(itemHiddenFromRecipeViewers)) {
+		return isHiddenFromRecipeViewersByTags(ingredient.getItemHolder());
+	}
+
+	@Override
+	public boolean isHiddenFromRecipeViewersByTags(ITypedIngredient<ItemStack> ingredient) {
+		Item item = ingredient.getBaseIngredient(VanillaTypes.ITEM_STACK);
+		@SuppressWarnings("deprecation")
+		Holder.Reference<Item> itemHolder = item.builtInRegistryHolder();
+		return isHiddenFromRecipeViewersByTags(itemHolder);
+	}
+
+	private boolean isHiddenFromRecipeViewersByTags(Holder<Item> itemHolder) {
+		if (itemHolder.is(itemHiddenFromRecipeViewers)) {
 			return true;
 		}
-		if (ingredient.getItem() instanceof BlockItem blockItem) {
+		if (itemHolder.value() instanceof BlockItem blockItem) {
 			Block block = blockItem.getBlock();
 			return block.builtInRegistryHolder().is(blockHiddenFromRecipeViewers);
 		}

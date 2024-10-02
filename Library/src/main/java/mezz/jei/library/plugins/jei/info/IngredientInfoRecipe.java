@@ -9,8 +9,8 @@ import mezz.jei.library.ingredients.TypedIngredient;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class IngredientInfoRecipe implements IJeiIngredientInfoRecipe {
 	private final List<FormattedText> description;
@@ -22,18 +22,14 @@ public class IngredientInfoRecipe implements IJeiIngredientInfoRecipe {
 		IIngredientType<T> ingredientType,
 		Component... descriptionComponents
 	) {
-		List<ITypedIngredient<?>> typedIngredients = ingredients.stream()
-			.map(i -> TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, i, true))
-			.<ITypedIngredient<?>>flatMap(Optional::stream)
-			.toList();
-
+		List<ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidNonnullList(ingredientManager, ingredientType, ingredients, true);
 		List<FormattedText> descriptionLines = StringUtil.expandNewlines(descriptionComponents);
 		return new IngredientInfoRecipe(typedIngredients, descriptionLines);
 	}
 
-	private IngredientInfoRecipe(List<ITypedIngredient<?>> ingredients, List<FormattedText> description) {
+	private IngredientInfoRecipe(List<? extends ITypedIngredient<?>> ingredients, List<FormattedText> description) {
 		this.description = description;
-		this.ingredients = ingredients;
+		this.ingredients = Collections.unmodifiableList(ingredients);
 	}
 
 	@Override

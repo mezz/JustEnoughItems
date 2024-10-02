@@ -41,4 +41,18 @@ public interface IIngredientType<T> {
 		}
 		return Optional.empty();
 	}
+
+	/**
+	 * Helper to cast an unknown ingredient to this type if it matches.
+	 *
+	 * @since 11.41.0
+	 */
+	@Nullable
+	default T getCastIngredient(@Nullable Object ingredient) {
+		Class<? extends T> ingredientClass = getIngredientClass();
+		if (ingredientClass.isInstance(ingredient)) {
+			return ingredientClass.cast(ingredient);
+		}
+		return null;
+	}
 }

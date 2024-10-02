@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
@@ -45,9 +46,11 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public <V> IIngredientHelper<V> getIngredientHelper(V ingredient) {
-		return getIngredientTypeChecked(ingredient)
-			.map(this::getIngredientHelper)
-			.orElseThrow(() -> new IllegalArgumentException("Unknown ingredient class: " + ingredient.getClass()));
+		IIngredientType<V> ingredientType = getIngredientType(ingredient);
+		if (ingredientType == null) {
+			throw new IllegalArgumentException("Unknown ingredient class: " + ingredient.getClass());
+		}
+		return getIngredientHelper(ingredientType);
 	}
 
 	@Override
@@ -61,9 +64,11 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public <V> IIngredientRenderer<V> getIngredientRenderer(V ingredient) {
-		return getIngredientTypeChecked(ingredient)
-			.map(this::getIngredientRenderer)
-			.orElseThrow(() -> new IllegalArgumentException("Unknown ingredient class: " + ingredient.getClass()));
+		IIngredientType<V> ingredientType = getIngredientType(ingredient);
+		if (ingredientType == null) {
+			throw new IllegalArgumentException("Unknown ingredient class: " + ingredient.getClass());
+		}
+		return getIngredientRenderer(ingredientType);
 	}
 
 	@Override
@@ -136,9 +141,16 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	@Override
-	public <V> Optional<IIngredientType<V>> getIngredientTypeChecked(V ingredient) {
+	@Nullable
+	public <V> IIngredientType<V> getIngredientTypeOrNull(V ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		return this.registeredIngredients.getIngredientType(ingredient);
+	}
+
+	@Override
+	public <V> Optional<IIngredientType<V>> getIngredientTypeChecked(V ingredient) {
+		IIngredientType<V> ingredientType = getIngredientTypeOrNull(ingredient);
+		return Optional.ofNullable(ingredientType);
 	}
 
 	@Override
@@ -151,7 +163,8 @@ public class IngredientManager implements IIngredientManager {
 	public <V> Optional<IIngredientType<V>> getIngredientTypeChecked(Class<? extends V> ingredientClass) {
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 
-		return this.registeredIngredients.getIngredientType(ingredientClass);
+		IIngredientType<V> ingredientType = this.registeredIngredients.getIngredientType(ingredientClass);
+		return Optional.ofNullable(ingredientType);
 	}
 
 	@SuppressWarnings("removal")
@@ -190,10 +203,7 @@ public class IngredientManager implements IIngredientManager {
 		ingredientInfo.removeIngredients(ingredients);
 
 		if (!this.listeners.isEmpty()) {
-			List<ITypedIngredient<V>> typedIngredients = ingredients.stream()
-				.flatMap(i -> TypedIngredient.createAndFilterInvalid(this, ingredientType, i, false).stream())
-				.toList();
-
+			List<ITypedIngredient<V>> typedIngredients = TypedIngredient.createAndFilterInvalidNonnullList(this, ingredientType, ingredients, false);
 			this.listeners.forEach(listener -> listener.onIngredientsRemoved(ingredientHelper, typedIngredients));
 		}
 	}
@@ -210,7 +220,8 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public <V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient) {
-		return TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, false);
+		@Nullable ITypedIngredient<V> result = TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, false);
+		return Optional.ofNullable(result);
 	}
 
 	@Override
@@ -226,11 +237,13 @@ public class IngredientManager implements IIngredientManager {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		ErrorUtil.checkNotNull(area, "area");
-		return TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, normalize)
-			.map(typedIngredient -> {
-				ImmutableRect2i slotArea = new ImmutableRect2i(area);
-				return new ClickableIngredient<>(typedIngredient, slotArea);
-			});
+		@Nullable ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, normalize);
+		if (typedIngredient == null) {
+			return Optional.empty();
+		}
+		ImmutableRect2i slotArea = new ImmutableRect2i(area);
+		ClickableIngredient<V> clickableIngredient = new ClickableIngredient<>(typedIngredient, slotArea);
+		return Optional.of(clickableIngredient);
 	}
 
 	@Override
@@ -246,7 +259,10 @@ public class IngredientManager implements IIngredientManager {
 		return registeredIngredients
 			.getIngredientInfo(ingredientType)
 			.getIngredientByUid(ingredientUuid)
-			.flatMap(i -> TypedIngredient.createAndFilterInvalid(this, ingredientType, i, true));
+			.flatMap(i -> {
+				@Nullable ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(this, ingredientType, i, true);
+				return Optional.ofNullable(typedIngredient);
+			});
 	}
 
 	@Override

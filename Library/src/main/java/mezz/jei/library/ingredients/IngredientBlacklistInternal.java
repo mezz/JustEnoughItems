@@ -15,25 +15,22 @@ public class IngredientBlacklistInternal implements IIngredientManager.IIngredie
 	private WeakReference<IngredientVisibility> ingredientVisibilityRef = new WeakReference<>(null);
 
 	public <V> void addIngredientToBlacklist(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
-		V ingredient = typedIngredient.getIngredient();
-		String uniqueName = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+		String uniqueName = ingredientHelper.getUniqueId(typedIngredient, UidContext.Ingredient);
 		if (uidBlacklist.add(uniqueName)) {
 			notifyListenersOfVisibilityChange(typedIngredient, false);
 		}
 	}
 
 	public <V> void removeIngredientFromBlacklist(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
-		V ingredient = typedIngredient.getIngredient();
-		String uniqueName = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+		String uniqueName = ingredientHelper.getUniqueId(typedIngredient, UidContext.Ingredient);
 		if (uidBlacklist.remove(uniqueName)) {
 			notifyListenersOfVisibilityChange(typedIngredient, true);
 		}
 	}
 
 	public <V> boolean isIngredientBlacklistedByApi(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
-		V ingredient = typedIngredient.getIngredient();
-		String uid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-		String uidWild = ingredientHelper.getWildcardId(ingredient);
+		String uid = ingredientHelper.getUniqueId(typedIngredient, UidContext.Ingredient);
+		String uidWild = ingredientHelper.getGroupingUid(typedIngredient);
 
 		if (uid.equals(uidWild)) {
 			return uidBlacklist.contains(uid);

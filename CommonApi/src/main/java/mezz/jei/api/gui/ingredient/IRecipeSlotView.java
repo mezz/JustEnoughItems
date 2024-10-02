@@ -11,8 +11,12 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -30,7 +34,7 @@ import java.util.stream.Stream;
 @ApiStatus.NonExtendable
 public interface IRecipeSlotView {
 	/**
-	 * All ingredient variations that can be shown.
+	 * All ingredient variations that can be shown, ignoring focus and visibility.
 	 *
 	 * @see #getItemStacks() to limit to only ItemStack ingredients.
 	 * @see #getIngredients(IIngredientType) to limit to one type of ingredient.
@@ -38,6 +42,15 @@ public interface IRecipeSlotView {
 	 * @since 9.3.0
 	 */
 	Stream<ITypedIngredient<?>> getAllIngredients();
+
+	/**
+	 * All ingredients, ignoring focus and visibility.
+	 * Null ingredients represent a "blank" drawn ingredient in the rotation.
+	 *
+	 * @since 11.41.0
+	 */
+	@Unmodifiable
+	List<@Nullable ITypedIngredient<?>> getAllIngredientsList();
 
 	/**
 	 * The ingredient variation that is shown at this moment.
@@ -74,9 +87,11 @@ public interface IRecipeSlotView {
 	 * @since 9.3.0
 	 */
 	default <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
-		return getAllIngredients()
-			.map(i -> i.getIngredient(ingredientType))
-			.flatMap(Optional::stream);
+		return getAllIngredientsList()
+			.stream()
+			.filter(Objects::nonNull)
+			.map(i -> i.getCastIngredient(ingredientType))
+			.filter(Objects::nonNull);
 	}
 
 	/**
@@ -97,7 +112,9 @@ public interface IRecipeSlotView {
 	 * @since 9.3.0
 	 */
 	default boolean isEmpty() {
-		return getAllIngredients().findAny().isEmpty();
+		return getAllIngredientsList()
+			.stream()
+			.noneMatch(Objects::nonNull);
 	}
 
 	/**
@@ -121,7 +138,7 @@ public interface IRecipeSlotView {
 	 */
 	default <T> Optional<T> getDisplayedIngredient(IIngredientType<T> ingredientType) {
 		return getDisplayedIngredient()
-			.flatMap(i -> i.getIngredient(ingredientType));
+			.map(i -> i.getCastIngredient(ingredientType));
 	}
 
 	/**

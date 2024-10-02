@@ -71,9 +71,10 @@ public class RecipeBookmark<R, I> implements IBookmark {
 			if (slotView.getRole() != role) {
 				continue;
 			}
-			Optional<ITypedIngredient<?>> outputOptional = slotView.getAllIngredients().findFirst();
-			if (outputOptional.isPresent()) {
-				return outputOptional.get();
+			for (@Nullable ITypedIngredient<?> ingredient : slotView.getAllIngredientsList()) {
+				if (ingredient != null) {
+					return ingredient;
+				}
 			}
 		}
 		return null;

@@ -7,6 +7,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.library.config.EditModeConfig;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,16 +44,18 @@ public class IngredientVisibility implements IIngredientVisibility {
 	@Override
 	public <V> boolean isIngredientVisible(IIngredientType<V> ingredientType, V ingredient) {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		return TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false)
-			.map(i -> isIngredientVisible(i, ingredientHelper))
-			.orElse(false);
+		@Nullable ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false);
+		if (typedIngredient == null) {
+			return false;
+		}
+		return isIngredientVisible(typedIngredient, ingredientHelper);
 	}
 
 	public <V> boolean isIngredientVisible(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
 		if (blacklist.isIngredientBlacklistedByApi(typedIngredient, ingredientHelper)) {
 			return false;
 		}
-		if (ingredientHelper.isHiddenFromRecipeViewersByTags(typedIngredient.getIngredient())) {
+		if (ingredientHelper.isHiddenFromRecipeViewersByTags(typedIngredient)) {
 			return false;
 		}
 		return worldConfig.isEditModeEnabled() || !editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient);
