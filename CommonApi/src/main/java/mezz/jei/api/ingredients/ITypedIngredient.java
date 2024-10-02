@@ -43,6 +43,17 @@ public interface ITypedIngredient<T> {
 	}
 
 	/**
+	 * @return the ingredient's base ingredient. (For example, an ItemStack's base ingredient is the Item)
+	 *
+	 * @see IIngredientTypeWithSubtypes#getBase
+	 *
+	 * @since 19.19.4
+	 */
+	default <B> B getBaseIngredient(IIngredientTypeWithSubtypes<B, T> ingredientType) {
+		return ingredientType.getBase(getIngredient());
+	}
+
+	/**
 	 * @return the ItemStack wrapped by this instance, only this holds an ItemStack ingredient.
 	 * This is useful when handling a wildcard generic instance of `ITypedIngredient<?>`.
 	 *

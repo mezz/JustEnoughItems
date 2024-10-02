@@ -2,10 +2,10 @@ package mezz.jei.library.ingredients.subtypes;
 
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class SubtypeInterpreters {
 	private final Map<Object, ISubtypeInterpreter<?>> map;
@@ -41,12 +41,18 @@ public class SubtypeInterpreters {
 		return true;
 	}
 
-	public <B, I> Optional<ISubtypeInterpreter<I>> get(IIngredientTypeWithSubtypes<B, I> type, I ingredient) {
+	@Nullable
+	public <B, I> ISubtypeInterpreter<I> get(IIngredientTypeWithSubtypes<B, I> type, I ingredient) {
 		B base = type.getBase(ingredient);
-		ISubtypeInterpreter<?> interpreter = map.get(base);
+		return getFromBase(type, base);
+	}
+
+	@Nullable
+	public <B, I> ISubtypeInterpreter<I> getFromBase(@SuppressWarnings("unused") IIngredientTypeWithSubtypes<B, I> type, B ingredientBase) {
+		ISubtypeInterpreter<?> interpreter = map.get(ingredientBase);
 		@SuppressWarnings("unchecked")
 		ISubtypeInterpreter<I> cast = (ISubtypeInterpreter<I>) interpreter;
-		return Optional.ofNullable(cast);
+		return cast;
 	}
 
 	public <B, T> boolean contains(IIngredientTypeWithSubtypes<B, T> type, T ingredient) {

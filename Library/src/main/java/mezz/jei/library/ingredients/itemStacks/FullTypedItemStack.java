@@ -31,6 +31,11 @@ final class FullTypedItemStack extends TypedItemStack {
 	}
 
 	@Override
+	protected Item getItem() {
+		return itemHolder.value();
+	}
+
+	@Override
 	public String toString() {
 		return "TypedItemStack{" +
 			"itemHolder=" + itemHolder +

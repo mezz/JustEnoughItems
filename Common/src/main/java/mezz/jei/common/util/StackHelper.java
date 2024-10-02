@@ -2,6 +2,7 @@ package mezz.jei.common.util;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IStackHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.core.registries.Registries;
@@ -44,6 +45,16 @@ public class StackHelper implements IStackHelper {
 	public Object getUidForStack(ItemStack stack, UidContext context) {
 		Item item = stack.getItem();
 		Object subtypeData = subtypeManager.getSubtypeData(stack, context);
+		if (subtypeData != null) {
+			return List.of(item, subtypeData);
+		}
+		return item;
+	}
+
+	@Override
+	public Object getUidForStack(ITypedIngredient<ItemStack> typedIngredient, UidContext context) {
+		Item item = typedIngredient.getBaseIngredient(VanillaTypes.ITEM_STACK);
+		Object subtypeData = subtypeManager.getSubtypeData(VanillaTypes.ITEM_STACK, typedIngredient, context);
 		if (subtypeData != null) {
 			return List.of(item, subtypeData);
 		}

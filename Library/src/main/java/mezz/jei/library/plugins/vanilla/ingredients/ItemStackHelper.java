@@ -6,6 +6,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
@@ -72,6 +73,13 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		ErrorUtil.checkNotEmpty(ingredient, "ingredient");
 		ErrorUtil.checkNotNull(context, "type");
 		return stackHelper.getUidForStack(ingredient, context);
+	}
+
+	@Override
+	public Object getUid(ITypedIngredient<ItemStack> typedIngredient, UidContext context) {
+		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
+		ErrorUtil.checkNotNull(context, "type");
+		return stackHelper.getUidForStack(typedIngredient, context);
 	}
 
 	@Override

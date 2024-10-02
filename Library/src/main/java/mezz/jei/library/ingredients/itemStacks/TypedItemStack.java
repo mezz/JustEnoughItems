@@ -5,7 +5,9 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.time.Duration;
@@ -54,9 +56,18 @@ public abstract class TypedItemStack implements ITypedIngredient<ItemStack> {
 	}
 
 	@Override
+	public final <B> B getBaseIngredient(IIngredientTypeWithSubtypes<B, ItemStack> ingredientType) {
+		Item item = getItem();
+		Class<? extends B> ingredientBaseClass = ingredientType.getIngredientBaseClass();
+		return ingredientBaseClass.cast(item);
+	}
+
+	@Override
 	public final IIngredientType<ItemStack> getType() {
 		return VanillaTypes.ITEM_STACK;
 	}
+
+	protected abstract Item getItem();
 
 	protected abstract TypedItemStack getNormalized();
 

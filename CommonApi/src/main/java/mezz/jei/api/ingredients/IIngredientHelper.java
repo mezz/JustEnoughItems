@@ -55,6 +55,21 @@ public interface IIngredientHelper<V> {
 		return getUniqueId(ingredient, context);
 	}
 
+
+	/**
+	 * Unique ID for use in comparing and looking up ingredients.
+	 *
+	 * Returns an {@link Object} so that UID creation can be optimized.
+	 * Make sure the returned value implements {@link Object#equals} and {@link Object#hashCode}.
+	 *
+	 * Replaces {@link #getUniqueId(Object, UidContext)}.
+	 *
+	 * @since 19.19.4
+	 */
+	default Object getUid(ITypedIngredient<V> typedIngredient, UidContext context) {
+		return getUniqueId(typedIngredient.getIngredient(), context);
+	}
+
 	/**
 	 * Unique ID for use in grouping ingredients together.
 	 * This is used for hiding groups of ingredients together at once.

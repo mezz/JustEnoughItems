@@ -86,6 +86,6 @@ public class RecipeMap {
 	private <T> Object getIngredientUid(ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> type = typedIngredient.getType();
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		return ingredientHelper.getUid(typedIngredient.getIngredient(), UidContext.Recipe);
+		return ingredientHelper.getUid(typedIngredient, UidContext.Recipe);
 	}
 }
