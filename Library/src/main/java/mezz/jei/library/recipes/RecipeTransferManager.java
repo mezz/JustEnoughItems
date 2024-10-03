@@ -11,10 +11,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 public class RecipeTransferManager implements IRecipeTransferManager {
 	private final ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers;
+	private final Set<AbstractContainerMenu> unsupportedContainers = new HashSet<>();
 
 	public RecipeTransferManager(ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers) {
 		this.recipeTransferHandlers = recipeTransferHandlers;
@@ -39,25 +42,30 @@ public class RecipeTransferManager implements IRecipeTransferManager {
 
 	@Nullable
 	private <C extends AbstractContainerMenu> MenuType<C> getMenuType(C container) {
+		if (unsupportedContainers.contains(container)) {
+			return null;
+		}
 		try {
 			@SuppressWarnings({"UnnecessaryLocalVariable", "unchecked"})
 			MenuType<C> cast = (MenuType<C>) container.getType();
 			return cast;
 		} catch (UnsupportedOperationException ignored) {
+			unsupportedContainers.add(container);
 			return null;
 		}
 	}
 
 	private <C extends AbstractContainerMenu, R> Optional<IRecipeTransferHandler<C, R>> getHandler(Class<? extends C> containerClass, @Nullable MenuType<C> menuType, RecipeType<?> recipeType) {
-		return Optional.ofNullable(recipeTransferHandlers.get(containerClass, recipeType))
-			.filter(handler -> {
-				Optional<? extends MenuType<?>> handlerMenuType = handler.getMenuType();
-				return handlerMenuType.isEmpty() || handlerMenuType.get().equals(menuType);
-			})
-			.flatMap(handler -> {
-				@SuppressWarnings("unchecked")
-				IRecipeTransferHandler<C, R> cast = (IRecipeTransferHandler<C, R>) handler;
-				return Optional.of(cast);
-			});
+		IRecipeTransferHandler<?, ?> handler = recipeTransferHandlers.get(containerClass, recipeType);
+		if (handler == null) {
+			return Optional.empty();
+		}
+		Optional<? extends MenuType<?>> handlerMenuType = handler.getMenuType();
+		if (handlerMenuType.isEmpty() || handlerMenuType.get().equals(menuType)) {
+			@SuppressWarnings("unchecked")
+			IRecipeTransferHandler<C, R> cast = (IRecipeTransferHandler<C, R>) handler;
+			return Optional.of(cast);
+		}
+		return Optional.empty();
 	}
 }
