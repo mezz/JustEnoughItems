@@ -67,7 +67,7 @@ public interface IIngredientHelper<V> {
 	 * @since 19.19.4
 	 */
 	default Object getUid(ITypedIngredient<V> typedIngredient, UidContext context) {
-		return getUniqueId(typedIngredient.getIngredient(), context);
+		return getUid(typedIngredient.getIngredient(), context);
 	}
 
 	/**
