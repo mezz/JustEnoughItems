@@ -87,8 +87,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	private final List<Rectangle> guiAreas;
 	private List<IAdvancedGuiHandler<?>> activeAdvancedGuiHandlers = Collections.emptyList();
 
-	public ItemListOverlayInternal(ItemListOverlay parent, IIngredientRegistry ingredientRegistry, GuiScreen guiScreen,
-			GuiProperties guiProperties) {
+	public ItemListOverlayInternal(ItemListOverlay parent, IIngredientRegistry ingredientRegistry, GuiScreen guiScreen, GuiProperties guiProperties) {
 		this.parent = parent;
 
 		this.guiBookmarks = new GuiIngredientFastList(ingredientRegistry);
@@ -106,8 +105,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		final int columns = getColumns(guiProperties);
 		final int rows = getRows(guiProperties);
 		final int xSize = columns * itemStackWidth;
-		final int xEmptySpace = guiProperties.getScreenWidth() - guiProperties.getGuiLeft() - guiProperties.getGuiXSize()
-				- xSize;
+		final int xEmptySpace = guiProperties.getScreenWidth() - guiProperties.getGuiLeft() - guiProperties.getGuiXSize() - xSize;
 
 		final int leftEdge = guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + (xEmptySpace / 2);
 		final int rightEdge = leftEdge + xSize;
@@ -139,15 +137,13 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		}
 
 		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
-		searchField = new GuiTextFieldFilter(0, fontRenderer, searchFieldX, searchFieldY, searchFieldWidth, searchHeight,
-				parent.getItemFilter());
+		searchField = new GuiTextFieldFilter(0, fontRenderer, searchFieldX, searchFieldY, searchFieldWidth, searchHeight, parent.getItemFilter());
 		setKeyboardFocus(false);
 
 		int configButtonX = searchFieldX + searchFieldWidth + 1;
 		int configButtonY = guiProperties.getScreenHeight() - buttonSize - borderPadding;
 		configButton = new GuiButton(2, configButtonX, configButtonY, buttonSize, buttonSize, "");
-		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN,
-				Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
+		ResourceLocation configButtonIconLocation = new ResourceLocation(Constants.RESOURCE_DOMAIN, Constants.TEXTURE_RECIPE_BACKGROUND_PATH);
 		GuiHelper guiHelper = Internal.getHelpers().getGuiHelper();
 		configButtonIcon = guiHelper.createDrawable(configButtonIconLocation, 0, 166, 16, 16);
 		configButtonCheatIcon = guiHelper.createDrawable(configButtonIconLocation, 16, 166, 16, 16);
@@ -186,8 +182,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	}
 
 	@Nullable
-	private <T extends GuiContainer> List<Rectangle> getGuiAreas(GuiContainer gui,
-			IAdvancedGuiHandler<T> advancedGuiHandler) {
+	private <T extends GuiContainer> List<Rectangle> getGuiAreas(GuiContainer gui, IAdvancedGuiHandler<T> advancedGuiHandler) {
 		Class<T> guiClass = advancedGuiHandler.getGuiContainerClass();
 		if (guiClass.isInstance(gui)) {
 			T guiT = guiClass.cast(gui);
@@ -217,8 +212,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		return false;
 	}
 
-	private static void createItemButtons(GuiIngredientFastList guiItemStacks, @Nullable List<Rectangle> guiAreas,
-			final int xStart, final int yStart, final int columnCount, final int rowCount) {
+	private static void createItemButtons(GuiIngredientFastList guiItemStacks, @Nullable List<Rectangle> guiAreas, final int xStart, final int yStart, final int columnCount, final int rowCount) {
 		guiItemStacks.clear();
 
 		for (int row = 0; row < rowCount; row++) {
@@ -303,8 +297,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	public void drawScreen(Minecraft minecraft, int mouseX, int mouseY) {
 		GlStateManager.disableLighting();
 
-		minecraft.fontRendererObj.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(),
-				true);
+		minecraft.fontRendererObj.drawString(pageNumDisplayString, pageNumDisplayX, pageNumDisplayY, Color.white.getRGB(), true);
 		searchField.drawTextBox();
 
 		nextButton.drawButton(minecraft, mouseX, mouseY);
@@ -384,7 +377,8 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 			if (Config.isCheatItemsEnabled()) {
 				List<String> tooltip = Arrays.asList(
 						configString,
-						TextFormatting.RED + Translator.translateToLocal("jei.tooltip.cheat.mode"));
+						TextFormatting.RED + Translator.translateToLocal("jei.tooltip.cheat.mode")
+				);
 				TooltipRenderer.drawHoveringText(minecraft, tooltip, mouseX, mouseY);
 			} else {
 				TooltipRenderer.drawHoveringText(minecraft, configString, mouseX, mouseY);
@@ -502,8 +496,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 			return true;
 		} else if (configButton.mousePressed(minecraft, mouseX, mouseY)) {
 			configButton.playPressSound(minecraft.getSoundHandler());
-			if (Keyboard.getEventKeyState()
-					&& (Keyboard.getEventKey() == Keyboard.KEY_LCONTROL || Keyboard.getEventKey() == Keyboard.KEY_RCONTROL)) {
+			if (Keyboard.getEventKeyState() && (Keyboard.getEventKey() == Keyboard.KEY_LCONTROL || Keyboard.getEventKey() == Keyboard.KEY_RCONTROL)) {
 				Config.toggleCheatItemsEnabled();
 			} else {
 				if (minecraft.currentScreen != null) {
@@ -559,8 +552,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 
 	// Finds the right edge of the inventory screen
 	private static int getItemButtonXSpace(GuiProperties guiProperties) {
-		return guiProperties.getScreenWidth()
-				- (guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + (2 * borderPadding));
+		return guiProperties.getScreenWidth() - (guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + (2 * borderPadding));
 	}
 
 	private static int getItemButtonYSpace(GuiProperties guiProperties) {

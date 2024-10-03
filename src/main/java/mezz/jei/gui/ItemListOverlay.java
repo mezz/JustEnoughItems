@@ -27,8 +27,7 @@ public class ItemListOverlay implements IItemListOverlay {
 	@Nullable
 	private ItemListOverlayInternal internal;
 
-	public ItemListOverlay(ItemFilter itemFilter, List<IAdvancedGuiHandler<?>> advancedGuiHandlers,
-			IIngredientRegistry ingredientRegistry, IIngredientBookmarks ingredientBookmarks) {
+	public ItemListOverlay(ItemFilter itemFilter, List<IAdvancedGuiHandler<?>> advancedGuiHandlers, IIngredientRegistry ingredientRegistry, IIngredientBookmarks ingredientBookmarks) {
 		this.itemFilter = itemFilter;
 		this.advancedGuiHandlers = advancedGuiHandlers;
 		this.ingredientRegistry = ingredientRegistry;

@@ -20,9 +20,7 @@ public class JeiRuntime implements IJeiRuntime {
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers;
 	private final IngredientBookmarks ingredientBookmarks;
 
-	public JeiRuntime(RecipeRegistry recipeRegistry, ItemListOverlay itemListOverlay, RecipesGui recipesGui,
-			IngredientRegistry ingredientRegistry, List<IAdvancedGuiHandler<?>> advancedGuiHandlers,
-			IngredientBookmarks ingredientBookmarks) {
+	public JeiRuntime(RecipeRegistry recipeRegistry, ItemListOverlay itemListOverlay, RecipesGui recipesGui, IngredientRegistry ingredientRegistry, List<IAdvancedGuiHandler<?>> advancedGuiHandlers, IngredientBookmarks ingredientBookmarks) {
 		this.recipeRegistry = recipeRegistry;
 		this.itemListOverlay = itemListOverlay;
 		this.recipesGui = recipesGui;

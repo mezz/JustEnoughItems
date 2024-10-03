@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 public class IngredientBookmarks implements IIngredientBookmarks {
 	private final IIngredientRegistry ingredientRegistry;
 
-	// Using both so cause linked list will retain order of insertion
+	// Using both cause linked list will retain order of insertion
 	private List<String> bookmarkIds = new LinkedList<String>();
 	private HashMap<String, Object> bookmarkList = new HashMap<String, Object>();
 
