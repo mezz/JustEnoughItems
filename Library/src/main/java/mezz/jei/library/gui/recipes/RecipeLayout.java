@@ -29,7 +29,6 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableCombined;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.gui.elements.TextWidget;
 import mezz.jei.common.gui.textures.Textures;
@@ -57,7 +56,6 @@ import java.util.Optional;
 
 public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasBuilder {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int DEFAULT_RECIPE_BORDER_PADDING = 4;
 	public static final int RECIPE_BUTTON_SIZE = 13;
 	public static final int RECIPE_BUTTON_SPACING = 2;
 
@@ -85,25 +83,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	private boolean extrasCreated = false;
 
 	private ImmutableRect2i area;
-
-	public static <T> Optional<IRecipeLayoutDrawable<T>> create(
-		IRecipeCategory<T> recipeCategory,
-		Collection<IRecipeCategoryDecorator<T>> decorators,
-		T recipe,
-		IFocusGroup focuses,
-		IIngredientManager ingredientManager
-	) {
-		DrawableNineSliceTexture recipeBackground = Internal.getTextures().getRecipeBackground();
-		return create(
-			recipeCategory,
-			decorators,
-			recipe,
-			focuses,
-			ingredientManager,
-			recipeBackground,
-			DEFAULT_RECIPE_BORDER_PADDING
-		);
-	}
 
 	public static <T> Optional<IRecipeLayoutDrawable<T>> create(
 		IRecipeCategory<T> recipeCategory,

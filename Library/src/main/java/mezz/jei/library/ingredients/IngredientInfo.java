@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.core.collect.ListMultiMap;
 import mezz.jei.library.load.registration.LegacyUidCodec;
@@ -81,7 +82,7 @@ public class IngredientInfo<T> {
 	}
 
 	@Unmodifiable
-	public Collection<String> getIngredientAliases(T ingredient) {
+	public Collection<String> getIngredientAliases(ITypedIngredient<T> ingredient) {
 		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
 		return aliases.get(uid);
 	}
@@ -91,7 +92,17 @@ public class IngredientInfo<T> {
 		this.aliases.put(uid, alias);
 	}
 
+	public void addIngredientAlias(ITypedIngredient<T> ingredient, String alias) {
+		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
+		this.aliases.put(uid, alias);
+	}
+
 	public void addIngredientAliases(T ingredient, Collection<String> aliases) {
+		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
+		this.aliases.putAll(uid, aliases);
+	}
+
+	public void addIngredientAliases(ITypedIngredient<T> ingredient, Collection<String> aliases) {
 		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
 		this.aliases.putAll(uid, aliases);
 	}

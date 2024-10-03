@@ -55,7 +55,6 @@ public interface IIngredientHelper<V> {
 		return getUniqueId(ingredient, context);
 	}
 
-
 	/**
 	 * Unique ID for use in comparing and looking up ingredients.
 	 *

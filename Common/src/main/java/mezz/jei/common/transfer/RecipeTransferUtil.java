@@ -3,10 +3,12 @@ package mezz.jei.common.transfer;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
@@ -20,9 +22,10 @@ import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,30 +186,18 @@ public final class RecipeTransferUtil {
 			.filter(r -> !r.isEmpty())
 			.toList();
 
+		UidHashStrategy uidHashStrategy = new UidHashStrategy(stackhelper);
+
 		for (Map.Entry<Slot, ItemStack> slotTuple : availableItemStacks.entrySet()) {
 			ItemStack slotItemStack = slotTuple.getValue();
 			Object slotItemStackUid = stackhelper.getUidForStack(slotItemStack, UidContext.Ingredient);
 
 			for (IRecipeSlotView ingredient : nonEmptyRequiredStacks) {
-				Set<Object> ingredientUids = slotUidCache.computeIfAbsent(ingredient, s ->
-					s.getItemStacks()
-					.map(i -> stackhelper.getUidForStack(i, UidContext.Ingredient))
-					.collect(Collectors.toSet())
-				);
+				Set<Object> ingredientUids = slotUidCache.computeIfAbsent(ingredient, s -> calculateUids(s, stackhelper));
 
 				if (ingredientUids.contains(slotItemStackUid)) {
 					relevantSlots
-						.computeIfAbsent(ingredient, it -> new Object2ObjectOpenCustomHashMap<>(new Hash.Strategy<>() {
-							@Override
-							public int hashCode(ItemStack o) {
-								return o.getItem().hashCode();
-							}
-
-							@Override
-							public boolean equals(ItemStack a, ItemStack b) {
-								return stackhelper.isEquivalent(a, b, UidContext.Ingredient);
-							}
-						}))
+						.computeIfAbsent(ingredient, it -> new Object2ObjectOpenCustomHashMap<>(uidHashStrategy))
 						.computeIfAbsent(slotItemStack, it -> new ArrayList<>())
 						.add(new PhantomSlotState(slotTuple.getKey(), slotItemStack));
 				}
@@ -298,6 +289,22 @@ public final class RecipeTransferUtil {
 		return transferOperations;
 	}
 
+	private static Set<Object> calculateUids(IRecipeSlotView recipeSlotView, IStackHelper stackhelper) {
+		List<@Nullable ITypedIngredient<?>> allIngredientsList = recipeSlotView.getAllIngredientsList();
+		Set<Object> uids = new HashSet<>(allIngredientsList.size());
+		for (ITypedIngredient<?> typedIngredient : allIngredientsList) {
+			if (typedIngredient == null) {
+				continue;
+			}
+			ITypedIngredient<ItemStack> typedItemStack = typedIngredient.cast(VanillaTypes.ITEM_STACK);
+			if (typedItemStack != null) {
+				Object uid = stackhelper.getUidForStack(typedItemStack, UidContext.Ingredient);
+				uids.add(uid);
+			}
+		}
+		return uids;
+	}
+
 	private record PhantomSlotState(Slot slot, ItemStack itemStack) {}
 
 	private record PhantomSlotStateList(List<PhantomSlotState> stateList, long totalItemCount) {
@@ -313,6 +320,24 @@ public final class RecipeTransferUtil {
 				}
 			}
 			return null;
+		}
+	}
+
+	private static class UidHashStrategy implements Hash.Strategy<ItemStack> {
+		private final IStackHelper stackhelper;
+
+		public UidHashStrategy(IStackHelper stackhelper) {
+			this.stackhelper = stackhelper;
+		}
+
+		@Override
+		public int hashCode(ItemStack o) {
+			return o.getItem().hashCode();
+		}
+
+		@Override
+		public boolean equals(ItemStack a, ItemStack b) {
+			return stackhelper.isEquivalent(a, b, UidContext.Ingredient);
 		}
 	}
 }

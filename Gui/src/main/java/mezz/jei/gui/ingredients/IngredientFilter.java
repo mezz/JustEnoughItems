@@ -136,7 +136,7 @@ public class IngredientFilter implements
 	) {
 		V ingredient = typedIngredient.getIngredient();
 		IIngredientType<V> type = typedIngredient.getType();
-		Function<ITypedIngredient<V>, Object> uidFunction = (i) -> ingredientHelper.getUid(i.getIngredient(), UidContext.Ingredient);
+		Function<ITypedIngredient<V>, Object> uidFunction = (i) -> ingredientHelper.getUid(i, UidContext.Ingredient);
 		Object ingredientUid = uidFunction.apply(typedIngredient);
 		String lowercaseDisplayName = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
 

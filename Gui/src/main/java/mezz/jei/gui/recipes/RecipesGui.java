@@ -125,8 +125,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			recipeManager,
 			recipeTransferManager,
 			this::updateLayout,
-			focusFactory,
-			this::createRecipeLayoutWithButtons
+			focusFactory
 		);
 		this.recipeCatalysts = new RecipeCatalysts(recipeManager);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, recipeManager, guiHelper);
@@ -517,7 +516,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		final int availableHeight = recipeLayoutsArea.getHeight();
 
 		AbstractContainerMenu containerMenu = getParentContainerMenu();
-		List<RecipeLayoutWithButtons<?>> recipeLayoutsWithButtons = logic.getVisibleRecipeLayoutsWithButtons(availableHeight, minRecipePadding, containerMenu);
+		List<RecipeLayoutWithButtons<?>> recipeLayoutsWithButtons = logic.getVisibleRecipeLayoutsWithButtons(
+			availableHeight,
+			minRecipePadding,
+			containerMenu,
+			bookmarks,
+			this
+		);
 		int recipesPerPage = this.logic.getRecipesPerPage();
 
 		this.layouts.setRecipeLayoutsWithButtons(recipeLayoutsWithButtons);
@@ -546,21 +551,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			area.getWidth() - (2 * borderPadding),
 			area.getHeight() - (headerHeight + borderPadding + navBarPadding)
 		);
-	}
-
-	private <T> RecipeLayoutWithButtons<T> createRecipeLayoutWithButtons(IRecipeLayoutDrawable<T> recipeLayoutDrawable) {
-		RecipeTransferButton transferButton = RecipeTransferButton.create(
-			recipeLayoutDrawable,
-			this::onClose
-		);
-
-		RecipeBookmarkButton bookmarkButton = RecipeBookmarkButton.create(
-			recipeLayoutDrawable,
-			ingredientManager,
-			bookmarks
-		);
-
-		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, bookmarkButton);
 	}
 
 	@Nullable

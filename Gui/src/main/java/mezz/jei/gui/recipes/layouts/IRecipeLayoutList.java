@@ -1,7 +1,12 @@
 package mezz.jei.gui.recipes.layouts;
 
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.recipes.RecipeLayoutWithButtons;
+import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
@@ -15,13 +20,22 @@ public interface IRecipeLayoutList {
 		Set<RecipeSorterStage> recipeSorterStages,
 		@Nullable AbstractContainerMenu container,
 		@Nullable Player player,
-		List<? extends RecipeLayoutWithButtons<?>> unsortedList
+		IFocusedRecipes<?> selectedRecipes,
+		IFocusGroup focusGroup,
+		BookmarkList bookmarkList,
+		IRecipeManager recipeManager,
+		RecipesGui recipesGui
 	) {
-		if (recipeSorterStages.isEmpty()) {
-			return new UnsortedRecipeLayoutList(unsortedList);
-		} else {
-			return new LazySortedRecipeLayoutList(recipeSorterStages, container, player, unsortedList);
-		}
+		return new LazyRecipeLayoutList<>(
+			recipeSorterStages,
+			container,
+			player,
+			selectedRecipes,
+			bookmarkList,
+			recipeManager,
+			recipesGui,
+			focusGroup
+		);
 	}
 
 	int size();

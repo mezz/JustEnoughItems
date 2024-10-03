@@ -1,4 +1,4 @@
-package mezz.jei.gui.recipes.layouts;
+package mezz.jei.library.gui.recipes.layout;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
@@ -14,8 +14,8 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
+import mezz.jei.library.gui.OffsetJeiInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.input.handlers.OffsetJeiInputHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;

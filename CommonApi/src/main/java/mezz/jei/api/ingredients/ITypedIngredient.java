@@ -55,6 +55,22 @@ public interface ITypedIngredient<T> {
 	}
 
 	/**
+	 * @return this instance, only if it matches the given type.
+	 * This is useful when handling a wildcard generic instance of `ITypedIngredient<?>`.
+	 *
+	 * @since 19.19.6
+	 */
+	@Nullable
+	default <V> ITypedIngredient<V> cast(IIngredientType<V> ingredientType) {
+		if (getType().equals(ingredientType)) {
+			@SuppressWarnings("unchecked")
+			ITypedIngredient<V> cast = (ITypedIngredient<V>) this;
+			return cast;
+		}
+		return null;
+	}
+
+	/**
 	 * @return the ingredient's base ingredient. (For example, an ItemStack's base ingredient is the Item)
 	 *
 	 * @see IIngredientTypeWithSubtypes#getBase

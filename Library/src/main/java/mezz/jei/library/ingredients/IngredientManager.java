@@ -260,7 +260,7 @@ public class IngredientManager implements IIngredientManager {
 	private <T> Collection<String> getIngredientAliasesInternal(ITypedIngredient<T> typedIngredient) {
 		return registeredIngredients
 			.getIngredientInfo(typedIngredient.getType())
-			.getIngredientAliases(typedIngredient.getIngredient())
+			.getIngredientAliases(typedIngredient)
 			.stream()
 			.map(Translator::translateToLocal)
 			.sorted(String::compareToIgnoreCase)

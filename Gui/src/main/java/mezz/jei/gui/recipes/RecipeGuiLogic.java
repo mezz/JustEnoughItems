@@ -12,11 +12,9 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
-import mezz.jei.common.gui.elements.DrawableBlank;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.recipes.layouts.IRecipeLayoutList;
-import mezz.jei.gui.recipes.layouts.RecipeLayoutDrawableErrored;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.ILookupState;
 import mezz.jei.gui.recipes.lookups.IngredientLookupState;
@@ -28,7 +26,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
@@ -43,7 +40,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private ILookupState state;
 	private final Stack<ILookupState> history = new Stack<>();
 	private final IFocusFactory focusFactory;
-	private final IRecipeLayoutWithButtonsFactory recipeLayoutFactory;
 	private @Nullable IRecipeCategory<?> cachedRecipeCategory;
 	private @Nullable IRecipeLayoutList cachedRecipeLayoutsWithButtons;
 	private Set<RecipeSorterStage> cachedSorterStages = Set.of();
@@ -52,13 +48,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		IRecipeManager recipeManager,
 		IRecipeTransferManager recipeTransferManager,
 		IRecipeLogicStateListener stateListener,
-		IFocusFactory focusFactory,
-		IRecipeLayoutWithButtonsFactory recipeLayoutFactory
+		IFocusFactory focusFactory
 	) {
 		this.recipeManager = recipeManager;
 		this.recipeTransferManager = recipeTransferManager;
 		this.stateListener = stateListener;
-		this.recipeLayoutFactory = recipeLayoutFactory;
 		List<IRecipeCategory<?>> recipeCategories = recipeManager.createRecipeCategoryLookup()
 			.get()
 			.toList();
@@ -202,7 +196,9 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	public List<RecipeLayoutWithButtons<?>> getVisibleRecipeLayoutsWithButtons(
 		int availableHeight,
 		int minRecipePadding,
-		@Nullable AbstractContainerMenu container
+		@Nullable AbstractContainerMenu container,
+		BookmarkList bookmarkList,
+		RecipesGui recipesGui
 	) {
 		Player player = Minecraft.getInstance().player;
 
@@ -218,7 +214,16 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		) {
 			IFocusedRecipes<?> focusedRecipes = this.state.getFocusedRecipes();
 
-			this.cachedRecipeLayoutsWithButtons = createRecipeLayoutsWithButtons(recipeSorterStages, focusedRecipes, container, player);
+			this.cachedRecipeLayoutsWithButtons = IRecipeLayoutList.create(
+				recipeSorterStages,
+				container,
+				player,
+				focusedRecipes,
+				state.getFocuses(),
+				bookmarkList,
+				recipeManager,
+				recipesGui
+			);
 			this.cachedRecipeCategory = recipeCategory;
 			this.cachedSorterStages = Set.copyOf(recipeSorterStages);
 		}
@@ -239,45 +244,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	@Override
 	public int getRecipesPerPage() {
 		return this.state.getRecipesPerPage();
-	}
-
-	@Unmodifiable
-	private <T> IRecipeLayoutList createRecipeLayoutsWithButtons(
-		Set<RecipeSorterStage> recipeSorterStages,
-		IFocusedRecipes<T> selectedRecipes,
-		@Nullable AbstractContainerMenu container,
-		@Nullable Player player
-	) {
-		IRecipeCategory<T> recipeCategory = selectedRecipes.getRecipeCategory();
-		List<T> recipes = selectedRecipes.getRecipes();
-		List<T> brokenRecipes = new ArrayList<>();
-
-		List<RecipeLayoutWithButtons<T>> results = recipes.stream()
-			.map(recipe -> {
-				if (recipeCategory.needsRecipeBorder()) {
-					DrawableNineSliceTexture recipeBackground = Internal.getTextures().getRecipeBackground();
-					return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses(), recipeBackground, 4)
-						.orElseGet(() -> {
-							brokenRecipes.add(recipe);
-							return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, 4);
-						});
-				} else {
-					return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses(), DrawableBlank.EMPTY, 0)
-						.orElseGet(() -> {
-							brokenRecipes.add(recipe);
-							return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, DrawableBlank.EMPTY, 0);
-						});
-				}
-			})
-			.map(recipeLayoutFactory::create)
-			.toList();
-
-		if (!brokenRecipes.isEmpty()) {
-			RecipeType<T> recipeType = recipeCategory.getRecipeType();
-			recipeManager.hideRecipes(recipeType, brokenRecipes);
-		}
-
-		return IRecipeLayoutList.create(recipeSorterStages, container, player, results);
 	}
 
 	@Override

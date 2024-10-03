@@ -24,7 +24,9 @@ import org.jetbrains.annotations.Nullable;
 public class RecipeTransferButton extends GuiIconToggleButton {
 	public static RecipeTransferButton create(
 		IRecipeLayoutDrawable<?> recipeLayout,
-		Runnable onClose
+		Runnable onClose,
+		@Nullable AbstractContainerMenu container,
+		@Nullable Player player
 	) {
 		Rect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
 		Rect2i layoutArea = recipeLayout.getRect();
@@ -35,6 +37,7 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 		IDrawable icon = textures.getRecipeTransfer();
 		RecipeTransferButton transferButton = new RecipeTransferButton(icon, recipeLayout, onClose);
 		transferButton.updateBounds(buttonArea);
+		transferButton.update(container, player);
 		return transferButton;
 	}
 
@@ -43,7 +46,6 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 	private @Nullable IRecipeTransferError recipeTransferError;
 	private @Nullable AbstractContainerMenu parentContainer;
 	private @Nullable Player player;
-	private boolean initialized = false;
 
 	private RecipeTransferButton(IDrawable icon, IRecipeLayoutDrawable<?> recipeLayout, Runnable onClose) {
 		super(icon, icon);
@@ -54,7 +56,6 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 	public void update(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
 		this.player = player;
 		this.parentContainer = parentContainer;
-		this.initialized = true;
 
 		if (parentContainer != null && player != null) {
 			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
@@ -125,14 +126,7 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 		}
 	}
 
-	public boolean isInitialized() {
-		return initialized;
-	}
-
 	public int getMissingCountHint() {
-		if (!initialized) {
-			return -1;
-		}
 		if (recipeTransferError == null) {
 			return 0;
 		}
