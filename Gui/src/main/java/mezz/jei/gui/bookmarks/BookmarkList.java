@@ -4,6 +4,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientConfig;
@@ -13,6 +14,7 @@ import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import net.minecraft.core.RegistryAccess;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -167,6 +169,18 @@ public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
 		return bookmarksList.stream()
 			.<IElement<?>>map(IBookmark::getElement)
 			.toList();
+	}
+
+	@Nullable
+	public <R> RecipeBookmark<R, ?> getMatchingBookmark(RecipeType<R> recipeType, R recipe) {
+		for (IBookmark bookmark : bookmarksList) {
+			if (bookmark instanceof RecipeBookmark<?, ?> recipeBookmark && recipeBookmark.isRecipe(recipeType, recipe)) {
+				@SuppressWarnings("unchecked")
+				RecipeBookmark<R, ?> castBookmark = (RecipeBookmark<R, ?>) recipeBookmark;
+				return castBookmark;
+			}
+		}
+		return null;
 	}
 
 	public boolean isEmpty() {

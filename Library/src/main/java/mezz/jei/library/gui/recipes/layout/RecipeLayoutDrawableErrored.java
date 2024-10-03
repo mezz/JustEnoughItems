@@ -1,0 +1,199 @@
+package mezz.jei.library.gui.recipes.layout;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
+import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
+import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.gui.widgets.IScrollBoxWidget;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.common.Internal;
+import mezz.jei.common.util.ImmutablePoint2i;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.library.gui.OffsetJeiInputHandler;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable {
+	private final IRecipeCategory<R> recipeCategory;
+	private final R recipe;
+	private final IScrollBoxWidget scrollBoxWidget;
+	private final IJeiInputHandler inputHandler;
+	private final IScalableDrawable background;
+	private final int borderPadding;
+	private ImmutableRect2i area;
+
+	public RecipeLayoutDrawableErrored(IRecipeCategory<R> recipeCategory, R recipe, IScalableDrawable background, int borderPadding) {
+		this.recipeCategory = recipeCategory;
+		this.recipe = recipe;
+		this.area = new ImmutableRect2i(0, 0, Math.max(100, recipeCategory.getWidth()), recipeCategory.getHeight());
+		this.background = background;
+		this.borderPadding = borderPadding;
+
+		List<FormattedText> lines = new ArrayList<>();
+		lines.add(new TranslatableComponent("gui.jei.category.recipe.crashed").withStyle(ChatFormatting.RED));
+		lines.add(new TextComponent(""));
+		lines.add(new TextComponent(recipeCategory.getRecipeType().getUid().toString()).withStyle(ChatFormatting.GRAY));
+		ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
+		if (registryName != null) {
+			lines.add(new TextComponent(""));
+			lines.add(new TextComponent(registryName.toString()).withStyle(ChatFormatting.GRAY));
+		}
+
+		IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+		IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
+		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		this.scrollBoxWidget = guiHelper.createScrollBoxWidget(area.width(), area.getHeight(), 0, 0)
+			.setContents(lines);
+
+		this.inputHandler = new OffsetJeiInputHandler(this.scrollBoxWidget, this::getPosition);
+	}
+
+	private ImmutablePoint2i getPosition() {
+		return this.area.getPosition();
+	}
+
+	@Override
+	public void setPosition(int posX, int posY) {
+		this.area = this.area.setPosition(posX, posY);
+	}
+
+	@Override
+	public void drawRecipe(PoseStack poseStack, int mouseX, int mouseY) {
+		background.draw(poseStack, getRectWithBorder());
+
+		poseStack.pushPose();
+		try {
+			poseStack.translate(area.x(), area.y(), 0);
+			int recipeMouseX = mouseX - area.x();
+			int recipeMouseY = mouseY - area.y();
+			Rect2i widgetArea = scrollBoxWidget.getArea();
+			poseStack.pushPose();
+			try {
+				poseStack.translate(widgetArea.getX(), widgetArea.getY(), 0);
+				scrollBoxWidget.drawWidget(poseStack, recipeMouseX - widgetArea.getX(), recipeMouseY - widgetArea.getY());
+			} finally {
+				poseStack.popPose();
+			}
+		} finally {
+			poseStack.popPose();
+		}
+	}
+
+	@Override
+	public void drawOverlays(PoseStack poseStack, int mouseX, int mouseY) {
+
+	}
+
+	@Override
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return area.contains(mouseX, mouseY);
+	}
+
+	@Override
+	@Nullable
+	public <T> T getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<T> ingredientType) {
+		return null;
+	}
+
+	@Override
+	public Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY) {
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
+		return Optional.empty();
+	}
+
+	@Override
+	public Rect2i getRect() {
+		return area.toMutable();
+	}
+
+	@Override
+	public Rect2i getRectWithBorder() {
+		return area.expandBy(borderPadding).toMutable();
+	}
+
+	@Override
+	public Rect2i getRecipeTransferButtonArea() {
+		return new Rect2i(0, 0, 0, 0);
+	}
+
+	@Override
+	public Rect2i getRecipeBookmarkButtonArea() {
+		return new Rect2i(0, 0, 0, 0);
+	}
+
+	@Override
+	public IRecipeSlotsView getRecipeSlotsView() {
+		return List::of;
+	}
+
+	@Override
+	public IRecipeCategory<R> getRecipeCategory() {
+		return recipeCategory;
+	}
+
+	@Override
+	public R getRecipe() {
+		return recipe;
+	}
+
+	@Override
+	public IJeiInputHandler getInputHandler() {
+		return inputHandler;
+	}
+
+	@Override
+	public void tick() {
+		scrollBoxWidget.tick();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public IGuiItemStackGroup getItemStacks() {
+		throw new UnsupportedOperationException("An errored recipe layout cannot be configured");
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public <T> IGuiIngredientGroup<T> getIngredientsGroup(IIngredientType<T> ingredientType) {
+		throw new UnsupportedOperationException("An errored recipe layout cannot be configured");
+	}
+
+	@Nullable
+	@Override
+	public <T> IFocus<T> getFocus(IIngredientType<T> ingredientType) {
+		return null;
+	}
+
+	@Override
+	public void moveRecipeTransferButton(int posX, int posY) {
+
+	}
+
+	@Override
+	public void setShapeless() {
+
+	}
+}

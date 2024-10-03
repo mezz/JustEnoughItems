@@ -134,6 +134,22 @@ public interface IRecipeManager {
 
 	/**
 	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
+	 * If there is something wrong and the recipe layout crashes, JEI's implementation will display an error recipe instead.
+	 *
+	 * @param recipeCategory the recipe category that the recipe belongs to
+	 * @param recipe         the specific recipe to draw.
+	 * @param focusGroup     the focuses of the recipe layout.
+	 *
+	 * @since 10.58.0
+	 */
+	<T> IRecipeLayoutDrawable createRecipeLayoutDrawableOrShowError(
+		IRecipeCategory<T> recipeCategory,
+		T recipe,
+		IFocusGroup focusGroup
+	);
+
+	/**
+	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
 	 *
 	 * @param recipeCategory the recipe category that the recipe belongs to
 	 * @param recipe         the specific recipe to draw.

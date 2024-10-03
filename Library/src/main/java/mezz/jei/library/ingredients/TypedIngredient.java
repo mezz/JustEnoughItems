@@ -149,8 +149,11 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		List<@Nullable ITypedIngredient<T>> results = new ArrayList<>(ingredients.size());
-		for (@Nullable T ingredient : ingredients) {
-			@Nullable ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize, false);
+		for (@Nullable
+			T ingredient : ingredients
+		) {
+			@Nullable
+			ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize, false);
 			results.add(result);
 		}
 		return results;
@@ -166,7 +169,8 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 
 		List<@Nullable ITypedIngredient<ItemStack>> results = new ArrayList<>(itemStacks.length);
 		for (ItemStack itemStack : itemStacks) {
-			@Nullable ITypedIngredient<ItemStack> result = createAndFilterInvalid(ingredientHelper, VanillaTypes.ITEM_STACK, itemStack, normalize, false);
+			@Nullable
+			ITypedIngredient<ItemStack> result = createAndFilterInvalid(ingredientHelper, VanillaTypes.ITEM_STACK, itemStack, normalize, false);
 			results.add(result);
 		}
 		return results;
@@ -273,6 +277,17 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	@Override
 	public <V> Optional<V> getIngredient(IIngredientType<V> ingredientType) {
 		return ingredientType.castIngredient(ingredient);
+	}
+
+	@Override
+	@Nullable
+	public <V> ITypedIngredient<V> cast(IIngredientType<V> ingredientType) {
+		if (getType().equals(ingredientType)) {
+			@SuppressWarnings("unchecked")
+			ITypedIngredient<V> cast = (ITypedIngredient<V>) this;
+			return cast;
+		}
+		return null;
 	}
 
 	@Override

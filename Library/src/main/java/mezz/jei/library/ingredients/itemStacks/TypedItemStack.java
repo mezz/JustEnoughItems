@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -72,6 +73,17 @@ public abstract class TypedItemStack implements ITypedIngredient<ItemStack> {
 	@Override
 	public final IIngredientType<ItemStack> getType() {
 		return VanillaTypes.ITEM_STACK;
+	}
+
+	@Override
+	@Nullable
+	public final <V> ITypedIngredient<V> cast(IIngredientType<V> ingredientType) {
+		if (getType().equals(ingredientType)) {
+			@SuppressWarnings("unchecked")
+			ITypedIngredient<V> cast = (ITypedIngredient<V>) this;
+			return cast;
+		}
+		return null;
 	}
 
 	protected abstract Item getItem();

@@ -251,5 +251,15 @@ public class IngredientGridScrollStateTest {
 		public Integer getIngredient() {
 			return ingredient;
 		}
+
+		@Override
+		public <V> ITypedIngredient<V> cast(IIngredientType<V> ingredientType) {
+			if (getType().equals(ingredientType)) {
+				@SuppressWarnings("unchecked")
+				ITypedIngredient<V> cast = (ITypedIngredient<V>) this;
+				return cast;
+			}
+			return null;
+		}
 	}
 }
