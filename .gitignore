@@ -21,3 +21,6 @@ out/
 build/*
 /bin/
 changelog.html
+
+.DS_Store
+.vscode/

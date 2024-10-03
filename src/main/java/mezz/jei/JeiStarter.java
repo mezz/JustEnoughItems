@@ -58,10 +58,11 @@ public class JeiStarter {
 
 		Log.info("Building runtime...");
 		start_time = System.currentTimeMillis();
+		IngredientBookmarks ingredientBookmarks = new IngredientBookmarks(ingredientRegistry);
 		List<IAdvancedGuiHandler<?>> advancedGuiHandlers = modRegistry.getAdvancedGuiHandlers();
-		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter, advancedGuiHandlers, ingredientRegistry);
+		ItemListOverlay itemListOverlay = new ItemListOverlay(itemFilter, advancedGuiHandlers, ingredientRegistry, ingredientBookmarks);
 		RecipesGui recipesGui = new RecipesGui(recipeRegistry);
-		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay, recipesGui, ingredientRegistry, advancedGuiHandlers);
+		JeiRuntime jeiRuntime = new JeiRuntime(recipeRegistry, itemListOverlay, recipesGui, ingredientRegistry, advancedGuiHandlers, ingredientBookmarks);
 		Internal.setRuntime(jeiRuntime);
 		Log.info("Built    runtime in {} ms", System.currentTimeMillis() - start_time);
 

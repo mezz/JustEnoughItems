@@ -29,6 +29,7 @@ key.jei.showRecipe=Mostrar Receita para o Item
 key.jei.showUses=Mostrar Usos do Item
 key.jei.recipeBack=Mostrar Página Anterior de Receitas
 key.jei.toggleCheatMode=Alternar Entre Modo de Trapaça de Itens
+key.jei.toggleBookmark=Alternar Favorito
 
 # Config
 config.jei.default=Padrão

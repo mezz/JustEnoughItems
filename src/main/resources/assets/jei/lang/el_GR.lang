@@ -28,6 +28,7 @@ key.jei.showRecipe=Δείξε Συνταγή Αντικειμένου
 key.jei.showUses=Δείξε Χρήσεις Αντικειμένου
 key.jei.recipeBack=Δείξε Προηγούμενη Σελίδα Συνταγών
 key.jei.toggleCheatMode=Ενάλλαξε Λειτουργία Cheat Αντικειμένων
+key.jei.toggleBookmark=Εναλλαγή Σελιδοδείκτη
 
 # Config
 config.jei.default=Αρχικό

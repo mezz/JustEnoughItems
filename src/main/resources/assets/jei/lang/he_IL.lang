@@ -28,6 +28,7 @@ key.jei.showRecipe=הצג מתכונים לחפצים
 key.jei.showUses=הצג שימוש של חפצים
 key.jei.recipeBack=הצג עמוד חפצים קודם
 key.jei.toggleCheatMode=הפעל.הפסק מצב רמאות חפצים
+key.jei.toggleBookmark=הפעל/הפסק סימניה
 
 # Config
 config.jei.default=ברירת מחדל

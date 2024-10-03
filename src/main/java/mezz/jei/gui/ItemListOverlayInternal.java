@@ -67,6 +67,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	private final GuiButton nextButton;
 	private final GuiButton backButton;
 	private final GuiButton configButton;
+	private final GuiButton clearButton;
 	private final IDrawable configButtonIcon;
 	private final IDrawable configButtonCheatIcon;
 	private final HoverChecker configButtonHoverChecker;
@@ -77,6 +78,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	private int pageNumDisplayY;
 
 	private final GuiIngredientFastList guiIngredientList;
+	private final GuiIngredientFastList guiBookmarks;
 	@Nullable
 	private GuiIngredientFast hovered = null;
 
@@ -88,6 +90,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	public ItemListOverlayInternal(ItemListOverlay parent, IIngredientRegistry ingredientRegistry, GuiScreen guiScreen, GuiProperties guiProperties) {
 		this.parent = parent;
 
+		this.guiBookmarks = new GuiIngredientFastList(ingredientRegistry);
 		this.guiIngredientList = new GuiIngredientFastList(ingredientRegistry);
 
 		this.guiProperties = guiProperties;
@@ -111,10 +114,15 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		final int itemButtonsHeight = rows * itemStackHeight;
 
 		final int buttonStartY = buttonSize + (2 * borderPadding) + (yItemButtonSpace - itemButtonsHeight) / 2;
+		// this renders the items gui
 		createItemButtons(guiIngredientList, guiAreas, leftEdge, buttonStartY, columns, rows);
+		// Alight with bottom of clear button
+		createItemButtons(guiBookmarks, guiAreas, 0, guiProperties.getGuiTop() + buttonSize, columns, rows);
 
 		nextButton = new GuiButton(0, rightEdge - buttonSize, borderPadding, buttonSize, buttonSize, nextLabel);
 		backButton = new GuiButton(1, leftEdge, borderPadding, buttonSize, buttonSize, backLabel);
+		// align with the top of inventory gui
+		clearButton = new GuiButton(3, 0, guiProperties.getGuiTop(), buttonSize * 3, buttonSize, "CLEAR");
 
 		final int searchFieldX;
 		final int searchFieldY = guiProperties.getScreenHeight() - searchHeight - borderPadding - 2;
@@ -236,6 +244,9 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		ImmutableList<IIngredientListElement> ingredientList = parent.getItemFilter().getIngredientList();
 		guiIngredientList.set(firstItemIndex, ingredientList);
 
+		List<IIngredientListElement> bookmarkList = parent.getIngredientBookmarks().getIngredientList();
+		guiBookmarks.set(0, bookmarkList);
+
 		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
 
 		pageNumDisplayString = (getPageNum() + 1) + "/" + getPageCount();
@@ -292,6 +303,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		nextButton.drawButton(minecraft, mouseX, mouseY);
 		backButton.drawButton(minecraft, mouseX, mouseY);
 		configButton.drawButton(minecraft, mouseX, mouseY);
+		clearButton.drawButton(minecraft, mouseX, mouseY);
 
 		IDrawable icon = Config.isCheatItemsEnabled() ? configButtonCheatIcon : configButtonIcon;
 		icon.draw(minecraft, configButton.xPosition + 2, configButton.yPosition + 2);
@@ -305,10 +317,24 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 			hovered = guiIngredientList.render(minecraft, mouseOver, mouseX, mouseY);
 		}
 
+		if (hovered == null) {
+			hovered = guiBookmarks.render(minecraft, isMouseOver(mouseX, mouseY), mouseX, mouseY);
+		} else {
+			guiBookmarks.render(minecraft, isMouseOver(mouseX, mouseY), mouseX, mouseY);
+		}
+
 		Set<ItemStack> highlightedStacks = parent.getHighlightedStacks();
 		if (!highlightedStacks.isEmpty()) {
 			StackHelper helper = Internal.getHelpers().getStackHelper();
 			for (GuiIngredientFast guiItemStack : guiIngredientList.getAllGuiIngredients()) {
+				Object ingredient = guiItemStack.getIngredient();
+				if (ingredient instanceof ItemStack) {
+					if (helper.containsStack(highlightedStacks, (ItemStack) ingredient) != null) {
+						guiItemStack.drawHighlight();
+					}
+				}
+			}
+			for (GuiIngredientFast guiItemStack : guiBookmarks.getAllGuiIngredients()) {
 				Object ingredient = guiItemStack.getIngredient();
 				if (ingredient instanceof ItemStack) {
 					if (helper.containsStack(highlightedStacks, (ItemStack) ingredient) != null) {
@@ -366,16 +392,24 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 
 	@Override
 	public boolean isMouseOver(int mouseX, int mouseY) {
-		if (mouseX < guiProperties.getGuiLeft() + guiProperties.getGuiXSize()) {
-			return isSearchBarCentered(guiProperties) &&
-					(searchField.isMouseOver(mouseX, mouseY) || configButtonHoverChecker.checkHover(mouseX, mouseY));
+		// Clickable area is anywhere outside of the inventory screen. Should probably
+		// narrow this down, but I don't know how do detect other mods that might be
+		// using the screen.
+		if (mouseX > guiProperties.getGuiLeft() && mouseX < guiProperties.getGuiLeft() + guiProperties.getGuiXSize()
+				&& mouseY > guiProperties.getGuiTop() && mouseY < guiProperties.getGuiTop() + guiProperties.getGuiYSize()) {
+			return false;
 		}
+		// if (mouseX < guiProperties.getGuiLeft() + guiProperties.getGuiXSize()) {
+		// return isSearchBarCentered(guiProperties) &&
+		// (searchField.isMouseOver(mouseX, mouseY) ||
+		// configButtonHoverChecker.checkHover(mouseX, mouseY));
+		// }
 
-		for (Rectangle guiArea : guiAreas) {
-			if (guiArea.contains(mouseX, mouseY)) {
-				return false;
-			}
-		}
+		// for (Rectangle guiArea : guiAreas) {
+		// if (guiArea.contains(mouseX, mouseY)) {
+		// return false;
+		// }
+		// }
 
 		return true;
 	}
@@ -391,8 +425,15 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		if (clicked != null) {
 			setKeyboardFocus(false);
 			clicked.setAllowsCheating();
+			return clicked;
 		}
-		return clicked;
+		clicked = guiBookmarks.getIngredientUnderMouse(mouseX, mouseY);
+		if (clicked != null) {
+			setKeyboardFocus(false);
+			clicked.setAllowsCheating();
+			return clicked;
+		}
+		return null;
 	}
 
 	@Override
@@ -465,6 +506,11 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 				}
 			}
 			return true;
+		} else if (clearButton.mousePressed(minecraft, mouseX, mouseY)) {
+			clearButton.playPressSound(minecraft.getSoundHandler());
+			parent.getIngredientBookmarks().clear();
+			updateLayout();
+			return true;
 		}
 		return false;
 	}
@@ -504,6 +550,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		return false;
 	}
 
+	// Finds the right edge of the inventory screen
 	private static int getItemButtonXSpace(GuiProperties guiProperties) {
 		return guiProperties.getScreenWidth() - (guiProperties.getGuiLeft() + guiProperties.getGuiXSize() + (2 * borderPadding));
 	}
@@ -512,6 +559,7 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 		if (isSearchBarCentered(guiProperties)) {
 			return guiProperties.getScreenHeight() - (buttonSize + (3 * borderPadding));
 		}
+		// finds the height of the list screen area minus the search and the buttons
 		return guiProperties.getScreenHeight() - (buttonSize + searchHeight + 2 + (4 * borderPadding));
 	}
 
@@ -571,6 +619,13 @@ public class ItemListOverlayInternal implements IShowsRecipeFocuses, IMouseHandl
 	public ImmutableList<ItemStack> getVisibleStacks() {
 		ImmutableList.Builder<ItemStack> visibleStacks = ImmutableList.builder();
 		for (GuiIngredientFast guiItemStack : guiIngredientList.getAllGuiIngredients()) {
+			Object ingredient = guiItemStack.getIngredient();
+			if (ingredient instanceof ItemStack) {
+				ItemStack itemStack = (ItemStack) ingredient;
+				visibleStacks.add(itemStack);
+			}
+		}
+		for (GuiIngredientFast guiItemStack : guiBookmarks.getAllGuiIngredients()) {
 			Object ingredient = guiItemStack.getIngredient();
 			if (ingredient instanceof ItemStack) {
 				ItemStack itemStack = (ItemStack) ingredient;

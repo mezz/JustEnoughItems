@@ -27,6 +27,7 @@ key.jei.showRecipe=Zobrazit recept
 key.jei.showUses=Zobrazit použití
 key.jei.recipeBack=Zobrazit předchozí stránku
 key.jei.toggleCheatMode=Ovládat s Cheat Módem
+key.jei.toggleBookmark=Přepnout záložku
 
 # Config
 config.jei.default=Výchozí

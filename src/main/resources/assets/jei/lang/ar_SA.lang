@@ -27,6 +27,7 @@ key.jei.showRecipe=أظهر وصفات العناصر
 key.jei.showUses=أظهر فوائد العناصر
 key.jei.recipeBack=أظهر صفحة العناصر السابقة
 key.jei.toggleCheatMode=تبديل وضع غش العناصر
+key.jei.toggleBookmark=تبديل الإشارة المرجعية
 
 # Config
 config.jei.default=الأصلي

@@ -31,6 +31,7 @@ key.jei.showRecipe=アイテムのレシピの表示
 key.jei.showUses=アイテムの用途の表示
 key.jei.recipeBack=前のレシピページに戻る
 key.jei.toggleCheatMode=チートモードのオン/オフ
+key.jei.toggleBookmark=ブックマークの切り替え
 
 # Config
 config.jei.default=デフォルト

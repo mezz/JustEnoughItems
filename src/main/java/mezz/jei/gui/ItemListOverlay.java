@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 import mezz.jei.ItemFilter;
 import mezz.jei.api.IItemListOverlay;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.api.ingredients.IIngredientBookmarks;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.config.Config;
 import mezz.jei.util.Log;
@@ -21,14 +22,16 @@ public class ItemListOverlay implements IItemListOverlay {
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers;
 	private final IIngredientRegistry ingredientRegistry;
 	private final Set<ItemStack> highlightedStacks = new HashSet<ItemStack>();
+	private final IIngredientBookmarks ingredientBookmarks;
 
 	@Nullable
 	private ItemListOverlayInternal internal;
 
-	public ItemListOverlay(ItemFilter itemFilter, List<IAdvancedGuiHandler<?>> advancedGuiHandlers, IIngredientRegistry ingredientRegistry) {
+	public ItemListOverlay(ItemFilter itemFilter, List<IAdvancedGuiHandler<?>> advancedGuiHandlers, IIngredientRegistry ingredientRegistry, IIngredientBookmarks ingredientBookmarks) {
 		this.itemFilter = itemFilter;
 		this.advancedGuiHandlers = advancedGuiHandlers;
 		this.ingredientRegistry = ingredientRegistry;
+		this.ingredientBookmarks = ingredientBookmarks;
 	}
 
 	@Nullable
@@ -131,5 +134,9 @@ public class ItemListOverlay implements IItemListOverlay {
 			internal.close();
 		}
 		internal = null;
+	}
+
+	public IIngredientBookmarks getIngredientBookmarks() {
+		return ingredientBookmarks;
 	}
 }

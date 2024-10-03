@@ -6,6 +6,7 @@ import java.util.List;
 
 import mezz.jei.JeiRuntime;
 import mezz.jei.RecipeRegistry;
+import mezz.jei.api.ingredients.IIngredientBookmarks;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IFocus;
@@ -25,6 +26,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import net.minecraftforge.fluids.FluidStack;
 
 public class InputHandler {
 	private final RecipeRegistry recipeRegistry;
@@ -34,6 +36,7 @@ public class InputHandler {
 	private final ItemListOverlayInternal itemListOverlayInternal;
 	private final MouseHelper mouseHelper;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<IShowsRecipeFocuses>();
+	private final IIngredientBookmarks ingredientBookmarks;
 
 	private boolean clickHandled = false;
 
@@ -42,6 +45,7 @@ public class InputHandler {
 		this.ingredientRegistry = runtime.getIngredientRegistry();
 		this.recipesGui = runtime.getRecipesGui();
 		this.itemListOverlayInternal = itemListOverlayInternal;
+		this.ingredientBookmarks = runtime.getIngredientBookmarks();
 
 		this.mouseHelper = new MouseHelper();
 
@@ -217,11 +221,22 @@ public class InputHandler {
 		if (!isContainerTextFieldFocused()) {
 			final boolean showRecipe = KeyBindings.showRecipe.isActiveAndMatches(eventKey);
 			final boolean showUses = KeyBindings.showUses.isActiveAndMatches(eventKey);
+			final boolean toggleBookmark = KeyBindings.toggleBookmark.isActiveAndMatches(eventKey);
 			if (showRecipe || showUses) {
 				IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
 				if (clicked != null) {
 					IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
 					recipesGui.show(new Focus<Object>(mode, clicked.getValue()));
+					return true;
+				}
+			}
+
+			if (toggleBookmark) {
+				// get the bookmarks list and add or remove the clicked ingredient
+				IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(mouseHelper.getX(), mouseHelper.getY());
+				if (clicked != null) {
+					ingredientBookmarks.toggleIngredientBookmark(clicked.getValue());
+					itemListOverlayInternal.updateLayout();
 					return true;
 				}
 			}
