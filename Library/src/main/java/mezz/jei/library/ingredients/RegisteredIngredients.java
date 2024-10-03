@@ -1,5 +1,6 @@
 package mezz.jei.library.ingredients;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.common.util.ErrorUtil;
@@ -31,7 +32,7 @@ public class RegisteredIngredients {
 			.<IIngredientType<?>>map(IngredientInfo::getIngredientType)
 			.toList();
 
-		this.typeToInfo = Map.copyOf(ingredientInfoList);
+		this.typeToInfo = new Object2ObjectArrayMap<>(ingredientInfoList);
 
 		this.classToType = this.orderedTypes.stream()
 			.collect(Collectors.toMap(IIngredientType::getIngredientClass, Function.identity()));
