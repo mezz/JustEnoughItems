@@ -27,6 +27,7 @@ key.jei.showRecipe=Mostra la ricetta dell'item
 key.jei.showUses=Mostra gli usi dell'item
 key.jei.recipeBack=Torna alla ricetta precedente
 key.jei.toggleCheatMode=(Dis)attiva la modalita' cheat
+key.jei.toggleBookmark=(Dis)attiva segnalibro
 
 # Config
 config.jei.default=Default

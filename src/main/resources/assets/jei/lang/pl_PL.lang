@@ -27,6 +27,7 @@ key.jei.showRecipe=Pokaż recepturę
 key.jei.showUses=Pokaż zastosowanie
 key.jei.recipeBack=Pokaż poprzednią stronę
 key.jei.toggleCheatMode=Włącz tryb duplikacji przedmiotu
+key.jei.toggleBookmark=Przełącz zakładkę
 
 # Config
 config.jei.default=Domyślny

@@ -13,12 +13,12 @@ import mezz.jei.gui.ingredients.IIngredientListElement;
  * @Since JEI 3.14.9
  */
 public interface IIngredientBookmarks {
-  /**
-   * Toggles visibility of ingredient in the bookmark list.
-   */
-  <V> void toggleIngredientBookmark(V ingredient);
+	/**
+	 * Toggles visibility of ingredient in the bookmark list.
+	 */
+	<V> void toggleIngredientBookmark(V ingredient);
 
-  List<IIngredientListElement> getIngredientList();
+	List<IIngredientListElement> getIngredientList();
 
-  void clear();
+	void clear();
 }
