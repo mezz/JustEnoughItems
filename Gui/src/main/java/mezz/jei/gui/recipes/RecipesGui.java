@@ -31,6 +31,7 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.elements.GuiIconButton;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
@@ -132,6 +133,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			guiHelper,
 			this::updateLayout,
 			focusFactory,
+			bookmarkList,
 			this::createRecipeLayoutWithButtons
 		);
 		this.recipeCatalysts = new RecipeCatalysts(recipeManager);
@@ -560,18 +562,31 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		);
 	}
 
-	private <T> IRecipeLayoutWithButtons<T> createRecipeLayoutWithButtons(IRecipeLayoutDrawable<T> recipeLayoutDrawable) {
+	private <T> IRecipeLayoutWithButtons<T> createRecipeLayoutWithButtons(
+		IRecipeLayoutDrawable<T> recipeLayoutDrawable,
+		@Nullable RecipeBookmark<?, ?> recipeBookmark
+	) {
 		RecipeTransferButton transferButton = RecipeTransferButton.create(
 			recipeLayoutDrawable,
 			this::onClose
 		);
-		RecipeBookmarkButton bookmarkButton = RecipeBookmarkButton.create(
-			recipeLayoutDrawable,
-			ingredientManager,
-			bookmarkList,
-			recipeManager,
-			guiHelper
-		).orElse(null);
+
+		RecipeBookmarkButton bookmarkButton;
+		if (recipeBookmark == null) {
+			bookmarkButton = RecipeBookmarkButton.create(
+				recipeLayoutDrawable,
+				ingredientManager,
+				bookmarkList,
+				recipeManager,
+				guiHelper
+			).orElse(null);
+		} else {
+			bookmarkButton = RecipeBookmarkButton.create(
+				recipeLayoutDrawable,
+				bookmarkList,
+				recipeBookmark
+			);
+		}
 
 		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, bookmarkButton);
 	}

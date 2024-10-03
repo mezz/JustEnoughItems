@@ -27,9 +27,8 @@ public class TypedIngredientSerializer implements IJeiConfigValueSerializer<ITyp
 	}
 
 	public static <T> String getUid(IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
-		T ingredient = typedIngredient.getIngredient();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient);
-		return ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
+		return ingredientHelper.getUniqueId(typedIngredient, UidContext.Recipe);
 	}
 
 	@Override

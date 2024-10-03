@@ -21,7 +21,7 @@ public class IngredientBookmark<T> implements IBookmark {
 		IIngredientType<T> type = typedIngredient.getType();
 		typedIngredient = ingredientManager.normalizeTypedIngredient(typedIngredient);
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		String uniqueId = ingredientHelper.getUniqueId(typedIngredient.getIngredient(), UidContext.Ingredient);
+		String uniqueId = ingredientHelper.getUniqueId(typedIngredient, UidContext.Ingredient);
 		return new IngredientBookmark<>(typedIngredient, uniqueId);
 	}
 

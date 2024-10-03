@@ -105,7 +105,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(alias, "alias");
 
 		IngredientInfo<I> ingredientInfo = getIngredientInfo(typedIngredient.getType());
-		ingredientInfo.addIngredientAlias(typedIngredient.getIngredient(), alias);
+		ingredientInfo.addIngredientAlias(typedIngredient, alias);
 	}
 
 	@Override
@@ -146,7 +146,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(aliases, "aliases");
 
 		IngredientInfo<I> ingredientInfo = getIngredientInfo(typedIngredient.getType());
-		ingredientInfo.addIngredientAliases(typedIngredient.getIngredient(), aliases);
+		ingredientInfo.addIngredientAliases(typedIngredient, aliases);
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 			if (ingredientInfo == null) {
 				ingredientInfo = getIngredientInfo(ingredientType);
 			}
-			ingredientInfo.addIngredientAlias(typedIngredient.getIngredient(), alias);
+			ingredientInfo.addIngredientAlias(typedIngredient, alias);
 		}
 	}
 
@@ -201,7 +201,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 			if (ingredientInfo == null) {
 				ingredientInfo = getIngredientInfo(ingredientType);
 			}
-			ingredientInfo.addIngredientAliases(typedIngredient.getIngredient(), aliases);
+			ingredientInfo.addIngredientAliases(typedIngredient, aliases);
 		}
 	}
 

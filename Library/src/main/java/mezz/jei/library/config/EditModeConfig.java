@@ -101,10 +101,9 @@ public class EditModeConfig implements IEditModeConfig {
 	}
 
 	private static <V> String getIngredientUid(ITypedIngredient<V> typedIngredient, HideMode blacklistType, IIngredientHelper<V> ingredientHelper) {
-		final V ingredient = typedIngredient.getIngredient();
 		return switch (blacklistType) {
-			case SINGLE -> ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-			case WILDCARD -> ingredientHelper.getWildcardId(ingredient);
+			case SINGLE -> ingredientHelper.getUniqueId(typedIngredient, UidContext.Ingredient);
+			case WILDCARD -> ingredientHelper.getGroupingUid(typedIngredient);
 		};
 	}
 

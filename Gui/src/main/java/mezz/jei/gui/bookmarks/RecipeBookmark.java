@@ -8,6 +8,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.overlay.elements.IElement;
@@ -129,6 +130,19 @@ public class RecipeBookmark<R, I> implements IBookmark {
 
 	public RecipeIngredientRole getDisplayRole() {
 		return displayRole;
+	}
+
+	public <T> boolean isRecipe(RecipeType<T> otherType, T otherRecipe) {
+		RecipeType<R> recipeType = recipeCategory.getRecipeType();
+		if (recipeType.equals(otherType)) {
+			Class<? extends R> recipeClass = recipeType.getRecipeClass();
+			if (recipeClass.isInstance(otherRecipe)) {
+				R castRecipe = recipeClass.cast(otherRecipe);
+				ResourceLocation otherUid = recipeCategory.getRegistryName(castRecipe);
+				return recipeUid.equals(otherUid);
+			}
+		}
+		return false;
 	}
 
 	@Override

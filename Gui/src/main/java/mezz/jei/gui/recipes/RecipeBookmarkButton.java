@@ -28,17 +28,23 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 		IGuiHelper guiHelper
 	) {
 		return RecipeBookmark.create(recipeLayout, ingredientManager, recipeManager, guiHelper)
-			.map(recipeBookmark -> {
-				IDrawable icon = Internal.getTextures().getRecipeBookmark();
-				Rect2i area = recipeLayout.getRecipeBookmarkButtonArea();
-				Rect2i layoutArea = recipeLayout.getRect();
-				area.setX(area.getX() + layoutArea.getX());
-				area.setY(area.getY() + layoutArea.getY());
+			.map(recipeBookmark -> create(recipeLayout, bookmarks, recipeBookmark));
+	}
 
-				RecipeBookmarkButton bookmarkButton = new RecipeBookmarkButton(icon, bookmarks, recipeBookmark);
-				bookmarkButton.updateBounds(area);
-				return bookmarkButton;
-			});
+	public static RecipeBookmarkButton create(
+		IRecipeLayoutDrawable<?> recipeLayout,
+		BookmarkList bookmarks,
+		RecipeBookmark<?, ?> recipeBookmark
+	) {
+		IDrawable icon = Internal.getTextures().getRecipeBookmark();
+		Rect2i area = recipeLayout.getRecipeBookmarkButtonArea();
+		Rect2i layoutArea = recipeLayout.getRect();
+		area.setX(area.getX() + layoutArea.getX());
+		area.setY(area.getY() + layoutArea.getY());
+
+		RecipeBookmarkButton recipeBookmarkButton = new RecipeBookmarkButton(icon, bookmarks, recipeBookmark);
+		recipeBookmarkButton.updateBounds(area);
+		return recipeBookmarkButton;
 	}
 
 	private RecipeBookmarkButton(IDrawable icon, BookmarkList bookmarks, RecipeBookmark<?, ?> recipeBookmark) {
