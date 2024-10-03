@@ -58,7 +58,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
-		List<Optional<ITypedIngredient<T>>> typedIngredients = TypedIngredient.createUnvalidatedList(ingredientType, ingredients);
+		List<Optional<ITypedIngredient<T>>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, ingredients, false);
 		@SuppressWarnings("unchecked")
 		List<Optional<ITypedIngredient<?>>> castTypedIngredients = (List<Optional<ITypedIngredient<?>>>) (Object) typedIngredients;
 		this.ingredients.addAll(castTypedIngredients);
@@ -70,7 +70,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public DisplayIngredientAcceptor addIngredients(Ingredient ingredient) {
 		Preconditions.checkNotNull(ingredient, "ingredient");
 
-		List<Optional<ITypedIngredient<ItemStack>>> typedIngredients = TypedIngredient.createUnvalidatedList(ingredient);
+		List<Optional<ITypedIngredient<ItemStack>>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredient, false);
 		@SuppressWarnings("unchecked")
 		List<Optional<ITypedIngredient<?>>> castTypedIngredients = (List<Optional<ITypedIngredient<?>>>) (Object) typedIngredients;
 		this.ingredients.addAll(castTypedIngredients);
@@ -91,7 +91,9 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public <I> DisplayIngredientAcceptor addTypedIngredient(ITypedIngredient<I> typedIngredient) {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
-		this.ingredients.add(Optional.of(typedIngredient));
+		@SuppressWarnings("unchecked")
+		Optional<ITypedIngredient<?>> copy = (Optional<ITypedIngredient<?>>) (Object) TypedIngredient.deepCopy(ingredientManager, typedIngredient);
+		this.ingredients.add(copy);
 
 		return this;
 	}
@@ -150,12 +152,10 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
-		if (ingredient == null) {
-			this.ingredients.add(Optional.empty());
-		} else {
-			ITypedIngredient<T> typedIngredient = TypedIngredient.createUnvalidated(ingredientType, ingredient);
-			this.ingredients.add(Optional.of(typedIngredient));
-		}
+		Optional<ITypedIngredient<T>> result = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false);
+		@SuppressWarnings("unchecked")
+		Optional<ITypedIngredient<?>> castResult = (Optional<ITypedIngredient<?>>) (Object) result;
+		this.ingredients.add(castResult);
 	}
 
 	@UnmodifiableView

@@ -101,29 +101,14 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return results;
 	}
 
-	public static <T> List<Optional<ITypedIngredient<T>>> createUnvalidatedList(
-		IIngredientType<T> ingredientType,
-		List<@Nullable T> ingredients
-	) {
-		List<Optional<ITypedIngredient<T>>> results = new ArrayList<>(ingredients.size());
-		for (T ingredient : ingredients) {
-			if (ingredient == null) {
-				results.add(Optional.empty());
-			} else {
-				ITypedIngredient<T> result = createUnvalidated(ingredientType, ingredient);
-				results.add(Optional.of(result));
-			}
-		}
-		return results;
-	}
-
-	public static List<Optional<ITypedIngredient<ItemStack>>> createUnvalidatedList(Ingredient ingredient) {
+	public static List<Optional<ITypedIngredient<ItemStack>>> createAndFilterInvalidList(IIngredientManager ingredientManager, Ingredient ingredient, boolean normalize) {
 		ItemStack[] itemStacks = ingredient.getItems();
+		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 
 		List<Optional<ITypedIngredient<ItemStack>>> results = new ArrayList<>(itemStacks.length);
 		for (ItemStack itemStack : itemStacks) {
-			ITypedIngredient<ItemStack> result = TypedItemStack.create(itemStack);
-			results.add(Optional.of(result));
+			Optional<ITypedIngredient<ItemStack>> result = createAndFilterInvalid(ingredientHelper, VanillaTypes.ITEM_STACK, itemStack, normalize);
+			results.add(result);
 		}
 		return results;
 	}
