@@ -35,7 +35,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	 * A list of ingredients, including "blank" ingredients represented by {@link Optional#empty()}.
 	 * Blank ingredients are drawn as "nothing" in a rotation of ingredients, but aren't considered in lookups.
 	 */
-	private final List<Optional<ITypedIngredient<?>>> ingredients = new ArrayList<>();
+	private final List<@Nullable ITypedIngredient<?>> ingredients = new ArrayList<>();
 
 	public DisplayIngredientAcceptor(IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
@@ -46,7 +46,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		for (Object ingredient : ingredients) {
-			Optional<ITypedIngredient<?>> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
+			@Nullable ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
 			this.ingredients.add(typedIngredient);
 		}
 
@@ -58,10 +58,8 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
-		List<Optional<ITypedIngredient<T>>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, ingredients, false);
-		@SuppressWarnings("unchecked")
-		List<Optional<ITypedIngredient<?>>> castTypedIngredients = (List<Optional<ITypedIngredient<?>>>) (Object) typedIngredients;
-		this.ingredients.addAll(castTypedIngredients);
+		List<@Nullable ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, ingredients, false);
+		this.ingredients.addAll(typedIngredients);
 
 		return this;
 	}
@@ -70,10 +68,8 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public DisplayIngredientAcceptor addIngredients(Ingredient ingredient) {
 		Preconditions.checkNotNull(ingredient, "ingredient");
 
-		List<Optional<ITypedIngredient<ItemStack>>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredient, false);
-		@SuppressWarnings("unchecked")
-		List<Optional<ITypedIngredient<?>>> castTypedIngredients = (List<Optional<ITypedIngredient<?>>>) (Object) typedIngredients;
-		this.ingredients.addAll(castTypedIngredients);
+		List<@Nullable ITypedIngredient<ItemStack>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredient, false);
+		this.ingredients.addAll(typedIngredients);
 
 		return this;
 	}
@@ -91,8 +87,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public <I> DisplayIngredientAcceptor addTypedIngredient(ITypedIngredient<I> typedIngredient) {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
-		@SuppressWarnings("unchecked")
-		Optional<ITypedIngredient<?>> copy = (Optional<ITypedIngredient<?>>) (Object) TypedIngredient.deepCopy(ingredientManager, typedIngredient);
+		@Nullable ITypedIngredient<I> copy = TypedIngredient.defensivelyCopyTypedIngredientFromApi(ingredientManager, typedIngredient);
 		this.ingredients.add(copy);
 
 		return this;
@@ -144,7 +139,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 			if (o.isPresent()) {
 				this.addTypedIngredient(o.get());
 			} else {
-				this.ingredients.add(o);
+				this.ingredients.add(null);
 			}
 		}
 
@@ -152,14 +147,12 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
-		Optional<ITypedIngredient<T>> result = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false);
-		@SuppressWarnings("unchecked")
-		Optional<ITypedIngredient<?>> castResult = (Optional<ITypedIngredient<?>>) (Object) result;
-		this.ingredients.add(castResult);
+		@Nullable ITypedIngredient<T> result = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false);
+		this.ingredients.add(result);
 	}
 
 	@UnmodifiableView
-	public List<Optional<ITypedIngredient<?>>> getAllIngredients() {
+	public List<@Nullable ITypedIngredient<?>> getAllIngredients() {
 		return Collections.unmodifiableList(this.ingredients);
 	}
 
@@ -173,7 +166,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	private <T> void getMatches(IFocus<T> focus, IntSet results) {
-		List<Optional<ITypedIngredient<?>>> ingredients = getAllIngredients();
+		List<@Nullable ITypedIngredient<?>> ingredients = getAllIngredients();
 		if (ingredients.isEmpty()) {
 			return;
 		}
@@ -185,16 +178,14 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Object focusUid = ingredientHelper.getUid(focusIngredient, UidContext.Ingredient);
 
 		for (int i = 0; i < ingredients.size(); i++) {
-			Optional<ITypedIngredient<?>> typedIngredientOptional = ingredients.get(i);
-			if (typedIngredientOptional.isEmpty()) {
+			@Nullable ITypedIngredient<?> typedIngredient = ingredients.get(i);
+			if (typedIngredient == null) {
 				continue;
 			}
-			ITypedIngredient<?> typedIngredient = typedIngredientOptional.get();
-			Optional<T> ingredientOptional = typedIngredient.getIngredient(ingredientType);
-			if (ingredientOptional.isEmpty()) {
+			@Nullable T ingredient = typedIngredient.getCastIngredient(ingredientType);
+			if (ingredient == null) {
 				continue;
 			}
-			T ingredient = ingredientOptional.get();
 			Object uniqueId = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
 			if (focusUid.equals(uniqueId)) {
 				results.add(i);

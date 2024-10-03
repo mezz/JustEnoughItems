@@ -11,8 +11,11 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -30,7 +33,7 @@ import java.util.stream.Stream;
 @ApiStatus.NonExtendable
 public interface IRecipeSlotView {
 	/**
-	 * All ingredient variations that can be shown.
+	 * All ingredient variations that can be shown, ignoring focus and visibility.
 	 *
 	 * @see #getItemStacks() to limit to only ItemStack ingredients.
 	 * @see #getIngredients(IIngredientType) to limit to one type of ingredient.
@@ -38,6 +41,15 @@ public interface IRecipeSlotView {
 	 * @since 9.3.0
 	 */
 	Stream<ITypedIngredient<?>> getAllIngredients();
+
+	/**
+	 * All ingredients, ignoring focus and visibility
+	 * null ingredients represent a "blank" drawn ingredient in the rotation.
+	 *
+	 * @since 19.19.5
+	 */
+	@Unmodifiable
+	List<@Nullable ITypedIngredient<?>> getAllIngredientsList();
 
 	/**
 	 * The ingredient variation that is shown at this moment.

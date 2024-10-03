@@ -6,6 +6,7 @@ import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
@@ -21,6 +22,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -124,17 +126,19 @@ public class ScreenHelper implements IScreenHelper {
 
 	private Optional<IClickableIngredient<?>> getClickedIngredient(Slot slot, AbstractContainerScreen<?> guiContainer) {
 		ItemStack stack = slot.getItem();
-		return TypedIngredient.createAndFilterInvalid(ingredientManager, VanillaTypes.ITEM_STACK, stack, false)
-			.map(typedIngredient -> {
-				IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-				ImmutableRect2i slotArea = new ImmutableRect2i(
-					screenHelper.getGuiLeft(guiContainer) + slot.x,
-					screenHelper.getGuiTop(guiContainer) + slot.y,
-					16,
-					16
-				);
-				return new ClickableIngredient<>(typedIngredient, slotArea);
-			});
+		@Nullable ITypedIngredient<ItemStack> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, VanillaTypes.ITEM_STACK, stack, false);
+		if (typedIngredient == null) {
+			return Optional.empty();
+		}
+		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+		ImmutableRect2i slotArea = new ImmutableRect2i(
+			screenHelper.getGuiLeft(guiContainer) + slot.x,
+			screenHelper.getGuiTop(guiContainer) + slot.y,
+			16,
+			16
+		);
+		ClickableIngredient<ItemStack> clickableIngredient = new ClickableIngredient<>(typedIngredient, slotArea);
+		return Optional.of(clickableIngredient);
 	}
 
 	private <T extends AbstractContainerScreen<?>> Stream<IClickableIngredient<?>> getGuiContainerHandlerIngredients(T guiContainer, double mouseX, double mouseY) {

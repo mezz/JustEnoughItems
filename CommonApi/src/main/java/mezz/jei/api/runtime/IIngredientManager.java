@@ -15,6 +15,7 @@ import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -100,6 +101,15 @@ public interface IIngredientManager {
 	 * Used by mods that have items created while the game is running, or use the server to define items.
 	 */
 	<V> void removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients);
+
+	/**
+	 * Helper method to get ingredient type for an ingredient.
+	 * Returns null if there is no known type for the given ingredient.
+	 *
+	 * @since 19.19.5
+	 */
+	@Nullable
+	<V> IIngredientType<V> getIngredientType(V ingredient);
 
 	/**
 	 * Helper method to get ingredient type for an ingredient.

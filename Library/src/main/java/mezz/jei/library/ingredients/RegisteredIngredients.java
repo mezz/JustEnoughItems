@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.common.util.ErrorUtil;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
@@ -58,29 +59,31 @@ public class RegisteredIngredients {
 		return this.orderedTypes;
 	}
 
-	public <V> Optional<IIngredientType<V>> getIngredientType(V ingredient) {
+	@Nullable
+	public <V> IIngredientType<V> getIngredientType(V ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		@SuppressWarnings("unchecked")
 		Class<? extends V> ingredientClass = (Class<? extends V>) ingredient.getClass();
 		return getIngredientType(ingredientClass);
 	}
 
-	public <V> Optional<IIngredientType<V>> getIngredientType(Class<? extends V> ingredientClass) {
+	@Nullable
+	public <V> IIngredientType<V> getIngredientType(Class<? extends V> ingredientClass) {
 		ErrorUtil.checkNotNull(ingredientClass, "ingredientClass");
 		@SuppressWarnings("unchecked")
 		IIngredientType<V> ingredientType = (IIngredientType<V>) this.classToType.get(ingredientClass);
 		if (ingredientType != null) {
-			return Optional.of(ingredientType);
+			return ingredientType;
 		}
 		for (IIngredientType<?> type : this.orderedTypes) {
 			if (type.getIngredientClass().isAssignableFrom(ingredientClass)) {
 				@SuppressWarnings("unchecked")
 				IIngredientType<V> castType = (IIngredientType<V>) type;
 				this.classToType.put(ingredientClass, castType);
-				return Optional.of(castType);
+				return castType;
 			}
 		}
-		return Optional.empty();
+		return null;
 	}
 
 	public <I, B> Optional<IIngredientTypeWithSubtypes<B, I>> getIngredientTypeWithSubtypesFromBase(B baseIngredient) {

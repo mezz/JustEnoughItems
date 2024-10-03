@@ -10,6 +10,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -36,28 +37,37 @@ public class RecipeBookmark<R, I> implements IBookmark {
 
 		IRecipeSlotsView recipeSlotsView = recipeLayoutDrawable.getRecipeSlotsView();
 		{
-			Optional<ITypedIngredient<?>> outputOptional = recipeSlotsView.getSlotViews(RecipeIngredientRole.OUTPUT).stream()
-				.flatMap(IRecipeSlotView::getAllIngredients)
-				.findFirst();
-			if (outputOptional.isPresent()) {
-				ITypedIngredient<?> output = outputOptional.get();
+			ITypedIngredient<?> output = findFirst(recipeSlotsView, RecipeIngredientRole.OUTPUT);
+			if (output != null) {
 				output = ingredientManager.normalizeTypedIngredient(output);
 				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, true));
 			}
 		}
 
 		{
-			Optional<ITypedIngredient<?>> inputOptional = recipeSlotsView.getSlotViews(RecipeIngredientRole.INPUT).stream()
-				.flatMap(IRecipeSlotView::getAllIngredients)
-				.findFirst();
-			if (inputOptional.isPresent()) {
-				ITypedIngredient<?> input = inputOptional.get();
+			ITypedIngredient<?> input = findFirst(recipeSlotsView, RecipeIngredientRole.INPUT);
+			if (input != null) {
 				input = ingredientManager.normalizeTypedIngredient(input);
 				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, input, false));
 			}
 		}
 
 		return Optional.empty();
+	}
+
+	@Nullable
+	private static ITypedIngredient<?> findFirst(IRecipeSlotsView slotsView, RecipeIngredientRole role) {
+		for (IRecipeSlotView slotView : slotsView.getSlotViews()) {
+			if (slotView.getRole() != role) {
+				continue;
+			}
+			for (ITypedIngredient<?> ingredient : slotView.getAllIngredientsList()) {
+				if (ingredient != null) {
+					return ingredient;
+				}
+			}
+		}
+		return null;
 	}
 
 	public RecipeBookmark(

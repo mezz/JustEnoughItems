@@ -1,9 +1,9 @@
 package mezz.jei.library.gui.ingredients;
 
 import net.minecraft.client.gui.screens.Screen;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 public class CycleTicker implements ICycler {
 	private static final int MAX_INDEX = 100_000;
@@ -22,9 +22,10 @@ public class CycleTicker implements ICycler {
 	}
 
 	@Override
-	public <T> Optional<T> getCycled(List<Optional<T>> list) {
+	@Nullable
+	public <T> T getCycled(List<@Nullable T> list) {
 		if (list.isEmpty()) {
-			return Optional.empty();
+			return null;
 		}
 		int index = this.index % list.size();
 		return list.get(index);

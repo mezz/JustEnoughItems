@@ -35,9 +35,7 @@ import java.util.HashSet;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	private final List<RecipeSlotBuilder> slots = new ArrayList<>();
@@ -132,7 +130,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			builders.add(builder);
 
 			DisplayIngredientAcceptor displayIngredientAcceptor = builder.getIngredientAcceptor();
-			List<Optional<ITypedIngredient<?>>> allIngredients = displayIngredientAcceptor.getAllIngredients();
+			List<@Nullable ITypedIngredient<?>> allIngredients = displayIngredientAcceptor.getAllIngredients();
 			int ingredientCount = allIngredients.size();
 			if (count == -1) {
 				count = ingredientCount;
@@ -226,10 +224,15 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	}
 
 	private static List<IRecipeSlotDrawable> sortSlots(List<Pair<Integer, IRecipeSlotDrawable>> indexedSlots) {
-		return indexedSlots.stream()
-			.sorted(Comparator.comparingInt(Pair::first))
-			.map(Pair::second)
-			.collect(Collectors.toCollection(ArrayList::new));
+		List<Pair<Integer, IRecipeSlotDrawable>> sortedPairs = new ArrayList<>(indexedSlots);
+		sortedPairs.sort(Comparator.comparingInt(Pair::first));
+
+		List<IRecipeSlotDrawable> iRecipeSlotDrawables = new ArrayList<>(sortedPairs.size());
+		for (Pair<Integer, IRecipeSlotDrawable> indexedSlot : sortedPairs) {
+			IRecipeSlotDrawable second = indexedSlot.second();
+			iRecipeSlotDrawables.add(second);
+		}
+		return iRecipeSlotDrawables;
 	}
 
 	@Nullable

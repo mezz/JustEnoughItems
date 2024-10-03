@@ -223,15 +223,15 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	}
 
 	public Pair<Integer, IRecipeSlotDrawable> build(Set<Integer> focusMatches, ICycler cycler) {
-		List<Optional<ITypedIngredient<?>>> allIngredients = this.ingredients.getAllIngredients();
+		List<@Nullable ITypedIngredient<?>> allIngredients = this.ingredients.getAllIngredients();
 
-		List<Optional<ITypedIngredient<?>>> focusedIngredients = null;
+		List<@Nullable ITypedIngredient<?>> focusedIngredients = null;
 
 		if (!focusMatches.isEmpty()) {
 			focusedIngredients = new ArrayList<>();
 			for (Integer i : focusMatches) {
 				if (i < allIngredients.size()) {
-					Optional<ITypedIngredient<?>> ingredient = allIngredients.get(i);
+					@Nullable ITypedIngredient<?> ingredient = allIngredients.get(i);
 					focusedIngredients.add(ingredient);
 				}
 			}

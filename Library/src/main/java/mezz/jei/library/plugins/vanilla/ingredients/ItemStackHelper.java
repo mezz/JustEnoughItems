@@ -83,6 +83,11 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	public Object getGroupingUid(ITypedIngredient<ItemStack> typedIngredient) {
+		return typedIngredient.getBaseIngredient(VanillaTypes.ITEM_STACK);
+	}
+
+	@Override
 	public Object getGroupingUid(ItemStack ingredient) {
 		return ingredient.getItem();
 	}
@@ -212,17 +217,29 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public boolean isHiddenFromRecipeViewersByTags(ItemStack ingredient) {
-		if (ingredient.is(itemHiddenFromRecipeViewers)) {
+		return isHiddenFromRecipeViewersByTags(ingredient.getItemHolder());
+	}
+
+	@Override
+	public boolean isHiddenFromRecipeViewersByTags(ITypedIngredient<ItemStack> ingredient) {
+		Item item = ingredient.getBaseIngredient(VanillaTypes.ITEM_STACK);
+		@SuppressWarnings("deprecation")
+		Holder.Reference<Item> itemHolder = item.builtInRegistryHolder();
+		return isHiddenFromRecipeViewersByTags(itemHolder);
+	}
+
+	private boolean isHiddenFromRecipeViewersByTags(Holder<Item> itemHolder) {
+		if (itemHolder.is(itemHiddenFromRecipeViewers)) {
 			return true;
 		}
-		if (ingredient.getItem() instanceof BlockItem blockItem) {
+		if (itemHolder.value() instanceof BlockItem blockItem) {
 			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 			if (clientConfig.isLookupBlockTagsEnabled()) {
 				Block block = blockItem.getBlock();
 				@SuppressWarnings("deprecation")
-				Holder.Reference<Block> holder = block.builtInRegistryHolder();
-				return holder.is(blockHiddenFromRecipeViewers);
+				Holder.Reference<Block> blockHolder = block.builtInRegistryHolder();
+				return blockHolder.is(blockHiddenFromRecipeViewers);
 			}
 		}
 		return false;
