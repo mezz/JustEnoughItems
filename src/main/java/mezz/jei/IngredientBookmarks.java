@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.IIngredientBookmarks;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.config.Config;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.util.IngredientListElement;
 import com.google.common.collect.ImmutableCollection;
@@ -22,6 +23,13 @@ public class IngredientBookmarks implements IIngredientBookmarks {
 
 	public IngredientBookmarks(IIngredientRegistry ingredientRegistry) {
 		this.ingredientRegistry = ingredientRegistry;
+
+		String[] bookmarks = Config.getBookmarks();
+
+		for (String uniqueId : bookmarks) {
+			bookmarkIds.add(uniqueId);
+			bookmarkList.put(uniqueId, findIngredientFromUniqueId(uniqueId));
+		}
 	}
 
 	@Override
@@ -29,27 +37,29 @@ public class IngredientBookmarks implements IIngredientBookmarks {
 		IIngredientHelper<V> ingredientHelper = ingredientRegistry.getIngredientHelper(ingredient);
 		String uniqueId = ingredientHelper.getUniqueId(ingredient);
 
-		// find ingredient in registry
-		ImmutableCollection<Class> clazzes = ingredientRegistry.getRegisteredIngredientClasses();
-		for (Class<V> clazz : clazzes) {
-			ImmutableList<V> iList = ingredientRegistry.getIngredients(clazz);
-			IIngredientHelper<V> iHelper = ingredientRegistry.getIngredientHelper(clazz);
-			for (V i : iList) {
-				if (iHelper.getUniqueId(i).equals(uniqueId)) {
-					ingredient = i;
-					break;
-				}
-			}
-		}
-
 		// System.out.println(ingredientHelper.getUniqueId(ingredient));
 		if (bookmarkIds.contains(uniqueId)) {
 			bookmarkIds.remove(uniqueId);
 			bookmarkList.remove(uniqueId);
 		} else {
 			bookmarkIds.add(uniqueId);
-			bookmarkList.put(uniqueId, ingredient);
+			bookmarkList.put(uniqueId, findIngredientFromUniqueId(uniqueId));
 		}
+		Config.updateBookmarks(bookmarkIds.toArray(new String[bookmarkIds.size()]));
+	}
+
+	private <V> V findIngredientFromUniqueId(String uniqueId) {
+		ImmutableCollection<Class> classes = ingredientRegistry.getRegisteredIngredientClasses();
+		for (Class<V> clazz : classes) {
+			ImmutableList<V> iList = ingredientRegistry.getIngredients(clazz);
+			IIngredientHelper<V> iHelper = ingredientRegistry.getIngredientHelper(clazz);
+			for (V i : iList) {
+				if (iHelper.getUniqueId(i).equals(uniqueId)) {
+					return i;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override

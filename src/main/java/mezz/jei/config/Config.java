@@ -6,6 +6,8 @@ import java.io.File;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -40,6 +42,8 @@ public class Config {
 	private static LocalizedConfiguration itemBlacklistConfig;
 	@Nullable
 	private static LocalizedConfiguration searchColorsConfig;
+	@Nullable
+	private static LocalizedConfiguration bookmarksConfig;
 
 	// advanced
 	private static boolean debugModeEnabled = false;
@@ -73,7 +77,11 @@ public class Config {
 
 	// item blacklist
 	private static final Set<String> itemBlacklist = new HashSet<String>();
-	private static final String[] defaultItemBlacklist = new String[]{};
+	private static final String[] defaultItemBlacklist = new String[] {};
+
+	// bookmarks
+	private static final String[] defaultBookmarks = new String[] {};
+	private static String[] bookmarks;
 
 	private Config() {
 
@@ -226,6 +234,8 @@ public class Config {
 		final File itemBlacklistConfigFile = new File(jeiConfigurationDir, "itemBlacklist.cfg");
 		final File searchColorsConfigFile = new File(jeiConfigurationDir, "searchColors.cfg");
 		final File worldConfigFile = new File(jeiConfigurationDir, "worldSettings.cfg");
+		final File bookmarksConfigFile = new File(jeiConfigurationDir, "bookmarks.cfg");
+
 		worldConfig = new Configuration(worldConfigFile, "0.1.0");
 
 		{
@@ -257,10 +267,12 @@ public class Config {
 		config = new LocalizedConfiguration(configKeyPrefix, configFile, "0.2.0");
 		itemBlacklistConfig = new LocalizedConfiguration(configKeyPrefix, itemBlacklistConfigFile, "0.1.0");
 		searchColorsConfig = new LocalizedConfiguration(configKeyPrefix, searchColorsConfigFile, "0.1.0");
+		bookmarksConfig = new LocalizedConfiguration(configKeyPrefix, bookmarksConfigFile, "0.1.0");
 
 		syncConfig();
 		syncItemBlacklistConfig();
 		syncSearchColorsConfig();
+		syncBookmarksConfig();
 	}
 
 	public static boolean syncAllConfig() {
@@ -315,7 +327,7 @@ public class Config {
 		searchCategory.remove("prefixRequiredForCreativeTabSearch");
 		searchCategory.remove("prefixRequiredForColorSearch");
 
-		SearchMode[] searchModes  = SearchMode.values();
+		SearchMode[] searchModes = SearchMode.values();
 		modNameSearchMode = config.getEnum("modNameSearchMode", CATEGORY_SEARCH, defaultModNameSearchMode, searchModes);
 		tooltipSearchMode = config.getEnum("tooltipSearchMode", CATEGORY_SEARCH, defaultTooltipSearchMode, searchModes);
 		oreDictSearchMode = config.getEnum("oreDictSearchMode", CATEGORY_SEARCH, defaultOreDictSearchMode, searchModes);
@@ -400,6 +412,42 @@ public class Config {
 			itemBlacklistConfig.save();
 		}
 		return configChanged;
+	}
+
+	private static boolean syncBookmarksConfig() {
+		if (bookmarksConfig == null) {
+			return false;
+		}
+
+		bookmarksConfig.addCategory(CATEGORY_ADVANCED);
+
+		bookmarks = bookmarksConfig.getStringList("bookmarks", CATEGORY_ADVANCED, defaultBookmarks);
+
+		final boolean configChanged = bookmarksConfig.hasChanged();
+		if (configChanged) {
+			bookmarksConfig.save();
+		}
+		return configChanged;
+	}
+
+	public static boolean updateBookmarks(String[] bookmarkIds) {
+		bookmarks = bookmarkIds;
+		if (bookmarksConfig == null) {
+			return false;
+		}
+		Property property = bookmarksConfig.get(CATEGORY_ADVANCED, "bookmarks", defaultBookmarks);
+
+		property.set(bookmarks);
+
+		boolean changed = bookmarksConfig.hasChanged();
+		if (changed) {
+			bookmarksConfig.save();
+		}
+		return changed;
+	}
+
+	public static String[] getBookmarks() {
+		return bookmarks;
 	}
 
 	public static boolean syncWorldConfig() {
