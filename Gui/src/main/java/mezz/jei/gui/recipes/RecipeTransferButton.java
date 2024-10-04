@@ -13,8 +13,10 @@ import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.input.UserInput;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -42,7 +44,6 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 	private final Runnable onClose;
 	private @Nullable IRecipeTransferError recipeTransferError;
 	private @Nullable AbstractContainerMenu parentContainer;
-	private @Nullable Player player;
 
 	private RecipeTransferButton(IDrawable icon, IRecipeLayoutDrawable<?> recipeLayout, Runnable onClose) {
 		super(icon, icon);
@@ -51,7 +52,6 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 	}
 
 	public void update(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
-		this.player = player;
 		this.parentContainer = parentContainer;
 
 		if (parentContainer != null && player != null) {
@@ -78,6 +78,8 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 		if (!input.isSimulate()) {
 			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
 			boolean maxTransfer = Screen.hasShiftDown();
+			Minecraft minecraft = Minecraft.getInstance();
+			LocalPlayer player = minecraft.player;
 			if (parentContainer != null && player != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, parentContainer, recipeLayout, player, maxTransfer)) {
 				onClose.run();
 			}
