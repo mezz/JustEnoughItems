@@ -34,6 +34,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeLayoutWithButtonsFactory recipeLayoutFactory;
 	private @Nullable IRecipeCategory<?> cachedRecipeCategory;
 	private @Nullable IRecipeLayoutList cachedRecipeLayoutsWithButtons;
+	private int cachedContainerId = -1;
 
 	public RecipeGuiLogic(
 		IRecipeManager recipeManager,
@@ -56,9 +57,9 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public void tick() {
+	public void tick(@Nullable AbstractContainerMenu container) {
 		if (cachedRecipeLayoutsWithButtons != null) {
-			cachedRecipeLayoutsWithButtons.tick();
+			cachedRecipeLayoutsWithButtons.tick(container);
 		}
 	}
 
@@ -112,6 +113,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		this.initialState = false;
 		this.cachedRecipeCategory = null;
 		this.cachedRecipeLayoutsWithButtons = null;
+		this.cachedContainerId = -1;
 		stateListener.onStateChange();
 		return true;
 	}
@@ -187,17 +189,20 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	) {
 		IRecipeCategory<?> recipeCategory = getSelectedRecipeCategory();
 
+		int containerId = container == null ? -1 : container.containerId;
 		if (this.cachedRecipeLayoutsWithButtons == null ||
-			this.cachedRecipeCategory != recipeCategory
+			this.cachedRecipeCategory != recipeCategory ||
+			this.cachedContainerId != containerId
 		) {
 			IFocusedRecipes<?> focusedRecipes = this.state.getFocusedRecipes();
 
-			this.cachedRecipeLayoutsWithButtons = createRecipeLayoutsWithButtons(focusedRecipes, container);
+			this.cachedRecipeLayoutsWithButtons = createRecipeLayoutsWithButtons(focusedRecipes);
 			this.cachedRecipeCategory = recipeCategory;
+			this.cachedContainerId = containerId;
 		}
 
 		final int recipeHeight =
-			this.cachedRecipeLayoutsWithButtons.findFirst()
+			this.cachedRecipeLayoutsWithButtons.findFirst(container)
 				.map(RecipeLayoutWithButtons::recipeLayout)
 				.map(IRecipeLayoutDrawable::getRectWithBorder)
 				.map(Rect2i::getHeight)
@@ -206,7 +211,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		final int recipesPerPage = Math.max(1, 1 + ((availableHeight - recipeHeight) / (recipeHeight + minRecipePadding)));
 		this.state.setRecipesPerPage(recipesPerPage);
 
-		return this.state.getVisible(this.cachedRecipeLayoutsWithButtons);
+		return this.state.getVisible(this.cachedRecipeLayoutsWithButtons, container);
 	}
 
 	@Override
@@ -216,8 +221,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Unmodifiable
 	private <T> IRecipeLayoutList createRecipeLayoutsWithButtons(
-		IFocusedRecipes<T> selectedRecipes,
-		@Nullable AbstractContainerMenu container
+		IFocusedRecipes<T> selectedRecipes
 	) {
 		IRecipeCategory<T> recipeCategory = selectedRecipes.getRecipeCategory();
 		List<T> recipes = selectedRecipes.getRecipes();
@@ -236,7 +240,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipeManager.hideRecipes(recipeType, brokenRecipes);
 		}
 
-		return IRecipeLayoutList.create(container, results);
+		return IRecipeLayoutList.create(results);
 	}
 
 	@Override

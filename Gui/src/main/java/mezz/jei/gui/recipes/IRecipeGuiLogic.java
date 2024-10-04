@@ -36,7 +36,7 @@ public interface IRecipeGuiLogic {
 
 	void nextPage();
 
-	void tick();
+	void tick(@Nullable AbstractContainerMenu container);
 
 	boolean showFocus(IFocusGroup focuses);
 
