@@ -181,7 +181,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			recipeBorderPadding,
 			shapelessIcon,
 			recipeTransferButtonPosition,
-			slots
+			slots,
+			cycleTicker
 		);
 	}
 

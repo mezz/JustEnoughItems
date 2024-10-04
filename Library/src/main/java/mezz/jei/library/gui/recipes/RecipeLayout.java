@@ -19,6 +19,7 @@ import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -49,6 +50,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private final ImmutableRect2i recipeTransferButtonArea;
 	private final @Nullable ShapelessIcon shapelessIcon;
 	private final RecipeLayoutInputHandler<R> inputHandler;
+	private final CycleTicker cycleTicker;
 
 	private ImmutableRect2i area;
 
@@ -104,11 +106,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		int recipeBorderPadding,
 		@Nullable ShapelessIcon shapelessIcon,
 		ImmutablePoint2i recipeTransferButtonPos,
-		List<IRecipeSlotDrawable> recipeCategorySlots
+		List<IRecipeSlotDrawable> recipeCategorySlots,
+		CycleTicker cycleTicker
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
 		this.inputHandler = new RecipeLayoutInputHandler<>(this);
+		this.cycleTicker = cycleTicker;
 
 		this.recipeCategorySlots = recipeCategorySlots;
 		this.recipeBorderPadding = recipeBorderPadding;
@@ -297,5 +301,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	@Override
 	public IJeiInputHandler getInputHandler() {
 		return inputHandler;
+	}
+
+	@Override
+	public void tick() {
+		cycleTicker.tick();
 	}
 }
