@@ -200,8 +200,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		BookmarkList bookmarkList,
 		RecipesGui recipesGui
 	) {
-		Player player = Minecraft.getInstance().player;
-
 		IRecipeCategory<?> recipeCategory = getSelectedRecipeCategory();
 
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
@@ -217,7 +215,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			this.cachedRecipeLayoutsWithButtons = IRecipeLayoutList.create(
 				recipeSorterStages,
 				container,
-				player,
 				focusedRecipes,
 				state.getFocuses(),
 				bookmarkList,

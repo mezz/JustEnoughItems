@@ -18,6 +18,7 @@ import mezz.jei.gui.recipes.RecipeSortUtil;
 import mezz.jei.gui.recipes.RecipeTransferButton;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +31,6 @@ import java.util.Set;
 
 public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 	private final @Nullable AbstractContainerMenu container;
-	private final @Nullable Player player;
 	private final IRecipeManager recipeManager;
 	private final IRecipeCategory<T> recipeCategory;
 	private final RecipesGui recipesGui;
@@ -46,7 +46,6 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 	public LazyRecipeLayoutList(
 		Set<RecipeSorterStage> recipeSorterStages,
 		@Nullable AbstractContainerMenu container,
-		@Nullable Player player,
 		IFocusedRecipes<T> selectedRecipes,
 		BookmarkList bookmarkList,
 		IRecipeManager recipeManager,
@@ -57,7 +56,6 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 		boolean matchingBookmarks = recipeSorterStages.contains(RecipeSorterStage.BOOKMARKED);
 		boolean matchingCraftable = recipeSorterStages.contains(RecipeSorterStage.CRAFTABLE);
 		this.container = container;
-		this.player = player;
 		this.recipeManager = recipeManager;
 		this.recipesGui = recipesGui;
 		this.focusGroup = focusGroup;
@@ -86,7 +84,7 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 				RecipeBookmark<T, ?> recipeBookmark = bookmarkList.getMatchingBookmark(recipeType, recipe);
 				if (recipeBookmark != null) {
 					IRecipeLayoutDrawable<T> recipeLayout = recipeManager.createRecipeLayoutDrawableOrShowError(recipeCategory, recipe, focusGroup);
-					RecipeLayoutWithButtons<T> recipeLayoutWithButtons = createRecipeLayoutWithButtons(recipeLayout, recipeBookmark, bookmarkList, recipesGui, container, player);
+					RecipeLayoutWithButtons<T> recipeLayoutWithButtons = createRecipeLayoutWithButtons(recipeLayout, recipeBookmark, bookmarkList, recipesGui, container);
 					results.add(recipeLayoutWithButtons);
 					iterator.remove();
 				}
@@ -98,20 +96,15 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 
 	private static <T> RecipeLayoutWithButtons<T> createRecipeLayoutWithButtons(
 		IRecipeLayoutDrawable<T> recipeLayoutDrawable,
-		RecipeBookmark<?, ?> recipeBookmark,
+		@Nullable RecipeBookmark<?, ?> recipeBookmark,
 		BookmarkList bookmarks,
 		RecipesGui recipesGui,
-		@Nullable AbstractContainerMenu container,
-		@Nullable Player player
+		@Nullable AbstractContainerMenu container
 	) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Player player = minecraft.player;
 		RecipeTransferButton transferButton = RecipeTransferButton.create(recipeLayoutDrawable, recipesGui::onClose, container, player);
-
-		RecipeBookmarkButton bookmarkButton = RecipeBookmarkButton.create(
-			recipeLayoutDrawable,
-			bookmarks,
-			recipeBookmark
-		);
-
+		RecipeBookmarkButton bookmarkButton = RecipeBookmarkButton.create(recipeLayoutDrawable, bookmarks, recipeBookmark);
 		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, bookmarkButton);
 	}
 
@@ -120,9 +113,8 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 	}
 
 	private RecipeLayoutWithButtons<T> createRecipeLayoutWithButtons(IRecipeLayoutDrawable<T> recipeLayoutDrawable, IIngredientManager ingredientManager) {
-		RecipeTransferButton transferButton = RecipeTransferButton.create(recipeLayoutDrawable, recipesGui::onClose, container, player);
-		RecipeBookmarkButton bookmarkButton = RecipeBookmarkButton.create(recipeLayoutDrawable, ingredientManager, bookmarkList);
-		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, bookmarkButton);
+		RecipeBookmark<T, ?> recipeBookmark = RecipeBookmark.create(recipeLayoutDrawable, ingredientManager);
+		return createRecipeLayoutWithButtons(recipeLayoutDrawable, recipeBookmark, bookmarkList, recipesGui, container);
 	}
 
 	@Override

@@ -19,7 +19,6 @@ public interface IRecipeLayoutList {
 	static IRecipeLayoutList create(
 		Set<RecipeSorterStage> recipeSorterStages,
 		@Nullable AbstractContainerMenu container,
-		@Nullable Player player,
 		IFocusedRecipes<?> selectedRecipes,
 		IFocusGroup focusGroup,
 		BookmarkList bookmarkList,
@@ -29,7 +28,6 @@ public interface IRecipeLayoutList {
 		return new LazyRecipeLayoutList<>(
 			recipeSorterStages,
 			container,
-			player,
 			selectedRecipes,
 			bookmarkList,
 			recipeManager,
