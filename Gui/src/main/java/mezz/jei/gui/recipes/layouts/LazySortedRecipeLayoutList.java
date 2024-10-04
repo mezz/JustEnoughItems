@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.Set;
 
 public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
-	private final @Nullable AbstractContainerMenu container;
 	private final List<RecipeLayoutWithButtons<?>> results;
 	private final List<RecipeLayoutWithButtons<?>> craftMissing;
 	private final Iterator<? extends RecipeLayoutWithButtons<?>> unsortedIterator;
@@ -27,12 +26,10 @@ public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 
 	LazySortedRecipeLayoutList(
 		Set<RecipeSorterStage> recipeSorterStages,
-		@Nullable AbstractContainerMenu container,
 		List<? extends RecipeLayoutWithButtons<?>> unsortedList
 	) {
 		boolean matchingBookmarks = recipeSorterStages.contains(RecipeSorterStage.BOOKMARKED);
 		this.matchingCraftable = recipeSorterStages.contains(RecipeSorterStage.CRAFTABLE);
-		this.container = container;
 		this.results = new ArrayList<>();
 		this.craftMissing = new ArrayList<>();
 		this.size = unsortedList.size();
@@ -63,22 +60,22 @@ public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 	}
 
 	@Override
-	public List<RecipeLayoutWithButtons<?>> subList(int from, int to) {
-		ensureResults(to - 1);
+	public List<RecipeLayoutWithButtons<?>> subList(int from, int to, @Nullable AbstractContainerMenu container) {
+		ensureResults(to - 1, container);
 		return results.subList(from, to);
 	}
 
-	private void ensureResults(int index) {
+	private void ensureResults(int index, @Nullable AbstractContainerMenu container) {
 		while (index >= results.size()) {
-			if (!calculateNextResult()) {
+			if (!calculateNextResult(container)) {
 				return;
 			}
 		}
 	}
 
 	@Override
-	public Optional<RecipeLayoutWithButtons<?>> findFirst() {
-		ensureResults(0);
+	public Optional<RecipeLayoutWithButtons<?>> findFirst(@Nullable AbstractContainerMenu container) {
+		ensureResults(0, container);
 		if (results.isEmpty()) {
 			return Optional.empty();
 		}
@@ -86,11 +83,11 @@ public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 	}
 
 	@Override
-	public void tick() {
-		calculateNextResult();
+	public void tick(@Nullable AbstractContainerMenu container) {
+		calculateNextResult(container);
 	}
 
-	private boolean calculateNextResult() {
+	private boolean calculateNextResult(@Nullable AbstractContainerMenu container) {
 		if (matchingCraftable) {
 			// if craftables go first, look for a 100% craftable element
 			while (unsortedIterator.hasNext()) {

@@ -12,21 +12,20 @@ import java.util.Set;
 public interface IRecipeLayoutList {
 	static IRecipeLayoutList create(
 		Set<RecipeSorterStage> recipeSorterStages,
-		@Nullable AbstractContainerMenu container,
 		List<? extends RecipeLayoutWithButtons<?>> unsortedList
 	) {
 		if (recipeSorterStages.isEmpty()) {
 			return new UnsortedRecipeLayoutList(unsortedList);
 		} else {
-			return new LazySortedRecipeLayoutList(recipeSorterStages, container, unsortedList);
+			return new LazySortedRecipeLayoutList(recipeSorterStages, unsortedList);
 		}
 	}
 
 	int size();
 
-	List<RecipeLayoutWithButtons<?>> subList(int from, int to);
+	List<RecipeLayoutWithButtons<?>> subList(int from, int to, @Nullable AbstractContainerMenu container);
 
-	Optional<RecipeLayoutWithButtons<?>> findFirst();
+	Optional<RecipeLayoutWithButtons<?>> findFirst(@Nullable AbstractContainerMenu container);
 
-	void tick();
+	void tick(@Nullable AbstractContainerMenu container);
 }

@@ -1,6 +1,8 @@
 package mezz.jei.gui.recipes.layouts;
 
 import mezz.jei.gui.recipes.RecipeLayoutWithButtons;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +21,12 @@ public class UnsortedRecipeLayoutList implements IRecipeLayoutList {
 	}
 
 	@Override
-	public List<RecipeLayoutWithButtons<?>> subList(int from, int to) {
+	public List<RecipeLayoutWithButtons<?>> subList(int from, int to, @Nullable AbstractContainerMenu container) {
 		return unsortedList.subList(from, to);
 	}
 
 	@Override
-	public Optional<RecipeLayoutWithButtons<?>> findFirst() {
+	public Optional<RecipeLayoutWithButtons<?>> findFirst(@Nullable AbstractContainerMenu container) {
 		if (unsortedList.isEmpty()) {
 			return Optional.empty();
 		}
@@ -32,7 +34,7 @@ public class UnsortedRecipeLayoutList implements IRecipeLayoutList {
 	}
 
 	@Override
-	public void tick() {
+	public void tick(@Nullable AbstractContainerMenu container) {
 
 	}
 }
