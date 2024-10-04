@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public interface IRecipeLayoutList {
 	static IRecipeLayoutList create(
-		@Nullable AbstractContainerMenu container,
 		List<? extends RecipeLayoutWithButtons<?>> unsortedList
 	) {
 		return new UnsortedRecipeLayoutList(unsortedList);
@@ -17,9 +16,9 @@ public interface IRecipeLayoutList {
 
 	int size();
 
-	List<RecipeLayoutWithButtons<?>> subList(int from, int to);
+	List<RecipeLayoutWithButtons<?>> subList(int from, int to, @Nullable AbstractContainerMenu container);
 
-	Optional<RecipeLayoutWithButtons<?>> findFirst();
+	Optional<RecipeLayoutWithButtons<?>> findFirst(@Nullable AbstractContainerMenu container);
 
-	void tick();
+	void tick(@Nullable AbstractContainerMenu container);
 }

@@ -342,7 +342,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		AbstractContainerMenu container = getParentContainerMenu();
 		this.layouts.tick(container);
 
-		this.logic.tick();
+		this.logic.tick(container);
 	}
 
 	@Override

@@ -4,6 +4,8 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.recipes.RecipeLayoutWithButtons;
 import mezz.jei.gui.recipes.layouts.IRecipeLayoutList;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -34,13 +36,13 @@ public interface ILookupState {
 
 	int pageCount();
 
-	default List<RecipeLayoutWithButtons<?>> getVisible(IRecipeLayoutList recipes) {
+	default List<RecipeLayoutWithButtons<?>> getVisible(IRecipeLayoutList recipes, @Nullable AbstractContainerMenu container) {
 		final int recipesPerPage = getRecipesPerPage();
 		final int firstRecipeIndex = getRecipeIndex() - (getRecipeIndex() % recipesPerPage);
 		final int maxIndex = Math.min(recipes.size(), firstRecipeIndex + recipesPerPage);
 		if (firstRecipeIndex >= maxIndex) {
 			return List.of();
 		}
-		return recipes.subList(firstRecipeIndex, maxIndex);
+		return recipes.subList(firstRecipeIndex, maxIndex, container);
 	}
 }
