@@ -4,6 +4,7 @@ import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.gui.recipes.RecipeLayoutWithButtons;
 import mezz.jei.gui.recipes.RecipeSortUtil;
 import mezz.jei.gui.recipes.RecipeTransferButton;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +18,6 @@ import java.util.Set;
 
 public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 	private final @Nullable AbstractContainerMenu container;
-	private final @Nullable Player player;
 	private final List<RecipeLayoutWithButtons<?>> results;
 	private final List<RecipeLayoutWithButtons<?>> craftMissing;
 	private final Iterator<? extends RecipeLayoutWithButtons<?>> unsortedIterator;
@@ -28,13 +28,11 @@ public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 	LazySortedRecipeLayoutList(
 		Set<RecipeSorterStage> recipeSorterStages,
 		@Nullable AbstractContainerMenu container,
-		@Nullable Player player,
 		List<? extends RecipeLayoutWithButtons<?>> unsortedList
 	) {
 		boolean matchingBookmarks = recipeSorterStages.contains(RecipeSorterStage.BOOKMARKED);
 		this.matchingCraftable = recipeSorterStages.contains(RecipeSorterStage.CRAFTABLE);
 		this.container = container;
-		this.player = player;
 		this.results = new ArrayList<>();
 		this.craftMissing = new ArrayList<>();
 		this.size = unsortedList.size();
@@ -99,6 +97,7 @@ public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 				RecipeLayoutWithButtons<?> next = unsortedIterator.next();
 				RecipeTransferButton transferButton = next.transferButton();
 				if (!transferButton.isInitialized()) {
+					Player player = Minecraft.getInstance().player;
 					transferButton.update(container, player);
 				}
 				int missingCountHint = transferButton.getMissingCountHint();

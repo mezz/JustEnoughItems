@@ -25,9 +25,7 @@ import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.ILookupState;
 import mezz.jei.gui.recipes.lookups.IngredientLookupState;
 import mezz.jei.gui.recipes.lookups.SingleCategoryLookupState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -246,8 +244,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		int minRecipePadding,
 		@Nullable AbstractContainerMenu container
 	) {
-		Player player = Minecraft.getInstance().player;
-
 		IRecipeCategory<?> recipeCategory = getSelectedRecipeCategory();
 
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
@@ -260,7 +256,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		) {
 			IFocusedRecipes<?> focusedRecipes = this.state.getFocusedRecipes();
 
-			this.cachedRecipeLayoutsWithButtons = createRecipeLayoutsWithButtons(recipeSorterStages, focusedRecipes, container, player);
+			this.cachedRecipeLayoutsWithButtons = createRecipeLayoutsWithButtons(recipeSorterStages, focusedRecipes, container);
 			this.cachedRecipeCategory = recipeCategory;
 			this.cachedSorterStages = Set.copyOf(recipeSorterStages);
 		}
@@ -287,8 +283,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private <T> IRecipeLayoutList createRecipeLayoutsWithButtons(
 		Set<RecipeSorterStage> recipeSorterStages,
 		IFocusedRecipes<T> selectedRecipes,
-		@Nullable AbstractContainerMenu container,
-		@Nullable Player player
+		@Nullable AbstractContainerMenu container
 	) {
 		IRecipeCategory<T> recipeCategory = selectedRecipes.getRecipeCategory();
 		List<T> recipes = selectedRecipes.getRecipes();
@@ -311,7 +306,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipeManager.hideRecipes(recipeType, brokenRecipes);
 		}
 
-		return IRecipeLayoutList.create(recipeSorterStages, container, player, results);
+		return IRecipeLayoutList.create(recipeSorterStages, container, results);
 	}
 
 	@Override
