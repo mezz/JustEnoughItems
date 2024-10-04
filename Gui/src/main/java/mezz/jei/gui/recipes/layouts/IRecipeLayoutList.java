@@ -7,7 +7,6 @@ import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.recipes.RecipeLayoutWithButtons;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 

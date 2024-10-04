@@ -14,7 +14,6 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
-import java.util.Optional;
 
 public class RecipeBookmark<R, I> implements IBookmark {
 	private final IElement<I> element;
