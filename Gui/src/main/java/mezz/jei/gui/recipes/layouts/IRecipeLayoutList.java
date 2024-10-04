@@ -41,5 +41,5 @@ public interface IRecipeLayoutList {
 
 	Optional<RecipeLayoutWithButtons<?>> findFirst();
 
-	void tick();
+	void tick(@Nullable AbstractContainerMenu container);
 }

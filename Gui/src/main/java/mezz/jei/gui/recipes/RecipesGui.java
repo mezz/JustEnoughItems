@@ -351,7 +351,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		this.optionButtons.tick();
 
-		this.logic.tick();
+		this.logic.tick(container);
 	}
 
 	@Override
@@ -554,7 +554,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Nullable
-	private AbstractContainerMenu getParentContainerMenu() {
+	public AbstractContainerMenu getParentContainerMenu() {
 		Screen screen;
 		if (parentScreen == null) {
 			screen = Minecraft.getInstance().screen;

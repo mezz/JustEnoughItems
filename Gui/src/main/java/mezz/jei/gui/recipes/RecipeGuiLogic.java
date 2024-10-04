@@ -40,6 +40,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IFocusFactory focusFactory;
 	private @Nullable IRecipeCategory<?> cachedRecipeCategory;
 	private @Nullable IRecipeLayoutList cachedRecipeLayoutsWithButtons;
+	private int cachedContainerId = -1;
 	private Set<RecipeSorterStage> cachedSorterStages = Set.of();
 
 	public RecipeGuiLogic(
@@ -64,9 +65,9 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public void tick() {
+	public void tick(@Nullable AbstractContainerMenu container) {
 		if (cachedRecipeLayoutsWithButtons != null) {
-			cachedRecipeLayoutsWithButtons.tick();
+			cachedRecipeLayoutsWithButtons.tick(container);
 		}
 	}
 
@@ -121,6 +122,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		this.initialState = false;
 		this.cachedRecipeCategory = null;
 		this.cachedRecipeLayoutsWithButtons = null;
+		this.cachedContainerId = -1;
 		stateListener.onStateChange();
 		return true;
 	}
@@ -204,9 +206,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		Set<RecipeSorterStage> recipeSorterStages = clientConfig.getRecipeSorterStages();
 
+		int containerId = container == null ? -1 : container.containerId;
 		if (!recipeSorterStages.equals(cachedSorterStages) ||
 			this.cachedRecipeLayoutsWithButtons == null ||
-			this.cachedRecipeCategory != recipeCategory
+			this.cachedRecipeCategory != recipeCategory ||
+			this.cachedContainerId != containerId
 		) {
 			IFocusedRecipes<?> focusedRecipes = this.state.getFocusedRecipes();
 
@@ -221,6 +225,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			);
 			this.cachedRecipeCategory = recipeCategory;
 			this.cachedSorterStages = Set.copyOf(recipeSorterStages);
+			this.cachedContainerId = containerId;
 		}
 
 		final int recipeHeight =
