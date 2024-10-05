@@ -31,7 +31,9 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 		);
 	}
 
-	private final ScreenRectangle area;
+	protected ImmutableRect2i area;
+	protected final ImmutableRect2i contentsArea;
+
 	private final ImmutableRect2i scrollArea;
 	private final DrawableNineSliceTexture scrollbarMarker;
 	private final DrawableNineSliceTexture scrollbarBackground;
@@ -44,12 +46,18 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 	 */
 	private float scrollOffsetY = 0;
 
-	public AbstractScrollWidget(ScreenRectangle area) {
+	public AbstractScrollWidget(ImmutableRect2i area) {
 		this.area = area;
 		this.scrollArea = calculateScrollArea(area.width(), area.height());
 		Textures textures = Internal.getTextures();
 		this.scrollbarMarker = textures.getScrollbarMarker();
 		this.scrollbarBackground = textures.getScrollbarBackground();
+		this.contentsArea = new ImmutableRect2i(
+			0,
+			0,
+			area.width() - getScrollBoxScrollbarExtraWidth(),
+			area.height()
+		);
 	}
 
 	protected ImmutableRect2i calculateScrollbarMarkerArea() {
@@ -76,16 +84,16 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 
 	@Override
 	public final ScreenRectangle getArea() {
-		return area;
+		return area.toScreenRectangle();
 	}
 
 	@Override
 	public final ScreenPosition getPosition() {
-		return area.position();
+		return area.getScreenPosition();
 	}
 
 	@Override
-	public final void draw(GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	public final void drawWidget(GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		scrollbarBackground.draw(guiGraphics, scrollArea);
 
 		ImmutableRect2i scrollbarMarkerArea = calculateScrollbarMarkerArea();

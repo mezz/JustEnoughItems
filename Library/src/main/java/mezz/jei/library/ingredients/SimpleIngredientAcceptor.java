@@ -38,9 +38,9 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		for (Object ingredient : ingredients) {
-			Optional<ITypedIngredient<?>> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
-			if (typedIngredient.isPresent()) {
-				this.ingredients.add(typedIngredient.get());
+			@Nullable ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
+			if (typedIngredient != null) {
+				this.ingredients.add(typedIngredient);
 			}
 		}
 
@@ -52,11 +52,11 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
-		List<Optional<ITypedIngredient<T>>> typedIngredients = TypedIngredient.createAndFilterInvalidList(this.ingredientManager, ingredientType, ingredients, false);
+		List<@Nullable  ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidList(this.ingredientManager, ingredientType, ingredients, false);
 
-		for (Optional<ITypedIngredient<T>> typedIngredientOptional : typedIngredients) {
-			if (typedIngredientOptional.isPresent()) {
-				this.ingredients.add(typedIngredientOptional.get());
+		for (@Nullable  ITypedIngredient<T> typedIngredientOptional : typedIngredients) {
+			if (typedIngredientOptional != null) {
+				this.ingredients.add(typedIngredientOptional);
 			}
 		}
 
@@ -76,12 +76,19 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 	public <I> SimpleIngredientAcceptor addTypedIngredient(ITypedIngredient<I> typedIngredient) {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
-		Optional<ITypedIngredient<I>> copy = TypedIngredient.deepCopy(ingredientManager, typedIngredient);
-		if (copy.isPresent()) {
-			this.ingredients.add(copy.get());
+		@Nullable ITypedIngredient<I> copy = TypedIngredient.defensivelyCopyTypedIngredientFromApi(ingredientManager, typedIngredient);
+		if (copy != null) {
+			this.ingredients.add(copy);
 		}
 
 		return this;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public SimpleIngredientAcceptor addFluidStack(Fluid fluid) {
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		return addFluidInternal(fluidHelper, fluid.builtInRegistryHolder(), fluidHelper.bucketVolume(), DataComponentPatch.EMPTY);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -131,9 +138,9 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		if (ingredient == null) {
 			return;
 		}
-		Optional<ITypedIngredient<T>> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, false);
-		if (typedIngredient.isPresent()) {
-			this.ingredients.add(typedIngredient.get());
+		@Nullable  ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, false);
+		if (typedIngredient != null) {
+			this.ingredients.add(typedIngredient);
 		}
 	}
 

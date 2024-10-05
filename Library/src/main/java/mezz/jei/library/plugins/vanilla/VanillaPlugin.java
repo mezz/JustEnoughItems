@@ -9,7 +9,6 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -38,8 +37,9 @@ import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
-import mezz.jei.library.plugins.vanilla.anvil.SmithingCategoryExtension;
 import mezz.jei.library.plugins.vanilla.anvil.SmithingRecipeCategory;
+import mezz.jei.library.plugins.vanilla.anvil.SmithingTransformCategoryExtension;
+import mezz.jei.library.plugins.vanilla.anvil.SmithingTrimCategoryExtension;
 import mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.compostable.CompostableRecipeCategory;
 import mezz.jei.library.plugins.vanilla.compostable.CompostingRecipeMaker;
@@ -110,7 +110,8 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
 import net.minecraft.world.item.crafting.ShulkerBoxColoring;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
-import net.minecraft.world.item.crafting.SmithingRecipe;
+import net.minecraft.world.item.crafting.SmithingTransformRecipe;
+import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.SuspiciousStewRecipe;
@@ -171,11 +172,11 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void registerIngredients(IModIngredientRegistration registration) {
 		ISubtypeManager subtypeManager = registration.getSubtypeManager();
-		StackHelper stackHelper = new StackHelper(subtypeManager);
-
-		List<ItemStack> itemStacks = ItemStackListFactory.create(stackHelper);
 		IColorHelper colorHelper = registration.getColorHelper();
+
+		StackHelper stackHelper = new StackHelper(subtypeManager);
 		ItemStackHelper itemStackHelper = new ItemStackHelper(stackHelper, colorHelper);
+		List<ItemStack> itemStacks = ItemStackListFactory.create(stackHelper, itemStackHelper);
 		ItemStackRenderer itemStackRenderer = new ItemStackRenderer();
 		registration.register(
 			VanillaTypes.ITEM_STACK,
@@ -221,7 +222,7 @@ public class VanillaPlugin implements IModPlugin {
 			campfireCategory = new CampfireCookingCategory(guiHelper),
 			smithingCategory = new SmithingRecipeCategory(guiHelper),
 			new CompostableRecipeCategory(guiHelper),
-			new FurnaceFuelCategory(guiHelper, textures),
+			new FurnaceFuelCategory(textures),
 			new BrewingRecipeCategory(guiHelper),
 			new AnvilRecipeCategory(guiHelper)
 		);
@@ -234,10 +235,8 @@ public class VanillaPlugin implements IModPlugin {
 
 		IExtendableSmithingRecipeCategory smithingCategory = registration.getSmithingCategory();
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
-		recipeHelper.getSupportedSmithingRecipeClasses();
-		for (Class<? extends SmithingRecipe> recipeClass : recipeHelper.getSupportedSmithingRecipeClasses()) {
-			smithingCategory.addExtension(recipeClass, new SmithingCategoryExtension<>(recipeHelper));
-		}
+		smithingCategory.addExtension(SmithingTransformRecipe.class, new SmithingTransformCategoryExtension(recipeHelper));
+		smithingCategory.addExtension(SmithingTrimRecipe.class, new SmithingTrimCategoryExtension(recipeHelper));
 	}
 
 	@Override
@@ -253,13 +252,12 @@ public class VanillaPlugin implements IModPlugin {
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 		VanillaRecipes vanillaRecipes = new VanillaRecipes(ingredientManager);
 
 		var craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
 		var handledCraftingRecipes = craftingRecipes.get(true);
 		var unhandledCraftingRecipes = craftingRecipes.get(false);
-		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, stackHelper);
+		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, jeiHelpers);
 
 		registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);
 		registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);
@@ -324,19 +322,27 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-		registration.addRecipeCatalyst(new ItemStack(Blocks.CRAFTING_TABLE), RecipeTypes.CRAFTING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.CRAFTER), RecipeTypes.CRAFTING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.STONECUTTER), RecipeTypes.STONECUTTING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.FURNACE), RecipeTypes.SMELTING, RecipeTypes.FUELING);
-
-		registration.addRecipeCatalyst(new ItemStack(Blocks.SMOKER), RecipeTypes.SMOKING, RecipeTypes.FUELING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.BLAST_FURNACE), RecipeTypes.BLASTING, RecipeTypes.FUELING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.CAMPFIRE), RecipeTypes.CAMPFIRE_COOKING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.SOUL_CAMPFIRE), RecipeTypes.CAMPFIRE_COOKING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.BREWING_STAND), RecipeTypes.BREWING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), RecipeTypes.ANVIL);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.SMITHING_TABLE), RecipeTypes.SMITHING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.COMPOSTER), RecipeTypes.COMPOSTING);
+		registration.addRecipeCatalysts(RecipeTypes.CRAFTING,
+			Blocks.CRAFTING_TABLE,
+			Blocks.CRAFTER
+		);
+		registration.addRecipeCatalysts(RecipeTypes.FUELING,
+			Blocks.FURNACE,
+			Blocks.SMOKER,
+			Blocks.BLAST_FURNACE
+		);
+		registration.addRecipeCatalysts(RecipeTypes.CAMPFIRE_COOKING,
+			Blocks.CAMPFIRE,
+			Blocks.SOUL_CAMPFIRE
+		);
+		registration.addRecipeCatalyst(Blocks.STONECUTTER, RecipeTypes.STONECUTTING);
+		registration.addRecipeCatalyst(Blocks.FURNACE, RecipeTypes.SMELTING);
+		registration.addRecipeCatalyst(Blocks.SMOKER, RecipeTypes.SMOKING);
+		registration.addRecipeCatalyst(Blocks.BLAST_FURNACE, RecipeTypes.BLASTING);
+		registration.addRecipeCatalyst(Blocks.BREWING_STAND, RecipeTypes.BREWING);
+		registration.addRecipeCatalyst(Blocks.ANVIL, RecipeTypes.ANVIL);
+		registration.addRecipeCatalyst(Blocks.SMITHING_TABLE, RecipeTypes.SMITHING);
+		registration.addRecipeCatalyst(Blocks.COMPOSTER, RecipeTypes.COMPOSTING);
 	}
 
 	public Optional<CraftingRecipeCategory> getCraftingCategory() {
@@ -354,9 +360,9 @@ public class VanillaPlugin implements IModPlugin {
 	 * If a special recipe we know how to replace is not present (because it has been removed),
 	 * we do not replace it.
 	 */
-	private static List<RecipeHolder<CraftingRecipe>> replaceSpecialCraftingRecipes(List<RecipeHolder<CraftingRecipe>> unhandledCraftingRecipes, IStackHelper stackHelper) {
+	private static List<RecipeHolder<CraftingRecipe>> replaceSpecialCraftingRecipes(List<RecipeHolder<CraftingRecipe>> unhandledCraftingRecipes, IJeiHelpers jeiHelpers) {
 		Map<Class<? extends CraftingRecipe>, Supplier<List<RecipeHolder<CraftingRecipe>>>> replacers = new IdentityHashMap<>();
-		replacers.put(TippedArrowRecipe.class, () -> TippedArrowRecipeMaker.createRecipes(stackHelper));
+		replacers.put(TippedArrowRecipe.class, () -> TippedArrowRecipeMaker.createRecipes(jeiHelpers));
 		replacers.put(ShulkerBoxColoring.class, ShulkerBoxColoringRecipeMaker::createRecipes);
 		replacers.put(SuspiciousStewRecipe.class, SuspiciousStewRecipeMaker::createRecipes);
 		replacers.put(ShieldDecorationRecipe.class, ShieldDecorationRecipeMaker::createRecipes);

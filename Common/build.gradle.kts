@@ -2,14 +2,16 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
-    java
-    id("org.spongepowered.gradle.vanilla")
-    `maven-publish`
+    id("idea")
+    id("java")
+    id("net.neoforged.moddev")
+    id("maven-publish")
 }
 
 // gradle.properties
 val jUnitVersion: String by extra
 val minecraftVersion: String by extra
+val neoformTimestamp: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 
@@ -27,9 +29,9 @@ dependencyProjects.forEach {
     project.evaluationDependsOn(it.path)
 }
 
-minecraft {
-    version(minecraftVersion)
-    // no runs are configured for Common
+neoForge {
+    neoFormVersion = "$minecraftVersion-$neoformTimestamp"
+    addModdingDependenciesTo(sourceSets.test.get())
 }
 
 sourceSets {
@@ -94,13 +96,21 @@ publishing {
             artifact(tasks.jar)
             artifact(tasks.named("sourcesJar"))
 
+            val dependencyInfos = dependencyProjects.map {
+                mapOf(
+                    "groupId" to it.group,
+                    "artifactId" to it.base.archivesName.get(),
+                    "version" to it.version
+                )
+            }
+
             pom.withXml {
                 val dependenciesNode = asNode().appendNode("dependencies")
-                dependencyProjects.forEach {
+                dependencyInfos.forEach {
                     val dependencyNode = dependenciesNode.appendNode("dependency")
-                    dependencyNode.appendNode("groupId", it.group)
-                    dependencyNode.appendNode("artifactId", it.base.archivesName.get())
-                    dependencyNode.appendNode("version", it.version)
+                    it.forEach { (key, value) ->
+                        dependencyNode.appendNode(key, value)
+                    }
                 }
             }
         }
@@ -109,6 +119,14 @@ publishing {
         val deployDir = project.findProperty("DEPLOY_DIR")
         if (deployDir != null) {
             maven(deployDir)
+        }
+    }
+}
+
+idea {
+    module {
+        for (fileName in listOf("build", "run", "out", "logs")) {
+            excludeDirs.add(file(fileName))
         }
     }
 }

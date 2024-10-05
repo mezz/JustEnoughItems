@@ -4,7 +4,9 @@ import com.mojang.serialization.Codec;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
@@ -59,6 +61,17 @@ public interface IJeiHelpers {
 	 * recipe types directly from their API.
 	 *
 	 * @see RecipeType#getUid()
+	 * @since 19.11.0
+	 */
+	<T> Optional<RecipeType<T>> getRecipeType(ResourceLocation uid, Class<? extends T> recipeClass);
+
+	/**
+	 * Get the registered recipe type for the given unique id.
+	 * <p>
+	 * This is useful for integrating with other mods that do not share their
+	 * recipe types directly from their API.
+	 *
+	 * @see RecipeType#getUid()
 	 * @since 11.4.0
 	 */
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
@@ -83,4 +96,19 @@ public interface IJeiHelpers {
 	 * @since 19.9.0
 	 */
 	ICodecHelper getCodecHelper();
+
+	/**
+	 * The {@link IVanillaRecipeFactory} allows creation of vanilla recipes.
+	 *
+	 * @since 19.15.0
+	 */
+	IVanillaRecipeFactory getVanillaRecipeFactory();
+
+	/**
+	 * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
+	 * ingredients based on what is visible in JEI.
+	 *
+	 * @since 19.18.4
+	 */
+	IIngredientVisibility getIngredientVisibility();
 }

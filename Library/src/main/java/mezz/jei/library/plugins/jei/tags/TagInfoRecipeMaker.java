@@ -61,8 +61,10 @@ public record TagInfoRecipeMaker<B, I>(
 		for (Holder<B> i : registry.getTagOrEmpty(tagKey)) {
 			B value = i.value();
 			I ingredient = baseToIngredient.apply(value);
-			TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false)
-				.ifPresent(ingredients::add);
+			ITypedIngredient<I> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false);
+			if (typedIngredient != null) {
+				ingredients.add(typedIngredient);
+			}
 		}
 
 		return ingredients;

@@ -120,6 +120,22 @@ public interface IRecipeManager {
 
 	/**
 	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
+	 * If there is something wrong and the recipe layout crashes, this will display an error recipe instead.
+	 *
+	 * @param recipeCategory the recipe category that the recipe belongs to
+	 * @param recipe         the specific recipe to draw.
+	 * @param focusGroup     the focuses of the recipe layout.
+	 *
+	 * @since 19.19.6
+	 */
+	<T> IRecipeLayoutDrawable<T> createRecipeLayoutDrawableOrShowError(
+		IRecipeCategory<T> recipeCategory,
+		T recipe,
+		IFocusGroup focusGroup
+	);
+
+	/**
+	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
 	 *
 	 * @param recipeCategory the recipe category that the recipe belongs to
 	 * @param recipe         the specific recipe to draw.
@@ -159,19 +175,41 @@ public interface IRecipeManager {
 	 * @param role                  the recipe ingredient role of this slot
 	 * @param ingredients           a non-null list of optional ingredients for the slot
 	 * @param focusedIngredients    indexes of the focused ingredients in "ingredients"
+	 * @param ingredientCycleOffset the starting index for cycling the list of ingredients when rendering.
+	 * @since 19.19.1
+	 */
+	IRecipeSlotDrawable createRecipeSlotDrawable(
+		RecipeIngredientRole role,
+		List<Optional<ITypedIngredient<?>>> ingredients,
+		Set<Integer> focusedIngredients,
+		int ingredientCycleOffset
+	);
+
+	/**
+	 * Returns a drawable recipe slot, for addons that want to draw the slots somewhere.
+	 *
+	 * @param role                  the recipe ingredient role of this slot
+	 * @param ingredients           a non-null list of optional ingredients for the slot
+	 * @param focusedIngredients    indexes of the focused ingredients in "ingredients"
 	 * @param xPos                  the x position of the slot on the screen
 	 * @param yPos                  the y position of the slot on the screen
 	 * @param ingredientCycleOffset the starting index for cycling the list of ingredients when rendering.
 	 * @since 11.5.0
+	 * @deprecated use {@link #createRecipeSlotDrawable(RecipeIngredientRole, List, Set, int)} and then set the position
 	 */
-	IRecipeSlotDrawable createRecipeSlotDrawable(
+	@Deprecated(since = "19.19.1")
+	default IRecipeSlotDrawable createRecipeSlotDrawable(
 		RecipeIngredientRole role,
 		List<Optional<ITypedIngredient<?>>> ingredients,
 		Set<Integer> focusedIngredients,
 		int xPos,
 		int yPos,
 		int ingredientCycleOffset
-	);
+	) {
+		IRecipeSlotDrawable recipeSlotDrawable = createRecipeSlotDrawable(role, ingredients, focusedIngredients, ingredientCycleOffset);
+		recipeSlotDrawable.setPosition(xPos, yPos);
+		return recipeSlotDrawable;
+	}
 
 	/**
 	 * Get the ingredients for a given recipe.
@@ -186,7 +224,18 @@ public interface IRecipeManager {
 	 * recipe types directly from their API.
 	 *
 	 * @see RecipeType#getUid()
+	 * @since 19.11.0
+	 */
+	<T> Optional<RecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass);
+
+	/**
+	 * Get the registered recipe type for the given unique id.
+	 * <p>
+	 * This is useful for integrating with other mods that do not share their
+	 * recipe types directly from their API.
+	 *
+	 * @see RecipeType#getUid()
 	 * @since 11.2.3
 	 */
-	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
+	Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid);
 }

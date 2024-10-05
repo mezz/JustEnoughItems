@@ -35,7 +35,8 @@ public final class OverlayHelper {
 		IClientToggleState toggleState,
 		IConnectionToServer serverConnection,
 		IColorHelper colorHelper,
-		IScreenHelper screenHelper
+		IScreenHelper screenHelper,
+		boolean supportsEditMode
 	) {
 		IngredientGrid ingredientListGrid = new IngredientGrid(
 			ingredientManager,
@@ -45,7 +46,8 @@ public final class OverlayHelper {
 			toggleState,
 			serverConnection,
 			keyMappings,
-			colorHelper
+			colorHelper,
+			supportsEditMode
 		);
 
 		return new IngredientGridWithNavigation(
@@ -90,7 +92,8 @@ public final class OverlayHelper {
 			toggleState,
 			serverConnection,
 			colorHelper,
-			screenHelper
+			screenHelper,
+			true
 		);
 
 		return new IngredientListOverlay(
@@ -130,7 +133,9 @@ public final class OverlayHelper {
 			toggleState,
 			serverConnection,
 			colorHelper,
-			screenHelper);
+			screenHelper,
+			false
+		);
 
 		return new BookmarkOverlay(
 			bookmarkList,

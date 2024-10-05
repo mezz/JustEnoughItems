@@ -56,6 +56,40 @@ public interface IIngredientHelper<V> {
 	}
 
 	/**
+	 * Unique ID for use in comparing and looking up ingredients.
+	 *
+	 * Returns an {@link Object} so that UID creation can be optimized.
+	 * Make sure the returned value implements {@link Object#equals} and {@link Object#hashCode}.
+	 *
+	 * Replaces {@link #getUniqueId(Object, UidContext)}.
+	 *
+	 * @since 19.19.4
+	 */
+	default Object getUid(ITypedIngredient<V> typedIngredient, UidContext context) {
+		return getUid(typedIngredient.getIngredient(), context);
+	}
+
+	/**
+	 * Unique ID for use in grouping ingredients together.
+	 * This is used for hiding groups of ingredients together at once.
+	 *
+	 * @since 19.13.0
+	 */
+	default Object getGroupingUid(V ingredient) {
+		return getWildcardId(ingredient);
+	}
+
+	/**
+	 * Unique ID for use in grouping ingredients together.
+	 * This is used for hiding groups of ingredients together at once.
+	 *
+	 * @since 19.19.5
+	 */
+	default Object getGroupingUid(ITypedIngredient<V> typedIngredient) {
+		return getGroupingUid(typedIngredient.getIngredient());
+	}
+
+	/**
 	 * Return true if the given ingredient can have subtypes.
 	 * For example in the vanilla game an enchanted book may have subtypes, but an apple does not.
 	 * <p>
@@ -71,7 +105,11 @@ public interface IIngredientHelper<V> {
 	 * Wildcard ID for use in comparing, blacklisting, and looking up ingredients.
 	 * For an example, ItemStack's wildcardId does not include NBT.
 	 * For ingredients which do not have a wildcardId, just return the uniqueId here.
+	 *
+	 * @deprecated use {@link #getGroupingUid} instead
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "19.13.0", forRemoval = true)
 	default String getWildcardId(V ingredient) {
 		return getUniqueId(ingredient, UidContext.Ingredient);
 	}
@@ -196,6 +234,17 @@ public interface IIngredientHelper<V> {
 	default boolean isHiddenFromRecipeViewersByTags(V ingredient) {
 		return getTagStream(ingredient)
 			.anyMatch(Tags.HIDDEN_FROM_RECIPE_VIEWERS::equals);
+	}
+
+	/**
+	 * Return true if the given ingredient is hidden from recipe viewers by its tags.
+	 *
+	 * @see Tags#HIDDEN_FROM_RECIPE_VIEWERS
+	 *
+	 * @since 19.19.5
+	 */
+	default boolean isHiddenFromRecipeViewersByTags(ITypedIngredient<V> ingredient) {
+		return isHiddenFromRecipeViewersByTags(ingredient.getIngredient());
 	}
 
 	/**

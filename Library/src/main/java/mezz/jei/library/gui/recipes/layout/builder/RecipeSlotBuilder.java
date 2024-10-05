@@ -4,9 +4,10 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
-import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
@@ -14,11 +15,13 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.core.util.Pair;
 import mezz.jei.library.gui.ingredients.ICycler;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RendererOverrides;
@@ -32,22 +35,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-// TODO: breaking change: give IRecipeSlotBuilder a parameter for ISlottedWidgetFactory
 public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private final DisplayIngredientAcceptor ingredients;
 	private final RecipeIngredientRole role;
 	private final List<IRecipeSlotRichTooltipCallback> tooltipCallbacks = new ArrayList<>();
+	private final int slotIndex;
 	private ImmutableRect2i rect;
 	private @Nullable RendererOverrides rendererOverrides;
-	private @Nullable IDrawable background;
+	private @Nullable OffsetDrawable background;
 	private @Nullable IDrawable overlay;
 	private @Nullable String slotName;
-	private @Nullable ISlottedWidgetFactory<?> assignedWidgetFactory;
+	@SuppressWarnings("removal")
+	private @Nullable mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> assignedWidgetFactory;
 
-	public RecipeSlotBuilder(IIngredientManager ingredientManager, RecipeIngredientRole role, int x, int y) {
+	public RecipeSlotBuilder(IIngredientManager ingredientManager, int slotIndex, RecipeIngredientRole role) {
 		this.ingredients = new DisplayIngredientAcceptor(ingredientManager);
-		this.rect = new ImmutableRect2i(x, y, 16, 16);
+		this.rect = new ImmutableRect2i(0, 0, 16, 16);
 		this.role = role;
+		this.slotIndex = slotIndex;
 	}
 
 	@Override
@@ -59,6 +64,12 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	@Override
 	public <I> IRecipeSlotBuilder addIngredient(IIngredientType<I> ingredientType, I ingredient) {
 		this.ingredients.addIngredient(ingredientType, ingredient);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder addFluidStack(Fluid fluid) {
+		this.ingredients.addFluidStack(fluid);
 		return this;
 	}
 
@@ -93,10 +104,26 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	}
 
 	@Override
+	public IRecipeSlotBuilder setStandardSlotBackground() {
+		IGuiHelper guiHelper = Internal.getJeiRuntime().getJeiHelpers().getGuiHelper();
+		IDrawableStatic background = guiHelper.getSlotDrawable();
+		this.background = new OffsetDrawable(background, -1, -1);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder setOutputSlotBackground() {
+		IGuiHelper guiHelper = Internal.getJeiRuntime().getJeiHelpers().getGuiHelper();
+		IDrawableStatic background = guiHelper.getOutputSlot();
+		this.background = new OffsetDrawable(background, -5, -5);
+		return this;
+	}
+
+	@Override
 	public IRecipeSlotBuilder setBackground(IDrawable background, int xOffset, int yOffset) {
 		ErrorUtil.checkNotNull(background, "background");
 
-		this.background = OffsetDrawable.create(background, xOffset, yOffset);
+		this.background = new OffsetDrawable(background, xOffset, yOffset);
 		return this;
 	}
 
@@ -160,39 +187,57 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		return this;
 	}
 
-	public RecipeSlotBuilder assignToWidgetFactory(ISlottedWidgetFactory<?> widgetFactory) {
+	@Override
+	public int getWidth() {
+		return this.rect.width();
+	}
+
+	@Override
+	public int getHeight() {
+		return this.rect.height();
+	}
+
+	@Override
+	public IRecipeSlotBuilder setPosition(int xPos, int yPos) {
+		this.rect = this.rect.setPosition(xPos, yPos);
+		return this;
+	}
+
+	@SuppressWarnings("removal")
+	public RecipeSlotBuilder assignToWidgetFactory(mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> widgetFactory) {
 		ErrorUtil.checkNotNull(widgetFactory, "widgetFactory");
 
 		this.assignedWidgetFactory = widgetFactory;
 		return this;
 	}
 
+	@SuppressWarnings("removal")
 	@Nullable
-	public ISlottedWidgetFactory<?> getAssignedWidget() {
+	public mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> getAssignedWidget() {
 		return assignedWidgetFactory;
 	}
 
-	public IRecipeSlotDrawable build(IFocusGroup focusGroup, ICycler cycler) {
+	public Pair<Integer, IRecipeSlotDrawable> build(IFocusGroup focusGroup, ICycler cycler) {
 		Set<Integer> focusMatches = getMatches(focusGroup);
 		return build(focusMatches, cycler);
 	}
 
-	public IRecipeSlotDrawable build(Set<Integer> focusMatches, ICycler cycler) {
-		List<Optional<ITypedIngredient<?>>> allIngredients = this.ingredients.getAllIngredients();
+	public Pair<Integer, IRecipeSlotDrawable> build(Set<Integer> focusMatches, ICycler cycler) {
+		List<@Nullable ITypedIngredient<?>> allIngredients = this.ingredients.getAllIngredients();
 
-		List<Optional<ITypedIngredient<?>>> focusedIngredients = null;
+		List<@Nullable ITypedIngredient<?>> focusedIngredients = null;
 
 		if (!focusMatches.isEmpty()) {
 			focusedIngredients = new ArrayList<>();
 			for (Integer i : focusMatches) {
 				if (i < allIngredients.size()) {
-					Optional<ITypedIngredient<?>> ingredient = allIngredients.get(i);
+					@Nullable ITypedIngredient<?> ingredient = allIngredients.get(i);
 					focusedIngredients.add(ingredient);
 				}
 			}
 		}
 
-		return new RecipeSlot(
+		RecipeSlot recipeSlot = new RecipeSlot(
 			role,
 			rect,
 			cycler,
@@ -204,6 +249,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 			slotName,
 			rendererOverrides
 		);
+		return new Pair<>(slotIndex, recipeSlot);
 	}
 
 	public IntSet getMatches(IFocusGroup focuses) {

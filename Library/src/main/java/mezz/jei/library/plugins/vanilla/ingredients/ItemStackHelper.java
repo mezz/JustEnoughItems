@@ -6,6 +6,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
@@ -63,15 +64,32 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@SuppressWarnings("removal")
 	@Override
 	public String getUniqueId(ItemStack ingredient, UidContext context) {
-		ErrorUtil.checkNotEmpty(ingredient);
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		return stackHelper.getUniqueIdentifierForStack(ingredient, context);
 	}
 
 	@Override
 	public Object getUid(ItemStack ingredient, UidContext context) {
-		ErrorUtil.checkNotEmpty(ingredient, "ingredient");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		ErrorUtil.checkNotNull(context, "type");
 		return stackHelper.getUidForStack(ingredient, context);
+	}
+
+	@Override
+	public Object getUid(ITypedIngredient<ItemStack> typedIngredient, UidContext context) {
+		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
+		ErrorUtil.checkNotNull(context, "type");
+		return stackHelper.getUidForStack(typedIngredient, context);
+	}
+
+	@Override
+	public Object getGroupingUid(ITypedIngredient<ItemStack> typedIngredient) {
+		return typedIngredient.getBaseIngredient(VanillaTypes.ITEM_STACK);
+	}
+
+	@Override
+	public Object getGroupingUid(ItemStack ingredient) {
+		return ingredient.getItem();
 	}
 
 	@Override
@@ -80,15 +98,16 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		return stackHelper.hasSubtypes(ingredient);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getWildcardId(ItemStack ingredient) {
-		ErrorUtil.checkNotEmpty(ingredient);
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		return StackHelper.getRegistryNameForStack(ingredient);
 	}
 
 	@Override
 	public String getDisplayModId(ItemStack ingredient) {
-		ErrorUtil.checkNotEmpty(ingredient);
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
 		return itemStackHelper.getCreatorModId(ingredient)
@@ -127,7 +146,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public ResourceLocation getResourceLocation(ItemStack ingredient) {
-		ErrorUtil.checkNotEmpty(ingredient);
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		Item item = ingredient.getItem();
 		ResourceLocation key = RegistryUtil
@@ -156,8 +175,12 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		if (ingredient.getCount() == 1) {
 			return ingredient;
 		}
+		// Temporarily setting the count on the original stack this way can "recover" some empty ItemStacks.
+		// Copying it first results in the copy being a hard-coded ItemStack#EMPTY that cannot be recovered.
+		int originalCount = ingredient.getCount();
+		ingredient.setCount(1);
 		ItemStack copy = ingredient.copy();
-		copy.setCount(1);
+		ingredient.setCount(originalCount);
 		return copy;
 	}
 
@@ -194,17 +217,29 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public boolean isHiddenFromRecipeViewersByTags(ItemStack ingredient) {
-		if (ingredient.is(itemHiddenFromRecipeViewers)) {
+		return isHiddenFromRecipeViewersByTags(ingredient.getItemHolder());
+	}
+
+	@Override
+	public boolean isHiddenFromRecipeViewersByTags(ITypedIngredient<ItemStack> ingredient) {
+		Item item = ingredient.getBaseIngredient(VanillaTypes.ITEM_STACK);
+		@SuppressWarnings("deprecation")
+		Holder.Reference<Item> itemHolder = item.builtInRegistryHolder();
+		return isHiddenFromRecipeViewersByTags(itemHolder);
+	}
+
+	private boolean isHiddenFromRecipeViewersByTags(Holder<Item> itemHolder) {
+		if (itemHolder.is(itemHiddenFromRecipeViewers)) {
 			return true;
 		}
-		if (ingredient.getItem() instanceof BlockItem blockItem) {
+		if (itemHolder.value() instanceof BlockItem blockItem) {
 			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 			if (clientConfig.isLookupBlockTagsEnabled()) {
 				Block block = blockItem.getBlock();
 				@SuppressWarnings("deprecation")
-				Holder.Reference<Block> holder = block.builtInRegistryHolder();
-				return holder.is(blockHiddenFromRecipeViewers);
+				Holder.Reference<Block> blockHolder = block.builtInRegistryHolder();
+				return blockHolder.is(blockHiddenFromRecipeViewers);
 			}
 		}
 		return false;

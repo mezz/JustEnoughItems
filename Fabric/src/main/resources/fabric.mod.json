@@ -38,8 +38,8 @@
   "accessWidener" : "jei.accesswidener",
 
   "depends": {
-    "fabricloader": ">=${fabricLoaderVersion}",
-    "fabric-api": ">=${fabricApiVersion}",
+    "fabricloader": "${fabricLoaderVersionRange}",
+    "fabric-api": "${fabricApiVersionRange}",
     "java": ">=${modJavaVersion}"
   }
 }

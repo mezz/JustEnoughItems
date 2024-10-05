@@ -1,5 +1,6 @@
 package mezz.jei.api.helpers;
 
+import mezz.jei.api.ingredients.ITypedIngredient;
 import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
@@ -19,6 +20,14 @@ public interface IStackHelper {
 	 * @since 19.9.0
 	 */
 	Object getUidForStack(ItemStack stack, UidContext context);
+
+	/**
+	 * Gets the unique identifier for a stack, ignoring NBT on items without subtypes, and uses the {@link ISubtypeManager}.
+	 * If two unique identifiers are equal, then the items can be considered equivalent.
+	 *
+	 * @since 19.19.4
+	 */
+	Object getUidForStack(ITypedIngredient<ItemStack> stack, UidContext context);
 
 	/**
 	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the {@link ISubtypeManager}

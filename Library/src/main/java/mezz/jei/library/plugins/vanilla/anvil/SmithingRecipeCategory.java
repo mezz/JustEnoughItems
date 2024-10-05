@@ -4,30 +4,19 @@ import com.mojang.serialization.Codec;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmithingRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.ISmithingCategoryExtension;
-import mezz.jei.common.Internal;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.library.util.RecipeUtil;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
-import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,39 +24,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SmithingRecipeCategory implements IRecipeCategory<RecipeHolder<SmithingRecipe>>, IExtendableSmithingRecipeCategory {
-	private final IDrawable background;
-	private final IDrawable icon;
-	private final IDrawable slot;
-	private final IDrawable recipeArrow;
+public class SmithingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<SmithingRecipe>> implements IExtendableSmithingRecipeCategory {
 	private final Map<Class<? extends SmithingRecipe>, ISmithingCategoryExtension<?>> extensions = new HashMap<>();
 
 	public SmithingRecipeCategory(IGuiHelper guiHelper) {
-		background = guiHelper.createBlankDrawable(108, 28);
-		slot = guiHelper.getSlotDrawable();
-		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.SMITHING_TABLE));
-		Textures textures = Internal.getTextures();
-		recipeArrow = textures.getRecipeArrow();
-	}
-
-	@Override
-	public RecipeType<RecipeHolder<SmithingRecipe>> getRecipeType() {
-		return RecipeTypes.SMITHING;
-	}
-
-	@Override
-	public Component getTitle() {
-		return Blocks.SMITHING_TABLE.getName();
-	}
-
-	@Override
-	public IDrawable getBackground() {
-		return background;
-	}
-
-	@Override
-	public IDrawable getIcon() {
-		return icon;
+		super(
+			RecipeTypes.SMITHING,
+			Blocks.SMITHING_TABLE.getName(),
+			guiHelper.createDrawableItemLike(Blocks.SMITHING_TABLE),
+			108,
+			28
+		);
 	}
 
 	@Override
@@ -79,17 +46,17 @@ public class SmithingRecipeCategory implements IRecipeCategory<RecipeHolder<Smit
 			return;
 		}
 
-		IRecipeSlotBuilder templateSlot = builder.addSlot(RecipeIngredientRole.INPUT, 1, 6)
-			.setBackground(slot, -1, -1);
+		IRecipeSlotBuilder templateSlot = builder.addInputSlot(1, 6)
+			.setStandardSlotBackground();
 
-		IRecipeSlotBuilder baseSlot = builder.addSlot(RecipeIngredientRole.INPUT, 19, 6)
-			.setBackground(slot, -1, -1);
+		IRecipeSlotBuilder baseSlot = builder.addInputSlot(19, 6)
+			.setStandardSlotBackground();
 
-		IRecipeSlotBuilder additionSlot = builder.addSlot(RecipeIngredientRole.INPUT, 37, 6)
-			.setBackground(slot, -1, -1);
+		IRecipeSlotBuilder additionSlot = builder.addInputSlot(37, 6)
+			.setStandardSlotBackground();
 
-		IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 91, 6)
-			.setBackground(slot, -1, -1);
+		IRecipeSlotBuilder outputSlot = builder.addOutputSlot(91, 6)
+			.setStandardSlotBackground();
 
 		extension.setTemplate(recipe, templateSlot);
 		extension.setBase(recipe, baseSlot);
@@ -98,41 +65,30 @@ public class SmithingRecipeCategory implements IRecipeCategory<RecipeHolder<Smit
 	}
 
 	@Override
-	public void onDisplayedIngredientsUpdate(RecipeHolder<SmithingRecipe> recipe, List<IRecipeSlotDrawable> recipeSlots, IFocusGroup focuses) {
+	public void onDisplayedIngredientsUpdate(RecipeHolder<SmithingRecipe> recipeHolder, List<IRecipeSlotDrawable> recipeSlots, IFocusGroup focuses) {
+		SmithingRecipe recipe = recipeHolder.value();
+		ISmithingCategoryExtension<? super SmithingRecipe> extension = getExtension(recipe);
+		if (extension == null) {
+			return;
+		}
+
 		IRecipeSlotDrawable templateSlot = recipeSlots.getFirst();
 		IRecipeSlotDrawable baseSlot = recipeSlots.get(1);
 		IRecipeSlotDrawable additionSlot = recipeSlots.get(2);
 		IRecipeSlotDrawable outputSlot = recipeSlots.get(3);
-
-		List<IFocus<?>> outputFocuses = focuses.getFocuses(RecipeIngredientRole.OUTPUT).toList();
-		if (outputFocuses.isEmpty()) {
-			ItemStack template = templateSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
-			ItemStack base = baseSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
-			ItemStack addition = additionSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
-
-			SmithingRecipeInput recipeInput = new SmithingRecipeInput(template, base, addition);
-			ItemStack output = RecipeUtil.assembleResultItem(recipeInput, recipe.value());
-			outputSlot.createDisplayOverrides()
-				.addItemStack(output);
-		} else {
-			ItemStack output = outputSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
-			ItemStack base = new ItemStack(output.getItem());
-			ItemStack template = templateSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
-			ItemStack addition = additionSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
-
-			baseSlot.createDisplayOverrides()
-				.addItemStack(base);
-
-			SmithingRecipeInput recipeInput = new SmithingRecipeInput(template, base, addition);
-			output = RecipeUtil.assembleResultItem(recipeInput, recipe.value());
-			outputSlot.createDisplayOverrides()
-				.addItemStack(output);
-		}
+		extension.onDisplayedIngredientsUpdate(
+			recipe,
+			templateSlot,
+			baseSlot,
+			additionSlot,
+			outputSlot,
+			focuses
+		);
 	}
 
 	@Override
-	public void draw(RecipeHolder<SmithingRecipe> recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		recipeArrow.draw(guiGraphics, 61, 7);
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, RecipeHolder<SmithingRecipe> recipe, IFocusGroup focuses) {
+		builder.addRecipeArrow().setPosition(61, 6);
 	}
 
 	@Override

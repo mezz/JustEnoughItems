@@ -1,6 +1,5 @@
 package mezz.jei.neoforge.platform;
 
-import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.core.Holder;
@@ -13,7 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
+import net.minecraft.world.level.block.ComposterBlock;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -44,11 +43,6 @@ public class IngredientHelper implements IPlatformIngredientHelper {
 	}
 
 	@Override
-	public Ingredient createNbtIngredient(ItemStack stack, IStackHelper stackHelper) {
-		return DataComponentIngredient.of(false, stack);
-	}
-
-	@Override
 	public List<Ingredient> getPotionContainers(PotionBrewing potionBrewing) {
 		return potionBrewing.containers;
 	}
@@ -60,5 +54,10 @@ public class IngredientHelper implements IPlatformIngredientHelper {
 			potionBrewing.potionMixes.stream()
 		)
 			.map(PotionBrewing.Mix::ingredient);
+	}
+
+	@Override
+	public float getCompostValue(ItemStack itemStack) {
+		return ComposterBlock.getValue(itemStack);
 	}
 }

@@ -2,6 +2,7 @@ package mezz.jei.api.ingredients.subtypes;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -31,6 +32,15 @@ public interface ISubtypeManager {
 	 */
 	@Nullable
 	<T> Object getSubtypeData(IIngredientTypeWithSubtypes<?, T> ingredientType, T ingredient, UidContext context);
+
+	/**
+	 * Get the data from a typed ingredient that is relevant to comparing and telling subtypes apart.
+	 * Returns null if the typed ingredient has no information used for subtypes.
+	 *
+	 * @since 19.19.4
+	 */
+	@Nullable
+	<B, T> Object getSubtypeData(IIngredientTypeWithSubtypes<B, T> ingredientType, ITypedIngredient<T> typedIngredient, UidContext context);
 
 	/**
 	 * Get the data from an ItemStack that is relevant to comparing and telling subtypes apart.

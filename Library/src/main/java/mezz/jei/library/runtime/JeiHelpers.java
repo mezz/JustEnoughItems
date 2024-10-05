@@ -10,10 +10,11 @@ import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.gui.helpers.GuiHelper;
-import mezz.jei.library.helpers.CodecHelper;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +30,8 @@ public class JeiHelpers implements IJeiHelpers {
 	private final IFocusFactory focusFactory;
 	private final IColorHelper colorHelper;
 	private final IIngredientManager ingredientManager;
+	private final IVanillaRecipeFactory vanillaRecipeFactory;
+	private final IIngredientVisibility ingredientVisibility;
 	private final IPlatformFluidHelper<?> platformFluidHelper;
 	private final ICodecHelper codecHelper;
 	private @Nullable Collection<IRecipeCategory<?>> recipeCategories;
@@ -39,7 +42,10 @@ public class JeiHelpers implements IJeiHelpers {
 		IModIdHelper modIdHelper,
 		IFocusFactory focusFactory,
 		IColorHelper colorHelper,
-		IIngredientManager ingredientManager
+		IIngredientManager ingredientManager,
+		IVanillaRecipeFactory vanillaRecipeFactory,
+		ICodecHelper codecHelper,
+		IIngredientVisibility ingredientVisibility
 	) {
 		this.guiHelper = guiHelper;
 		this.stackHelper = stackHelper;
@@ -47,8 +53,10 @@ public class JeiHelpers implements IJeiHelpers {
 		this.focusFactory = focusFactory;
 		this.colorHelper = colorHelper;
 		this.ingredientManager = ingredientManager;
+		this.vanillaRecipeFactory = vanillaRecipeFactory;
+		this.ingredientVisibility = ingredientVisibility;
 		this.platformFluidHelper = Services.PLATFORM.getFluidHelper();
-		this.codecHelper = new CodecHelper(ingredientManager, focusFactory);
+		this.codecHelper = codecHelper;
 	}
 
 	public void setRecipeCategories(Collection<IRecipeCategory<?>> recipeCategories) {
@@ -86,6 +94,21 @@ public class JeiHelpers implements IJeiHelpers {
 	}
 
 	@Override
+	public <T> Optional<RecipeType<T>> getRecipeType(ResourceLocation uid, Class<? extends T> recipeClass) {
+		return Optional.ofNullable(this.recipeCategories)
+			.flatMap(r -> r.stream()
+				.map(IRecipeCategory::getRecipeType)
+				.filter(t -> t.getUid().equals(uid) && t.getRecipeClass().equals(recipeClass))
+				.map(t -> {
+					@SuppressWarnings("unchecked")
+					RecipeType<T> cast = (RecipeType<T>) t;
+					return cast;
+				})
+				.findFirst()
+			);
+	}
+
+	@Override
 	public Optional<RecipeType<?>> getRecipeType(ResourceLocation uid) {
 		return Optional.ofNullable(this.recipeCategories)
 			.flatMap(r -> r.stream()
@@ -112,5 +135,15 @@ public class JeiHelpers implements IJeiHelpers {
 	@Override
 	public ICodecHelper getCodecHelper() {
 		return codecHelper;
+	}
+
+	@Override
+	public IVanillaRecipeFactory getVanillaRecipeFactory() {
+		return vanillaRecipeFactory;
+	}
+
+	@Override
+	public IIngredientVisibility getIngredientVisibility() {
+		return ingredientVisibility;
 	}
 }

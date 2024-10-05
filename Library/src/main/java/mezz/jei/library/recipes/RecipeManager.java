@@ -15,9 +15,13 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.Internal;
+import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.core.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTimer;
 import mezz.jei.library.gui.recipes.RecipeLayout;
+import mezz.jei.library.gui.recipes.layout.RecipeLayoutDrawableErrored;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import mezz.jei.library.util.IngredientSupplierHelper;
 import net.minecraft.resources.ResourceLocation;
@@ -68,6 +72,39 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
+	public <T> IRecipeLayoutDrawable<T> createRecipeLayoutDrawableOrShowError(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup) {
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
+
+		RecipeType<T> recipeType = recipeCategory.getRecipeType();
+		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
+
+		final IScalableDrawable recipeBackground;
+		final int borderPadding;
+		if (recipeCategory.needsRecipeBorder()) {
+			recipeBackground = Internal.getTextures().getRecipeBackground();
+			borderPadding = 4;
+		} else {
+			recipeBackground = DrawableBlank.EMPTY;
+			borderPadding = 0;
+		}
+
+		return RecipeLayout.create(
+			recipeCategory,
+			decorators,
+			recipe,
+			focusGroup,
+			ingredientManager,
+			recipeBackground,
+			borderPadding
+		)
+		.orElseGet(() -> {
+			return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding);
+		});
+	}
+
+	@Override
 	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
@@ -75,12 +112,25 @@ public class RecipeManager implements IRecipeManager {
 
 		RecipeType<T> recipeType = recipeCategory.getRecipeType();
 		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
+
+		final IScalableDrawable recipeBackground;
+		final int borderPadding;
+		if (recipeCategory.needsRecipeBorder()) {
+			recipeBackground = Internal.getTextures().getRecipeBackground();
+			borderPadding = 4;
+		} else {
+			recipeBackground = DrawableBlank.EMPTY;
+			borderPadding = 0;
+		}
+
 		return RecipeLayout.create(
 			recipeCategory,
 			decorators,
 			recipe,
 			focusGroup,
-			ingredientManager
+			ingredientManager,
+			recipeBackground,
+			borderPadding
 		);
 	}
 
@@ -111,11 +161,12 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public IRecipeSlotDrawable createRecipeSlotDrawable(RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusedIngredients, int xPos, int yPos, int ingredientCycleOffset) {
-		RecipeSlotBuilder builder = new RecipeSlotBuilder(ingredientManager, role, xPos, yPos);
+	public IRecipeSlotDrawable createRecipeSlotDrawable(RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusedIngredients, int ingredientCycleOffset) {
+		RecipeSlotBuilder builder = new RecipeSlotBuilder(ingredientManager, 0, role);
 		builder.addOptionalTypedIngredients(ingredients);
 		CycleTimer cycleTimer = CycleTimer.create(ingredientCycleOffset);
-		return builder.build(focusedIngredients, cycleTimer);
+		Pair<Integer, IRecipeSlotDrawable> result = builder.build(focusedIngredients, cycleTimer);
+		return result.second();
 	}
 
 	@Override
@@ -153,6 +204,11 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.assertMainThread();
 		internal.unhideRecipeCategory(recipeType);
+	}
+
+	@Override
+	public <T> Optional<RecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass) {
+		return internal.getRecipeType(recipeUid, recipeClass);
 	}
 
 	@Override

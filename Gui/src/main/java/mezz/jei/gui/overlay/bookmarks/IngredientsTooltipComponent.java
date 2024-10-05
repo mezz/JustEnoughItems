@@ -76,8 +76,7 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 	private static <T> Object getUid(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
 		IIngredientType<T> type = typedIngredient.getType();
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		T ingredient = typedIngredient.getIngredient();
-		return ingredientHelper.getUid(ingredient, UidContext.Recipe);
+		return ingredientHelper.getUid(typedIngredient, UidContext.Recipe);
 	}
 
 	@Override

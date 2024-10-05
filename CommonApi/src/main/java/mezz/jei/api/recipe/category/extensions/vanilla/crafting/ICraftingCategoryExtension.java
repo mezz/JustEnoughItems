@@ -3,6 +3,7 @@ package mezz.jei.api.recipe.category.extensions.vanilla.crafting;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
@@ -12,6 +13,8 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -37,6 +40,34 @@ public interface ICraftingCategoryExtension<R extends CraftingRecipe> extends IR
 	 */
 	default void setRecipe(RecipeHolder<R> recipeHolder, IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
 		setRecipe(builder, craftingGridHelper, focuses);
+	}
+
+	/**
+	 * Called every time JEI updates the cycling displayed ingredients on a recipe.
+	 *
+	 * Use this (for example) to compute recipe outputs that result from complex relationships between ingredients.
+	 *
+	 * Use {@link IRecipeSlotDrawable#getDisplayedIngredient()} from your regular slots to see what is
+	 * currently being drawn, and calculate what you need from there.
+	 * You can override any slot's displayed ingredient with {@link IRecipeSlotDrawable#createDisplayOverrides()}.
+	 *
+	 * Note that overrides set this way are not searchable via recipe lookups in JEI,
+	 * it is only for displaying things too complex for normal lookups to handle.
+	 *
+	 * @param recipeHolder the current crafting recipe being drawn.
+	 * @param recipeSlots the current recipe slots being drawn.
+	 * @param focuses the current focuses
+	 *
+	 * @see IRecipeCategory#onDisplayedIngredientsUpdate
+	 *
+	 * @since 19.14.2
+	 */
+	default void onDisplayedIngredientsUpdate(
+		RecipeHolder<R> recipeHolder,
+		List<IRecipeSlotDrawable> recipeSlots,
+		IFocusGroup focuses
+	) {
+
 	}
 
 	/**

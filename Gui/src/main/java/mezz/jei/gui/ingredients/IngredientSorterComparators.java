@@ -22,21 +22,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class IngredientSorterComparators {
-	private final IngredientFilter ingredientFilter;
 	private final IIngredientManager ingredientManager;
 	private final ModNameSortingConfig modNameSortingConfig;
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
+	private final Set<String> modNames;
 
 	public IngredientSorterComparators(
-		IngredientFilter ingredientFilter,
 		IIngredientManager ingredientManager,
 		ModNameSortingConfig modNameSortingConfig,
-		IngredientTypeSortingConfig ingredientTypeSortingConfig
+		IngredientTypeSortingConfig ingredientTypeSortingConfig,
+		Set<String> modNames
 	) {
-		this.ingredientFilter = ingredientFilter;
 		this.ingredientManager = ingredientManager;
 		this.modNameSortingConfig = modNameSortingConfig;
 		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
+		this.modNames = modNames;
 	}
 
 	public Comparator<IListElementInfo<?>> getComparator(List<IngredientSortStage> ingredientSorterStages) {
@@ -65,18 +65,14 @@ public class IngredientSorterComparators {
 	}
 
 	private static Comparator<IListElementInfo<?>> getCreativeMenuComparator() {
-		return Comparator.comparingInt(o -> {
-			IListElement<?> element = o.getElement();
-			return element.getOrderIndex();
-		});
+		return Comparator.comparingInt(IListElementInfo::getCreatedIndex);
 	}
 
 	private static Comparator<IListElementInfo<?>> getAlphabeticalComparator() {
-		return Comparator.comparing(IListElementInfo::getName);
+		return Comparator.comparing(i -> i.getNames().getFirst());
 	}
 
 	private Comparator<IListElementInfo<?>> getModNameComparator() {
-		Set<String> modNames = this.ingredientFilter.getModNamesForSorting();
 		return this.modNameSortingConfig.getComparatorFromMappedValues(modNames);
 	}
 

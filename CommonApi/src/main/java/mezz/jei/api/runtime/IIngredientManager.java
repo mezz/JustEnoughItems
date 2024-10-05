@@ -11,7 +11,11 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.registration.IExtraIngredientRegistration;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -85,6 +89,10 @@ public interface IIngredientManager {
 	/**
 	 * Add new ingredients to JEI at runtime.
 	 * Used by mods that have items created while the game is running, or use the server to define items.
+	 *
+	 * If you just want to add ingredients to an existing type
+	 * (like adding more ItemStacks or FluidStacks, not at runtime),
+	 * use {@link IExtraIngredientRegistration#addExtraIngredients} instead.
 	 */
 	<V> void addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients);
 
@@ -93,6 +101,15 @@ public interface IIngredientManager {
 	 * Used by mods that have items created while the game is running, or use the server to define items.
 	 */
 	<V> void removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients);
+
+	/**
+	 * Helper method to get ingredient type for an ingredient.
+	 * Returns null if there is no known type for the given ingredient.
+	 *
+	 * @since 19.19.5
+	 */
+	@Nullable
+	<V> IIngredientType<V> getIngredientType(V ingredient);
 
 	/**
 	 * Helper method to get ingredient type for an ingredient.
@@ -121,8 +138,8 @@ public interface IIngredientManager {
 	/**
 	 * Create a typed ingredient, if the given ingredient is valid.
 	 *
-	 * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient}
-	 * cannot be created into {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
+	 * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient})
+	 * cannot be used in {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
 	 * This helps turn all special cases like {@link ItemStack#EMPTY} into {@link Optional#empty()} instead.
 	 *
 	 * @since 11.5.0
@@ -155,6 +172,40 @@ public interface IIngredientManager {
 	<V> ITypedIngredient<V> normalizeTypedIngredient(ITypedIngredient<V> typedIngredient);
 
 	/**
+	 * Create a clickable ingredient.
+	 *
+	 * @see IClickableIngredient
+	 *
+	 * @param ingredientType the type of the ingredient being clicked
+	 * @param ingredient the ingredient being clicked
+	 * @param area the area that this clickable ingredient is drawn in, in absolute screen coordinates.
+	 * @param normalize set true to normalize the ingredient (see {@link IIngredientHelper#normalizeIngredient}
+	 *
+	 * @return a clickable ingredient, or {@link Optional#empty()} if the ingredient is invalid (see {@link IIngredientHelper#isValidIngredient}
+	 *
+	 * @since 19.18.5
+	 */
+	<V> Optional<IClickableIngredient<V>> createClickableIngredient(IIngredientType<V> ingredientType, V ingredient, Rect2i area, boolean normalize);
+
+	/**
+	 * Create a clickable ingredient.
+	 *
+	 * @see IClickableIngredient
+	 *
+	 * @param ingredient the ingredient being clicked
+	 * @param area the area that this clickable ingredient is drawn in, in absolute screen coordinates.
+	 * @param normalize set true to normalize the ingredient (see {@link IIngredientHelper#normalizeIngredient}
+	 *
+	 * @return a clickable ingredient, or {@link Optional#empty()} if the ingredient is invalid (see {@link IIngredientHelper#isValidIngredient}
+	 *
+	 * @since 19.18.6
+	 */
+	default <V> Optional<IClickableIngredient<V>> createClickableIngredient(V ingredient, Rect2i area, boolean normalize) {
+		return getIngredientTypeChecked(ingredient)
+			.flatMap(type -> createClickableIngredient(type, ingredient, area, normalize));
+	}
+
+	/**
 	 * Get an ingredient by the given unique id.
 	 * This uses the uids from {@link IIngredientHelper#getUniqueId(Object, UidContext)}
 	 *
@@ -175,6 +226,16 @@ public interface IIngredientManager {
 	@SuppressWarnings("removal")
 	@Deprecated(since = "19.9.0", forRemoval = true)
 	<V> Optional<ITypedIngredient<V>> getTypedIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid);
+
+	/**
+	 * Get localized search aliases for ingredients.
+	 * Registered by mods with {@link IIngredientAliasRegistration#addAlias}.
+	 *
+	 * If search aliases are disabled by the player in the configs, this will return an empty collection.
+	 *
+	 * @since 19.10.0
+	 */
+	Collection<String> getIngredientAliases(ITypedIngredient<?> ingredient);
 
 	/**
 	 * Add a listener to receive updates when ingredients are added or removed from the ingredient manager.

@@ -1,17 +1,15 @@
-import net.darkhax.curseforgegradle.TaskPublishCurseForge
-import net.neoforged.gradle.dsl.common.runs.run.Run
+import me.modmuss50.mpp.PublishModTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import net.darkhax.curseforgegradle.Constants as CFG_Constants
+import org.slf4j.event.Level
 
 plugins {
 	id("java")
 	id("idea")
 	id("eclipse")
 	id("maven-publish")
-	id("net.darkhax.curseforgegradle") version("1.0.8")
-	id("com.modrinth.minotaur") version("2.+")
-	id("net.neoforged.gradle.userdev")
+	id("me.modmuss50.mod-publish-plugin")
+	id("net.neoforged.moddev")
 }
 
 // gradle.properties
@@ -20,12 +18,16 @@ val curseProjectId: String by extra
 val neoforgeVersion: String by extra
 val jUnitVersion: String by extra
 val minecraftVersion: String by extra
+val minecraftVersionRangeStart: String by extra
 val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val modrinthId: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
+// set by ORG_GRADLE_PROJECT_curseforgeApikey in Jenkinsfile
+val curseforgeApikey: String? by project
 
 val baseArchivesName = "${modId}-${minecraftVersion}-neoforge"
 base {
@@ -55,15 +57,13 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(":Changelog")
 
-val notNeoTask = { it: Task -> !it.name.startsWith("neo") }
-
-tasks.withType<JavaCompile>().matching(notNeoTask).configureEach {
+tasks.withType<JavaCompile>().configureEach {
     dependencyProjects.forEach {
         source(it.sourceSets.main.get().allSource)
     }
 }
 
-tasks.withType<ProcessResources>().matching(notNeoTask).configureEach {
+tasks.withType<ProcessResources> {
     dependencyProjects.forEach {
         from(it.sourceSets.main.get().resources)
     }
@@ -77,11 +77,6 @@ java {
 }
 
 dependencies {
-	implementation(
-		group = "net.neoforged",
-		name = "neoforge",
-		version = neoforgeVersion
-	)
 	dependencyProjects.forEach {
 		implementation(it)
 	}
@@ -97,43 +92,42 @@ dependencies {
 	)
 }
 
-minecraft {
-	accessTransformers {
-		file("src/main/resources/META-INF/accesstransformer.cfg")
-	}
-}
+neoForge {
+	version = neoforgeVersion
+	// MDG already defaults to this, but override it for clarity.
+	setAccessTransformers("src/main/resources/META-INF/accesstransformer.cfg")
 
-fun commonRunProperties(run: Run) {
-	for (dependencyProject in dependencyProjects) {
-		run.modSources.add(project.name, dependencyProject.sourceSets.main.get())
-	}
-}
+	addModdingDependenciesTo(sourceSets.test.get())
 
-runs {
-	create("client") {
-		configure("client")
-		systemProperty("forge.logging.console.level", "debug")
-		workingDirectory(file("run/client/Dev"))
-		commonRunProperties(this)
+	mods {
+		create("jei") {
+			sourceSet(sourceSets.main.get())
+			for (dependencyProject in dependencyProjects) {
+				sourceSet(dependencyProject.sourceSets.main.get())
+			}
+		}
 	}
-	create("client_01") {
-		configure("client")
-		workingDirectory(file("run/client/Player01"))
-		programArguments("--username", "Player01")
-		commonRunProperties(this)
-	}
-	create("client_02") {
-		configure("client")
-		workingDirectory(file("run/client/Player02"))
-		programArguments("--username", "Player02")
-		commonRunProperties(this)
-	}
-	create("server") {
-		configure("server")
-		systemProperty("forge.logging.console.level", "debug")
-		workingDirectory(file("run/server"))
-		programArguments("nogui")
-		commonRunProperties(this)
+
+	runs {
+		create("client") {
+			client()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/client/Dev")
+			logLevel = Level.DEBUG
+		}
+		create("client_01") {
+			client()
+			gameDirectory = file("run/client/Player01")
+			programArguments.addAll("--username", "Player01")
+			logLevel = Level.DEBUG
+		}
+		create("server") {
+			server()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/server")
+			programArguments.addAll("nogui")
+			logLevel = Level.DEBUG
+		}
 	}
 }
 
@@ -155,36 +149,38 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	archiveClassifier.set("sources")
 }
 
-tasks.register<TaskPublishCurseForge>("publishCurseForge") {
-	dependsOn(tasks.jar)
-	dependsOn(":Changelog:makeChangelog")
+publishMods {
+	file.set(tasks.jar.get().archiveFile)
+	type = BETA
+	modLoaders.add("neoforge")
+	displayName.set("${project.version} for NeoForge $minecraftVersion")
+	version.set(project.version.toString())
 
-	apiToken = project.findProperty("curseforge_apikey") ?: "0"
+	curseforge {
+		projectId = curseProjectId
+		accessToken.set(curseforgeApikey ?: "0")
+		changelog.set(provider { file("../Changelog/changelog.html").readText() })
+		changelogType = "html"
+		minecraftVersionRange {
+			start = minecraftVersionRangeStart
+			end = minecraftVersion
+		}
+		javaVersions.add(JavaVersion.toVersion(modJavaVersion))
+	}
 
-	val mainFile = upload(curseProjectId, tasks.jar.get().archiveFile)
-	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
-	mainFile.changelog = file("../Changelog/changelog.html")
-	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
-	mainFile.addJavaVersion("Java $modJavaVersion")
-	mainFile.addGameVersion(minecraftVersion)
-	mainFile.addModLoader("NeoForge")
-
-	doLast {
-		project.ext.set("curse_file_url", "${curseHomepageUrl}/files/${mainFile.curseFileId}")
+	modrinth {
+		projectId = modrinthId
+		accessToken = modrinthToken
+		changelog.set(provider { file("../Changelog/changelog.md").readText() })
+		minecraftVersionRange {
+			start = minecraftVersionRangeStart
+			end = minecraftVersion
+		}
 	}
 }
-
-modrinth {
-	token.set(modrinthToken)
-	projectId.set("jei")
-	versionNumber.set("${project.version}")
-	versionName.set("${project.version} for NeoForge $minecraftVersion")
-	versionType.set("beta")
-	uploadFile.set(tasks.jar.get())
-	changelog.set(provider { file("../Changelog/changelog.md").readText() })
+tasks.withType<PublishModTask> {
+	dependsOn(tasks.jar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
 }
-tasks.modrinth.get().dependsOn(tasks.jar)
-tasks.modrinth.get().dependsOn(":Changelog:makeMarkdownChangelog")
 
 tasks.named<Test>("test") {
 	useJUnitPlatform()
@@ -220,7 +216,7 @@ publishing {
 
 idea {
 	module {
-		for (fileName in listOf("run", "out", "logs")) {
+		for (fileName in listOf("build", "run", "out", "logs")) {
 			excludeDirs.add(file(fileName))
 		}
 	}

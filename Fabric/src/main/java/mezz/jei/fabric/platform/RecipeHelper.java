@@ -10,12 +10,9 @@ import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 
-import java.util.Collection;
 import java.util.List;
 
 public class RecipeHelper implements IPlatformRecipeHelper {
-	private final List<Class<? extends SmithingRecipe>> supportedSmithingRecipeClasses = List.of(SmithingTransformRecipe.class, SmithingTrimRecipe.class);
-
 	@Override
 	public Ingredient getBase(SmithingRecipe recipe) {
 		if (recipe instanceof SmithingTransformRecipe transformRecipe) {
@@ -47,11 +44,6 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 			return trimRecipe.template;
 		}
 		return Ingredient.EMPTY;
-	}
-
-	@Override
-	public Collection<Class<? extends SmithingRecipe>> getSupportedSmithingRecipeClasses() {
-		return supportedSmithingRecipeClasses;
 	}
 
 	@Override

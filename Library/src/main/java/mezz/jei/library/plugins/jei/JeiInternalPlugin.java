@@ -24,7 +24,6 @@ import mezz.jei.library.plugins.jei.tags.TagInfoRecipeMaker;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
 import java.util.ArrayList;
@@ -44,10 +43,9 @@ public class JeiInternalPlugin implements IModPlugin {
 	public void registerCategories(IRecipeCategoryRegistration registration) {
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
-		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 		Textures textures = Internal.getTextures();
 
-		registration.addRecipeCategories(new IngredientInfoRecipeCategory(guiHelper, textures));
+		registration.addRecipeCategories(new IngredientInfoRecipeCategory(textures));
 
 		tagInfoRecipeMakers.clear();
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
@@ -116,7 +114,7 @@ public class JeiInternalPlugin implements IModPlugin {
 	}
 
 	private static RecipeType<ITagInfoRecipe> createTagInfoRecipeType(ResourceLocation registryLocation) {
-		return RecipeType.create(registryLocation.getNamespace(), registryLocation.getPath(), ITagInfoRecipe.class);
+		return RecipeType.create(registryLocation.getNamespace(), "tag_recipes/" + registryLocation.getPath(), ITagInfoRecipe.class);
 	}
 
 	private static <B, I> boolean createAndRegisterTagCategory(
@@ -162,7 +160,7 @@ public class JeiInternalPlugin implements IModPlugin {
 		tagInfoRecipeMakers.add(new TagInfoRecipeMaker<>(
 			VanillaTypes.ITEM_STACK,
 			recipeType,
-			ItemStack::new,
+			i -> i.asItem().getDefaultInstance(),
 			registryKey
 		));
 		return true;

@@ -29,7 +29,8 @@ public enum BookmarkType {
 		private static <R> Codec<? extends RecipeBookmark<R, ?>> getCodec(
 			IRecipeCategory<R> recipeCategory,
 			ICodecHelper codecHelper,
-			IRecipeManager recipeManager
+			IRecipeManager recipeManager,
+			IIngredientManager ingredientManager
 		) {
 			return recipeCategory.getCodec(codecHelper, recipeManager)
 				.flatXmap(
@@ -39,12 +40,25 @@ public enum BookmarkType {
 							return DataResult.error(() -> "Recipe has no registry name");
 						}
 						IIngredientSupplier ingredients = recipeManager.getRecipeIngredients(recipeCategory, recipe);
+
+						boolean displayIsOutput;
+						ITypedIngredient<?> displayIngredient;
+
 						List<ITypedIngredient<?>> outputs = ingredients.getIngredients(RecipeIngredientRole.OUTPUT);
-						if (outputs.isEmpty()) {
-							return DataResult.error(() -> "Recipe has no outputs");
+						if (!outputs.isEmpty()) {
+							displayIngredient = outputs.getFirst();
+							displayIsOutput = true;
+						} else {
+							List<ITypedIngredient<?>> inputs = ingredients.getIngredients(RecipeIngredientRole.INPUT);
+							if (inputs.isEmpty()) {
+								return DataResult.error(() -> "Recipe has no inputs or outputs");
+							}
+							displayIngredient = inputs.getFirst();
+							displayIsOutput = false;
 						}
-						ITypedIngredient<?> output = outputs.getFirst();
-						RecipeBookmark<R, ?> bookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output);
+
+						displayIngredient = ingredientManager.normalizeTypedIngredient(displayIngredient);
+						RecipeBookmark<R, ?> bookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, displayIngredient, displayIsOutput);
 						return DataResult.success(bookmark);
 					},
 					bookmark -> {
@@ -62,7 +76,7 @@ public enum BookmarkType {
 					bookmark -> bookmark.getRecipeCategory().getRecipeType(),
 					recipeType -> {
 						IRecipeCategory<?> recipeCategory = recipeManager.getRecipeCategory(recipeType);
-						return getCodec(recipeCategory, codecHelper, recipeManager)
+						return getCodec(recipeCategory, codecHelper, recipeManager, ingredientManager)
 							.fieldOf("recipe");
 					}
 				);

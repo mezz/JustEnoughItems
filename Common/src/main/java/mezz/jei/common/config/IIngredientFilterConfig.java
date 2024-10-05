@@ -13,11 +13,15 @@ public interface IIngredientFilterConfig {
 
 	SearchMode getResourceLocationSearchMode();
 
+	SearchMode getCreativeTabSearchMode();
+
 	boolean getSearchAdvancedTooltips();
 
 	boolean getSearchModIds();
 
 	boolean getSearchModAliases();
+
+	boolean getSearchIngredientAliases();
 
 	boolean getSearchShortModNames();
 }

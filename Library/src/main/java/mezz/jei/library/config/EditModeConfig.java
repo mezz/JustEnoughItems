@@ -1,13 +1,12 @@
 package mezz.jei.library.config;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonWriter;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -16,29 +15,34 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.codecs.EnumCodec;
-import mezz.jei.core.util.WeakList;
+import mezz.jei.common.config.file.JsonArrayFileHelper;
+import mezz.jei.library.ingredients.IngredientVisibility;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class EditModeConfig implements IEditModeConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int VERSION = 2;
 
 	private final Map<Object, Pair<HideMode, ITypedIngredient<?>>> blacklist = new LinkedHashMap<>();
 	private final ISerializer serializer;
 	private final IIngredientManager ingredientManager;
-	private final WeakList<IListener> listeners = new WeakList<>();
+	private WeakReference<IngredientVisibility> ingredientVisibilityRef = new WeakReference<>(null);
 
 	public EditModeConfig(ISerializer serializer, IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
@@ -68,15 +72,13 @@ public class EditModeConfig implements IEditModeConfig {
 		IIngredientHelper<V> ingredientHelper
 	) {
 		Object wildcardUid = getIngredientUid(typedIngredient, HideMode.WILDCARD, ingredientHelper);
+		Object uid = getIngredientUid(typedIngredient, HideMode.SINGLE, ingredientHelper);
+		if (wildcardUid.equals(uid)) {
+			// there's only one type of this ingredient, adding it as SINGLE is the same as adding it as WILDCARD.
+			blacklistType = HideMode.WILDCARD;
+		}
 
 		if (blacklistType == HideMode.SINGLE) {
-			Object uid = getIngredientUid(typedIngredient, blacklistType, ingredientHelper);
-
-			if (wildcardUid.equals(uid)) {
-				// there's only one type of this ingredient, adding it as ITEM the same as adding it as WILDCARD.
-				return blacklist.put(wildcardUid, new Pair<>(blacklistType, typedIngredient)) == null;
-			}
-
 			return blacklist.put(uid, new Pair<>(blacklistType, typedIngredient)) == null;
 		} else if (blacklistType == HideMode.WILDCARD) {
 			return blacklist.put(wildcardUid, new Pair<>(blacklistType, typedIngredient)) == null;
@@ -107,9 +109,24 @@ public class EditModeConfig implements IEditModeConfig {
 	}
 
 	private <V> Set<HideMode> getIngredientOnConfigBlacklist(ITypedIngredient<V> ingredient, IIngredientHelper<V> ingredientHelper) {
-		return Arrays.stream(HideMode.values())
-			.filter(hideMode -> isIngredientOnConfigBlacklist(ingredient, hideMode, ingredientHelper))
-			.collect(Collectors.toUnmodifiableSet());
+		final Object singleUid = getIngredientUid(ingredient, HideMode.SINGLE, ingredientHelper);
+		final Object wildcardUid = getIngredientUid(ingredient, HideMode.WILDCARD, ingredientHelper);
+		if (singleUid.equals(wildcardUid)) {
+			if (blacklist.containsKey(singleUid)) {
+				// there's only one type of this ingredient, adding it as SINGLE is the same as adding it as WILDCARD.
+				return Set.of(HideMode.SINGLE, HideMode.WILDCARD);
+			}
+			return Set.of();
+		}
+
+		Set<HideMode> set = new HashSet<>();
+		if (blacklist.containsKey(singleUid)) {
+			set.add(HideMode.SINGLE);
+		}
+		if (blacklist.containsKey(wildcardUid)) {
+			set.add(HideMode.WILDCARD);
+		}
+		return Collections.unmodifiableSet(set);
 	}
 
 	public <V> boolean isIngredientOnConfigBlacklist(ITypedIngredient<V> typedIngredient, HideMode blacklistType, IIngredientHelper<V> ingredientHelper) {
@@ -118,10 +135,9 @@ public class EditModeConfig implements IEditModeConfig {
 	}
 
 	private static <V> Object getIngredientUid(ITypedIngredient<V> typedIngredient, HideMode blacklistType, IIngredientHelper<V> ingredientHelper) {
-		final V ingredient = typedIngredient.getIngredient();
 		return switch (blacklistType) {
-			case SINGLE -> ingredientHelper.getUid(ingredient, UidContext.Ingredient);
-			case WILDCARD -> ingredientHelper.getWildcardId(ingredient);
+			case SINGLE -> ingredientHelper.getUid(typedIngredient, UidContext.Ingredient);
+			case WILDCARD -> ingredientHelper.getGroupingUid(typedIngredient);
 		};
 	}
 
@@ -153,8 +169,8 @@ public class EditModeConfig implements IEditModeConfig {
 		removeIngredientFromConfigBlacklist(ingredient, hideMode, ingredientHelper);
 	}
 
-	public void registerListener(IListener listener) {
-		this.listeners.add(listener);
+	public void registerListener(IngredientVisibility ingredientVisibility) {
+		this.ingredientVisibilityRef = new WeakReference<>(ingredientVisibility);
 	}
 
 	public interface ISerializer {
@@ -165,18 +181,22 @@ public class EditModeConfig implements IEditModeConfig {
 
 	public static class FileSerializer implements ISerializer {
 		private final Path path;
-		private final Codec<List<Pair<HideMode, ITypedIngredient<?>>>> listCodec;
+		private final Codec<Pair<HideMode, ITypedIngredient<?>>> codec;
 		private final RegistryOps<JsonElement> registryOps;
 
 		public FileSerializer(Path path, RegistryAccess registryAccess, ICodecHelper codecHelper) {
 			this.path = path;
-			this.listCodec = Codec.list(
-				Codec.pair(
-					EnumCodec.create(HideMode.class, HideMode::valueOf),
+			this.codec = RecordCodecBuilder.create(builder -> {
+				return builder.group(
+					EnumCodec.create(HideMode.class, HideMode::valueOf)
+						.fieldOf("hide_mode")
+						.forGetter(Pair::getFirst),
 					codecHelper.getTypedIngredientCodec().codec()
-				)
-			);
-			this.registryOps = registryAccess.createSerializationContext(JsonOps.COMPRESSED);
+						.fieldOf("ingredient")
+						.forGetter(Pair::getSecond)
+				).apply(builder, Pair::new);
+			});
+			this.registryOps = registryAccess.createSerializationContext(JsonOps.INSTANCE);
 		}
 
 		@Override
@@ -188,23 +208,23 @@ public class EditModeConfig implements IEditModeConfig {
 
 		@Override
 		public void save(EditModeConfig config) {
-			List<Pair<HideMode, ITypedIngredient<?>>> values = List.copyOf(config.blacklist.values());
-
-			DataResult<JsonElement> results = listCodec.encodeStart(registryOps, values);
-			results.ifError(error -> {
-				LOGGER.error("Encountered errors when saving the blacklist config to file {}\n{}", path, error);
-			});
-
-			if (results.hasResultOrPartial()) {
-				try (JsonWriter jsonWriter = new JsonWriter(Files.newBufferedWriter(path))) {
-					Gson gson = new Gson();
-					JsonElement jsonElement = results.getPartialOrThrow();
-					gson.toJson(jsonElement, jsonWriter);
-					jsonWriter.flush();
-					LOGGER.debug("Saved blacklist config to file: {}", path);
-				} catch (IOException e) {
-					LOGGER.error("Failed to save blacklist config to file {}", path, e);
-				}
+			try (BufferedWriter out = Files.newBufferedWriter(path)) {
+				JsonArrayFileHelper.write(
+					out,
+					VERSION,
+					config.blacklist.values(),
+					codec,
+					registryOps,
+					error -> {
+						LOGGER.error("Encountered an error when saving the blacklist config to file {}\n{}", path, error);
+					},
+					(element, exception) -> {
+						LOGGER.error("Encountered an exception when saving the blacklist config to file {}\n{}", path, element, exception);
+					}
+				);
+				LOGGER.debug("Saved blacklist config to file: {}", path);
+			} catch (IOException e) {
+				LOGGER.error("Failed to save blacklist config to file {}", path, e);
 			}
 		}
 
@@ -213,31 +233,35 @@ public class EditModeConfig implements IEditModeConfig {
 			if (!Files.exists(path)) {
 				return;
 			}
-			try {
-				JsonElement jsonElement = JsonParser.parseReader(Files.newBufferedReader(path));
-				DataResult<Pair<List<Pair<HideMode, ITypedIngredient<?>>>, JsonElement>> results = listCodec.decode(registryOps, jsonElement);
-				results.ifError(error -> {
-					LOGGER.error("Encountered errors when loading the blacklist config from file {}\n{}", path, error);
-				});
-
-				if (results.hasResultOrPartial()) {
-					config.blacklist.clear();
-					List<Pair<HideMode, ITypedIngredient<?>>> list = results.getPartialOrThrow().getFirst();
-					for (Pair<HideMode, ITypedIngredient<?>> pair : list) {
-						config.addIngredientToConfigBlacklistInternal(pair.getSecond(), pair.getFirst());
+			List<Pair<HideMode, ITypedIngredient<?>>> results;
+			try (BufferedReader reader = Files.newBufferedReader(path)) {
+				results = JsonArrayFileHelper.read(
+					reader,
+					VERSION,
+					codec,
+					registryOps,
+					(element, error) -> {
+						LOGGER.error("Encountered an error when loading the blacklist config from file {}\n{}\n{}", path, element, error);
+					},
+					(element, exception) -> {
+						LOGGER.error("Encountered an exception when loading the blacklist config from file {}\n{}", path, element, exception);
 					}
-				}
-			} catch (IOException | IllegalArgumentException e) {
+				);
+			} catch (JsonIOException | JsonSyntaxException | IOException | IllegalArgumentException e) {
 				LOGGER.error("Failed to load blacklist from file {}", path, e);
+				results = List.of();
+			}
+
+			for (Pair<HideMode, ITypedIngredient<?>> pair : results) {
+				config.addIngredientToConfigBlacklistInternal(pair.getSecond(), pair.getFirst());
 			}
 		}
 	}
 
-	public interface IListener {
-		<V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible);
-	}
-
 	private <T> void notifyListenersOfVisibilityChange(ITypedIngredient<T> ingredient, boolean visible) {
-		listeners.forEach(listener -> listener.onIngredientVisibilityChanged(ingredient, visible));
+		IngredientVisibility ingredientVisibility = this.ingredientVisibilityRef.get();
+		if (ingredientVisibility != null) {
+			ingredientVisibility.notifyListeners(ingredient, visible);
+		}
 	}
 }

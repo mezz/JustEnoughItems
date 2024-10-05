@@ -1,16 +1,17 @@
 package mezz.jei.library.load.registration;
 
-import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.common.Constants;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.library.recipes.RecipeTransferManager;
 import mezz.jei.library.recipes.UniversalRecipeTransferHandlerAdapter;
 import mezz.jei.library.transfer.BasicRecipeTransferHandler;
 import mezz.jei.library.transfer.BasicRecipeTransferInfo;
@@ -93,7 +94,7 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 		this.recipeTransferHandlers.put(containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_TYPE, recipeTransferHandler);
 	}
 
-	public ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> getRecipeTransferHandlers() {
-		return recipeTransferHandlers.toImmutable();
+	public IRecipeTransferManager createRecipeTransferManager() {
+		return new RecipeTransferManager(recipeTransferHandlers.toImmutable());
 	}
 }

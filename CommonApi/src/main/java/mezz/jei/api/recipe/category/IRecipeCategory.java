@@ -26,6 +26,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -52,8 +53,18 @@ public interface IRecipeCategory<T> {
 
 	/**
 	 * Returns the drawable background for a single recipe in this category.
+	 *
+	 * @apiNote this became nullable in 19.19.0.
+	 * If the background is null, getWidth() and getHeight() must be overridden
+	 *
+	 * @deprecated you can optionally draw a background image in {@link #draw}, and specify the width and height with {@link #getWidth()} and {@link #getHeight()}
 	 */
-	IDrawable getBackground();
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "19.19.0", forRemoval = true)
+	@Nullable
+	default IDrawable getBackground() {
+		return null;
+	}
 
 	/**
 	 * Returns the width of recipe layouts that are drawn for this recipe category.
@@ -61,8 +72,11 @@ public interface IRecipeCategory<T> {
 	 * @since 11.5.0
 	 */
 	default int getWidth() {
-		return getBackground()
-				.getWidth();
+		IDrawable background = getBackground();
+		if (background == null) {
+			throw new IllegalStateException("getWidth() and getHeight() must be overridden if background is null");
+		}
+		return background.getWidth();
 	}
 
 	/**
@@ -71,8 +85,11 @@ public interface IRecipeCategory<T> {
 	 * @since 11.5.0
 	 */
 	default int getHeight() {
-		return getBackground()
-				.getHeight();
+		IDrawable background = getBackground();
+		if (background == null) {
+			throw new IllegalStateException("getWidth() and getHeight() must be overridden if background is null");
+		}
+		return background.getHeight();
 	}
 
 	/**
@@ -102,10 +119,26 @@ public interface IRecipeCategory<T> {
 	 * so they can be used for caching and displaying recipe-specific
 	 * information more easily than from the recipe category directly.
 	 *
+	 * @since 19.19.0
+	 * @deprecated use {@link #createRecipeExtras(IRecipeExtrasBuilder, Object, IFocusGroup)}, the recipe slots are in {@link IRecipeExtrasBuilder#getRecipeSlots()} now.
+	 */
+	@Deprecated(since = "19.19.3", forRemoval = true)
+	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
+
+	}
+
+	/**
+	 * Create per-recipe extras like {@link IRecipeWidget} and {@link IJeiInputHandler}.
+	 *
+	 * These have access to a specific recipe, and will persist as long as a recipe layout is on screen,
+	 * so they can be used for caching and displaying recipe-specific
+	 * information more easily than from the recipe category directly.
+	 *
 	 * @since 19.6.0
 	 */
+	@SuppressWarnings("RedundantUnmodifiable")
 	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IFocusGroup focuses) {
-
+		createRecipeExtras(builder, recipe, () -> Collections.unmodifiableList(builder.getRecipeSlots().getSlots()), focuses);
 	}
 
 	/**
@@ -166,6 +199,7 @@ public interface IRecipeCategory<T> {
 	 * @since 9.3.0
 	 * @deprecated use {@link #getTooltip(ITooltipBuilder, Object, IRecipeSlotsView, double, double)}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(since = "19.5.4", forRemoval = true)
 	default List<Component> getTooltipStrings(T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
 		return List.of();

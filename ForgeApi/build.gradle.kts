@@ -1,10 +1,12 @@
+import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
+
 plugins {
 	id("java")
 	id("idea")
 	id("eclipse")
 	id("maven-publish")
-	id("net.minecraftforge.gradle") version("[6.0.24,6.2)")
-	id("org.parchmentmc.librarian.forgegradle") version ("1.+")
+	id("net.minecraftforge.gradle")
+	id("org.parchmentmc.librarian.forgegradle")
 }
 
 // gradle.properties
@@ -102,13 +104,21 @@ publishing {
 			artifact(tasks.jar)
 			artifact(sourcesJar)
 
+			val dependencyInfos = dependencyProjects.map {
+				mapOf(
+					"groupId" to it.group,
+					"artifactId" to it.base.archivesName.get(),
+					"version" to it.version
+				)
+			}
+
 			pom.withXml {
 				val dependenciesNode = asNode().appendNode("dependencies")
-				dependencyProjects.forEach {
+				dependencyInfos.forEach {
 					val dependencyNode = dependenciesNode.appendNode("dependency")
-					dependencyNode.appendNode("groupId", it.group)
-					dependencyNode.appendNode("artifactId", it.base.archivesName.get())
-					dependencyNode.appendNode("version", it.version)
+					it.forEach { (key, value) ->
+						dependencyNode.appendNode(key, value)
+					}
 				}
 			}
 		}
@@ -117,6 +127,19 @@ publishing {
 		val deployDir = project.findProperty("DEPLOY_DIR")
 		if (deployDir != null) {
 			maven(deployDir)
+		}
+	}
+}
+
+tasks.withType<DownloadMavenArtifact> {
+	notCompatibleWithConfigurationCache("uses Task.project at execution time")
+}
+
+
+idea {
+	module {
+		for (fileName in listOf("build", "run", "out", "logs")) {
+			excludeDirs.add(file(fileName))
 		}
 	}
 }

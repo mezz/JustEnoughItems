@@ -8,14 +8,15 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
-import mezz.jei.api.gui.widgets.IScrollGridWidgetFactory;
-import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 
 /**
  * Helps with the implementation of GUIs.
@@ -51,9 +52,76 @@ public interface IGuiHelper {
 	IDrawableAnimated createAnimatedDrawable(IDrawableStatic drawable, int ticksPerCycle, IDrawableAnimated.StartDirection startDirection, boolean inverted);
 
 	/**
-	 * Returns a slot drawable for drawing extra slots on guis
+	 * Creates an animated texture for a gui, revealing the texture over time.
+	 *
+	 * @param drawable       the underlying texture to draw
+	 * @param tickTimer      a timer to help render things that normally depend on ticks
+	 * @param startDirection the direction that the animation starts drawing the texture
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableAnimated createAnimatedDrawable(IDrawableStatic drawable, ITickTimer tickTimer, IDrawableAnimated.StartDirection startDirection);
+
+	/**
+	 * Returns a vanilla-style slot for drawing on guis.
 	 */
 	IDrawableStatic getSlotDrawable();
+
+	/**
+	 * Returns a vanilla-style large output slot for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableStatic getOutputSlot();
+
+	/**
+	 * Returns a vanilla-style recipe arrow for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableStatic getRecipeArrow();
+
+	/**
+	 * Returns a vanilla-style filled (white) recipe arrow for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableStatic getRecipeArrowFilled();
+
+	/**
+	 * Returns a vanilla-style recipe arrow that fills over time, for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableAnimated createAnimatedRecipeArrow(int ticksPerCycle);
+
+	/**
+	 * Returns a vanilla-style grey plus sign for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableStatic getRecipePlusSign();
+
+	/**
+	 * Returns a vanilla-style recipe flame (red) for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableStatic getRecipeFlameFilled();
+
+	/**
+	 * Returns a vanilla-style recipe flame background (grey) for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableStatic getRecipeFlameEmpty();
+
+	/**
+	 * Returns a vanilla-style recipe flame that empties over time, for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableAnimated createAnimatedRecipeFlame(int ticksPerCycle);
 
 	/**
 	 * Returns a blank drawable for using as a blank recipe background.
@@ -69,6 +137,17 @@ public interface IGuiHelper {
 	 */
 	default IDrawable createDrawableItemStack(ItemStack ingredient) {
 		return createDrawableIngredient(VanillaTypes.ITEM_STACK, ingredient);
+	}
+
+	/**
+	 * Returns a 16x16 drawable for the given ItemLike,
+	 * matching the one JEI draws in the ingredient list.
+	 *
+	 * @see #createDrawableIngredient(IIngredientType, Object) for other ingredient types.
+	 * @since 19.18.1
+	 */
+	default IDrawable createDrawableItemLike(ItemLike itemLike) {
+		return createDrawableIngredient(VanillaTypes.ITEM_STACK, itemLike.asItem().getDefaultInstance());
 	}
 
 	/**
@@ -95,26 +174,50 @@ public interface IGuiHelper {
 	 * Create a scroll grid widget factory.
 	 * Handles displaying a grid of ingredient slots in a scrolling area.
 	 *
-	 * Add ingredients to it using {@link IRecipeLayoutBuilder#addSlotToWidget(RecipeIngredientRole, ISlottedWidgetFactory)}
+	 * Add ingredients to it using {@link IRecipeLayoutBuilder#addSlotToWidget(RecipeIngredientRole, mezz.jei.api.gui.widgets.ISlottedWidgetFactory)}
 	 *
 	 * @since 19.7.0
+	 * @deprecated use {@link IRecipeExtrasBuilder#addScrollGridWidget} instead, it's much simpler
 	 */
-	IScrollGridWidgetFactory<?> createScrollGridFactory(int columns, int visibleRows);
+	@SuppressWarnings("removal")
+	@Deprecated(since = "19.19.3", forRemoval = true)
+	mezz.jei.api.gui.widgets.IScrollGridWidgetFactory<?> createScrollGridFactory(int columns, int visibleRows);
 
 	/**
 	 * Create a scroll box widget.
 	 * Handles displaying drawable contents in a scrolling area.
 	 *
 	 * @since 19.8.0
+	 *
+	 * @deprecated use {@link IRecipeExtrasBuilder#addScrollBoxWidget}
 	 */
+	@Deprecated(since = "19.18.9", forRemoval = true)
 	IScrollBoxWidget createScrollBoxWidget(IDrawable contents, int visibleHeight, int xPos, int yPos);
+
+	/**
+	 * Create a scroll box widget.
+	 * Handles displaying drawable contents in a scrolling area.
+	 *
+	 * @since 19.18.10
+	 */
+	IScrollBoxWidget createScrollBoxWidget(int width, int height, int xPos, int yPos);
 
 	/**
 	 * The amount of extra horizontal space that a {@link IScrollBoxWidget} takes up with its scroll bar.
 	 *
 	 * @since 19.8.0
+	 *
+	 * @deprecated use {@link IRecipeExtrasBuilder#addScrollBoxWidget}
 	 */
+	@Deprecated(since = "19.18.9", forRemoval = true)
 	int getScrollBoxScrollbarExtraWidth();
+
+	/**
+	 * Create a simple widget from an {@link IDrawable}
+	 *
+	 * @since 19.18.8
+	 */
+	IRecipeWidget createWidgetFromDrawable(IDrawable drawable, int xPos, int yPos);
 
 	/**
 	 * Create a timer to help with rendering things that normally depend on ticks.

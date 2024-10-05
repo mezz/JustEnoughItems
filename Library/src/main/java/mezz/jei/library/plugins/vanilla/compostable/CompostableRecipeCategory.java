@@ -1,77 +1,46 @@
 package mezz.jei.library.plugins.vanilla.compostable;
 
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
-import mezz.jei.common.util.Translator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 
-public class CompostableRecipeCategory implements IRecipeCategory<IJeiCompostingRecipe> {
-	public static final int width = 120;
-	public static final int height = 18;
-
-	private final IDrawable background;
-	private final IDrawable slot;
-	private final IDrawable icon;
-	private final Component localizedName;
-
+public class CompostableRecipeCategory extends AbstractRecipeCategory<IJeiCompostingRecipe> {
 	public CompostableRecipeCategory(IGuiHelper guiHelper) {
-		background = guiHelper.createBlankDrawable(width, height);
-		slot = guiHelper.getSlotDrawable();
-		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.COMPOSTER));
-		localizedName = Component.translatable("gui.jei.category.compostable");
-	}
-
-	@Override
-	public RecipeType<IJeiCompostingRecipe> getRecipeType() {
-		return RecipeTypes.COMPOSTING;
-	}
-
-	@Override
-	public Component getTitle() {
-		return localizedName;
-	}
-
-	@Override
-	public IDrawable getBackground() {
-		return background;
-	}
-
-	@Override
-	public IDrawable getIcon() {
-		return icon;
+		super(
+			RecipeTypes.COMPOSTING,
+			Component.translatable("gui.jei.category.compostable"),
+			guiHelper.createDrawableItemLike(Blocks.COMPOSTER),
+			120,
+			18
+		);
 	}
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, IJeiCompostingRecipe recipe, IFocusGroup focuses) {
-		builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
+		builder.addInputSlot(1, 1)
+			.setStandardSlotBackground()
 			.addItemStacks(recipe.getInputs());
 	}
 
 	@Override
-	public void draw(IJeiCompostingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		slot.draw(guiGraphics);
-
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiCompostingRecipe recipe, IFocusGroup focuses) {
 		float chance = recipe.getChance();
 		int chancePercent = (int) Math.floor(chance * 100);
-		String text = Translator.translateToLocalFormatted("gui.jei.category.compostable.chance", chancePercent);
-
-		Minecraft minecraft = Minecraft.getInstance();
-		Font font = minecraft.font;
-		guiGraphics.drawString(font, text, 24, 5, 0xFF808080, false);
+		Component text = Component.translatable("gui.jei.category.compostable.chance", chancePercent);
+		builder.addText(text, getWidth() - 24, getHeight())
+			.setPosition(24, 0)
+			.setTextAlignment(HorizontalAlignment.CENTER)
+			.setTextAlignment(VerticalAlignment.CENTER)
+			.setColor(0xFF808080);
 	}
 
 	@Override

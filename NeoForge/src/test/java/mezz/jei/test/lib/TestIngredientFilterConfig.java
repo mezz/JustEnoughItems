@@ -31,6 +31,11 @@ public class TestIngredientFilterConfig implements IIngredientFilterConfig {
 	}
 
 	@Override
+	public SearchMode getCreativeTabSearchMode() {
+		return SearchMode.DISABLED;
+	}
+
+	@Override
 	public boolean getSearchAdvancedTooltips() {
 		return false;
 	}
@@ -42,6 +47,11 @@ public class TestIngredientFilterConfig implements IIngredientFilterConfig {
 
 	@Override
 	public boolean getSearchModAliases() {
+		return false;
+	}
+
+	@Override
+	public boolean getSearchIngredientAliases() {
 		return false;
 	}
 

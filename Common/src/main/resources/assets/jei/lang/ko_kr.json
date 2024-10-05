@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "JEI 구성",
   "jei.tooltip.show.recipes": "제작법 보기",
-  "jei.tooltip.show.all.recipes": "모든 제작법 보기",
   "jei.tooltip.delete.item": "지우려면 클릭",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
@@ -36,9 +35,7 @@
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "부족한 아이템:",
   "jei.tooltip.error.recipe.transfer.inventory.full": "인벤토리에 공간이 부족합니다.",
-  "jei.tooltip.error.recipe.transfer.unknown": "알려지지 않은 오류입니다. 로그 파일을 확인하세요.",
   "jei.tooltip.error.recipe.transfer.no.server": "서버에 JEI가 설치되어 있어야 합니다.",
-  "jei.tooltip.error.recipe.transfer.disabled": "서버 구성에서 JEI 제작법 전송을 사용할 수 없도록 설정했습니다.",
   "jei.tooltip.error.recipe.transfer.too.large.player.inventory": "제작법이 너무 커서 2x2 플레이어 제작 그리드에서 만들 수 없습니다.",
   "jei.tooltip.error.crash": "툴팁 에러입니다. 로그를 확인하세요.",
   "jei.tooltip.error.render.crash": "이 요소를 렌더링하는 중에 충돌이 발생했습니다. 자세한 정보는 클라이언트 로그를 참조하십시오.",
@@ -124,7 +121,7 @@
   "config.jei.search.tooltipSearchMode.comment": "툴팁 내용을 검색하는 모드 (접두사: #)",
   "config.jei.search.tagSearchMode": "$Tag",
   "config.jei.search.tagSearchMode.comment": "태그 이름을 검색하는 모드 (접두사: $)",
-  "config.jei.search.creativeTabSearchMode": "%%CreativeTab",
+  "config.jei.search.creativeTabSearchMode": "%%CreativeModeTab",
   "config.jei.search.creativeTabSearchMode.comment": "크리에이티브 탭 이름을 검색하는 모드 (접두사: %)",
   "config.jei.search.colorSearchMode": "^Color",
   "config.jei.search.colorSearchMode.comment": "색깔을 검색하는 모드 (접두사: ^)",
@@ -190,11 +187,13 @@
   "jei.key.mouse.left": "CLICK",
   "jei.key.mouse.right": "RIGHT-CLICK",
 
-  "_comment": "DEBUG (for debug mode, do not need translation)",
+  "_comment": "Debug (for a debug mode, do not need translation)",
   "description.jei.wooden.door.1": "나무 문을 통해 건물에 괴물이 들어오지 못하게 막을 수 있습니다.\\n문장을 테스트하는 중입니다.",
   "description.jei.wooden.door.2": "문을 클릭하면 문 상태가 열림에서 닫힘으로 또는 그 반대로 변경됩니다.",
   "description.jei.wooden.door.3": "나무 문은 레드스톤 회로를 통해 열거나 닫을 수 있습니다.",
   "description.jei.debug.formatting.1": "%s 포맷 교체를 테스트하는 중입니다.",
   "description.jei.debug.formatting.2": "%s 및 %s 포맷 교체품을 테스트하는 중입니다.",
-  "description.jei.debug.formatting.3": "%s과(와) 중첩되었습니다."
+  "description.jei.debug.formatting.3": "%s과(와) 중첩되었습니다.",
+  "jei.alias.panda.spawn.egg": "endangered",
+  "jei.alias.villager.spawn.egg": "HMMM"
 }

@@ -2,14 +2,17 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
-    java
-    id("org.spongepowered.gradle.vanilla")
-    `maven-publish`
+    id("java")
+    id("idea")
+    id("eclipse")
+    id("maven-publish")
+    id("net.neoforged.moddev")
 }
 
 // gradle.properties
 val jUnitVersion: String by extra
 val minecraftVersion: String by extra
+val neoformTimestamp: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 
@@ -28,9 +31,8 @@ dependencyProjects.forEach {
     project.evaluationDependsOn(it.path)
 }
 
-minecraft {
-    version(minecraftVersion)
-    // no runs are configured for Library
+neoForge {
+    neoFormVersion = "$minecraftVersion-$neoformTimestamp"
 }
 
 sourceSets {
@@ -102,6 +104,15 @@ publishing {
         val deployDir = project.findProperty("DEPLOY_DIR")
         if (deployDir != null) {
             maven(deployDir)
+        }
+    }
+}
+
+
+idea {
+    module {
+        for (fileName in listOf("build", "run", "out", "logs")) {
+            excludeDirs.add(file(fileName))
         }
     }
 }

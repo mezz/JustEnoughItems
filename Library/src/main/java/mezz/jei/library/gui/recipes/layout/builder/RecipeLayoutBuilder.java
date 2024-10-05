@@ -8,22 +8,17 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
-import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
-import mezz.jei.api.gui.inputs.IJeiInputHandler;
-import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
-import mezz.jei.api.gui.widgets.IRecipeWidget;
-import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
-import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
-import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.core.collect.ListMultiMap;
+import mezz.jei.core.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
@@ -35,20 +30,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
-// TODO: make IRecipeLayoutBuilder take a generic parameter for ISlottedWidgetFactory
-public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtrasBuilder {
+public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	private final List<RecipeSlotBuilder> slots = new ArrayList<>();
 	private final List<List<RecipeSlotBuilder>> focusLinkedSlots = new ArrayList<>();
-	private final List<IRecipeWidget> widgets = new ArrayList<>();
-	private final List<IJeiInputHandler> inputHandlers = new ArrayList<>();
-	private final List<IJeiGuiEventListener> guiEventListeners = new ArrayList<>();
 
 	private final IIngredientManager ingredientManager;
 	private final IRecipeCategory<T> recipeCategory;
@@ -59,6 +50,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 	private int shapelessY = -1;
 	private int recipeTransferX = -1;
 	private int recipeTransferY = -1;
+	private int nextSlotIndex = 0;
 
 	public RecipeLayoutBuilder(IRecipeCategory<T> recipeCategory, T recipe, IIngredientManager ingredientManager) {
 		this.recipeCategory = recipeCategory;
@@ -67,8 +59,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 	}
 
 	@Override
-	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role, int x, int y) {
-		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, role, x, y);
+	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role) {
+		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, nextSlotIndex++, role);
 
 		if (role == RecipeIngredientRole.OUTPUT) {
 			addOutputSlotTooltipCallback(slot);
@@ -78,9 +70,11 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		return slot;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
-	public IRecipeSlotBuilder addSlotToWidget(RecipeIngredientRole role, ISlottedWidgetFactory<?> widgetFactory) {
-		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, role, 0, 0)
+	@Deprecated
+	public IRecipeSlotBuilder addSlotToWidget(RecipeIngredientRole role, mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> widgetFactory) {
+		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, nextSlotIndex++, role)
 			.assignToWidgetFactory(widgetFactory);
 
 		if (role == RecipeIngredientRole.OUTPUT) {
@@ -94,7 +88,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 	private void addOutputSlotTooltipCallback(RecipeSlotBuilder slot) {
 		ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 		if (recipeName != null) {
-			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName);
+			RecipeType<T> recipeType = recipeCategory.getRecipeType();
+			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName, recipeType);
 			slot.addRichTooltipCallback(callback);
 		}
 	}
@@ -103,24 +98,6 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
 		// invisible slots are only used by IngredientSupplierBuilder, and are ignored here
 		return IngredientAcceptorVoid.INSTANCE;
-	}
-
-	@Override
-	public void addWidget(IRecipeWidget widget) {
-		ErrorUtil.checkNotNull(widget, "widget");
-		this.widgets.add(widget);
-	}
-
-	@Override
-	public void addInputHandler(IJeiInputHandler inputHandler) {
-		ErrorUtil.checkNotNull(inputHandler, "inputHandler");
-		this.inputHandlers.add(inputHandler);
-	}
-
-	@Override
-	public void addGuiEventListener(IJeiGuiEventListener guiEventListener) {
-		ErrorUtil.checkNotNull(guiEventListener, "guiEventListener");
-		this.guiEventListeners.add(guiEventListener);
 	}
 
 	@Override
@@ -153,7 +130,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 			builders.add(builder);
 
 			DisplayIngredientAcceptor displayIngredientAcceptor = builder.getIngredientAcceptor();
-			List<Optional<ITypedIngredient<?>>> allIngredients = displayIngredientAcceptor.getAllIngredients();
+			List<@Nullable ITypedIngredient<?>> allIngredients = displayIngredientAcceptor.getAllIngredients();
 			int ingredientCount = allIngredients.size();
 			if (count == -1) {
 				count = ingredientCount;
@@ -174,6 +151,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		this.focusLinkedSlots.add(builders);
 	}
 
+	@SuppressWarnings("removal")
 	public RecipeLayout<T> buildRecipeLayout(
 		IFocusGroup focuses,
 		Collection<IRecipeCategoryDecorator<T>> decorators,
@@ -183,9 +161,9 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 		ShapelessIcon shapelessIcon = createShapelessIcon(recipeCategory);
 		ImmutablePoint2i recipeTransferButtonPosition = getRecipeTransferButtonPosition(recipeCategory, recipeBorderPadding);
 
-		List<IRecipeSlotDrawable> recipeCategorySlots = new ArrayList<>();
-		List<IRecipeSlotDrawable> allSlots = new ArrayList<>(recipeCategorySlots);
-		ListMultiMap<ISlottedWidgetFactory<?>, IRecipeSlotDrawable> widgetSlots = new ListMultiMap<>();
+		List<Pair<Integer, IRecipeSlotDrawable>> recipeCategorySlots = new ArrayList<>();
+		List<Pair<Integer, IRecipeSlotDrawable>> allSlots = new ArrayList<>();
+		ListMultiMap<mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?>, Pair<Integer, IRecipeSlotDrawable>> widgetSlots = new ListMultiMap<>();
 
 		CycleTicker cycleTicker = CycleTicker.createWithRandomOffset();
 
@@ -196,8 +174,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 				focusMatches.addAll(slot.getMatches(focuses));
 			}
 			for (RecipeSlotBuilder slotBuilder : linkedSlots) {
-				ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
-				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focusMatches, cycleTicker);
+				mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
+				Pair<Integer, IRecipeSlotDrawable> slotDrawable = slotBuilder.build(focusMatches, cycleTicker);
 				if (assignedWidget == null) {
 					recipeCategorySlots.add(slotDrawable);
 				} else {
@@ -210,8 +188,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 
 		for (RecipeSlotBuilder slotBuilder : slots) {
 			if (!focusLinkedSlots.contains(slotBuilder)) {
-				ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
-				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focuses, cycleTicker);
+				mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
+				Pair<Integer, IRecipeSlotDrawable> slotDrawable = slotBuilder.build(focuses, cycleTicker);
 				if (assignedWidget == null) {
 					recipeCategorySlots.add(slotDrawable);
 				} else {
@@ -221,22 +199,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 			}
 		}
 
-		for (Map.Entry<ISlottedWidgetFactory<?>, List<IRecipeSlotDrawable>> e : widgetSlots.entrySet()) {
-			// TODO: breaking change: add a type parameter to IRecipeLayoutBuilder to avoid this cast
-			@SuppressWarnings("unchecked")
-			ISlottedWidgetFactory<T> factory = (ISlottedWidgetFactory<T>) e.getKey();
-			List<IRecipeSlotDrawable> slots = e.getValue();
-			factory.createWidgetForSlots(this, recipe, slots);
-		}
-
-		List<ISlottedRecipeWidget> slottedWidgets = new ArrayList<>();
-		for (IRecipeWidget widget : widgets) {
-			if (widget instanceof ISlottedRecipeWidget slottedWidget) {
-				slottedWidgets.add(slottedWidget);
-			}
-		}
-
-		return new RecipeLayout<>(
+		RecipeLayout<T> recipeLayout = new RecipeLayout<>(
 			recipeCategory,
 			decorators,
 			recipe,
@@ -244,15 +207,32 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder, IRecipeExtr
 			recipeBorderPadding,
 			shapelessIcon,
 			recipeTransferButtonPosition,
-			recipeCategorySlots,
-			allSlots,
-			slottedWidgets,
-			widgets,
-			inputHandlers,
-			guiEventListeners,
+			sortSlots(recipeCategorySlots),
+			sortSlots(allSlots),
 			cycleTicker,
 			focuses
 		);
+
+		for (Map.Entry<mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?>, List<Pair<Integer, IRecipeSlotDrawable>>> e : widgetSlots.entrySet()) {
+			@SuppressWarnings("unchecked")
+			mezz.jei.api.gui.widgets.ISlottedWidgetFactory<T> factory = (mezz.jei.api.gui.widgets.ISlottedWidgetFactory<T>) e.getKey();
+			List<IRecipeSlotDrawable> slots = sortSlots(e.getValue());
+			factory.createWidgetForSlots(recipeLayout, recipe, slots);
+		}
+
+		return recipeLayout;
+	}
+
+	private static List<IRecipeSlotDrawable> sortSlots(List<Pair<Integer, IRecipeSlotDrawable>> indexedSlots) {
+		List<Pair<Integer, IRecipeSlotDrawable>> sortedPairs = new ArrayList<>(indexedSlots);
+		sortedPairs.sort(Comparator.comparingInt(Pair::first));
+
+		List<IRecipeSlotDrawable> iRecipeSlotDrawables = new ArrayList<>(sortedPairs.size());
+		for (Pair<Integer, IRecipeSlotDrawable> indexedSlot : sortedPairs) {
+			IRecipeSlotDrawable second = indexedSlot.second();
+			iRecipeSlotDrawables.add(second);
+		}
+		return iRecipeSlotDrawables;
 	}
 
 	@Nullable

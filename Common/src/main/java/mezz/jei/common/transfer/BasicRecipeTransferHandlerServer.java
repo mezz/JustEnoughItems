@@ -66,7 +66,7 @@ public final class BasicRecipeTransferHandlerServer {
 		List<ItemStack> clearedCraftingItems = clearCraftingGrid(craftingSlots, player);
 
 		// put items into the crafting grid
-		List<ItemStack> remainderItems = putItemsIntoCraftingGrid(recipeSlotToTakenStacks, requireCompleteSets, player);
+		List<ItemStack> remainderItems = putItemsIntoCraftingGrid(recipeSlotToTakenStacks, requireCompleteSets);
 
 		// put leftover items back into the inventory
 		stowItems(player, inventorySlots, clearedCraftingItems);
@@ -100,11 +100,13 @@ public final class BasicRecipeTransferHandlerServer {
 	private static List<ItemStack> clearCraftingGrid(List<Slot> craftingSlots, Player player) {
 		List<ItemStack> clearedCraftingItems = new ArrayList<>();
 		for (Slot craftingSlot : craftingSlots) {
-			if (!craftingSlot.allowModification(player)) {
+			if (!craftingSlot.mayPickup(player)) {
 				continue;
 			}
-			if (craftingSlot.hasItem()) {
-				ItemStack craftingItem = craftingSlot.remove(Integer.MAX_VALUE);
+
+			ItemStack item = craftingSlot.getItem();
+			if (!item.isEmpty() && craftingSlot.mayPlace(item)) {
+				ItemStack craftingItem = craftingSlot.safeTake(Integer.MAX_VALUE, Integer.MAX_VALUE, player);
 				clearedCraftingItems.add(craftingItem);
 			}
 		}
@@ -113,20 +115,15 @@ public final class BasicRecipeTransferHandlerServer {
 
 	private static List<ItemStack> putItemsIntoCraftingGrid(
 		Map<Slot, ItemStack> recipeSlotToTakenStacks,
-		boolean requireCompleteSets,
-		Player player
+		boolean requireCompleteSets
 	) {
 		final int slotStackLimit = getSlotStackLimit(recipeSlotToTakenStacks, requireCompleteSets);
 		List<ItemStack> remainderItems = new ArrayList<>();
 
 		recipeSlotToTakenStacks.forEach((slot, stack) -> {
-			if (slot.getItem().isEmpty() && slot.allowModification(player) && slot.mayPlace(stack)) {
-				ItemStack remainder = slot.safeInsert(stack, slotStackLimit);
-				if (!remainder.isEmpty()) {
-					remainderItems.add(remainder);
-				}
-			} else {
-				remainderItems.add(stack);
+			ItemStack remainder = slot.safeInsert(stack, slotStackLimit);
+			if (!remainder.isEmpty()) {
+				remainderItems.add(remainder);
 			}
 		});
 
@@ -232,18 +229,18 @@ public final class BasicRecipeTransferHandlerServer {
 			final Slot hint = entry.getValue().hint;
 
 			// Locate a slot that has what we need.
-			final Slot slot = getSlotWithStack(player, requiredStack, craftingSlots, inventorySlots, hint)
+			final Slot sourceSlot = getSlotWithStack(player, requiredStack, craftingSlots, inventorySlots, hint)
 				.orElse(null);
-			if (slot != null) {
+			if (sourceSlot != null) {
 				// the item was found
 
 				// Keep a copy of the slot's original contents in case we need to roll back.
-				if (originalSlotContents != null && !originalSlotContents.containsKey(slot)) {
-					originalSlotContents.put(slot, slot.getItem().copy());
+				if (originalSlotContents != null && !originalSlotContents.containsKey(sourceSlot)) {
+					originalSlotContents.put(sourceSlot, sourceSlot.getItem().copy());
 				}
 
 				// Reduce the size of the found slot.
-				ItemStack removedItemStack = slot.remove(1);
+				ItemStack removedItemStack = sourceSlot.safeTake(1, Integer.MAX_VALUE, player);
 				foundItemsInSet.put(recipeSlot, removedItemStack);
 			} else {
 				// We can't find any more slots to fulfill the requirements.
@@ -253,7 +250,8 @@ public final class BasicRecipeTransferHandlerServer {
 					// slot changes we've made during this set iteration.
 					for (Map.Entry<Slot, ItemStack> slotEntry : originalSlotContents.entrySet()) {
 						ItemStack stack = slotEntry.getValue();
-						slotEntry.getKey().set(stack);
+						Slot slot = slotEntry.getKey();
+						slot.set(stack);
 					}
 					return Map.of();
 				}
@@ -291,10 +289,7 @@ public final class BasicRecipeTransferHandlerServer {
 	}
 
 	private static Optional<Slot> getValidatedHintSlot(Player player, ItemStack stack, Slot hint) {
-		if (hint.mayPickup(player) &&
-			!hint.getItem().isEmpty() &&
-			ItemStack.isSameItemSameComponents(stack, hint.getItem())
-		) {
+		if (isValidAndMatches(player, hint, stack)) {
 			return Optional.of(hint);
 		}
 
@@ -303,7 +298,7 @@ public final class BasicRecipeTransferHandlerServer {
 
 	private static void stowItems(Player player, List<Slot> inventorySlots, List<ItemStack> itemStacks) {
 		for (ItemStack itemStack : itemStacks) {
-			ItemStack remainder = stowItem(inventorySlots, itemStack);
+			ItemStack remainder = stowItem(player, inventorySlots, itemStack);
 			if (!remainder.isEmpty()) {
 				if (!player.getInventory().add(remainder)) {
 					player.drop(remainder, false);
@@ -312,18 +307,21 @@ public final class BasicRecipeTransferHandlerServer {
 		}
 	}
 
-	private static ItemStack stowItem(Collection<Slot> slots, ItemStack stack) {
+	private static ItemStack stowItem(Player player, Collection<Slot> slots, ItemStack stack) {
 		if (stack.isEmpty()) {
 			return ItemStack.EMPTY;
 		}
 
-		final ItemStack remainder = stack.copy();
+		ItemStack remainder = stack.copy();
 
 		// Add to existing stacks first
 		for (Slot slot : slots) {
+			if (!slot.mayPickup(player)) {
+				continue;
+			}
 			final ItemStack inventoryStack = slot.getItem();
 			if (!inventoryStack.isEmpty() && inventoryStack.isStackable()) {
-				slot.safeInsert(remainder);
+				remainder = slot.safeInsert(remainder);
 				if (remainder.isEmpty()) {
 					return ItemStack.EMPTY;
 				}
@@ -333,7 +331,7 @@ public final class BasicRecipeTransferHandlerServer {
 		// Try adding to empty slots
 		for (Slot slot : slots) {
 			if (slot.getItem().isEmpty()) {
-				slot.safeInsert(remainder);
+				remainder = slot.safeInsert(remainder);
 				if (remainder.isEmpty()) {
 					return ItemStack.EMPTY;
 				}
@@ -352,12 +350,14 @@ public final class BasicRecipeTransferHandlerServer {
 	 */
 	private static Optional<Slot> getSlotWithStack(Player player, Collection<Slot> slots, ItemStack itemStack) {
 		return slots.stream()
-			.filter(slot -> {
-				ItemStack slotStack = slot.getItem();
-				return ItemStack.isSameItemSameComponents(itemStack, slotStack) &&
-					slot.mayPickup(player);
-			})
+			.filter(slot -> isValidAndMatches(player, slot, itemStack))
 			.findFirst();
+	}
+
+	private static boolean isValidAndMatches(Player player, Slot slot, ItemStack stack) {
+		ItemStack containedStack = slot.getItem();
+		return ItemStack.isSameItemSameComponents(stack, containedStack) &&
+			slot.allowModification(player);
 	}
 
 	private record ItemStackWithSlotHint(Slot hint, ItemStack stack) {}

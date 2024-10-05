@@ -4,6 +4,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.StackHelper;
@@ -18,6 +19,8 @@ import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +37,7 @@ import java.util.stream.Collectors;
 public final class ItemStackListFactory {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static List<ItemStack> create(StackHelper stackHelper) {
+	public static List<ItemStack> create(StackHelper stackHelper, ItemStackHelper itemStackHelper) {
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		final boolean showHidden = clientConfig.isShowHiddenItemsEnabled();
@@ -64,106 +67,69 @@ public final class ItemStackListFactory {
 		final CreativeModeTab.ItemDisplayParameters displayParameters =
 			new CreativeModeTab.ItemDisplayParameters(features, hasOperatorItemsTabPermissions, registryAccess);
 
-		for (CreativeModeTab itemGroup : CreativeModeTabs.allTabs()) {
-			if (itemGroup.getType() != CreativeModeTab.Type.CATEGORY) {
+		for (CreativeModeTab tab : CreativeModeTabs.allTabs()) {
+			if (tab.getType() != CreativeModeTab.Type.CATEGORY) {
 				LOGGER.debug(
 					"Skipping creative tab: '{}' because it is type: {}",
-					itemGroup.getDisplayName().getString(),
-					itemGroup.getType()
+					tab.getDisplayName().getString(),
+					tab.getType()
 				);
 				continue;
 			}
 			try {
-				itemGroup.buildContents(displayParameters);
+				tab.buildContents(displayParameters);
 			} catch (RuntimeException | LinkageError e) {
 				LOGGER.error(
 					"Item Group crashed while building contents." +
 					"Items from this group will be missing from the JEI ingredient list: {}",
-					itemGroup.getDisplayName().getString(),
+					tab.getDisplayName().getString(),
 					e
 				);
 				continue;
 			}
 
-			@Unmodifiable Collection<ItemStack> creativeTabItemStacks;
+			@Unmodifiable Collection<ItemStack> displayItems;
+			@Unmodifiable Collection<ItemStack> searchTabDisplayItems;
 			try {
-				creativeTabItemStacks = itemGroup.getSearchTabDisplayItems();
+				displayItems = tab.getDisplayItems();
+				searchTabDisplayItems = tab.getSearchTabDisplayItems();
 			} catch (RuntimeException | LinkageError e) {
 				LOGGER.error(
 					"Item Group crashed while getting search tab display items." +
 					"Some items from this group will be missing from the JEI ingredient list: {}",
-					itemGroup.getDisplayName().getString(),
+					tab.getDisplayName().getString(),
 					e
 				);
 				continue;
 			}
 
-			if (creativeTabItemStacks.isEmpty()) {
-				try {
-					Collection<ItemStack> displayItems = itemGroup.getDisplayItems();
-					if (displayItems.isEmpty()) {
-						LOGGER.warn(
-							"Item Group has no display items and no search tab display items. " +
-							"Items from this group will be missing from the JEI ingredient list. {}",
-							itemGroup.getDisplayName().getString()
-						);
-						continue;
-					} else {
-						LOGGER.warn(
-							"Item Group has no search tab display items. " +
-								"Falling back on getting the regular display items: {}",
-							itemGroup.getDisplayName().getString()
-						);
-						creativeTabItemStacks = displayItems;
-					}
-				} catch (RuntimeException | LinkageError e) {
-					LOGGER.error(
-						"Item Group has no search tab display items and crashed while getting display items. " +
-							"Items from this group will be missing from the JEI ingredient list. {}",
-						itemGroup.getDisplayName().getString(),
-						e
-					);
-					continue;
-				}
+			if (displayItems.isEmpty() && searchTabDisplayItems.isEmpty()) {
+				LOGGER.warn(
+					"Item Group has no display items and no search tab display items. " +
+					"Items from this group will be missing from the JEI ingredient list. {}",
+					tab.getDisplayName().getString()
+				);
+				continue;
 			}
 
-			Set<Object> tabUidSet = new HashSet<>();
-			int added = 0;
-			Set<Object> duplicateInTab = new HashSet<>();
-			int duplicateInTabCount = 0;
-			for (ItemStack itemStack : creativeTabItemStacks) {
-				if (itemStack.isEmpty()) {
-					LOGGER.error("Found an empty itemStack from creative tab: {}", itemGroup);
-				} else {
-					Object itemKey = safeGetUid(stackHelper, itemStack);
-					if (itemKey != null) {
-						if (tabUidSet.contains(itemKey)) {
-							duplicateInTab.add(itemKey);
-							duplicateInTabCount++;
-						}
-						if (itemUidSet.add(itemKey)) {
-							tabUidSet.add(itemKey);
-							itemList.add(itemStack);
-							added++;
-						}
-					}
-				}
-			}
-			LOGGER.debug(
-				"Added {}/{} new items from creative tab: {}",
-				added,
-				creativeTabItemStacks.size(),
-				itemGroup.getDisplayName().getString()
+			addFromTab(
+				displayItems,
+				"displayItems",
+				tab,
+				stackHelper,
+				itemStackHelper,
+				itemList,
+				itemUidSet
 			);
-			if (duplicateInTabCount > 0) {
-				LOGGER.warn(
-					"""
-						{} duplicate items were found in creative tab: {}
-						This may indicate that these types of item need a subtype interpreter added to JEI:
-						{}""",
-					duplicateInTabCount,
-					itemGroup.getDisplayName().getString(),
-					duplicateInTab.stream().map(Object::toString).collect(Collectors.joining(", ", "[", "]"))
+			if (!displayItems.equals(searchTabDisplayItems)) {
+				addFromTab(
+					searchTabDisplayItems,
+					"searchTabDisplayItems",
+					tab,
+					stackHelper,
+					itemStackHelper,
+					itemList,
+					itemUidSet
 				);
 			}
 		}
@@ -173,6 +139,74 @@ public final class ItemStackListFactory {
 		}
 
 		return itemList;
+	}
+
+	private static void addFromTab(
+		Collection<ItemStack> tabDisplayItems,
+		String displayType,
+		CreativeModeTab tab,
+		StackHelper stackHelper,
+		ItemStackHelper itemStackHelper,
+		List<ItemStack> itemList,
+		Set<Object> itemUidSet
+	) {
+		Set<Object> tabUidSet = new HashSet<>();
+		int added = 0;
+		Set<Object> duplicateInTab = new HashSet<>();
+		int duplicateInTabCount = 0;
+		for (ItemStack itemStack : tabDisplayItems) {
+			if (itemStack.isEmpty()) {
+				String errorInfo = itemStackHelper.getErrorInfo(itemStack);
+				LOGGER.error("Found an empty itemStack in '{}' creative tab's {}: {}", tab, displayType, errorInfo);
+				continue;
+			}
+			if (!itemStackHelper.isValidIngredient(itemStack)) {
+				String errorInfo = itemStackHelper.getErrorInfo(itemStack);
+				LOGGER.error("Ignoring ingredient in '{}' creative tab's {} that is considered invalid: {}", tab, displayType, errorInfo);
+				continue;
+			}
+			if (!itemStackHelper.isIngredientOnServer(itemStack)) {
+				String errorInfo = itemStackHelper.getErrorInfo(itemStack);
+				LOGGER.warn("Ignoring ingredient in '{}' creative tab's {} that isn't on the server: {}", tab, displayType, errorInfo);
+				continue;
+			}
+			Object itemKey = safeGetUid(stackHelper, itemStack);
+			if (itemKey == null) {
+				continue;
+			}
+
+			if (tabUidSet.contains(itemKey)) {
+				duplicateInTab.add(itemKey);
+				duplicateInTabCount++;
+			}
+			if (itemUidSet.add(itemKey)) {
+				tabUidSet.add(itemKey);
+				itemList.add(itemStack);
+				added++;
+			}
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug(
+				"Added {}/{} new items from '{}' creative tab's {}",
+				StringUtils.leftPad(Integer.toString(added), 4, ' '),
+				StringUtils.leftPad(Integer.toString(tabDisplayItems.size()), 4, ' '),
+				tab.getDisplayName().getString(),
+				displayType
+			);
+		}
+		if (duplicateInTabCount > 0) {
+			Level level = Services.PLATFORM.getModHelper().isInDev() ? Level.WARN : Level.DEBUG;
+			LOGGER.log(level,
+				"""
+					{} duplicate items were found in '{}' creative tab's: {}
+					This may indicate that these types of item need a subtype interpreter added to JEI:
+					{}""",
+				duplicateInTabCount,
+				tab.getDisplayName().getString(),
+				displayType,
+				duplicateInTab.stream().map(Object::toString).collect(Collectors.joining(", ", "[", "]"))
+			);
+		}
 	}
 
 	private static void addItemsFromRegistries(

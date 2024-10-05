@@ -5,67 +5,48 @@ import com.mojang.serialization.Codec;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.IExtendableCraftingRecipeCategory;
-import mezz.jei.common.Constants;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.library.recipes.CraftingExtensionHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.List;
 
-public class CraftingRecipeCategory implements IExtendableCraftingRecipeCategory, IRecipeCategory<RecipeHolder<CraftingRecipe>> {
+public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<CraftingRecipe>> implements IExtendableCraftingRecipeCategory {
 	public static final int width = 116;
 	public static final int height = 54;
 
-	private final IDrawable background;
-	private final IDrawable icon;
-	private final Component localizedName;
+	private final IGuiHelper guiHelper;
 	private final ICraftingGridHelper craftingGridHelper;
 	private final CraftingExtensionHelper extendableHelper = new CraftingExtensionHelper();
 
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
-		ResourceLocation location = Constants.RECIPE_GUI_VANILLA;
-		background = guiHelper.createDrawable(location, 0, 60, width, height);
-		icon = guiHelper.createDrawableItemStack(new ItemStack(Blocks.CRAFTING_TABLE));
-		localizedName = Component.translatable("gui.jei.category.craftingTable");
+		super(
+			RecipeTypes.CRAFTING,
+			Component.translatable("gui.jei.category.craftingTable"),
+			guiHelper.createDrawableItemLike(Blocks.CRAFTING_TABLE),
+			width,
+			height
+		);
+		this.guiHelper = guiHelper;
 		craftingGridHelper = guiHelper.createCraftingGridHelper();
-	}
-
-	@Override
-	public RecipeType<RecipeHolder<CraftingRecipe>> getRecipeType() {
-		return RecipeTypes.CRAFTING;
-	}
-
-	@Override
-	public Component getTitle() {
-		return localizedName;
-	}
-
-	@Override
-	public IDrawable getBackground() {
-		return background;
-	}
-
-	@Override
-	public IDrawable getIcon() {
-		return icon;
 	}
 
 	@Override
@@ -75,9 +56,15 @@ public class CraftingRecipeCategory implements IExtendableCraftingRecipeCategory
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder acceptor, RecipeHolder<CraftingRecipe> recipeHolder, IFocusGroup focuses) {
+	public void onDisplayedIngredientsUpdate(RecipeHolder<CraftingRecipe> recipeHolder, List<IRecipeSlotDrawable> recipeSlots, IFocusGroup focuses) {
 		var recipeExtension = this.extendableHelper.getRecipeExtension(recipeHolder);
-		recipeExtension.createRecipeExtras(recipeHolder, acceptor, craftingGridHelper, focuses);
+		recipeExtension.onDisplayedIngredientsUpdate(recipeHolder, recipeSlots, focuses);
+	}
+
+	@Override
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, RecipeHolder<CraftingRecipe> recipeHolder, IFocusGroup focuses) {
+		var recipeExtension = this.extendableHelper.getRecipeExtension(recipeHolder);
+		recipeExtension.createRecipeExtras(recipeHolder, builder, craftingGridHelper, focuses);
 	}
 
 	@Override
@@ -86,6 +73,9 @@ public class CraftingRecipeCategory implements IExtendableCraftingRecipeCategory
 		int recipeWidth = this.getWidth();
 		int recipeHeight = this.getHeight();
 		extension.drawInfo(recipeHolder, recipeWidth, recipeHeight, guiGraphics, mouseX, mouseY);
+
+		IDrawableStatic recipeArrow = guiHelper.getRecipeArrow();
+		recipeArrow.draw(guiGraphics, 61, (height - recipeArrow.getHeight()) / 2);
 	}
 
 	@Override
@@ -133,5 +123,16 @@ public class CraftingRecipeCategory implements IExtendableCraftingRecipeCategory
 	@Override
 	public Codec<RecipeHolder<CraftingRecipe>> getCodec(ICodecHelper codecHelper, IRecipeManager recipeManager) {
 		return codecHelper.getRecipeHolderCodec();
+	}
+
+	public ImmutableSize2i getRecipeSize(RecipeHolder<CraftingRecipe> recipeHolder) {
+		ErrorUtil.checkNotNull(recipeHolder, "recipeHolder");
+		return this.extendableHelper.getOptionalRecipeExtension(recipeHolder)
+			.map(extension -> {
+				int width = extension.getWidth(recipeHolder);
+				int height = extension.getHeight(recipeHolder);
+				return new ImmutableSize2i(width, height);
+			})
+			.orElse(ImmutableSize2i.EMPTY);
 	}
 }

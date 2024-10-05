@@ -2,6 +2,7 @@ package mezz.jei.common.util;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IStackHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.core.registries.Registries;
@@ -50,6 +51,16 @@ public class StackHelper implements IStackHelper {
 		return item;
 	}
 
+	@Override
+	public Object getUidForStack(ITypedIngredient<ItemStack> typedIngredient, UidContext context) {
+		Item item = typedIngredient.getBaseIngredient(VanillaTypes.ITEM_STACK);
+		Object subtypeData = subtypeManager.getSubtypeData(VanillaTypes.ITEM_STACK, typedIngredient, context);
+		if (subtypeData != null) {
+			return List.of(item, subtypeData);
+		}
+		return item;
+	}
+
 	@SuppressWarnings("removal")
 	@Override
 	public String getUniqueIdentifierForStack(ItemStack stack, UidContext context) {
@@ -66,7 +77,7 @@ public class StackHelper implements IStackHelper {
 	}
 
 	public static String getRegistryNameForStack(ItemStack stack) {
-		ErrorUtil.checkNotEmpty(stack, "stack");
+		ErrorUtil.checkNotNull(stack, "stack");
 
 		Item item = stack.getItem();
 		ResourceLocation key = RegistryUtil

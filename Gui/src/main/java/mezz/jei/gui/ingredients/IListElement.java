@@ -5,7 +5,11 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 public interface IListElement<V> {
 	ITypedIngredient<V> getTypedIngredient();
 
-	int getOrderIndex();
+	int getSortedIndex();
+
+	void setSortedIndex(int sortIndex);
+
+	int getCreatedIndex();
 
 	boolean isVisible();
 

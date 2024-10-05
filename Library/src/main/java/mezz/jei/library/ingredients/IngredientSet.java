@@ -44,27 +44,24 @@ public class IngredientSet<V> extends AbstractSet<V> {
 	}
 
 	@Override
-	public boolean add(V v) {
-		Object uid = getUid(v);
-		return uid != null && ingredients.put(uid, v) == null;
+	public boolean add(V value) {
+		Object uid = getUid(value);
+		return uid != null && ingredients.put(uid, value) == null;
 	}
 
 	@Override
-	public boolean remove(Object o) {
+	public boolean remove(Object value) {
 		//noinspection unchecked
-		Object uid = getUid((V) o);
+		Object uid = getUid((V) value);
 		return uid != null && ingredients.remove(uid) != null;
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		if (c instanceof IngredientSet) {
-			return super.removeAll(c);
-		}
 		Objects.requireNonNull(c);
 		boolean modified = false;
-		for (Object aC : c) {
-			modified |= remove(aC);
+		for (Object value : c) {
+			modified |= remove(value);
 		}
 		return modified;
 	}

@@ -2,6 +2,7 @@ package mezz.jei.api.recipe;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ import java.util.Optional;
  *
  * Use a null IFocus to signify no focus, like in the case of looking up categories of recipes.
  */
+@ApiStatus.NonExtendable
 public interface IFocus<V> {
 	/**
 	 * The ingredient that is being focused on.

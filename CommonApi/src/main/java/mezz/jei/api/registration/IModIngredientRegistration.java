@@ -36,6 +36,7 @@ public interface IModIngredientRegistration {
 	 * @param ingredientRenderer   The ingredient render to allow JEI to render these ingredients in the ingredient list.
 	 *                             This ingredient renderer must be configured to draw in a 16 by 16 pixel space.
 	 * @param ingredientCodec      A serializer codec for this type of ingredient, used for saving ingredients to file.
+	 *                             The codec should support "normalized" ingredients, so as an optimization the count does not need to be encoded.
 	 *
 	 * @since 19.9.0
 	 */

@@ -1,21 +1,19 @@
 package mezz.jei.api.runtime;
 
-import mezz.jei.api.IModPlugin;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.registration.IRecipeRegistration;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
  * ingredients based on what is visible in JEI.
  *
- * An instance available during {@link IModPlugin#registerRecipes}
- * from {@link IRecipeRegistration#getIngredientVisibility()}
- * and it is accessible at runtime from
- * {@link IJeiRuntime#getIngredientVisibility()}.
+ * An instance available from {@link IJeiHelpers#getIngredientVisibility()}.
  *
  * @since JEI 9.3.0
  */
+@ApiStatus.NonExtendable
 public interface IIngredientVisibility {
 	/**
 	 * Returns true if the given ingredient is visible in JEI's ingredient list.

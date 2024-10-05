@@ -23,8 +23,7 @@ public final class ShulkerBoxColoringRecipeMaker {
 	private static final String group = "jei.shulker.color";
 
 	public static List<RecipeHolder<CraftingRecipe>> createRecipes() {
-		ItemStack baseShulkerStack = new ItemStack(Blocks.SHULKER_BOX);
-		Ingredient baseShulkerIngredient = Ingredient.of(baseShulkerStack);
+		Ingredient baseShulkerIngredient = Ingredient.of(Blocks.SHULKER_BOX);
 		return Arrays.stream(DyeColor.values())
 			.map(color -> createRecipe(color, baseShulkerIngredient))
 			.toList();

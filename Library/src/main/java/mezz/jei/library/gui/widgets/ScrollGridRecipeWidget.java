@@ -4,9 +4,10 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.gui.widgets.IScrollGridWidget;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,30 +16,57 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import java.util.List;
 import java.util.Optional;
 
-public class ScrollGridRecipeWidget extends AbstractScrollWidget implements ISlottedRecipeWidget, IJeiInputHandler {
+public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScrollGridWidget, ISlottedRecipeWidget, IJeiInputHandler {
 	private final IDrawable slotBackground;
 	private final int columns;
 	private final int visibleRows;
 	private final int hiddenRows;
 	private final List<IRecipeSlotDrawable> slots;
 
-	public static ImmutableSize2i calculateSize(IDrawable slotBackground, int columns, int visibleRows) {
+	public static ImmutableSize2i calculateSize(int columns, int visibleRows) {
+		IDrawable slotBackground = Internal.getTextures().getSlot();
 		return new ImmutableSize2i(
 			columns * slotBackground.getWidth() + getScrollBoxScrollbarExtraWidth(),
 			visibleRows * slotBackground.getHeight()
 		);
 	}
 
-	public ScrollGridRecipeWidget(ScreenRectangle area, int columns, int visibleRows, List<IRecipeSlotDrawable> slots) {
+	public static ScrollGridRecipeWidget create(List<IRecipeSlotDrawable> slots, int columns, int visibleRows) {
+		ImmutableSize2i size = calculateSize(columns, visibleRows);
+		ImmutableRect2i area = new ImmutableRect2i(0, 0, size.width(), size.height());
+		return new ScrollGridRecipeWidget(area, columns, visibleRows, slots);
+	}
+
+	public ScrollGridRecipeWidget(ImmutableRect2i area, int columns, int visibleRows, List<IRecipeSlotDrawable> slots) {
 		super(area);
 		this.slots = slots;
-		Textures textures = Internal.getTextures();
-		this.slotBackground = textures.getSlotDrawable();
+		this.slotBackground = Internal.getTextures().getSlot();
 
 		this.columns = columns;
 		this.visibleRows = visibleRows;
 		int totalRows = MathUtil.divideCeil(slots.size(), columns);
 		this.hiddenRows = Math.max(totalRows - visibleRows, 0);
+	}
+
+	@Override
+	public ScrollGridRecipeWidget setPosition(int xPos, int yPos) {
+		this.area = area.setPosition(xPos, yPos);
+		return this;
+	}
+
+	@Override
+	public int getWidth() {
+		return area.width();
+	}
+
+	@Override
+	public int getHeight() {
+		return area.height();
+	}
+
+	@Override
+	public ScreenRectangle getScreenRectangle() {
+		return area.toScreenRectangle();
 	}
 
 	@Override
@@ -96,7 +124,7 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements ISlo
 
 	@Override
 	protected float calculateScrollAmount(double scrollDeltaY) {
-		int totalSlots = slots.size();
-		return (float) (scrollDeltaY / (double) totalSlots);
+		int hiddenRows = getHiddenAmount();
+		return (float) (scrollDeltaY / (double) hiddenRows);
 	}
 }

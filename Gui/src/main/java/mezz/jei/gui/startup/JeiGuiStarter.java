@@ -32,8 +32,8 @@ import mezz.jei.gui.config.ModNameSortingConfig;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
-import mezz.jei.gui.ingredients.IIngredientSorter;
 import mezz.jei.gui.ingredients.IListElement;
+import mezz.jei.gui.ingredients.IListElementInfo;
 import mezz.jei.gui.ingredients.IngredientFilter;
 import mezz.jei.gui.ingredients.IngredientFilterApi;
 import mezz.jei.gui.ingredients.IngredientListElementFactory;
@@ -55,11 +55,11 @@ import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class JeiGuiStarter {
@@ -76,11 +76,11 @@ public class JeiGuiStarter {
 		IScreenHelper screenHelper = registration.getScreenHelper();
 		IRecipeTransferManager recipeTransferManager = registration.getRecipeTransferManager();
 		IRecipeManager recipeManager = registration.getRecipeManager();
-		IIngredientVisibility ingredientVisibility = registration.getIngredientVisibility();
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IEditModeConfig editModeConfig = registration.getEditModeConfig();
 
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+		IIngredientVisibility ingredientVisibility = jeiHelpers.getIngredientVisibility();
 		IColorHelper colorHelper = jeiHelpers.getColorHelper();
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 		IFocusFactory focusFactory = jeiHelpers.getFocusFactory();
@@ -95,7 +95,7 @@ public class JeiGuiStarter {
 		RegistryAccess registryAccess = level.registryAccess();
 
 		timer.start("Building ingredient list");
-		NonNullList<IListElement<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager);
+		List<IListElementInfo<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper);
 		timer.stop();
 
 		timer.start("Building ingredient filter");
@@ -112,10 +112,12 @@ public class JeiGuiStarter {
 		IIngredientGridConfig bookmarkListConfig = jeiClientConfigs.getBookmarkListConfig();
 		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
 
-		IIngredientSorter ingredientSorter = new IngredientSorter(
+		Comparator<IListElement<?>> ingredientComparator = IngredientSorter.sortIngredients(
 			clientConfig,
 			modNameSortingConfig,
-			ingredientTypeSortingConfig
+			ingredientTypeSortingConfig,
+			ingredientManager,
+			ingredientList
 		);
 
 		IngredientFilter ingredientFilter = new IngredientFilter(
@@ -123,14 +125,15 @@ public class JeiGuiStarter {
 			clientConfig,
 			ingredientFilterConfig,
 			ingredientManager,
-			ingredientSorter,
+			ingredientComparator,
 			ingredientList,
 			modIdHelper,
 			ingredientVisibility,
-			colorHelper
+			colorHelper,
+			toggleState
 		);
 		ingredientManager.registerIngredientListener(ingredientFilter);
-		ingredientVisibility.registerListener(ingredientFilter::onIngredientVisibilityChanged);
+		ingredientVisibility.registerListener(ingredientFilter);
 		timer.stop();
 
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);

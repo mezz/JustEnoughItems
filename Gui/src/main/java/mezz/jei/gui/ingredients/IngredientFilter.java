@@ -10,6 +10,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.IIngredientGridSource;
@@ -19,18 +20,15 @@ import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchLowMem;
 import mezz.jei.gui.search.IElementSearch;
-import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +38,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class IngredientFilter implements IIngredientGridSource, IIngredientManager.IIngredientListener {
+public class IngredientFilter implements
+	IIngredientGridSource,
+	IIngredientManager.IIngredientListener,
+	IIngredientVisibility.IListener,
+	IClientToggleState.IEditModeListener
+{
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
@@ -48,12 +51,11 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 	private final IClientConfig clientConfig;
 	private final IFilterTextSource filterTextSource;
 	private final IIngredientManager ingredientManager;
-	private final IIngredientSorter sorter;
+	private final Comparator<IListElement<?>> ingredientComparator;
 	private final IModIdHelper modIdHelper;
 	private final IIngredientVisibility ingredientVisibility;
 
 	private final ElementPrefixParser elementPrefixParser;
-	private final Set<String> modNamesForSorting = new HashSet<>();
 	private IElementSearch elementSearch;
 
 	@Nullable
@@ -65,16 +67,17 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
 		IIngredientManager ingredientManager,
-		IIngredientSorter sorter,
-		NonNullList<IListElement<?>> ingredients,
+		Comparator<IListElement<?>> ingredientComparator,
+		List<IListElementInfo<?>> ingredients,
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
-		IColorHelper colorHelper
+		IColorHelper colorHelper,
+		IClientToggleState clientToggleState
 	) {
 		this.filterTextSource = filterTextSource;
 		this.clientConfig = clientConfig;
 		this.ingredientManager = ingredientManager;
-		this.sorter = sorter;
+		this.ingredientComparator = ingredientComparator;
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
 		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper);
@@ -82,20 +85,20 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
-		int added = 0;
-		for (IListElement<?> ingredient : ingredients) {
-			IListElementInfo<?> info = ListElementInfo.create(ingredient, ingredientManager, modIdHelper);
-			if (info != null) {
-				addIngredient(info);
-				added++;
-			}
+		for (IListElementInfo<?> ingredient : ingredients) {
+			addIngredient(ingredient);
 		}
-		LOGGER.info("Added {}/{} ingredients", added, ingredients.size());
+		LOGGER.info("Added {} ingredients", ingredients.size());
+		if (DebugConfig.isLogSuffixTreeStatsEnabled()) {
+			this.elementSearch.logStatistics();
+		}
 
 		this.filterTextSource.addListener(filterText -> {
 			ingredientListCached = null;
 			notifyListenersOfChange();
 		});
+
+		clientToggleState.addEditModeToggleListener(this);
 	}
 
 	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser) {
@@ -112,31 +115,28 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 
 		this.elementSearch.add(info);
 
-		String modNameForSorting = info.getModNameForSorting();
-		this.modNamesForSorting.add(modNameForSorting);
-
 		invalidateCache();
 	}
 
 	public void invalidateCache() {
 		ingredientListCached = null;
-		sorter.invalidateCache();
 	}
 
 	public void rebuildItemFilter() {
 		this.invalidateCache();
-		Collection<IListElementInfo<?>> ingredients = this.elementSearch.getAllIngredients();
+		Collection<IListElement<?>> ingredients = this.elementSearch.getAllIngredients();
 		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser);
-		this.elementSearch.addAll(ingredients);
+		List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, modIdHelper);
+		this.elementSearch.addAll(elementInfos);
 	}
 
-	public <V> Optional<IListElementInfo<V>> searchForMatchingElement(
+	public <V> Optional<IListElement<V>> searchForMatchingElement(
 		IIngredientHelper<V> ingredientHelper,
 		ITypedIngredient<V> typedIngredient
 	) {
 		V ingredient = typedIngredient.getIngredient();
 		IIngredientType<V> type = typedIngredient.getType();
-		Function<ITypedIngredient<V>, Object> uidFunction = (i) -> ingredientHelper.getUid(i.getIngredient(), UidContext.Ingredient);
+		Function<ITypedIngredient<V>, Object> uidFunction = (i) -> ingredientHelper.getUid(i, UidContext.Ingredient);
 		Object ingredientUid = uidFunction.apply(typedIngredient);
 		String lowercaseDisplayName = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
 
@@ -148,10 +148,14 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			.findFirst();
 	}
 
+	@Override
+	public void onEditModeChanged() {
+		updateHidden();
+	}
+
 	public void updateHidden() {
 		boolean changed = false;
-		for (IListElementInfo<?> info : this.elementSearch.getAllIngredients()) {
-			IListElement<?> element = info.getElement();
+		for (IListElement<?> element : this.elementSearch.getAllIngredients()) {
 			changed |= updateHiddenState(element);
 		}
 		if (changed) {
@@ -170,12 +174,12 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		return false;
 	}
 
+	@Override
 	public <V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible) {
 		IIngredientType<V> ingredientType = ingredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		searchForMatchingElement(ingredientHelper, ingredient)
-			.ifPresent(matchingElementInfo -> {
-				IListElement<V> element = matchingElementInfo.getElement();
+			.ifPresent(element -> {
 				if (element.isVisible() != visible) {
 					element.setVisible(visible);
 					notifyListenersOfChange();
@@ -195,19 +199,6 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		return ingredientListCached;
 	}
 
-	//This is used to allow the sorting function to set all item's indexes, precomputing the master sort order.
-	@Unmodifiable
-	public List<IListElementInfo<?>> getIngredientListPreSort(Comparator<IListElementInfo<?>> directComparator) {
-		return this.elementSearch.getAllIngredients()
-			.stream()
-			.sorted(directComparator)
-			.toList();
-	}
-
-	public Set<String> getModNamesForSorting() {
-		return Collections.unmodifiableSet(this.modNamesForSorting);
-	}
-
 	public <T> List<T> getFilteredIngredients(IIngredientType<T> ingredientType) {
 		return getElements()
 			.stream()
@@ -224,25 +215,25 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			.filter(s -> !s.isEmpty())
 			.toList();
 
-		Stream<IListElementInfo<?>> elementInfoStream;
+		Stream<IListElement<?>> elementStream;
 		if (searchTokens.isEmpty()) {
-			elementInfoStream = this.elementSearch.getAllIngredients()
+			elementStream = this.elementSearch.getAllIngredients()
 				.parallelStream();
 		} else {
-			elementInfoStream = searchTokens.stream()
+			elementStream = searchTokens.stream()
 				.map(this::getSearchResults)
 				.flatMap(Set::stream)
 				.distinct();
 		}
 
-		return elementInfoStream
-			.filter(info -> info.getElement().isVisible())
-			.sorted(sorter.getComparator(this, this.ingredientManager))
-			.map(IListElementInfo::getTypedIngredient);
+		return elementStream
+			.filter(IListElement::isVisible)
+			.sorted(ingredientComparator)
+			.map(IListElement::getTypedIngredient);
 	}
 
-	private static <T> Optional<IListElementInfo<T>> checkForMatch(IListElementInfo<?> info, IIngredientType<T> ingredientType, Object uid, Function<ITypedIngredient<T>, Object> uidFunction) {
-		return optionalCast(info, ingredientType)
+	private static <T> Optional<IListElement<T>> checkForMatch(IListElement<?> element, IIngredientType<T> ingredientType, Object uid, Function<ITypedIngredient<T>, Object> uidFunction) {
+		return optionalCast(element, ingredientType)
 			.filter(cast -> {
 				ITypedIngredient<T> typedIngredient = cast.getTypedIngredient();
 				Object elementUid = uidFunction.apply(typedIngredient);
@@ -250,11 +241,11 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 			});
 	}
 
-	private static <T> Optional<IListElementInfo<T>> optionalCast(IListElementInfo<?> info, IIngredientType<T> ingredientType) {
-		ITypedIngredient<?> typedIngredient = info.getTypedIngredient();
+	private static <T> Optional<IListElement<T>> optionalCast(IListElement<?> element, IIngredientType<T> ingredientType) {
+		ITypedIngredient<?> typedIngredient = element.getTypedIngredient();
 		if (typedIngredient.getType() == ingredientType) {
 			@SuppressWarnings("unchecked")
-			IListElementInfo<T> cast = (IListElementInfo<T>) info;
+			IListElement<T> cast = (IListElement<T>) element;
 			return Optional.of(cast);
 		}
 		return Optional.empty();
@@ -263,16 +254,15 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 	@Override
 	public <V> void onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
 		for (ITypedIngredient<V> value : ingredients) {
-			Optional<IListElementInfo<V>> matchingElementInfo = searchForMatchingElement(ingredientHelper, value);
-			if (matchingElementInfo.isPresent()) {
-				IListElement<V> matchingElement = matchingElementInfo.get().getElement();
+			Optional<IListElement<V>> matchingElementOptional = searchForMatchingElement(ingredientHelper, value);
+			if (matchingElementOptional.isPresent()) {
+				IListElement<V> matchingElement = matchingElementOptional.get();
 				updateHiddenState(matchingElement);
 				if (DebugConfig.isDebugModeEnabled()) {
 					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
 				}
 			} else {
-				IListElement<V> element = IngredientListElementFactory.createOrderedElement(value);
-				IListElementInfo<V> listElementInfo = ListElementInfo.create(element, this.ingredientManager, modIdHelper);
+				IListElementInfo<V> listElementInfo = ListElementInfo.create(value, this.ingredientManager, modIdHelper);
 				if (listElementInfo != null) {
 					addIngredient(listElementInfo);
 					if (DebugConfig.isDebugModeEnabled()) {
@@ -287,15 +277,15 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 	@Override
 	public <V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
 		for (ITypedIngredient<V> typedIngredient : ingredients) {
-			Optional<IListElementInfo<V>> matchingElementInfo = searchForMatchingElement(ingredientHelper, typedIngredient);
-			if (matchingElementInfo.isEmpty()) {
+			Optional<IListElement<V>> matchingElementOptional = searchForMatchingElement(ingredientHelper, typedIngredient);
+			if (matchingElementOptional.isEmpty()) {
 				String errorInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
 				LOGGER.error("Could not find a matching ingredient to remove: {}", errorInfo);
 			} else {
 				if (DebugConfig.isDebugModeEnabled()) {
 					LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
 				}
-				IListElement<V> matchingElement = matchingElementInfo.get().getElement();
+				IListElement<V> matchingElement = matchingElementOptional.get();
 				matchingElement.setVisible(false);
 			}
 		}
@@ -338,11 +328,11 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 		return searchTokens;
 	}
 
-	private Set<IListElementInfo<?>> getSearchResults(SearchTokens searchTokens) {
-		List<Set<IListElementInfo<?>>> resultsPerToken = searchTokens.toSearch.stream()
+	private Set<IListElement<?>> getSearchResults(SearchTokens searchTokens) {
+		List<Set<IListElement<?>>> resultsPerToken = searchTokens.toSearch.stream()
 			.map(this.elementSearch::getSearchResults)
 			.toList();
-		Set<IListElementInfo<?>> results = intersection(resultsPerToken);
+		Set<IListElement<?>> results = intersection(resultsPerToken);
 
 		if (results.isEmpty() && !searchTokens.toRemove.isEmpty()) {
 			results.addAll(this.elementSearch.getAllIngredients());
@@ -350,7 +340,7 @@ public class IngredientFilter implements IIngredientGridSource, IIngredientManag
 
 		if (!results.isEmpty() && !searchTokens.toRemove.isEmpty()) {
 			for (ElementPrefixParser.TokenInfo tokenInfo : searchTokens.toRemove) {
-				Set<IListElementInfo<?>> resultsToRemove = this.elementSearch.getSearchResults(tokenInfo);
+				Set<IListElement<?>> resultsToRemove = this.elementSearch.getSearchResults(tokenInfo);
 				results.removeAll(resultsToRemove);
 				if (results.isEmpty()) {
 					break;

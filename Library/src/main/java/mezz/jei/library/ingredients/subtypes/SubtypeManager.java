@@ -1,6 +1,8 @@
 package mezz.jei.library.ingredients.subtypes;
 
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.util.ErrorUtil;
@@ -20,9 +22,26 @@ public class SubtypeManager implements ISubtypeManager {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		ErrorUtil.checkNotNull(context, "type");
 
-		return interpreters.get(ingredientType, ingredient)
-			.map(subtypeInterpreter -> subtypeInterpreter.getSubtypeData(ingredient, context))
-			.orElse(null);
+		ISubtypeInterpreter<T> interpreter = interpreters.get(ingredientType, ingredient);
+		if (interpreter == null) {
+			return null;
+		}
+		return interpreter.getSubtypeData(ingredient, context);
+	}
+
+	@Override
+	public @Nullable <B, T> Object getSubtypeData(IIngredientTypeWithSubtypes<B, T> ingredientType, ITypedIngredient<T> typedIngredient, UidContext context) {
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
+		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
+		ErrorUtil.checkNotNull(context, "type");
+
+		B ingredientBase = typedIngredient.getBaseIngredient(ingredientType);
+		ISubtypeInterpreter<T> interpreter = interpreters.getFromBase(ingredientType, ingredientBase);
+		if (interpreter == null) {
+			return null;
+		}
+		T ingredient = typedIngredient.getIngredient();
+		return interpreter.getSubtypeData(ingredient, context);
 	}
 
 	@SuppressWarnings({"removal", "deprecation"})
@@ -32,9 +51,11 @@ public class SubtypeManager implements ISubtypeManager {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		ErrorUtil.checkNotNull(context, "context");
 
-		return interpreters.get(ingredientType, ingredient)
-			.map(subtypeInterpreter -> subtypeInterpreter.getLegacyStringSubtypeInfo(ingredient, context))
-			.orElse(mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter.NONE);
+		ISubtypeInterpreter<T> interpreter = interpreters.get(ingredientType, ingredient);
+		if (interpreter == null) {
+			return mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter.NONE;
+		}
+		return interpreter.getLegacyStringSubtypeInfo(ingredient, context);
 	}
 
 	@Override

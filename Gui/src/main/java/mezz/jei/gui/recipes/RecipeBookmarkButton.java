@@ -7,6 +7,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.input.UserInput;
@@ -18,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class RecipeBookmarkButton extends GuiIconToggleButton {
 	private final BookmarkList bookmarks;
-	private final @Nullable RecipeBookmark<?, ?> recipeBookmark;
+	private final @Nullable IBookmark recipeBookmark;
 	private boolean bookmarked;
 
 	public static RecipeBookmarkButton create(
@@ -26,9 +27,15 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 		IIngredientManager ingredientManager,
 		BookmarkList bookmarks
 	) {
-		RecipeBookmark<?, ?> recipeBookmark = RecipeBookmark.create(recipeLayout, ingredientManager)
-			.orElse(null);
+		IBookmark recipeBookmark = RecipeBookmark.create(recipeLayout, ingredientManager);
+		return create(recipeLayout, bookmarks, recipeBookmark);
+	}
 
+	public static RecipeBookmarkButton create(
+		IRecipeLayoutDrawable<?> recipeLayout,
+		BookmarkList bookmarks,
+		@Nullable IBookmark recipeBookmark
+	) {
 		Textures textures = Internal.getTextures();
 		IDrawable icon = textures.getRecipeBookmark();
 		Rect2i area = recipeLayout.getRecipeBookmarkButtonArea();
@@ -41,7 +48,7 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 		return recipeBookmarkButton;
 	}
 
-	private RecipeBookmarkButton(IDrawable icon, BookmarkList bookmarks, @Nullable RecipeBookmark<?, ?> recipeBookmark) {
+	private RecipeBookmarkButton(IDrawable icon, BookmarkList bookmarks, @Nullable IBookmark recipeBookmark) {
 		super(icon, icon);
 
 		this.bookmarks = bookmarks;

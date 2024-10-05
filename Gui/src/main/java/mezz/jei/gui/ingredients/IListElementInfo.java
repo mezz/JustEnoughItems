@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public interface IListElementInfo<V> {
 
-	String getName();
+	List<String> getNames();
 
 	String getModNameForSorting();
 
@@ -30,14 +30,14 @@ public interface IListElementInfo<V> {
 
 	Iterable<Integer> getColors(IIngredientManager ingredientManager);
 
+	@Unmodifiable
+	Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager);
+
 	ResourceLocation getResourceLocation();
 
 	IListElement<V> getElement();
 
 	ITypedIngredient<V> getTypedIngredient();
 
-	void setSortedIndex(int sortIndex);
-
-	int getSortedIndex();
-
+	int getCreatedIndex();
 }

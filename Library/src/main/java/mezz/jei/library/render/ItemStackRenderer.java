@@ -3,8 +3,10 @@ package mezz.jei.library.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.rendering.BatchRenderElement;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.library.render.batch.ItemStackBatchRendererCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,6 +20,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
+	private final ItemStackBatchRendererCache batchRenderer = new ItemStackBatchRendererCache();
+
 	@Override
 	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient) {
 		render(guiGraphics, ingredient, 0, 0);
@@ -34,6 +38,11 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 			guiGraphics.renderItemDecorations(font, ingredient, posX, posY);
 			RenderSystem.disableBlend();
 		}
+	}
+
+	@Override
+	public void renderBatch(GuiGraphics guiGraphics, List<BatchRenderElement<ItemStack>> batchRenderElements) {
+		batchRenderer.renderBatch(guiGraphics, this, batchRenderElements);
 	}
 
 	@SuppressWarnings("removal")

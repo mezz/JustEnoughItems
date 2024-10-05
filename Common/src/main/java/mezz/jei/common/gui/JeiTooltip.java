@@ -93,6 +93,12 @@ public class JeiTooltip implements ITooltipBuilder {
 		}
 	}
 
+	@Override
+	public void clear() {
+		this.lines.clear();
+		this.typedIngredient = null;
+	}
+
 	public void addAll(JeiTooltip tooltip) {
 		lines.addAll(tooltip.lines);
 	}

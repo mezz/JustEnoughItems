@@ -1,15 +1,13 @@
-import net.darkhax.curseforgegradle.TaskPublishCurseForge
+import me.modmuss50.mpp.PublishModTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import net.darkhax.curseforgegradle.Constants as CFG_Constants
 
 plugins {
     java
     idea
     `maven-publish`
     id("fabric-loom")
-    id("net.darkhax.curseforgegradle") version("1.0.8")
-    id("com.modrinth.minotaur") version("2.+")
+    id("me.modmuss50.mod-publish-plugin")
 }
 
 repositories {
@@ -21,6 +19,12 @@ repositories {
     exclusiveMaven("https://maven.parchmentmc.org") {
         includeGroupByRegex("org\\.parchmentmc.*")
     }
+    maven("https://maven.siphalor.de/") {
+        // for optional AMECS integration
+        content {
+            includeGroup("de.siphalor")
+        }
+    }
 }
 
 // gradle.properties
@@ -28,15 +32,21 @@ val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
 val fabricApiVersion: String by extra
 val fabricLoaderVersion: String by extra
+val minecraftVersionRangeStart: String by extra
 val minecraftVersion: String by extra
 val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
-val parchmentVersionFabric: String by extra
 val parchmentMinecraftVersion: String by extra
+val parchmentVersionFabric: String by extra
+val modrinthId: String by extra
+val amecsVersionFabric: String by extra
+val amecsMinecraftVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
+// set by ORG_GRADLE_PROJECT_curseforgeApikey in Jenkinsfile
+val curseforgeApikey: String? by project
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric"
 base {
@@ -97,6 +107,11 @@ dependencies {
         name = "jsr305",
         version = "3.0.1"
     )
+    modImplementation(
+        group = "de.siphalor",
+        name = "amecsapi-${amecsMinecraftVersion}",
+        version = amecsVersionFabric
+    )
     dependencyProjects.forEach {
         implementation(it)
     }
@@ -119,9 +134,7 @@ loom {
             }
 
         // loom 1.11 runDir takes a directory relative to the root directory
-        val loomRunDir = project.projectDir
-            .relativeTo(project.rootDir)
-            .resolve("run")
+        val loomRunDir = File("run")
 
         named("client") {
             client()
@@ -195,36 +208,38 @@ tasks.named<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
 }
 
-tasks.register<TaskPublishCurseForge>("publishCurseForge") {
-    dependsOn(tasks.remapJar)
-    dependsOn(":Changelog:makeChangelog")
+publishMods {
+    file.set(tasks.remapJar.get().archiveFile)
+    changelog.set(provider { file("../Changelog/changelog.md").readText() })
+    type = BETA
+    modLoaders.add("fabric")
+    displayName.set("${project.version} for Fabric $minecraftVersion")
+    version.set(project.version.toString())
 
-    apiToken = project.findProperty("curseforge_apikey") ?: "0"
+    curseforge {
+        projectId = curseProjectId
+        accessToken.set(curseforgeApikey ?: "0")
+        changelog.set(provider { file("../Changelog/changelog.html").readText() })
+        changelogType = "html"
+        minecraftVersionRange {
+            start = minecraftVersionRangeStart
+            end = minecraftVersion
+        }
+        javaVersions.add(JavaVersion.toVersion(modJavaVersion))
+    }
 
-    val mainFile = upload(curseProjectId, tasks.remapJar.get().archiveFile)
-    mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
-    mainFile.changelog = file("../Changelog/changelog.html")
-    mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
-    mainFile.addJavaVersion("Java $modJavaVersion")
-    mainFile.addGameVersion(minecraftVersion)
-    mainFile.addModLoader("Fabric")
-
-    doLast {
-        project.ext.set("curse_file_url", "${curseHomepageUrl}/files/${mainFile.curseFileId}")
+    modrinth {
+        projectId = modrinthId
+        accessToken = modrinthToken
+        minecraftVersionRange {
+            start = minecraftVersionRangeStart
+            end = minecraftVersion
+        }
     }
 }
-
-modrinth {
-    token.set(modrinthToken)
-    projectId.set("jei")
-    versionNumber.set("${project.version}")
-    versionName.set("${project.version} for Fabric $minecraftVersion")
-    versionType.set("beta")
-    uploadFile.set(tasks.remapJar.get())
-    changelog.set(provider { file("../Changelog/changelog.md").readText() })
+tasks.withType<PublishModTask> {
+    dependsOn(tasks.jar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
 }
-tasks.modrinth.get().dependsOn(tasks.remapJar)
-tasks.modrinth.get().dependsOn(":Changelog:makeMarkdownChangelog")
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
@@ -251,13 +266,21 @@ publishing {
             artifact(tasks.remapJar)
             artifact(tasks.remapSourcesJar)
 
+            val dependencyInfos = dependencyProjects.map {
+                mapOf(
+                    "groupId" to it.group,
+                    "artifactId" to it.dependencyProject.base.archivesName.get(),
+                    "version" to it.version
+                )
+            }
+
             pom.withXml {
                 val dependenciesNode = asNode().appendNode("dependencies")
-                dependencyProjects.forEach {
+                dependencyInfos.forEach {
                     val dependencyNode = dependenciesNode.appendNode("dependency")
-                    dependencyNode.appendNode("groupId", it.group)
-                    dependencyNode.appendNode("artifactId", it.dependencyProject.base.archivesName.get())
-                    dependencyNode.appendNode("version", it.version)
+                    it.forEach { (key, value) ->
+                        dependencyNode.appendNode(key, value)
+                    }
                 }
             }
         }
@@ -272,7 +295,7 @@ publishing {
 
 idea {
     module {
-        for (fileName in listOf("run", "out", "logs")) {
+        for (fileName in listOf("build", "run", "out", "logs")) {
             excludeDirs.add(file(fileName))
         }
     }

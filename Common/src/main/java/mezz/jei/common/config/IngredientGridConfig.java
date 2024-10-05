@@ -1,8 +1,8 @@
 package mezz.jei.common.config;
 
-import mezz.jei.common.util.HorizontalAlignment;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.util.NavigationVisibility;
-import mezz.jei.common.util.VerticalAlignment;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 
@@ -35,24 +35,24 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 			defaultNumRows,
 			minNumRows,
 			largestNumRows,
-			"Max number of rows shown"
+			"Max number of rows shown."
 		);
 		maxColumns = category.addInteger(
 			"MaxColumns",
 			defaultNumColumns,
 			minNumColumns,
 			largestNumColumns,
-			"Max number of columns shown"
+			"Max number of columns shown."
 		);
 		horizontalAlignment = category.addEnum(
 			"HorizontalAlignment",
 			defaultHorizontalAlignment,
-			"Horizontal alignment of the ingredient grid inside the available area"
+			"Horizontal alignment of the ingredient grid inside the available area."
 		);
 		verticalAlignment = category.addEnum(
 			"VerticalAlignment",
 			defaultVerticalAlignment,
-			"Vertical alignment of the ingredient grid inside the available area"
+			"Vertical alignment of the ingredient grid inside the available area."
 		);
 		buttonNavigationVisibility = category.addEnum(
 			"ButtonNavigationVisibility",
@@ -62,7 +62,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 		drawBackground = category.addBoolean(
 			"DrawBackground",
 			defaultDrawBackground,
-			"Set to true to draw a background texture behind the gui."
+			"Enable this to draw a background texture behind the GUI."
 		);
 	}
 

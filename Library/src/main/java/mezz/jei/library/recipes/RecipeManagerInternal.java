@@ -2,7 +2,9 @@ package mezz.jei.library.recipes;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
+import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
@@ -13,7 +15,6 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
-import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.library.recipes.collect.RecipeMap;
 import mezz.jei.library.recipes.collect.RecipeTypeData;
 import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
@@ -40,7 +41,6 @@ public class RecipeManagerInternal {
 
 	@Unmodifiable
 	private final List<IRecipeCategory<?>> recipeCategories;
-	private final ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 	private final IIngredientManager ingredientManager;
 	private final RecipeTypeDataMap recipeTypeDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
@@ -48,6 +48,7 @@ public class RecipeManagerInternal {
 	private final PluginManager pluginManager;
 	private final Set<RecipeType<?>> hiddenRecipeTypes = new HashSet<>();
 	private final IIngredientVisibility ingredientVisibility;
+	private ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 
 	@Nullable
 	@Unmodifiable
@@ -55,16 +56,14 @@ public class RecipeManagerInternal {
 
 	public RecipeManagerInternal(
 		List<IRecipeCategory<?>> recipeCategories,
-		ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts,
-		ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
+		ImmutableListMultimap<RecipeType<?>, ITypedIngredient<?>> recipeCatalysts,
 		IIngredientManager ingredientManager,
-		List<IRecipeManagerPlugin> plugins,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		IIngredientVisibility ingredientVisibility
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
-		this.recipeCategoryDecorators = recipeCategoryDecorators;
+		this.recipeCategoryDecorators = ImmutableListMultimap.of();
 		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
 
@@ -86,9 +85,9 @@ public class RecipeManagerInternal {
 
 		RecipeCatalystBuilder recipeCatalystBuilder = new RecipeCatalystBuilder(this.recipeMaps.get(RecipeIngredientRole.CATALYST));
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
-			ResourceLocation recipeCategoryUid = recipeCategory.getRecipeType().getUid();
-			if (recipeCatalysts.containsKey(recipeCategoryUid)) {
-				List<ITypedIngredient<?>> catalysts = recipeCatalysts.get(recipeCategoryUid);
+			RecipeType<?> recipeType = recipeCategory.getRecipeType();
+			if (recipeCatalysts.containsKey(recipeType)) {
+				List<ITypedIngredient<?>> catalysts = recipeCatalysts.get(recipeType);
 				recipeCatalystBuilder.addCategoryCatalysts(recipeCategory, catalysts);
 			}
 		}
@@ -100,11 +99,19 @@ public class RecipeManagerInternal {
 			recipeTypeDataMap,
 			recipeMaps
 		);
-		this.pluginManager = new PluginManager(internalRecipeManagerPlugin, plugins);
+		this.pluginManager = new PluginManager(internalRecipeManagerPlugin);
+	}
+
+	public void addPlugins(List<IRecipeManagerPlugin> plugins) {
+		this.pluginManager.addAll(plugins);
+	}
+
+	public void addDecorators(ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> decorators) {
+		this.recipeCategoryDecorators = decorators;
 	}
 
 	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
-		LOGGER.debug("Adding recipes: {}", recipeType.getUid());
+		LOGGER.debug("Adding recipes: {}", recipeType);
 		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipeType);
 		IRecipeCategory<T> recipeCategory = recipeTypeData.getRecipeCategory();
 		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
@@ -267,6 +274,10 @@ public class RecipeManagerInternal {
 		recipeCategoriesVisibleCache = null;
 	}
 
+	public <T> Optional<RecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass) {
+		return recipeTypeDataMap.getType(recipeUid, recipeClass);
+	}
+
 	public Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid) {
 		return recipeTypeDataMap.getType(recipeUid);
 	}
@@ -280,5 +291,10 @@ public class RecipeManagerInternal {
 
 	public void compact() {
 		recipeMaps.values().forEach(RecipeMap::compact);
+	}
+
+	public boolean isRecipeCatalyst(RecipeType<?> recipeType, IFocus<?> focus) {
+		RecipeMap recipeMap = recipeMaps.get(focus.getRole());
+		return recipeMap.isCatalystForRecipeCategory(recipeType, focus.getTypedValue());
 	}
 }

@@ -9,10 +9,13 @@ import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IAdvancedRegistration;
+import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModInfoRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -22,7 +25,10 @@ import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
@@ -39,6 +45,7 @@ import mezz.jei.library.plugins.debug.ingredients.ErrorIngredientRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -87,6 +94,59 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
+	public void registerExtraIngredients(IExtraIngredientRegistration registration) {
+		if (DebugConfig.isDebugModeEnabled()) {
+			registration.addExtraIngredients(DebugIngredient.TYPE, DebugIngredientListFactory.create(0, 10));
+		}
+	}
+
+	@Override
+	public void registerIngredientAliases(IIngredientAliasRegistration registration) {
+		registration.addAlias(
+			VanillaTypes.ITEM_STACK,
+			new ItemStack(Items.PANDA_SPAWN_EGG),
+			"jei.alias.panda.spawn.egg"
+		);
+
+		registration.addAlias(
+			VanillaTypes.ITEM_STACK,
+			new ItemStack(Items.VILLAGER_SPAWN_EGG),
+			"jei.alias.villager.spawn.egg"
+		);
+
+		registration.addAliases(
+			VanillaTypes.ITEM_STACK,
+			List.of(
+				new ItemStack(Items.STRUCTURE_VOID),
+				new ItemStack(Items.BARRIER)
+			),
+			"nothing"
+		);
+
+		registration.addAliases(
+			VanillaTypes.ITEM_STACK,
+			List.of(
+				new ItemStack(Items.GOLDEN_HOE),
+				new ItemStack(Items.DIAMOND_BLOCK)
+			),
+			List.of("shiny", "valuable", "Expensive", "expansive", "extensive")
+		);
+
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		registerFluidAliases(registration, fluidHelper);
+	}
+
+	private <T> void registerFluidAliases(IIngredientAliasRegistration registration, IPlatformFluidHelper<T> fluidHelper) {
+		@SuppressWarnings("deprecation")
+		Holder.Reference<Fluid> water = Fluids.WATER.builtInRegistryHolder();
+		registration.addAliases(
+			fluidHelper.getFluidIngredientType(),
+			fluidHelper.create(water, fluidHelper.bucketVolume()),
+			List.of("wet", "aqua", "sea", "ocean")
+		);
+	}
+
+	@Override
 	public void registerModInfo(IModInfoRegistration registration) {
 		registration.addModAliases(ModIds.JEI_ID, "jei");
 	}
@@ -98,11 +158,12 @@ public class JeiDebugPlugin implements IModPlugin {
 			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 			IPlatformFluidHelper<?> platformFluidHelper = jeiHelpers.getPlatformFluidHelper();
 			IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
+			Textures textures = Internal.getTextures();
 			this.debugRecipeCategory = new DebugRecipeCategory<>(guiHelper, platformFluidHelper, ingredientManager);
 			registration.addRecipeCategories(
 				debugRecipeCategory,
-				new DebugFocusRecipeCategory<>(guiHelper, platformFluidHelper),
-				new ObnoxiouslyLargeCategory(guiHelper, ingredientManager)
+				new DebugFocusRecipeCategory<>(platformFluidHelper),
+				new ObnoxiouslyLargeCategory(guiHelper, textures, ingredientManager)
 			);
 		}
 	}
@@ -226,9 +287,20 @@ public class JeiDebugPlugin implements IModPlugin {
 		Rect2i area
 	) implements IClickableIngredient<T> {
 
+		@SuppressWarnings("removal")
 		@Override
 		public ITypedIngredient<T> getTypedIngredient() {
 			return typedIngredient;
+		}
+
+		@Override
+		public IIngredientType<T> getIngredientType() {
+			return typedIngredient.getType();
+		}
+
+		@Override
+		public T getIngredient() {
+			return typedIngredient.getIngredient();
 		}
 
 		@Override
@@ -258,7 +330,7 @@ public class JeiDebugPlugin implements IModPlugin {
 
 		registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
 		registration.addRecipeCatalyst(fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume), DebugRecipeCategory.TYPE);
-		registration.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
+		registration.addRecipeCatalyst(Items.STICK, DebugRecipeCategory.TYPE);
 
 		RegistryUtil.getRegistry(Registries.ITEM)
 			.stream()
@@ -274,10 +346,14 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void registerAdvanced(IAdvancedRegistration registration) {
 		if (DebugConfig.isDebugModeEnabled()) {
-			registration.getJeiHelpers()
+			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+
+			jeiHelpers
 				.getAllRecipeTypes()
 				.filter(r -> r.getUid().getNamespace().equals(ModIds.JEI_ID))
 				.forEach(r -> registration.addRecipeCategoryDecorator(r, DebugCategoryDecorator.getInstance()));
+
+			registration.addTypedRecipeManagerPlugin(RecipeTypes.CRAFTING, new DebugSimpleRecipeManagerPlugin(jeiHelpers));
 		}
 	}
 
@@ -292,7 +368,7 @@ public class JeiDebugPlugin implements IModPlugin {
 				debugRecipeCategory.setRuntime(jeiRuntime);
 			}
 			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
-			ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create());
+			ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create(10, 20));
 		}
 	}
 }

@@ -8,11 +8,9 @@ import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,17 +18,12 @@ public class CraftingCategoryExtension implements ICraftingCategoryExtension<Cra
 	@Override
 	public void setRecipe(RecipeHolder<CraftingRecipe> recipeHolder, IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
 		CraftingRecipe recipe = recipeHolder.value();
-		List<List<ItemStack>> inputs = new ArrayList<>();
-		for (Ingredient ingredient : recipe.getIngredients()) {
-			List<ItemStack> items = List.of(ingredient.getItems());
-			inputs.add(items);
-		}
 		ItemStack resultItem = RecipeUtil.getResultItem(recipe);
 
 		int width = getWidth(recipeHolder);
 		int height = getHeight(recipeHolder);
 		craftingGridHelper.createAndSetOutputs(builder, List.of(resultItem));
-		craftingGridHelper.createAndSetInputs(builder, inputs, width, height);
+		craftingGridHelper.createAndSetIngredients(builder, recipe.getIngredients(), width, height);
 	}
 
 	@SuppressWarnings("removal")
@@ -45,6 +38,9 @@ public class CraftingCategoryExtension implements ICraftingCategoryExtension<Cra
 		if (recipe instanceof ShapedRecipe shapedRecipe) {
 			return shapedRecipe.getWidth();
 		}
+		if (recipe instanceof JeiShapedRecipe shapedRecipe) {
+			return shapedRecipe.getWidth();
+		}
 		return 0;
 	}
 
@@ -52,6 +48,9 @@ public class CraftingCategoryExtension implements ICraftingCategoryExtension<Cra
 	public int getHeight(RecipeHolder<CraftingRecipe> recipeHolder) {
 		CraftingRecipe recipe = recipeHolder.value();
 		if (recipe instanceof ShapedRecipe shapedRecipe) {
+			return shapedRecipe.getHeight();
+		}
+		if (recipe instanceof JeiShapedRecipe shapedRecipe) {
 			return shapedRecipe.getHeight();
 		}
 		return 0;
