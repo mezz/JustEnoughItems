@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.util.RegistryUtil;
+import mezz.jei.library.render.FluidSlotRenderer;
 import mezz.jei.library.render.FluidTankRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -42,6 +43,11 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	@Override
 	public IIngredientRenderer<FluidStack> createRenderer(long capacity, boolean showCapacity, int width, int height) {
 		return new FluidTankRenderer<>(this, capacity, showCapacity, width, height);
+	}
+
+	@Override
+	public IIngredientRenderer<FluidStack> createSlotRenderer(long capacity) {
+		return new FluidSlotRenderer<>(this, capacity);
 	}
 
 	@Override
@@ -93,6 +99,11 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	@Override
 	public long bucketVolume() {
 		return FluidType.BUCKET_VOLUME;
+	}
+
+	@Override
+	public String unit() {
+		return "mB";
 	}
 
 	@Override

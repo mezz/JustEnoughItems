@@ -7,16 +7,20 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.level.material.Fluid;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -137,8 +141,19 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 			ITypedIngredient<T> typedIngredient = summaryElement.getIngredient();
 			IIngredientType<T> type = typedIngredient.getType();
 			IIngredientHelper<T> helper = ingredientManager.getIngredientHelper(type);
-			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
 			T ingredient = helper.copyWithAmount(typedIngredient.getIngredient(), summaryElement.getAmount());
+
+			IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+			IIngredientTypeWithSubtypes<Fluid, ?> fluidIngredientType = fluidHelper.getFluidIngredientType();
+
+			IIngredientRenderer<T> renderer;
+			if (type.equals(fluidIngredientType)){
+				@SuppressWarnings("unchecked")
+				IPlatformFluidHelperInternal<T> castFluidHelper = (IPlatformFluidHelperInternal<T>) fluidHelper;
+				renderer = castFluidHelper.createSlotRenderer(fluidHelper.bucketVolume());
+			} else {
+				renderer = ingredientManager.getIngredientRenderer(type);
+			}
 			return new RenderElement<>(renderer, ingredient);
 		}
 
