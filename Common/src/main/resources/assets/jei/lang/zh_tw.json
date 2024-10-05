@@ -171,10 +171,10 @@
   "gui.jei.category.compostable": "可堆肥",
   "gui.jei.category.compostable.chance": "機率：%s%%",
   "gui.jei.category.itemInformation": "資訊",
+  "gui.jei.category.tagInformation": "%s 標籤",
   "gui.jei.category.tagInformation.block": "方塊 標籤",
   "gui.jei.category.tagInformation.fluid": "流體 標籤",
   "gui.jei.category.tagInformation.item": "物品 標籤",
-  "gui.jei.category.tagInformation": "%s 標籤",
 
   "_comment": "Messages",
   "jei.message.configured": "安裝「Configured」模組以存取遊戲內設定",

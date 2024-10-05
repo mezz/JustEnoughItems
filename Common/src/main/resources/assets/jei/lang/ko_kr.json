@@ -125,7 +125,7 @@
   "config.jei.search.creativeTabSearchMode.comment": "크리에이티브 탭 이름을 검색하는 모드 (접두사: %)",
   "config.jei.search.colorSearchMode": "^Color",
   "config.jei.search.colorSearchMode.comment": "색깔을 검색하는 모드 (접두사: ^)",
-  "config.jei.search.resourceIdSearchMode": "&ResourceId",
+  "config.jei.search.resourceIdSearchMode": "&ResourceLocation",
   "config.jei.search.resourceIdSearchMode.comment": "리소스 ID를 검색하는 모드 (접두사: &)",
   "config.jei.search.searchAdvancedTooltips": "고급 툴팁 검색",
   "config.jei.advanced": "고급",
@@ -145,7 +145,7 @@
   "config.jei.advanced.maxRecipeGuiHeight": "최대 제작법 GUI 높이",
   "config.jei.advanced.maxRecipeGuiHeight.comment": "제작법 GUI의 최대 높이입니다.",
   "config.jei.advanced.giveMode": "제공 모드",
-  "config.jei.advanced.giveMode.comment": "JEI가 인벤토리(inventory)에 직접 아이템을 제공할지 또는 마우스(mouse_pickup)로 아이템을 픽업할지를 선택합니다.",
+  "config.jei.advanced.giveMode.comment": "JEI가 인벤토리에 직접 아이템을 제공할지 또는 마우스로 아이템을 픽업할지를 선택합니다.",
   "config.jei.advanced.addBookmarksToFront": "새 북마크 추가",
   "config.jei.advanced.addBookmarksToFront.comment": "true이면 북마크 목록 앞쪽에 새 북마크를 추가합니다. false이면 북마크 목록 끝에 새 북마크를 추가합니다.",
 

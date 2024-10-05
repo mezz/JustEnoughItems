@@ -132,7 +132,7 @@
   "config.jei.advanced.maxRecipeGuiHeight": "Максимальна висота інтерфейсу рецептів",
   "config.jei.advanced.maxRecipeGuiHeight.comment": "Максимальна висота інтерфейсу рецептів.",
   "config.jei.advanced.giveMode": "Режим видачі",
-  "config.jei.advanced.giveMode.comment": "Чи має JEI давати предмети безпосередньо в інвентар (inventory) чи підбирати їх за допомогою миші (mouse_pickup).",
+  "config.jei.advanced.giveMode.comment": "Чи має JEI давати предмети безпосередньо в інвентар чи підбирати їх за допомогою миші.",
   "config.jei.advanced.addBookmarksToFront": "Додавання нових закладок",
   "config.jei.advanced.addBookmarksToFront.comment": "Якщо значення true, нові закладки додаються на початок списку. Якщо false, нові закладки додаються в кінець списку",
 

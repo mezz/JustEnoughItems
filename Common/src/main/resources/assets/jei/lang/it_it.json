@@ -111,7 +111,7 @@
   "config.jei.search.creativeTabSearchMode.comment": "Modalità di ricerca per i nomi della schermata creativa (prefisso: %)",
   "config.jei.search.colorSearchMode": "^Color",
   "config.jei.search.colorSearchMode.comment": "Modalità di ricerca per colori (prefisso: ^)",
-  "config.jei.search.resourceIdSearchMode": "&ResourceId",
+  "config.jei.search.resourceIdSearchMode": "&ResourceLocation",
   "config.jei.search.resourceIdSearchMode.comment": "Modalità di ricerca per ID delle risorse (prefisso: &)",
   "config.jei.search.searchAdvancedTooltips": "Ricerca suggerimenti avanzati",
   "config.jei.advanced": "Avanzate",
@@ -131,7 +131,7 @@
   "config.jei.advanced.maxRecipeGuiHeight": "Altezza massima della GUI ricette",
   "config.jei.advanced.maxRecipeGuiHeight.comment": "L'altezza massima della GUI delle ricette.",
   "config.jei.advanced.giveMode": "Modalità dare",
-  "config.jei.advanced.giveMode.comment": "Scegli se la JEI dovrebbe dare gli ingredienti direttamente nell'inventario(inventario) o prenderli con il mouse (mouse_pickup).",
+  "config.jei.advanced.giveMode.comment": "Scegli se la JEI dovrebbe dare gli ingredienti direttamente nell'inventario o prenderli con il mouse.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "Modalità nascondi ingredienti nella JEI:",

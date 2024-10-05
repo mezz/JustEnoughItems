@@ -145,7 +145,7 @@
   "config.jei.advanced.maxRecipeGuiHeight": "Максимальная высота интерфейса рецепта",
   "config.jei.advanced.maxRecipeGuiHeight.comment": "Максимальная высота интерфейса рецепта.",
   "config.jei.advanced.giveMode": "Режим выдачи",
-  "config.jei.advanced.giveMode.comment": "Выбери, должен ли JEI давать ингредиенты прямо в инвентарь (inventory) либо собирать их мышкой (mouse_pickup).",
+  "config.jei.advanced.giveMode.comment": "Выбери, должен ли JEI давать ингредиенты прямо в инвентарь либо собирать их мышкой.",
   "config.jei.advanced.addBookmarksToFront": "Добавлять новые закладки в начало",
   "config.jei.advanced.addBookmarksToFront.comment": "Когда включено, добавляет новые закладки в начало списка закладок. Когда выключено, добавляет новые закладки в конец списка закладок",
 

@@ -127,7 +127,7 @@
   "config.jei.advanced.maxRecipeGuiHeight": "Altura máxima del GUI de recetas",
   "config.jei.advanced.maxRecipeGuiHeight.comment": "La altura máxima del GUI de la receta.",
   "config.jei.advanced.giveMode": "Modo de obtener",
-  "config.jei.advanced.giveMode.comment": "Elija si JEI debe dar elementos directamente al inventario (inventory) o recogerlos con el mouse (mouse_pickup).",
+  "config.jei.advanced.giveMode.comment": "Elija si JEI debe dar elementos directamente al inventario o recogerlos con el mouse.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Modo de ocultar ingredientes:",

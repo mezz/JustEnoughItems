@@ -112,7 +112,7 @@
   "config.jei.search.creativeTabSearchMode.comment": "Chế độ tìm kiếm tên tab quảng cáo (prefix: %).",
   "config.jei.search.colorSearchMode": "^Color",
   "config.jei.search.colorSearchMode.comment": "Chế độ tìm kiếm màu (prefix: ^).",
-  "config.jei.search.resourceIdSearchMode": "&ResourceId",
+  "config.jei.search.resourceIdSearchMode": "&ResourceLocation",
   "config.jei.search.resourceIdSearchMode.comment": "Chế độ tìm kiếm ID tài nguyên (prefix: &).",
   "config.jei.search.searchAdvancedTooltips": "Tìm kiếm chú giải công cụ nâng cao",
   "config.jei.advanced": "Nâng cao",
@@ -132,7 +132,7 @@
   "config.jei.advanced.maxRecipeGuiHeight": "Chiều cao GUI công thức tối đa",
   "config.jei.advanced.maxRecipeGuiHeight.comment": "Chiều cao tối đa của GUI công thức.",
   "config.jei.advanced.giveMode": "Chế độ tặng",
-  "config.jei.advanced.giveMode.comment": "Chọn xem JEI sẽ đưa nguyên liệu trực tiếp vào kho (inventory) hay nhặt chúng bằng chuột (mouse_pickup).",
+  "config.jei.advanced.giveMode.comment": "Chọn xem JEI sẽ đưa nguyên liệu trực tiếp vào kho hay nhặt chúng bằng chuột.",
   "config.jei.advanced.addBookmarksToFront": "Thêm Dấu trang Mới",
   "config.jei.advanced.addBookmarksToFront.comment": "Khi đúng, thêm dấu trang mới vào đầu danh sách dấu trang. Khi sai, thêm dấu trang mới vào cuối danh sách dấu trang",
 

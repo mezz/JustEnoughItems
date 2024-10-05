@@ -145,7 +145,7 @@
   "config.jei.advanced.maxRecipeGuiHeight": "Maximal bredd för receptgränssnittet",
   "config.jei.advanced.maxRecipeGuiHeight.comment": "Maximal höjd för receptgränssnittet.",
   "config.jei.advanced.giveMode": "Placeringsläge",
-  "config.jei.advanced.giveMode.comment": "Välj om JEI ska placera ingredienser direkt i förrådet (inventory) eller plocka upp dem med musen (mouse_pickup).",
+  "config.jei.advanced.giveMode.comment": "Välj om JEI ska placera ingredienser direkt i förrådet eller plocka upp dem med musen.",
   "config.jei.advanced.addBookmarksToFront": "Placera nya bokmärken längst fram",
   "config.jei.advanced.addBookmarksToFront.comment": "När detta aktiveras läggs nya bokmärken till längst fram i bokmärkeslistan. Annars läggs nya bokmärken till i slutet på listan",
 
@@ -171,10 +171,10 @@
   "gui.jei.category.compostable": "Kompostering",
   "gui.jei.category.compostable.chance": "Chans: %s %%",
   "gui.jei.category.itemInformation": "Information",
+  "gui.jei.category.tagInformation": "%s taggar",
   "gui.jei.category.tagInformation.block": "Block taggar",
   "gui.jei.category.tagInformation.fluid": "Vätska taggar",
   "gui.jei.category.tagInformation.item": "Föremål taggar",
-  "gui.jei.category.tagInformation": "%s taggar",
 
   "_comment": "Messages",
   "jei.message.configured": "Installera modden \"Configured\" för att få åtkomst till konfigurationen i spelet",
