@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import net.minecraftforge.fml.client.config.HoverChecker;
 import net.minecraft.client.Minecraft;
@@ -571,9 +572,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		}
 	}
 
-	@Nullable
-	public GuiScreen getParentScreen() {
-		return parentScreen;
+	@Override
+	public Optional<GuiScreen> getParentScreen() {
+		return Optional.ofNullable(parentScreen);
 	}
 
 	@Nullable
