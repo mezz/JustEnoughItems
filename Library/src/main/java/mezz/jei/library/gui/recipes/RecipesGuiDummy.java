@@ -5,6 +5,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IRecipesGui;
+import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,11 @@ public class RecipesGuiDummy implements IRecipesGui {
 
 	@Override
 	public <T> Optional<T> getIngredientUnderMouse(IIngredientType<T> ingredientType) {
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<Screen> getParentScreen() {
 		return Optional.empty();
 	}
 }
