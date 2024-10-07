@@ -11,6 +11,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -60,4 +61,14 @@ public interface IRecipesGui {
 	 * @return the ingredient that's currently under the mouse in this gui
 	 */
 	<T> Optional<T> getIngredientUnderMouse(IIngredientType<T> ingredientType);
+
+	/**
+	 * Get the screen that the {@link IRecipesGui} was opened from.
+	 * When the {@link IRecipesGui} is closed, it will re-open the parent screen.
+	 *
+	 * If the {@link IRecipesGui} is not open, this will return {@link Optional#empty()}.
+	 *
+	 * @since 11.50.0
+	 */
+	Optional<Screen> getParentScreen();
 }

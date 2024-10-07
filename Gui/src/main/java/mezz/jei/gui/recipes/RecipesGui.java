@@ -611,6 +611,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		return null;
 	}
 
+	@Override
+	public Optional<Screen> getParentScreen() {
+		return Optional.ofNullable(parentScreen);
+	}
+
 	@Nullable
 	public IGuiProperties getProperties() {
 		if (width <= 0 || height <= 0) {
