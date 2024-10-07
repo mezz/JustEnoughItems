@@ -50,6 +50,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocuses, IRecipeLogicStateListener {
 	private static final int borderPadding = 6;
@@ -472,6 +473,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 			return ingredient.getValue();
 		}
 		return null;
+	}
+
+	@Override
+	public Optional<Screen> getParentScreen() {
+		return Optional.ofNullable(parentScreen);
 	}
 
 	public void back() {

@@ -2,7 +2,9 @@ package mezz.jei.api.runtime;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.api.recipe.IFocus;
@@ -33,4 +35,16 @@ public interface IRecipesGui {
 	 */
 	@Nullable
 	Object getIngredientUnderMouse();
+
+	/**
+	 * Get the screen that the {@link IRecipesGui} was opened from.
+	 * When the {@link IRecipesGui} is closed, it will re-open the parent screen.
+	 *
+	 * If the {@link IRecipesGui} is not open, this will return {@link Optional#empty()}.
+	 *
+	 * @since 7.19.0
+	 */
+	default Optional<Screen> getParentScreen() {
+		return Optional.empty();
+	}
 }
