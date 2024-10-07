@@ -33,6 +33,10 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
 	private final Supplier<Boolean> dragToRearrangeBookmarksEnabled;
 
+	// history
+	private final Supplier<Boolean> historyEnabled;
+	private final Supplier<Integer> maxHistoryRows;
+
 	// advanced
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> catchRenderErrorsEnabled;
@@ -110,6 +114,19 @@ public final class ClientConfig implements IClientConfig {
 			"DragToRearrangeBookmarksEnabled",
 			true,
 			"Drag bookmarks to rearrange them in the list."
+		);
+
+		historyEnabled = bookmarks.addBoolean(
+			"HistoryEnabled",
+			false,
+			"Enable the history overlay."
+		);
+		maxHistoryRows = bookmarks.addInteger(
+			"MaxHistoryRows",
+			1,
+			0,
+			5,
+			"Max number of rows in the history overlay."
 		);
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
@@ -254,6 +271,16 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isDragToRearrangeBookmarksEnabled() {
 		return dragToRearrangeBookmarksEnabled.get();
+	}
+
+	@Override
+	public boolean isHistoryEnabled() {
+		return historyEnabled.get();
+	}
+
+	@Override
+	public int getMaxHistoryRows() {
+		return maxHistoryRows.get();
 	}
 
 	@Override

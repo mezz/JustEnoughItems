@@ -5,6 +5,8 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutablePoint2i;
@@ -27,6 +29,7 @@ import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListSlot;
 import mezz.jei.gui.overlay.ScreenPropertiesCache;
+import mezz.jei.gui.overlay.bookmarks.history.HistoryOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -51,23 +54,29 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	// display elements
 	private final IngredientGridWithNavigation contents;
+	private final HistoryOverlay historyOverlay;
 	private final GuiIconToggleButton bookmarkButton;
 
 	// data
 	private final BookmarkList bookmarkList;
 	private final IClientToggleState toggleState;
+	private final IClientConfig clientConfig;
 
 	public BookmarkOverlay(
 		BookmarkList bookmarkList,
 		IngredientGridWithNavigation contents,
+		HistoryOverlay historyOverlay,
 		IClientToggleState toggleState,
+		IClientConfig clientConfig,
 		IScreenHelper screenHelper,
 		IInternalKeyMappings keyBindings
 	) {
 		this.bookmarkList = bookmarkList;
 		this.toggleState = toggleState;
+		this.clientConfig = clientConfig;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, toggleState, keyBindings);
 		this.contents = contents;
+		this.historyOverlay = historyOverlay;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		this.bookmarkDragManager = new BookmarkDragManager(this);
 		bookmarkList.addSourceListChangedListener(() -> {
@@ -76,6 +85,12 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			this.getScreenPropertiesUpdater()
 				.updateScreen(minecraft.screen)
 				.update();
+		});
+		historyOverlay.getHistoryList().addSourceListChangedListener(() -> {
+				Minecraft minecraft = Minecraft.getInstance();
+				this.getScreenPropertiesUpdater()
+					.updateScreen(minecraft.screen)
+					.update();
 		});
 	}
 
@@ -103,8 +118,17 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		ImmutableRect2i displayArea = getDisplayArea(guiProperties);
 		Set<ImmutableRect2i> guiExclusionAreas = this.screenPropertiesCache.getGuiExclusionAreas();
 		ImmutablePoint2i mouseExclusionArea = this.screenPropertiesCache.getMouseExclusionArea();
-
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
+		if (clientConfig.isHistoryEnabled()) {
+			int historyRows = clientConfig.getMaxHistoryRows();
+			availableContentsArea  = availableContentsArea.cropBottom(historyRows * HistoryOverlay.SLOT_HEIGHT);
+			ImmutableRect2i historyArea = displayArea
+				.insetBy(BORDER_MARGIN)
+				.moveUp(BUTTON_SIZE + INNER_PADDING)
+				.keepBottom(historyRows * HistoryOverlay.SLOT_HEIGHT);
+			this.historyOverlay.updateBounds(historyArea, guiExclusionAreas, mouseExclusionArea);
+			this.historyOverlay.updateLayout();
+		}
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, mouseExclusionArea);
 		this.contents.updateLayout(false);
 
@@ -138,6 +162,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		if (isListDisplayed()) {
 			this.bookmarkDragManager.updateDrag(mouseX, mouseY);
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			this.historyOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			this.bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
@@ -148,6 +173,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		if (isListDisplayed()) {
 			if (!this.bookmarkDragManager.drawDraggedItem(guiGraphics, mouseX, mouseY)) {
 				this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+				this.historyOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 			}
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
@@ -158,7 +184,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
-			return this.contents.getIngredientUnderMouse(mouseX, mouseY);
+			return Stream.concat(this.contents.getIngredientUnderMouse(mouseX, mouseY),this.historyOverlay.getIngredientUnderMouse(mouseX, mouseY));
 		}
 		return Stream.empty();
 	}
@@ -166,7 +192,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
-			return this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY);
+			return Stream.concat(this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY),this.historyOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
 		}
 		return Stream.empty();
 	}
