@@ -14,6 +14,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.gui.screens.Screen;
 
 /**
  * JEI's gui for displaying recipes. Use this interface to open recipes.
@@ -80,4 +81,14 @@ public interface IRecipesGui {
 	 */
 	@Deprecated(forRemoval = true, since = "9.5.0")
 	void showCategories(List<ResourceLocation> recipeCategoryUids);
+
+	/**
+	 * Get the screen that the {@link IRecipesGui} was opened from.
+	 * When the {@link IRecipesGui} is closed, it will re-open the parent screen.
+	 *
+	 * If the {@link IRecipesGui} is not open, this will return {@link Optional#empty()}.
+	 *
+	 * @since 10.66.0
+	 */
+	Optional<Screen> getParentScreen();
 }

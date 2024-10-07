@@ -5,10 +5,12 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IRecipesGui;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public class RecipesGuiDummy implements IRecipesGui {
 	public static final IRecipesGui INSTANCE = new RecipesGuiDummy();
@@ -48,5 +50,10 @@ public class RecipesGuiDummy implements IRecipesGui {
 	@Deprecated
 	public void showCategories(List<ResourceLocation> recipeCategoryUids) {
 
+	}
+
+	@Override
+	public Optional<Screen> getParentScreen() {
+		return Optional.empty();
 	}
 }
