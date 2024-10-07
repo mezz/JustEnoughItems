@@ -182,7 +182,6 @@ public class JeiGuiStarter {
 		RecipesGui recipesGui = new RecipesGui(
 			recipeManager,
 			recipeTransferManager,
-			ingredientManager,
 			keyMappings,
 			focusFactory,
 			bookmarkList,

@@ -16,7 +16,6 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
@@ -67,7 +66,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final IInternalKeyMappings keyBindings;
 	private final BookmarkList bookmarks;
 	private final IFocusFactory focusFactory;
-	private final IIngredientManager ingredientManager;
 
 	private int headerHeight;
 
@@ -111,7 +109,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public RecipesGui(
 		IRecipeManager recipeManager,
 		IRecipeTransferManager recipeTransferManager,
-		IIngredientManager ingredientManager,
 		IInternalKeyMappings keyBindings,
 		IFocusFactory focusFactory,
 		BookmarkList bookmarks,
@@ -119,7 +116,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	) {
 		super(Component.literal("Recipes"));
 		this.bookmarks = bookmarks;
-		this.ingredientManager = ingredientManager;
 		this.keyBindings = keyBindings;
 		this.logic = new RecipeGuiLogic(
 			recipeManager,
@@ -565,6 +561,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			return containerScreen.getMenu();
 		}
 		return null;
+	}
+
+	@Override
+	public Optional<Screen> getParentScreen() {
+		return Optional.ofNullable(parentScreen);
 	}
 
 	@Nullable
