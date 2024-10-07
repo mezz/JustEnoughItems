@@ -76,7 +76,7 @@ public final class ClientConfig implements IClientConfig {
 		giveMode = cheatMode.addEnum(
 			"GiveMode",
 			GiveMode.defaultGiveMode,
-			"Choose if JEI should give ingredients directly to the inventory (INVENTORY) or pick them up with the mouse (MOUSE_PICKUP)."
+			"Choose if JEI should give ingredients directly to the inventory or pick them up with the mouse."
 		);
 		cheatToHotbarUsingHotkeysEnabled = cheatMode.addBoolean(
 			"CheatToHotbarUsingHotkeysEnabled",

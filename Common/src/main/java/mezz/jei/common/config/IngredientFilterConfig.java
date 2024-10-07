@@ -44,7 +44,7 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 		resourceLocationSearchMode = search.addEnum(
 			"ResourceLocationSearchMode",
 			SearchMode.DISABLED,
-			"Search mode for resource IDs (prefix: &)."
+			"Search mode for resource locations (prefix: &)."
 		);
 		creativeTabSearchMode = search.addEnum(
 			"CreativeTabSearchMode",

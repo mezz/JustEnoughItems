@@ -110,7 +110,7 @@
   "config.jei.search.creativeTabSearchMode.comment": "Режим на търсене на имена на креативни раздели (prefix: %).",
   "config.jei.search.colorSearchMode": "^Color",
   "config.jei.search.colorSearchMode.comment": "Режим на търсене на цветове (prefix: ^).",
-  "config.jei.search.resourceIdSearchMode": "&ResourceId",
+  "config.jei.search.resourceIdSearchMode": "&ResourceLocation",
   "config.jei.search.resourceIdSearchMode.comment": "Режим на търсене на идентификационни номера на ресурсите (prefix: &).",
   "config.jei.search.searchAdvancedTooltips": "Търсете разширени инструменти",
   "config.jei.advanced": "Напреднал",
@@ -130,7 +130,7 @@
   "config.jei.advanced.maxRecipeGuiHeight": "Максимална рецепта GUI височина",
   "config.jei.advanced.maxRecipeGuiHeight.comment": "Максималната височина на GUI за рецепта.",
   "config.jei.advanced.giveMode": "Дайте режим",
-  "config.jei.advanced.giveMode.comment": "Изберете дали JEI трябва да даде на съставките директно на инвентара (inventory) или да ги вземете с мишката (mouse_pickup).",
+  "config.jei.advanced.giveMode.comment": "Изберете дали JEI трябва да даде на съставките директно на инвентара или да ги вземете с мишката.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "Jei скрий режим на съставки:",

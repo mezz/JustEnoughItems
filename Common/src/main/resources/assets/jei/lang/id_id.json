@@ -78,7 +78,7 @@
   "config.jei.search.creativeTabSearchMode.comment": "Pencarian Nama Tab Kreatif (awalan: %)",
   "config.jei.search.colorSearchMode": "^Color",
   "config.jei.search.colorSearchMode.comment": "Pencarian Warna (awalan: ^)",
-  "config.jei.search.resourceIdSearchMode": "&ResourceId",
+  "config.jei.search.resourceIdSearchMode": "&ResourceLocation",
   "config.jei.search.resourceIdSearchMode.comment": "Pencarian ID Sumber Daya (awalan: &)",
   "config.jei.search.searchAdvancedTooltips": "Cari tooltips lanjutan",
   "config.jei.advanced": "Lanjutan",
@@ -98,7 +98,7 @@
   "config.jei.advanced.maxRecipeGuiHeight": "Tinggi Maksimum GUI Resep",
   "config.jei.advanced.maxRecipeGuiHeight.comment": "Ketinggian maksimum GUI resep.",
   "config.jei.advanced.giveMode": "Mode Pemberian",
-  "config.jei.advanced.giveMode.comment": "Pilih apakah JEI harus memberikan benda langsung ke persediaan (inventory) atau mengambilnya dengan mouse (mouse_pickup).",
+  "config.jei.advanced.giveMode.comment": "Pilih apakah JEI harus memberikan benda langsung ke persediaan atau mengambilnya dengan mouse.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "Mode Sembunyikan Benda JEI:",

@@ -96,7 +96,7 @@
   "config.jei.advanced.maxRecipeGuiHeight": "Azami Tarif Ekranı Yüksekliği",
   "config.jei.advanced.maxRecipeGuiHeight.comment": "Tarif ekranının azami yüksekliği",
   "config.jei.advanced.giveMode": "Alma Modu",
-  "config.jei.advanced.giveMode.comment": "JEI'nin envantere doğrudan eşyaları vermesini mi yoksa fareyle (mouse_pickup) almasını mı istediğinizi seçin.",
+  "config.jei.advanced.giveMode.comment": "JEI'nin envantere doğrudan eşyaları vermesini mi yoksa fareyle almasını mı istediğinizi seçin.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Eşya Listesi Düzenleme Modu:",

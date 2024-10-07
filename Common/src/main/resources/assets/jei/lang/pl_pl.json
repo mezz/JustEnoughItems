@@ -132,7 +132,7 @@
   "config.jei.advanced.maxRecipeGuiHeight": "Maksymalna wysokość interfejsu",
   "config.jei.advanced.maxRecipeGuiHeight.comment": "Maksymalna wysokość interfejsu z recepturami.",
   "config.jei.advanced.giveMode": "Tryb dawania",
-  "config.jei.advanced.giveMode.comment": "Wybierz, czy JEI ma dawać składniki bezpośrednio do ekwipunku (inventory), czy wolisz samemu zabierać i przenosić je za pomocą myszy (mouse_pickup).",
+  "config.jei.advanced.giveMode.comment": "Wybierz, czy JEI ma dawać składniki bezpośrednio do ekwipunku, czy wolisz samemu zabierać i przenosić je za pomocą myszy.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "Tryb ukrywania składników JEI:",
