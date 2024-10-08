@@ -96,8 +96,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 
 	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
-		// invisible slots are only used by IngredientSupplierBuilder, and are ignored here
-		return IngredientAcceptorVoid.INSTANCE;
+		return new RecipeSlotBuilder(ingredientManager, nextSlotIndex++, role);
 	}
 
 	@Override
