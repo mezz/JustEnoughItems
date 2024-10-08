@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
-	private final List<RecipeSlotBuilder> slots = new ArrayList<>();
+	private final List<RecipeSlotBuilder> visibleSlots = new ArrayList<>();
 	private final List<List<RecipeSlotBuilder>> focusLinkedSlots = new ArrayList<>();
 
 	private final IIngredientManager ingredientManager;
@@ -66,7 +66,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			addOutputSlotTooltipCallback(slot);
 		}
 
-		this.slots.add(slot);
+		this.visibleSlots.add(slot);
 		return slot;
 	}
 
@@ -81,7 +81,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			addOutputSlotTooltipCallback(slot);
 		}
 
-		this.slots.add(slot);
+		this.visibleSlots.add(slot);
 		return slot;
 	}
 
@@ -173,6 +173,9 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 				focusMatches.addAll(slot.getMatches(focuses));
 			}
 			for (RecipeSlotBuilder slotBuilder : linkedSlots) {
+				if (!visibleSlots.contains(slotBuilder)) {
+					continue;
+				}
 				mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
 				Pair<Integer, IRecipeSlotDrawable> slotDrawable = slotBuilder.build(focusMatches, cycleTicker);
 				if (assignedWidget == null) {
@@ -185,7 +188,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			focusLinkedSlots.addAll(linkedSlots);
 		}
 
-		for (RecipeSlotBuilder slotBuilder : slots) {
+		for (RecipeSlotBuilder slotBuilder : visibleSlots) {
 			if (!focusLinkedSlots.contains(slotBuilder)) {
 				mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
 				Pair<Integer, IRecipeSlotDrawable> slotDrawable = slotBuilder.build(focuses, cycleTicker);
