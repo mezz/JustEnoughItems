@@ -37,7 +37,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
-	private final List<RecipeSlotBuilder> slots = new ArrayList<>();
+	private final List<RecipeSlotBuilder> visibleSlots = new ArrayList<>();
 	private final List<List<RecipeSlotBuilder>> focusLinkedSlots = new ArrayList<>();
 
 	private final IIngredientManager ingredientManager;
@@ -65,7 +65,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			addOutputSlotTooltipCallback(slot);
 		}
 
-		this.slots.add(slot);
+		this.visibleSlots.add(slot);
 		return slot;
 	}
 
@@ -80,8 +80,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 
 	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
-		// invisible slots are only used by IngredientSupplierBuilder, and are ignored here
-		return IngredientAcceptorVoid.INSTANCE;
+		return new RecipeSlotBuilder(ingredientManager, nextSlotIndex++, role, 0, 0);
 	}
 
 	@Override
@@ -164,13 +163,16 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 				focusMatches.addAll(slot.getMatches(focuses));
 			}
 			for (RecipeSlotBuilder slotBuilder : linkedSlots) {
+				if (!visibleSlots.contains(slotBuilder)) {
+					continue;
+				}
 				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focusMatches, cycleTicker);
 				recipeCategorySlots.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
 			}
 			focusLinkedSlots.addAll(linkedSlots);
 		}
 
-		for (RecipeSlotBuilder slotBuilder : slots) {
+		for (RecipeSlotBuilder slotBuilder : visibleSlots) {
 			if (!focusLinkedSlots.contains(slotBuilder)) {
 				IRecipeSlotDrawable slotDrawable = slotBuilder.build(focuses, cycleTicker);
 				recipeCategorySlots.add(new Pair<>(slotBuilder.getIndex(), slotDrawable));
