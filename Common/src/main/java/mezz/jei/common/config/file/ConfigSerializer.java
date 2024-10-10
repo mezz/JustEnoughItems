@@ -2,6 +2,7 @@ package mezz.jei.common.config.file;
 
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.common.util.PathUtil;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
@@ -144,15 +145,18 @@ public final class ConfigSerializer {
 		String name = configValue.getName();
 		IJeiConfigValueSerializer<T> serializer = configValue.getSerializer();
 
-		String description = "Description: %s".formatted(configValue.getDescription());
+		String localizedName = new TranslatableComponent("jei.config.name", configValue.getLocalizedName().getString()).getString();
+		addCommentedStrings(serialized, localizedName);
+
+		String description = new TranslatableComponent("jei.config.description", configValue.getLocalizedDescription().getString()).getString();
 		addCommentedStrings(serialized, description);
 
-		String validValues = "Valid Values: %s".formatted(serializer.getValidValuesDescription());
+		String validValues = new TranslatableComponent("jei.config.valueValues", serializer.getValidValuesDescription()).getString();
 		addCommentedStrings(serialized, validValues);
 
 		T defaultValue = configValue.getDefaultValue();
 		String defaultValueSerialized = serializer.serialize(defaultValue);
-		String defaultValueString = "Default Value: %s".formatted(defaultValueSerialized);
+		String defaultValueString = new TranslatableComponent("jei.config.defaultValue", defaultValueSerialized).getString();
 		addCommentedStrings(serialized, defaultValueString);
 
 		T value = configValue.getValue();

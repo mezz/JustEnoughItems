@@ -22,31 +22,11 @@ public final class DebugConfig {
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
 		IConfigCategoryBuilder advanced = schema.addCategory("debug");
-		debugIngredientsEnabled = advanced.addBoolean(
-			"debugIngredientsEnabled",
-			false,
-			"Log added and updated ingredients in JEI's ingredient filter."
-		);
-		debugGuisEnabled = advanced.addBoolean(
-			"DebugGuis",
-			false,
-			"Debug GUIs enabled."
-		);
-		debugInputsEnabled = advanced.addBoolean(
-			"DebugInputs",
-			false,
-			"Debug inputs enabled."
-		);
-		debugInfoTooltipsEnabled = advanced.addBoolean(
-			"debugInfoTooltipsEnabled",
-			false,
-			"Add debug information to ingredient tooltips when advanced tooltips are enabled."
-		);
-		logSuffixTreeStats = advanced.addBoolean(
-			"logSuffixTreeStats",
-			false,
-			"Log information about the suffix trees used for searching, to help debug JEI."
-		);
+		debugIngredientsEnabled = advanced.addBoolean("debugIngredientsEnabled", false);
+		debugGuisEnabled = advanced.addBoolean("debugGuis", false);
+		debugInputsEnabled = advanced.addBoolean("debugInputs", false);
+		debugInfoTooltipsEnabled = advanced.addBoolean("debugInfoTooltipsEnabled", false);
+		logSuffixTreeStats = advanced.addBoolean("logSuffixTreeStats", false);
 	}
 
 	public static boolean isDebugIngredientsEnabled() {
