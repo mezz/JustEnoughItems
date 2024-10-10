@@ -27,7 +27,7 @@ public interface IClientConfig {
 
 	GiveMode getGiveMode();
 
-	boolean isShowHiddenItemsEnabled();
+	boolean getShowHiddenIngredients();
 
 	boolean isDragToRearrangeBookmarksEnabled();
 
@@ -67,7 +67,7 @@ public interface IClientConfig {
 
 	boolean isTagContentTooltipEnabled();
 
-	boolean isHideSingleIngredientTagsEnabled();
+	boolean getHideSingleTagContentTooltipEnabled();
 
 	boolean isLookupFluidContentsEnabled();
 

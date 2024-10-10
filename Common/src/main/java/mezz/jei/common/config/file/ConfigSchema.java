@@ -2,6 +2,7 @@ package mezz.jei.common.config.file;
 
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.util.DeduplicatingRunner;
+import net.minecraft.locale.Language;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
@@ -61,6 +62,10 @@ public class ConfigSchema implements IConfigSchema {
 	}
 
 	private void save() {
+		if (!Language.getInstance().has("jei.config")) {
+			LOGGER.debug("Localization has not loaded yet, waiting to save the config file until JEI starts.");
+			return;
+		}
 		try {
 			ConfigSerializer.save(path, categories);
 		} catch (IOException e) {

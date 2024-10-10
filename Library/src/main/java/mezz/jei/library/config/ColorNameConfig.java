@@ -55,10 +55,9 @@ public final class ColorNameConfig {
 	public ColorNameConfig(IConfigSchemaBuilder schema) {
 		IConfigCategoryBuilder colors = schema.addCategory("colors");
 		this.searchColors = colors.addList(
-			"SearchColors",
+			"searchColors",
 			defaultColors,
-			new ListSerializer<>(ColorNameSerializer.INSTANCE),
-			"Color values to search for."
+			new ListSerializer<>(ColorNameSerializer.INSTANCE)
 		);
 	}
 

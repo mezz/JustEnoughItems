@@ -31,7 +31,7 @@ public final class ItemStackListFactory {
 	public static List<ItemStack> create(StackHelper stackHelper, ItemStackHelper itemStackHelper) {
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		final boolean showHidden = clientConfig.isShowHiddenItemsEnabled();
+		final boolean showHidden = clientConfig.getShowHiddenIngredients();
 		final boolean debug = DebugConfig.isDebugIngredientsEnabled();
 
 		final List<ItemStack> itemList = new ArrayList<>();
