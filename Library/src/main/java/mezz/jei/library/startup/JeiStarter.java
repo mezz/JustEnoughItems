@@ -71,15 +71,15 @@ public final class JeiStarter {
 
 		this.configManager = new ConfigManager();
 
-		IConfigSchemaBuilder debugFileBuilder = new ConfigSchemaBuilder(configDir.resolve("jei-debug.ini"));
+		IConfigSchemaBuilder debugFileBuilder = new ConfigSchemaBuilder(configDir.resolve("jei-debug.ini"), "jei.config.debug");
 		DebugConfig.create(debugFileBuilder);
 		debugFileBuilder.build().register(fileWatcher, configManager);
 
-		IConfigSchemaBuilder modFileBuilder = new ConfigSchemaBuilder(configDir.resolve("jei-mod-id-format.ini"));
+		IConfigSchemaBuilder modFileBuilder = new ConfigSchemaBuilder(configDir.resolve("jei-mod-id-format.ini"), "jei.config.modIdFormat");
 		this.modIdFormatConfig = new ModIdFormatConfig(modFileBuilder);
 		modFileBuilder.build().register(fileWatcher, configManager);
 
-		IConfigSchemaBuilder colorFileBuilder = new ConfigSchemaBuilder(configDir.resolve("jei-colors.ini"));
+		IConfigSchemaBuilder colorFileBuilder = new ConfigSchemaBuilder(configDir.resolve("jei-colors.ini"), "jei.config.colors");
 		this.colorNameConfig = new ColorNameConfig(colorFileBuilder);
 		colorFileBuilder.build().register(fileWatcher, configManager);
 
@@ -105,6 +105,7 @@ public final class JeiStarter {
 
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
+		this.configManager.onJeiStarted();
 
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
 		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();

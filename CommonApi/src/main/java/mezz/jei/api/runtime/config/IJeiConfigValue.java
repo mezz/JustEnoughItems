@@ -1,5 +1,7 @@
 package mezz.jei.api.runtime.config;
 
+import net.minecraft.network.chat.Component;
+
 /**
  * Represents config value used by JEI.
  * Config values can be read or updated by mods that display in-game config files to players.
@@ -22,8 +24,24 @@ public interface IJeiConfigValue<T> {
 	 * Get the description of this config value.
 	 *
 	 * @since 12.1.0
+	 * @deprecated use {@link #getLocalizedDescription()}
 	 */
+	@Deprecated(since = "19.21.0", forRemoval = true)
 	String getDescription();
+
+	/**
+	 * Get the translated name component of this config value.
+	 *
+	 * @since 19.21.0
+	 */
+	Component getLocalizedName();
+
+	/**
+	 * Get the translated description component of this config value.
+	 *
+	 * @since 19.21.0
+	 */
+	Component getLocalizedDescription();
 
 	/**
 	 * Get the current value.

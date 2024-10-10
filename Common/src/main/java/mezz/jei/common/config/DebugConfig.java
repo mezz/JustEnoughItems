@@ -23,36 +23,12 @@ public final class DebugConfig {
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
 		IConfigCategoryBuilder advanced = schema.addCategory("debug");
-		debugModeEnabled = advanced.addBoolean(
-			"DebugMode",
-			false,
-			"Debug mode enabled."
-		);
-		debugGuisEnabled = advanced.addBoolean(
-			"DebugGuis",
-			false,
-			"Debug GUIs enabled."
-		);
-		debugInputsEnabled = advanced.addBoolean(
-			"DebugInputs",
-			false,
-			"Debug inputs enabled."
-		);
-		debugInfoTooltipsEnabled = advanced.addBoolean(
-			"debugInfoTooltipsEnabled",
-			false,
-			"Add debug information to ingredient tooltips when advanced tooltips are enabled."
-		);
-		crashingTestIngredientsEnabled = advanced.addBoolean(
-			"CrashingTestItemsEnabled",
-			false,
-			"Adds ingredients to JEI that intentionally crash, to help debug JEI."
-		);
-		logSuffixTreeStats = advanced.addBoolean(
-			"logSuffixTreeStats",
-			false,
-			"Log information about the suffix trees used for searching, to help debug JEI."
-		);
+		debugModeEnabled = advanced.addBoolean("debugMode", false);
+		debugGuisEnabled = advanced.addBoolean("debugGuis", false);
+		debugInputsEnabled = advanced.addBoolean("debugInputs", false);
+		debugInfoTooltipsEnabled = advanced.addBoolean("debugInfoTooltipsEnabled", false);
+		crashingTestIngredientsEnabled = advanced.addBoolean("crashingTestItemsEnabled", false);
+		logSuffixTreeStats = advanced.addBoolean("logSuffixTreeStats", false);
 	}
 
 	public static boolean isDebugModeEnabled() {

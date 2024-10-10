@@ -2,6 +2,7 @@ package mezz.jei.common.config.file;
 
 import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
+import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -13,16 +14,21 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final String name;
-	private final String description;
+	private final Component localizedName;
+	private final Component description;
 	private final T defaultValue;
 	private final IJeiConfigValueSerializer<T> serializer;
 	private volatile T currentValue;
 	@Nullable
 	private IConfigSchema schema;
 
-	public ConfigValue(String name, T defaultValue, IJeiConfigValueSerializer<T> serializer, String description) {
+	public ConfigValue(String localizationPath, String name, T defaultValue, IJeiConfigValueSerializer<T> serializer) {
 		this.name = name;
-		this.description = description;
+
+		String nameKey = localizationPath + "." + name;
+		String descriptionKey = nameKey + ".description";
+		this.localizedName = Component.translatable(nameKey);
+		this.description = Component.translatable(descriptionKey);
 		this.defaultValue = defaultValue;
 		this.currentValue = defaultValue;
 		this.serializer = serializer;
@@ -37,9 +43,20 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 		return name;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public String getDescription() {
+		return description.getString();
+	}
+
+	@Override
+	public Component getLocalizedDescription() {
 		return description;
+	}
+
+	@Override
+	public Component getLocalizedName() {
+		return localizedName;
 	}
 
 	@Override

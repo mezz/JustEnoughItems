@@ -25,7 +25,7 @@ public final class ClientConfig implements IClientConfig {
 	// cheat_mode
 	private final Supplier<GiveMode> giveMode;
 	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
-	private final Supplier<Boolean> showHiddenItemsEnabled;
+	private final Supplier<Boolean> showHiddenIngredients;
 
 	// bookmarks
 	private final Supplier<Boolean> addBookmarksToFrontEnabled;
@@ -51,7 +51,7 @@ public final class ClientConfig implements IClientConfig {
 
 	// tags
 	private final Supplier<Boolean> tagContentTooltipEnabled;
-	private final Supplier<Boolean> hideSingleIngredientTagsEnabled;
+	private final Supplier<Boolean> hideSingleTagContentTooltipEnabled;
 
 	public ClientConfig(IConfigSchemaBuilder schema) {
 		instance = this;
@@ -59,131 +59,69 @@ public final class ClientConfig implements IClientConfig {
 		boolean isDev = Services.PLATFORM.getModHelper().isInDev();
 
 		IConfigCategoryBuilder appearance = schema.addCategory("appearance");
-		centerSearchBarEnabled = appearance.addBoolean(
-			"CenterSearch",
-			defaultCenterSearchBar,
-			"Move the JEI search bar to the bottom center of the screen."
-		);
+		centerSearchBarEnabled = appearance.addBoolean("centerSearch",			defaultCenterSearchBar		);
 		maxRecipeGuiHeight = appearance.addInteger(
-			"RecipeGuiHeight",
+			"recipeGuiHeight",
 			defaultRecipeGuiHeight,
 			minRecipeGuiHeight,
-			Integer.MAX_VALUE,
-			"Max recipe GUI height."
+			Integer.MAX_VALUE
 		);
 
-		IConfigCategoryBuilder cheatMode = schema.addCategory("cheat_mode");
-		giveMode = cheatMode.addEnum(
-			"GiveMode",
-			GiveMode.defaultGiveMode,
-			"Choose if JEI should give ingredients directly to the inventory or pick them up with the mouse."
-		);
-		cheatToHotbarUsingHotkeysEnabled = cheatMode.addBoolean(
-			"CheatToHotbarUsingHotkeysEnabled",
-			false,
-			"Enable cheating items into the hotbar by using Shift + numeric keys."
-		);
-		showHiddenItemsEnabled = cheatMode.addBoolean(
-			"ShowHiddenItems",
-			false,
-			"Enable showing items that are not in the creative menu."
-		);
+		IConfigCategoryBuilder cheating = schema.addCategory("cheating");
+		giveMode = cheating.addEnum("giveMode", GiveMode.defaultGiveMode);
+		cheatToHotbarUsingHotkeysEnabled = cheating.addBoolean("cheatToHotbarUsingHotkeysEnabled", false);
+		showHiddenIngredients = cheating.addBoolean("showHiddenIngredients", false);
+		showTagRecipesEnabled = cheating.addBoolean("showTagRecipesEnabled", isDev);
 
 		IConfigCategoryBuilder bookmarks = schema.addCategory("bookmarks");
-		addBookmarksToFrontEnabled = bookmarks.addBoolean(
-			"AddBookmarksToFrontEnabled",
-			false,
-			"Add new bookmarks to the front of the bookmark list instead of the end."
-		);
-		bookmarkTooltipFeatures = bookmarks.addList(
-			"BookmarkTooltipFeatures",
+		addBookmarksToFrontEnabled = bookmarks.addBoolean("addBookmarksToFrontEnabled", false);
+		dragToRearrangeBookmarksEnabled = bookmarks.addBoolean("dragToRearrangeBookmarksEnabled", true);
+
+		IConfigCategoryBuilder tooltips = schema.addCategory("tooltips");
+		bookmarkTooltipFeatures = tooltips.addList(
+			"bookmarkTooltipFeatures",
 			BookmarkTooltipFeature.DEFAULT_BOOKMARK_TOOLTIP_FEATURES,
-			new ListSerializer<>(new EnumSerializer<>(BookmarkTooltipFeature.class)),
-			"Extra features for bookmark tooltips."
+			new ListSerializer<>(new EnumSerializer<>(BookmarkTooltipFeature.class))
 		);
-		holdShiftToShowBookmarkTooltipFeaturesEnabled = bookmarks.addBoolean(
-			"HoldShiftToShowBookmarkTooltipFeatures",
-			true,
-			"Hold Shift to show bookmark tooltip features."
-		);
-		dragToRearrangeBookmarksEnabled = bookmarks.addBoolean(
-			"DragToRearrangeBookmarksEnabled",
-			true,
-			"Drag bookmarks to rearrange them in the list."
-		);
+		holdShiftToShowBookmarkTooltipFeaturesEnabled = tooltips.addBoolean("holdShiftToShowBookmarkTooltipFeatures", true);
+		showCreativeTabNamesEnabled = tooltips.addBoolean("showCreativeTabNamesEnabled", false);
+		tagContentTooltipEnabled = tooltips.addBoolean("tagContentTooltipEnabled", true);
+		hideSingleTagContentTooltipEnabled = tooltips.addBoolean("hideSingleTagContentTooltipEnabled", true);
+
+		IConfigCategoryBuilder performance = schema.addCategory("performance");
+		lowMemorySlowSearchEnabled = performance.addBoolean("lowMemorySlowSearchEnabled", false);
+
+		IConfigCategoryBuilder lookups = schema.addCategory("lookups");
+		lookupFluidContentsEnabled = lookups.addBoolean("lookupFluidContentsEnabled", false);
+		lookupBlockTagsEnabled = lookups.addBoolean("lookupBlockTagsEnabled", true);
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
-		lowMemorySlowSearchEnabled = advanced.addBoolean(
-			"LowMemorySlowSearchEnabled",
-			false,
-			"Set low-memory mode (makes search very slow but uses less RAM)."
-		);
-		catchRenderErrorsEnabled = advanced.addBoolean(
-			"CatchRenderErrorsEnabled",
-			!isDev,
-			"Catch render errors from ingredients and attempt to recover from them instead of crashing."
-		);
-		lookupFluidContentsEnabled = advanced.addBoolean(
-			"lookupFluidContentsEnabled",
-			false,
-			"When looking up recipes with items that contain fluids, also look up recipes for the fluids."
-		);
-		lookupBlockTagsEnabled = advanced.addBoolean(
-			"lookupBlockTagsEnabled",
-			true,
-			"When searching for item tags, also include tags for the default blocks contained in the items."
-		);
-		showTagRecipesEnabled = advanced.addBoolean(
-			"showTagRecipesEnabled",
-			isDev,
-			"Show recipes for ingredient tags like item tags and block tags."
-		);
-		showCreativeTabNamesEnabled = advanced.addBoolean(
-			"showCreativeTabNamesEnabled",
-			false,
-			"Show creative tab names in ingredient tooltips."
-		);
+		catchRenderErrorsEnabled = advanced.addBoolean("catchRenderErrorsEnabled", !isDev);
 
 		IConfigCategoryBuilder input = schema.addCategory("input");
 		dragDelayMs = input.addInteger(
 			"dragDelayInMilliseconds",
 			150,
 			0,
-			1000,
-			"Number of milliseconds before a long mouse click is considered a drag operation."
+			1000
 		);
 		smoothScrollRate = input.addInteger(
 			"smoothScrollRate",
 			9,
 			1,
-			50,
-			"Scroll rate for scrolling the mouse wheel in smooth-scrolling scroll boxes. Measured in pixels."
+			50
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
 		ingredientSorterStages = sorting.addList(
-			"IngredientSortStages",
+			"ingredientSortStages",
 			IngredientSortStage.defaultStages,
-			new ListSerializer<>(new EnumSerializer<>(IngredientSortStage.class)),
-			"Sorting order for the ingredient list."
+			new ListSerializer<>(new EnumSerializer<>(IngredientSortStage.class))
 		);
 		recipeSorterStages = sorting.addList(
-			"RecipeSorterStages",
+			"recipeSorterStages",
 			RecipeSorterStage.defaultStages,
-			new ListSerializer<>(new EnumSerializer<>(RecipeSorterStage.class)),
-			"Sorting order for displayed recipes."
-		);
-
-		IConfigCategoryBuilder tags = schema.addCategory("tags");
-		tagContentTooltipEnabled = tags.addBoolean(
-			"TagContentTooltipEnabled",
-			true,
-			"Show tag content in tooltips."
-		);
-		hideSingleIngredientTagsEnabled = tags.addBoolean(
-			"HideSingleIngredientTagsEnabled",
-			true,
-			"Hide tags that only have 1 ingredient."
+			new ListSerializer<>(new EnumSerializer<>(RecipeSorterStage.class))
 		);
 	}
 
@@ -237,8 +175,8 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isShowHiddenItemsEnabled() {
-		return showHiddenItemsEnabled.get();
+	public boolean getShowHiddenIngredients() {
+		return showHiddenIngredients.get();
 	}
 
 	@Override
@@ -307,8 +245,8 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isHideSingleIngredientTagsEnabled() {
-		return hideSingleIngredientTagsEnabled.get();
+	public boolean getHideSingleTagContentTooltipEnabled() {
+		return hideSingleTagContentTooltipEnabled.get();
 	}
 
 	@Override

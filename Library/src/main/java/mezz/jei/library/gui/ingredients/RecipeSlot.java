@@ -233,7 +233,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		}
 
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (clientConfig.isHideSingleIngredientTagsEnabled() && ingredients.size() == 1) {
+		if (clientConfig.getHideSingleTagContentTooltipEnabled() && ingredients.size() == 1) {
 			return;
 		}
 
