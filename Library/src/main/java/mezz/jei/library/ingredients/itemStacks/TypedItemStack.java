@@ -16,6 +16,7 @@ import java.util.Optional;
 public abstract class TypedItemStack implements ITypedIngredient<ItemStack> {
 	private static final LoadingCache<TypedItemStack, ItemStack> CACHE = CacheBuilder.newBuilder()
 		.expireAfterAccess(Duration.ofSeconds(1))
+		.concurrencyLevel(1)
 		.build(new CacheLoader<>() {
 			@Override
 			public ItemStack load(TypedItemStack key) {
