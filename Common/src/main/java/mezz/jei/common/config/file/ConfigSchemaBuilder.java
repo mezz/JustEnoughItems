@@ -10,9 +10,11 @@ public class ConfigSchemaBuilder implements IConfigSchemaBuilder {
 	private final Set<String> categoryNames = new HashSet<>();
 	private final List<ConfigCategoryBuilder> categoryBuilders = new ArrayList<>();
 	private final Path configFile;
+	private final String localizationPath;
 
-	public ConfigSchemaBuilder(Path configFile) {
+	public ConfigSchemaBuilder(Path configFile, String localizationPath) {
 		this.configFile = configFile;
+		this.localizationPath = localizationPath;
 	}
 
 	@Override
@@ -20,7 +22,7 @@ public class ConfigSchemaBuilder implements IConfigSchemaBuilder {
 		if (!categoryNames.add(name)) {
 			throw new IllegalArgumentException("There is already a category named: " + name);
 		}
-		ConfigCategoryBuilder category = new ConfigCategoryBuilder(name);
+		ConfigCategoryBuilder category = new ConfigCategoryBuilder(localizationPath, name);
 		this.categoryBuilders.add(category);
 		return category;
 	}

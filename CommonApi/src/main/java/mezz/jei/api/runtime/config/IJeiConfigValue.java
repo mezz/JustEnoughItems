@@ -1,5 +1,8 @@
 package mezz.jei.api.runtime.config;
 
+import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.function.Consumer;
 
 /**
@@ -12,6 +15,7 @@ import java.util.function.Consumer;
  *
  * @since 12.1.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiConfigValue<T> {
 	/**
 	 * Get the name of this config value.
@@ -24,8 +28,24 @@ public interface IJeiConfigValue<T> {
 	 * Get the description of this config value.
 	 *
 	 * @since 12.1.0
+	 * @deprecated use {@link #getLocalizedDescription()}
 	 */
+	@Deprecated(since = "15.45.0", forRemoval = true)
 	String getDescription();
+
+	/**
+	 * Get the translated name component of this config value.
+	 *
+	 * @since 15.45.0
+	 */
+	Component getLocalizedName();
+
+	/**
+	 * Get the translated description component of this config value.
+	 *
+	 * @since 15.45.0
+	 */
+	Component getLocalizedDescription();
 
 	/**
 	 * Get the current value.

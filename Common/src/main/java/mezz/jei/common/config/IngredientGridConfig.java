@@ -32,44 +32,22 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	public IngredientGridConfig(String categoryName, IConfigSchemaBuilder builder, HorizontalAlignment defaultHorizontalAlignment) {
 		IConfigCategoryBuilder category = builder.addCategory(categoryName);
 		maxRows = category.addInteger(
-			"MaxRows",
+			"maxRows",
 			defaultNumRows,
 			minNumRows,
-			largestNumRows,
-			"Max number of rows shown."
+			largestNumRows
 		);
 		maxColumns = category.addInteger(
-			"MaxColumns",
+			"maxColumns",
 			defaultNumColumns,
 			minNumColumns,
-			largestNumColumns,
-			"Max number of columns shown."
+			largestNumColumns
 		);
-		horizontalAlignment = category.addEnum(
-			"HorizontalAlignment",
-			defaultHorizontalAlignment,
-			"Horizontal alignment of the ingredient grid inside the available area."
-		);
-		verticalAlignment = category.addEnum(
-			"VerticalAlignment",
-			defaultVerticalAlignment,
-			"Vertical alignment of the ingredient grid inside the available area."
-		);
-		navigationVisibility = category.addEnum(
-			"NavigationVisibility",
-			defaultNavigationVisibility,
-			"Visibility of navigation controls like page buttons and scroll bars. Use AUTO_HIDE to only show them when the list overflows."
-		);
-		navigationMode = category.addEnum(
-			"NavigationMode",
-			defaultNavigationMode,
-			"Choose PAGED for page buttons, SCROLLING for a row-stepped scroll bar, or SMOOTH_SCROLLING for a smooth scroll bar."
-		);
-		drawBackground = category.addBoolean(
-			"DrawBackground",
-			defaultDrawBackground,
-			"Enable this to draw a background texture behind the GUI."
-		);
+		horizontalAlignment = category.addEnum("horizontalAlignment", defaultHorizontalAlignment);
+		verticalAlignment = category.addEnum("verticalAlignment", defaultVerticalAlignment);
+		navigationVisibility = category.addEnum("navigationVisibility", defaultNavigationVisibility);
+		navigationMode = category.addEnum("navigationMode", defaultNavigationMode);
+		drawBackground = category.addBoolean("drawBackground", defaultDrawBackground);
 	}
 
 	@Override

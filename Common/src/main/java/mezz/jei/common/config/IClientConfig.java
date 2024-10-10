@@ -34,7 +34,7 @@ public interface IClientConfig {
 
 	GiveMode getGiveMode();
 
-	boolean isShowHiddenItemsEnabled();
+	boolean getShowHiddenIngredients();
 
 	List<BookmarkTooltipFeature> getBookmarkTooltipFeatures();
 
@@ -78,7 +78,7 @@ public interface IClientConfig {
 
 	boolean isTagContentTooltipEnabled();
 
-	boolean isHideSingleIngredientTagsEnabled();
+	boolean getHideSingleTagContentTooltipEnabled();
 
 	boolean isShowTagRecipesEnabled();
 
