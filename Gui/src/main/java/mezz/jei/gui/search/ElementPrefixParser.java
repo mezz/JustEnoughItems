@@ -73,15 +73,15 @@ public class ElementPrefixParser {
 		));
 		addPrefix(new PrefixInfo<>(
 			'#',
-			config::getTooltipSearchMode,
-			e -> e.getTooltipStrings(config, ingredientManager),
-			GeneralizedSuffixTree::new
-		));
-		addPrefix(new PrefixInfo<>(
-			'$',
 			config::getTagSearchMode,
 			e -> e.getTagStrings(ingredientManager),
 			LimitedStringStorage::new
+		));
+		addPrefix(new PrefixInfo<>(
+			'$',
+			config::getTooltipSearchMode,
+			e -> e.getTooltipStrings(config, ingredientManager),
+			GeneralizedSuffixTree::new
 		));
 		addPrefix(new PrefixInfo<>(
 			'%',

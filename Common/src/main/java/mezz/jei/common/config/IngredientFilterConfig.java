@@ -22,8 +22,8 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	public IngredientFilterConfig(IConfigSchemaBuilder builder) {
 		IConfigCategoryBuilder search = builder.addCategory("search");
 		modNameSearchMode = search.addEnum("modNameSearchMode", SearchMode.REQUIRE_PREFIX);
-		tooltipSearchMode = search.addEnum("tooltipSearchMode", SearchMode.ENABLED);
 		tagSearchMode = search.addEnum("tagSearchMode", SearchMode.REQUIRE_PREFIX);
+		tooltipSearchMode = search.addEnum("tooltipSearchMode", SearchMode.ENABLED);
 		colorSearchMode = search.addEnum("colorSearchMode", SearchMode.DISABLED);
 		resourceLocationSearchMode = search.addEnum("resourceLocationSearchMode", SearchMode.DISABLED);
 		creativeTabSearchMode = search.addEnum("creativeTabSearchMode", SearchMode.DISABLED);
