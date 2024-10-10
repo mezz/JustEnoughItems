@@ -83,18 +83,18 @@ public class ElementPrefixParser {
 			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
-			"tooltips",
-			'#',
-			config::getTooltipSearchMode,
-			e -> e.getTooltipStrings(config, ingredientManager),
-			searchStorageBuilderFactory
-		));
-		addPrefix(new PrefixInfo<>(
 			"tags",
-			'$',
+			'#',
 			config::getTagSearchMode,
 			e -> e.getTagStrings(ingredientManager),
 			limitedStringStorageBuilderFactory
+		));
+		addPrefix(new PrefixInfo<>(
+			"tooltips",
+			'$',
+			config::getTooltipSearchMode,
+			e -> e.getTooltipStrings(config, ingredientManager),
+			searchStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			"creative_tabs",
