@@ -32,6 +32,10 @@ public interface IClientConfig {
 
 	boolean isDragToRearrangeBookmarksEnabled();
 
+	boolean isHistoryEnabled();
+
+	int getMaxHistoryRows();
+
 	int getDragDelayMs();
 
 	int getSmoothScrollRate();

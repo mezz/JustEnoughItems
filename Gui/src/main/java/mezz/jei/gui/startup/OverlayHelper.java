@@ -18,6 +18,8 @@ import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.overlay.bookmarks.history.HistoryList;
+import mezz.jei.gui.overlay.bookmarks.history.HistoryOverlay;
 
 public final class OverlayHelper {
 	private OverlayHelper() {}
@@ -111,6 +113,7 @@ public final class OverlayHelper {
 		IIngredientManager ingredientManager,
 		IScreenHelper screenHelper,
 		BookmarkList bookmarkList,
+		HistoryList historyList,
 		IInternalKeyMappings keyMappings,
 		IIngredientGridConfig bookmarkListConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
@@ -137,10 +140,24 @@ public final class OverlayHelper {
 			false
 		);
 
+		HistoryOverlay historyOverlay = new HistoryOverlay(
+			ingredientManager,
+			historyList,
+			keyMappings,
+			bookmarkListConfig,
+			ingredientFilterConfig,
+			clientConfig,
+			toggleState,
+			serverConnection,
+			colorHelper
+		);
+
 		return new BookmarkOverlay(
 			bookmarkList,
 			bookmarkListGridNavigation,
+			historyOverlay,
 			toggleState,
+			clientConfig,
 			screenHelper,
 			keyMappings
 		);

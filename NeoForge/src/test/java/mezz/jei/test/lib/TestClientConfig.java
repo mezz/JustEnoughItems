@@ -77,6 +77,16 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isHistoryEnabled() {
+		return false;
+	}
+
+	@Override
+	public int getMaxHistoryRows() {
+		return 0;
+	}
+
+	@Override
 	public int getDragDelayMs() {
 		return 0;
 	}
