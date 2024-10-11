@@ -129,7 +129,7 @@ public class CodecHelper implements ICodecHelper {
 					.forGetter(Data::registryName),
 				getTypedIngredientCodec().codec().fieldOf("ingredient")
 					.forGetter(Data::ingredient),
-				EnumCodec.create(RecipeIngredientRole.class, RecipeIngredientRole::valueOf).fieldOf("ingredient_role")
+				EnumCodec.create(RecipeIngredientRole.class).fieldOf("ingredient_role")
 					.forGetter(Data::ingredientRole)
 			).apply(builder, Data::new);
 		});

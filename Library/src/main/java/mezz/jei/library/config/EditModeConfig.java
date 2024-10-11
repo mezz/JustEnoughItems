@@ -188,7 +188,7 @@ public class EditModeConfig implements IEditModeConfig {
 			this.path = path;
 			this.codec = RecordCodecBuilder.create(builder -> {
 				return builder.group(
-					EnumCodec.create(HideMode.class, HideMode::valueOf)
+					EnumCodec.create(HideMode.class)
 						.fieldOf("hide_mode")
 						.forGetter(Pair::getFirst),
 					codecHelper.getTypedIngredientCodec().codec()

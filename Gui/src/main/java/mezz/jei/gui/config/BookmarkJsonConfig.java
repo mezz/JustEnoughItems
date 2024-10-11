@@ -36,7 +36,7 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int VERSION = 2;
 
-	private static final Codec<BookmarkType> TYPE_CODEC = EnumCodec.create(BookmarkType.class, BookmarkType::valueOf);
+	private static final Codec<BookmarkType> TYPE_CODEC = EnumCodec.create(BookmarkType.class);
 	private static @Nullable MapCodec<IBookmark> BOOKMARK_CODEC;
 
 	@SuppressWarnings("deprecation")
