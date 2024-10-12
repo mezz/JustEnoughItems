@@ -20,18 +20,21 @@ public class BookmarkInputHandler implements IUserInputHandler {
 
 	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-		if (input.is(keyBindings.getBookmark())) {
-			return handleBookmark(input, keyBindings);
+		if (input.is(keyBindings.getForceBookmark())) {
+			return handleBookmark(input, keyBindings, true);
+		}
+		else if (input.is(keyBindings.getBookmark())) {
+			return handleBookmark(input, keyBindings, false);
 		}
 		return Optional.empty();
 	}
 
-	private Optional<IUserInputHandler> handleBookmark(UserInput input, IInternalKeyMappings keyBindings) {
+	private Optional<IUserInputHandler> handleBookmark(UserInput input, IInternalKeyMappings keyBindings, boolean shouldForce) {
 		return focusSource.getIngredientUnderMouse(input, keyBindings)
 			.findFirst()
 			.flatMap(clicked -> {
 				if (input.isSimulate() ||
-					bookmarkList.onElementBookmarked(clicked.getElement())
+					bookmarkList.onElementBookmarked(clicked.getElement(), shouldForce)
 				) {
 					IUserInputHandler handler = new SameElementInputHandler(this, clicked::isMouseOver);
 					return Optional.of(handler);

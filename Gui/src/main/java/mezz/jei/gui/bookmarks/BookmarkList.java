@@ -54,8 +54,8 @@ public class BookmarkList implements IIngredientGridSource {
 		this.codecHelper = codecHelper;
 	}
 
-	public boolean add(IBookmark value) {
-		if (!addToListWithoutNotifying(value, clientConfig.isAddingBookmarksToFrontEnabled())) {
+	public boolean add(IBookmark value, boolean shouldForce) {
+		if (!addToListWithoutNotifying(value, clientConfig.isAddingBookmarksToFrontEnabled(), shouldForce)) {
 			return false;
 		}
 		notifyListenersOfChange();
@@ -90,13 +90,13 @@ public class BookmarkList implements IIngredientGridSource {
 		return this.bookmarksSet.contains(value);
 	}
 
-	public <T> boolean onElementBookmarked(IElement<T> element) {
+	public <T> boolean onElementBookmarked(IElement<T> element, boolean shouldForce) {
 		return element.getBookmark()
 			.map(this::remove)
 			.orElseGet(() -> {
 				ITypedIngredient<T> ingredient = element.getTypedIngredient();
 				IBookmark bookmark = IngredientBookmark.create(ingredient, ingredientManager);
-				return add(bookmark);
+				return add(bookmark, shouldForce);
 			});
 	}
 
@@ -104,7 +104,7 @@ public class BookmarkList implements IIngredientGridSource {
 		if (remove(bookmark)) {
 			return;
 		}
-		add(bookmark);
+		add(bookmark, false);
 	}
 
 	public boolean remove(IBookmark ingredient) {
@@ -131,9 +131,12 @@ public class BookmarkList implements IIngredientGridSource {
 		notifyListenersOfChange();
 	}
 
-	private boolean addToListWithoutNotifying(IBookmark value, boolean addToFront) {
+	private boolean addToListWithoutNotifying(IBookmark value, boolean addToFront, boolean shouldForce) {
 		if (contains(value)) {
-			return false;
+			if(!shouldForce) {
+				return false;
+			}
+			remove(value);
 		}
 		if (addToFront) {
 			bookmarksList.addFirst(value);
