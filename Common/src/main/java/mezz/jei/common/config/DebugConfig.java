@@ -23,12 +23,12 @@ public final class DebugConfig {
 		debugModeEnabled = advanced.addBoolean(
 			"DebugMode",
 			false,
-			"Debug mode enabled"
+			"Debug mode enabled."
 		);
 		debugInputsEnabled = advanced.addBoolean(
 			"DebugInputs",
 			false,
-			"Debug inputs enabled"
+			"Debug inputs enabled."
 		);
 		crashingTestIngredientsEnabled = advanced.addBoolean(
 			"CrashingTestItemsEnabled",
