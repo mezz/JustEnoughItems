@@ -1,4 +1,4 @@
-﻿# Tooltips
+# Tooltips
 jei.tooltip.config=اعدادات جاي إي آي
 jei.tooltip.show.recipes=اظهر الوصفات
 jei.tooltip.show.all.recipes=اظهر كل الوصفات
@@ -7,29 +7,16 @@ jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
 jei.tooltip.liquid.amount=%,d mB
 jei.tooltip.transfer=حرك الأشاء
 jei.tooltip.recipe.ore.dict=%s :يقبل أي من
-jei.tooltip.item.colors=Colors: %s
 jei.tooltip.shapeless.recipe=وصفة بلا ترتيب معين
 jei.tooltip.cheat.mode.button.enabled=وضع الغش
-jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
-jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
-jei.tooltip.recipe.by=Recipe By: %s
-jei.tooltip.recipe.id=Recipe ID: %s
-jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
-jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=عناصر مفقودة
 jei.tooltip.error.recipe.transfer.inventory.full=حقيبتك ممتلئة تماما
-jei.tooltip.error.recipe.transfer.unknown=خلل مجهول، الق نظرة على ملفات السجلات
 jei.tooltip.error.recipe.transfer.no.server=على السيرفر أن يمتك جاي إي آي منصبا
-jei.tooltip.error.recipe.transfer.too.large.player.inventory=Recipe is too large to craft in the 2x2 player crafting grid.
-jei.tooltip.error.crash=Tooltip error, see log
 
 # Error Messages
 jei.chat.error.command.too.long=.على جاي إي آي أن يكون موجودا في السيرفر حتى يمكنه أن يتعامل مع أمر الدردشة هذا، إنه طويل للغاية حتى تتمكن ماينكرافت من إرساله
-jei.chat.error.no.cheat.permission.1=You do not have permission to use JEI's Cheat Mode.
-jei.chat.error.no.cheat.permission.2=Permission is given to players who can /give items or are in Creative Mode.
 
 # Key Bindings
 key.jei.toggleOverlay=تفعيل وضع إظهار قائمة العناصر
@@ -38,8 +25,6 @@ key.jei.showRecipe=أظهر وصفات العناصر
 key.jei.showUses=أظهر فوائد العناصر
 key.jei.recipeBack=أظهر صفحة العناصر السابقة
 key.jei.toggleCheatMode=تبديل وضع غش العناصر
-key.jei.previousPage=Show Previous Page
-key.jei.nextPage=Show Next Page
 
 # Config
 config.jei.default=الأصلي
@@ -71,8 +56,6 @@ config.jei.search.creativeTabSearchMode=طلب %% من أجل علامات ال�
 config.jei.search.creativeTabSearchMode.comment=.طلب "%" قبل الكلمة للبحث في أسماء علامات التبويب المبتكرة
 config.jei.search.colorSearchMode=طلب ^ للألوان
 config.jei.search.colorSearchMode.comment=.طلب "^" قبل الكلمة ببحث في الوان العناصر
-config.jei.search.resourceIdSearchMode=&ResourceId
-config.jei.search.resourceIdSearchMode.comment=Search mode for resources ids (prefix: &)
 
 config.jei.advanced=متقدمة
 config.jei.advanced.comment=.إعدادات خيارات متقدمة لتغيير كيفية عمل جاي إي آي
@@ -84,27 +67,16 @@ config.jei.advanced.debugModeEnabled=وضع التصحيح
 config.jei.advanced.debugModeEnabled.comment=.ذو فائدة لمصممي جاي إي آي، يضيف الآلاف من العناصر وبعض وصفات التصحيح
 config.jei.advanced.centerSearchBarEnabled=.شريط الشاشة في الوسط
 config.jei.advanced.centerSearchBarEnabled.comment=.انقل جاي إي آي إلى أسفل وسط الشاشة
-config.jei.advanced.modNameFormat=Mod Name Format
-config.jei.advanced.modNameFormat.comment=How the mod name should be formatted in the tooltip for JEI guis. Leave blank to disable.
-config.jei.advanced.maxColumns=Max Width
-config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
-config.jei.advanced.giveMode=Give Mode
-config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
 # Hide Ingredients Mode
 gui.jei.editMode.description=:وضع جاي إي آي لتعديل قائمة العناصر
 gui.jei.editMode.description.hide=.للإخفاء %CTRL أنقر
 gui.jei.editMode.description.hide.wild=.مع زر الفأرة الأيمن للإخفاء مع البدل %CTRL أنقر
 
-# PC/Linux Control Key
-key.jei.ctrl=CTRL
-# Mac Command Key
-key.jei.ctrl.mac=CMD
-
 # Recipe Categories
 gui.jei.category.craftingTable=الصناعة
 gui.jei.category.smelting=الصهر
-gui.jei.category.smelting.experience=%s xp
+gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=الوقود
 gui.jei.category.fuel.smeltCount.single=تصهر شيء واحد
 gui.jei.category.fuel.smeltCount=من الأشياء %s تصهر
@@ -112,7 +84,11 @@ gui.jei.category.brewing=التخمير
 gui.jei.category.brewing.steps=%s :الخطوات
 gui.jei.category.itemInformation=الوصف
 
-# DEBUG (for debug mode, do not need translation)
-description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
-description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
-description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.
+# Key Names
+key.jei.ctrl=CTRL
+key.jei.ctrl.mac=CMD
+
+# Debug (for a debug mode, do not need translation)
+description.jei.wooden.door.1=Wooden doors allow you to block monsters from entering your building.\nTesting sentences.
+description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and vice versa.
+description.jei.wooden.door.3=Wooden doors can be opened/closed via redstone circuits.

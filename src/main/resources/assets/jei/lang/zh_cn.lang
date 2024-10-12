@@ -13,7 +13,7 @@ jei.tooltip.cheat.mode.button.enabled=作弊模式
 jei.tooltip.cheat.mode.how.to.disable.hotkey=按 %s 以切换。
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=按住 %s 并点击以切换。
 jei.tooltip.recipe.by=该配方由 %s 添加
-jei.tooltip.recipe.id=配方 ID: %s
+jei.tooltip.recipe.id=配方 ID：%s
 jei.tooltip.not.enough.space=屏幕空间不足，无法显示 JEI 界面。
 jei.tooltip.ingredient.list.disabled=JEI 悬浮界面已禁用。
 jei.tooltip.ingredient.list.disabled.how.to.fix=按 %s 以启用。
@@ -23,12 +23,11 @@ jei.tooltip.bookmarks.usage.key=将鼠标悬停在某个物品上，然后按 %s
 jei.tooltip.bookmarks.not.enough.space=这里没有足够的空间来显示书签。
 
 # Error Tooltips
-jei.tooltip.error.recipe.transfer.missing=缺失物品
+jei.tooltip.error.recipe.transfer.missing=缺少物品
 jei.tooltip.error.recipe.transfer.inventory.full=物品栏已满
-jei.tooltip.error.recipe.transfer.unknown=未知错误，请查阅日志获得详细信息
 jei.tooltip.error.recipe.transfer.no.server=服务器必须安装 JEI
-jei.tooltip.error.recipe.transfer.too.large.player.inventory=配方不是 2×2 的
-jei.tooltip.error.crash=提示错误，请查看日志
+jei.tooltip.error.recipe.transfer.too.large.player.inventory=配方太大，无法在 2x2 玩家合成方格中合成
+jei.tooltip.error.crash=获取提示时崩溃，请查看日志
 
 # Error Messages
 jei.chat.error.command.too.long=必须于服务器上安装 JEI 才能处理，这条指令对 Minecraft 来说太长了。
@@ -36,15 +35,16 @@ jei.chat.error.no.cheat.permission.1=你没有使用 JEI 作弊模式的权限�
 jei.chat.error.no.cheat.permission.2=可以使用 /give 或处在创造模式下的玩家拥有此权限。
 
 # Key Bindings
-key.jei.toggleOverlay=显示/隐藏 JEI
+key.jei.toggleOverlay=显示/隐藏 JEI 悬浮界面
 key.jei.focusSearch=高亮搜索框
 key.jei.showRecipe=显示物品配方
 key.jei.showUses=显示物品用途
-key.jei.recipeBack=显示上个查看的配方
-key.jei.toggleCheatMode=作弊模式开关
+key.jei.recipeBack=上一个配方
+key.jei.toggleCheatMode=切换作弊模式
+key.jei.toggleEditMode=编辑模式开关
 key.jei.previousPage=上一页
 key.jei.nextPage=下一页
-key.jei.bookmark=添加/删除一个物品的书签
+key.jei.bookmark=添加/删除书签
 key.jei.toggleBookmarkOverlay=显示/隐藏加入书签的物品
 
 # Config
@@ -63,24 +63,25 @@ config.jei.mode.editEnabled.comment=在列表中点击物品以隐藏或取消�
 config.jei.interface=用户界面
 config.jei.interface.comment=用户界面的相关设定。
 config.jei.interface.overlayEnabled=启用物品列表
-config.jei.interface.overlayEnabled.comment=在打开的 GUI 一侧显示物品列表。
+config.jei.interface.overlayEnabled.comment=在打开的界面一侧显示物品列表。
 config.jei.interface.bookmarkOverlayEnabled=显示书签
-config.jei.interface.bookmarkOverlayEnabled.comment=在打开的 GUI 一侧显示书签列表。
+config.jei.interface.bookmarkOverlayEnabled.comment=在打开的界面一侧显示书签列表。
 
 config.jei.search=搜索选项
 config.jei.search.comment=搜索框的相关选项。
 config.jei.search.modNameSearchMode=@模组名称
-config.jei.search.modNameSearchMode.comment=当按模组名称搜索时，要求使用 "@" 作为前缀
-config.jei.search.tooltipSearchMode=#提示
-config.jei.search.tooltipSearchMode.comment=当按提示搜索时，要求使用 "#" 作为前缀
+config.jei.search.modNameSearchMode.comment=当按模组名称搜索时，要求使用“@”作为前缀
+config.jei.search.tooltipSearchMode=#工具提示
+config.jei.search.tooltipSearchMode.comment=当按工具提示搜索时，要求使用“#”作为前缀
 config.jei.search.oreDictSearchMode=$矿物词典
 config.jei.search.oreDictSearchMode.comment=当按矿物词典搜索时，要求使用 "$" 作为前缀
 config.jei.search.creativeTabSearchMode=%%创造标签页
-config.jei.search.creativeTabSearchMode.comment=当按创造标签页名搜索时，要求使用 "%" 作为前缀
+config.jei.search.creativeTabSearchMode.comment=当按创造标签页名搜索时，要求使用“%”作为前缀
 config.jei.search.colorSearchMode=^颜色
-config.jei.search.colorSearchMode.comment=当按物品颜色搜索时，要求使用 "^" 作为前缀
+config.jei.search.colorSearchMode.comment=当按物品颜色搜索时，要求使用“^”作为前缀
 config.jei.search.resourceIdSearchMode=&资源 ID
-config.jei.search.resourceIdSearchMode.comment=当按资源 ID 搜索时，要求使用 "&" 作为前缀
+config.jei.search.resourceIdSearchMode.comment=当按资源 ID 搜索时，要求使用“&”作为前缀
+config.jei.search.searchAdvancedTooltips=搜索高级工具提示
 
 config.jei.advanced=高级
 config.jei.advanced.comment=用于更改 JEI 功能的高级配置。
@@ -93,23 +94,20 @@ config.jei.advanced.debugModeEnabled.comment=仅对 JEI 开发者有用，启用
 config.jei.advanced.centerSearchBarEnabled=搜索框居中
 config.jei.advanced.centerSearchBarEnabled.comment=启用后，搜索框会被移动至底部居中的位置。
 config.jei.advanced.modNameFormat=模组名称样式
-config.jei.advanced.modNameFormat.comment=定义 JEI 界面的信息提示中的 Mod 名称样式。留空以禁用。
+config.jei.advanced.modNameFormat.comment=定义 JEI 界面的信息提示中的模组名称样式。留空以禁用。
 config.jei.advanced.maxColumns=最大宽度
 config.jei.advanced.maxColumns.comment=输入物品列表的最大宽度。
-config.jei.advanced.maxRecipeGuiHeight=合成界面最大高度
-config.jei.advanced.maxRecipeGuiHeight.comment=合成表查询界面允许的最大高度。
+config.jei.advanced.maxRecipeGuiHeight=配方界面最大高度
+config.jei.advanced.maxRecipeGuiHeight.comment=配方查询界面允许的最大高度。
 config.jei.advanced.giveMode=拿取模式
 config.jei.advanced.giveMode.comment=选择 JEI 会直接将物品移入物品栏或是用鼠标将其捡起。
+config.jei.advanced.addBookmarksToFront=预添加新书签
+config.jei.advanced.addBookmarksToFront.comment=设为 true 时，将新书签添加到书签列表的前面。设为 false 时，将新书签添加到书签列表的末尾
 
 # Hide Ingredients Mode
-gui.jei.editMode.description=JEI 物品列表编辑模式：
+gui.jei.editMode.description=JEI 隐藏原料模式：
 gui.jei.editMode.description.hide=按住 %CTRL 点击以隐藏。
 gui.jei.editMode.description.hide.wild=按住 %CTRL 右击以隐藏相同 ID 的物品。
-
-# PC/Linux Control Key
-key.jei.ctrl=CTRL
-# Mac Command Key
-key.jei.ctrl.mac=CMD
 
 # Recipe Categories
 gui.jei.category.craftingTable=工作台合成
@@ -119,10 +117,14 @@ gui.jei.category.fuel=燃料
 gui.jei.category.fuel.smeltCount.single=烧炼 1 个物品
 gui.jei.category.fuel.smeltCount=烧炼 %s 个物品
 gui.jei.category.brewing=酿造
-gui.jei.category.brewing.steps=步数：%s
+gui.jei.category.brewing.steps=步数：%s 步
 gui.jei.category.itemInformation=信息
 
-# DEBUG (for debug mode, do not need translation)
-description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
-description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
-description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.
+# Key Names
+key.jei.ctrl=CTRL
+key.jei.ctrl.mac=CMD
+
+# Debug (for a debug mode, do not need translation)
+description.jei.wooden.door.1=Wooden doors allow you to block monsters from entering your building.\nTesting sentences.
+description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and vice versa.
+description.jei.wooden.door.3=Wooden doors can be opened/closed via redstone circuits.

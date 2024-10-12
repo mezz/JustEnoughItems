@@ -1,27 +1,30 @@
 # Tooltips
 jei.tooltip.config=JEI Seçenekleri
 jei.tooltip.show.recipes=Tarifleri Göster
-jei.tooltip.show.all.recipes=Tüm Tarifleri Göster
+jei.tooltip.show.all.recipes=Bütün Tarifleri Göster
 jei.tooltip.delete.item=Silmek İçin Tıkla
 jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
 jei.tooltip.liquid.amount=%,d mB
 jei.tooltip.transfer=Eşyaları Taşı
 jei.tooltip.recipe.ore.dict=Herhangi Biri Olur: %s
 jei.tooltip.item.colors=Renkler: %s
-jei.tooltip.shapeless.recipe=Sekilsiz Tarif
+jei.tooltip.shapeless.recipe=Şekilsiz Tarif
 jei.tooltip.cheat.mode.button.enabled=Hile Modu
-jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
-jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
+jei.tooltip.cheat.mode.how.to.disable.hotkey=Değiştirmek için %s düğmesine bas.
+jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-değiştirmek için buna bas.
 jei.tooltip.recipe.by=%s Tarifi
-jei.tooltip.recipe.id=Recipe ID: %s
-jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
-jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
+jei.tooltip.recipe.id=Tarif Kimliği: %s
+jei.tooltip.not.enough.space=Burada içerik listesini gösterecek kadar yer yok.
+jei.tooltip.ingredient.list.disabled=JEI katmanı kapatıldı.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Açmak için %s düğmesine basın.
+jei.tooltip.bookmarks=JEI Yer İmleri
+jei.tooltip.bookmarks.usage.nokey=JEI yer imlerini kontrol etmek için Seçenkelerden kısayol ekleyin.
+jei.tooltip.bookmarks.usage.key=Bir içeriği yer imlemek için fareyi üzerine götürüp "%s" düğmesine basın.
+jei.tooltip.bookmarks.not.enough.space=Burada yer imlerini gösterecek kadar yer yok.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Eşyalar Eksik
 jei.tooltip.error.recipe.transfer.inventory.full=Envanter Dolu
-jei.tooltip.error.recipe.transfer.unknown=Bilinmeyen hata, kayıt dosyasına bak.
 jei.tooltip.error.recipe.transfer.no.server=Sunucu, JEI modunu kurmalı.
 jei.tooltip.error.recipe.transfer.too.large.player.inventory=Tarif, 2x2 üretim kısmında üretmek için çok büyük.
 jei.tooltip.error.crash=İpucu hatası, kayıt dosyasına bak.
@@ -34,12 +37,15 @@ jei.chat.error.no.cheat.permission.2=Yetki, /give komudunu yazabilen ve Yaratıc
 # Key Bindings
 key.jei.toggleOverlay=Eşya Listesi Görünümünü Aç/Kapa
 key.jei.focusSearch=Arama Çubuğunu Seç
-key.jei.showRecipe=Eşya Tarifini Göster
-key.jei.showUses=Eşya Kullanımlarını Göster
+key.jei.showRecipe=Tarifi Göster
+key.jei.showUses=Kullanımları Göster
 key.jei.recipeBack=Önceki Tarifi Göster
 key.jei.toggleCheatMode=Hile Modunu Aç/Kapa
+key.jei.toggleEditMode=Gizle/Düzenle Kipini Değiştir
 key.jei.previousPage=Önceki Sayfayı Göster
 key.jei.nextPage=Sonraki Sayfayı Göster
+key.jei.bookmark=Yer İmli İçerik Ekle/Kaldır
+key.jei.toggleBookmarkOverlay=Yer İmli İçerikleri Göster/Gizle
 
 # Config
 config.jei.default=Varsayılan
@@ -58,21 +64,23 @@ config.jei.interface=Arayüz
 config.jei.interface.comment=Kullanıcı arayüzü ile ilgili seçenekler.
 config.jei.interface.overlayEnabled=Eşya Listesi Aktif
 config.jei.interface.overlayEnabled.comment=Eşya listesini açık arayüzün yanında göster.
+config.jei.interface.bookmarkOverlayEnabled=Yer İmlerini Göster
 
 config.jei.search=Arama Seçenekleri
 config.jei.search.comment=Arama çubuğuyla ilgili seçenekler.
-config.jei.search.modNameSearchMode=@ModName
-config.jei.search.modNameSearchMode.comment=Mod adları için arama modu. (öneği: @)
-config.jei.search.tooltipSearchMode=#Tooltip
-config.jei.search.tooltipSearchMode.comment=İpuçları için arama modu. (öneği: #)
+config.jei.search.modNameSearchMode=@ModAdı
+config.jei.search.modNameSearchMode.comment=Mod adları için arama kipi. (öneği: @)
+config.jei.search.tooltipSearchMode=#İpucu
+config.jei.search.tooltipSearchMode.comment=İpuçları için arama kipi. (öneği: #)
 config.jei.search.oreDictSearchMode=$OreDictionary
 config.jei.search.oreDictSearchMode.comment=Ore Dictionary için arama modu. (öneği: $)
-config.jei.search.creativeTabSearchMode=%%CreativeTab
+config.jei.search.creativeTabSearchMode=%%YaratıcıSekmesi
 config.jei.search.creativeTabSearchMode.comment=Yaratıcı modu sekme adları için arama modu. (öneği: %)
-config.jei.search.colorSearchMode=^Color
+config.jei.search.colorSearchMode=^Renk
 config.jei.search.colorSearchMode.comment=Eşya renkleri için arama modu. (öneği: ^)
-config.jei.search.resourceIdSearchMode=&ResourceId
+config.jei.search.resourceIdSearchMode=&KaynakKimliği
 config.jei.search.resourceIdSearchMode.comment=Kaynak ID'leri için arama modu. (öneği: &)
+config.jei.search.searchAdvancedTooltips=Gelişmiş ipuçlarını ara
 
 config.jei.advanced=Gelişmiş
 config.jei.advanced.comment=JEI fonksiyonlarını değiştirmek için gelişmiş seçenekler.
@@ -86,33 +94,34 @@ config.jei.advanced.centerSearchBarEnabled=Arama Çubuğu Merkezde
 config.jei.advanced.centerSearchBarEnabled.comment=JEI arama çubuğunu ekranın alt ortasına yerleştir.
 config.jei.advanced.modNameFormat=Mod Adı Biçimi
 config.jei.advanced.modNameFormat.comment=JEI arayüz ipuçlarında mod ismi biçimlendirme tipi. Devre dışı bırakmak için boş bırakın.
-config.jei.advanced.maxColumns=Maksimum Genişlik
-config.jei.advanced.maxColumns.comment=Malzeme listesinin maksimum genişliği.
+config.jei.advanced.maxColumns=Azami Genişlik
+config.jei.advanced.maxColumns.comment=Malzeme listesinin azami genişliği.
+config.jei.advanced.maxRecipeGuiHeight=Azami Tarif Ekranı Yüksekliği
+config.jei.advanced.maxRecipeGuiHeight.comment=Tarif ekranının azami yüksekliği
 config.jei.advanced.giveMode=Alma Modu
-config.jei.advanced.giveMode.comment=JEI'nin envantere (inventory) doğrudan eşyaları vermesini mi yoksa fareyle (mouse_pickup) almasını mı istediğinizi seçin.
+config.jei.advanced.giveMode.comment=JEI'nin envantere doğrudan eşyaları vermesini mi yoksa fareyle almasını mı istediğinizi seçin.
 
 # Hide Ingredients Mode
 gui.jei.editMode.description=JEI Eşya Listesi Düzenleme Modu:
-gui.jei.editMode.description.hide=Gizle (%CTRL-click).
-gui.jei.editMode.description.hide.wild=Joker ile Gizle (%CTRL-right-click).
-
-# PC/Linux Control Key
-key.jei.ctrl=CTRL
-# Mac Command Key
-key.jei.ctrl.mac=CMD
+gui.jei.editMode.description.hide=Gizle (%CTRL-Click).
+gui.jei.editMode.description.hide.wild=Joker ile Gizle (%CTRL-Right-Click).
 
 # Recipe Categories
-gui.jei.category.craftingTable=Üretim
-gui.jei.category.smelting=Pişirme
+gui.jei.category.craftingTable=Eşya Yapma
+gui.jei.category.smelting=Pişirme/Eritme
 gui.jei.category.smelting.experience=%s XP
 gui.jei.category.fuel=Yakıt
-gui.jei.category.fuel.smeltCount.single=1 eşya pişirir.
-gui.jei.category.fuel.smeltCount=%s eşya pişirir.
+gui.jei.category.fuel.smeltCount.single=1 eşya pişirir/eritir.
+gui.jei.category.fuel.smeltCount=%s eşya pişirir/eritir.
 gui.jei.category.brewing=İksir Tezgahı
 gui.jei.category.brewing.steps=Adım: %s
 gui.jei.category.itemInformation=Bilgi
 
-# DEBUG (for debug mode, do not need translation)
-description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
-description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
-description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.
+# Key Names
+key.jei.ctrl=CTRL
+key.jei.ctrl.mac=CMD
+
+# Debug (for a debug mode, do not need translation)
+description.jei.wooden.door.1=Wooden doors allow you to block monsters from entering your building.\nTesting sentences.
+description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and vice versa.
+description.jei.wooden.door.3=Wooden doors can be opened/closed via redstone circuits.
