@@ -87,7 +87,7 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 	protected boolean onMouseClicked(UserInput input) {
 		if (recipeBookmark != null) {
 			if (!input.isSimulate()) {
-				bookmarks.toggleBookmark(recipeBookmark);
+				bookmarks.toggleBookmark(recipeBookmark, false);
 			}
 			return true;
 		}

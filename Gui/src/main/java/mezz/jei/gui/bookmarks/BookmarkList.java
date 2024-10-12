@@ -90,19 +90,24 @@ public class BookmarkList implements IIngredientGridSource {
 		return this.bookmarksSet.contains(value);
 	}
 
-	public <T> boolean onElementBookmarked(IElement<T> element, boolean shouldForce) {
-		return element.getBookmark()
-			.map(this::remove)
-			.orElseGet(() -> {
-				ITypedIngredient<T> ingredient = element.getTypedIngredient();
-				IBookmark bookmark = IngredientBookmark.create(ingredient, ingredientManager);
-				return add(bookmark, shouldForce);
-			});
+	public <T> boolean onElementBookmarked(IElement<T> element, boolean shouldForceAdd) {
+		boolean didExist = element.getBookmark()
+					.map(this::remove)
+					.orElse(false);
+
+		if(shouldForceAdd || !didExist) {
+			ITypedIngredient<T> ingredient = element.getTypedIngredient();
+			IBookmark bookmark = IngredientBookmark.create(ingredient, ingredientManager);
+			return add(bookmark, shouldForceAdd);
+		}
+		return true;
 	}
 
-	public void toggleBookmark(IBookmark bookmark) {
+	public void toggleBookmark(IBookmark bookmark, boolean shouldAddBack) {
 		if (remove(bookmark)) {
-			return;
+			if(!shouldAddBack) {
+				return;
+			}
 		}
 		add(bookmark, false);
 	}
