@@ -14,19 +14,19 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 
 	public IngredientFilterConfig(ForgeConfigSpec.Builder builder) {
 		builder.push("search");
-		builder.comment("Search mode for Mod Names (prefix: @)");
+		builder.comment("Search mode for mod names (prefix: @).");
 		modNameSearchMode = builder.defineEnum("ModNameSearchMode", SearchMode.REQUIRE_PREFIX);
-		builder.comment("Search mode for Tooltips (prefix: #)");
+		builder.comment("Search mode for tooltips (prefix: #).");
 		tooltipSearchMode = builder.defineEnum("TooltipSearchMode", SearchMode.ENABLED);
-		builder.comment("Search mode for Tag Names (prefix: $)");
+		builder.comment("Search mode for tags (prefix: $).");
 		tagSearchMode = builder.defineEnum("TagSearchMode", SearchMode.REQUIRE_PREFIX);
-		builder.comment("Search mode for Creative Tab Names (prefix: %)");
+		builder.comment("Search mode for creative mode tab names (prefix: %).");
 		creativeTabSearchMode = builder.defineEnum("CreativeTabSearchMode", SearchMode.DISABLED);
-		builder.comment("Search mode for Colors (prefix: ^)");
+		builder.comment("Search mode for colors (prefix: ^).");
 		colorSearchMode = builder.defineEnum("ColorSearchMode", SearchMode.DISABLED);
-		builder.comment("Search mode for resources IDs (prefix: &)");
+		builder.comment("Search mode for resource IDs (prefix: &).");
 		resourceIdSearchMode = builder.defineEnum("ResourceIdSearchMode", SearchMode.DISABLED);
-		builder.comment("Search advanced tooltips (visible with F3+H)");
+		builder.comment("Search in advanced tooltips (visible with F3 + H).");
 		searchAdvancedTooltips = builder.define("SearchAdvancedTooltips", false);
 		builder.pop();
 	}
