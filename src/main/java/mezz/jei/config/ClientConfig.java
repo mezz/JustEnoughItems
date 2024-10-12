@@ -68,35 +68,35 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 
 		builder.push("advanced");
 		{
-			builder.comment("Debug mode enabled");
+			builder.comment("Debug mode enabled.");
 			debugModeEnabled = builder.define("DebugMode", false);
 
-			builder.comment("Display search bar in the center");
+			builder.comment("Move the JEI search bar to the bottom center of the screen.");
 			centerSearchBarEnabled = builder.define("CenterSearch", defaultCenterSearchBar);
 
-			builder.comment("Set low-memory mode (makes search very slow, but uses less RAM)");
+			builder.comment("Set low-memory mode (makes search very slow but uses less RAM).");
 			lowMemorySlowSearchEnabled = builder.define("LowMemorySlowSearchEnabled", false);
 
-			builder.comment("Enable fast batched item rendering for JEI (disable this if items in JEI are not rendering correctly)");
+			builder.comment("Enable fast batched item rendering for JEI (disable this if items in JEI do not render correctly).");
 			fastItemRenderingEnabled = builder.define("FastItemRenderingEnabled", true);
 
-			builder.comment("Enable cheating items into the hotbar by using the shift+number keys.");
+			builder.comment("Enable cheating items into the hotbar by using Shift + numeric keys.");
 			cheatToHotbarUsingHotkeysEnabled = builder.define("CheatToHotbarUsingHotkeysEnabled", false);
-			
-			builder.comment("How items should be handed to you");
+
+			builder.comment("Choose if JEI should give ingredients directly to the inventory (INVENTORY) or pick them up with the mouse (MOUSE_PICKUP).");
 			giveMode = builder.defineEnum("GiveMode", defaultGiveMode);
 
-			builder.comment("Max number of columns shown");
+			builder.comment("Max number of columns shown.");
 			maxColumns = builder.defineInRange("MaxColumns", defaultNumColumns, minNumColumns, largestNumColumns);
 
-			builder.comment("Max. recipe gui height");
+			builder.comment("Max recipe GUI height.");
 			maxRecipeGuiHeight = builder.defineInRange("RecipeGuiHeight", defaultRecipeGuiHeight, minRecipeGuiHeight, Integer.MAX_VALUE);
 		}
 		builder.pop();
 
 		builder.push("colors");
 		{
-			builder.comment("Color values to search for");
+			builder.comment("Color values to search for.");
 			searchColorsCfg = builder.defineList("SearchColors", Lists.newArrayList(ColorGetter.getColorDefaults()), ClientConfig::validSearchColor);
 		}
 		builder.pop();
