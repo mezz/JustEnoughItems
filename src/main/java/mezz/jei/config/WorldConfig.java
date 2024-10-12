@@ -15,7 +15,6 @@ import mezz.jei.events.EventBusHelper;
 import mezz.jei.events.OverlayToggleEvent;
 import mezz.jei.network.Network;
 import mezz.jei.network.packets.PacketRequestCheatPermission;
-import mezz.jei.util.Translator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -206,27 +205,19 @@ public class WorldConfig implements IWorldConfig, IFilterTextSource {
 		final String worldCategory = ServerInfo.getWorldUid(networkManager);
 
 		Property property = worldConfig.get(worldCategory, "overlayEnabled", defaultValues.overlayEnabled);
-		property.setLanguageKey("config.jei.interface.overlayEnabled");
-		property.setComment(Translator.translateToLocal("config.jei.interface.overlayEnabled.comment"));
 		property.setShowInGui(false);
 		values.overlayEnabled = property.getBoolean();
 
 		property = worldConfig.get(worldCategory, "cheatItemsEnabled", defaultValues.cheatItemsEnabled);
-		property.setLanguageKey("config.jei.mode.cheatItemsEnabled");
-		property.setComment(Translator.translateToLocal("config.jei.mode.cheatItemsEnabled.comment"));
 		values.cheatItemsEnabled = property.getBoolean();
 
 		property = worldConfig.get(worldCategory, "editEnabled", defaultValues.editModeEnabled);
-		property.setLanguageKey("config.jei.mode.editEnabled");
-		property.setComment(Translator.translateToLocal("config.jei.mode.editEnabled.comment"));
 		values.editModeEnabled = property.getBoolean();
 		if (property.hasChanged()) {
 			EventBusHelper.post(new EditModeToggleEvent(values.editModeEnabled));
 		}
 
 		property = worldConfig.get(worldCategory, "bookmarkOverlayEnabled", defaultValues.bookmarkOverlayEnabled);
-		property.setLanguageKey("config.jei.interface.bookmarkOverlayEnabled");
-		property.setComment(Translator.translateToLocal("config.jei.interface.bookmarkOverlayEnabled.comment"));
 		property.setShowInGui(false);
 		values.bookmarkOverlayEnabled = property.getBoolean();
 
