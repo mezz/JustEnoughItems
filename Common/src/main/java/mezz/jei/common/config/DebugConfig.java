@@ -26,22 +26,22 @@ public final class DebugConfig {
 		debugModeEnabled = advanced.addBoolean(
 			"DebugMode",
 			false,
-			"Debug mode enabled"
+			"Debug mode enabled."
 		);
 		debugGuisEnabled = advanced.addBoolean(
 			"DebugGuis",
 			false,
-			"Debug GUIs enabled"
+			"Debug GUIs enabled."
 		);
 		debugInputsEnabled = advanced.addBoolean(
 			"DebugInputs",
 			false,
-			"Debug inputs enabled"
+			"Debug inputs enabled."
 		);
 		debugInfoTooltipsEnabled = advanced.addBoolean(
 			"debugInfoTooltipsEnabled",
 			false,
-			"Add debug information to ingredient tooltips when advanced tooltips are enabled"
+			"Add debug information to ingredient tooltips when advanced tooltips are enabled."
 		);
 		crashingTestIngredientsEnabled = advanced.addBoolean(
 			"CrashingTestItemsEnabled",
@@ -51,7 +51,7 @@ public final class DebugConfig {
 		logSuffixTreeStats = advanced.addBoolean(
 			"logSuffixTreeStats",
 			false,
-			"Log information about the suffix trees used for searching, to help debug JEI"
+			"Log information about the suffix trees used for searching, to help debug JEI."
 		);
 	}
 
