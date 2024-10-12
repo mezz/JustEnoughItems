@@ -19,32 +19,32 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 		modNameSearchMode = search.addEnum(
 			"ModNameSearchMode",
 			SearchMode.REQUIRE_PREFIX,
-			"Search mode for Mod Names (prefix: @)"
+			"Search mode for mod names (prefix: @)."
 		);
 		tooltipSearchMode = search.addEnum(
 			"TooltipSearchMode",
 			SearchMode.ENABLED,
-			"Search mode for Tooltips (prefix: #)"
+			"Search mode for tooltips (prefix: #)."
 		);
 		tagSearchMode = search.addEnum(
 			"TagSearchMode",
 			SearchMode.REQUIRE_PREFIX,
-			"Search mode for Tag Names (prefix: $)"
+			"Search mode for tags (prefix: $)."
 		);
 		colorSearchMode = search.addEnum(
 			"ColorSearchMode",
 			SearchMode.DISABLED,
-			"Search mode for Colors (prefix: ^)"
+			"Search mode for colors (prefix: ^)."
 		);
 		resourceLocationSearchMode = search.addEnum(
 			"ResourceLocationSearchMode",
 			SearchMode.DISABLED,
-			"Search mode for resources locations (prefix: &)"
+			"Search mode for resource locations (prefix: &)."
 		);
 		searchAdvancedTooltips = search.addBoolean(
 			"SearchAdvancedTooltips",
 			false,
-			"Search advanced tooltips (visible with F3+H)"
+			"Search in advanced tooltips (visible with F3 + H)."
 		);
 	}
 
