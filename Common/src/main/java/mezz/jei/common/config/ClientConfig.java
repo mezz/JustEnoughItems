@@ -50,26 +50,26 @@ public final class ClientConfig implements IClientConfig {
 		centerSearchBarEnabled = appearance.addBoolean(
 			"CenterSearch",
 			defaultCenterSearchBar,
-			"Display search bar in the center"
+			"Move the JEI search bar to the bottom center of the screen."
 		);
 		maxRecipeGuiHeight = appearance.addInteger(
 			"RecipeGuiHeight",
 			defaultRecipeGuiHeight,
 			minRecipeGuiHeight,
 			Integer.MAX_VALUE,
-			"Max. recipe gui height"
+			"Max recipe GUI height."
 		);
 
 		IConfigCategoryBuilder cheatMode = schema.addCategory("cheat_mode");
 		giveMode = cheatMode.addEnum(
 			"GiveMode",
 			GiveMode.defaultGiveMode,
-			"How items should be handed to you"
+			"Choose if JEI should give ingredients directly to the inventory or pick them up with the mouse."
 		);
 		cheatToHotbarUsingHotkeysEnabled = cheatMode.addBoolean(
 			"CheatToHotbarUsingHotkeysEnabled",
 			false,
-			"Enable cheating items into the hotbar by using the shift+number keys."
+			"Enable cheating items into the hotbar by using Shift + numeric keys."
 		);
 
 		IConfigCategoryBuilder bookmarks = schema.addCategory("bookmarks");
@@ -81,14 +81,14 @@ public final class ClientConfig implements IClientConfig {
 		dragToRearrangeBookmarksEnabled = bookmarks.addBoolean(
 			"DragToRearrangeBookmarksEnabled",
 			true,
-			"Drag bookmarks to rearrange them in the list"
+			"Drag bookmarks to rearrange them in the list."
 		);
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
 		lowMemorySlowSearchEnabled = advanced.addBoolean(
 			"LowMemorySlowSearchEnabled",
 			false,
-			"Set low-memory mode (makes search very slow, but uses less RAM)"
+			"Set low-memory mode (makes search very slow but uses less RAM)."
 		);
 		catchRenderErrorsEnabled = advanced.addBoolean(
 			"CatchRenderErrorsEnabled",
@@ -107,7 +107,7 @@ public final class ClientConfig implements IClientConfig {
 			150,
 			0,
 			1000,
-			"Number of milliseconds before a long mouse click is considered to become a drag operation"
+			"Number of milliseconds before a long mouse click is considered a drag operation."
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
@@ -115,14 +115,14 @@ public final class ClientConfig implements IClientConfig {
 			"IngredientSortStages",
 			IngredientSortStage.defaultStages,
 			new ListSerializer<>(new EnumSerializer<>(IngredientSortStage.class)),
-			"Sorting order for the ingredient list"
+			"Sorting order for the ingredient list."
 		);
 
 		IConfigCategoryBuilder tags = schema.addCategory("tags");
 		hideSingleIngredientTagsEnabled = tags.addBoolean(
 			"HideSingleIngredientTagsEnabled",
 			true,
-			"Hide tags that only have 1 ingredient"
+			"Hide tags that only have 1 ingredient."
 		);
 	}
 

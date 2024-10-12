@@ -24,13 +24,13 @@ public final class ServerConfig implements IServerConfig {
 	private ServerConfig(ForgeConfigSpec.Builder builder) {
 		builder.push("cheat mode");
 		{
-			builder.comment("Enable Cheat Mode for Operators (/op)");
+			builder.comment("Enable the cheat mode for players who have an operator status (/op).");
 			enableCheatModeForOp = builder.define("enableCheatModeForOp", true);
 
-			builder.comment("Enable Cheat Mode for users in Creative Mode");
+			builder.comment("Enable the cheat mode for players who are in the creative mode.");
 			enableCheatModeForCreative = builder.define("enableCheatModeForCreative", true);
 
-			builder.comment("Enable Cheat Mode for users who can use /give");
+			builder.comment("Enable the cheat mode for players who can use the \"/give\" command.");
 			enableCheatModeForGive = builder.define("enableCheatModeForGive", false);
 		}
 		builder.pop();
