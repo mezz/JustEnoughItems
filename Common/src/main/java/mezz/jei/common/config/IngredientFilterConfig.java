@@ -21,54 +21,54 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	public IngredientFilterConfig(IConfigSchemaBuilder builder) {
 		IConfigCategoryBuilder search = builder.addCategory("search");
 		modNameSearchMode = search.addEnum(
-				"ModNameSearchMode",
-				SearchMode.REQUIRE_PREFIX,
-				"Search mode for Mod Names (prefix: @)"
+			"ModNameSearchMode",
+			SearchMode.REQUIRE_PREFIX,
+			"Search mode for mod names (prefix: @)."
 		);
 		tooltipSearchMode = search.addEnum(
-				"TooltipSearchMode",
-				SearchMode.ENABLED,
-				"Search mode for Tooltips (prefix: #)"
+			"TooltipSearchMode",
+			SearchMode.ENABLED,
+			"Search mode for tooltips (prefix: #)."
 		);
 		tagSearchMode = search.addEnum(
-				"TagSearchMode",
-				SearchMode.REQUIRE_PREFIX,
-				"Search mode for Tag Names (prefix: $)"
+			"TagSearchMode",
+			SearchMode.REQUIRE_PREFIX,
+			"Search mode for tags (prefix: $)."
 		);
 		colorSearchMode = search.addEnum(
-				"ColorSearchMode",
-				SearchMode.DISABLED,
-				"Search mode for Colors (prefix: ^)"
+			"ColorSearchMode",
+			SearchMode.DISABLED,
+			"Search mode for colors (prefix: ^)."
 		);
 		resourceLocationSearchMode = search.addEnum(
-				"ResourceLocationSearchMode",
-				SearchMode.DISABLED,
-				"Search mode for resources locations (prefix: &)"
+			"ResourceLocationSearchMode",
+			SearchMode.DISABLED,
+			"Search mode for resource locations (prefix: &)."
 		);
 		creativeTabSearchMode = search.addEnum(
 			"CreativeTabSearchMode",
 			SearchMode.DISABLED,
-			"Search mode for Creative Tabs (prefix: %)"
+			"Search mode for creative mode tab names (prefix: %)."
 		);
 		searchAdvancedTooltips = search.addBoolean(
-				"SearchAdvancedTooltips",
-				false,
-				"Search advanced tooltips (visible with F3+H)"
+			"SearchAdvancedTooltips",
+			false,
+			"Search in advanced tooltips (visible with F3 + H)."
 		);
 		searchModIds = search.addBoolean(
-				"SearchModIds",
-				true,
-				"Search mod ids in addition to mod names"
+			"SearchModIds",
+			true,
+			"Search mod IDs in addition to mod names."
 		);
 		searchShortModNames = search.addBoolean(
-				"SearchShortModNames",
-				true,
-				"Search by the shorthand first letters of a mod's name"
+			"SearchShortModNames",
+			true,
+			"Search by the shorthand first letters of a mod's name."
 		);
 		searchIngredientAliases = search.addBoolean(
 			"SearchIngredientAliases",
 			true,
-			"Search ingredient aliases (alternative names) that are added by plugins, in addition to ingredient names"
+			"Search ingredient aliases (alternative names) that are added by plugins, in addition to ingredient names."
 		);
 	}
 
