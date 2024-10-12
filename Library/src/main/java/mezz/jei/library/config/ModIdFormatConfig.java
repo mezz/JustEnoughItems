@@ -35,7 +35,7 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 			"ModNameFormat",
 			defaultModNameFormat,
 			ChatFormattingSerializer.INSTANCE,
-			"Formatting for mod name tooltip"
+			"Formatting for the mod names in tooltips for JEI GUIs. Leave blank to disable."
 		);
 		this.modNameFormat = new CachedSupplierTransformer<>(configValue, ModIdFormatConfig::toFormatString);
 	}
