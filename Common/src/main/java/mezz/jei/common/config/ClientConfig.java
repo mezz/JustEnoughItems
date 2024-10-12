@@ -35,12 +35,12 @@ public final class ClientConfig implements IClientConfig {
 		centerSearchBarEnabled = advanced.addBoolean(
 			"CenterSearch",
 			defaultCenterSearchBar,
-			"Display search bar in the center"
+			"Move the JEI search bar to the bottom center of the screen."
 		);
 		lowMemorySlowSearchEnabled = advanced.addBoolean(
 			"LowMemorySlowSearchEnabled",
 			false,
-			"Set low-memory mode (makes search very slow, but uses less RAM)"
+			"Set low-memory mode (makes search very slow but uses less RAM)."
 		);
 		catchRenderErrorsEnabled = advanced.addBoolean(
 			"CatchRenderErrorsEnabled",
@@ -70,14 +70,14 @@ public final class ClientConfig implements IClientConfig {
 		giveMode = advanced.addEnum(
 			"GiveMode",
 			GiveMode.defaultGiveMode,
-			"How items should be handed to you"
+			"Choose if JEI should give ingredients directly to the inventory or pick them up with the mouse."
 		);
 		maxRecipeGuiHeight = advanced.addInteger(
 			"RecipeGuiHeight",
 			defaultRecipeGuiHeight,
 			minRecipeGuiHeight,
 			Integer.MAX_VALUE,
-			"Max. recipe gui height"
+			"Max recipe GUI height."
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
@@ -85,7 +85,7 @@ public final class ClientConfig implements IClientConfig {
 			"IngredientSortStages",
 			IngredientSortStage.defaultStages,
 			new ListSerializer<>(new EnumSerializer<>(IngredientSortStage.class)),
-			"Sorting order for the ingredient list"
+			"Sorting order for the ingredient list."
 		);
 	}
 
