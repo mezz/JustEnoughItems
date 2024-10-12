@@ -26,21 +26,18 @@
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "Fehlende Items",
   "jei.tooltip.error.recipe.transfer.inventory.full": "Inventar ist zu voll",
-  "jei.tooltip.error.recipe.transfer.unknown": "Unbekannter Fehler, siehe Protokoll(Logs)",
   "jei.tooltip.error.recipe.transfer.no.server": "Auf dem Server muss JEI installiert sein",
-  "jei.tooltip.error.recipe.transfer.disabled": "In Server Konfiguration wurde der JEI Rezept-Transfer deaktiviert",
   "jei.tooltip.error.recipe.transfer.too.large.player.inventory": "Rezept ist zu groß für 2x2",
-  "jei.tooltip.error.crash": "Fehler des Tooltips, siehe Protokoll(Log)",
+  "jei.tooltip.error.crash": "Fehler des Tooltips, siehe Protokoll (Log)",
 
   "_comment": "Error Messages",
-  "jei.chat.error.command.too.long": "JEI muss auf dem Server installiert sein, damit dieser Befehl funktioniert, da er zu lang für Minecraft ist.",
   "jei.chat.error.no.cheat.permission.1": "Dir ist es nicht erlaubt, JEI's Cheat-Modus zu benutzen.",
   "jei.chat.error.no.cheat.permission.disabled": "Auf diesem Server, ist der JEI Cheat Mode für alle Spieler deaktiviert.",
   "jei.chat.error.no.cheat.permission.enabled": "Auf diesem Server, können folgende Spieler den JEI Cheat Mode benutzen:",
   "jei.chat.error.no.cheat.permission.creative": "Spieler im Kreativmodus",
   "jei.chat.error.no.cheat.permission.op": "Spieler die Operator sind (/op)",
   "jei.chat.error.no.cheat.permission.give": "Spieler die berechtigt sind für /give",
-  
+
   "_comment": "Key Bindings",
   "jei.key.category.overlays": "JEI (Overlays)",
   "key.jei.toggleOverlay": "Item-Liste (de-)aktivieren",
@@ -48,34 +45,36 @@
   "key.jei.previousPage": "Vorherige Seite anzeigen",
   "key.jei.nextPage": "Nächste Seite anzeigen",
   "key.jei.toggleBookmarkOverlay": "Zeige/Verstecke den mit Lesezeichen versehenen Gegenstand",
-  
+
   "jei.key.category.recipe.gui": "JEI (Rezepte)",
   "key.jei.recipeBack": "Zuvor angeschautes Rezept anzeigen",
   "key.jei.previousCategory": "Vorherige Rezeptkategorie anzeigen",
   "key.jei.nextCategory": "Nächste Rezeptkategorie anzeigen",
   "key.jei.previousRecipePage": "Vorherige Rezeptseite anzeigen",
   "key.jei.nextRecipePage": "Nächste Rezeptseite anzeigen",
-  
+
   "jei.key.category.cheat.mode": "JEI (Cheat Modus)",
   "key.jei.toggleCheatMode": "Cheat Modus umschalten",
-  "key.jei.toggleCheatModeConfigButton": "Cheat Modus umschalten (wenn Maus über Config Button schwebt)",
   "key.jei.cheatOneItem": "Cheate 1 Item",
   "key.jei.cheatOneItem2": "Cheate 1 Item",
   "key.jei.cheatItemStack": "Cheate 1 Item-Stapel",
   "key.jei.cheatItemStack2": "Cheate 1 Item-Stapel",
-  
+
+  "jei.key.category.hover.config.button": "JEI (wenn Maus über Config Button schwebt)",
+  "key.jei.toggleCheatModeConfigButton": "Cheat Modus umschalten",
+
   "jei.key.category.edit.mode": "JEI (Editier Modus)",
   "key.jei.toggleEditMode": "Zutaten Ausblendungsmodus umschalten",
   "key.jei.toggleHideIngredient": "Zutat ausblenden",
   "key.jei.toggleWildcardHideIngredient": "Zutat ausblenden per Wildcard Übereinstimmung",
-  
+
   "jei.key.category.mouse.hover": "JEI (Maus Hovering)",
   "key.jei.bookmark": "Hinzufügen/Entfernen Lesezeichen",
   "key.jei.showRecipe": "Rezept anzeigen",
   "key.jei.showRecipe2": "Rezept anzeigen",
   "key.jei.showUses": "Verwendung anzeigen",
   "key.jei.showUses2": "Verwendung anzeigen",
-  
+
   "jei.key.category.search": "JEI (Suchfilter)",
   "key.jei.clearSearchBar": "Suchfilter löschen",
   "key.jei.previousSearch": "Vorherige Suche im Verlauf",
@@ -110,8 +109,8 @@
   "config.jei.search.creativeTabSearchMode.comment": "Suchmodus für die Kategorien im Kreativmodus-Inventar (Präfix: %)",
   "config.jei.search.colorSearchMode": "^Farbe",
   "config.jei.search.colorSearchMode.comment": "Suchmodus für die Item-Farben (Präfix: ^)",
-  "config.jei.search.resourceIdSearchMode": "&ResourceId",
-  "config.jei.search.resourceIdSearchMode.comment": "Suchmodus für die \"Resource-Id\" (prefix: &)",
+  "config.jei.search.resourceIdSearchMode": "&ResourceLocation",
+  "config.jei.search.resourceIdSearchMode.comment": "Suchmodus für die \"ResourceLocation\" (prefix: &)",
   "config.jei.search.searchAdvancedTooltips": "Durchsuche erweiterte Tooltips",
   "config.jei.advanced": "Erweitert",
   "config.jei.advanced.comment": "Erweiterte Konfigurationsoptionen, die ändern, wie JEI funktioniert.",
@@ -158,10 +157,16 @@
   "_comment": "Messages",
   "jei.message.configured": "Installier den \"Configured\" mod um auf die In-Game Konfiguration zu zugreifen",
 
-  "_comment": "DEBUG (for debug mode, do not need translation)",
-  "description.jei.wooden.door.1": "Wooden Doors allow you to block monsters from entering your building.\\nTesting sentences.",
+  "_comment": "Key Names",
+  "jei.key.combo.shift": "SHIFT + %s",
+  "jei.key.combo.control": "CTRL + %s",
+  "jei.key.combo.command": "CMD + %s",
+  "jei.key.combo.alt": "ALT + %s",
+
+  "_comment": "Debug (for a debug mode, do not need translation)",
+  "description.jei.wooden.door.1": "Wooden doors allow you to block monsters from entering your building.\\nTesting sentences.",
   "description.jei.wooden.door.2": "Clicking on a door changes its state from open to closed and vice versa.",
-  "description.jei.wooden.door.3": "Wooden Doors can be opened/closed via Redstone Circuits.",
+  "description.jei.wooden.door.3": "Wooden doors can be opened/closed via redstone circuits.",
   "description.jei.debug.formatting.1": "Testing %s formatting replacements.",
   "description.jei.debug.formatting.2": "Testing %s %s formatting replacements.",
   "description.jei.debug.formatting.3": "%s nested"
