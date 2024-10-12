@@ -10,26 +10,15 @@ jei.tooltip.recipe.ore.dict=קבל כל: %s
 jei.tooltip.item.colors=צבעים: %s
 jei.tooltip.shapeless.recipe=מתכון חסר צורה
 jei.tooltip.cheat.mode.button.enabled=מצב צ'יטים
-jei.tooltip.cheat.mode.how.to.disable.hotkey=Press %s to toggle it.
-jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-click here to toggle it.
-jei.tooltip.recipe.by=Recipe By: %s
-jei.tooltip.recipe.id=Recipe ID: %s
-jei.tooltip.not.enough.space=There is not enough space to display the ingredient list here.
-jei.tooltip.ingredient.list.disabled=The JEI overlay is disabled.
-jei.tooltip.ingredient.list.disabled.how.to.fix=Press %s to enable it.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=חפצים חסרים
 jei.tooltip.error.recipe.transfer.inventory.full=המלאי מלא מידי
-jei.tooltip.error.recipe.transfer.unknown=בעיה לא ידועה, יש לבדוק את הלוג
 jei.tooltip.error.recipe.transfer.no.server=חייב שלשרת יהיה JEI מותקן
-jei.tooltip.error.recipe.transfer.too.large.player.inventory=Recipe is too large to craft in the 2x2 player crafting grid.
 jei.tooltip.error.crash=בעיה בToolTip יש לבדוק את הלוג
 
 # Error Messages
 jei.chat.error.command.too.long=JEI חייב ליהיות מותקן בשרת כדי לטפל בפקודת הצ'אט הזאת, לקח למיינקראפט יותר מידי זמן לשלוח.
-jei.chat.error.no.cheat.permission.1=You do not have permission to use JEI's Cheat Mode.
-jei.chat.error.no.cheat.permission.2=Permission is given to players who can /give items or are in Creative Mode.
 
 # Key Bindings
 key.jei.toggleOverlay=הפעל/הפסק כיסוי רשימת חפצים
@@ -38,8 +27,6 @@ key.jei.showRecipe=הצג מתכונים לחפצים
 key.jei.showUses=הצג שימוש של חפצים
 key.jei.recipeBack=הצג עמוד חפצים קודם
 key.jei.toggleCheatMode=הפעל.הפסק מצב רמאות חפצים
-key.jei.previousPage=Show Previous Page
-key.jei.nextPage=Show Next Page
 
 # Config
 config.jei.default=ברירת מחדל
@@ -71,8 +58,6 @@ config.jei.search.creativeTabSearchMode=נידרש %% בשביל שמות של �
 config.jei.search.creativeTabSearchMode.comment=נדרש "%" לפני מילה כדי לחפש שמות של טאבים ממצב יצירתי.
 config.jei.search.colorSearchMode=נדרש ^ בשביל צבעים
 config.jei.search.colorSearchMode.comment=נדרש "^" לפני מילה גדי לחפש צבע של חפץ.
-config.jei.search.resourceIdSearchMode=&ResourceId
-config.jei.search.resourceIdSearchMode.comment=Search mode for resources ids (prefix: &)
 
 config.jei.advanced=מתקדם
 config.jei.advanced.comment=הגדרות מתכדמות כדי לשנות את האופן שJEI מתנהג.
@@ -84,22 +69,11 @@ config.jei.advanced.debugModeEnabled=מצב דיבאג
 config.jei.advanced.debugModeEnabled.comment=שימושי רק בישביל מפתחי JEI, מוסיף אלפי חפצי ניסיון וכמה מתכוני דיבאג.
 config.jei.advanced.centerSearchBarEnabled=בר חיפוש מרכזי
 config.jei.advanced.centerSearchBarEnabled.comment=הזז את בר החיפוש של JEI לתחתית מרכז המסך.
-config.jei.advanced.modNameFormat=Mod Name Format
-config.jei.advanced.modNameFormat.comment=How the mod name should be formatted in the tooltip for JEI guis. Leave blank to disable.
-config.jei.advanced.maxColumns=Max Width
-config.jei.advanced.maxColumns.comment=The maximum width of the ingredient list.
-config.jei.advanced.giveMode=Give Mode
-config.jei.advanced.giveMode.comment=Choose if JEI should give items direct to the inventory (inventory) or pick them up with the mouse (mouse_pickup).
 
 # Hide Ingredients Mode
 gui.jei.editMode.description=JEI מצב עריכת רשימת חפצים:
 gui.jei.editMode.description.hide=%CTRL-לחץ כדי להחביא.
-gui.jei.editMode.description.hide.wild=%CTRL-right-click כדי להחביא עם wildcard.
-
-# PC/Linux Control Key
-key.jei.ctrl=CTRL
-# Mac Command Key
-key.jei.ctrl.mac=CMD
+gui.jei.editMode.description.hide.wild=%CTRL-Right-Click כדי להחביא עם wildcard.
 
 # Recipe Categories
 gui.jei.category.craftingTable=בניה
@@ -112,7 +86,11 @@ gui.jei.category.brewing=מבשל
 gui.jei.category.brewing.steps=צעדים: %s
 gui.jei.category.itemInformation=תיאור
 
-# DEBUG (for debug mode, do not need translation)
-description.jei.wooden.door.1=Wooden Doors allow you to block monsters from entering your building.\nTesting sentences.
-description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and visa versa.
-description.jei.wooden.door.3=Wooden Doors can be opened/closed via Redstone Circuits.
+# Key Names
+key.jei.ctrl=CTRL
+key.jei.ctrl.mac=CMD
+
+# Debug (for a debug mode, do not need translation)
+description.jei.wooden.door.1=Wooden doors allow you to block monsters from entering your building.\nTesting sentences.
+description.jei.wooden.door.2=Clicking on a door changes its state from open to closed and vice versa.
+description.jei.wooden.door.3=Wooden doors can be opened/closed via redstone circuits.
