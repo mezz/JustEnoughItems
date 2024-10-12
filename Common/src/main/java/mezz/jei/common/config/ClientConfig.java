@@ -35,34 +35,34 @@ public final class ClientConfig implements IClientConfig {
 		debugModeEnabled = advanced.addBoolean(
 			"DebugMode",
 			false,
-			"Debug mode enabled"
+			"Debug mode enabled."
 		);
 		centerSearchBarEnabled = advanced.addBoolean(
 			"CenterSearch",
 			defaultCenterSearchBar,
-			"Display search bar in the center"
+			"Move the JEI search bar to the bottom center of the screen."
 		);
 		lowMemorySlowSearchEnabled = advanced.addBoolean(
 			"LowMemorySlowSearchEnabled",
 			false,
-			"Set low-memory mode (makes search very slow, but uses less RAM)"
+			"Set low-memory mode (makes search very slow but uses less RAM)."
 		);
 		cheatToHotbarUsingHotkeysEnabled = advanced.addBoolean(
 			"CheatToHotbarUsingHotkeysEnabled",
 			false,
-			"Enable cheating items into the hotbar by using the shift+number keys."
+			"Enable cheating items into the hotbar by using Shift + numeric keys."
 		);
 		giveMode = advanced.addEnum(
 			"GiveMode",
 			GiveMode.defaultGiveMode,
-			"How items should be handed to you"
+			"Choose if JEI should give ingredients directly to the inventory or pick them up with the mouse."
 		);
 		maxRecipeGuiHeight = advanced.addInteger(
 			"RecipeGuiHeight",
 			defaultRecipeGuiHeight,
 			minRecipeGuiHeight,
 			Integer.MAX_VALUE,
-			"Max. recipe gui height"
+			"Max recipe GUI height."
 		);
 
 		ConfigCategoryBuilder colors = schema.addCategory("colors");
@@ -70,7 +70,7 @@ public final class ClientConfig implements IClientConfig {
 			"SearchColors",
 			ColorGetter.getColorDefaults(),
 			ColorNameSerializer.INSTANCE,
-			"Color values to search for"
+			"Color values to search for."
 		);
 		ColorNamer.create(searchColors);
 
@@ -79,7 +79,7 @@ public final class ClientConfig implements IClientConfig {
 			"IngredientSortStages",
 			IngredientSortStage.defaultStages,
 			new EnumSerializer<>(IngredientSortStage.class),
-			"Sorting order for the ingredient list"
+			"Sorting order for the ingredient list."
 		);
 	}
 
