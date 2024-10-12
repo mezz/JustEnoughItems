@@ -23,6 +23,7 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 	IJeiKeyMapping getCloseRecipeGui();
 
 	IJeiKeyMapping getBookmark();
+	IJeiKeyMapping getForceBookmark();
 	IJeiKeyMapping getToggleBookmarkOverlay();
 
 	@Override
