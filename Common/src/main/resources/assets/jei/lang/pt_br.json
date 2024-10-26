@@ -82,5 +82,7 @@
   "description.jei.wooden.door.3": "As portas de madeira podem ser abertas/fechadas através dos circuitos de Redstone.",
   "description.jei.debug.formatting.1": "Testing %s formatting replacements.",
   "description.jei.debug.formatting.2": "Testing %s %s formatting replacements.",
-  "description.jei.debug.formatting.3": "%s nested"
+  "description.jei.debug.formatting.3": "%s nested",
+  "jei.alias.panda.spawn.egg": "endangered",
+  "jei.alias.villager.spawn.egg": "HMMM"
 }
