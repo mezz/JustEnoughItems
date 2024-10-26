@@ -1,6 +1,6 @@
 # Tooltips
 jei.tooltip.config=Konfiguration för JEI
-jei.tooltip.show.recipes=Visa recept
+jei.tooltip.show.recipes=Visa alla recept
 jei.tooltip.show.all.recipes=Visa alla recept
 jei.tooltip.delete.item=Klicka för att radera
 jei.tooltip.liquid.amount.with.capacity=%,d / %,d mB
@@ -9,25 +9,25 @@ jei.tooltip.transfer=Placera föremål
 jei.tooltip.recipe.ore.dict=Fungerar med alla %s
 jei.tooltip.item.colors=Färger: %s
 jei.tooltip.shapeless.recipe=Formlöst recept
-jei.tooltip.cheat.mode.button.enabled=Fuskläget är aktiverat
+jei.tooltip.cheat.mode.button.enabled=Fuskläget har aktiverats.
 jei.tooltip.cheat.mode.how.to.disable.hotkey=Tryck på "%s" för att slå på/av det.
 jei.tooltip.cheat.mode.how.to.disable.no.hotkey=%s-klicka för att slå på/av det.
 jei.tooltip.recipe.by=Recept av: %s
 jei.tooltip.recipe.id=Recept-ID: %s
-jei.tooltip.not.enough.space=Det finns inte tillräckligt mycket utrymme för att visa överlägget för JEI:s ingredienslista här.
-jei.tooltip.ingredient.list.disabled=JEI:s överlägg är inaktiverat.
-jei.tooltip.ingredient.list.disabled.how.to.fix=Tryck på %s för att aktivera det.
+jei.tooltip.not.enough.space=Området till höger om denna meny är för litet för att visa överlägget för JEI:s ingredienslista.
+jei.tooltip.ingredient.list.disabled=JEI:s överlägg är dolt.
+jei.tooltip.ingredient.list.disabled.how.to.fix=Tryck på %s för att visa det igen.
 jei.tooltip.bookmarks=JEI-bokmärken
 jei.tooltip.bookmarks.usage.nokey=Lägg till ett tangentkombination för JEI-bokmärken i dina kontrollinställningar.
 jei.tooltip.bookmarks.usage.key=Lägg musen över en ingrediens och tryck på "%s" för att bokmärka den.
-jei.tooltip.bookmarks.not.enough.space=Det finns inte tillräckligt mycket utrymme för att visa överlägget för JEI:s bokmärken här.
+jei.tooltip.bookmarks.not.enough.space=Området till vänster om denna meny är för litet för att visa överlägget för JEI:s bokmärken.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Föremål saknas
-jei.tooltip.error.recipe.transfer.inventory.full=Förrådet är för fullt
-jei.tooltip.error.recipe.transfer.no.server=Servern måste ha JEI installerat
+jei.tooltip.error.recipe.transfer.inventory.full=Förrådet har för lite utrymme.
+jei.tooltip.error.recipe.transfer.no.server=Servern måste ha JEI installerat.
 jei.tooltip.error.recipe.transfer.too.large.player.inventory=Receptet är för stort för att tillverkas i spelarens rutnät på 2x2.
-jei.tooltip.error.crash=Denna ingrediens kraschade när dess inforuta hämtades. Se klientloggarna för detaljerad information.
+jei.tooltip.error.crash=Denna ingrediens kraschade när dess inforuta hämtades. Se klientloggarna för information.
 
 # Error Messages
 jei.chat.error.command.too.long=JEI måste vara installerad på servern för att hantera detta chattkommando då det är för lång för Minecraft att skicka.

@@ -19,8 +19,8 @@ jei.tooltip.ingredient.list.disabled=Die JEI-Oberfläche ist deaktiviert.
 jei.tooltip.ingredient.list.disabled.how.to.fix=Klicke auf %s zum Aktivieren.
 jei.tooltip.bookmarks=JEI Lesezeichen
 jei.tooltip.bookmarks.usage.nokey=Füge eine Tastenkombination für JEI-Lesezeichen in der Steuerungs-Einstellung hinzu.
-jei.tooltip.bookmarks.usage.key=Gehe mit den Mauszeiger auf einen Gegenstand und drücke "%s" um es als Lesezeichen zu speichern.
-jei.tooltip.bookmarks.not.enough.space=Dort ist nicht genug Platz, um das Lesezeichen hier anzeigen zukönnen.
+jei.tooltip.bookmarks.usage.key=Gehe mit dem Mauszeiger auf einen Gegenstand und drücke \"%s\", um ihn als Lesezeichen zu speichern.
+jei.tooltip.bookmarks.not.enough.space=Dort ist nicht genug Platz, um das Lesezeichen hier anzeigen zu können.
 
 # Error Tooltips
 jei.tooltip.error.recipe.transfer.missing=Fehlende Items
@@ -41,10 +41,10 @@ key.jei.showRecipe=Rezept anzeigen
 key.jei.showUses=Verwendung anzeigen
 key.jei.recipeBack=Zuvor angeschautes Rezept anzeigen
 key.jei.toggleCheatMode=Cheat Modus umschalten
-key.jei.toggleEditMode=Zutaten Ausblendungsmodus umschalten
+key.jei.toggleEditMode=Zutaten-Ausblendungsmodus umschalten
 key.jei.previousPage=Vorherige Seite anzeigen
 key.jei.nextPage=Nächste Seite anzeigen
-key.jei.bookmark=Hinzufügen/Entfernen Lesezeichen
+key.jei.bookmark=Lesezeichen hinzufügen/entfernen
 key.jei.toggleBookmarkOverlay=Zeige/Verstecke den mit Lesezeichen versehenen Gegenstand
 
 # Config
@@ -103,7 +103,7 @@ config.jei.advanced.giveMode=Item-Aufnahmemodus
 config.jei.advanced.giveMode.comment=Wähle, ob JEI die Items direkt in das Inventar geben soll oder du sie mit der Maus aufnimmst.
 
 # Hide Ingredients Mode
-gui.jei.editMode.description=JEI Zutaten Ausblendungsmodus:
+gui.jei.editMode.description=JEI Zutaten-Ausblendungsmodus:
 gui.jei.editMode.description.hide=Ausblenden mit %CTRL-Klick.
 gui.jei.editMode.description.hide.wild=Ausblenden per Wildcard mit %CTRL-Rechtsklick.
 
