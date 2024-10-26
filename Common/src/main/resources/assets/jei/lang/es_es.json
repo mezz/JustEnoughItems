@@ -117,5 +117,7 @@
   "description.jei.wooden.door.3": "Las puertas de madera pueden abrirse/cerrarse mediante circuitos de piedra roja.",
   "description.jei.debug.formatting.1": "Probando %s reemplazos de formato.",
   "description.jei.debug.formatting.2": "Probando %s %s reemplazos de formato.",
-  "description.jei.debug.formatting.3": "%s anidados"
+  "description.jei.debug.formatting.3": "%s anidados",
+  "jei.alias.panda.spawn.egg": "endangered",
+  "jei.alias.villager.spawn.egg": "HMMM"
 }

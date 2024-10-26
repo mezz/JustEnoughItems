@@ -21,6 +21,16 @@
   "jei.tooltip.bookmarks.usage.nokey": "在按鍵設定中為 JEI 書籤新增綁定鍵。",
   "jei.tooltip.bookmarks.usage.key": "將游標停在某個物品上，然後按下「%s」以新增至書籤。",
   "jei.tooltip.bookmarks.not.enough.space": "這裡沒有足夠的空間顯示 JEI 書籤清單疊層。",
+  "jei.tooltip.bookmarks.recipe": "%s 配方書籤",
+  "jei.tooltip.bookmarks.recipe.add": "將此配方加入書籤。",
+  "jei.tooltip.bookmarks.recipe.remove": "移除此配方的書籤。",
+  "jei.tooltip.bookmarks.tooltips.usage": "[%s 以顯示詳細資訊]",
+  "jei.tooltip.bookmarks.tooltips.transfer.usage": "[%s 以合成一個]",
+  "jei.tooltip.bookmarks.tooltips.transfer.max.usage": "[%s 以合成多個]",
+  "jei.tooltip.recipe.sort.bookmarks.first.enabled": "優先顯示已加入書籤的配方（已啟用）",
+  "jei.tooltip.recipe.sort.bookmarks.first.disabled": "優先顯示已加入書籤的配方（已停用）",
+  "jei.tooltip.recipe.sort.craftable.first.enabled": "優先顯示可合成的配方（已啟用）",
+  "jei.tooltip.recipe.sort.craftable.first.disabled": "優先顯示可合成的配方（已停用）",
 
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "遺失的物品",
@@ -28,6 +38,7 @@
   "jei.tooltip.error.recipe.transfer.no.server": "伺服器必須安裝 JEI",
   "jei.tooltip.error.recipe.transfer.too.large.player.inventory": "合成配方太大，無法在 2x2 玩家合成台製作。",
   "jei.tooltip.error.crash": "物品提示錯誤，請查看記錄檔",
+  "jei.tooltip.error.render.crash": "此成分在繪製時當機。請查看客戶端記錄檔以獲取詳細資訊。",
 
   "_comment": "Error Messages",
   "jei.chat.error.no.cheat.permission.1": "您沒有使用 JEI 作弊模式的權限。",
@@ -74,6 +85,8 @@
   "key.jei.showRecipe2": "顯示配方",
   "key.jei.showUses": "顯示用途",
   "key.jei.showUses2": "顯示用途",
+  "key.jei.transferRecipeBookmark": "合成已加入書籤的配方（一次）",
+  "key.jei.maxTransferRecipeBookmark": "合成已加入書籤的配方（最大數量）",
 
   "jei.key.category.search": "JEI（搜尋篩選器）",
   "key.jei.clearSearchBar": "清空搜尋篩選器",
@@ -105,10 +118,10 @@
   "gui.jei.category.compostable": "可堆肥",
   "gui.jei.category.compostable.chance": "機率：%s%%",
   "gui.jei.category.itemInformation": "資訊",
+  "gui.jei.category.tagInformation": "%s 標籤",
   "gui.jei.category.tagInformation.block": "方塊 標籤",
   "gui.jei.category.tagInformation.fluid": "流體 標籤",
   "gui.jei.category.tagInformation.item": "物品 標籤",
-  "gui.jei.category.tagInformation": "%s 標籤",
 
   "_comment": "Messages",
   "jei.message.configured": "安裝「Configured」模組以存取遊戲內設定",
@@ -121,6 +134,9 @@
   "jei.key.combo.control": "CTRL + %s",
   "jei.key.combo.command": "CMD + %s",
   "jei.key.combo.alt": "ALT + %s",
+  "jei.key.shift": "SHIFT",
+  "jei.key.mouse.left": "左鍵",
+  "jei.key.mouse.right": "右鍵",
 
   "_comment": "Debug (for a debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden doors allow you to block monsters from entering your building.\\nTesting sentences.",
@@ -128,5 +144,7 @@
   "description.jei.wooden.door.3": "Wooden doors can be opened/closed via redstone circuits.",
   "description.jei.debug.formatting.1": "Testing %s formatting replacements.",
   "description.jei.debug.formatting.2": "Testing %s %s formatting replacements.",
-  "description.jei.debug.formatting.3": "%s nested"
+  "description.jei.debug.formatting.3": "%s nested",
+  "jei.alias.panda.spawn.egg": "endangered",
+  "jei.alias.villager.spawn.egg": "HMMM"
 }

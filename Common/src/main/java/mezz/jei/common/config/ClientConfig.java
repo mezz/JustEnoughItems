@@ -111,7 +111,7 @@ public final class ClientConfig implements IClientConfig {
 		holdShiftToShowBookmarkTooltipFeaturesEnabled = bookmarkTooltips.addBoolean(
 			"HoldShiftToShowBookmarkTooltipFeatures",
 			true,
-			"Hold shift to show bookmark tooltip features."
+			"Hold Shift to show bookmark tooltip features."
 		);
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
@@ -133,7 +133,7 @@ public final class ClientConfig implements IClientConfig {
 		showTagRecipesEnabled = advanced.addBoolean(
 			"showTagRecipesEnabled",
 			isDev,
-			"Show recipes for ingredient tags, like Item Tags and Block Tags."
+			"Show recipes for ingredient tags like item tags and block tags."
 		);
 		showCreativeTabNamesEnabled = advanced.addBoolean(
 			"showCreativeTabNamesEnabled",
