@@ -56,7 +56,7 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Modo de ocultar ingredientes:",
-  "gui.jei.editMode.description.hide": "%s-Click para ocultar",
+  "gui.jei.editMode.description.hide": "%s para ocultar",
   "gui.jei.editMode.description.hide.wild": "%s-Click derecho del ratón para ocultar por medio de un comodín",
 
   "_comment": "Recipe Categories",

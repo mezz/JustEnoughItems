@@ -56,8 +56,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI 아이템 목록 수정 모드:",
-  "gui.jei.editMode.description.hide": "%s-숨기려면 클릭하십시오.",
-  "gui.jei.editMode.description.hide.wild": "와일드카드로 숨기려면 %s 마우스 오른쪽 버튼을 클릭하십시오.",
+  "gui.jei.editMode.description.hide": "%s을(를) 눌러 숨기십시오.",
+  "gui.jei.editMode.description.hide.wild": "%s을(를) 눌러 와일드카드로 숨기십시오.",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "제작대",

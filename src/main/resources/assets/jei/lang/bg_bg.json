@@ -56,8 +56,8 @@
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "Jei скрий режим на съставки:",
-  "gui.jei.editMode.description.hide": "%s-Click да скриеш.",
-  "gui.jei.editMode.description.hide.wild": "%s-Right-Click да скриеш с wildcard.",
+  "gui.jei.editMode.description.hide": "%s да се скрие",
+  "gui.jei.editMode.description.hide.wild": "%sда се скрие от Wildcard",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Крафтване",
