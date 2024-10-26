@@ -2,7 +2,7 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "Konfiguracja JEI",
   "jei.tooltip.show.recipes": "Pokaż receptury",
-  "jei.tooltip.show.all.recipes": "Pokaż wszystkie receptury",
+  "jei.tooltip.show.all.recipes.hotkey": "Naciśnij „%s”, aby pokazać wszystkie receptury.",
   "jei.tooltip.delete.item": "Kliknij, aby usunąć.",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
@@ -109,6 +109,7 @@
 
   "_comment": "Messages",
   "jei.message.configured": "Zainstaluj moda Configured, aby uzyskać dostęp do konfiguracji w grze",
+  "jei.message.config.folder": "Lub kliknij tutaj, żeby zamiast tego otworzyć folder konfiguracyjny JEI",
   "jei.message.copy.recipe.id.success": "Skopiowano do schowka następujące ID receptury: %s",
   "jei.message.copy.recipe.id.failure": "Nie udało się skopiować do schowka ID receptury, gdyż jest ono nieznane",
 

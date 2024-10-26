@@ -58,7 +58,7 @@ public final class ColorNameConfig {
 			"SearchColors",
 			defaultColors,
 			new ListSerializer<>(ColorNameSerializer.INSTANCE),
-			"Color values to search for"
+			"Color values to search for."
 		);
 	}
 

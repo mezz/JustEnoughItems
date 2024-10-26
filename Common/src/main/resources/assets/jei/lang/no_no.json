@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "Innstillinger",
   "jei.tooltip.show.recipes": "Vis oppskrifter",
-  "jei.tooltip.show.all.recipes": "Vis alle oppskrifter",
   "jei.tooltip.delete.item": "Klikk for å slette",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",

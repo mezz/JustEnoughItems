@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "JEI конфигурация",
   "jei.tooltip.show.recipes": "Покажи рецепти",
-  "jei.tooltip.show.all.recipes": "Покажи всички рецепти",
   "jei.tooltip.delete.item": "Щракнете, за да изтриете",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",

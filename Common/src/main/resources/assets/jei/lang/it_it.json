@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "Configurazione della JEI",
   "jei.tooltip.show.recipes": "Mostra ricette",
-  "jei.tooltip.show.all.recipes": "Mostra tutte le ricette",
   "jei.tooltip.delete.item": "Clicca per eliminare",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",

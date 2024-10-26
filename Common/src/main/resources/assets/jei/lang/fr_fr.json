@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "Configurer JEI",
   "jei.tooltip.show.recipes": "Afficher les recettes",
-  "jei.tooltip.show.all.recipes": "Afficher toutes les recettes",
   "jei.tooltip.delete.item": "Cliquer pour supprimer",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
@@ -109,6 +108,7 @@
 
   "_comment": "Messages",
   "jei.message.configured": "Installez le mod \"Configured\" pour accéder à la configuration du jeu.",
+  "jei.message.config.folder": "Cliquez ici pour ouvrir le dossier de configuration de la JEI",
   "jei.message.copy.recipe.id.success": "Copie de l'ID de la recette dans le presse-papiers: %s",
   "jei.message.copy.recipe.id.failure": "Échec de la copie de l'ID de la recette dans le presse-papiers, l'ID de la recette est inconnu.",
 

@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "اعدادات جاي إي آي",
   "jei.tooltip.show.recipes": "اظهر الوصفات",
-  "jei.tooltip.show.all.recipes": "اظهر كل الوصفات",
   "jei.tooltip.delete.item": "انقر للحذف",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",

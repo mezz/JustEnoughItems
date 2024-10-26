@@ -2,8 +2,7 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "JEI Config",
   "jei.tooltip.show.recipes": "Show Recipes",
-  "jei.tooltip.show.all.recipes.hotkey": "%s to Show All Recipes",
-  "jei.tooltip.show.all.recipes": "Show All Recipes",
+  "jei.tooltip.show.all.recipes.hotkey": "Press \"%s\" to show all recipes.",
   "jei.tooltip.delete.item": "Click to delete.",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
@@ -110,7 +109,7 @@
 
   "_comment": "Messages",
   "jei.message.configured": "Install the \"Configured\" mod to access the in-game config",
-  "jei.message.config.folder": "Click here to open the JEI config folder",
+  "jei.message.config.folder": "Or click here to open the JEI config folder instead",
   "jei.message.copy.recipe.id.success": "The following recipe ID was copied to the clipboard: %s",
   "jei.message.copy.recipe.id.failure": "Failed to copy the recipe ID to the clipboard because the ID is unknown",
 

@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "Konfigurasi JEI",
   "jei.tooltip.show.recipes": "Tampilkan Resep",
-  "jei.tooltip.show.all.recipes": "Tampilkan Semua Resep",
   "jei.tooltip.delete.item": "Klik untuk Menghapus",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",

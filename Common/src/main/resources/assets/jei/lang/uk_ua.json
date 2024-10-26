@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "Конфігурація JEI",
   "jei.tooltip.show.recipes": "Показати рецепти",
-  "jei.tooltip.show.all.recipes": "Показати всі рецепти",
   "jei.tooltip.delete.item": "Клацніть, щоб видалити",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
@@ -109,6 +108,7 @@
 
   "_comment": "Messages",
   "jei.message.configured": "Встановіть \"Configured\", щоб отримати доступ до конфігурації",
+  "jei.message.config.folder": "Клацніть тут, щоб відкрити теку з конфігурацією JEI",
   "jei.message.copy.recipe.id.success": "Ідентифікатор рецепту скопійовано до буфера обміну: %s",
   "jei.message.copy.recipe.id.failure": "Помилка копіювання ідентифікатора рецепту до буфера обміну, ідентифікатор рецепту невідомий",
 

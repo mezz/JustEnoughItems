@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "Asetukset",
   "jei.tooltip.show.recipes": "Näytä reseptit",
-  "jei.tooltip.show.all.recipes": "Näytä kaikki reseptit",
   "jei.tooltip.delete.item": "Paina poistaaksesi",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",

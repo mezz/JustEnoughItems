@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "Cấu hình JEI",
   "jei.tooltip.show.recipes": "Hiển thị công thức",
-  "jei.tooltip.show.all.recipes": "Hiển thị tất cả công thức",
   "jei.tooltip.delete.item": "Nhấp để Xóa",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
@@ -109,6 +108,7 @@
 
   "_comment": "Messages",
   "jei.message.configured": "Cài đặt mod \"Configured\" để truy cập cấu hình trong trò chơi",
+  "jei.message.config.folder": "Nhấp vào đây để mở thư mục cấu hình JEI",
   "jei.message.copy.recipe.id.success": "Đã sao chép ID công thức vào khay nhớ tạm: %s",
   "jei.message.copy.recipe.id.failure": "Không thể sao chép ID công thức vào khay nhớ tạm, ID công thức không xác định",
 

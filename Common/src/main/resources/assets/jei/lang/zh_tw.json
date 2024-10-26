@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "JEI 設定",
   "jei.tooltip.show.recipes": "顯示配方",
-  "jei.tooltip.show.all.recipes": "顯示所有配方",
   "jei.tooltip.delete.item": "點擊以刪除",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
@@ -109,6 +108,7 @@
 
   "_comment": "Messages",
   "jei.message.configured": "安裝「Configured」模組以存取遊戲內設定",
+  "jei.message.config.folder": "點擊此處以開啟 JEI 設定資料夾",
   "jei.message.copy.recipe.id.success": "已複製配方 ID 到剪貼簿：%s",
   "jei.message.copy.recipe.id.failure": "無法複製配方 ID 到剪貼簿，未知的配方 ID",
 

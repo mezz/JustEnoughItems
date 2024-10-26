@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "JEI Beállítások",
   "jei.tooltip.show.recipes": "Receptek Megjelenítése",
-  "jei.tooltip.show.all.recipes": "Minden Recept Megjelenítése",
   "jei.tooltip.delete.item": "Kattints a Törléshez",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
@@ -101,6 +100,7 @@
 
   "_comment": "Messages",
   "jei.message.configured": "Telepítsd a \"Configured\" modot, hogy hozzáférj a játékon belüli beállításokhoz",
+  "jei.message.config.folder": "Kattints ide, hogy megnyisd a JEI konfigurációs mappát",
   "jei.message.copy.recipe.id.success": "Recept ID vágólapra másolva: %s",
   "jei.message.copy.recipe.id.failure": "Nem sikerült vágólapra másolni a Recept ID-t, a Recept ID nem létezik",
 

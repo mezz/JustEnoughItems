@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "JEI Seçenekleri",
   "jei.tooltip.show.recipes": "Tarifleri Göster",
-  "jei.tooltip.show.all.recipes": "Bütün Tarifleri Göster",
   "jei.tooltip.delete.item": "Silmek İçin Tıkla",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",

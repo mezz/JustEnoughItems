@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "JEI 구성",
   "jei.tooltip.show.recipes": "제작법 보기",
-  "jei.tooltip.show.all.recipes": "모든 제작법 보기",
   "jei.tooltip.delete.item": "지우려면 클릭",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
@@ -109,6 +108,7 @@
 
   "_comment": "Messages",
   "jei.message.configured": "게임 내 구성에 접근하려면 \"Configured\" 모드를 설치하십시오.",
+  "jei.message.config.folder": "JEI 구성 폴더를 열려면 여기를 클릭하십시오.",
   "jei.message.copy.recipe.id.success": "제작법 ID를 클립보드에 복사했습니다: %s",
   "jei.message.copy.recipe.id.failure": "제작법 ID를 클립보드에 복사하지 못했습니다. 제작법 ID를 알 수 없습니다.",
 

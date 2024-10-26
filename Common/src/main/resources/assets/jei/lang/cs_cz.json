@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "JEI Config",
   "jei.tooltip.show.recipes": "Zobrazit Recepty",
-  "jei.tooltip.show.all.recipes": "Zobrazit Všechny Recepty",
   "jei.tooltip.delete.item": "Klikni pro smazání",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",

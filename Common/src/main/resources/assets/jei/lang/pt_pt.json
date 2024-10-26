@@ -2,6 +2,7 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "Configuração do JEI",
   "jei.tooltip.show.recipes": "Mostrar Receitas",
+  "jei.tooltip.show.all.recipes.hotkey": "%s para mostrar todas as Receitas",
   "jei.tooltip.delete.item": "Clicar para Apagar",
   "jei.tooltip.transfer": "Mover Itens",
   "jei.tooltip.recipe.tag": "Aceita etiqueta: %s",

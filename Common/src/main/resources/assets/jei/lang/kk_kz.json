@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "JEI конфигі",
   "jei.tooltip.show.recipes": "Рецепт көрсету",
-  "jei.tooltip.show.all.recipes": "Барлық рецептті көрсету",
   "jei.tooltip.delete.item": "Жою үшін басыңыз",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",

@@ -2,7 +2,7 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "JEIの設定",
   "jei.tooltip.show.recipes": "レシピを表示",
-  "jei.tooltip.show.all.recipes": "すべてのレシピを表示",
+  "jei.tooltip.show.all.recipes.hotkey": "「%s」を押してすべてのレシピを表示",
   "jei.tooltip.delete.item": "クリックで削除",
   "jei.tooltip.liquid.amount.with.capacity": "%s／%s mB",
   "jei.tooltip.liquid.amount": "%s mB",
@@ -109,6 +109,7 @@
 
   "_comment": "Messages",
   "jei.message.configured": "ゲーム内で設定にアクセスするには、\n\"Configured\" Modを導入してください",
+  "jei.message.config.folder": "ここをクリックするとJEIの設定フォルダーを開きます",
   "jei.message.copy.recipe.id.success": "以下のレシピIDをクリップボードにコピーしました：%s",
   "jei.message.copy.recipe.id.failure": "IDが不明なため、レシピIDのクリップボードへのコピーに失敗しました",
 

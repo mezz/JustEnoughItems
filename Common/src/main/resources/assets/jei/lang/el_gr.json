@@ -2,7 +2,6 @@
   "_comment": "Tooltips",
   "jei.tooltip.config": "Ρυθμίσεις JEI",
   "jei.tooltip.show.recipes": "Δείξε συνταγές",
-  "jei.tooltip.show.all.recipes": "Δείξε όλες τις συνταγές",
   "jei.tooltip.delete.item": "Πάτα για Διαγραφή",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
