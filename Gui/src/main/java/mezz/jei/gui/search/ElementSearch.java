@@ -22,6 +22,7 @@ public class ElementSearch implements IElementSearch {
 
 	private final Map<PrefixInfo<IListElementInfo<?>, IListElement<?>>, PrefixedSearchable<IListElementInfo<?>, IListElement<?>>> prefixedSearchables = new IdentityHashMap<>();
 	private final CombinedSearchables<IListElement<?>> combinedSearchables = new CombinedSearchables<>();
+	private final Set<IListElement<?>> allElements = Collections.newSetFromMap(new IdentityHashMap<>());
 
 	public ElementSearch(ElementPrefixParser elementPrefixParser) {
 		for (PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo : elementPrefixParser.allPrefixInfos()) {
@@ -57,6 +58,7 @@ public class ElementSearch implements IElementSearch {
 
 	@Override
 	public void add(IListElementInfo<?> info) {
+		this.allElements.add(info.getElement());
 		for (PrefixedSearchable<IListElementInfo<?>, IListElement<?>> prefixedSearchable : this.prefixedSearchables.values()) {
 			SearchMode searchMode = prefixedSearchable.getMode();
 			if (searchMode != SearchMode.DISABLED) {
@@ -71,6 +73,9 @@ public class ElementSearch implements IElementSearch {
 
 	@Override
 	public void addAll(Collection<IListElementInfo<?>> infos) {
+		for (IListElementInfo<?> info : infos) {
+			this.allElements.add(info.getElement());
+		}
 		for (PrefixedSearchable<IListElementInfo<?>, IListElement<?>> prefixedSearchable : this.prefixedSearchables.values()) {
 			SearchMode searchMode = prefixedSearchable.getMode();
 			if (searchMode != SearchMode.DISABLED) {
@@ -87,10 +92,7 @@ public class ElementSearch implements IElementSearch {
 
 	@Override
 	public Set<IListElement<?>> getAllIngredients() {
-		Set<IListElement<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
-		PrefixedSearchable<IListElementInfo<?>, IListElement<?>> noPrefixSearchables = this.prefixedSearchables.get(ElementPrefixParser.NO_PREFIX);
-		noPrefixSearchables.getAllElements(results::addAll);
-		return results;
+		return Collections.unmodifiableSet(allElements);
 	}
 
 	@Override
