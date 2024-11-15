@@ -13,6 +13,8 @@ public interface IClientConfig {
 
 	boolean isCheatToHotbarUsingHotkeysEnabled();
 
+	boolean getAsyncLoadingEnabled();
+
 	boolean isAddingBookmarksToFront();
 
     boolean isLookupFluidContents();

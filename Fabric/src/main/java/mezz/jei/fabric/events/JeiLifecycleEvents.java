@@ -36,6 +36,14 @@ public class JeiLifecycleEvents {
                 }
             });
 
+    public static final Event<Runnable> CLIENT_TICK_END =
+            EventFactory.createArrayBacked(Runnable.class, callbacks -> () -> {
+                for (Runnable callback : callbacks) {
+                    callback.run();
+                }
+            });
+
+
     @Environment(EnvType.CLIENT)
     @FunctionalInterface
     public interface RegisterResourceReloadListener {

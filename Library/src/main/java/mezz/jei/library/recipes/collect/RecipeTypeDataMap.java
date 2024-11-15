@@ -7,11 +7,13 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Unmodifiable;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@ThreadSafe
 public class RecipeTypeDataMap {
 	@Unmodifiable
 	private final Map<ResourceLocation, RecipeTypeData<?>> uidMap;

@@ -2,7 +2,7 @@ package mezz.jei.fabric.mixin;
 
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.fabric.plugins.fabric.FabricGuiPlugin;
+import mezz.jei.fabric.plugins.fabric.FabricRuntimePlugin;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.network.chat.Component;
@@ -25,7 +25,7 @@ public abstract class EffectRenderingInventoryScreenMixin extends AbstractContai
         at = @At("STORE")
     )
     public boolean modifyHasRoom(boolean bl) {
-        boolean ingredientListDisplayed = FabricGuiPlugin.getRuntime()
+        boolean ingredientListDisplayed = FabricRuntimePlugin.getRuntime()
             .map(IJeiRuntime::getIngredientListOverlay)
             .map(IIngredientListOverlay::isListDisplayed)
             .orElse(false);

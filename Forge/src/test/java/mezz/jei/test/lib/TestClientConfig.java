@@ -29,6 +29,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean getAsyncLoadingEnabled() {
+		return false;
+	}
+
+	@Override
 	public boolean isAddingBookmarksToFront() {
 		return false;
 	}
