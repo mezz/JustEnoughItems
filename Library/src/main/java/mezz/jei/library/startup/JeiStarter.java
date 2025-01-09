@@ -1,22 +1,20 @@
 package mezz.jei.library.startup;
 
-import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
-import mezz.jei.common.async.JeiStartTask;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
-import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.JeiClientConfigs;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.library.color.ColorHelper;
 import mezz.jei.library.config.ColorNameConfig;
@@ -35,7 +33,6 @@ import mezz.jei.library.recipes.RecipeManager;
 import mezz.jei.library.runtime.JeiHelpers;
 import mezz.jei.library.runtime.JeiRuntime;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,6 +43,7 @@ public final class JeiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final StartData data;
+	private final List<IModPlugin> plugins;
 	private final VanillaPlugin vanillaPlugin;
 	private final ModIdFormatConfig modIdFormatConfig;
 	private final ColorNameConfig colorNameConfig;
@@ -53,19 +51,17 @@ public final class JeiStarter {
 	@SuppressWarnings("FieldCanBeLocal")
 	private final FileWatcher fileWatcher = new FileWatcher("JEI Config File Watcher");
 	private final ConfigManager configManager;
-	private final ClientTaskExecutor clientExecutor;
-	private final PluginCaller pluginCaller;
 	private final JeiClientConfigs jeiClientConfigs;
-
-	private JeiStartTask currentStartTask = null;
+	private final ClientTaskExecutor clientExecutor;
 
 	public JeiStarter(StartData data) {
+		ErrorUtil.checkNotEmpty(data.plugins(), "plugins");
 		this.data = data;
-		List<IModPlugin> plugins = data.plugins();
+		this.plugins = data.plugins();
 		this.vanillaPlugin = PluginHelper.getPluginWithClass(VanillaPlugin.class, plugins)
-			.orElseThrow(() -> new IllegalStateException("vanilla plugin not found"));
+				.orElseThrow(() -> new IllegalStateException("vanilla plugin not found"));
 		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins)
-			.orElse(null);
+				.orElse(null);
 		PluginHelper.sortPlugins(plugins, vanillaPlugin, jeiInternalPlugin);
 
 		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
@@ -85,57 +81,27 @@ public final class JeiStarter {
 		colorFileBuilder.build().register(fileWatcher, configManager);
 
 		this.jeiClientConfigs = new JeiClientConfigs(configDir.resolve("jei-client.ini"));
-		this.jeiClientConfigs.register(fileWatcher, configManager);
+		jeiClientConfigs.register(fileWatcher, configManager);
 		Internal.setJeiClientConfigs(jeiClientConfigs);
 
 		fileWatcher.start();
 
+		this.clientExecutor = new ClientTaskExecutor();
+
 		this.recipeCategorySortingConfig = new RecipeCategorySortingConfig(configDir.resolve("recipe-category-sort-order.ini"));
 
-		this.clientExecutor = new ClientTaskExecutor();
-		this.pluginCaller = new PluginCaller(
-			data.plugins(),
-			data.runtimePlugin(),
-			clientExecutor
-		);
-
-		pluginCaller.callOnPlugins(
-			"Sending ConfigManager",
-			p -> p.onConfigManagerAvailable(configManager)
-		);
+		PluginCaller.callOnPlugins("Sending ConfigManager", plugins, p -> p.onConfigManagerAvailable(configManager));
 	}
 
-	/**
-	 * Starts JEI, either synchronously or asynchronously depending on config. Should only be called from
-	 * the main thread.
-	 */
 	public void start() {
-		if (currentStartTask != null) {
-			LOGGER.error("JEI start requested but it is already starting.");
-			return;
-		}
 		Minecraft minecraft = Minecraft.getInstance();
 		if (minecraft.level == null) {
 			LOGGER.error("Failed to start JEI, there is no Minecraft client level.");
 			return;
 		}
 
-		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		if (clientConfig.getAsyncLoadingEnabled()) {
-			currentStartTask = new JeiStartTask(this::doActualStart);
-			currentStartTask.start();
-		} else {
-			doActualStart();
-		}
-	}
-
-	private void doActualStart() {
 		LoggedTimer totalTime = new LoggedTimer();
-		if (Thread.currentThread() instanceof JeiStartTask) {
-			totalTime.start("Starting JEI asynchronously");
-		} else {
-			totalTime.start("Starting JEI synchronously");
-		}
+		totalTime.start("Starting JEI");
 
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
 		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
@@ -144,95 +110,65 @@ public final class JeiStarter {
 
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
 
-		PluginLoader pluginLoader = new PluginLoader(data.serverConnection(), pluginCaller, modIdFormatConfig, colorHelper, clientExecutor);
-		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
-		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
-
-		IIngredientManager ingredientManager = pluginLoader.getIngredientManager();
-
-		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
-		ingredientManager.registerIngredientListener(blacklist);
-
 		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
 		EditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.cfg")), ingredientManager);
 
 		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(modIdFormatConfig, colorHelper, editModeConfig, focusFactory, ingredientManager, subtypeManager);
 
-		RecipeManager recipeManager = pluginLoader.createRecipeManager(
-			vanillaPlugin,
-			recipeCategorySortingConfig,
-			jeiHelpers,
-			ingredientManager
+		RecipeManager recipeManager = PluginLoader.createRecipeManager(
+				plugins,
+				vanillaPlugin,
+				recipeCategorySortingConfig,
+				jeiHelpers,
+				ingredientManager
 		);
-		ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers =
-			pluginLoader.createRecipeTransferHandlers();
-		IRecipeTransferManager recipeTransferManager = new RecipeTransferManager(recipeTransferHandlers);
+		IRecipeTransferManager recipeTransferManager = PluginLoader.createRecipeTransferManager(
+				plugins,
+				jeiHelpers,
+				data.serverConnection()
+		);
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
-		IScreenHelper screenHelper = pluginLoader.createGuiScreenHelper(jeiHelpers);
+		IScreenHelper screenHelper = PluginLoader.createGuiScreenHelper(plugins, jeiHelpers, ingredientManager);
 
 		RuntimeRegistration runtimeRegistration = new RuntimeRegistration(
-			recipeManager,
-			jeiHelpers,
-			editModeConfig,
-			ingredientManager,
-			recipeTransferManager,
-			screenHelper
+				recipeManager,
+				jeiHelpers,
+				editModeConfig,
+				ingredientManager,
+				recipeTransferManager,
+				screenHelper
 		);
-		//noinspection removal
-		pluginCaller.callOnPlugins(
-			"Registering Runtime (legacy)",
-			p -> p.registerRuntime(runtimeRegistration)
-		);
-		pluginCaller.callOnRuntimePlugin(
-			"Registering Runtime",
-			p -> p.registerRuntime(runtimeRegistration, clientExecutor.getExecutor())
-		);
+		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration));
 
 		JeiRuntime jeiRuntime = new JeiRuntime(
-			recipeManager,
-			ingredientManager,
-			data.keyBindings(),
-			jeiHelpers,
-			screenHelper,
-			recipeTransferManager,
-			editModeConfig,
-			runtimeRegistration.getIngredientListOverlay(),
-			runtimeRegistration.getBookmarkOverlay(),
-			runtimeRegistration.getRecipesGui(),
-			runtimeRegistration.getIngredientFilter(),
-			configManager
+				recipeManager,
+				ingredientManager,
+				data.keyBindings(),
+				jeiHelpers,
+				screenHelper,
+				recipeTransferManager,
+				editModeConfig,
+				runtimeRegistration.getIngredientListOverlay(),
+				runtimeRegistration.getBookmarkOverlay(),
+				runtimeRegistration.getRecipesGui(),
+				runtimeRegistration.getIngredientFilter(),
+				configManager
 		);
 		timer.stop();
 
-		pluginCaller.callOnPlugins(
-			"Sending Runtime",
-			p -> p.onRuntimeAvailable(jeiRuntime)
-		);
-		pluginCaller.callOnRuntimePlugin(
-			"Sending Runtime to Runtime Plugin",
-			p -> p.onRuntimeAvailable(jeiRuntime, clientExecutor.getExecutor())
-		);
+		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime));
+		Internal.setRuntime(jeiRuntime);
 
 		totalTime.stop();
 	}
 
 	public void stop() {
 		LOGGER.info("Stopping JEI");
-		if (currentStartTask != null) {
-			currentStartTask.cancelStart();
-			Minecraft.getInstance().managedBlock(() -> !currentStartTask.isAlive());
-			currentStartTask = null;
-		}
-		pluginCaller.callOnPlugins(
-			"Sending Runtime Unavailable",
-			IModPlugin::onRuntimeUnavailable
-		);
-		pluginCaller.callOnRuntimePlugin(
-			"Sending Runtime Unavailable to Runtime Plugin",
-			p -> p.onRuntimeUnavailable(clientExecutor.getExecutor())
-		);
+		List<IModPlugin> plugins = data.plugins();
+		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
+		Internal.setRuntime(null);
 	}
 
 	public void tick() {

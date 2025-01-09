@@ -55,11 +55,11 @@ public class RecipeManagerInternal {
 	private List<IRecipeCategory<?>> recipeCategoriesVisibleCache = null;
 
 	public RecipeManagerInternal(
-		List<IRecipeCategory<?>> recipeCategories,
-		ImmutableListMultimap<RecipeType<?>, ITypedIngredient<?>> recipeCatalysts,
-		IIngredientManager ingredientManager,
-		RecipeCategorySortingConfig recipeCategorySortingConfig,
-		IIngredientVisibility ingredientVisibility
+			List<IRecipeCategory<?>> recipeCategories,
+			ImmutableListMultimap<RecipeType<?>, ITypedIngredient<?>> recipeCatalysts,
+			IIngredientManager ingredientManager,
+			RecipeCategorySortingConfig recipeCategorySortingConfig,
+			IIngredientVisibility ingredientVisibility
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
@@ -68,8 +68,8 @@ public class RecipeManagerInternal {
 		this.ingredientVisibility = ingredientVisibility;
 
 		Collection<RecipeType<?>> recipeTypes = recipeCategories.stream()
-			.<RecipeType<?>>map(IRecipeCategory::getRecipeType)
-			.toList();
+				.<RecipeType<?>>map(IRecipeCategory::getRecipeType)
+				.toList();
 		Comparator<RecipeType<?>> recipeTypeComparator = recipeCategorySortingConfig.getComparator(recipeTypes);
 
 		this.recipeMaps = new EnumMap<>(RecipeIngredientRole.class);
@@ -80,8 +80,8 @@ public class RecipeManagerInternal {
 
 		this.recipeCategoryComparator = Comparator.comparing(IRecipeCategory::getRecipeType, recipeTypeComparator);
 		this.recipeCategories = recipeCategories.stream()
-			.sorted(this.recipeCategoryComparator)
-			.toList();
+				.sorted(this.recipeCategoryComparator)
+				.toList();
 
 		RecipeCatalystBuilder recipeCatalystBuilder = new RecipeCatalystBuilder(this.recipeMaps.get(RecipeIngredientRole.CATALYST));
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
@@ -95,9 +95,9 @@ public class RecipeManagerInternal {
 		this.recipeTypeDataMap = new RecipeTypeDataMap(recipeCategories, recipeCategoryCatalystsMap);
 
 		IRecipeManagerPlugin internalRecipeManagerPlugin = new InternalRecipeManagerPlugin(
-			ingredientManager,
-			recipeTypeDataMap,
-			recipeMaps
+				ingredientManager,
+				recipeTypeDataMap,
+				recipeMaps
 		);
 		this.pluginManager = new PluginManager(internalRecipeManagerPlugin);
 	}
@@ -116,18 +116,12 @@ public class RecipeManagerInternal {
 		IRecipeCategory<T> recipeCategory = recipeTypeData.getRecipeCategory();
 		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
 
-		List<T> addedRecipes = recipes.stream()
-			.filter(recipe -> {
-				if (hiddenRecipes.contains(recipe) || !recipeCategory.isHandled(recipe)) {
-					return false;
-				}
-				IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
-				if (ingredientSupplier == null) {
-					return false;
-				}
-				return addRecipe(recipeCategory, recipe, ingredientSupplier);
-			})
-			.toList();
+		List<T> addedRecipes = new ArrayList<>(recipes.size());
+		for (T recipe : recipes) {
+			if (addRecipe(recipeCategory, recipe, hiddenRecipes)) {
+				addedRecipes.add(recipe);
+			}
+		}
 
 		if (!addedRecipes.isEmpty()) {
 			recipeTypeData.addRecipes(addedRecipes);
@@ -177,7 +171,7 @@ public class RecipeManagerInternal {
 
 		// hide the category if it has catalysts, but they have all been hidden
 		if (getRecipeCatalystStream(recipeType, true).findAny().isPresent() &&
-			getRecipeCatalystStream(recipeType, false).findAny().isEmpty())
+				getRecipeCatalystStream(recipeType, false).findAny().isEmpty())
 		{
 			return true;
 		}
@@ -189,9 +183,9 @@ public class RecipeManagerInternal {
 
 	public Stream<IRecipeCategory<?>> getRecipeCategoriesForTypes(Collection<RecipeType<?>> recipeTypes, IFocusGroup focuses, boolean includeHidden) {
 		List<IRecipeCategory<?>> recipeCategories = recipeTypes.stream()
-			.map(this.recipeTypeDataMap::get)
-			.<IRecipeCategory<?>>map(RecipeTypeData::getRecipeCategory)
-			.toList();
+				.map(this.recipeTypeDataMap::get)
+				.<IRecipeCategory<?>>map(RecipeTypeData::getRecipeCategory)
+				.toList();
 
 		return getRecipeCategoriesCached(recipeCategories, focuses, includeHidden);
 	}
@@ -205,7 +199,7 @@ public class RecipeManagerInternal {
 		if (recipeCategories.isEmpty() && focuses.isEmpty() && !includeHidden) {
 			if (this.recipeCategoriesVisibleCache == null) {
 				this.recipeCategoriesVisibleCache = getRecipeCategoriesUncached(recipeCategories, focuses, includeHidden)
-					.toList();
+						.toList();
 			}
 			return this.recipeCategoriesVisibleCache.stream();
 		}
@@ -222,13 +216,13 @@ public class RecipeManagerInternal {
 			} else {
 				// empty focus, non-empty recipeCategories => use the recipeCategories
 				categoryStream = recipeCategories.stream()
-					.distinct();
+						.distinct();
 			}
 		} else {
 			// focus => get all recipe categories from plugins with the focus
 			categoryStream = this.pluginManager.getRecipeTypes(focuses)
-				.map(recipeTypeDataMap::get)
-				.map(RecipeTypeData::getRecipeCategory);
+					.map(recipeTypeDataMap::get)
+					.map(RecipeTypeData::getRecipeCategory);
 
 			// non-empty recipeCategories => narrow the results to just ones in recipeCategories
 			if (!recipeCategories.isEmpty()) {
@@ -255,7 +249,7 @@ public class RecipeManagerInternal {
 			return catalysts.stream();
 		}
 		return catalysts.stream()
-			.filter(ingredientVisibility::isIngredientVisible);
+				.filter(ingredientVisibility::isIngredientVisible);
 	}
 
 	public <T> void hideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {

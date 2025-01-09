@@ -153,6 +153,8 @@ public final class ErrorUtil {
 		CrashReportCategory ingredientCategory = crashreport.addCategory("Ingredient being rendered");
 		ingredientCategory.setDetail("String Name", ingredient::toString);
 		ingredientCategory.setDetail("Class Name", () -> ingredient.getClass().toString());
+		return new ReportedException(crashreport);
+	}
 
 	public static <T> CrashReport createIngredientCrashReport(Throwable throwable, String title, IIngredientManager ingredientManager, IIngredientType<T> ingredientType, T ingredient) {
 		CrashReport crashReport = CrashReport.forThrowable(throwable, title);

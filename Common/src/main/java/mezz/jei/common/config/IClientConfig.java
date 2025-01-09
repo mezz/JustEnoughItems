@@ -18,7 +18,6 @@ public interface IClientConfig {
 
 	boolean getAsyncLoadingEnabled();
 
-	boolean isAddingBookmarksToFront();
 	boolean isAddingBookmarksToFrontEnabled();
 
 	boolean isLookupFluidContentsEnabled();

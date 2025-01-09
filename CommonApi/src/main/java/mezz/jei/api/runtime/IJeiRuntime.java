@@ -53,18 +53,6 @@ public interface IJeiRuntime {
 	IIngredientManager getIngredientManager();
 
 	/**
-	 * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
-	 * ingredients based on what is visible in JEI.
-	 *
-	 * @since 9.3.0
-	 * @deprecated use {@link IJeiHelpers#getIngredientVisibility()}
-	 */
-	@Deprecated(since = "15.19.1", forRemoval = true)
-	default IIngredientVisibility getIngredientVisibility() {
-		return getJeiHelpers().getIngredientVisibility();
-	}
-
-	/**
 	 * The {@link IJeiKeyMappings} gives access to key mappings used by JEI.
 	 * This can be used by mods that want to use the same keys that players bind for JEI.
 	 *

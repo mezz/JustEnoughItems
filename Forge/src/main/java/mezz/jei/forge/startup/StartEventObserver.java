@@ -4,6 +4,9 @@ import mezz.jei.forge.events.PermanentEventSubscriptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -15,6 +18,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 /**
  * This class observes events and determines when it's the right time to start JEI.
@@ -25,9 +30,14 @@ import java.util.Set;
  * Depending on the configuration (Integrated server, vanilla server, modded server),
  * these events might come in any order.
  */
-public class StartEventObserver {
+public class StartEventObserver implements PreparableReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<Class<? extends Event>> requiredEvents = Set.of(TagsUpdatedEvent.class, RecipesUpdatedEvent.class);
+
+	@Override
+	public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller profilerFiller, ProfilerFiller profilerFiller1, Executor executor, Executor executor1) {
+		return new CompletableFuture<>();
+	}
 
 	private enum State {
 		DISABLED, ENABLED, JEI_STARTED

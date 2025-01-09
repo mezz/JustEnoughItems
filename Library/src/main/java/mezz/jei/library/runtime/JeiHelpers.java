@@ -13,16 +13,18 @@ import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.platform.Services;
-import mezz.jei.library.gui.helpers.GuiHelper;
+import mezz.jei.library.gui.helpers.GuiHelpers;
+import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
 import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class JeiHelpers implements IJeiHelpers {
-	private final GuiHelper guiHelper;
+	private final GuiHelpers guiHelper;
 	private final IStackHelper stackHelper;
 	private final IModIdHelper modIdHelper;
 	private final IFocusFactory focusFactory;
@@ -34,12 +36,14 @@ public class JeiHelpers implements IJeiHelpers {
 	private @Nullable Collection<IRecipeCategory<?>> recipeCategories;
 
 	public JeiHelpers(
-		GuiHelper guiHelper,
-		IStackHelper stackHelper,
-		IModIdHelper modIdHelper,
-		IFocusFactory focusFactory,
-		IColorHelper colorHelper,
-		IIngredientManager ingredientManager
+			GuiHelpers guiHelper,
+			IStackHelper stackHelper,
+			IModIdHelper modIdHelper,
+			IFocusFactory focusFactory,
+			IColorHelper colorHelper,
+			IIngredientManager ingredientManager,
+			VanillaRecipeFactory vanillaRecipeFactory,
+			IIngredientVisibility ingredientVisibility
 	) {
 		this.guiHelper = guiHelper;
 		this.stackHelper = stackHelper;
@@ -124,5 +128,15 @@ public class JeiHelpers implements IJeiHelpers {
 	@Override
 	public IIngredientManager getIngredientManager() {
 		return ingredientManager;
+	}
+
+	@Override
+	public IVanillaRecipeFactory getVanillaRecipeFactory() {
+		return vanillaRecipeFactory;
+	}
+
+	@Override
+	public IIngredientVisibility getIngredientVisibility() {
+		return ingredientVisibility;
 	}
 }

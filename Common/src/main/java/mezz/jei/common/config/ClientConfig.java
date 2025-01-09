@@ -6,6 +6,7 @@ import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
+import mezz.jei.common.platform.Services;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -34,13 +35,18 @@ public final class ClientConfig implements IClientConfig {
 
 	// advanced
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
-	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
 	private final Supplier<Boolean> asyncLoadingEnabled;
-	private final Supplier<Boolean> addBookmarksToFront;
-	private final Supplier<GiveMode> giveMode;
-	private final Supplier<Integer> maxRecipeGuiHeight;
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
 	private final ConfigValue<List<RecipeSorterStage>> recipeSorterStages;
+	private final Supplier<Boolean> catchRenderErrorsEnabled;
+	private final Supplier<Boolean> lookupFluidContentsEnabled;
+	private final Supplier<Boolean> lookupBlockTagsEnabled;
+	private final Supplier<Boolean> showTagRecipesEnabled;
+	private final Supplier<Boolean> showCreativeTabNamesEnabled;
+
+	// input
+	private final Supplier<Integer> dragDelayMs;
+	private final Supplier<Integer> smoothScrollRate;
 
 	// tags
 	private final Supplier<Boolean> tagContentTooltipEnabled;
@@ -222,8 +228,8 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isAddingBookmarksToFront() {
-		return addBookmarksToFront.get();
+	public boolean isAddingBookmarksToFrontEnabled() {
+		return addBookmarksToFrontEnabled.get();
 	}
 
 	@Override

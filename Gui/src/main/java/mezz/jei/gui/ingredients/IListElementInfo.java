@@ -39,7 +39,5 @@ public interface IListElementInfo<V> {
 
 	ITypedIngredient<V> getTypedIngredient();
 
-	void setSortedIndex(int sortIndex);
-
-	int getSortedIndex();
+	int getCreatedIndex();
 }

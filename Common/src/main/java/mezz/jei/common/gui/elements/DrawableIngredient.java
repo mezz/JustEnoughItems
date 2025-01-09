@@ -1,18 +1,17 @@
 package mezz.jei.common.gui.elements;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.util.SafeIngredientUtil;
 import net.minecraft.client.gui.GuiGraphics;
 
 public class DrawableIngredient<V> implements IDrawable {
-	private final ITypedIngredient<V> typedIngredient;
+	private final V ingredient;
 	private final IIngredientRenderer<V> ingredientRenderer;
 
-	public DrawableIngredient(ITypedIngredient<V> typedIngredient, IIngredientRenderer<V> ingredientRenderer) {
-		this.typedIngredient = typedIngredient;
+	public DrawableIngredient(V ingredient, IIngredientRenderer<V> ingredientRenderer) {
+		this.ingredient = ingredient;
 		this.ingredientRenderer = ingredientRenderer;
 	}
 
@@ -27,9 +26,19 @@ public class DrawableIngredient<V> implements IDrawable {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+	public void draw(GuiGraphics poseStack) {
 		RenderSystem.enableDepthTest();
-		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, typedIngredient, xOffset, yOffset);
+		this.ingredientRenderer.render(poseStack, ingredient);
 		RenderSystem.disableDepthTest();
+	}
+
+	@Override
+	public void draw(GuiGraphics poseStack, int xOffset, int yOffset) {
+		poseStack.pose().pushPose();
+		{
+			poseStack.pose().translate(xOffset, yOffset, 0);
+			draw(poseStack);
+		}
+		poseStack.pose().popPose();
 	}
 }

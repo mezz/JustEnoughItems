@@ -30,18 +30,6 @@ public interface IRecipeRegistration {
 	IVanillaRecipeFactory getVanillaRecipeFactory();
 
 	/**
-	 * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
-	 * ingredients based on what is visible in JEI.
-	 *
-	 * @since 9.3.1
-	 * @deprecated use {@link IJeiHelpers#getIngredientVisibility()}
-	 */
-	@Deprecated(since = "15.19.1", forRemoval = true)
-	default IIngredientVisibility getIngredientVisibility() {
-		return getJeiHelpers().getIngredientVisibility();
-	}
-
-	/**
 	 * Add the recipes provided by your plugin.
 	 *
 	 * @since 9.5.0

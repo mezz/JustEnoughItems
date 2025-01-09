@@ -9,6 +9,7 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * {@link IJeiHelpers} provides helpers and tools for addon mods.
@@ -89,4 +90,14 @@ public interface IJeiHelpers {
 	 * @since 11.5.0
 	 */
 	IIngredientManager getIngredientManager();
+
+	IVanillaRecipeFactory getVanillaRecipeFactory();
+
+	/**
+	 * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
+	 * ingredients based on what is visible in JEI.
+	 *
+	 * @since 15.19.1
+	 */
+	IIngredientVisibility getIngredientVisibility();
 }

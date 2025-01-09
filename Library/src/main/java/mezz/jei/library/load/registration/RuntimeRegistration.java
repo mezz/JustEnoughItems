@@ -17,36 +17,33 @@ import mezz.jei.library.gui.recipes.RecipesGuiDummy;
 import mezz.jei.library.ingredients.IngredientFilterApiDummy;
 
 public class RuntimeRegistration implements IRuntimeRegistration {
-    private final IRecipeManager recipeManager;
-    private final IJeiHelpers jeiHelpers;
-    private final IEditModeConfig editModeConfig;
-    private final IIngredientManager ingredientManager;
-    private final IIngredientVisibility ingredientVisibility;
-    private final IRecipeTransferManager recipeTransferManager;
-    private final IScreenHelper screenHelper;
+	private final IRecipeManager recipeManager;
+	private final IJeiHelpers jeiHelpers;
+	private final IEditModeConfig editModeConfig;
+	private final IIngredientManager ingredientManager;
+	private final IRecipeTransferManager recipeTransferManager;
+	private final IScreenHelper screenHelper;
 
 	private IIngredientListOverlay ingredientListOverlay = IngredientListOverlayDummy.INSTANCE;
 	private IBookmarkOverlay bookmarkOverlay = BookmarkOverlayDummy.INSTANCE;
 	private IRecipesGui recipesGui = RecipesGuiDummy.INSTANCE;
 	private IIngredientFilter ingredientFilter = IngredientFilterApiDummy.INSTANCE;
 
-    public RuntimeRegistration(
-        IRecipeManager recipeManager,
-        IJeiHelpers jeiHelpers,
-        IEditModeConfig editModeConfig,
-        IIngredientManager ingredientManager,
-        IIngredientVisibility ingredientVisibility,
-        IRecipeTransferManager recipeTransferManager,
-        IScreenHelper screenHelper
-    ) {
-        this.recipeManager = recipeManager;
-        this.jeiHelpers = jeiHelpers;
-        this.editModeConfig = editModeConfig;
-        this.ingredientManager = ingredientManager;
-        this.ingredientVisibility = ingredientVisibility;
-        this.recipeTransferManager = recipeTransferManager;
-        this.screenHelper = screenHelper;
-    }
+	public RuntimeRegistration(
+			IRecipeManager recipeManager,
+			IJeiHelpers jeiHelpers,
+			IEditModeConfig editModeConfig,
+			IIngredientManager ingredientManager,
+			IRecipeTransferManager recipeTransferManager,
+			IScreenHelper screenHelper
+	) {
+		this.recipeManager = recipeManager;
+		this.jeiHelpers = jeiHelpers;
+		this.editModeConfig = editModeConfig;
+		this.ingredientManager = ingredientManager;
+		this.recipeTransferManager = recipeTransferManager;
+		this.screenHelper = screenHelper;
+	}
 
 	@Override
 	public void setIngredientListOverlay(IIngredientListOverlay ingredientListOverlay) {
@@ -110,11 +107,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 		return recipesGui;
 	}
 
-    public IRecipesGui getRecipesGui() {
-        return recipesGui;
-    }
-
-    public IIngredientFilter getIngredientFilter() {
-        return this.ingredientFilter;
-    }
+	public IIngredientFilter getIngredientFilter() {
+		return this.ingredientFilter;
+	}
 }

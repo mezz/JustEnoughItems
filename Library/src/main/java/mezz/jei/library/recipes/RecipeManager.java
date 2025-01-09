@@ -14,13 +14,11 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTimer;
 import mezz.jei.library.gui.recipes.RecipeLayout;
-import mezz.jei.library.startup.ClientTaskExecutor;
+import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
@@ -31,23 +29,10 @@ import java.util.Set;
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
 	private final IIngredientManager ingredientManager;
-	private final Textures textures;
-	private final IIngredientVisibility ingredientVisibility;
-	private final ClientTaskExecutor clientExecutor;
 
-	public RecipeManager(
-		RecipeManagerInternal internal,
-		IModIdHelper modIdHelper,
-		IIngredientManager ingredientManager,
-		Textures textures,
-		IIngredientVisibility ingredientVisibility,
-		ClientTaskExecutor clientExecutor
-	) {
+	public RecipeManager(RecipeManagerInternal internal, IIngredientManager ingredientManager) {
 		this.internal = internal;
 		this.ingredientManager = ingredientManager;
-		this.textures = textures;
-		this.ingredientVisibility = ingredientVisibility;
-		this.clientExecutor = clientExecutor;
 	}
 
 	@Override
@@ -75,7 +60,8 @@ public class RecipeManager implements IRecipeManager {
 	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(recipes, "recipes");
-		clientExecutor.runAsync(() -> internal.addRecipes(recipeType, recipes));
+
+		internal.addRecipes(recipeType, recipes);
 	}
 
 	@Override
@@ -87,21 +73,21 @@ public class RecipeManager implements IRecipeManager {
 		RecipeType<T> recipeType = recipeCategory.getRecipeType();
 		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
 		return RecipeLayout.create(
-			recipeCategory,
-			decorators,
-			recipe,
-			focusGroup,
-			ingredientManager
+				recipeCategory,
+				decorators,
+				recipe,
+				focusGroup,
+				ingredientManager
 		);
 	}
 
 	@Override
 	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
-		IRecipeCategory<T> recipeCategory,
-		T recipe,
-		IFocusGroup focusGroup,
-		IScalableDrawable background,
-		int borderSize
+			IRecipeCategory<T> recipeCategory,
+			T recipe,
+			IFocusGroup focusGroup,
+			IScalableDrawable background,
+			int borderSize
 	) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
@@ -111,13 +97,13 @@ public class RecipeManager implements IRecipeManager {
 		RecipeType<T> recipeType = recipeCategory.getRecipeType();
 		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
 		return RecipeLayout.create(
-			recipeCategory,
-			decorators,
-			recipe,
-			focusGroup,
-			ingredientManager,
-			background,
-			borderSize
+				recipeCategory,
+				decorators,
+				recipe,
+				focusGroup,
+				ingredientManager,
+				background,
+				borderSize
 		);
 	}
 
@@ -134,26 +120,26 @@ public class RecipeManager implements IRecipeManager {
 	public <T> void hideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {
 		ErrorUtil.checkNotNull(recipes, "recipe");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		clientExecutor.runAsync(() -> internal.hideRecipes(recipeType, recipes));
+		internal.hideRecipes(recipeType, recipes);
 	}
 
 	@Override
 	public <T> void unhideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {
 		ErrorUtil.checkNotNull(recipes, "recipe");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		clientExecutor.runAsync(() -> internal.unhideRecipes(recipeType, recipes));
+		internal.unhideRecipes(recipeType, recipes);
 	}
 
 	@Override
 	public void hideRecipeCategory(RecipeType<?> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		clientExecutor.runAsync(() -> internal.hideRecipeCategory(recipeType));
+		internal.hideRecipeCategory(recipeType);
 	}
 
 	@Override
 	public void unhideRecipeCategory(RecipeType<?> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		clientExecutor.runAsync(() -> internal.unhideRecipeCategory(recipeType));
+		internal.unhideRecipeCategory(recipeType);
 	}
 
 	@Override

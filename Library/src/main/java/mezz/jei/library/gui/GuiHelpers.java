@@ -28,10 +28,10 @@ import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
 import mezz.jei.library.gui.widgets.ScrollGridWidgetFactory;
 import net.minecraft.resources.ResourceLocation;
 
-public class GuiHelper implements IGuiHelper {
+public class GuiHelpers implements IGuiHelper {
 	private final IIngredientManager ingredientManager;
 
-	public GuiHelper(IIngredientManager ingredientManager) {
+	public GuiHelpers(IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
 	}
 
@@ -125,10 +125,10 @@ public class GuiHelper implements IGuiHelper {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
 		ITypedIngredient<V> typedIngredient = ingredientManager.createTypedIngredient(type, ingredient)
-			.orElseThrow(() -> {
-				String info = ErrorUtil.getIngredientInfo(ingredient, type, ingredientManager);
-				return new IllegalArgumentException(String.format("Ingredient is invalid and cannot be used as a drawable ingredient: %s", info));
-			});
+				.orElseThrow(() -> {
+					String info = ErrorUtil.getIngredientInfo(ingredient, type, ingredientManager);
+					return new IllegalArgumentException(String.format("Ingredient is invalid and cannot be used as a drawable ingredient: %s", info));
+				});
 		return new DrawableIngredient<>(ingredient, ingredientRenderer);
 	}
 

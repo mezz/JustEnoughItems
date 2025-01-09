@@ -13,7 +13,6 @@ import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.util.Translator;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.IIngredientGridSource;
@@ -22,6 +21,7 @@ import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchLowMem;
 import mezz.jei.gui.search.IElementSearch;
+import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -73,10 +73,12 @@ public class IngredientFilter implements
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
 		IIngredientManager ingredientManager,
-		IIngredientSorter sorter,
+		Comparator<IListElement<?>> ingredientComparator,
+		List<IListElementInfo<?>> ingredients,
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
-		IColorHelper colorHelper
+		IColorHelper colorHelper,
+		IClientToggleState clientToggleState
 	) {
 		this.filterTextSource = filterTextSource;
 		this.clientConfig = clientConfig;
@@ -88,38 +90,57 @@ public class IngredientFilter implements
 
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
 
+		LOGGER.info("Adding {} ingredients", ingredients.size());
+		for (IListElementInfo<?> ingredient : ingredients) {
+			addIngredient(ingredient);
+		}
+		LOGGER.info("Added {} ingredients", ingredients.size());
+		if (DebugConfig.isLogSuffixTreeStatsEnabled()) {
+			this.elementSearch.logStatistics();
+		}
+
 		this.filterTextSource.addListener(filterText -> {
 			ingredientListCached = null;
 			notifyListenersOfChange();
 		});
+
+		clientToggleState.addEditModeToggleListener(this);
+	}
+
+	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser) {
+		if (clientConfig.isLowMemorySlowSearchEnabled()) {
+			return new ElementSearchLowMem();
+		} else {
+			return new ElementSearch(elementPrefixParser);
+		}
 	}
 
 	public CompletableFuture<Void> addIngredientsAsync(
-		NonNullList<IListElement<?>> ingredients,
-		Executor clientExecutor
+			NonNullList<IListElement<?>> ingredients,
+			Executor clientExecutor
 	) {
 		int ingredientCount = ingredients.size();
 		LOGGER.info("Adding {} ingredients", ingredientCount);
 		List<IListElementInfo<?>> elementInfos = ingredients.stream()
-			.map(i -> ListElementInfo.create(i, ingredientManager, modIdHelper))
-			.flatMap(Optional::stream)
-			.collect(Collectors.toList());
+				.map(i -> ListElementInfo.create(i, ingredientManager, modIdHelper))
+				.flatMap(Optional::stream)
+				.collect(Collectors.toList());
 
 		int batchSize = 1000;
 		AtomicInteger addedTotal = new AtomicInteger(0);
 		Stream<CompletableFuture<Void>> futures = Lists.partition(elementInfos, batchSize)
-			.stream()
-			.map(batch ->
-				CompletableFuture.runAsync(() -> {
-					for (IListElementInfo<?> elementInfo : batch) {
-						this.addIngredient(elementInfo);
-					}
-					int added = addedTotal.addAndGet(batch.size());
-					if (added % (10 * batchSize) == 0 || added == ingredientCount) {
-						LOGGER.info("Added {}/{} ingredients", added, ingredientCount);
-					}
-				}, clientExecutor)
-			);
+				.stream()
+				.map(batch ->
+						CompletableFuture.runAsync(() -> {
+							for (IListElementInfo<?> elementInfo : batch) {
+								this.addIngredient(elementInfo);
+							}
+							int added = addedTotal.addAndGet(batch.size());
+							if (added % (10 * batchSize) == 0 || added == ingredientCount) {
+								LOGGER.info("Added {}/{} ingredients", added, ingredientCount);
+							}
+						}, clientExecutor)
+				);
 
 		return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
 	}
