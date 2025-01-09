@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 public class ClientLifecycleHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final JeiStarter jeiStarter;
+	//private final JeiStarter jeiStarter;
 	private boolean running;
 
 	public ClientLifecycleHandler(IServerConfig serverConfig) {
@@ -38,7 +38,7 @@ public class ClientLifecycleHandler {
 		//	serverConnection,
 		//	keyMappings
 		//);
-
+//
 		//this.jeiStarter = new JeiStarter(startData);
 	}
 
@@ -52,7 +52,7 @@ public class ClientLifecycleHandler {
 			})
 		);
 		JeiLifecycleEvents.GAME_STOP.register(this::stopJei);
-		JeiLifecycleEvents.CLIENT_TICK_END.register(this.jeiStarter::tick);
+		//JeiLifecycleEvents.CLIENT_TICK_END.register(this.jeiStarter::tick);
 	}
 
 	public ResourceManagerReloadListener getReloadListener() {

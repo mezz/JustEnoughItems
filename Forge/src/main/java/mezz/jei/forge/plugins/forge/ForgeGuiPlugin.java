@@ -39,7 +39,6 @@ public class ForgeGuiPlugin implements IModPlugin {
 		return JeiGuiStarter.start(registration, executor)
 				.thenAcceptAsync(eventHandlers -> {
 					EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
-					resourceReloadHandler = eventHandlers.resourceReloadHandler();
 				}, executor);
 	}
 

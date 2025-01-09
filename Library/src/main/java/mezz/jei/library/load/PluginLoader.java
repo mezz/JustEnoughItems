@@ -30,7 +30,6 @@ import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.focus.FocusFactory;
 import mezz.jei.library.gui.helpers.GuiHelper;
-import mezz.jei.library.gui.helpers.GuiHelpers;
 import mezz.jei.library.helpers.ModIdHelper;
 import mezz.jei.library.ingredients.IngredientBlacklistInternal;
 import mezz.jei.library.ingredients.IngredientVisibility;
@@ -96,7 +95,7 @@ public final class PluginLoader {
 	) {
 		VanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory(ingredientManager);
 		StackHelper stackHelper = new StackHelper(subtypeManager);
-		GuiHelpers guiHelper = new GuiHelpers(ingredientManager);
+		GuiHelper guiHelper = new GuiHelper(ingredientManager);
 
 		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager);
 

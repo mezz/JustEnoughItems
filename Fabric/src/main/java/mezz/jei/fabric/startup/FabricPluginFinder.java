@@ -3,6 +3,7 @@ package mezz.jei.fabric.startup;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IRuntimePlugin;
 import mezz.jei.library.startup.IPluginFinder;
+import net.fabricmc.loader.api.EntrypointException;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
@@ -13,6 +14,8 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.mojang.text2speech.Narrator.LOGGER;
 
 public final class FabricPluginFinder implements IPluginFinder {
 	private static final Map<Class<?>, String> entryPointKeys = Map.of(
