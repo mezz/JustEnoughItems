@@ -27,6 +27,16 @@ public interface IRuntimeRegistration {
 	void setIngredientListOverlay(IIngredientListOverlay ingredientListOverlay);
 
 	/**
+	 * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
+	 * ingredients based on what is visible in JEI.
+	 * @deprecated use {@link IJeiHelpers#getIngredientVisibility()}
+	 */
+	@Deprecated(since = "15.19.1", forRemoval = true)
+	default IIngredientVisibility getIngredientVisibility() {
+		return getJeiHelpers().getIngredientVisibility();
+	}
+
+	/**
 	 * Set the bookmark list overlay.
 	 *
 	 * This is used by JEI's GUI and can be used by other mods

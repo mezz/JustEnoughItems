@@ -17,6 +17,18 @@ public interface IJeiRuntime {
 	IRecipeManager getRecipeManager();
 
 	/**
+	 * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
+	 * ingredients based on what is visible in JEI.
+	 *
+	 * @since 9.3.0
+	 * @deprecated use {@link IJeiHelpers#getIngredientVisibility()}
+	 */
+	@Deprecated(since = "15.19.1", forRemoval = true)
+	default IIngredientVisibility getIngredientVisibility() {
+		return getJeiHelpers().getIngredientVisibility();
+	}
+
+	/**
 	 * The {@link IRecipesGui} is JEI's gui for displaying recipes.
 	 * Use this interface to open the gui and display recipes.
 	 */
