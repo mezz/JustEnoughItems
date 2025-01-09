@@ -32,14 +32,14 @@ public class ClientLifecycleHandler {
 		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig);
 		ClientNetworkHandler.registerClientPacketHandler(packetRouter);
 
-		FabricPluginFinder pluginFinder = new FabricPluginFinder();
-		StartData startData = StartData.create(
-			pluginFinder,
-			serverConnection,
-			keyMappings
-		);
+		//FabricPluginFinder pluginFinder = new FabricPluginFinder();
+		//StartData startData = new StartData(
+		//	pluginFinder,
+		//	serverConnection,
+		//	keyMappings
+		//);
 
-		this.jeiStarter = new JeiStarter(startData);
+		//this.jeiStarter = new JeiStarter(startData);
 	}
 
 	public void registerEvents() {
