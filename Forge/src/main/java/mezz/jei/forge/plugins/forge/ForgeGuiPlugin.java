@@ -6,7 +6,6 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.startup.EventRegistration;
-import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import mezz.jei.gui.startup.ResourceReloadHandler;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +15,8 @@ import org.apache.logging.log4j.Logger;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @JeiPlugin
 public class ForgeGuiPlugin implements IModPlugin {
@@ -29,17 +30,17 @@ public class ForgeGuiPlugin implements IModPlugin {
 		return new ResourceLocation(ModIds.JEI_ID, "forge_gui");
 	}
 
-	@Override
-	public void registerRuntime(IRuntimeRegistration registration) {
+	public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor executor) {
 		if (!runtimeSubscriptions.isEmpty()) {
 			LOGGER.error("JEI GUI is already running.");
 			runtimeSubscriptions.clear();
 		}
 
-		JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
-		resourceReloadHandler = eventHandlers.resourceReloadHandler();
-
-		EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
+		return JeiGuiStarter.start(registration, executor)
+				.thenAcceptAsync(eventHandlers -> {
+					EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
+					resourceReloadHandler = eventHandlers.resourceReloadHandler();
+				}, executor);
 	}
 
 	@Override

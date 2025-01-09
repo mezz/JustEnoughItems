@@ -60,177 +60,188 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 public class JeiGuiStarter {
-	private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	public static JeiEventHandlers start(IRuntimeRegistration registration) {
-		LOGGER.info("Starting JEI GUI");
-		LoggedTimer timer = new LoggedTimer();
+    public static CompletableFuture<JeiEventHandlers> start(IRuntimeRegistration registration, Executor executorClient) {
+        LOGGER.info("Starting JEI GUI");
+        LoggedTimer timer = new LoggedTimer();
 
-		IConnectionToServer serverConnection = Internal.getServerConnection();
-		Textures textures = Internal.getTextures();
-		IInternalKeyMappings keyMappings = Internal.getKeyMappings();
+        IConnectionToServer serverConnection = Internal.getServerConnection();
+        Textures textures = Internal.getTextures();
+        IInternalKeyMappings keyMappings = Internal.getKeyMappings();
 
-		IScreenHelper screenHelper = registration.getScreenHelper();
-		IRecipeTransferManager recipeTransferManager = registration.getRecipeTransferManager();
-		IRecipeManager recipeManager = registration.getRecipeManager();
-		IIngredientManager ingredientManager = registration.getIngredientManager();
-		IEditModeConfig editModeConfig = registration.getEditModeConfig();
+        IScreenHelper screenHelper = registration.getScreenHelper();
+        IRecipeTransferManager recipeTransferManager = registration.getRecipeTransferManager();
+        IRecipeManager recipeManager = registration.getRecipeManager();
+        IIngredientManager ingredientManager = registration.getIngredientManager();
+        IEditModeConfig editModeConfig = registration.getEditModeConfig();
 
-		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-		IIngredientVisibility ingredientVisibility = jeiHelpers.getIngredientVisibility();
-		IColorHelper colorHelper = jeiHelpers.getColorHelper();
-		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
-		IFocusFactory focusFactory = jeiHelpers.getFocusFactory();
-		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+        IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+        IIngredientVisibility ingredientVisibility = jeiHelpers.getIngredientVisibility();
+        IColorHelper colorHelper = jeiHelpers.getColorHelper();
+        IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
+        IFocusFactory focusFactory = jeiHelpers.getFocusFactory();
+        IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 
-		IFilterTextSource filterTextSource = new FilterTextSource();
-		Minecraft minecraft = Minecraft.getInstance();
-		ClientLevel level = minecraft.level;
-		ErrorUtil.checkNotNull(level, "minecraft.level");
+        IFilterTextSource filterTextSource = new FilterTextSource();
+        Minecraft minecraft = Minecraft.getInstance();
+        ClientLevel level = minecraft.level;
+        ErrorUtil.checkNotNull(level, "minecraft.level");
 
-		RegistryAccess registryAccess = level.registryAccess();
+        RegistryAccess registryAccess = level.registryAccess();
 
-		timer.start("Building ingredient list");
-		List<IListElementInfo<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper);
-		timer.stop();
+        timer.start("Building ingredient list");
+        List<IListElementInfo<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper);
+        timer.stop();
 
-		timer.start("Building ingredient filter");
-		GuiConfigData configData = GuiConfigData.create();
+        timer.start("Building ingredient filter");
+        GuiConfigData configData = GuiConfigData.create();
 
-		ModNameSortingConfig modNameSortingConfig = configData.modNameSortingConfig();
-		IngredientTypeSortingConfig ingredientTypeSortingConfig = configData.ingredientTypeSortingConfig();
-		IClientToggleState toggleState = Internal.getClientToggleState();
-		IBookmarkConfig bookmarkConfig = configData.bookmarkConfig();
+        ModNameSortingConfig modNameSortingConfig = configData.modNameSortingConfig();
+        IngredientTypeSortingConfig ingredientTypeSortingConfig = configData.ingredientTypeSortingConfig();
+        IClientToggleState toggleState = Internal.getClientToggleState();
+        IBookmarkConfig bookmarkConfig = configData.bookmarkConfig();
 
-		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
-		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		IIngredientGridConfig ingredientListConfig = jeiClientConfigs.getIngredientListConfig();
-		IIngredientGridConfig bookmarkListConfig = jeiClientConfigs.getBookmarkListConfig();
-		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
+        IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+        IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+        IIngredientGridConfig ingredientListConfig = jeiClientConfigs.getIngredientListConfig();
+        IIngredientGridConfig bookmarkListConfig = jeiClientConfigs.getBookmarkListConfig();
+        IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
 
-		Comparator<IListElement<?>> ingredientComparator = IngredientSorter.sortIngredients(
-			clientConfig,
-			modNameSortingConfig,
-			ingredientTypeSortingConfig,
-			ingredientManager,
-			ingredientList
-		);
+        Comparator<IListElement<?>> ingredientComparator = IngredientSorter.sortIngredients(
+                clientConfig,
+                modNameSortingConfig,
+                ingredientTypeSortingConfig,
+                ingredientManager,
+                ingredientList
+        );
 
-		IngredientFilter ingredientFilter = new IngredientFilter(
-			filterTextSource,
-			clientConfig,
-			ingredientFilterConfig,
-			ingredientManager,
-			ingredientComparator,
-			ingredientList,
-			modIdHelper,
-			ingredientVisibility,
-			colorHelper,
-			toggleState
-		);
-		ingredientManager.registerIngredientListener(ingredientFilter);
-		ingredientVisibility.registerListener(ingredientFilter);
-		timer.stop();
+        IngredientFilter ingredientFilter = new IngredientFilter(
+                filterTextSource,
+                clientConfig,
+                ingredientFilterConfig,
+                ingredientManager,
+                ingredientComparator,
+                ingredientList,
+                modIdHelper,
+                ingredientVisibility,
+                colorHelper,
+                toggleState
+        );
 
-		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
-		registration.setIngredientFilter(ingredientFilterApi);
+        timer.stop();
 
-		IngredientListOverlay ingredientListOverlay = OverlayHelper.createIngredientListOverlay(
-			ingredientManager,
-			screenHelper,
-			ingredientFilter,
-			filterTextSource,
-			keyMappings,
-			ingredientListConfig,
-			clientConfig,
-			toggleState,
-			serverConnection,
-			ingredientFilterConfig,
-			textures,
-			colorHelper
-		);
-		registration.setIngredientListOverlay(ingredientListOverlay);
+        timer.start("Adding Ingredients");
+        return ingredientFilter.addIngredientsAsync(ingredientList, executorClient)
+                .thenApplyAsync((v) -> {
+                    timer.stop();
 
-		BookmarkList bookmarkList = new BookmarkList(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkConfig, clientConfig, guiHelper);
-		bookmarkConfig.loadBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarkList);
+                    ingredientManager.registerIngredientListener(ingredientFilter);
+                    ingredientVisibility.registerListener(ingredientFilter::onIngredientVisibilityChanged);
 
-		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
-			ingredientManager,
-			screenHelper,
-			bookmarkList,
-			keyMappings,
-			bookmarkListConfig,
-			ingredientFilterConfig,
-			clientConfig,
-			toggleState,
-			serverConnection,
-			textures,
-			colorHelper
-		);
-		registration.setBookmarkOverlay(bookmarkOverlay);
+                    IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
+                    registration.setIngredientFilter(ingredientFilterApi);
 
-		GuiEventHandler guiEventHandler = new GuiEventHandler(
-			screenHelper,
-			bookmarkOverlay,
-			ingredientListOverlay
-		);
+                    IngredientListOverlay ingredientListOverlay = OverlayHelper.createIngredientListOverlay(
+                            ingredientManager,
+                            screenHelper,
+                            ingredientFilter,
+                            filterTextSource,
+                            keyMappings,
+                            ingredientListConfig,
+                            clientConfig,
+                            toggleState,
+                            serverConnection,
+                            ingredientFilterConfig,
+                            textures,
+                            colorHelper
+                    );
+                    registration.setIngredientListOverlay(ingredientListOverlay);
 
-		RecipesGui recipesGui = new RecipesGui(
-			recipeManager,
-			recipeTransferManager,
-			ingredientManager,
-			keyMappings,
-			focusFactory,
-			bookmarkList,
-			guiHelper
-		);
-		registration.setRecipesGui(recipesGui);
+                    BookmarkList bookmarkList = new BookmarkList(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkConfig, clientConfig, guiHelper);
+                    bookmarkConfig.loadBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarkList);
 
-		CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
-			recipesGui,
-			ingredientListOverlay,
-			bookmarkOverlay,
-			new GuiContainerWrapper(screenHelper)
-		);
+                    BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
+                            ingredientManager,
+                            screenHelper,
+                            bookmarkList,
+                            keyMappings,
+                            bookmarkListConfig,
+                            ingredientFilterConfig,
+                            clientConfig,
+                            toggleState,
+                            serverConnection,
+                            textures,
+                            colorHelper
+                    );
+                    registration.setBookmarkOverlay(bookmarkOverlay);
 
-		List<ICharTypedHandler> charTypedHandlers = List.of(
-			ingredientListOverlay
-		);
+                    GuiEventHandler guiEventHandler = new GuiEventHandler(
+                            screenHelper,
+                            bookmarkOverlay,
+                            ingredientListOverlay
+                    );
 
-		FocusUtil focusUtil = new FocusUtil(focusFactory, clientConfig, ingredientManager);
+                    RecipesGui recipesGui = new RecipesGui(
+                            recipeManager,
+                            recipeTransferManager,
+                            ingredientManager,
+                            keyMappings,
+                            focusFactory,
+                            bookmarkList,
+                            guiHelper
+                    );
+                    registration.setRecipesGui(recipesGui);
 
-		UserInputRouter userInputRouter = new UserInputRouter(
-			"JEIGlobal",
-			new EditInputHandler(recipeFocusSource, toggleState, editModeConfig),
-			ingredientListOverlay.createInputHandler(),
-			bookmarkOverlay.createInputHandler(),
-			new FocusInputHandler(recipeFocusSource, recipesGui, focusUtil, clientConfig, ingredientManager, toggleState, serverConnection),
-			new BookmarkInputHandler(recipeFocusSource, bookmarkList),
-			new GlobalInputHandler(toggleState),
-			new GuiAreaInputHandler(screenHelper, recipesGui, focusFactory)
-		);
+                    CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
+                            recipesGui,
+                            ingredientListOverlay,
+                            bookmarkOverlay,
+                            new GuiContainerWrapper(screenHelper)
+                    );
 
-		DragRouter dragRouter = new DragRouter(
-			ingredientListOverlay.createDragHandler(),
-			bookmarkOverlay.createDragHandler()
-		);
-		ClientInputHandler clientInputHandler = new ClientInputHandler(
-			charTypedHandlers,
-			userInputRouter,
-			dragRouter,
-			keyMappings
-		);
-		ResourceReloadHandler resourceReloadHandler = new ResourceReloadHandler(
-			ingredientListOverlay,
-			ingredientFilter
-		);
+                    List<ICharTypedHandler> charTypedHandlers = List.of(
+                            ingredientListOverlay
+                    );
 
-		return new JeiEventHandlers(
-			guiEventHandler,
-			clientInputHandler,
-			resourceReloadHandler
-		);
-	}
-}
+                    FocusUtil focusUtil = new FocusUtil(focusFactory, clientConfig, ingredientManager);
+
+                    UserInputRouter userInputRouter = new UserInputRouter(
+                            "JEIGlobal",
+                            new EditInputHandler(recipeFocusSource, toggleState, editModeConfig),
+                            ingredientListOverlay.createInputHandler(),
+                            bookmarkOverlay.createInputHandler(),
+                            new FocusInputHandler(recipeFocusSource, recipesGui, focusUtil, clientConfig, ingredientManager, toggleState, serverConnection),
+                            new BookmarkInputHandler(recipeFocusSource, bookmarkList),
+                            new GlobalInputHandler(toggleState),
+                            new GuiAreaInputHandler(screenHelper, recipesGui, focusFactory)
+                    );
+
+                    DragRouter dragRouter = new DragRouter(
+                            ingredientListOverlay.createDragHandler(),
+                            bookmarkOverlay.createDragHandler()
+                    );
+                    ClientInputHandler clientInputHandler = new ClientInputHandler(
+                            charTypedHandlers,
+                            userInputRouter,
+                            dragRouter,
+                            keyMappings
+                    );
+
+                    ResourceReloadHandler resourceReloadHandler = new ResourceReloadHandler(
+                            ingredientListOverlay,
+                            ingredientFilter
+                    );
+
+                    return new JeiEventHandlers(
+                            guiEventHandler,
+                            clientInputHandler,
+                            resourceReloadHandler
+                    );
+                }, executorClient);
+        }
+    }

@@ -29,11 +29,11 @@ public class FabricRuntimePlugin implements IRuntimePlugin {
         return new ResourceLocation(ModIds.JEI_ID, "fabric_runtime");
     }
 
-    @Override
-    public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor clientExecutor) {
-        return JeiGuiStarter.start(registration, clientExecutor)
-            .thenAccept(eventRegistration::setEventHandlers);
-    }
+  // @Override
+  // public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor clientExecutor) {
+  //     return JeiGuiStarter.start(registration, clientExecutor)
+  //         .thenAcceptAsync(eventRegistration::setEventHandlers);
+  // }
 
     @Override
     public CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor clientExecutor) {

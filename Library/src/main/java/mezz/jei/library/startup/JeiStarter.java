@@ -140,7 +140,7 @@ public final class JeiStarter {
 				recipeTransferManager,
 				screenHelper
 		);
-		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration));
+		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration, command -> {}));
 
 		JeiRuntime jeiRuntime = new JeiRuntime(
 				recipeManager,

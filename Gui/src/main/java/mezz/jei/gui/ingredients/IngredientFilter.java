@@ -21,7 +21,6 @@ import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchLowMem;
 import mezz.jei.gui.search.IElementSearch;
-import net.minecraft.core.NonNullList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -69,16 +68,16 @@ public class IngredientFilter implements
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 
 	public IngredientFilter(
-		IFilterTextSource filterTextSource,
-		IClientConfig clientConfig,
-		IIngredientFilterConfig config,
-		IIngredientManager ingredientManager,
-		Comparator<IListElement<?>> ingredientComparator,
-		List<IListElementInfo<?>> ingredients,
-		IModIdHelper modIdHelper,
-		IIngredientVisibility ingredientVisibility,
-		IColorHelper colorHelper,
-		IClientToggleState clientToggleState
+			IFilterTextSource filterTextSource,
+			IClientConfig clientConfig,
+			IIngredientFilterConfig config,
+			IIngredientManager ingredientManager,
+			Comparator<IListElement<?>> ingredientComparator,
+			List<IListElementInfo<?>> ingredients,
+			IModIdHelper modIdHelper,
+			IIngredientVisibility ingredientVisibility,
+			IColorHelper colorHelper,
+			IClientToggleState clientToggleState
 	) {
 		this.filterTextSource = filterTextSource;
 		this.clientConfig = clientConfig;
@@ -92,7 +91,7 @@ public class IngredientFilter implements
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
 		for (IListElementInfo<?> ingredient : ingredients) {
-			addIngredient(ingredient);
+			this.addIngredient(ingredient);
 		}
 		LOGGER.info("Added {} ingredients", ingredients.size());
 		if (DebugConfig.isLogSuffixTreeStatsEnabled()) {
@@ -116,12 +115,13 @@ public class IngredientFilter implements
 	}
 
 	public CompletableFuture<Void> addIngredientsAsync(
-			NonNullList<IListElement<?>> ingredients,
+			List<IListElementInfo<?>> ingredients,
 			Executor clientExecutor
 	) {
 		int ingredientCount = ingredients.size();
 		LOGGER.info("Adding {} ingredients", ingredientCount);
 		List<IListElementInfo<?>> elementInfos = ingredients.stream()
+				.map(IListElementInfo::getElement)
 				.map(i -> ListElementInfo.create(i, ingredientManager, modIdHelper))
 				.flatMap(Optional::stream)
 				.collect(Collectors.toList());

@@ -17,14 +17,12 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 /**
  * The main class to implement to create a JEI plugin. Everything communicated between a mod and JEI is through this class.
- *
- * In a Forge environment, IModPlugins must have the {@link JeiPlugin} annotation to get loaded by JEI.
- *
- * In a Fabric environment, IModPlugins must be declared under `entrypoints.jei_mod_plugin` in `fabric.mod.json`.
- * See <a href="https://fabricmc.net/wiki/documentation:entrypoint">the Fabric Wiki</a> for more information.
+ * IModPlugins must have the {@link JeiPlugin} annotation to get loaded by JEI.
  */
 public interface IModPlugin {
 
@@ -137,12 +135,10 @@ public interface IModPlugin {
 	/**
 	 * Override the default JEI runtime.
 	 *
-	 * @since 12.0.2
-	 * @deprecated this has moved to {@link IRuntimePlugin}
+	 * @return
 	 */
-	@Deprecated(since = "13.2.0", forRemoval = true)
-	default void registerRuntime(IRuntimeRegistration registration) {
-
+	default CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor executor) {
+		return new CompletableFuture<>();
 	}
 
 	/**

@@ -30,14 +30,9 @@ import java.util.concurrent.Executor;
  * Depending on the configuration (Integrated server, vanilla server, modded server),
  * these events might come in any order.
  */
-public class StartEventObserver implements PreparableReloadListener {
+public class StartEventObserver {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<Class<? extends Event>> requiredEvents = Set.of(TagsUpdatedEvent.class, RecipesUpdatedEvent.class);
-
-	@Override
-	public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller profilerFiller, ProfilerFiller profilerFiller1, Executor executor, Executor executor1) {
-		return new CompletableFuture<>();
-	}
 
 	private enum State {
 		DISABLED, ENABLED, JEI_STARTED
