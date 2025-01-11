@@ -81,9 +81,11 @@ public final class AnvilRecipeMaker {
 		}
 
 		public List<ItemStack> getEnchantedBooks(IPlatformItemStackHelper itemStackHelper, ItemStack ingredient) {
-			return enchantedBooks.stream()
+			var list = enchantedBooks.stream()
 				.filter(enchantedBook -> itemStackHelper.isBookEnchantable(ingredient, enchantedBook))
 				.toList();
+			// avoid using copy of list if it contains the exact same items
+			return list.size() == enchantedBooks.size() ? enchantedBooks : list;
 		}
 
 		private boolean canEnchant(ItemStack ingredient) {
@@ -123,6 +125,7 @@ public final class AnvilRecipeMaker {
 		List<EnchantmentData> enchantmentDatas,
 		ItemStack ingredient
 	) {
+		var ingredientSingletonList = List.of(ingredient);
 		return enchantmentDatas.stream()
 			.filter(data -> data.canEnchant(ingredient))
 			.map(data -> data.getEnchantedBooks(itemStackHelper, ingredient))
@@ -135,8 +138,11 @@ public final class AnvilRecipeMaker {
 				String ingredientId = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
 				String ingredientIdPath = ResourceLocationUtil.sanitizePath(ingredientId);
 				String id = "enchantment." + ingredientIdPath;
+
 				ResourceLocation uid = new ResourceLocation(ModIds.MINECRAFT_ID, id);
-				IJeiAnvilRecipe recipe = vanillaRecipeFactory.createAnvilRecipe(ingredient, enchantedBooks, outputs, uid);
+				// All lists given here are immutable, so call the AnvilRecipe constructor directly
+				// to avoid copying them again.
+				IJeiAnvilRecipe recipe = new AnvilRecipe(ingredientSingletonList, enchantedBooks, outputs, uid);
 				return Stream.of(recipe);
 			});
 	}
