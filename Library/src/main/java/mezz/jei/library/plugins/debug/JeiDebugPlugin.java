@@ -74,7 +74,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerIngredients(IModIngredientRegistration registration) {
+	public CompletableFuture<Void> registerIngredients(IModIngredientRegistration registration, Executor executor) {
 		if (DebugConfig.isDebugModeEnabled()) {
 			DebugIngredientHelper ingredientHelper = new DebugIngredientHelper();
 			DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer(ingredientHelper);
@@ -87,17 +87,19 @@ public class JeiDebugPlugin implements IModPlugin {
 				registration.register(ErrorIngredient.TYPE, errorIngredients, errorIngredientHelper, errorIngredientRenderer);
 			}
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
-	public void registerExtraIngredients(IExtraIngredientRegistration registration) {
+	public CompletableFuture<Void> registerExtraIngredients(IExtraIngredientRegistration registration, Executor executor) {
 		if (DebugConfig.isDebugModeEnabled()) {
 			registration.addExtraIngredients(DebugIngredient.TYPE, DebugIngredientListFactory.create(0, 10));
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
-	public void registerIngredientAliases(IIngredientAliasRegistration registration) {
+	public CompletableFuture<Void> registerIngredientAliases(IIngredientAliasRegistration registration, Executor executor) {
 		registration.addAlias(
 			VanillaTypes.ITEM_STACK,
 			new ItemStack(Items.PANDA_SPAWN_EGG),
@@ -130,6 +132,7 @@ public class JeiDebugPlugin implements IModPlugin {
 
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		registerFluidAliases(registration, fluidHelper);
+		return CompletableFuture.completedFuture(null);
 	}
 
 	private <T> void registerFluidAliases(IIngredientAliasRegistration registration, IPlatformFluidHelper<T> fluidHelper) {
@@ -141,7 +144,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerCategories(IRecipeCategoryRegistration registration) {
+	public CompletableFuture<Void> registerCategories(IRecipeCategoryRegistration registration, Executor executor) {
 		if (DebugConfig.isDebugModeEnabled()) {
 			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
@@ -155,10 +158,11 @@ public class JeiDebugPlugin implements IModPlugin {
 				new ObnoxiouslyLargeCategory(guiHelper, textures, ingredientManager)
 			);
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
-	public void registerRecipes(IRecipeRegistration registration) {
+	public CompletableFuture<Void> registerRecipes(IRecipeRegistration registration, Executor executor) {
 		if (DebugConfig.isDebugModeEnabled()) {
 			registration.addItemStackInfo(List.of(
 				new ItemStack(Blocks.OAK_DOOR),
@@ -226,6 +230,7 @@ public class JeiDebugPlugin implements IModPlugin {
 
 			registration.addRecipes(ObnoxiouslyLargeCategory.TYPE, List.of(new ObnoxiouslyLargeRecipe()));
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 	private <T> void registerFluidRecipes(IRecipeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
@@ -238,7 +243,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+	public CompletableFuture<Void> registerGuiHandlers(IGuiHandlerRegistration registration, Executor executor) {
 		if (DebugConfig.isDebugModeEnabled()) {
 			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 			IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
@@ -271,6 +276,7 @@ public class JeiDebugPlugin implements IModPlugin {
 			registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager));
 			registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandlerTwo<>(ingredientManager));
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 	private record DebugClickableIngredient<T>(
@@ -301,19 +307,21 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public <T> void registerFluidSubtypes(ISubtypeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
+	public <T> CompletableFuture<Void> registerFluidSubtypes(ISubtypeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper, Executor executor) {
 		Fluid water = Fluids.WATER;
 		IIngredientTypeWithSubtypes<Fluid, T> ingredientType = platformFluidHelper.getFluidIngredientType();
 		FluidSubtypeHandlerTest<T> subtype = new FluidSubtypeHandlerTest<>(ingredientType);
 		registration.registerSubtypeInterpreter(ingredientType, water, subtype);
+		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
-	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
+	public CompletableFuture<Void> registerRecipeCatalysts(IRecipeCatalystRegistration registration, Executor executor) {
 		if (DebugConfig.isDebugModeEnabled()) {
 			IPlatformFluidHelper<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 			registerRecipeCatalysts(registration, fluidHelper);
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 	private <T> void registerRecipeCatalysts(IRecipeCatalystRegistration registration, IPlatformFluidHelper<T> fluidHelper) {
@@ -334,7 +342,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerAdvanced(IAdvancedRegistration registration) {
+	public CompletableFuture<Void> registerAdvanced(IAdvancedRegistration registration, Executor executor) {
 		if (DebugConfig.isDebugModeEnabled()) {
 			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 
@@ -345,6 +353,7 @@ public class JeiDebugPlugin implements IModPlugin {
 
 			registration.addTypedRecipeManagerPlugin(RecipeTypes.CRAFTING, new DebugSimpleRecipeManagerPlugin());
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override

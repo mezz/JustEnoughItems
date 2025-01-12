@@ -8,6 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @JeiPlugin
 public class TestPlugin implements IModPlugin {
@@ -19,13 +21,14 @@ public class TestPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerIngredients(IModIngredientRegistration registration) {
+	public CompletableFuture<Void> registerIngredients(IModIngredientRegistration registration, Executor executor) {
 		Collection<TestIngredient> baseTestIngredients = new ArrayList<>();
 		for (int i = 0; i < BASE_INGREDIENT_COUNT; i++) {
 			baseTestIngredients.add(new TestIngredient(i));
 		}
 
 		registration.register(TestIngredient.TYPE, baseTestIngredients, new TestIngredientHelper(), new TestIngredientRenderer());
+		return CompletableFuture.completedFuture(null);
 	}
 
 }

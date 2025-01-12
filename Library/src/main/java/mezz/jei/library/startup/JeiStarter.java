@@ -105,8 +105,8 @@ public final class JeiStarter {
 
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
 		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
-		SubtypeManager subtypeManager = PluginLoader.registerSubtypes(data);
-		IIngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper, ingredientFilterConfig);
+		SubtypeManager subtypeManager = PluginLoader.registerSubtypes(data, clientExecutor);
+		IIngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper, ingredientFilterConfig, clientExecutor);
 
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
 
@@ -120,17 +120,19 @@ public final class JeiStarter {
 				vanillaPlugin,
 				recipeCategorySortingConfig,
 				jeiHelpers,
-				ingredientManager
+				ingredientManager,
+				clientExecutor
 		);
 		IRecipeTransferManager recipeTransferManager = PluginLoader.createRecipeTransferManager(
 				plugins,
 				jeiHelpers,
-				data.serverConnection()
+				data.serverConnection(),
+				clientExecutor
 		);
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
-		IScreenHelper screenHelper = PluginLoader.createGuiScreenHelper(plugins, jeiHelpers, ingredientManager);
+		IScreenHelper screenHelper = PluginLoader.createGuiScreenHelper(plugins, jeiHelpers, ingredientManager, clientExecutor);
 
 		RuntimeRegistration runtimeRegistration = new RuntimeRegistration(
 				recipeManager,

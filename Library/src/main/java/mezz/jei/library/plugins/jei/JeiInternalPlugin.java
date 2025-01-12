@@ -28,6 +28,8 @@ import net.minecraft.world.level.ItemLike;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Function;
 
 @JeiPlugin
@@ -40,7 +42,7 @@ public class JeiInternalPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerCategories(IRecipeCategoryRegistration registration) {
+	public CompletableFuture<Void> registerCategories(IRecipeCategoryRegistration registration, Executor executor) {
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
 		Textures textures = Internal.getTextures();
@@ -58,10 +60,11 @@ public class JeiInternalPlugin implements IModPlugin {
 						createAndRegisterTagCategory(registration, tagInfoRecipeMakers, ingredientManager, registry);
 					});
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
-	public void registerRecipes(IRecipeRegistration registration) {
+	public CompletableFuture<Void> registerRecipes(IRecipeRegistration registration, Executor executor) {
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		if (clientConfig.isShowTagRecipesEnabled()) {
@@ -70,6 +73,7 @@ public class JeiInternalPlugin implements IModPlugin {
 			}
 		}
 		tagInfoRecipeMakers.clear();
+		return CompletableFuture.completedFuture(null);
 	}
 
 	private static <B> void createAndRegisterTagCategory(

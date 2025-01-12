@@ -9,6 +9,9 @@ import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+
 @JeiPlugin
 public class JeiGuiPlugin implements IModPlugin {
 	@Override
@@ -17,8 +20,9 @@ public class JeiGuiPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+	public CompletableFuture<Void> registerGuiHandlers(IGuiHandlerRegistration registration, Executor executor) {
 		registration.addGuiScreenHandler(AbstractContainerScreen.class, GuiProperties::create);
 		registration.addGuiScreenHandler(RecipesGui.class, RecipesGui::getProperties);
+		return CompletableFuture.completedFuture(null);
 	}
 }

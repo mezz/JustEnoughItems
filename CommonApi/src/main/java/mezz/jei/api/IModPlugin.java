@@ -35,8 +35,8 @@ public interface IModPlugin {
 	/**
 	 * If your item has subtypes that depend on NBT or capabilities, use this to help JEI identify those subtypes correctly.
 	 */
-	default void registerItemSubtypes(ISubtypeRegistration registration) {
-
+	default CompletableFuture<Void> registerItemSubtypes(ISubtypeRegistration registration, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
@@ -45,15 +45,15 @@ public interface IModPlugin {
 	 *
 	 * @since 10.1.0
 	 */
-	default <T> void registerFluidSubtypes(ISubtypeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
-
+	default <T> CompletableFuture<Void> registerFluidSubtypes(ISubtypeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
 	 */
-	default void registerIngredients(IModIngredientRegistration registration) {
-
+	default CompletableFuture<Void> registerIngredients(IModIngredientRegistration registration, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
@@ -62,8 +62,8 @@ public interface IModPlugin {
 	 *
 	 * @since 15.19.0
 	 */
-	default void registerExtraIngredients(IExtraIngredientRegistration registration) {
-
+	default CompletableFuture<Void> registerExtraIngredients(IExtraIngredientRegistration registration, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
@@ -73,38 +73,38 @@ public interface IModPlugin {
 	 *
 	 * @since 15.15.0
 	 */
-	default void registerIngredientAliases(IIngredientAliasRegistration registration) {
-
+	default CompletableFuture<Void> registerIngredientAliases(IIngredientAliasRegistration registration, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
 	 * Register the categories handled by this plugin.
 	 * These are registered before recipes so they can be checked for validity.
 	 */
-	default void registerCategories(IRecipeCategoryRegistration registration) {
-
+	default CompletableFuture<Void> registerCategories(IRecipeCategoryRegistration registration, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
 	 * Register modded extensions to the vanilla crafting recipe category.
 	 * Custom crafting recipes for your mod should use this to tell JEI how they work.
 	 */
-	default void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
-
+	default CompletableFuture<Void> registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
 	 * Register modded recipes.
 	 */
-	default void registerRecipes(IRecipeRegistration registration) {
-
+	default CompletableFuture<Void> registerRecipes(IRecipeRegistration registration, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
 	 * Register recipe transfer handlers (move ingredients from the inventory into crafting GUIs).
 	 */
-	default void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-
+	default CompletableFuture<Void> registerRecipeTransferHandlers(IRecipeTransferRegistration registration, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
@@ -112,8 +112,8 @@ public interface IModPlugin {
 	 * Recipe Catalysts are ingredients that are needed in order to craft other things.
 	 * Vanilla examples of Recipe Catalysts are the Crafting Table and Furnace.
 	 */
-	default void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-
+	default CompletableFuture<Void> registerRecipeCatalysts(IRecipeCatalystRegistration registration, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
@@ -121,15 +121,15 @@ public interface IModPlugin {
 	 * This includes adding clickable areas in your guis to open JEI,
 	 * and adding areas on the screen that JEI should avoid drawing.
 	 */
-	default void registerGuiHandlers(IGuiHandlerRegistration registration) {
-
+	default CompletableFuture<Void> registerGuiHandlers(IGuiHandlerRegistration registration, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
 	 * Register advanced features for your mod plugin.
 	 */
-	default void registerAdvanced(IAdvancedRegistration registration) {
-
+	default CompletableFuture<Void> registerAdvanced(IAdvancedRegistration registration, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
