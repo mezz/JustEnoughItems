@@ -64,7 +64,7 @@ public class IngredientFilterTest {
 
         IColorHelper colorHelper = new TestColorHelper();
         IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
-        testPlugin.registerIngredients(ingredientManagerBuilder);
+        testPlugin.registerIngredients(ingredientManagerBuilder, clientExecutor);
 
         IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
         this.modIdHelper = new TestModIdHelper();
