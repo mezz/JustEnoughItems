@@ -24,8 +24,7 @@ public final class ClientTaskExecutor {
     }
 
     public void runAsync(Runnable runnable) {
-        CompletableFuture<Void> future = CompletableFuture.runAsync(runnable, executor);
-        join(future);
+        executor.runAsync(runnable);
     }
 
     public void runAsync(Supplier<CompletableFuture<Void>> supplier) {
@@ -36,24 +35,14 @@ public final class ClientTaskExecutor {
 
     @SuppressWarnings("UnusedReturnValue")
     private <T> T join(CompletableFuture<T> future) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.isSameThread()) {
-            minecraft.managedBlock(() -> {
-                if (future.isDone()) {
-                    return true;
-                }
-                tick();
-                return false;
-            });
-        }
-        return future.join();
+        return executor.join(future);
     }
 
     public InternalExecutor getExecutor() {
         return executor;
     }
 
-    private static final class InternalExecutor implements Executor {
+    public static final class InternalExecutor implements Executor {
         private static final long TICK_BUDGET = TimeUnit.MILLISECONDS.toNanos(2);
 
         private final ConcurrentLinkedQueue<Runnable> taskQueue = new ConcurrentLinkedQueue<>();
@@ -68,6 +57,25 @@ public final class ClientTaskExecutor {
                     return;
                 }
             } while ((System.nanoTime() - startTime) < TICK_BUDGET);
+        }
+
+        public void runAsync(Runnable runnable) {
+            CompletableFuture<Void> future = CompletableFuture.runAsync(runnable, this);
+            join(future);
+        }
+
+        public <T> T join(CompletableFuture<T> future) {
+            Minecraft minecraft = Minecraft.getInstance();
+            if (minecraft.isSameThread()) {
+                minecraft.managedBlock(() -> {
+                    if (future.isDone()) {
+                        return true;
+                    }
+                    tick();
+                    return false;
+                });
+            }
+            return future.join();
         }
 
         @Override

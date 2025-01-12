@@ -9,6 +9,7 @@ import mezz.jei.forge.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import mezz.jei.gui.startup.ResourceReloadHandler;
+import mezz.jei.library.startup.ClientTaskExecutor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
@@ -32,16 +33,18 @@ public class ForgeGuiPlugin implements IModPlugin {
         return new ResourceLocation(ModIds.JEI_ID, "forge_gui");
     }
 
-    public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor executor) {
-        if (!runtimeSubscriptions.isEmpty()) {
-            LOGGER.error("JEI GUI is already running.");
-            runtimeSubscriptions.clear();
-        }
+    public void registerRuntime(IRuntimeRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            if (!runtimeSubscriptions.isEmpty()) {
+                LOGGER.error("JEI GUI is already running.");
+                runtimeSubscriptions.clear();
+            }
 
-        JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, executor);
-        resourceReloadHandler = eventHandlers.resourceReloadHandler();
-        EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
-        return CompletableFuture.completedFuture(null);
+            JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, executor);
+            resourceReloadHandler = eventHandlers.resourceReloadHandler();
+            EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
+        }));
     }
 
     @Override

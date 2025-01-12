@@ -20,9 +20,10 @@ public class JeiGuiPlugin implements IModPlugin {
 	}
 
 	@Override
-	public CompletableFuture<Void> registerGuiHandlers(IGuiHandlerRegistration registration, Executor executor) {
-		registration.addGuiScreenHandler(AbstractContainerScreen.class, GuiProperties::create);
-		registration.addGuiScreenHandler(RecipesGui.class, RecipesGui::getProperties);
-		return CompletableFuture.completedFuture(null);
+	public void registerGuiHandlers(IGuiHandlerRegistration registration, Executor executor) {
+		executor.execute(new Thread(() -> {
+			registration.addGuiScreenHandler(AbstractContainerScreen.class, GuiProperties::create);
+			registration.addGuiScreenHandler(RecipesGui.class, RecipesGui::getProperties);
+		}));
 	}
 }

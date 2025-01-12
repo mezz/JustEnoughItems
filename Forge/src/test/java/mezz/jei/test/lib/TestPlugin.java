@@ -21,14 +21,14 @@ public class TestPlugin implements IModPlugin {
 	}
 
 	@Override
-	public CompletableFuture<Void> registerIngredients(IModIngredientRegistration registration, Executor executor) {
-		Collection<TestIngredient> baseTestIngredients = new ArrayList<>();
-		for (int i = 0; i < BASE_INGREDIENT_COUNT; i++) {
-			baseTestIngredients.add(new TestIngredient(i));
-		}
+	public void registerIngredients(IModIngredientRegistration registration, Executor executor) {
+		executor.execute(new Thread(() -> {
+			Collection<TestIngredient> baseTestIngredients = new ArrayList<>();
+			for (int i = 0; i < BASE_INGREDIENT_COUNT; i++) {
+				baseTestIngredients.add(new TestIngredient(i));
+			}
 
-		registration.register(TestIngredient.TYPE, baseTestIngredients, new TestIngredientHelper(), new TestIngredientRenderer());
-		return CompletableFuture.completedFuture(null);
+			registration.register(TestIngredient.TYPE, baseTestIngredients, new TestIngredientHelper(), new TestIngredientRenderer());
+		}));
 	}
-
 }

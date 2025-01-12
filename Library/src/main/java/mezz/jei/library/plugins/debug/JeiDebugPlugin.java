@@ -40,6 +40,7 @@ import mezz.jei.library.plugins.debug.ingredients.ErrorIngredient;
 import mezz.jei.library.plugins.debug.ingredients.ErrorIngredientHelper;
 import mezz.jei.library.plugins.debug.ingredients.ErrorIngredientListFactory;
 import mezz.jei.library.plugins.debug.ingredients.ErrorIngredientRenderer;
+import mezz.jei.library.startup.ClientTaskExecutor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -66,305 +67,325 @@ import java.util.concurrent.Executor;
 
 @JeiPlugin
 public class JeiDebugPlugin implements IModPlugin {
-	private @Nullable DebugRecipeCategory<?> debugRecipeCategory;
+    private @Nullable DebugRecipeCategory<?> debugRecipeCategory;
 
-	@Override
-	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "debug");
-	}
+    @Override
+    public ResourceLocation getPluginUid() {
+        return new ResourceLocation(ModIds.JEI_ID, "debug");
+    }
 
-	@Override
-	public CompletableFuture<Void> registerIngredients(IModIngredientRegistration registration, Executor executor) {
-		if (DebugConfig.isDebugModeEnabled()) {
-			DebugIngredientHelper ingredientHelper = new DebugIngredientHelper();
-			DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer(ingredientHelper);
-			registration.register(DebugIngredient.TYPE, Collections.emptyList(), ingredientHelper, ingredientRenderer);
+    @Override
+    public void registerIngredients(IModIngredientRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            if (DebugConfig.isDebugModeEnabled()) {
+                DebugIngredientHelper ingredientHelper = new DebugIngredientHelper();
+                DebugIngredientRenderer ingredientRenderer = new DebugIngredientRenderer(ingredientHelper);
+                registration.register(DebugIngredient.TYPE, Collections.emptyList(), ingredientHelper, ingredientRenderer);
 
-			if (DebugConfig.isCrashingTestIngredientsEnabled()) {
-				ErrorIngredientHelper errorIngredientHelper = new ErrorIngredientHelper();
-				ErrorIngredientRenderer errorIngredientRenderer = new ErrorIngredientRenderer(errorIngredientHelper);
-				Collection<ErrorIngredient> errorIngredients = ErrorIngredientListFactory.create();
-				registration.register(ErrorIngredient.TYPE, errorIngredients, errorIngredientHelper, errorIngredientRenderer);
-			}
-		}
-		return CompletableFuture.completedFuture(null);
-	}
+                if (DebugConfig.isCrashingTestIngredientsEnabled()) {
+                    ErrorIngredientHelper errorIngredientHelper = new ErrorIngredientHelper();
+                    ErrorIngredientRenderer errorIngredientRenderer = new ErrorIngredientRenderer(errorIngredientHelper);
+                    Collection<ErrorIngredient> errorIngredients = ErrorIngredientListFactory.create();
+                    registration.register(ErrorIngredient.TYPE, errorIngredients, errorIngredientHelper, errorIngredientRenderer);
+                }
+            }
+        }));
+    }
 
-	@Override
-	public CompletableFuture<Void> registerExtraIngredients(IExtraIngredientRegistration registration, Executor executor) {
-		if (DebugConfig.isDebugModeEnabled()) {
-			registration.addExtraIngredients(DebugIngredient.TYPE, DebugIngredientListFactory.create(0, 10));
-		}
-		return CompletableFuture.completedFuture(null);
-	}
+    @Override
+    public void registerExtraIngredients(IExtraIngredientRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            if (DebugConfig.isDebugModeEnabled()) {
+                registration.addExtraIngredients(DebugIngredient.TYPE, DebugIngredientListFactory.create(0, 10));
+            }
+        }));
+    }
 
-	@Override
-	public CompletableFuture<Void> registerIngredientAliases(IIngredientAliasRegistration registration, Executor executor) {
-		registration.addAlias(
-			VanillaTypes.ITEM_STACK,
-			new ItemStack(Items.PANDA_SPAWN_EGG),
-			"jei.alias.panda.spawn.egg"
-		);
+    @Override
+    public void registerIngredientAliases(IIngredientAliasRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            registration.addAlias(
+                    VanillaTypes.ITEM_STACK,
+                    new ItemStack(Items.PANDA_SPAWN_EGG),
+                    "jei.alias.panda.spawn.egg"
+            );
 
-		registration.addAlias(
-			VanillaTypes.ITEM_STACK,
-			new ItemStack(Items.VILLAGER_SPAWN_EGG),
-			"jei.alias.villager.spawn.egg"
-		);
+            registration.addAlias(
+                    VanillaTypes.ITEM_STACK,
+                    new ItemStack(Items.VILLAGER_SPAWN_EGG),
+                    "jei.alias.villager.spawn.egg"
+            );
 
-		registration.addAliases(
-			VanillaTypes.ITEM_STACK,
-			List.of(
-				new ItemStack(Items.STRUCTURE_VOID),
-				new ItemStack(Items.BARRIER)
-			),
-			"nothing"
-		);
+            registration.addAliases(
+                    VanillaTypes.ITEM_STACK,
+                    List.of(
+                            new ItemStack(Items.STRUCTURE_VOID),
+                            new ItemStack(Items.BARRIER)
+                    ),
+                    "nothing"
+            );
 
-		registration.addAliases(
-			VanillaTypes.ITEM_STACK,
-			List.of(
-				new ItemStack(Items.GOLDEN_HOE),
-				new ItemStack(Items.DIAMOND_BLOCK)
-			),
-			List.of("shiny", "valuable", "Expensive", "expansive", "extensive")
-		);
+            registration.addAliases(
+                    VanillaTypes.ITEM_STACK,
+                    List.of(
+                            new ItemStack(Items.GOLDEN_HOE),
+                            new ItemStack(Items.DIAMOND_BLOCK)
+                    ),
+                    List.of("shiny", "valuable", "Expensive", "expansive", "extensive")
+            );
 
-		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
-		registerFluidAliases(registration, fluidHelper);
-		return CompletableFuture.completedFuture(null);
-	}
+            IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+            registerFluidAliases(registration, fluidHelper);
+        }));
+    }
 
-	private <T> void registerFluidAliases(IIngredientAliasRegistration registration, IPlatformFluidHelper<T> fluidHelper) {
-		registration.addAliases(
-			fluidHelper.getFluidIngredientType(),
-			fluidHelper.create(Fluids.WATER, fluidHelper.bucketVolume()),
-			List.of("wet", "aqua", "sea", "ocean")
-		);
-	}
+    private <T> void registerFluidAliases(IIngredientAliasRegistration registration, IPlatformFluidHelper<T> fluidHelper) {
+        registration.addAliases(
+                fluidHelper.getFluidIngredientType(),
+                fluidHelper.create(Fluids.WATER, fluidHelper.bucketVolume()),
+                List.of("wet", "aqua", "sea", "ocean")
+        );
+    }
 
-	@Override
-	public CompletableFuture<Void> registerCategories(IRecipeCategoryRegistration registration, Executor executor) {
-		if (DebugConfig.isDebugModeEnabled()) {
-			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
-			IPlatformFluidHelper<?> platformFluidHelper = jeiHelpers.getPlatformFluidHelper();
-			IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
-			Textures textures = Internal.getTextures();
-			this.debugRecipeCategory = new DebugRecipeCategory<>(guiHelper, platformFluidHelper, ingredientManager);
-			registration.addRecipeCategories(
-				debugRecipeCategory,
-				new DebugFocusRecipeCategory<>(platformFluidHelper),
-				new ObnoxiouslyLargeCategory(guiHelper, textures, ingredientManager)
-			);
-		}
-		return CompletableFuture.completedFuture(null);
-	}
+    @Override
+    public void registerCategories(IRecipeCategoryRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            if (DebugConfig.isDebugModeEnabled()) {
+                IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+                IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+                IPlatformFluidHelper<?> platformFluidHelper = jeiHelpers.getPlatformFluidHelper();
+                IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
+                Textures textures = Internal.getTextures();
+                this.debugRecipeCategory = new DebugRecipeCategory<>(guiHelper, platformFluidHelper, ingredientManager);
+                registration.addRecipeCategories(
+                        debugRecipeCategory,
+                        new DebugFocusRecipeCategory<>(platformFluidHelper),
+                        new ObnoxiouslyLargeCategory(guiHelper, textures, ingredientManager)
+                );
+            }
+        }));
+    }
 
-	@Override
-	public CompletableFuture<Void> registerRecipes(IRecipeRegistration registration, Executor executor) {
-		if (DebugConfig.isDebugModeEnabled()) {
-			registration.addItemStackInfo(List.of(
-				new ItemStack(Blocks.OAK_DOOR),
-				new ItemStack(Blocks.SPRUCE_DOOR),
-				new ItemStack(Blocks.BIRCH_DOOR),
-				new ItemStack(Blocks.JUNGLE_DOOR),
-				new ItemStack(Blocks.ACACIA_DOOR),
-				new ItemStack(Blocks.DARK_OAK_DOOR)
-				),
-				Component.translatable("description.jei.wooden.door.1"), // actually 2 lines
-				Component.translatable("description.jei.wooden.door.2"),
-				Component.translatable("description.jei.wooden.door.3")
-			);
+    @Override
+    public void registerRecipes(IRecipeRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            if (DebugConfig.isDebugModeEnabled()) {
+                registration.addItemStackInfo(List.of(
+                                new ItemStack(Blocks.OAK_DOOR),
+                                new ItemStack(Blocks.SPRUCE_DOOR),
+                                new ItemStack(Blocks.BIRCH_DOOR),
+                                new ItemStack(Blocks.JUNGLE_DOOR),
+                                new ItemStack(Blocks.ACACIA_DOOR),
+                                new ItemStack(Blocks.DARK_OAK_DOOR)
+                        ),
+                        Component.translatable("description.jei.wooden.door.1"), // actually 2 lines
+                        Component.translatable("description.jei.wooden.door.2"),
+                        Component.translatable("description.jei.wooden.door.3")
+                );
 
-			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-			IPlatformFluidHelper<?> platformFluidHelper = jeiHelpers.getPlatformFluidHelper();
-			registerFluidRecipes(registration, platformFluidHelper);
-			registration.addIngredientInfo(new DebugIngredient(1), DebugIngredient.TYPE, Component.literal("debug"));
-			registration.addIngredientInfo(new DebugIngredient(2), DebugIngredient.TYPE,
-				Component.literal("debug colored").withStyle(ChatFormatting.AQUA),
-				Component.literal("debug\\nSplit and colored").withStyle(ChatFormatting.LIGHT_PURPLE),
-				Component.translatable("description.jei.debug.formatting.1", "various"),
-				Component.translatable("description.jei.debug.formatting.1", "various\\nsplit"),
-				Component.translatable("description.jei.debug.formatting.1", Component.literal("various colored").withStyle(ChatFormatting.RED)),
-				Component.translatable("description.jei.debug.formatting.1",
-					Component.literal("various\\nsplit colored").withStyle(ChatFormatting.DARK_AQUA)
-				),
-				Component.translatable("description.jei.debug.formatting.1", "\\nSplitting at the start"),
-				Component.translatable("description.jei.debug.formatting.1", "various all colored").withStyle(ChatFormatting.RED),
-				Component.translatable("description.jei.debug.formatting.1",
-					Component.translatable("description.jei.debug.formatting.3", "various").withStyle(ChatFormatting.DARK_AQUA)
-				),
-				Component.translatable("description.jei.debug.formatting.2",
-					Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
-					Component.literal("various").withStyle(ChatFormatting.RED)
-				).withStyle(ChatFormatting.BLUE),
-				Component.translatable("description.jei.debug.formatting.1",
-					Component.translatable("description.jei.debug.formatting.3",
-						Component.translatable("description.jei.debug.formatting.2",
-							Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
-							Component.literal("various").withStyle(ChatFormatting.RED)
-						).withStyle(ChatFormatting.DARK_AQUA)
-					)
-				)
-			);
+                IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+                IPlatformFluidHelper<?> platformFluidHelper = jeiHelpers.getPlatformFluidHelper();
+                registerFluidRecipes(registration, platformFluidHelper);
+                registration.addIngredientInfo(new DebugIngredient(1), DebugIngredient.TYPE, Component.literal("debug"));
+                registration.addIngredientInfo(new DebugIngredient(2), DebugIngredient.TYPE,
+                        Component.literal("debug colored").withStyle(ChatFormatting.AQUA),
+                        Component.literal("debug\\nSplit and colored").withStyle(ChatFormatting.LIGHT_PURPLE),
+                        Component.translatable("description.jei.debug.formatting.1", "various"),
+                        Component.translatable("description.jei.debug.formatting.1", "various\\nsplit"),
+                        Component.translatable("description.jei.debug.formatting.1", Component.literal("various colored").withStyle(ChatFormatting.RED)),
+                        Component.translatable("description.jei.debug.formatting.1",
+                                Component.literal("various\\nsplit colored").withStyle(ChatFormatting.DARK_AQUA)
+                        ),
+                        Component.translatable("description.jei.debug.formatting.1", "\\nSplitting at the start"),
+                        Component.translatable("description.jei.debug.formatting.1", "various all colored").withStyle(ChatFormatting.RED),
+                        Component.translatable("description.jei.debug.formatting.1",
+                                Component.translatable("description.jei.debug.formatting.3", "various").withStyle(ChatFormatting.DARK_AQUA)
+                        ),
+                        Component.translatable("description.jei.debug.formatting.2",
+                                Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
+                                Component.literal("various").withStyle(ChatFormatting.RED)
+                        ).withStyle(ChatFormatting.BLUE),
+                        Component.translatable("description.jei.debug.formatting.1",
+                                Component.translatable("description.jei.debug.formatting.3",
+                                        Component.translatable("description.jei.debug.formatting.2",
+                                                Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
+                                                Component.literal("various").withStyle(ChatFormatting.RED)
+                                        ).withStyle(ChatFormatting.DARK_AQUA)
+                                )
+                        )
+                );
 
-			registration.addRecipes(DebugRecipeCategory.TYPE, List.of(
-				new DebugRecipe(),
-				new DebugRecipe()
-			));
+                registration.addRecipes(DebugRecipeCategory.TYPE, List.of(
+                        new DebugRecipe(),
+                        new DebugRecipe()
+                ));
 
-			registration.addRecipes(DebugFocusRecipeCategory.TYPE, List.of(
-				new DebugRecipe()
-			));
+                registration.addRecipes(DebugFocusRecipeCategory.TYPE, List.of(
+                        new DebugRecipe()
+                ));
 
-			SmithingRecipe testRecipeWithoutTemplate = new SmithingTrimRecipe(
-				new ResourceLocation(ModIds.JEI_ID, "test_recipe_without_template"),
-				Ingredient.EMPTY,
-				Ingredient.of(new ItemStack(Items.APPLE)),
-				Ingredient.of(new ItemStack(Items.BAKED_POTATO))
-			);
-			registration.addRecipes(RecipeTypes.SMITHING, List.of(
-				testRecipeWithoutTemplate
-			));
+                SmithingRecipe testRecipeWithoutTemplate = new SmithingTrimRecipe(
+                        new ResourceLocation(ModIds.JEI_ID, "test_recipe_without_template"),
+                        Ingredient.EMPTY,
+                        Ingredient.of(new ItemStack(Items.APPLE)),
+                        Ingredient.of(new ItemStack(Items.BAKED_POTATO))
+                );
+                registration.addRecipes(RecipeTypes.SMITHING, List.of(
+                        testRecipeWithoutTemplate
+                ));
 
-			registration.addRecipes(ObnoxiouslyLargeCategory.TYPE, List.of(new ObnoxiouslyLargeRecipe()));
-		}
-		return CompletableFuture.completedFuture(null);
-	}
+                registration.addRecipes(ObnoxiouslyLargeCategory.TYPE, List.of(new ObnoxiouslyLargeRecipe()));
+            }
+        }));
+    }
 
-	private <T> void registerFluidRecipes(IRecipeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
-		long bucketVolume = platformFluidHelper.bucketVolume();
-		T fluidIngredient = platformFluidHelper.create(Fluids.WATER, bucketVolume, null);
-		registration.addIngredientInfo(fluidIngredient, platformFluidHelper.getFluidIngredientType(), Component.literal("water"));
+    private <T> void registerFluidRecipes(IRecipeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
+        long bucketVolume = platformFluidHelper.bucketVolume();
+        T fluidIngredient = platformFluidHelper.create(Fluids.WATER, bucketVolume, null);
+        registration.addIngredientInfo(fluidIngredient, platformFluidHelper.getFluidIngredientType(), Component.literal("water"));
 
-		fluidIngredient = platformFluidHelper.create(Fluids.LAVA.defaultFluidState().getType(), 1);
-		registration.addIngredientInfo(fluidIngredient, platformFluidHelper.getFluidIngredientType(), Component.literal("small amount of lava that should still show as 1 bucket"));
-	}
+        fluidIngredient = platformFluidHelper.create(Fluids.LAVA.defaultFluidState().getType(), 1);
+        registration.addIngredientInfo(fluidIngredient, platformFluidHelper.getFluidIngredientType(), Component.literal("small amount of lava that should still show as 1 bucket"));
+    }
 
-	@Override
-	public CompletableFuture<Void> registerGuiHandlers(IGuiHandlerRegistration registration, Executor executor) {
-		if (DebugConfig.isDebugModeEnabled()) {
-			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-			IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
+    @Override
+    public void registerGuiHandlers(IGuiHandlerRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            if (DebugConfig.isDebugModeEnabled()) {
+                IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+                IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
 
-			registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<>() {
-				@Override
-				public List<Rect2i> getGuiExtraAreas(BrewingStandScreen containerScreen) {
-					int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
-					int size = 25 + widthMovement;
-					IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-					int guiLeft = screenHelper.getGuiLeft(containerScreen);
-					int xSize = screenHelper.getXSize(containerScreen);
-					int guiTop = screenHelper.getGuiTop(containerScreen);
-					return List.of(
-						new Rect2i(guiLeft + xSize, guiTop + 40, size, size)
-					);
-				}
+                registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<>() {
+                    @Override
+                    public List<Rect2i> getGuiExtraAreas(BrewingStandScreen containerScreen) {
+                        int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
+                        int size = 25 + widthMovement;
+                        IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+                        int guiLeft = screenHelper.getGuiLeft(containerScreen);
+                        int xSize = screenHelper.getXSize(containerScreen);
+                        int guiTop = screenHelper.getGuiTop(containerScreen);
+                        return List.of(
+                                new Rect2i(guiLeft + xSize, guiTop + 40, size, size)
+                        );
+                    }
 
-				@Override
-				public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(BrewingStandScreen containerScreen, double mouseX, double mouseY) {
-					Rect2i area = new Rect2i(0, 0, 10, 10);
-					if (MathUtil.contains(area, mouseX, mouseY)) {
-						return ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.BOW))
-							.map(item -> new DebugClickableIngredient<>(item, area));
-					}
-					return Optional.empty();
-				}
-			});
+                    @Override
+                    public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(BrewingStandScreen containerScreen, double mouseX, double mouseY) {
+                        Rect2i area = new Rect2i(0, 0, 10, 10);
+                        if (MathUtil.contains(area, mouseX, mouseY)) {
+                            return ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.BOW))
+                                    .map(item -> new DebugClickableIngredient<>(item, area));
+                        }
+                        return Optional.empty();
+                    }
+                });
 
-			registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager));
-			registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandlerTwo<>(ingredientManager));
-		}
-		return CompletableFuture.completedFuture(null);
-	}
+                registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager));
+                registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandlerTwo<>(ingredientManager));
+            }
+        }));
+    }
 
-	private record DebugClickableIngredient<T>(
-		ITypedIngredient<T> typedIngredient,
-		Rect2i area
-	) implements IClickableIngredient<T> {
+    private record DebugClickableIngredient<T>(
+            ITypedIngredient<T> typedIngredient,
+            Rect2i area
+    ) implements IClickableIngredient<T> {
 
-		@SuppressWarnings("removal")
-		@Override
-		public ITypedIngredient<T> getTypedIngredient() {
-			return typedIngredient;
-		}
+        @SuppressWarnings("removal")
+        @Override
+        public ITypedIngredient<T> getTypedIngredient() {
+            return typedIngredient;
+        }
 
-		@Override
-		public IIngredientType<T> getIngredientType() {
-			return typedIngredient.getType();
-		}
+        @Override
+        public IIngredientType<T> getIngredientType() {
+            return typedIngredient.getType();
+        }
 
-		@Override
-		public T getIngredient() {
-			return typedIngredient.getIngredient();
-		}
+        @Override
+        public T getIngredient() {
+            return typedIngredient.getIngredient();
+        }
 
-		@Override
-		public Rect2i getArea() {
-			return area;
-		}
-	}
+        @Override
+        public Rect2i getArea() {
+            return area;
+        }
+    }
 
-	@Override
-	public <T> CompletableFuture<Void> registerFluidSubtypes(ISubtypeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper, Executor executor) {
-		Fluid water = Fluids.WATER;
-		IIngredientTypeWithSubtypes<Fluid, T> ingredientType = platformFluidHelper.getFluidIngredientType();
-		FluidSubtypeHandlerTest<T> subtype = new FluidSubtypeHandlerTest<>(ingredientType);
-		registration.registerSubtypeInterpreter(ingredientType, water, subtype);
-		return CompletableFuture.completedFuture(null);
-	}
+    @Override
+    public <T> void registerFluidSubtypes(ISubtypeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            Fluid water = Fluids.WATER;
+            IIngredientTypeWithSubtypes<Fluid, T> ingredientType = platformFluidHelper.getFluidIngredientType();
+            FluidSubtypeHandlerTest<T> subtype = new FluidSubtypeHandlerTest<>(ingredientType);
+            registration.registerSubtypeInterpreter(ingredientType, water, subtype);
+        }));
+    }
 
-	@Override
-	public CompletableFuture<Void> registerRecipeCatalysts(IRecipeCatalystRegistration registration, Executor executor) {
-		if (DebugConfig.isDebugModeEnabled()) {
-			IPlatformFluidHelper<?> fluidHelper = Services.PLATFORM.getFluidHelper();
-			registerRecipeCatalysts(registration, fluidHelper);
-		}
-		return CompletableFuture.completedFuture(null);
-	}
+    @Override
+    public void registerRecipeCatalysts(IRecipeCatalystRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            if (DebugConfig.isDebugModeEnabled()) {
+                IPlatformFluidHelper<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+                registerRecipeCatalysts(registration, fluidHelper);
+            }
+        }));
+    }
 
-	private <T> void registerRecipeCatalysts(IRecipeCatalystRegistration registration, IPlatformFluidHelper<T> fluidHelper) {
-		long bucketVolume = fluidHelper.bucketVolume();
+    private <T> void registerRecipeCatalysts(IRecipeCatalystRegistration registration, IPlatformFluidHelper<T> fluidHelper) {
+        long bucketVolume = fluidHelper.bucketVolume();
 
-		registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
-		registration.addRecipeCatalyst(fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER, bucketVolume, null), DebugRecipeCategory.TYPE);
-		registration.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
-		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registries.ITEM);
-		registry.getValues()
-			.limit(300)
-			.forEach(item -> {
-				ItemStack catalystIngredient = new ItemStack(item);
-				if (!catalystIngredient.isEmpty()) {
-					registration.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.TYPE);
-				}
-			});
-	}
+        registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
+        registration.addRecipeCatalyst(fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER, bucketVolume, null), DebugRecipeCategory.TYPE);
+        registration.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
+        IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registries.ITEM);
+        registry.getValues()
+                .limit(300)
+                .forEach(item -> {
+                    ItemStack catalystIngredient = new ItemStack(item);
+                    if (!catalystIngredient.isEmpty()) {
+                        registration.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.TYPE);
+                    }
+                });
+    }
 
-	@Override
-	public CompletableFuture<Void> registerAdvanced(IAdvancedRegistration registration, Executor executor) {
-		if (DebugConfig.isDebugModeEnabled()) {
-			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+    @Override
+    public void registerAdvanced(IAdvancedRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            if (DebugConfig.isDebugModeEnabled()) {
+                IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 
-			jeiHelpers
-				.getAllRecipeTypes()
-				.filter(r -> r.getUid().getNamespace().equals(ModIds.JEI_ID))
-				.forEach(r -> registration.addRecipeCategoryDecorator(r, DebugCategoryDecorator.getInstance()));
+                jeiHelpers
+                        .getAllRecipeTypes()
+                        .filter(r -> r.getUid().getNamespace().equals(ModIds.JEI_ID))
+                        .forEach(r -> registration.addRecipeCategoryDecorator(r, DebugCategoryDecorator.getInstance()));
 
-			registration.addTypedRecipeManagerPlugin(RecipeTypes.CRAFTING, new DebugSimpleRecipeManagerPlugin());
-		}
-		return CompletableFuture.completedFuture(null);
-	}
+                registration.addTypedRecipeManagerPlugin(RecipeTypes.CRAFTING, new DebugSimpleRecipeManagerPlugin());
+            }
+        }));
+    }
 
-	@Override
-	public CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
-		if (DebugConfig.isDebugModeEnabled()) {
-			if (debugRecipeCategory != null) {
-				debugRecipeCategory.setRuntime(jeiRuntime);
-			}
-			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
-			ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create(10, 20), executor);
-		}
-		return CompletableFuture.completedFuture(null);
-	}
+    @Override
+    public void onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            if (DebugConfig.isDebugModeEnabled()) {
+                if (debugRecipeCategory != null) {
+                    debugRecipeCategory.setRuntime(jeiRuntime);
+                }
+                IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
+                ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create(10, 20), executor);
+            }
+        }));
+    }
 }

@@ -9,6 +9,7 @@ import mezz.jei.fabric.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import mezz.jei.gui.startup.ResourceReloadHandler;
+import mezz.jei.library.startup.ClientTaskExecutor;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,16 +32,20 @@ public class FabricGuiPlugin implements IModPlugin {
         return new ResourceLocation(ModIds.JEI_ID, "fabric_runtime");
     }
 
-    public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor executor) {
-        JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, executor);
-        resourceReloadHandler = eventHandlers.resourceReloadHandler();
-        return CompletableFuture.completedFuture(null);
+    public void registerRuntime(IRuntimeRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, executor);
+            resourceReloadHandler = eventHandlers.resourceReloadHandler();
+        }));
     }
 
     @Override
-    public CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
-        runtime = jeiRuntime;
-        return CompletableFuture.completedFuture(null);
+    public void onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            runtime = jeiRuntime;
+        }));
     }
 
     @Override

@@ -73,6 +73,7 @@ import mezz.jei.library.plugins.vanilla.ingredients.subtypes.SuspiciousStewSubty
 import mezz.jei.library.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.library.render.ItemStackRenderer;
+import mezz.jei.library.startup.ClientTaskExecutor;
 import mezz.jei.library.transfer.PlayerRecipeTransferHandler;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
@@ -126,243 +127,261 @@ import java.util.stream.Stream;
 
 @JeiPlugin
 public class VanillaPlugin implements IModPlugin {
-	private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
-	@Nullable
-	private CraftingRecipeCategory craftingCategory;
-	@Nullable
-	private IRecipeCategory<StonecutterRecipe> stonecuttingCategory;
-	@Nullable
-	private IRecipeCategory<SmeltingRecipe> furnaceCategory;
-	@Nullable
-	private IRecipeCategory<SmokingRecipe> smokingCategory;
-	@Nullable
-	private IRecipeCategory<BlastingRecipe> blastingCategory;
-	@Nullable
-	private IRecipeCategory<CampfireCookingRecipe> campfireCategory;
-	@Nullable
-	private SmithingRecipeCategory smithingCategory;
+    @Nullable
+    private CraftingRecipeCategory craftingCategory;
+    @Nullable
+    private IRecipeCategory<StonecutterRecipe> stonecuttingCategory;
+    @Nullable
+    private IRecipeCategory<SmeltingRecipe> furnaceCategory;
+    @Nullable
+    private IRecipeCategory<SmokingRecipe> smokingCategory;
+    @Nullable
+    private IRecipeCategory<BlastingRecipe> blastingCategory;
+    @Nullable
+    private IRecipeCategory<CampfireCookingRecipe> campfireCategory;
+    @Nullable
+    private SmithingRecipeCategory smithingCategory;
 
-	@Override
-	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "minecraft");
-	}
+    @Override
+    public ResourceLocation getPluginUid() {
+        return new ResourceLocation(ModIds.JEI_ID, "minecraft");
+    }
 
-	@Override
-	public CompletableFuture<Void> registerItemSubtypes(ISubtypeRegistration registration, Executor executor) {
-		registration.registerSubtypeInterpreter(Items.TIPPED_ARROW, PotionSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.POTION, PotionSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, (itemStack, context) -> {
-			List<String> enchantmentNames = new ArrayList<>();
-			ListTag enchantments = EnchantedBookItem.getEnchantments(itemStack);
-			for (int i = 0; i < enchantments.size(); ++i) {
-				CompoundTag compoundnbt = enchantments.getCompound(i);
-				String id = compoundnbt.getString("id");
-				IPlatformRegistry<Enchantment> enchantmentRegistry = Services.PLATFORM.getRegistry(Registries.ENCHANTMENT);
-				ResourceLocation resourceLocation = ResourceLocation.tryParse(id);
-				if (resourceLocation != null) {
-					enchantmentRegistry.getValue(resourceLocation)
-						.map(enchantment -> enchantment.getDescriptionId() + ".lvl" + compoundnbt.getShort("lvl"))
-						.ifPresent(enchantmentNames::add);
-				}
-			}
-			enchantmentNames.sort(null);
-			return enchantmentNames.toString();
-		});
-		return CompletableFuture.completedFuture(null);
-	}
+    @Override
+    public void registerItemSubtypes(ISubtypeRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            registration.registerSubtypeInterpreter(Items.TIPPED_ARROW, PotionSubtypeInterpreter.INSTANCE);
+            registration.registerSubtypeInterpreter(Items.POTION, PotionSubtypeInterpreter.INSTANCE);
+            registration.registerSubtypeInterpreter(Items.SPLASH_POTION, PotionSubtypeInterpreter.INSTANCE);
+            registration.registerSubtypeInterpreter(Items.LINGERING_POTION, PotionSubtypeInterpreter.INSTANCE);
+            registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, (itemStack, context) -> {
+                List<String> enchantmentNames = new ArrayList<>();
+                ListTag enchantments = EnchantedBookItem.getEnchantments(itemStack);
+                for (int i = 0; i < enchantments.size(); ++i) {
+                    CompoundTag compoundnbt = enchantments.getCompound(i);
+                    String id = compoundnbt.getString("id");
+                    IPlatformRegistry<Enchantment> enchantmentRegistry = Services.PLATFORM.getRegistry(Registries.ENCHANTMENT);
+                    ResourceLocation resourceLocation = ResourceLocation.tryParse(id);
+                    if (resourceLocation != null) {
+                        enchantmentRegistry.getValue(resourceLocation)
+                                .map(enchantment -> enchantment.getDescriptionId() + ".lvl" + compoundnbt.getShort("lvl"))
+                                .ifPresent(enchantmentNames::add);
+                    }
+                }
+                enchantmentNames.sort(null);
+                return enchantmentNames.toString();
+            });
+        }));
+    }
 
-	@Override
-	public CompletableFuture<Void> registerIngredients(IModIngredientRegistration registration, Executor executor) {
-		ISubtypeManager subtypeManager = registration.getSubtypeManager();
-		StackHelper stackHelper = new StackHelper(subtypeManager);
+    @Override
+    public void registerIngredients(IModIngredientRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            ISubtypeManager subtypeManager = registration.getSubtypeManager();
+            StackHelper stackHelper = new StackHelper(subtypeManager);
 
-		List<ItemStack> itemStacks = ItemStackListFactory.create(stackHelper);
-		IColorHelper colorHelper = registration.getColorHelper();
-		ItemStackHelper itemStackHelper = new ItemStackHelper(subtypeManager, stackHelper, colorHelper);
-		ItemStackRenderer itemStackRenderer = new ItemStackRenderer();
-		registration.register(VanillaTypes.ITEM_STACK, itemStacks, itemStackHelper, itemStackRenderer);
+            List<ItemStack> itemStacks = ItemStackListFactory.create(stackHelper);
+            IColorHelper colorHelper = registration.getColorHelper();
+            ItemStackHelper itemStackHelper = new ItemStackHelper(subtypeManager, stackHelper, colorHelper);
+            ItemStackRenderer itemStackRenderer = new ItemStackRenderer();
+            registration.register(VanillaTypes.ITEM_STACK, itemStacks, itemStackHelper, itemStackRenderer);
 
-		IPlatformFluidHelperInternal<?> platformFluidHelper = Services.PLATFORM.getFluidHelper();
-		registerFluidIngredients(registration, platformFluidHelper);
-		return CompletableFuture.completedFuture(null);
-	}
+            IPlatformFluidHelperInternal<?> platformFluidHelper = Services.PLATFORM.getFluidHelper();
+            registerFluidIngredients(registration, platformFluidHelper);
+        }));
+    }
 
-	private <T> void registerFluidIngredients(IModIngredientRegistration registration, IPlatformFluidHelperInternal<T> platformFluidHelper) {
-		ISubtypeManager subtypeManager = registration.getSubtypeManager();
-		IColorHelper colorHelper = registration.getColorHelper();
+    private <T> void registerFluidIngredients(IModIngredientRegistration registration, IPlatformFluidHelperInternal<T> platformFluidHelper) {
+        ISubtypeManager subtypeManager = registration.getSubtypeManager();
+        IColorHelper colorHelper = registration.getColorHelper();
 
-		IPlatformRegistry<Fluid> registry = Services.PLATFORM.getRegistry(Registries.FLUID);
-		List<T> fluidIngredients = FluidStackListFactory.create(registry, platformFluidHelper);
-		FluidIngredientHelper<T> fluidIngredientHelper = new FluidIngredientHelper<>(subtypeManager, colorHelper, platformFluidHelper);
-		FluidTankRenderer<T> fluidTankRenderer = new FluidTankRenderer<>(platformFluidHelper);
-		IIngredientType<T> fluidIngredientType = platformFluidHelper.getFluidIngredientType();
-		registration.register(fluidIngredientType, fluidIngredients, fluidIngredientHelper, fluidTankRenderer);
-	}
+        IPlatformRegistry<Fluid> registry = Services.PLATFORM.getRegistry(Registries.FLUID);
+        List<T> fluidIngredients = FluidStackListFactory.create(registry, platformFluidHelper);
+        FluidIngredientHelper<T> fluidIngredientHelper = new FluidIngredientHelper<>(subtypeManager, colorHelper, platformFluidHelper);
+        FluidTankRenderer<T> fluidTankRenderer = new FluidTankRenderer<>(platformFluidHelper);
+        IIngredientType<T> fluidIngredientType = platformFluidHelper.getFluidIngredientType();
+        registration.register(fluidIngredientType, fluidIngredients, fluidIngredientHelper, fluidTankRenderer);
+    }
 
-	@Override
-	public CompletableFuture<Void> registerCategories(IRecipeCategoryRegistration registration, Executor executor) {
-		Textures textures = Internal.getTextures();
-		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
-		registration.addRecipeCategories(
-			craftingCategory = new CraftingRecipeCategory(guiHelper),
-			stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper),
-			furnaceCategory = new FurnaceSmeltingCategory(guiHelper),
-			smokingCategory = new SmokingCategory(guiHelper),
-			blastingCategory = new BlastingCategory(guiHelper),
-			campfireCategory = new CampfireCookingCategory(guiHelper),
-			smithingCategory = new SmithingRecipeCategory(guiHelper),
-			new CompostableRecipeCategory(guiHelper),
-			new FurnaceFuelCategory(textures),
-			new BrewingRecipeCategory(guiHelper),
-			new AnvilRecipeCategory(guiHelper)
-		);
-		return CompletableFuture.completedFuture(null);
-	}
+    @Override
+    public void registerCategories(IRecipeCategoryRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            Textures textures = Internal.getTextures();
+            IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+            IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+            registration.addRecipeCategories(
+                    craftingCategory = new CraftingRecipeCategory(guiHelper),
+                    stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper),
+                    furnaceCategory = new FurnaceSmeltingCategory(guiHelper),
+                    smokingCategory = new SmokingCategory(guiHelper),
+                    blastingCategory = new BlastingCategory(guiHelper),
+                    campfireCategory = new CampfireCookingCategory(guiHelper),
+                    smithingCategory = new SmithingRecipeCategory(guiHelper),
+                    new CompostableRecipeCategory(guiHelper),
+                    new FurnaceFuelCategory(textures),
+                    new BrewingRecipeCategory(guiHelper),
+                    new AnvilRecipeCategory(guiHelper)
+            );
+        }));
+    }
 
-	@Override
-	public CompletableFuture<Void> registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration, Executor executor) {
-		IExtendableRecipeCategory<CraftingRecipe, ICraftingCategoryExtension> craftingCategory = registration.getCraftingCategory();
-		craftingCategory.addCategoryExtension(CraftingRecipe.class, r -> !r.isSpecial(), CraftingCategoryExtension::new);
-		return CompletableFuture.completedFuture(null);
-	}
 
-	@Override
-	public CompletableFuture<Void> registerRecipes(IRecipeRegistration registration, Executor executor) {
-		ErrorUtil.checkNotNull(craftingCategory, "craftingCategory");
-		ErrorUtil.checkNotNull(stonecuttingCategory, "stonecuttingCategory");
-		ErrorUtil.checkNotNull(furnaceCategory, "furnaceCategory");
-		ErrorUtil.checkNotNull(smokingCategory, "smokingCategory");
-		ErrorUtil.checkNotNull(blastingCategory, "blastingCategory");
-		ErrorUtil.checkNotNull(campfireCategory, "campfireCategory");
-		ErrorUtil.checkNotNull(smithingCategory, "smithingCategory");
+    @Override
+    public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            IExtendableRecipeCategory<CraftingRecipe, ICraftingCategoryExtension> craftingCategory = registration.getCraftingCategory();
+            craftingCategory.addCategoryExtension(CraftingRecipe.class, r -> !r.isSpecial(), CraftingCategoryExtension::new);
+        }));
+    }
 
-		IIngredientManager ingredientManager = registration.getIngredientManager();
-		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
-		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-		IStackHelper stackHelper = jeiHelpers.getStackHelper();
-		VanillaRecipes vanillaRecipes = new VanillaRecipes(ingredientManager);
+    @Override
+    public void registerRecipes(IRecipeRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            ErrorUtil.checkNotNull(craftingCategory, "craftingCategory");
+            ErrorUtil.checkNotNull(stonecuttingCategory, "stonecuttingCategory");
+            ErrorUtil.checkNotNull(furnaceCategory, "furnaceCategory");
+            ErrorUtil.checkNotNull(smokingCategory, "smokingCategory");
+            ErrorUtil.checkNotNull(blastingCategory, "blastingCategory");
+            ErrorUtil.checkNotNull(campfireCategory, "campfireCategory");
+            ErrorUtil.checkNotNull(smithingCategory, "smithingCategory");
 
-		Map<Boolean, List<CraftingRecipe>> craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
-		List<CraftingRecipe> handledCraftingRecipes = craftingRecipes.get(true);
-		List<CraftingRecipe> unhandledCraftingRecipes = craftingRecipes.get(false);
-		List<CraftingRecipe> specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, stackHelper);
+            IIngredientManager ingredientManager = registration.getIngredientManager();
+            IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
+            IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+            IStackHelper stackHelper = jeiHelpers.getStackHelper();
+            VanillaRecipes vanillaRecipes = new VanillaRecipes(ingredientManager);
 
-		registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);
-		registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);
+            Map<Boolean, List<CraftingRecipe>> craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
+            List<CraftingRecipe> handledCraftingRecipes = craftingRecipes.get(true);
+            List<CraftingRecipe> unhandledCraftingRecipes = craftingRecipes.get(false);
+            List<CraftingRecipe> specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, stackHelper);
 
-		registration.addRecipes(RecipeTypes.STONECUTTING, vanillaRecipes.getStonecuttingRecipes(stonecuttingCategory));
-		registration.addRecipes(RecipeTypes.SMELTING, vanillaRecipes.getFurnaceRecipes(furnaceCategory));
-		registration.addRecipes(RecipeTypes.SMOKING, vanillaRecipes.getSmokingRecipes(smokingCategory));
-		registration.addRecipes(RecipeTypes.BLASTING, vanillaRecipes.getBlastingRecipes(blastingCategory));
-		registration.addRecipes(RecipeTypes.CAMPFIRE_COOKING, vanillaRecipes.getCampfireCookingRecipes(campfireCategory));
-		registration.addRecipes(RecipeTypes.FUELING, FuelRecipeMaker.getFuelRecipes(ingredientManager));
-		registration.addRecipes(RecipeTypes.ANVIL, AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager));
-		registration.addRecipes(RecipeTypes.SMITHING, vanillaRecipes.getSmithingRecipes(smithingCategory));
-		registration.addRecipes(RecipeTypes.COMPOSTING, CompostingRecipeMaker.getRecipes(ingredientManager));
+            registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);
+            registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);
 
-		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
-		List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(ingredientManager, vanillaRecipeFactory);
-		brewingRecipes.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
-		registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
-		return CompletableFuture.completedFuture(null);
-	}
+            registration.addRecipes(RecipeTypes.STONECUTTING, vanillaRecipes.getStonecuttingRecipes(stonecuttingCategory));
+            registration.addRecipes(RecipeTypes.SMELTING, vanillaRecipes.getFurnaceRecipes(furnaceCategory));
+            registration.addRecipes(RecipeTypes.SMOKING, vanillaRecipes.getSmokingRecipes(smokingCategory));
+            registration.addRecipes(RecipeTypes.BLASTING, vanillaRecipes.getBlastingRecipes(blastingCategory));
+            registration.addRecipes(RecipeTypes.CAMPFIRE_COOKING, vanillaRecipes.getCampfireCookingRecipes(campfireCategory));
+            registration.addRecipes(RecipeTypes.FUELING, FuelRecipeMaker.getFuelRecipes(ingredientManager));
+            registration.addRecipes(RecipeTypes.ANVIL, AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager));
+            registration.addRecipes(RecipeTypes.SMITHING, vanillaRecipes.getSmithingRecipes(smithingCategory));
+            registration.addRecipes(RecipeTypes.COMPOSTING, CompostingRecipeMaker.getRecipes(ingredientManager));
 
-	@Override
-	public CompletableFuture<Void> registerGuiHandlers(IGuiHandlerRegistration registration, Executor executor) {
-		registration.addRecipeClickArea(CraftingScreen.class, 88, 32, 28, 23, RecipeTypes.CRAFTING);
-		registration.addRecipeClickArea(InventoryScreen.class, 137, 29, 10, 13, RecipeTypes.CRAFTING);
-		registration.addRecipeClickArea(BrewingStandScreen.class, 97, 16, 14, 30, RecipeTypes.BREWING);
-		registration.addRecipeClickArea(FurnaceScreen.class, 78, 32, 28, 23, RecipeTypes.SMELTING, RecipeTypes.FUELING);
-		registration.addRecipeClickArea(SmokerScreen.class, 78, 32, 28, 23, RecipeTypes.SMOKING, RecipeTypes.FUELING);
-		registration.addRecipeClickArea(BlastFurnaceScreen.class, 78, 32, 28, 23, RecipeTypes.BLASTING, RecipeTypes.FUELING);
-		registration.addRecipeClickArea(AnvilScreen.class, 102, 48, 22, 15, RecipeTypes.ANVIL);
-		registration.addRecipeClickArea(SmithingScreen.class, 68, 49, 22, 15, RecipeTypes.SMITHING);
+            IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
+            List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(ingredientManager, vanillaRecipeFactory);
+            brewingRecipes.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
+            registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
+        }));
+    }
 
-		registration.addGenericGuiContainerHandler(EffectRenderingInventoryScreen.class, new InventoryEffectRendererGuiHandler<>());
-		registration.addGuiContainerHandler(CraftingScreen.class, new RecipeBookGuiHandler<>());
-		registration.addGuiContainerHandler(InventoryScreen.class, new RecipeBookGuiHandler<>());
-		registration.addGuiContainerHandler(AbstractFurnaceScreen.class, new RecipeBookGuiHandler<>());
-		return CompletableFuture.completedFuture(null);
-	}
+    @Override
+    public void registerGuiHandlers(IGuiHandlerRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            registration.addRecipeClickArea(CraftingScreen.class, 88, 32, 28, 23, RecipeTypes.CRAFTING);
+            registration.addRecipeClickArea(InventoryScreen.class, 137, 29, 10, 13, RecipeTypes.CRAFTING);
+            registration.addRecipeClickArea(BrewingStandScreen.class, 97, 16, 14, 30, RecipeTypes.BREWING);
+            registration.addRecipeClickArea(FurnaceScreen.class, 78, 32, 28, 23, RecipeTypes.SMELTING, RecipeTypes.FUELING);
+            registration.addRecipeClickArea(SmokerScreen.class, 78, 32, 28, 23, RecipeTypes.SMOKING, RecipeTypes.FUELING);
+            registration.addRecipeClickArea(BlastFurnaceScreen.class, 78, 32, 28, 23, RecipeTypes.BLASTING, RecipeTypes.FUELING);
+            registration.addRecipeClickArea(AnvilScreen.class, 102, 48, 22, 15, RecipeTypes.ANVIL);
+            registration.addRecipeClickArea(SmithingScreen.class, 68, 49, 22, 15, RecipeTypes.SMITHING);
 
-	@Override
-	public CompletableFuture<Void> registerRecipeTransferHandlers(IRecipeTransferRegistration registration, Executor executor) {
-		registration.addRecipeTransferHandler(CraftingMenu.class, MenuType.CRAFTING, RecipeTypes.CRAFTING, 1, 9, 10, 36);
-		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, 0, 1, 3, 36);
-		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.FUELING, 1, 1, 3, 36);
-		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.SMOKING, 0, 1, 3, 36);
-		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.FUELING, 1, 1, 3, 36);
-		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, MenuType.BLAST_FURNACE, RecipeTypes.BLASTING, 0, 1, 3, 36);
-		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, MenuType.BLAST_FURNACE, RecipeTypes.FUELING, 1, 1, 3, 36);
-		registration.addRecipeTransferHandler(BrewingStandMenu.class, MenuType.BREWING_STAND, RecipeTypes.BREWING, 0, 4, 5, 36);
-		registration.addRecipeTransferHandler(AnvilMenu.class, MenuType.ANVIL, RecipeTypes.ANVIL, 0, 2, 3, 36);
-		registration.addRecipeTransferHandler(SmithingMenu.class, MenuType.SMITHING, RecipeTypes.SMITHING, 0, 3, 3, 36);
+            registration.addGenericGuiContainerHandler(EffectRenderingInventoryScreen.class, new InventoryEffectRendererGuiHandler<>());
+            registration.addGuiContainerHandler(CraftingScreen.class, new RecipeBookGuiHandler<>());
+            registration.addGuiContainerHandler(InventoryScreen.class, new RecipeBookGuiHandler<>());
+            registration.addGuiContainerHandler(AbstractFurnaceScreen.class, new RecipeBookGuiHandler<>());
+        }));
+    }
 
-		IRecipeTransferHandlerHelper transferHelper = registration.getTransferHelper();
-		PlayerRecipeTransferHandler recipeTransferHandler = new PlayerRecipeTransferHandler(transferHelper);
-		registration.addRecipeTransferHandler(recipeTransferHandler, RecipeTypes.CRAFTING);
-		return CompletableFuture.completedFuture(null);
-	}
+    @Override
+    public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            registration.addRecipeTransferHandler(CraftingMenu.class, MenuType.CRAFTING, RecipeTypes.CRAFTING, 1, 9, 10, 36);
+            registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, 0, 1, 3, 36);
+            registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.FUELING, 1, 1, 3, 36);
+            registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.SMOKING, 0, 1, 3, 36);
+            registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.FUELING, 1, 1, 3, 36);
+            registration.addRecipeTransferHandler(BlastFurnaceMenu.class, MenuType.BLAST_FURNACE, RecipeTypes.BLASTING, 0, 1, 3, 36);
+            registration.addRecipeTransferHandler(BlastFurnaceMenu.class, MenuType.BLAST_FURNACE, RecipeTypes.FUELING, 1, 1, 3, 36);
+            registration.addRecipeTransferHandler(BrewingStandMenu.class, MenuType.BREWING_STAND, RecipeTypes.BREWING, 0, 4, 5, 36);
+            registration.addRecipeTransferHandler(AnvilMenu.class, MenuType.ANVIL, RecipeTypes.ANVIL, 0, 2, 3, 36);
+            registration.addRecipeTransferHandler(SmithingMenu.class, MenuType.SMITHING, RecipeTypes.SMITHING, 0, 3, 3, 36);
 
-	@Override
-	public CompletableFuture<Void> registerRecipeCatalysts(IRecipeCatalystRegistration registration, Executor executor) {
-		registration.addRecipeCatalyst(new ItemStack(Blocks.CRAFTING_TABLE), RecipeTypes.CRAFTING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.STONECUTTER), RecipeTypes.STONECUTTING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.FURNACE), RecipeTypes.SMELTING, RecipeTypes.FUELING);
+            IRecipeTransferHandlerHelper transferHelper = registration.getTransferHelper();
+            PlayerRecipeTransferHandler recipeTransferHandler = new PlayerRecipeTransferHandler(transferHelper);
+            registration.addRecipeTransferHandler(recipeTransferHandler, RecipeTypes.CRAFTING);
+        }));
+    }
 
-		registration.addRecipeCatalyst(new ItemStack(Blocks.SMOKER), RecipeTypes.SMOKING, RecipeTypes.FUELING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.BLAST_FURNACE), RecipeTypes.BLASTING, RecipeTypes.FUELING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.CAMPFIRE), RecipeTypes.CAMPFIRE_COOKING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.SOUL_CAMPFIRE), RecipeTypes.CAMPFIRE_COOKING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.BREWING_STAND), RecipeTypes.BREWING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), RecipeTypes.ANVIL);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.SMITHING_TABLE), RecipeTypes.SMITHING);
-		registration.addRecipeCatalyst(new ItemStack(Blocks.COMPOSTER), RecipeTypes.COMPOSTING);
-		return CompletableFuture.completedFuture(null);
-	}
+    @Override
+    public void registerRecipeCatalysts(IRecipeCatalystRegistration registration, Executor executor) {
+        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
+        internalExecutor.runAsync(new Thread(() -> {
+            registration.addRecipeCatalyst(new ItemStack(Blocks.CRAFTING_TABLE), RecipeTypes.CRAFTING);
+            registration.addRecipeCatalyst(new ItemStack(Blocks.STONECUTTER), RecipeTypes.STONECUTTING);
+            registration.addRecipeCatalyst(new ItemStack(Blocks.FURNACE), RecipeTypes.SMELTING, RecipeTypes.FUELING);
 
-	public Optional<CraftingRecipeCategory> getCraftingCategory() {
-		return Optional.ofNullable(craftingCategory);
-	}
+            registration.addRecipeCatalyst(new ItemStack(Blocks.SMOKER), RecipeTypes.SMOKING, RecipeTypes.FUELING);
+            registration.addRecipeCatalyst(new ItemStack(Blocks.BLAST_FURNACE), RecipeTypes.BLASTING, RecipeTypes.FUELING);
+            registration.addRecipeCatalyst(new ItemStack(Blocks.CAMPFIRE), RecipeTypes.CAMPFIRE_COOKING);
+            registration.addRecipeCatalyst(new ItemStack(Blocks.SOUL_CAMPFIRE), RecipeTypes.CAMPFIRE_COOKING);
+            registration.addRecipeCatalyst(new ItemStack(Blocks.BREWING_STAND), RecipeTypes.BREWING);
+            registration.addRecipeCatalyst(new ItemStack(Blocks.ANVIL), RecipeTypes.ANVIL);
+            registration.addRecipeCatalyst(new ItemStack(Blocks.SMITHING_TABLE), RecipeTypes.SMITHING);
+            registration.addRecipeCatalyst(new ItemStack(Blocks.COMPOSTER), RecipeTypes.COMPOSTING);
+        }
+        ));
+    }
 
-	public Optional<SmithingRecipeCategory> getSmithingCategory() {
-		return Optional.ofNullable(smithingCategory);
-	}
+    public Optional<CraftingRecipeCategory> getCraftingCategory() {
+        return Optional.ofNullable(craftingCategory);
+    }
 
-	/**
-	 * By default, JEI can't handle special recipes.
-	 * This method expands some special unhandled recipes into a list of normal recipes that JEI can understand.
-	 * <p>
-	 * If a special recipe we know how to replace is not present (because it has been removed),
-	 * we do not replace it.
-	 */
-	private static List<CraftingRecipe> replaceSpecialCraftingRecipes(List<CraftingRecipe> unhandledCraftingRecipes, IStackHelper stackHelper) {
-		Map<Class<? extends CraftingRecipe>, Supplier<List<CraftingRecipe>>> replacers = new IdentityHashMap<>();
-		replacers.put(TippedArrowRecipe.class, () -> TippedArrowRecipeMaker.createRecipes(stackHelper));
-		replacers.put(ShulkerBoxColoring.class, ShulkerBoxColoringRecipeMaker::createRecipes);
-		replacers.put(SuspiciousStewRecipe.class, SuspiciousStewRecipeMaker::createRecipes);
-		replacers.put(ShieldDecorationRecipe.class, ShieldDecorationRecipeMaker::createRecipes);
+    public Optional<SmithingRecipeCategory> getSmithingCategory() {
+        return Optional.ofNullable(smithingCategory);
+    }
 
-		return unhandledCraftingRecipes.stream()
-			.map(CraftingRecipe::getClass)
-			.distinct()
-			.filter(replacers::containsKey)
-			// distinct + this limit will ensure we stop iterating early if we find all the recipes we're looking for.
-			.limit(replacers.size())
-			.flatMap(recipeClass -> {
-				var supplier = replacers.get(recipeClass);
-				try {
-					return supplier.get()
-						.stream();
-				} catch (RuntimeException e) {
-					LOGGER.error("Failed to create JEI recipes for {}", recipeClass, e);
-					return Stream.of();
-				}
-			})
-			.toList();
-	}
+    /**
+     * By default, JEI can't handle special recipes.
+     * This method expands some special unhandled recipes into a list of normal recipes that JEI can understand.
+     * <p>
+     * If a special recipe we know how to replace is not present (because it has been removed),
+     * we do not replace it.
+     */
+    private static List<CraftingRecipe> replaceSpecialCraftingRecipes(List<CraftingRecipe> unhandledCraftingRecipes, IStackHelper stackHelper) {
+        Map<Class<? extends CraftingRecipe>, Supplier<List<CraftingRecipe>>> replacers = new IdentityHashMap<>();
+        replacers.put(TippedArrowRecipe.class, () -> TippedArrowRecipeMaker.createRecipes(stackHelper));
+        replacers.put(ShulkerBoxColoring.class, ShulkerBoxColoringRecipeMaker::createRecipes);
+        replacers.put(SuspiciousStewRecipe.class, SuspiciousStewRecipeMaker::createRecipes);
+        replacers.put(ShieldDecorationRecipe.class, ShieldDecorationRecipeMaker::createRecipes);
+
+        return unhandledCraftingRecipes.stream()
+                .map(CraftingRecipe::getClass)
+                .distinct()
+                .filter(replacers::containsKey)
+                // distinct + this limit will ensure we stop iterating early if we find all the recipes we're looking for.
+                .limit(replacers.size())
+                .flatMap(recipeClass -> {
+                    var supplier = replacers.get(recipeClass);
+                    try {
+                        return supplier.get()
+                                .stream();
+                    } catch (RuntimeException e) {
+                        LOGGER.error("Failed to create JEI recipes for {}", recipeClass, e);
+                        return Stream.of();
+                    }
+                })
+                .toList();
+    }
 }
