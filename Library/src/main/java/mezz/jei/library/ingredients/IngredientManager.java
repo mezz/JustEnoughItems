@@ -163,7 +163,7 @@ public class IngredientManager implements IIngredientManager {
 
 			IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 
-			this.listeners.forEach(listener -> listener.onIngredientsRemoved(ingredientHelper, typedIngredients));
+			this.listeners.forEach(listener -> listener.onIngredientsRemoved(ingredientHelper, typedIngredients, executor));
 		}
 		return CompletableFuture.completedFuture(null);
 	}

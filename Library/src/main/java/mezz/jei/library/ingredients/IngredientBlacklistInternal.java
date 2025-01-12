@@ -9,6 +9,8 @@ import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 public class IngredientBlacklistInternal implements IIngredientManager.IIngredientListener {
 	private final Set<String> uidBlacklist = new HashSet<>();
@@ -46,17 +48,19 @@ public class IngredientBlacklistInternal implements IIngredientManager.IIngredie
 	}
 
 	@Override
-	public <V> void onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
+	public <V> CompletableFuture<Void> onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients, Executor executor) {
 		for (ITypedIngredient<V> ingredient : ingredients) {
 			removeIngredientFromBlacklist(ingredient, ingredientHelper);
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
-	public <V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
+	public <V> CompletableFuture<Void> onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients, Executor executor) {
 		for (ITypedIngredient<V> ingredient : ingredients) {
 			addIngredientToBlacklist(ingredient, ingredientHelper);
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 	private <T> void notifyListenersOfVisibilityChange(ITypedIngredient<T> ingredient, boolean visible) {
