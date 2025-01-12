@@ -138,22 +138,24 @@ public interface IModPlugin {
 	 * @return
 	 */
 	default CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor executor) {
-		return new CompletableFuture<>();
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
 	 * Called when JEI's runtime features are available, after all mods have registered.
+	 *
+	 * @return
 	 */
-	default void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
-
+	default CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**
 	 * Called when JEI's runtime features are no longer available, after a user quits or logs out of a world.
 	 * @since 11.5.0
 	 */
-	default void onRuntimeUnavailable() {
-
+	default CompletableFuture<Void> onRuntimeUnavailable(Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**

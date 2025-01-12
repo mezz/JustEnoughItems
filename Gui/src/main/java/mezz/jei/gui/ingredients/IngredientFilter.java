@@ -119,7 +119,6 @@ public class IngredientFilter implements
 			Executor clientExecutor
 	) {
 		int ingredientCount = ingredients.size();
-		LOGGER.info("Adding {} ingredients", ingredientCount);
 		List<IListElementInfo<?>> elementInfos = ingredients.stream()
 				.map(IListElementInfo::getElement)
 				.map(i -> ListElementInfo.create(i, ingredientManager, modIdHelper))

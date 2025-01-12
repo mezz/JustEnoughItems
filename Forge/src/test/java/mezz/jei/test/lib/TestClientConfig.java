@@ -42,7 +42,7 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isAddingBookmarksToFront() {
+	public boolean isAddingBookmarksToFrontEnabled() {
 		return false;
 	}
 

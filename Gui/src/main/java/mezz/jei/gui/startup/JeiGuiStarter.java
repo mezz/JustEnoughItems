@@ -132,16 +132,14 @@ public class JeiGuiStarter {
                 colorHelper,
                 toggleState
         );
-
+        ingredientManager.registerIngredientListener(ingredientFilter);
+        ingredientVisibility.registerListener(ingredientFilter);
         timer.stop();
 
         timer.start("Adding Ingredients");
         return ingredientFilter.addIngredientsAsync(ingredientList, executorClient)
                 .thenApplyAsync((v) -> {
                     timer.stop();
-
-                    ingredientManager.registerIngredientListener(ingredientFilter);
-                    ingredientVisibility.registerListener(ingredientFilter::onIngredientVisibilityChanged);
 
                     IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
                     registration.setIngredientFilter(ingredientFilterApi);
@@ -231,7 +229,6 @@ public class JeiGuiStarter {
                             dragRouter,
                             keyMappings
                     );
-
                     ResourceReloadHandler resourceReloadHandler = new ResourceReloadHandler(
                             ingredientListOverlay,
                             ingredientFilter
@@ -243,5 +240,5 @@ public class JeiGuiStarter {
                             resourceReloadHandler
                     );
                 }, executorClient);
-        }
     }
+}

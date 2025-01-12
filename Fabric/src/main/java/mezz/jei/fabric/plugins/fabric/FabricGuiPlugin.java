@@ -1,6 +1,6 @@
 package mezz.jei.fabric.plugins.fabric;
 
-import mezz.jei.api.IRuntimePlugin;
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IRuntimeRegistration;
@@ -18,23 +18,24 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 @JeiPlugin
-public class FabricRuntimePlugin implements IRuntimePlugin {
+public class FabricGuiPlugin implements IModPlugin {
     private static final Logger LOGGER = LogManager.getLogger();
     private static @Nullable IJeiRuntime runtime;
+    private static @Nullable ResourceReloadHandler resourceReloadHandler;
 
-	private final EventRegistration eventRegistration = new EventRegistration();
+    private final EventRegistration eventRegistration = new EventRegistration();
 
     @Override
     public ResourceLocation getPluginUid() {
         return new ResourceLocation(ModIds.JEI_ID, "fabric_runtime");
     }
 
-  // @Override
-  // public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor clientExecutor) {
-  //     return JeiGuiStarter.start(registration, clientExecutor)
-  //         .thenAcceptAsync(eventRegistration::setEventHandlers);
-  // }
-
+    public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor executor) {
+        return JeiGuiStarter.start(registration, executor).thenAccept(eventHandlers -> {
+            resourceReloadHandler = eventHandlers.resourceReloadHandler();
+            eventRegistration.setEventHandlers(eventHandlers);
+        });
+    }
     @Override
     public CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor clientExecutor) {
         runtime = jeiRuntime;
@@ -49,11 +50,11 @@ public class FabricRuntimePlugin implements IRuntimePlugin {
         return CompletableFuture.completedFuture(null);
     }
 
-	public static Optional<IJeiRuntime> getRuntime() {
-		return Optional.ofNullable(runtime);
-	}
+    public static Optional<IJeiRuntime> getRuntime() {
+        return Optional.ofNullable(runtime);
+    }
 
-	public static Optional<ResourceReloadHandler> getResourceReloadHandler() {
-		return Optional.ofNullable(resourceReloadHandler);
-	}
+    public static Optional<ResourceReloadHandler> getResourceReloadHandler() {
+        return Optional.ofNullable(resourceReloadHandler);
+    }
 }

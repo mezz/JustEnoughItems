@@ -140,7 +140,7 @@ public final class JeiStarter {
 				recipeTransferManager,
 				screenHelper
 		);
-		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration, command -> {}));
+		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration, clientExecutor.getExecutor()));
 
 		JeiRuntime jeiRuntime = new JeiRuntime(
 				recipeManager,
@@ -158,7 +158,7 @@ public final class JeiStarter {
 		);
 		timer.stop();
 
-		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime));
+		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime, clientExecutor.getExecutor()));
 		Internal.setRuntime(jeiRuntime);
 
 		totalTime.stop();
@@ -167,7 +167,7 @@ public final class JeiStarter {
 	public void stop() {
 		LOGGER.info("Stopping JEI");
 		List<IModPlugin> plugins = data.plugins();
-		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
+		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, p -> p.onRuntimeUnavailable(clientExecutor.getExecutor()));
 		Internal.setRuntime(null);
 	}
 

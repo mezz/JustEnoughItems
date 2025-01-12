@@ -1,5 +1,6 @@
 package mezz.jei.fabric.startup;
 
+import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.network.ClientPacketRouter;
@@ -16,10 +17,12 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
+
 public class ClientLifecycleHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	//private final JeiStarter jeiStarter;
+	private final JeiStarter jeiStarter;
 	private boolean running;
 
 	public ClientLifecycleHandler(IServerConfig serverConfig) {
@@ -32,27 +35,27 @@ public class ClientLifecycleHandler {
 		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig);
 		ClientNetworkHandler.registerClientPacketHandler(packetRouter);
 
-		//FabricPluginFinder pluginFinder = new FabricPluginFinder();
-		//StartData startData = new StartData(
-		//	pluginFinder,
-		//	serverConnection,
-		//	keyMappings
-		//);
-//
-		//this.jeiStarter = new JeiStarter(startData);
+		List<IModPlugin> plugins = FabricPluginFinder.getModPlugins();
+		StartData startData = new StartData(
+				plugins,
+				serverConnection,
+				keyMappings
+		);
+
+		this.jeiStarter = new JeiStarter(startData);
 	}
 
 	public void registerEvents() {
 		JeiLifecycleEvents.GAME_START.register(() ->
-			JeiLifecycleEvents.AFTER_RECIPE_SYNC.register(() -> {
-				if (running) {
-					stopJei();
-				}
-				startJei();
-			})
+				JeiLifecycleEvents.AFTER_RECIPE_SYNC.register(() -> {
+					if (running) {
+						stopJei();
+					}
+					startJei();
+				})
 		);
 		JeiLifecycleEvents.GAME_STOP.register(this::stopJei);
-		//JeiLifecycleEvents.CLIENT_TICK_END.register(this.jeiStarter::tick);
+		JeiLifecycleEvents.CLIENT_TICK_END.register(jeiStarter::tick);
 	}
 
 	public ResourceManagerReloadListener getReloadListener() {

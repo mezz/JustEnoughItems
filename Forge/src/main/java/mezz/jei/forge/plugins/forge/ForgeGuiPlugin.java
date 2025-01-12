@@ -6,6 +6,7 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.startup.EventRegistration;
+import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import mezz.jei.gui.startup.ResourceReloadHandler;
 import net.minecraft.resources.ResourceLocation;
@@ -14,42 +15,44 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 @JeiPlugin
 public class ForgeGuiPlugin implements IModPlugin {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static @Nullable ResourceReloadHandler resourceReloadHandler;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static @Nullable ResourceReloadHandler resourceReloadHandler;
 
-	private final RuntimeEventSubscriptions runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
+    private final RuntimeEventSubscriptions runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
 
-	@Override
-	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "forge_gui");
-	}
+    @Override
+    public ResourceLocation getPluginUid() {
+        return new ResourceLocation(ModIds.JEI_ID, "forge_gui");
+    }
 
-	public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor executor) {
-		if (!runtimeSubscriptions.isEmpty()) {
-			LOGGER.error("JEI GUI is already running.");
-			runtimeSubscriptions.clear();
-		}
+    public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor executor) {
+        if (!runtimeSubscriptions.isEmpty()) {
+            LOGGER.error("JEI GUI is already running.");
+            runtimeSubscriptions.clear();
+        }
 
-		return JeiGuiStarter.start(registration, executor)
-				.thenAcceptAsync(eventHandlers -> {
-					EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
-				}, executor);
-	}
+        return JeiGuiStarter.start(registration, executor).thenAcceptAsync(eventHandlers -> {
+            resourceReloadHandler = eventHandlers.resourceReloadHandler();
+            EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
+        }, executor);
+    }
 
-	@Override
-	public void onRuntimeUnavailable() {
-		LOGGER.info("Stopping JEI GUI");
-		runtimeSubscriptions.clear();
-		resourceReloadHandler = null;
-	}
+    @Override
+    public CompletableFuture<Void> onRuntimeUnavailable(Executor executor) {
+        LOGGER.info("Stopping JEI GUI");
+        runtimeSubscriptions.clear();
+        resourceReloadHandler = null;
+        return CompletableFuture.completedFuture(null);
+    }
 
-	public static Optional<ResourceReloadHandler> getResourceReloadHandler() {
-		return Optional.ofNullable(resourceReloadHandler);
-	}
+    public static Optional<ResourceReloadHandler> getResourceReloadHandler() {
+        return Optional.ofNullable(resourceReloadHandler);
+    }
 }

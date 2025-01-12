@@ -37,7 +37,7 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 						.registerReloadListener(new JeiIdentifiableResourceReloadListener("lifecycle", clientLifecycleHandler.getReloadListener()));
 
 				ResourceManagerHelper.get(PackType.CLIENT_RESOURCES)
-					.registerReloadListener(new JeiIdentifiableResourceReloadListener("resources_reload", createReloadListener()));
+						.registerReloadListener(new JeiIdentifiableResourceReloadListener("resources_reload", createReloadListener()));
 			});
 		});
 	}
@@ -45,7 +45,7 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 	public ResourceManagerReloadListener createReloadListener() {
 		return (resourceManager) -> {
 			FabricGuiPlugin.getResourceReloadHandler()
-				.ifPresent(r -> r.onResourceManagerReload(resourceManager));
+					.ifPresent(r -> r.onResourceManagerReload(resourceManager));
 		};
 	}
 }

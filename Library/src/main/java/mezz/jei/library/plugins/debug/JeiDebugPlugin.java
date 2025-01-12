@@ -61,6 +61,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @JeiPlugin
 public class JeiDebugPlugin implements IModPlugin {
@@ -346,7 +348,7 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+	public CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
 		if (DebugConfig.isDebugModeEnabled()) {
 			if (debugRecipeCategory != null) {
 				debugRecipeCategory.setRuntime(jeiRuntime);
@@ -354,5 +356,6 @@ public class JeiDebugPlugin implements IModPlugin {
 			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
 			ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create(10, 20));
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 }
