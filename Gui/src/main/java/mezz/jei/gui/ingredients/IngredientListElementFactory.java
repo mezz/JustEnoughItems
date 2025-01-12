@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 
 public final class IngredientListElementFactory {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -21,11 +22,11 @@ public final class IngredientListElementFactory {
 	private IngredientListElementFactory() {
 	}
 
-	public static List<IListElementInfo<?>> createBaseList(IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	public static List<IListElementInfo<?>> createBaseList(IIngredientManager ingredientManager, IModIdHelper modIdHelper, Executor executor) {
 		List<IListElementInfo<?>> ingredientListElements = new ArrayList<>();
 
 		for (IIngredientType<?> ingredientType : ingredientManager.getRegisteredIngredientTypes()) {
-			addToBaseList(ingredientListElements, ingredientManager, ingredientType, modIdHelper);
+			addToBaseList(ingredientListElements, ingredientManager, ingredientType, modIdHelper, executor);
 		}
 
 		return ingredientListElements;
@@ -53,18 +54,19 @@ public final class IngredientListElementFactory {
 		return results;
 	}
 
-	private static <V> void addToBaseList(List<IListElementInfo<?>> baseList, IIngredientManager ingredientManager, IIngredientType<V> ingredientType, IModIdHelper modIdHelper) {
-		Collection<V> ingredients = ingredientManager.getAllIngredients(ingredientType);
-		LOGGER.debug("Registering ingredients: {}", ingredientType.getIngredientClass().getSimpleName());
-		for (V ingredient : ingredients) {
-			Optional<ITypedIngredient<V>> typedIngredient = ingredientManager.createTypedIngredient(ingredientType, ingredient);
-			if (typedIngredient.isPresent()) {
-				@Nullable IListElementInfo<V> orderedElement = ListElementInfo.create(typedIngredient.get(), ingredientManager, modIdHelper);
-				if (orderedElement != null) {
-					baseList.add(orderedElement);
-				}
-			}
-		}
+	private static <V> void addToBaseList(List<IListElementInfo<?>> baseList, IIngredientManager ingredientManager, IIngredientType<V> ingredientType, IModIdHelper modIdHelper, Executor executor) {
+		executor.execute(new Thread(() -> {
+            Collection<V> ingredients = ingredientManager.getAllIngredients(ingredientType);
+            LOGGER.debug("Registering ingredients: {}", ingredientType.getIngredientClass().getSimpleName());
+            for (V ingredient : ingredients) {
+                Optional<ITypedIngredient<V>> typedIngredient = ingredientManager.createTypedIngredient(ingredientType, ingredient);
+                if (typedIngredient.isPresent()) {
+                    @Nullable IListElementInfo<V> orderedElement = ListElementInfo.create(typedIngredient.get(), ingredientManager, modIdHelper);
+                    if (orderedElement != null) {
+                        baseList.add(orderedElement);
+                    }
+                }
+            }
+        }, "JEI Ingredients Thread"));
 	}
-
 }

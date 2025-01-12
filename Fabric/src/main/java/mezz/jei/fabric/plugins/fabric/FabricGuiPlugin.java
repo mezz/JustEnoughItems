@@ -6,6 +6,7 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.fabric.startup.EventRegistration;
+import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import mezz.jei.gui.startup.ResourceReloadHandler;
 import net.minecraft.resources.ResourceLocation;
@@ -31,11 +32,11 @@ public class FabricGuiPlugin implements IModPlugin {
     }
 
     public CompletableFuture<Void> registerRuntime(IRuntimeRegistration registration, Executor executor) {
-        return JeiGuiStarter.start(registration, executor).thenAccept(eventHandlers -> {
-            resourceReloadHandler = eventHandlers.resourceReloadHandler();
-            eventRegistration.setEventHandlers(eventHandlers);
-        });
+        JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, executor);
+        resourceReloadHandler = eventHandlers.resourceReloadHandler();
+        return CompletableFuture.completedFuture(null);
     }
+
     @Override
     public CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
         runtime = jeiRuntime;

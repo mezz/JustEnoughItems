@@ -72,7 +72,7 @@ public class IngredientFilterTest {
         IClientConfig clientConfig = new TestClientConfig(false);
         this.ingredientManager = ingredientManagerBuilder.build();
 
-        this.baseList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper);
+        this.baseList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper, clientExecutor);
 
         this.editModeConfig = new EditModeConfig(new NullSerializer(), ingredientManager);
 

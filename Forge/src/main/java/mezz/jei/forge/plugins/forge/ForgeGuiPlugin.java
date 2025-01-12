@@ -38,10 +38,10 @@ public class ForgeGuiPlugin implements IModPlugin {
             runtimeSubscriptions.clear();
         }
 
-        return JeiGuiStarter.start(registration, executor).thenAcceptAsync(eventHandlers -> {
-            resourceReloadHandler = eventHandlers.resourceReloadHandler();
-            EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
-        }, executor);
+        JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, executor);
+        resourceReloadHandler = eventHandlers.resourceReloadHandler();
+        EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
