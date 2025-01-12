@@ -160,7 +160,7 @@ public final class JeiStarter {
 		);
 		timer.stop();
 
-		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime));
+		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime, clientExecutor.getExecutor()));
 		Internal.setRuntime(jeiRuntime);
 
 		totalTime.stop();

@@ -20,6 +20,8 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 public class IngredientManager implements IIngredientManager {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -89,7 +91,7 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	@Override
-	public synchronized <V> void addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
+	public synchronized <V> CompletableFuture<Void> addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients, Executor executor) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 		IngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
@@ -120,8 +122,9 @@ public class IngredientManager implements IIngredientManager {
 				.map(i -> TypedIngredient.createUnvalidated(ingredientType, i))
 				.toList();
 
-			this.listeners.forEach(listener -> listener.onIngredientsAdded(ingredientHelper, typedIngredients));
+			this.listeners.forEach(listener -> listener.onIngredientsAdded(ingredientHelper, typedIngredients, executor));
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
@@ -144,7 +147,7 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	@Override
-	public synchronized <V> void removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
+	public synchronized <V> CompletableFuture<Void> removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients, Executor executor) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 		IngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
@@ -162,6 +165,7 @@ public class IngredientManager implements IIngredientManager {
 
 			this.listeners.forEach(listener -> listener.onIngredientsRemoved(ingredientHelper, typedIngredients));
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override

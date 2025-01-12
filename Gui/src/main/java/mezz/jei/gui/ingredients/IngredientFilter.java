@@ -59,8 +59,9 @@ public class IngredientFilter implements
 	private final Comparator<IListElement<?>> ingredientComparator;
 	private final IModIdHelper modIdHelper;
 	private final IIngredientVisibility ingredientVisibility;
+    private final Executor executor;
 
-	private final ElementPrefixParser elementPrefixParser;
+    private final ElementPrefixParser elementPrefixParser;
 	private IElementSearch elementSearch;
 
 	@Nullable
@@ -77,7 +78,8 @@ public class IngredientFilter implements
 			IModIdHelper modIdHelper,
 			IIngredientVisibility ingredientVisibility,
 			IColorHelper colorHelper,
-			IClientToggleState clientToggleState
+			IClientToggleState clientToggleState,
+			Executor executor
 	) {
 		this.filterTextSource = filterTextSource;
 		this.clientConfig = clientConfig;
@@ -85,7 +87,8 @@ public class IngredientFilter implements
 		this.ingredientComparator = ingredientComparator;
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
-		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper);
+        this.executor = executor;
+        this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper);
 
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
 
@@ -115,8 +118,7 @@ public class IngredientFilter implements
 	}
 
 	public CompletableFuture<Void> addIngredientsAsync(
-			List<IListElementInfo<?>> ingredients,
-			Executor clientExecutor
+			List<IListElementInfo<?>> ingredients
 	) {
 		int ingredientCount = ingredients.size();
 		List<IListElementInfo<?>> elementInfos = ingredients.stream()
@@ -138,7 +140,7 @@ public class IngredientFilter implements
 							if (added % (10 * batchSize) == 0 || added == ingredientCount) {
 								LOGGER.info("Added {}/{} ingredients", added, ingredientCount);
 							}
-						}, clientExecutor)
+						}, executor)
 				);
 
 		return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
@@ -287,7 +289,7 @@ public class IngredientFilter implements
 	}
 
 	@Override
-	public <V> void onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
+	public <V> CompletableFuture<Void> onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients, Executor executor) {
 		for (ITypedIngredient<V> value : ingredients) {
 			Optional<IListElement<V>> matchingElementOptional = searchForMatchingElement(ingredientHelper, value);
 			if (matchingElementOptional.isPresent()) {
@@ -307,10 +309,11 @@ public class IngredientFilter implements
 			}
 		}
 		invalidateCache();
+		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
-	public <V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
+	public <V> CompletableFuture<Void> onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients, Executor executor) {
 		for (ITypedIngredient<V> typedIngredient : ingredients) {
 			Optional<IListElement<V>> matchingElementOptional = searchForMatchingElement(ingredientHelper, typedIngredient);
 			if (matchingElementOptional.isEmpty()) {
@@ -326,6 +329,7 @@ public class IngredientFilter implements
 		}
 
 		invalidateCache();
+		return CompletableFuture.completedFuture(null);
 	}
 
 	private record SearchTokens(List<ElementPrefixParser.TokenInfo> toSearch, List<ElementPrefixParser.TokenInfo> toRemove) {

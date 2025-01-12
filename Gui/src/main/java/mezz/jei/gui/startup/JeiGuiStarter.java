@@ -130,14 +130,15 @@ public class JeiGuiStarter {
                 modIdHelper,
                 ingredientVisibility,
                 colorHelper,
-                toggleState
+                toggleState,
+                executorClient
         );
         ingredientManager.registerIngredientListener(ingredientFilter);
         ingredientVisibility.registerListener(ingredientFilter);
         timer.stop();
 
         timer.start("Adding Ingredients");
-        return ingredientFilter.addIngredientsAsync(ingredientList, executorClient)
+        return ingredientFilter.addIngredientsAsync(ingredientList)
                 .thenApplyAsync((v) -> {
                     timer.stop();
 

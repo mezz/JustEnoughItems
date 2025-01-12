@@ -19,6 +19,7 @@ import mezz.jei.library.ingredients.IngredientVisibility;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
+import mezz.jei.library.startup.ClientTaskExecutor;
 import mezz.jei.test.lib.TestClientConfig;
 import mezz.jei.test.lib.TestClientToggleState;
 import mezz.jei.test.lib.TestColorHelper;
@@ -53,11 +54,11 @@ public class IngredientFilterTest {
     private FilterTextSource filterTextSource;
     @Nullable
     private IModIdHelper modIdHelper;
+    private final Executor clientExecutor = MoreExecutors.directExecutor();
 
     @BeforeEach
     public void setup() throws ExecutionException, InterruptedException {
         TestPlugin testPlugin = new TestPlugin();
-        Executor clientExecutor = MoreExecutors.directExecutor();
 
         SubtypeInterpreters subtypeInterpreters = new SubtypeInterpreters();
         SubtypeManager subtypeManager = new SubtypeManager(subtypeInterpreters);
@@ -90,9 +91,10 @@ public class IngredientFilterTest {
                 modIdHelper,
                 ingredientVisibility,
                 colorHelper,
-                toggleState
+                toggleState,
+                clientExecutor
         );
-        this.ingredientFilter.addIngredientsAsync(baseList, clientExecutor).get();
+        this.ingredientFilter.addIngredientsAsync(baseList).get();
 
         this.ingredientManager.registerIngredientListener(blacklist);
         this.ingredientManager.registerIngredientListener(ingredientFilter);
@@ -118,9 +120,9 @@ public class IngredientFilterTest {
 
         List<TestIngredient> ingredients = createIngredients();
 
-        addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
-        removeIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
-        addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+        addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients, clientExecutor);
+        removeIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients, clientExecutor);
+        addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients, clientExecutor);
     }
 
     @Test
@@ -136,21 +138,21 @@ public class IngredientFilterTest {
         IIngredientRenderer<TestIngredient> ingredientRenderer = ingredientManager.getIngredientRenderer(TestIngredient.TYPE);
         Set<String> tooltipStrings = getTooltipStrings(ingredientRenderer, testIngredient);
 
-        addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+        addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients, clientExecutor);
         for (String tooltipString : tooltipStrings) {
             filterTextSource.setFilterText(tooltipString);
             List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
             Assertions.assertTrue(filteredIngredients.contains(testIngredient), tooltipString);
         }
 
-        removeIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+        removeIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients, clientExecutor);
         for (String tooltipString : tooltipStrings) {
             filterTextSource.setFilterText(tooltipString);
             List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
             Assertions.assertFalse(filteredIngredients.contains(testIngredient), tooltipString);
         }
 
-        addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+        addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients, clientExecutor);
         for (String tooltipString : tooltipStrings) {
             filterTextSource.setFilterText(tooltipString);
             List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
@@ -198,12 +200,13 @@ public class IngredientFilterTest {
             IIngredientVisibility ingredientVisibility,
             IIngredientManager ingredientManager,
             IModIdHelper modIdHelper,
-            List<TestIngredient> ingredientsToAdd
+            List<TestIngredient> ingredientsToAdd,
+            Executor executor
     ) {
         List<IListElementInfo<TestIngredient>> listToAdd = IngredientListElementFactory.createTestList(ingredientManager, TestIngredient.TYPE, ingredientsToAdd, modIdHelper);
         Assertions.assertEquals(EXTRA_INGREDIENT_COUNT, listToAdd.size());
 
-        ingredientManager.addIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToAdd);
+        ingredientManager.addIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToAdd, executor);
 
         Collection<TestIngredient> testIngredients = ingredientManager.getAllIngredients(TestIngredient.TYPE);
         Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, testIngredients.size());
@@ -229,12 +232,13 @@ public class IngredientFilterTest {
             IIngredientVisibility ingredientVisibility,
             IIngredientManager ingredientManager,
             IModIdHelper modIdHelper,
-            List<TestIngredient> ingredientsToRemove
+            List<TestIngredient> ingredientsToRemove,
+            Executor executor
     ) {
         List<IListElementInfo<TestIngredient>> listToRemove = IngredientListElementFactory.createTestList(ingredientManager, TestIngredient.TYPE, ingredientsToRemove, modIdHelper);
         Assertions.assertEquals(EXTRA_INGREDIENT_COUNT, listToRemove.size());
 
-        ingredientManager.removeIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToRemove);
+        ingredientManager.removeIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToRemove, executor);
 
         filterTextSource.setFilterText("");
         List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);

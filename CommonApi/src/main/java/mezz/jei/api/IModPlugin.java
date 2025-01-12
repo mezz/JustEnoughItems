@@ -146,7 +146,8 @@ public interface IModPlugin {
 	 *
 	 * @return
 	 */
-	default void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+	default CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
+		return CompletableFuture.completedFuture(null);
 	}
 
 	/**

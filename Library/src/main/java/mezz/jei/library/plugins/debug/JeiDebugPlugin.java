@@ -357,13 +357,14 @@ public class JeiDebugPlugin implements IModPlugin {
 	}
 
 	@Override
-	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+	public CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
 		if (DebugConfig.isDebugModeEnabled()) {
 			if (debugRecipeCategory != null) {
 				debugRecipeCategory.setRuntime(jeiRuntime);
 			}
 			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
-			ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create(10, 20));
+			ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create(10, 20), executor);
 		}
+		return CompletableFuture.completedFuture(null);
 	}
 }

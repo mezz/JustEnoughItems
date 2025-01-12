@@ -37,8 +37,9 @@ public class FabricGuiPlugin implements IModPlugin {
         });
     }
     @Override
-    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+    public CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
         runtime = jeiRuntime;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

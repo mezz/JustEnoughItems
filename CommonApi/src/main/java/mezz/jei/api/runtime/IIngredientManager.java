@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 /**
  * The {@link IIngredientManager} has some useful functions related to recipe ingredients.
@@ -84,13 +86,17 @@ public interface IIngredientManager {
 	 * (like adding more ItemStacks or FluidStacks, not at runtime),
 	 * use {@link IExtraIngredientRegistration#addExtraIngredients} instead.
 	 */
-	<V> void addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients);
+    default <V> CompletableFuture<Void> addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients, Executor executor) {
+		return CompletableFuture.completedFuture(null);
+	}
 
 	/**
 	 * Remove ingredients from JEI at runtime.
 	 * Used by mods that have items created while the game is running, or use the server to define items.
 	 */
-	<V> void removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients);
+	default <V> CompletableFuture<Void> removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients, Executor executor) {
+		return CompletableFuture.completedFuture(null);
+	}
 
 	/**
 	 * Helper method to get ingredient type for an ingredient.
@@ -231,12 +237,16 @@ public interface IIngredientManager {
 		 * Called when ingredients are added to the ingredient manager.
 		 * @since 11.5.0
 		 */
-		<V> void onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients);
+		default <V> CompletableFuture<Void> onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients, Executor executor) {
+			return CompletableFuture.completedFuture(null);
+		}
 
 		/**
 		 * Called when ingredients are removed from the ingredient manager.
 		 * @since 11.5.0
 		 */
-		<V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients);
+		default <V> CompletableFuture<Void> onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients, Executor executor) {
+			return CompletableFuture.completedFuture(null);
+		}
 	}
 }
