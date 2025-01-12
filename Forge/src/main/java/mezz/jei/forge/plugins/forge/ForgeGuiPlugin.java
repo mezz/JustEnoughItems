@@ -45,11 +45,10 @@ public class ForgeGuiPlugin implements IModPlugin {
     }
 
     @Override
-    public CompletableFuture<Void> onRuntimeUnavailable(Executor executor) {
+    public void onRuntimeUnavailable() {
         LOGGER.info("Stopping JEI GUI");
         runtimeSubscriptions.clear();
         resourceReloadHandler = null;
-        return CompletableFuture.completedFuture(null);
     }
 
     public static Optional<ResourceReloadHandler> getResourceReloadHandler() {

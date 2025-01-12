@@ -146,16 +146,15 @@ public interface IModPlugin {
 	 *
 	 * @return
 	 */
-	default CompletableFuture<Void> onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
-		return CompletableFuture.completedFuture(null);
+	default void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 	}
 
 	/**
 	 * Called when JEI's runtime features are no longer available, after a user quits or logs out of a world.
 	 * @since 11.5.0
 	 */
-	default CompletableFuture<Void> onRuntimeUnavailable(Executor executor) {
-		return CompletableFuture.completedFuture(null);
+	default void onRuntimeUnavailable() {
+
 	}
 
 	/**
