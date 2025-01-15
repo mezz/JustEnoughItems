@@ -250,7 +250,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			List<T> ingredients = getIngredients(type).toList();
 
 			if (ingredients.size() > 1) {
-				tooltip.add(new TagContentTooltipComponent<>(renderer, ingredients));
+				//TODO figure out why this is causing a crash when looking at a mutli-block tag (disabled due to crash!)
+				//tooltip.add(new TagContentTooltipComponent<>(renderer, ingredients));
 			}
 		}
 	}

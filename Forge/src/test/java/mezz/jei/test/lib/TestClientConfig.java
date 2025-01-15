@@ -38,7 +38,7 @@ public class TestClientConfig implements IClientConfig {
 
 	@Override
 	public boolean getAsyncLoadingEnabled() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isShowHiddenItemsEnabled() {
+	public boolean getShowHiddenIngredients() {
 		return false;
 	}
 
@@ -97,8 +97,8 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isHideSingleIngredientTagsEnabled() {
-		return true;
+	public boolean getHideSingleTagContentTooltipEnabled() {
+		return false;
 	}
 
 	@Override

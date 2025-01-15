@@ -16,8 +16,6 @@ public interface IClientConfig {
 
 	boolean isCheatToHotbarUsingHotkeysEnabled();
 
-	boolean getAsyncLoadingEnabled();
-
 	boolean isAddingBookmarksToFrontEnabled();
 
 	boolean isLookupFluidContentsEnabled();
@@ -27,6 +25,8 @@ public interface IClientConfig {
 	GiveMode getGiveMode();
 
 	boolean isShowHiddenItemsEnabled();
+
+	boolean getAsyncLoadingEnabled();
 
 	List<BookmarkTooltipFeature> getBookmarkTooltipFeatures();
 
