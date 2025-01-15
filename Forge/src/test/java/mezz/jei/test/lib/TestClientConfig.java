@@ -62,7 +62,7 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean getShowHiddenIngredients() {
+	public boolean isShowHiddenItemsEnabled() {
 		return false;
 	}
 
@@ -97,7 +97,7 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean getHideSingleTagContentTooltipEnabled() {
+	public boolean isHideSingleIngredientTagsEnabled() {
 		return false;
 	}
 
