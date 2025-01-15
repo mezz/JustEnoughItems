@@ -111,7 +111,7 @@ public interface IModPlugin {
 	 * This includes adding clickable areas in your guis to open JEI,
 	 * and adding areas on the screen that JEI should avoid drawing.
 	 */
-	default void registerGuiHandlers(IGuiHandlerRegistration registration, Executor executor) {
+	default void registerGuiHandlers(IGuiHandlerRegistration registration) {
 	}
 
 	/**

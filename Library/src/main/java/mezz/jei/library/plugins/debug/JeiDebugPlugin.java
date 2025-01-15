@@ -254,42 +254,39 @@ public class JeiDebugPlugin implements IModPlugin {
     }
 
     @Override
-    public void registerGuiHandlers(IGuiHandlerRegistration registration, Executor executor) {
-        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
-        internalExecutor.runAsync(new Thread(() -> {
-            if (DebugConfig.isDebugModeEnabled()) {
-                IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-                IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
+    public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+        if (DebugConfig.isDebugModeEnabled()) {
+            IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+            IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
 
-                registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<>() {
-                    @Override
-                    public List<Rect2i> getGuiExtraAreas(BrewingStandScreen containerScreen) {
-                        int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
-                        int size = 25 + widthMovement;
-                        IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-                        int guiLeft = screenHelper.getGuiLeft(containerScreen);
-                        int xSize = screenHelper.getXSize(containerScreen);
-                        int guiTop = screenHelper.getGuiTop(containerScreen);
-                        return List.of(
-                                new Rect2i(guiLeft + xSize, guiTop + 40, size, size)
-                        );
+            registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<>() {
+                @Override
+                public List<Rect2i> getGuiExtraAreas(BrewingStandScreen containerScreen) {
+                    int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
+                    int size = 25 + widthMovement;
+                    IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+                    int guiLeft = screenHelper.getGuiLeft(containerScreen);
+                    int xSize = screenHelper.getXSize(containerScreen);
+                    int guiTop = screenHelper.getGuiTop(containerScreen);
+                    return List.of(
+                            new Rect2i(guiLeft + xSize, guiTop + 40, size, size)
+                    );
+                }
+
+                @Override
+                public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(BrewingStandScreen containerScreen, double mouseX, double mouseY) {
+                    Rect2i area = new Rect2i(0, 0, 10, 10);
+                    if (MathUtil.contains(area, mouseX, mouseY)) {
+                        return ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.BOW))
+                                .map(item -> new DebugClickableIngredient<>(item, area));
                     }
+                    return Optional.empty();
+                }
+            });
 
-                    @Override
-                    public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(BrewingStandScreen containerScreen, double mouseX, double mouseY) {
-                        Rect2i area = new Rect2i(0, 0, 10, 10);
-                        if (MathUtil.contains(area, mouseX, mouseY)) {
-                            return ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.BOW))
-                                    .map(item -> new DebugClickableIngredient<>(item, area));
-                        }
-                        return Optional.empty();
-                    }
-                });
-
-                registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager));
-                registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandlerTwo<>(ingredientManager));
-            }
-        }));
+            registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager));
+            registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandlerTwo<>(ingredientManager));
+        }
     }
 
     private record DebugClickableIngredient<T>(

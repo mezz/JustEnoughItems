@@ -9,21 +9,16 @@ import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-
 @JeiPlugin
 public class JeiGuiPlugin implements IModPlugin {
-	@Override
-	public ResourceLocation getPluginUid() {
-		return new ResourceLocation(ModIds.JEI_ID, "gui");
-	}
+    @Override
+    public ResourceLocation getPluginUid() {
+        return new ResourceLocation(ModIds.JEI_ID, "gui");
+    }
 
-	@Override
-	public void registerGuiHandlers(IGuiHandlerRegistration registration, Executor executor) {
-		executor.execute(new Thread(() -> {
-			registration.addGuiScreenHandler(AbstractContainerScreen.class, GuiProperties::create);
-			registration.addGuiScreenHandler(RecipesGui.class, RecipesGui::getProperties);
-		}));
-	}
+    @Override
+    public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+        registration.addGuiScreenHandler(AbstractContainerScreen.class, GuiProperties::create);
+        registration.addGuiScreenHandler(RecipesGui.class, RecipesGui::getProperties);
+    }
 }
