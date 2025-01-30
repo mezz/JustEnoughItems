@@ -133,7 +133,7 @@ public interface IModPlugin {
 	 *
 	 * @return
 	 */
-	default void onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
+	default void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 	}
 
 	/**

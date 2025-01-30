@@ -289,7 +289,7 @@ public class IngredientFilter implements
 	}
 
 	@Override
-	public <V> CompletableFuture<Void> onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients, Executor executor) {
+	public <V> void onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
 		for (ITypedIngredient<V> value : ingredients) {
 			Optional<IListElement<V>> matchingElementOptional = searchForMatchingElement(ingredientHelper, value);
 			if (matchingElementOptional.isPresent()) {
@@ -309,11 +309,10 @@ public class IngredientFilter implements
 			}
 		}
 		invalidateCache();
-		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
-	public <V> CompletableFuture<Void> onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients, Executor executor) {
+	public <V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
 		for (ITypedIngredient<V> typedIngredient : ingredients) {
 			Optional<IListElement<V>> matchingElementOptional = searchForMatchingElement(ingredientHelper, typedIngredient);
 			if (matchingElementOptional.isEmpty()) {
@@ -329,7 +328,6 @@ public class IngredientFilter implements
 		}
 
 		invalidateCache();
-		return CompletableFuture.completedFuture(null);
 	}
 
 	private record SearchTokens(List<ElementPrefixParser.TokenInfo> toSearch, List<ElementPrefixParser.TokenInfo> toRemove) {

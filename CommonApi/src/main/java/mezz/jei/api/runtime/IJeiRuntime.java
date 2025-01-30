@@ -8,7 +8,7 @@ import mezz.jei.api.runtime.config.IJeiConfigManager;
 
 /**
  * Gives access to JEI functions that are available once everything has loaded.
- * The IJeiRuntime instance is passed to your mod plugin in {@link IModPlugin#onRuntimeAvailable(IJeiRuntime, java.util.concurrent.Executor)}.
+ * The IJeiRuntime instance is passed to your mod plugin in {@link IModPlugin#onRuntimeAvailable(IJeiRuntime)}.
  */
 public interface IJeiRuntime {
 	/**

@@ -373,16 +373,13 @@ public class JeiDebugPlugin implements IModPlugin {
     }
 
     @Override
-    public void onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
-        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
-        internalExecutor.runAsync(new Thread(() -> {
+    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
             if (DebugConfig.isDebugModeEnabled()) {
                 if (debugRecipeCategory != null) {
                     debugRecipeCategory.setRuntime(jeiRuntime);
                 }
                 IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
-                ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create(10, 20), executor);
+                ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create(10, 20));
             }
-        }));
     }
 }

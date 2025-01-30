@@ -86,16 +86,14 @@ public interface IIngredientManager {
 	 * (like adding more ItemStacks or FluidStacks, not at runtime),
 	 * use {@link IExtraIngredientRegistration#addExtraIngredients} instead.
 	 */
-    default <V> CompletableFuture<Void> addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients, Executor executor) {
-		return CompletableFuture.completedFuture(null);
+    default <V> void addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
 	}
 
 	/**
 	 * Remove ingredients from JEI at runtime.
 	 * Used by mods that have items created while the game is running, or use the server to define items.
 	 */
-	default <V> CompletableFuture<Void> removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients, Executor executor) {
-		return CompletableFuture.completedFuture(null);
+	default <V> void removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
 	}
 
 	/**
@@ -237,16 +235,14 @@ public interface IIngredientManager {
 		 * Called when ingredients are added to the ingredient manager.
 		 * @since 11.5.0
 		 */
-		default <V> CompletableFuture<Void> onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients, Executor executor) {
-			return CompletableFuture.completedFuture(null);
+		default <V> void onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
 		}
 
 		/**
 		 * Called when ingredients are removed from the ingredient manager.
 		 * @since 11.5.0
 		 */
-		default <V> CompletableFuture<Void> onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients, Executor executor) {
-			return CompletableFuture.completedFuture(null);
+		default <V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
 		}
 	}
 }

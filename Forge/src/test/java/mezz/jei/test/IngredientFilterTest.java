@@ -206,7 +206,7 @@ public class IngredientFilterTest {
         List<IListElementInfo<TestIngredient>> listToAdd = IngredientListElementFactory.createTestList(ingredientManager, TestIngredient.TYPE, ingredientsToAdd, modIdHelper);
         Assertions.assertEquals(EXTRA_INGREDIENT_COUNT, listToAdd.size());
 
-        ingredientManager.addIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToAdd, executor);
+        ingredientManager.addIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToAdd);
 
         Collection<TestIngredient> testIngredients = ingredientManager.getAllIngredients(TestIngredient.TYPE);
         Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, testIngredients.size());
@@ -238,7 +238,7 @@ public class IngredientFilterTest {
         List<IListElementInfo<TestIngredient>> listToRemove = IngredientListElementFactory.createTestList(ingredientManager, TestIngredient.TYPE, ingredientsToRemove, modIdHelper);
         Assertions.assertEquals(EXTRA_INGREDIENT_COUNT, listToRemove.size());
 
-        ingredientManager.removeIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToRemove, executor);
+        ingredientManager.removeIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToRemove);
 
         filterTextSource.setFilterText("");
         List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);

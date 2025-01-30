@@ -41,11 +41,8 @@ public class FabricGuiPlugin implements IModPlugin {
     }
 
     @Override
-    public void onRuntimeAvailable(IJeiRuntime jeiRuntime, Executor executor) {
-        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
-        internalExecutor.runAsync(new Thread(() -> {
-            runtime = jeiRuntime;
-        }));
+    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+        runtime = jeiRuntime;
     }
 
     @Override

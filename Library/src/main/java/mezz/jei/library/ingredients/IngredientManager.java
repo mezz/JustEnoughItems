@@ -91,7 +91,7 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	@Override
-	public synchronized <V> CompletableFuture<Void> addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients, Executor executor) {
+	public synchronized <V> void addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 		IngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
@@ -122,9 +122,8 @@ public class IngredientManager implements IIngredientManager {
 				.map(i -> TypedIngredient.createUnvalidated(ingredientType, i))
 				.toList();
 
-			this.listeners.forEach(listener -> listener.onIngredientsAdded(ingredientHelper, typedIngredients, executor));
+			this.listeners.forEach(listener -> listener.onIngredientsAdded(ingredientHelper, typedIngredients));
 		}
-		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
@@ -147,7 +146,7 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	@Override
-	public synchronized <V> CompletableFuture<Void> removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients, Executor executor) {
+	public synchronized <V> void removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 		IngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
@@ -163,9 +162,8 @@ public class IngredientManager implements IIngredientManager {
 
 			IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 
-			this.listeners.forEach(listener -> listener.onIngredientsRemoved(ingredientHelper, typedIngredients, executor));
+			this.listeners.forEach(listener -> listener.onIngredientsRemoved(ingredientHelper, typedIngredients));
 		}
-		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override

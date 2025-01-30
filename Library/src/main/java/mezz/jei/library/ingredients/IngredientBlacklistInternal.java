@@ -48,19 +48,17 @@ public class IngredientBlacklistInternal implements IIngredientManager.IIngredie
 	}
 
 	@Override
-	public <V> CompletableFuture<Void> onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients, Executor executor) {
+	public <V> void onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
 		for (ITypedIngredient<V> ingredient : ingredients) {
 			removeIngredientFromBlacklist(ingredient, ingredientHelper);
 		}
-		return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
-	public <V> CompletableFuture<Void> onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients, Executor executor) {
+	public <V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
 		for (ITypedIngredient<V> ingredient : ingredients) {
 			addIngredientToBlacklist(ingredient, ingredientHelper);
 		}
-		return CompletableFuture.completedFuture(null);
 	}
 
 	private <T> void notifyListenersOfVisibilityChange(ITypedIngredient<T> ingredient, boolean visible) {
