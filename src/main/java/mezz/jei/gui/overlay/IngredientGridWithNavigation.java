@@ -99,7 +99,9 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	}
 
 	public void drawTooltips(Minecraft minecraft, int mouseX, int mouseY) {
-		this.ingredientGrid.drawTooltips(minecraft, mouseX, mouseY);
+		if (!this.guiScreenHelper.isInGuiExclusionArea(mouseX, mouseY)) {
+			this.ingredientGrid.drawTooltips(minecraft, mouseX, mouseY);
+		}
 	}
 
 	@Override
