@@ -13,7 +13,7 @@ val makeHtmlChangelog = tasks.register<GitChangelogTask>("makeHtmlChangelog") {
 	fromRepo.set(project.rootProject.rootDir.absolutePath)
 	file.set(output.get().asFile)
 	untaggedName.set("Current release $specificationVersion")
-	fromRevision.set("e72e49fa7a072755e7f96cad65388205f6a010dc")
+	fromRevision.set("HEAD~30")
 	toRevision.set("HEAD")
 	templateContent.set(file("changelog.mustache").readText())
 
