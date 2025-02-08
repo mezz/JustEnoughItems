@@ -13,7 +13,7 @@ tasks.register<GitChangelogTask>("makeChangelog") {
 	fromRepo = projectDir.absolutePath.toString()
 	file = file("changelog.html")
 	untaggedName = changelogUntaggedName
-	fromRevision = "e72e49fa7a072755e7f96cad65388205f6a010dc"
+	fromRevision = "HEAD~30"
 	toRevision = "HEAD"
 	templateContent = file("changelog.mustache").readText()
 }
