@@ -18,6 +18,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
+import net.neoforged.neoforge.client.model.IDynamicBakedModel;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.Tags;
 
@@ -71,5 +72,10 @@ public class RenderHelper implements IPlatformRenderHelper {
 	public Component getName(TagKey<?> tagKey) {
 		String tagTranslationKey = Tags.getTagTranslationKey(tagKey);
 		return Component.translatableWithFallback(tagTranslationKey, "#" + tagKey.location());
+	}
+
+	@Override
+	public BakedModel createLimitedQuadItemModel(BakedModel bakedModel) {
+		return NeoForgeLimitedQuadItemModel.wrap(bakedModel);
 	}
 }
