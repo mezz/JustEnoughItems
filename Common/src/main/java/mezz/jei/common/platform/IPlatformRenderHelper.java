@@ -32,4 +32,6 @@ public interface IPlatformRenderHelper {
 	void renderTooltip(GuiGraphics guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack);
 
 	Component getName(TagKey<?> tagKey);
+
+	BakedModel createLimitedQuadItemModel(BakedModel bakedModel);
 }
