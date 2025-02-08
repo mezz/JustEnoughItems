@@ -161,6 +161,11 @@ public class RenderHelper implements IPlatformRenderHelper {
 		return new TextComponent(fallback);
 	}
 
+	@Override
+	public BakedModel createLimitedQuadItemModel(BakedModel bakedModel) {
+		return ForgeLimitedQuadItemModel.wrap(bakedModel);
+	}
+
 	private static String getTagTranslationKey(TagKey<?> tagKey) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("tag.");
