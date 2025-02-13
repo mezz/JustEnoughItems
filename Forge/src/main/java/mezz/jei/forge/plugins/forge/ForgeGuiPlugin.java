@@ -34,17 +34,15 @@ public class ForgeGuiPlugin implements IModPlugin {
     }
 
     public void registerRuntime(IRuntimeRegistration registration, Executor executor) {
-        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
-        internalExecutor.runAsync(new Thread(() -> {
+        executor.execute(new Thread(() -> JeiGuiStarter.start(registration, executor).thenAccept(eventHandlers -> {
             if (!runtimeSubscriptions.isEmpty()) {
                 LOGGER.error("JEI GUI is already running.");
                 runtimeSubscriptions.clear();
             }
 
-            JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, executor);
             resourceReloadHandler = eventHandlers.resourceReloadHandler();
             EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
-        }));
+        }), "Forge Gui Start Thread"));
     }
 
     @Override

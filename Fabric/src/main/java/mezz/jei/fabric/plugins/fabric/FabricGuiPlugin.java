@@ -33,11 +33,9 @@ public class FabricGuiPlugin implements IModPlugin {
     }
 
     public void registerRuntime(IRuntimeRegistration registration, Executor executor) {
-        ClientTaskExecutor.InternalExecutor internalExecutor = (ClientTaskExecutor.InternalExecutor) executor;
-        internalExecutor.runAsync(new Thread(() -> {
-            JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, executor);
+        executor.execute(new Thread(() -> JeiGuiStarter.start(registration, executor).thenAccept(eventHandlers -> {
             resourceReloadHandler = eventHandlers.resourceReloadHandler();
-        }));
+        }), "Fabric Gui Start Thread"));
     }
 
     @Override
