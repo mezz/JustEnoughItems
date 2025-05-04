@@ -97,7 +97,7 @@
   "key.jei.nextSearch": "Búsqueda siguiente",
 
   "jei.key.category.dev.tools": "JEI (Herramientas de desarrollo)",
-  "key.jei.copy.recipe.id": "Copiar ID de receta al portapapeles"
+  "key.jei.copy.recipe.id": "Copiar ID de receta al portapapeles",
 
   "_comment": "Configuración",
   "jei.config": "Configuración de JEI",
@@ -197,7 +197,7 @@
   "jei.config.client.search.modNameSearchMode.description": "Modo de búsqueda para nombres de mods (prefijo: @).",
   "jei.config.client.search.tagSearchMode": "Modo de Búsqueda por #Etiqueta",
   "jei.config.client.search.tagSearchMode.description": "Modo de búsqueda para etiquetas (prefijo: #).",
-  "jei.config.client.search.tooltipSearchMode": "Modo de Búsqueda por $Tooltip"
+  "jei.config.client.search.tooltipSearchMode": "Modo de Búsqueda por $Tooltip",
   "jei.config.client.search.tooltipSearchMode.description": "Modo de búsqueda por descripciones emergentes (prefijo: $).",
   "jei.config.client.search.colorSearchMode": "^Modo de Búsqueda por Color",
   "jei.config.client.search.colorSearchMode.description": "Modo de búsqueda por colores (prefijo: ^).",
@@ -215,7 +215,7 @@
   "jei.config.client.search.searchShortModNames.description": "Buscar por siglas o letras iniciales del nombre de un mod.",
   "jei.config.client.search.searchIngredientAliases": "Buscar Alias de Ingredientes",
   "jei.config.client.search.searchIngredientAliases.description": "Buscar alias (nombres alternativos) de ingredientes agregados por plugins, además de los nombres de ingredientes.",
-  
+
   "jei.config.client.ingredientList": "Lista de Ingredientes",
   "jei.config.client.ingredientList.description": "Opciones relacionadas con la Lista de Ingredientes (la lista que aparece a la derecha de la pantalla).",
   "jei.config.client.ingredientList.maxRows": "Filas Máximas",
@@ -230,7 +230,7 @@
   "jei.config.client.ingredientList.buttonNavigationVisibility.description": "Visibilidad de los botones superiores. Usá AUTO_HIDE para que se muestren solo si hay varias páginas.",
   "jei.config.client.ingredientList.drawBackground": "Mostrar Fondo de Interfaz",
   "jei.config.client.ingredientList.drawBackground.description": "Activá esto para mostrar una textura de fondo detrás de la lista de ingredientes.",
-  
+
   "jei.config.client.bookmarkList": "Lista de Favoritos",
   "jei.config.client.bookmarkList.description": "Opciones relacionadas con la Lista de Favoritos (la lista de ingredientes favoritos a la izquierda de la pantalla).",
   "jei.config.client.bookmarkList.maxRows": "Filas Máximas",
@@ -245,17 +245,17 @@
   "jei.config.client.bookmarkList.buttonNavigationVisibility.description": "Visibilidad de los botones superiores. Usá AUTO_HIDE para que se muestren solo si hay varias páginas.",
   "jei.config.client.bookmarkList.drawBackground": "Mostrar Fondo de Interfaz",
   "jei.config.client.bookmarkList.drawBackground.description": "Activá esto para mostrar una textura de fondo detrás de la lista de favoritos.",
-  
+
   "jei.config.client.advanced.itemBlacklist": "Lista Negra de Ingredientes",
   "jei.config.client.advanced.itemBlacklist.description": "Lista de ingredientes que no deberían mostrarse en la superposición de la lista de ingredientes. Formato: modId[:name[:meta]]. El modo ocultar ingredientes va a agregar o quitar entradas automáticamente.",
   "jei.config.client.advanced.maxColumns": "Ancho Máximo de Superposición",
   "jei.config.client.advanced.maxColumns.description": "El ancho máximo para las superposiciones de listas de ingredientes y favoritos.",
-  
+
   "jei.config.modIdFormat.modName": "Nombre del Mod",
   "jei.config.modIdFormat.modName.description": "Opciones de configuración para mostrar los nombres de los mods.",
   "jei.config.modIdFormat.modName.modNameFormat": "Formato del Nombre del Mod",
   "jei.config.modIdFormat.modName.modNameFormat.description": "Formato del nombre del mod en los tooltips de las GUIs de JEI. Dejalo vacío para desactivarlo.",
-  
+
   "jei.config.debug.debug": "Depuración",
   "jei.config.debug.debug.description": "Opciones para ayudar a desarrolladores a depurar errores en JEI.",
   "jei.config.debug.debug.debugMode": "Modo de Depuración",
@@ -270,17 +270,17 @@
   "jei.config.debug.debug.crashingTestItemsEnabled.description": "Agrega ingredientes a JEI que causan crash intencionalmente, para ayudar con la depuración.",
   "jei.config.debug.debug.logSuffixTreeStats": "Registrar Estadísticas de Árboles de Sufijos",
   "jei.config.debug.debug.logSuffixTreeStats.description": "Registrar información sobre los árboles de sufijos usados para las búsquedas, para ayudar en la depuración.",
-  
+
   "jei.config.colors.colors": "Colores",
   "jei.config.colors.colors.description": "Opciones relacionadas con la búsqueda por color de ítems en JEI.",
   "jei.config.colors.colors.searchColors": "Buscar por Color",
   "jei.config.colors.colors.searchColors.description": "Valores de color a buscar.",
-  
+
   "_comment": "Modo Ocultar Ingredientes",
   "gui.jei.editMode.description": "Modo de Ocultar Ingredientes de JEI:",
   "gui.jei.editMode.description.hide": "Presioná \"%s\" para ocultar.",
   "gui.jei.editMode.description.hide.wild": "Presioná \"%s\" para ocultar con comodín.",
-  
+
   "_comment": "Categorías de Recetas",
   "gui.jei.category.craftingTable": "Crafteo",
   "gui.jei.category.stoneCutter": "Corte de Piedra",
