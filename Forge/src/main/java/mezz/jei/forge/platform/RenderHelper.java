@@ -76,11 +76,11 @@ public class RenderHelper implements IPlatformRenderHelper {
         if (screen == null) {
             return;
         }
-        //guiGraphics.tooltipStack = stack; (it became private!)
+        guiGraphics.tooltipStack = stack;
 
         List<ClientTooltipComponent> components = ForgeHooksClient.gatherTooltipComponentsFromElements(stack, elements, x, screen.width, screen.height, font);
         guiGraphics.renderTooltipInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE);
-        //guiGraphics.tooltipStack = ItemStack.EMPTY;
+        guiGraphics.tooltipStack = ItemStack.EMPTY;
     }
 
     @Override
