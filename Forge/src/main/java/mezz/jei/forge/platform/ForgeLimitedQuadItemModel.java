@@ -1,6 +1,7 @@
 package mezz.jei.forge.platform;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.common.util.QuadUtil;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.resources.model.BakedModel;
@@ -36,10 +37,21 @@ public class ForgeLimitedQuadItemModel extends BakedModelWrapper<BakedModel> {
 	public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
 		if (direction == null) {
 			if (quads == null) {
-				quads = originalModel.getQuads(blockState, null, random)
-					.stream()
-					.filter(q -> q.getDirection() == Direction.SOUTH)
-					.toList();
+				List<BakedQuad> originalQuads = originalModel.getQuads(blockState, null, random);
+
+				PoseStack poseStack = new PoseStack();
+
+				BakedModel bakedModel = originalModel.handlePerspective(ItemTransforms.TransformType.GUI, poseStack);
+				if (bakedModel != originalModel) {
+					// this shouldn't be possible because we don't wrap IDynamicBakedModels
+					// we can't easily understand which way the quads will face in this case, so don't cull or cache any quads
+					return originalQuads;
+				}
+
+				quads = QuadUtil.getQuadsFacingDirection(originalQuads, poseStack, Direction.SOUTH);
+				if (quads.isEmpty()) {
+					quads = originalQuads;
+				}
 			}
 			return quads;
 		}
