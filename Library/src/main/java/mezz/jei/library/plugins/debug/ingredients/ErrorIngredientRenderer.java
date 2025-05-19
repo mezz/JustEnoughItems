@@ -6,6 +6,8 @@ import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.common.platform.Services;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -39,7 +41,8 @@ public class ErrorIngredientRenderer implements IIngredientRenderer<ErrorIngredi
 		Minecraft minecraft = Minecraft.getInstance();
 		switch (ingredient.crashType()) {
 			case RenderBreakVertexBufferCrash -> {
-				MultiBufferSource.BufferSource bufferSource = guiGraphics.bufferSource();
+				IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+				MultiBufferSource bufferSource = renderHelper.getBufferSource(guiGraphics);
 				for (RenderType renderType : RENDER_TYPES) {
 					VertexConsumer buffer = bufferSource.getBuffer(renderType);
 					buffer.addVertex(0, 0, 0)

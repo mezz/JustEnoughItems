@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 public class IngredientSet<V> extends AbstractSet<V> {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -76,23 +75,6 @@ public class IngredientSet<V> extends AbstractSet<V> {
 		V v = ingredientClass.cast(o);
 		Object uid = getUid(v);
 		return uid != null && ingredients.containsKey(uid);
-	}
-
-	@SuppressWarnings("removal")
-	@Deprecated(forRemoval = true)
-	public Optional<V> getByLegacyUid(String uid) {
-		V v = ingredients.get(uid);
-		if (v != null) {
-			return Optional.of(v);
-		}
-
-		for (V ingredient : ingredients.values()) {
-			String legacyUid = ingredientHelper.getUniqueId(ingredient, context);
-			if (uid.equals(legacyUid)) {
-				return Optional.of(ingredient);
-			}
-		}
-		return Optional.empty();
 	}
 
 	@Override

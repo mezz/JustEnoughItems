@@ -2,13 +2,11 @@ package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
-import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,15 +19,6 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 	private final BookmarkList bookmarks;
 	private final @Nullable IBookmark recipeBookmark;
 	private boolean bookmarked;
-
-	public static RecipeBookmarkButton create(
-		IRecipeLayoutDrawable<?> recipeLayout,
-		IIngredientManager ingredientManager,
-		BookmarkList bookmarks
-	) {
-		IBookmark recipeBookmark = RecipeBookmark.create(recipeLayout, ingredientManager);
-		return create(recipeLayout, bookmarks, recipeBookmark);
-	}
 
 	public static RecipeBookmarkButton create(
 		IRecipeLayoutDrawable<?> recipeLayout,
@@ -107,9 +96,5 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 				0x1100FF00
 			);
 		}
-	}
-
-	public boolean isBookmarked() {
-		return bookmarked;
 	}
 }

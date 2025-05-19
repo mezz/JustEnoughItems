@@ -28,11 +28,6 @@ public class EnchantedBookSubtypeInterpreter implements ISubtypeInterpreter<Item
 		return EnchantmentHelper.getEnchantmentsForCrafting(ingredient);
 	}
 
-	@Override
-	public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
-		return getStringName(ingredient);
-	}
-
 	public String getStringName(ItemStack itemStack) {
 		ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(itemStack);
 		if (enchantments.isEmpty()) {

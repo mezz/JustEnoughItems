@@ -2,11 +2,11 @@ package mezz.jei.api.registration;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPluginHelper;
 import mezz.jei.api.recipe.advanced.ISimpleRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IJeiFeatures;
 
 /**
@@ -33,16 +33,27 @@ public interface IAdvancedRegistration {
 	/**
 	 * Register your own {@link ISimpleRecipeManagerPlugin} here.
 	 *
-	 * @since 19.16.0
+	 * @since 20.0.0
 	 */
-	<T> void addTypedRecipeManagerPlugin(RecipeType<T> recipeType, ISimpleRecipeManagerPlugin<T> recipeManagerPlugin);
+	<T> void addSimpleRecipeManagerPlugin(IRecipeType<T> recipeType, ISimpleRecipeManagerPlugin<T> recipeManagerPlugin);
+
+	/**
+	 * Register your own {@link ISimpleRecipeManagerPlugin} here.
+	 *
+	 * @since 19.16.0
+	 * @deprecated use {@link #addSimpleRecipeManagerPlugin(IRecipeType, ISimpleRecipeManagerPlugin)} instead.
+	 */
+	@Deprecated(forRemoval = true, since = "20.0.0")
+	default <T> void addTypedRecipeManagerPlugin(IRecipeType<T> recipeType, ISimpleRecipeManagerPlugin<T> recipeManagerPlugin) {
+		addSimpleRecipeManagerPlugin(recipeType, recipeManagerPlugin);
+	}
 
 	/**
 	 * Register a {@link IRecipeCategoryDecorator} for a recipe type.
 	 *
 	 * @since 15.1.0
 	 */
-	<T> void addRecipeCategoryDecorator(RecipeType<T> recipeType, IRecipeCategoryDecorator<T> decorator);
+	<T> void addRecipeCategoryDecorator(IRecipeType<T> recipeType, IRecipeCategoryDecorator<T> decorator);
 
 	/**
 	 * Get access to disable various JEI features.

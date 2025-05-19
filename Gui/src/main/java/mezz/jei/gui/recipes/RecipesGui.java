@@ -13,9 +13,9 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
@@ -78,7 +78,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private String pageString = "1/1";
 	private final DrawableNineSliceTexture background;
 
-	private final RecipeCatalysts recipeCatalysts;
+	private final CraftingStations craftingStations;
 	private final RecipeGuiTabs recipeGuiTabs;
 	private final RecipeOptionButtons optionButtons;
 	private final UserInputRouter inputHandler;
@@ -123,7 +123,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			this::updateLayout,
 			focusFactory
 		);
-		this.recipeCatalysts = new RecipeCatalysts(recipeManager);
+		this.craftingStations = new CraftingStations(recipeManager);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, recipeManager, guiHelper);
 		this.optionButtons = new RecipeOptionButtons(this.logic::goToFirstPage);
 		this.focusFactory = focusFactory;
@@ -159,10 +159,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	public int getLeftSideExtraWidth() {
-		if (recipeCatalysts.isEmpty()) {
+		if (craftingStations.isEmpty()) {
 			return optionButtons.getWidth();
 		}
-		return Math.max(recipeCatalysts.getWidth(), optionButtons.getWidth());
+		return Math.max(craftingStations.getWidth(), optionButtons.getWidth());
 	}
 
 	@Override
@@ -223,7 +223,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			return;
 		}
 		renderTransparentBackground(guiGraphics);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		guiGraphics.flush();
 		this.background.draw(guiGraphics, area);
 
 		RenderSystem.disableBlend();
@@ -259,7 +259,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		Optional<IRecipeLayoutDrawable<?>> hoveredRecipeLayout = this.layouts.draw(guiGraphics, mouseX, mouseY);
 		optionButtons.draw(guiGraphics, mouseX, mouseY, partialTicks);
-		Optional<IRecipeSlotDrawable> hoveredRecipeCatalyst = recipeCatalysts.draw(guiGraphics, mouseX, mouseY);
+		Optional<IRecipeSlotDrawable> hoveredRecipeCatalyst = craftingStations.draw(guiGraphics, mouseX, mouseY);
 
 		recipeGuiTabs.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 
@@ -363,7 +363,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isOpen()) {
 			return Stream.concat(
-				recipeCatalysts.getIngredientUnderMouse(mouseX, mouseY),
+				craftingStations.getIngredientUnderMouse(mouseX, mouseY),
 				layouts.getIngredientUnderMouse(mouseX, mouseY)
 			);
 		}
@@ -462,7 +462,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	public void showTypes(List<RecipeType<?>> recipeTypes) {
+	public void showTypes(List<IRecipeType<?>> recipeTypes) {
 		ErrorUtil.checkNotEmpty(recipeTypes, "recipeTypes");
 
 		if (logic.showCategories(recipeTypes)) {
@@ -536,7 +536,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		optionButtons.updateLayout(this.area);
 		ImmutableRect2i optionButtonsArea = optionButtons.getArea();
 		List<ITypedIngredient<?>> recipeCatalystIngredients = logic.getRecipeCatalysts().toList();
-		recipeCatalysts.updateLayout(recipeCatalystIngredients, this.area, optionButtonsArea);
+		craftingStations.updateLayout(recipeCatalystIngredients, this.area, optionButtonsArea);
 		recipeGuiTabs.initLayout(this.idealArea);
 	}
 

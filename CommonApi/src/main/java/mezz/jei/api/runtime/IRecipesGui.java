@@ -1,7 +1,6 @@
 package mezz.jei.api.runtime;
 
 import mezz.jei.api.recipe.IFocusFactory;
-import mezz.jei.api.recipe.RecipeType;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +10,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.screens.Screen;
 
 /**
@@ -43,7 +43,7 @@ public interface IRecipesGui {
 	 *
 	 * @param recipeTypes a list of recipe types to display, in order. Must not be empty.
 	 */
-	void showTypes(List<RecipeType<?>> recipeTypes);
+	void showTypes(List<IRecipeType<?>> recipeTypes);
 
 	/**
 	 * Show specific recipes for one recipe category, with multiple {@link IFocus}.

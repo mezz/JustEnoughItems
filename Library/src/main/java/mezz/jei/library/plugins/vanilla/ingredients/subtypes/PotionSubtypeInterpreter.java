@@ -26,11 +26,6 @@ public class PotionSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> 
 			.orElse(null);
 	}
 
-	@Override
-	public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
-		return getStringName(ingredient);
-	}
-
 	public String getStringName(ItemStack itemStack) {
 		if (itemStack.getComponentsPatch().isEmpty()) {
 			return "";

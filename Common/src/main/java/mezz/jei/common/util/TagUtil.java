@@ -1,6 +1,5 @@
 package mezz.jei.common.util;
 
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.HolderSet;
 import net.minecraft.tags.TagKey;
 
@@ -15,18 +14,15 @@ public class TagUtil {
 	public static <VALUE, STACK> Optional<TagKey<?>> getTagEquivalent(
 		Collection<STACK> stacks,
 		Function<STACK, VALUE> stackToValue,
-		Supplier<Stream<Pair<TagKey<VALUE>, HolderSet.Named<VALUE>>>> tagSupplier
+		Supplier<Stream<HolderSet.Named<VALUE>>> tagSupplier
 	) {
 		List<VALUE> values = stacks.stream()
 			.map(stackToValue)
 			.toList();
 
 		return tagSupplier.get()
-			.filter(e -> {
-				HolderSet.Named<VALUE> tag = e.getSecond();
-				return areEquivalent(tag, values);
-			})
-			.<TagKey<?>>map(Pair::getFirst)
+			.filter(tag -> areEquivalent(tag, values))
+			.<TagKey<?>>map(HolderSet.Named::key)
 			.findFirst();
 	}
 

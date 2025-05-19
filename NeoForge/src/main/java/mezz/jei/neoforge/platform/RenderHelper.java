@@ -4,9 +4,9 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Either;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
@@ -18,7 +18,6 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
-import net.neoforged.neoforge.client.model.IDynamicBakedModel;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.Tags;
 
@@ -48,12 +47,8 @@ public class RenderHelper implements IPlatformRenderHelper {
 	}
 
 	@Override
-	public ItemColors getItemColors() {
-		return Minecraft.getInstance().getItemColors();
-	}
-
-	@Override
 	public Optional<NativeImage> getMainImage(TextureAtlasSprite sprite) {
+		@SuppressWarnings("resource")
 		SpriteContents contents = sprite.contents();
 		NativeImage[] frames = contents.byMipLevel;
 		if (frames.length == 0) {
@@ -77,5 +72,10 @@ public class RenderHelper implements IPlatformRenderHelper {
 	@Override
 	public BakedModel createLimitedQuadItemModel(BakedModel bakedModel) {
 		return NeoForgeLimitedQuadItemModel.wrap(bakedModel);
+	}
+
+	@Override
+	public MultiBufferSource getBufferSource(GuiGraphics guiGraphics) {
+		return guiGraphics.bufferSource;
 	}
 }

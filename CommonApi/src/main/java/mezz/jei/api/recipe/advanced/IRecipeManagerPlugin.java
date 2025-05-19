@@ -1,13 +1,12 @@
 package mezz.jei.api.recipe.advanced;
 
-import java.util.List;
-
-import mezz.jei.api.recipe.RecipeType;
-
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IAdvancedRegistration;
+
+import java.util.List;
 
 /**
  * {@link IRecipeManagerPlugin}s are used by the {@link IRecipeManager} to look up recipes.
@@ -30,17 +29,19 @@ public interface IRecipeManagerPlugin {
 	 *
 	 * @since 9.5.0
 	 */
-	<V> List<RecipeType<?>> getRecipeTypes(IFocus<V> focus);
+	<V> List<IRecipeType<?>> getRecipeTypes(IFocus<V> focus);
 
 	/**
-	 * Returns a list of Recipes in the recipeCategory that have the focus.
-	 * This is used internally by JEI to implement {@link IRecipeManager#createRecipeLookup(RecipeType)}.
+	 * Returns a list of Recipes with the recipe type that have the focus.
+	 * This is used internally by JEI to implement {@link IRecipeManager#createRecipeLookup(IRecipeType)}.
 	 */
-	<T, V> List<T> getRecipes(IRecipeCategory<T> recipeCategory, IFocus<V> focus);
+	<T, V> List<T> getRecipes(IRecipeType<T> recipeType, IFocus<V> focus);
 
 	/**
-	 * Returns a list of all Recipes in the recipeCategory.
-	 * This is used internally by JEI to implement {@link IRecipeManager#createRecipeLookup(RecipeType)}.
+	 * Returns a list of all Recipes with the {@link IRecipeType}.
+	 * This is used internally by JEI to implement {@link IRecipeManager#createRecipeLookup(IRecipeType)}.
+	 *
+	 * @since 20.0.0
 	 */
-	<T> List<T> getRecipes(IRecipeCategory<T> recipeCategory);
+	<T> List<T> getRecipes(IRecipeType<T> recipeType);
 }

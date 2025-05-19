@@ -5,16 +5,19 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
 	public static final CraftingGridHelper INSTANCE = new CraftingGridHelper();
@@ -42,6 +45,17 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 	}
 
 	@Override
+	public void createAndSetIngredientsFromDisplays(IRecipeLayoutBuilder builder, List<SlotDisplay> displays, int width, int height) {
+		Minecraft minecraft = Minecraft.getInstance();
+		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
+
+		List<List<ItemStack>> ingredients = displays.stream()
+			.map(d -> d.resolveForStacks(contextmap))
+			.toList();
+		createAndSetInputs(builder, ingredients, width, height);
+	}
+
+	@Override
 	public <T> List<IRecipeSlotBuilder> createAndSetInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height) {
 		List<IRecipeSlotBuilder> inputSlots = createInputSlots(builder, width, height);
 		setInputs(inputSlots, ingredientType, inputs, width, height);
@@ -62,7 +76,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 
 			Ingredient ingredient = ingredients.get(i);
 			if (ingredient != null) {
-				slot.addIngredients(ingredient);
+				slot.add(ingredient);
 			}
 		}
 	}
@@ -85,6 +99,14 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 				slot.addIngredients(ingredientType, ingredients);
 			}
 		}
+	}
+
+	@Override
+	public IRecipeSlotBuilder createAndSetOutputs(IRecipeLayoutBuilder builder, SlotDisplay outputs) {
+		Minecraft minecraft = Minecraft.getInstance();
+		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
+		List<ItemStack> outputStacks = outputs.resolveForStacks(contextmap);
+		return createAndSetOutputs(builder, outputStacks);
 	}
 
 	@Override
@@ -128,7 +150,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 			Pair<String, Ingredient> value = namedIngredients.get(i);
 			if (value != null) {
 				slot.setSlotName(value.getFirst())
-					.addIngredients(value.getSecond());
+					.add(value.getSecond());
 			}
 		}
 	}
@@ -153,19 +175,17 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		}
 	}
 
-	public static Map<Integer, Ingredient> getGuiSlotToIngredientMap(RecipeHolder<CraftingRecipe> recipeHolder, int width, int height) {
-		CraftingRecipe recipe = recipeHolder.value();
-		NonNullList<Ingredient> ingredients = recipe.getIngredients();
+	public static Map<Integer, SlotDisplay> getGuiSlotToIngredientMap(List<SlotDisplay> ingredients, int width, int height) {
 		if (width <= 0 || height <= 0) {
 			width = height = getShapelessSize(ingredients.size());
 		}
 
-		Map<Integer, Ingredient> result = new LinkedHashMap<>(ingredients.size());
+		Map<Integer, SlotDisplay> result = new LinkedHashMap<>(ingredients.size());
 		for (int i = 0; i < ingredients.size(); i++) {
-			Ingredient ingredient = ingredients.get(i);
-			if (!ingredient.isEmpty()) {
+			SlotDisplay slotDisplay = ingredients.get(i);
+			if (slotDisplay != SlotDisplay.Empty.INSTANCE) {
 				int craftingIndex = CraftingGridHelper.getCraftingIndex(i, width, height);
-				result.put(craftingIndex, ingredient);
+				result.put(craftingIndex, slotDisplay);
 			}
 		}
 		return result;

@@ -3,7 +3,7 @@ package mezz.jei.api.recipe.transfer;
 import java.util.List;
 import java.util.Optional;
 
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * Gives JEI the information it needs to transfer recipes from a slotted inventory into the crafting area.
  *
  * Most plugins with normal inventories can use the simpler
- * {@link IRecipeTransferRegistration#addRecipeTransferHandler(Class, MenuType, RecipeType, int, int, int, int)}.
+ * {@link IRecipeTransferRegistration#addRecipeTransferHandler(Class, MenuType, IRecipeType, int, int, int, int)}.
  *
  * Containers with slot ranges that contain gaps or other oddities can implement this interface directly.
  * Containers that need full control over the recipe transfer or do not use slots can implement {@link IRecipeTransferHandler}.
@@ -38,7 +38,7 @@ public interface IRecipeTransferInfo<C extends AbstractContainerMenu, R> {
 	 *
 	 * @since 9.5.0
 	 */
-	RecipeType<R> getRecipeType();
+	IRecipeType<R> getRecipeType();
 
 	/**
 	 * Return true if this recipe transfer info can handle the given container instance and recipe.

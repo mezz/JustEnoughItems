@@ -37,6 +37,7 @@ import mezz.jei.library.runtime.JeiHelpers;
 import mezz.jei.library.runtime.JeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.item.crafting.RecipeMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -124,7 +125,17 @@ public final class JeiStarter {
 		EditModeConfig editModeConfig = new EditModeConfig(editModeSerializer, ingredientManager);
 
 		ImmutableSetMultimap<String, String> modAliases = PluginLoader.registerModAliases(data, ingredientFilterConfig);
-		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(modAliases, modIdFormatConfig, colorHelper, editModeConfig, focusFactory, codecHelper, ingredientManager, subtypeManager);
+
+		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(
+			modAliases,
+			modIdFormatConfig,
+			colorHelper,
+			editModeConfig,
+			focusFactory,
+			codecHelper,
+			ingredientManager,
+			subtypeManager
+		);
 
 		RecipeManager recipeManager = PluginLoader.createRecipeManager(
 			plugins,
@@ -181,6 +192,7 @@ public final class JeiStarter {
 		List<IModPlugin> plugins = data.plugins();
 		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
 		Internal.setRuntime(null);
+		Internal.setClientSyncedRecipes(RecipeMap.EMPTY);
 		RegistryUtil.setRegistryAccess(null);
 	}
 }

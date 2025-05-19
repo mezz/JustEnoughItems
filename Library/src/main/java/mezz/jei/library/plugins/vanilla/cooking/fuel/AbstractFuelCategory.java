@@ -1,31 +1,45 @@
 package mezz.jei.library.plugins.vanilla.cooking.fuel;
 
-import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
 import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
 
-public class FurnaceFuelCategory extends AbstractRecipeCategory<IJeiFuelingRecipe> {
-	public FurnaceFuelCategory(Textures textures) {
+public abstract class AbstractFuelCategory extends AbstractRecipeCategory<IJeiFuelingRecipe> {
+	private final int burnDivisor;
+
+	protected AbstractFuelCategory(
+		Textures textures,
+		IRecipeType<IJeiFuelingRecipe> recipeType,
+		Component title,
+		IDrawable icon,
+		int burnDivisor
+	) {
 		super(
-			RecipeTypes.FUELING,
-			Component.translatable("gui.jei.category.fuel"),
-			textures.getFlameIcon(),
+			recipeType,
+			title,
+			new IconWithFlameOverlay(textures, icon),
 			getMaxWidth(),
 			34
 		);
+		if (burnDivisor <= 0) {
+			throw new IllegalArgumentException("burnDivisor must be greater than 0");
+		}
+		this.burnDivisor = burnDivisor;
 	}
 
 	private static int getMaxWidth() {
@@ -47,7 +61,7 @@ public class FurnaceFuelCategory extends AbstractRecipeCategory<IJeiFuelingRecip
 
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiFuelingRecipe recipe, IFocusGroup focuses) {
-		int burnTime = recipe.getBurnTime();
+		int burnTime = recipe.getBurnTime() / burnDivisor;
 		builder.addAnimatedRecipeFlame(burnTime)
 			.setPosition(1, 0);
 
@@ -73,5 +87,42 @@ public class FurnaceFuelCategory extends AbstractRecipeCategory<IJeiFuelingRecip
 	@Override
 	public @Nullable ResourceLocation getRegistryName(IJeiFuelingRecipe recipe) {
 		return null;
+	}
+
+	private static class IconWithFlameOverlay implements IDrawable {
+		private final IDrawable icon;
+		private final IDrawable flameIcon;
+
+		public IconWithFlameOverlay(Textures textures, IDrawable icon) {
+			this.icon = icon;
+			this.flameIcon = textures.getFlameIcon();
+		}
+
+		@Override
+		public int getWidth() {
+			return 16;
+		}
+
+		@Override
+		public int getHeight() {
+			return 16;
+		}
+
+		@Override
+		public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+			icon.draw(guiGraphics, xOffset, yOffset);
+
+			var poseStack = guiGraphics.pose();
+			poseStack.pushPose();
+			{
+				// this z level seems to be the sweet spot so that
+				// 2D icons draw above the items, and
+				// 3D icons draw still draw under tooltips.
+				poseStack.translate(8 + xOffset, 8 + yOffset, 200);
+				poseStack.scale(0.5f, 0.5f, 0.5f);
+				flameIcon.draw(guiGraphics);
+			}
+			poseStack.popPose();
+		}
 	}
 }

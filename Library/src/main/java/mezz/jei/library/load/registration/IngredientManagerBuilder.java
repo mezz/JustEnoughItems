@@ -31,28 +31,6 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		this.colorHelper = colorHelper;
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public <V> void register(IIngredientType<V> ingredientType, Collection<V> allIngredients, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
-		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
-		ErrorUtil.checkNotNull(allIngredients, "allIngredients");
-		ErrorUtil.checkNotNull(ingredientHelper, "ingredientHelper");
-		ErrorUtil.checkNotNull(ingredientRenderer, "ingredientRenderer");
-		Preconditions.checkArgument(ingredientRenderer.getWidth() == 16,
-			"the default ingredient renderer registered here will be used for drawing " +
-				"ingredients in the ingredient list, and it must have a width of 16"
-		);
-		Preconditions.checkArgument(ingredientRenderer.getHeight() == 16,
-			"the default ingredient renderer registered here will be used for drawing " +
-				"ingredients in the ingredient list, and it must have a height of 16"
-		);
-		if (ingredientInfos.containsKey(ingredientType)) {
-			throw new IllegalArgumentException("Ingredient type has already been registered: " + ingredientType.getUid());
-		}
-
-		ingredientInfos.put(ingredientType, new IngredientInfo<>(ingredientType, allIngredients, ingredientHelper, ingredientRenderer, null));
-	}
-
 	@Override
 	public <V> void register(
 		IIngredientType<V> ingredientType,

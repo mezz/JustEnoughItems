@@ -5,8 +5,8 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
@@ -147,8 +147,8 @@ public class RecipeBookmark<R, I> implements IBookmark {
 			'}';
 	}
 
-	public <T> boolean isRecipe(RecipeType<T> otherType, T otherRecipe) {
-		RecipeType<R> recipeType = recipeCategory.getRecipeType();
+	public <T> boolean isRecipe(IRecipeType<T> otherType, T otherRecipe) {
+		IRecipeType<R> recipeType = recipeCategory.getRecipeType();
 		if (recipeType.equals(otherType)) {
 			Class<? extends R> recipeClass = recipeType.getRecipeClass();
 			if (recipeClass.isInstance(otherRecipe)) {

@@ -20,6 +20,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -54,6 +55,16 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	@Override
+	public DisplayIngredientAcceptor add(SlotDisplay slotDisplay) {
+		Preconditions.checkNotNull(slotDisplay, "slotDisplay");
+
+		List<@Nullable ITypedIngredient<ItemStack>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, slotDisplay, false);
+		this.ingredients.addAll(typedIngredients);
+
+		return this;
+	}
+
+	@Override
 	public <T> DisplayIngredientAcceptor addIngredients(IIngredientType<T> ingredientType, List<@Nullable T> ingredients) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredients, "ingredients");
@@ -65,7 +76,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	@Override
-	public DisplayIngredientAcceptor addIngredients(Ingredient ingredient) {
+	public DisplayIngredientAcceptor add(Ingredient ingredient) {
 		Preconditions.checkNotNull(ingredient, "ingredient");
 
 		List<@Nullable ITypedIngredient<ItemStack>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredient, false);
@@ -75,7 +86,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	@Override
-	public <T> DisplayIngredientAcceptor addIngredient(IIngredientType<T> ingredientType, T ingredient) {
+	public <T> DisplayIngredientAcceptor add(IIngredientType<T> ingredientType, T ingredient) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
@@ -84,7 +95,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	@Override
-	public <I> DisplayIngredientAcceptor addTypedIngredient(ITypedIngredient<I> typedIngredient) {
+	public <I> DisplayIngredientAcceptor add(ITypedIngredient<I> typedIngredient) {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
 		@Nullable ITypedIngredient<I> copy = TypedIngredient.defensivelyCopyTypedIngredientFromApi(ingredientManager, typedIngredient);
@@ -95,21 +106,21 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public DisplayIngredientAcceptor addFluidStack(Fluid fluid) {
+	public DisplayIngredientAcceptor add(Fluid fluid) {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		return addFluidInternal(fluidHelper, fluid.builtInRegistryHolder(), fluidHelper.bucketVolume(), DataComponentPatch.EMPTY);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public DisplayIngredientAcceptor addFluidStack(Fluid fluid, long amount) {
+	public DisplayIngredientAcceptor add(Fluid fluid, long amount) {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		return addFluidInternal(fluidHelper, fluid.builtInRegistryHolder(), amount, DataComponentPatch.EMPTY);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public DisplayIngredientAcceptor addFluidStack(Fluid fluid, long amount, DataComponentPatch componentPatch) {
+	public DisplayIngredientAcceptor add(Fluid fluid, long amount, DataComponentPatch componentPatch) {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		return addFluidInternal(fluidHelper, fluid.builtInRegistryHolder(), amount, componentPatch);
 	}
@@ -126,7 +137,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		ErrorUtil.checkNotNull(ingredients, "ingredients");
 
 		for (ITypedIngredient<?> typedIngredient : ingredients) {
-			this.addTypedIngredient(typedIngredient);
+			this.add(typedIngredient);
 		}
 		return this;
 	}
@@ -137,7 +148,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 
 		for (Optional<ITypedIngredient<?>> o : ingredients) {
 			if (o.isPresent()) {
-				this.addTypedIngredient(o.get());
+				this.add(o.get());
 			} else {
 				this.ingredients.add(null);
 			}

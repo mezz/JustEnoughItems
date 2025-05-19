@@ -8,21 +8,25 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterpreter;
 import mezz.jei.library.util.BrewingRecipeMakerCommon;
 import mezz.jei.library.util.ResourceLocationUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.neoforged.neoforge.common.brewing.BrewingRecipe;
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class BrewingRecipeMaker {
@@ -62,14 +66,18 @@ public class BrewingRecipeMaker {
 		Collection<IBrewingRecipe> brewingRecipes,
 		Collection<IJeiBrewingRecipe> recipes
 	) {
+		Minecraft minecraft = Minecraft.getInstance();
+		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
+
 		Set<Class<?>> unhandledRecipeClasses = new HashSet<>();
 		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {
 			if (iBrewingRecipe instanceof BrewingRecipe brewingRecipe) {
-				ItemStack[] ingredients = brewingRecipe.getIngredient().getItems();
-				if (ingredients.length > 0) {
+				List<ItemStack> ingredients = brewingRecipe.getIngredient().display().resolveForStacks(contextmap);
+				if (!ingredients.isEmpty()) {
 					Ingredient inputIngredient = brewingRecipe.getInput();
 					ItemStack output = brewingRecipe.getOutput();
-					List<ItemStack> inputs = Arrays.stream(inputIngredient.getItems())
+					SlotDisplay slotDisplay = inputIngredient.display();
+					List<ItemStack> inputs = slotDisplay.resolve(contextmap, SlotDisplay.ItemStackContentsFactory.INSTANCE)
 						.filter(i -> !i.isEmpty())
 						.toList();
 					if (!output.isEmpty() && !inputs.isEmpty()) {
@@ -77,7 +85,7 @@ public class BrewingRecipeMaker {
 						String outputUid = PotionSubtypeInterpreter.INSTANCE.getStringName(output);
 						String uidPath = ResourceLocationUtil.sanitizePath(outputUid);
 						IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(
-							List.of(ingredients),
+							ingredients,
 							inputs,
 							output,
 							ResourceLocation.fromNamespaceAndPath(outputModId, uidPath)

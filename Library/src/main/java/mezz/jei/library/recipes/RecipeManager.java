@@ -5,15 +5,15 @@ import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.ICraftingStationLookup;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.IRecipeCatalystLookup;
 import mezz.jei.api.recipe.IRecipeCategoriesLookup;
 import mezz.jei.api.recipe.IRecipeLookup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableBlank;
@@ -41,7 +41,7 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <R> IRecipeLookup<R> createRecipeLookup(RecipeType<R> recipeType) {
+	public <R> IRecipeLookup<R> createRecipeLookup(IRecipeType<R> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		return new RecipeLookup<>(recipeType, internal, ingredientManager);
 	}
@@ -52,17 +52,23 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <T> IRecipeCategory<T> getRecipeCategory(RecipeType<T> recipeType) {
+	public <T> IRecipeCategory<T> getRecipeCategory(IRecipeType<T> recipeType) {
 		return internal.getRecipeCategory(recipeType);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
-	public IRecipeCatalystLookup createRecipeCatalystLookup(RecipeType<?> recipeType) {
-		return new RecipeCatalystLookup(recipeType, internal);
+	public mezz.jei.api.recipe.IRecipeCatalystLookup createRecipeCatalystLookup(IRecipeType<?> recipeType) {
+		return new CraftingStationLookup(recipeType, internal);
 	}
 
 	@Override
-	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
+	public ICraftingStationLookup createCraftingStationLookup(IRecipeType<?> recipeType) {
+		return new CraftingStationLookup(recipeType, internal);
+	}
+
+	@Override
+	public <T> void addRecipes(IRecipeType<T> recipeType, List<T> recipes) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(recipes, "recipes");
 		ErrorUtil.validateRecipes(recipeType, recipes);
@@ -77,7 +83,7 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
 
-		RecipeType<T> recipeType = recipeCategory.getRecipeType();
+		IRecipeType<T> recipeType = recipeCategory.getRecipeType();
 		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
 
 		final IScalableDrawable recipeBackground;
@@ -110,7 +116,7 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipe, "recipe");
 		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
 
-		RecipeType<T> recipeType = recipeCategory.getRecipeType();
+		IRecipeType<T> recipeType = recipeCategory.getRecipeType();
 		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
 
 		final IScalableDrawable recipeBackground;
@@ -147,7 +153,7 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
 		ErrorUtil.checkNotNull(background, "background");
 
-		RecipeType<T> recipeType = recipeCategory.getRecipeType();
+		IRecipeType<T> recipeType = recipeCategory.getRecipeType();
 		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
 		return RecipeLayout.create(
 			recipeCategory,
@@ -175,7 +181,7 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <T> void hideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {
+	public <T> void hideRecipes(IRecipeType<T> recipeType, Collection<T> recipes) {
 		ErrorUtil.checkNotNull(recipes, "recipe");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.validateRecipes(recipeType, recipes);
@@ -184,7 +190,7 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <T> void unhideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {
+	public <T> void unhideRecipes(IRecipeType<T> recipeType, Collection<T> recipes) {
 		ErrorUtil.checkNotNull(recipes, "recipe");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.validateRecipes(recipeType, recipes);
@@ -193,26 +199,26 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public void hideRecipeCategory(RecipeType<?> recipeType) {
+	public void hideRecipeCategory(IRecipeType<?> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.assertMainThread();
 		internal.hideRecipeCategory(recipeType);
 	}
 
 	@Override
-	public void unhideRecipeCategory(RecipeType<?> recipeType) {
+	public void unhideRecipeCategory(IRecipeType<?> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.assertMainThread();
 		internal.unhideRecipeCategory(recipeType);
 	}
 
 	@Override
-	public <T> Optional<RecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass) {
+	public <T> Optional<IRecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass) {
 		return internal.getRecipeType(recipeUid, recipeClass);
 	}
 
 	@Override
-	public Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid) {
+	public Optional<IRecipeType<?>> getRecipeType(ResourceLocation recipeUid) {
 		return internal.getRecipeType(recipeUid);
 	}
 }

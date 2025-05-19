@@ -3,15 +3,15 @@ package mezz.jei.api.recipe.transfer;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError.Type;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -60,7 +60,7 @@ public interface IRecipeTransferHandlerHelper {
 	<C extends AbstractContainerMenu, R> IRecipeTransferInfo<C, R> createBasicRecipeTransferInfo(
 		Class<? extends C> containerClass,
 		@Nullable MenuType<C> menuType,
-		RecipeType<R> recipeType,
+		IRecipeType<R> recipeType,
 		int recipeSlotStart,
 		int recipeSlotCount,
 		int inventorySlotStart,
@@ -99,7 +99,7 @@ public interface IRecipeTransferHandlerHelper {
 	 * so that they are centered horizontally, and some will be aligned to the bottom. (i.e. slab recipes).
 	 * This logic is controlled by {@link ICraftingGridHelper}.
 	 *
-	 * @since 19.16.1
+	 * @since 20.0.0
 	 */
-	Map<Integer, Ingredient> getGuiSlotIndexToIngredientMap(RecipeHolder<CraftingRecipe> recipeHolder);
+	Map<Integer, SlotDisplay> getGuiSlotIndexToIngredientMap(RecipeHolder<CraftingRecipe> recipeHolder);
 }

@@ -1,8 +1,8 @@
 package mezz.jei.gui.recipes.lookups;
 
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.util.MathUtil;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class SingleCategoryLookupState implements ILookupState {
 
 	@Override
 	public boolean moveToRecipeCategory(IRecipeCategory<?> recipeCategory) {
-		RecipeType<?> recipeType = focusedRecipes.getRecipeCategory().getRecipeType();
+		IRecipeType<?> recipeType = focusedRecipes.getRecipeCategory().getRecipeType();
 		return recipeCategory.getRecipeType().equals(recipeType);
 	}
 

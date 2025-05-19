@@ -5,8 +5,6 @@ import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -61,33 +59,7 @@ public class StackHelper implements IStackHelper {
 		return item;
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public String getUniqueIdentifierForStack(ItemStack stack, UidContext context) {
-		String result = getRegistryNameForStack(stack);
-		String subtypeInfo = subtypeManager.getSubtypeInfo(stack, context);
-		if (!subtypeInfo.isEmpty()) {
-			result = result + ':' + subtypeInfo;
-		}
-		return result;
-	}
-
 	public boolean hasSubtypes(ItemStack stack) {
 		return subtypeManager.hasSubtypes(VanillaTypes.ITEM_STACK, stack);
-	}
-
-	public static String getRegistryNameForStack(ItemStack stack) {
-		ErrorUtil.checkNotNull(stack, "stack");
-
-		Item item = stack.getItem();
-		ResourceLocation key = RegistryUtil
-			.getRegistry(Registries.ITEM)
-			.getKey(item);
-
-		if (key == null) {
-			String stackInfo = ErrorUtil.getItemStackInfo(stack);
-			throw new IllegalStateException("Item has no registry key: " + stackInfo);
-		}
-		return key.toString();
 	}
 }

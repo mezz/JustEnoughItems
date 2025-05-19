@@ -36,7 +36,7 @@ public final class ServerCommandUtil {
 	private ServerCommandUtil() {
 	}
 
-	public static boolean hasPermissionForCheatMode(Player sender, IServerConfig serverConfig) {
+	public static boolean hasPermissionForCheatMode(ServerPlayer sender, IServerConfig serverConfig) {
 		if (serverConfig.isCheatModeEnabledForCreative() &&
 			sender.isCreative()) {
 			return true;
@@ -149,7 +149,9 @@ public final class ServerCommandUtil {
 
 		if (giveCount > 0) {
 			itemStackCopy.setCount(giveCount);
-			notifyGive(sender, itemStackCopy);
+			if (sender instanceof ServerPlayer serverPlayer) {
+				notifyGive(serverPlayer, itemStackCopy);
+			}
 			containerMenu.broadcastChanges();
 		}
 	}
@@ -166,7 +168,7 @@ public final class ServerCommandUtil {
 	 * @see GiveCommand#giveItem(CommandSource, ItemInput, Collection, int)
 	 */
 	@SuppressWarnings("JavadocReference")
-	private static void giveToInventory(Player entityplayermp, ItemStack itemStack) {
+	private static void giveToInventory(ServerPlayer entityplayermp, ItemStack itemStack) {
 		ItemStack itemStackCopy = itemStack.copy();
 		boolean flag = entityplayermp.getInventory().add(itemStack);
 		if (flag && itemStack.isEmpty()) {
@@ -189,7 +191,7 @@ public final class ServerCommandUtil {
 		notifyGive(entityplayermp, itemStackCopy);
 	}
 
-	private static void notifyGive(Player player, ItemStack stack) {
+	private static void notifyGive(ServerPlayer player, ItemStack stack) {
 		if (player.getServer() == null) {
 			return;
 		}

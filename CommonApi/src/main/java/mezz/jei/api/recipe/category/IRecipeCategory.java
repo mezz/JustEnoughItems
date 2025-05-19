@@ -17,7 +17,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -26,7 +26,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,7 +41,7 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @since 9.5.0
 	 */
-	RecipeType<T> getRecipeType();
+	IRecipeType<T> getRecipeType();
 
 	/**
 	 * Returns a text component representing the name of this recipe type.
@@ -97,7 +96,7 @@ public interface IRecipeCategory<T> {
 	 * You can use {@link IGuiHelper#createDrawableIngredient(IIngredientType, Object)}
 	 * to create a drawable from an ingredient.
 	 *
-	 * If null is returned here, JEI will try to use the first recipe catalyst as the icon.
+	 * If null is returned here, JEI will try to use the first crafting station as the icon.
 	 *
 	 * @return icon to draw on the category tab, max size is 16x16 pixels.
 	 */
@@ -119,26 +118,10 @@ public interface IRecipeCategory<T> {
 	 * so they can be used for caching and displaying recipe-specific
 	 * information more easily than from the recipe category directly.
 	 *
-	 * @since 19.19.0
-	 * @deprecated use {@link #createRecipeExtras(IRecipeExtrasBuilder, Object, IFocusGroup)}, the recipe slots are in {@link IRecipeExtrasBuilder#getRecipeSlots()} now.
-	 */
-	@Deprecated(since = "19.19.3", forRemoval = true)
-	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IRecipeSlotsView recipeSlotsView, IFocusGroup focuses) {
-
-	}
-
-	/**
-	 * Create per-recipe extras like {@link IRecipeWidget} and {@link IJeiInputHandler}.
-	 *
-	 * These have access to a specific recipe, and will persist as long as a recipe layout is on screen,
-	 * so they can be used for caching and displaying recipe-specific
-	 * information more easily than from the recipe category directly.
-	 *
 	 * @since 19.6.0
 	 */
-	@SuppressWarnings("RedundantUnmodifiable")
 	default void createRecipeExtras(IRecipeExtrasBuilder builder, T recipe, IFocusGroup focuses) {
-		createRecipeExtras(builder, recipe, () -> Collections.unmodifiableList(builder.getRecipeSlots().getSlots()), focuses);
+
 	}
 
 	/**
@@ -268,7 +251,7 @@ public interface IRecipeCategory<T> {
 	@Nullable
 	default ResourceLocation getRegistryName(T recipe) {
 		if (recipe instanceof RecipeHolder<?> recipeHolder) {
-			return recipeHolder.id();
+			return recipeHolder.id().location();
 		}
 		return null;
 	}
@@ -276,7 +259,8 @@ public interface IRecipeCategory<T> {
 	/**
 	 * Get a codec for this type of recipe.
 	 *
-	 * The default implementation uses {@link #getRegistryName} to look up the recipes in an inefficient way.
+	 * The default implementation uses a {@link RecipeHolder} codec or falls back on {@link #getRegistryName}
+	 * to look up the recipes in an inefficient way.
 	 *
 	 * Override this method to provide a more efficient implementation,
 	 * or an implementation that doesn't depend on {@link #getRegistryName}
@@ -284,7 +268,7 @@ public interface IRecipeCategory<T> {
 	 * @since 19.9.0
 	 */
 	default Codec<T> getCodec(ICodecHelper codecHelper, IRecipeManager recipeManager) {
-		RecipeType<T> recipeType = getRecipeType();
+		IRecipeType<T> recipeType = getRecipeType();
 		if (RecipeHolder.class.isAssignableFrom(recipeType.getRecipeClass())) {
 			@SuppressWarnings("unchecked")
 			Codec<T> recipeHolderCodec = (Codec<T>) codecHelper.getRecipeHolderCodec();

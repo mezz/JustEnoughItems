@@ -1,10 +1,10 @@
 package mezz.jei.library.recipes;
 
 import com.google.common.collect.ImmutableTable;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.Constants;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -16,10 +16,10 @@ import java.util.Optional;
 import java.util.Set;
 
 public class RecipeTransferManager implements IRecipeTransferManager {
-	private final ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers;
+	private final ImmutableTable<Class<? extends AbstractContainerMenu>, IRecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers;
 	private final Set<AbstractContainerMenu> unsupportedContainers = new HashSet<>();
 
-	public RecipeTransferManager(ImmutableTable<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers) {
+	public RecipeTransferManager(ImmutableTable<Class<? extends AbstractContainerMenu>, IRecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers) {
 		this.recipeTransferHandlers = recipeTransferHandlers;
 	}
 
@@ -29,7 +29,7 @@ public class RecipeTransferManager implements IRecipeTransferManager {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 
 		MenuType<C> menuType = getMenuType(container);
-		RecipeType<R> recipeType = recipeCategory.getRecipeType();
+		IRecipeType<R> recipeType = recipeCategory.getRecipeType();
 		@SuppressWarnings("unchecked")
 		Class<? extends C> containerClass = (Class<? extends C>) container.getClass();
 		Optional<IRecipeTransferHandler<C, R>> handler = getHandler(containerClass, menuType, recipeType);
@@ -55,7 +55,7 @@ public class RecipeTransferManager implements IRecipeTransferManager {
 		}
 	}
 
-	private <C extends AbstractContainerMenu, R> Optional<IRecipeTransferHandler<C, R>> getHandler(Class<? extends C> containerClass, @Nullable MenuType<C> menuType, RecipeType<?> recipeType) {
+	private <C extends AbstractContainerMenu, R> Optional<IRecipeTransferHandler<C, R>> getHandler(Class<? extends C> containerClass, @Nullable MenuType<C> menuType, IRecipeType<?> recipeType) {
 		IRecipeTransferHandler<?, ?> handler = recipeTransferHandlers.get(containerClass, recipeType);
 		if (handler == null) {
 			return Optional.empty();

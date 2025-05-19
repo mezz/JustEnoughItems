@@ -8,7 +8,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -88,7 +88,7 @@ public class JeiInternalPlugin implements IModPlugin {
 				IIngredientType<B> type = ingredientManager.getIngredientTypeChecked(ingredient).orElse(null);
 				if (type != null) {
 					ResourceLocation registryLocation = registry.key().location();
-					RecipeType<ITagInfoRecipe> recipeType = createTagInfoRecipeType(registryLocation);
+					IRecipeType<ITagInfoRecipe> recipeType = createTagInfoRecipeType(registryLocation);
 					registration.addRecipeCategories(
 						new TagInfoRecipeCategory<>(guiHelper, recipeType, registryLocation)
 					);
@@ -113,8 +113,8 @@ public class JeiInternalPlugin implements IModPlugin {
 		});
 	}
 
-	private static RecipeType<ITagInfoRecipe> createTagInfoRecipeType(ResourceLocation registryLocation) {
-		return RecipeType.create(registryLocation.getNamespace(), "tag_recipes/" + registryLocation.getPath(), ITagInfoRecipe.class);
+	private static IRecipeType<ITagInfoRecipe> createTagInfoRecipeType(ResourceLocation registryLocation) {
+		return IRecipeType.create(registryLocation.getNamespace(), "tag_recipes/" + registryLocation.getPath(), ITagInfoRecipe.class);
 	}
 
 	private static <B, I> boolean createAndRegisterTagCategory(
@@ -134,7 +134,7 @@ public class JeiInternalPlugin implements IModPlugin {
 		}
 		ResourceLocation registryLocation = registry.key().location();
 
-		RecipeType<ITagInfoRecipe> recipeType = createTagInfoRecipeType(registryLocation);
+		IRecipeType<ITagInfoRecipe> recipeType = createTagInfoRecipeType(registryLocation);
 
 		registration.addRecipeCategories(
 			new TagInfoRecipeCategory<>(guiHelper, recipeType, registryLocation)
@@ -153,7 +153,7 @@ public class JeiInternalPlugin implements IModPlugin {
 
 		ResourceKey<? extends Registry<B>> registryKey = registry.key();
 		ResourceLocation registryLocation = registryKey.location();
-		RecipeType<ITagInfoRecipe> recipeType = createTagInfoRecipeType(registryLocation);
+		IRecipeType<ITagInfoRecipe> recipeType = createTagInfoRecipeType(registryLocation);
 		registration.addRecipeCategories(
 			new TagInfoRecipeCategory<>(guiHelper, recipeType, registryLocation)
 		);

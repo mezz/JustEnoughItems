@@ -20,11 +20,14 @@ import mezz.jei.neoforge.startup.ForgePluginFinder;
 import mezz.jei.neoforge.startup.StartEventObserver;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -63,21 +66,22 @@ public class JustEnoughItemsClient {
 	}
 
 	public void register() {
-		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
+		subscriptions.register(AddClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
+		subscriptions.register(RecipesReceivedEvent.class, e -> Internal.setClientSyncedRecipes(e.getRecipeMap()));
 
 		IEventBus modEventBus = subscriptions.getModEventBus();
 		DeferredRegister<RecipeSerializer<?>> deferredRegister = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, ModIds.JEI_ID);
 		deferredRegister.register(modEventBus);
 
-		Supplier<RecipeSerializer<?>> jeiShaped = deferredRegister.register("jei_shaped", JeiShapedRecipe.Serializer::new);
+		Supplier<RecipeSerializer<? extends CraftingRecipe>> jeiShaped = deferredRegister.register("jei_shaped", JeiShapedRecipe.Serializer::new);
 		RecipeSerializers.register(jeiShaped);
 	}
 
-	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event) {
+	private void onRegisterReloadListenerEvent(AddClientReloadListenersEvent event) {
 		Textures textures = Internal.getTextures();
-		event.registerReloadListener(textures.getSpriteUploader());
-		event.registerReloadListener(createReloadListener());
+		event.addListener(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "textures"), textures.getSpriteUploader());
+		event.addListener(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "jei_client"), createReloadListener());
 	}
 
 	private void onRegisterClientTooltipEvent(RegisterClientTooltipComponentFactoriesEvent event) {

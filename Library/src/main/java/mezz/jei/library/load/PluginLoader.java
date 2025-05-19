@@ -8,12 +8,12 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IJeiFeatures;
@@ -127,7 +127,17 @@ public final class PluginLoader {
 			ingredientManager
 		);
 
-		return new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager, vanillaRecipeFactory, codecHelper, ingredientVisibility);
+		return new JeiHelpers(
+			guiHelper,
+			stackHelper,
+			modIdHelper,
+			focusFactory,
+			colorHelper,
+			ingredientManager,
+			vanillaRecipeFactory,
+			codecHelper,
+			ingredientVisibility
+		);
 	}
 
 	@Unmodifiable
@@ -175,7 +185,7 @@ public final class PluginLoader {
 
 		RecipeCatalystRegistration recipeCatalystRegistration = new RecipeCatalystRegistration(ingredientManager, jeiHelpers);
 		PluginCaller.callOnPlugins("Registering recipe catalysts", plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration));
-		ImmutableListMultimap<RecipeType<?>, ITypedIngredient<?>> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
+		ImmutableListMultimap<IRecipeType<?>, ITypedIngredient<?>> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building recipe registry");
@@ -194,7 +204,7 @@ public final class PluginLoader {
 		PluginCaller.callOnPlugins("Registering advanced plugins", plugins, p -> p.registerAdvanced(advancedRegistration));
 
 		List<IRecipeManagerPlugin> recipeManagerPlugins = advancedRegistration.getRecipeManagerPlugins();
-		ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators = advancedRegistration.getRecipeCategoryDecorators();
+		ImmutableListMultimap<IRecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators = advancedRegistration.getRecipeCategoryDecorators();
 		recipeManagerInternal.addPlugins(recipeManagerPlugins);
 		recipeManagerInternal.addDecorators(recipeCategoryDecorators);
 

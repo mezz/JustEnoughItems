@@ -1,6 +1,7 @@
 package mezz.jei.api.constants;
 
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeHolderType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
@@ -11,7 +12,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
@@ -19,7 +20,7 @@ import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.level.block.ComposterBlock;
 
 /**
- * List of all the built-in {@link RecipeType}s that are added by JEI.
+ * List of all the built-in {@link IRecipeType}s that are added by JEI.
  *
  * @since 9.5.0
  */
@@ -31,8 +32,8 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<CraftingRecipe>> CRAFTING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.CRAFTING);
+	public static final IRecipeHolderType<CraftingRecipe> CRAFTING =
+		IRecipeHolderType.create(RecipeType.CRAFTING);
 
 	/**
 	 * The stonecutting recipe type.
@@ -41,8 +42,8 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<StonecutterRecipe>> STONECUTTING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.STONECUTTING);
+	public static final IRecipeHolderType<StonecutterRecipe> STONECUTTING =
+		IRecipeHolderType.create(RecipeType.STONECUTTING);
 
 	/**
 	 * The smelting recipe type.
@@ -51,8 +52,8 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<SmeltingRecipe>> SMELTING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.SMELTING);
+	public static final IRecipeHolderType<SmeltingRecipe> SMELTING =
+		IRecipeHolderType.create(RecipeType.SMELTING);
 
 	/**
 	 * The smoking recipe type.
@@ -61,8 +62,8 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<SmokingRecipe>> SMOKING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.SMOKING);
+	public static final IRecipeHolderType<SmokingRecipe> SMOKING =
+		IRecipeHolderType.create(RecipeType.SMOKING);
 
 	/**
 	 * The blasting recipe type.
@@ -71,8 +72,8 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<BlastingRecipe>> BLASTING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.BLASTING);
+	public static final IRecipeHolderType<BlastingRecipe> BLASTING =
+		IRecipeHolderType.create(RecipeType.BLASTING);
 
 	/**
 	 * The campfire cooking recipe type.
@@ -81,18 +82,38 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<CampfireCookingRecipe>> CAMPFIRE_COOKING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.CAMPFIRE_COOKING);
+	public static final IRecipeHolderType<CampfireCookingRecipe> CAMPFIRE_COOKING =
+		IRecipeHolderType.create(RecipeType.CAMPFIRE_COOKING);
 
 	/**
-	 * The fueling recipe type.
+	 * The furnace fuel recipe type.
 	 *
 	 * JEI automatically creates a fuel recipe for anything that has a burn time.
 	 *
-	 * @since 9.5.0
+	 * @since 20.0.0
 	 */
-	public static final RecipeType<IJeiFuelingRecipe> FUELING =
-		RecipeType.create(ModIds.MINECRAFT_ID, "fuel", IJeiFuelingRecipe.class);
+	public static final IRecipeType<IJeiFuelingRecipe> SMELTING_FUEL =
+		IRecipeType.create(ModIds.MINECRAFT_ID, "smelting_fuel", IJeiFuelingRecipe.class);
+
+	/**
+	 * The blast furnace fuel recipe type.
+	 *
+	 * JEI automatically creates a fuel recipe for anything that has a burn time.
+	 *
+	 * @since 20.0.0
+	 */
+	public static final IRecipeType<IJeiFuelingRecipe> BLASTING_FUEL =
+		IRecipeType.create(ModIds.MINECRAFT_ID, "blasting_fuel", IJeiFuelingRecipe.class);
+
+	/**
+	 * The smoker fuel recipe type.
+	 *
+	 * JEI automatically creates a fuel recipe for anything that has a burn time.
+	 *
+	 * @since 20.0.0
+	 */
+	public static final IRecipeType<IJeiFuelingRecipe> SMOKING_FUEL =
+		IRecipeType.create(ModIds.MINECRAFT_ID, "smoking_fuel", IJeiFuelingRecipe.class);
 
 	/**
 	 * The brewing recipe type.
@@ -104,8 +125,8 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<IJeiBrewingRecipe> BREWING =
-		RecipeType.create(ModIds.MINECRAFT_ID, "brewing", IJeiBrewingRecipe.class);
+	public static final IRecipeType<IJeiBrewingRecipe> BREWING =
+		IRecipeType.create(ModIds.MINECRAFT_ID, "brewing", IJeiBrewingRecipe.class);
 
 	/**
 	 * The anvil recipe type.
@@ -114,8 +135,8 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<IJeiAnvilRecipe> ANVIL =
-		RecipeType.create(ModIds.MINECRAFT_ID, "anvil", IJeiAnvilRecipe.class);
+	public static final IRecipeType<IJeiAnvilRecipe> ANVIL =
+		IRecipeType.create(ModIds.MINECRAFT_ID, "anvil", IJeiAnvilRecipe.class);
 
 	/**
 	 * The smithing recipe type.
@@ -125,8 +146,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<SmithingRecipe>> SMITHING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.SMITHING);
+	public static final IRecipeHolderType<SmithingRecipe> SMITHING = IRecipeHolderType.create(RecipeType.SMITHING);
 
 	/**
 	 * The composting recipe type.
@@ -134,8 +154,8 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<IJeiCompostingRecipe> COMPOSTING =
-		RecipeType.create(ModIds.MINECRAFT_ID, "compostable", IJeiCompostingRecipe.class);
+	public static final IRecipeType<IJeiCompostingRecipe> COMPOSTING =
+		IRecipeType.create(ModIds.MINECRAFT_ID, "compostable", IJeiCompostingRecipe.class);
 
 	/**
 	 * The JEI info recipe type.
@@ -144,8 +164,8 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<IJeiIngredientInfoRecipe> INFORMATION =
-		RecipeType.create(ModIds.JEI_ID, "information", IJeiIngredientInfoRecipe.class);
+	public static final IRecipeType<IJeiIngredientInfoRecipe> INFORMATION =
+		IRecipeType.create(ModIds.JEI_ID, "information", IJeiIngredientInfoRecipe.class);
 
 	private RecipeTypes() {}
 }

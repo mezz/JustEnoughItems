@@ -5,9 +5,9 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
@@ -147,7 +147,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public boolean showCategories(List<RecipeType<?>> recipeTypes) {
+	public boolean showCategories(List<IRecipeType<?>> recipeTypes) {
 		List<IRecipeCategory<?>> recipeCategories = recipeManager.createRecipeCategoryLookup()
 			.limitTypes(recipeTypes)
 			.get()
@@ -176,8 +176,8 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public Stream<ITypedIngredient<?>> getRecipeCatalysts(IRecipeCategory<?> recipeCategory) {
-		RecipeType<?> recipeType = recipeCategory.getRecipeType();
-		return recipeManager.createRecipeCatalystLookup(recipeType)
+		IRecipeType<?> recipeType = recipeCategory.getRecipeType();
+		return recipeManager.createCraftingStationLookup(recipeType)
 			.get();
 	}
 

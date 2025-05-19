@@ -3,7 +3,7 @@ package mezz.jei.api.helpers;
 import com.mojang.serialization.Codec;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.IFocusFactory;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
@@ -48,7 +48,7 @@ public interface IJeiHelpers {
 	IColorHelper getColorHelper();
 
 	/**
-	 * Helps with handling fluid ingredients on multiple platforms (Forge and Fabric).
+	 * Helps with handling fluid ingredients on multiple mod loader platforms.
 	 *
 	 * @since 10.1.0
 	 */
@@ -60,10 +60,10 @@ public interface IJeiHelpers {
 	 * This is useful for integrating with other mods that do not share their
 	 * recipe types directly from their API.
 	 *
-	 * @see RecipeType#getUid()
+	 * @see IRecipeType#getUid()
 	 * @since 19.11.0
 	 */
-	<T> Optional<RecipeType<T>> getRecipeType(ResourceLocation uid, Class<? extends T> recipeClass);
+	<T> Optional<IRecipeType<T>> getRecipeType(ResourceLocation uid, Class<? extends T> recipeClass);
 
 	/**
 	 * Get the registered recipe type for the given unique id.
@@ -71,17 +71,17 @@ public interface IJeiHelpers {
 	 * This is useful for integrating with other mods that do not share their
 	 * recipe types directly from their API.
 	 *
-	 * @see RecipeType#getUid()
+	 * @see IRecipeType#getUid()
 	 * @since 11.4.0
 	 */
-	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
+	Optional<IRecipeType<?>> getRecipeType(ResourceLocation uid);
 
 	/**
 	 * Get all registered recipe types.
 	 *
 	 * @since 15.1.0
 	 */
-	Stream<RecipeType<?>> getAllRecipeTypes();
+	Stream<IRecipeType<?>> getAllRecipeTypes();
 
 	/**
 	 * The ingredient manager, with information about all registered ingredients.

@@ -1,37 +1,17 @@
 package mezz.jei.library.plugins.vanilla.crafting;
 
-import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
-import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
-import mezz.jei.library.util.RecipeUtil;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
+import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 
 import java.util.List;
-import java.util.Optional;
 
 public class CraftingCategoryExtension implements ICraftingCategoryExtension<CraftingRecipe> {
-	@Override
-	public void setRecipe(RecipeHolder<CraftingRecipe> recipeHolder, IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
-		CraftingRecipe recipe = recipeHolder.value();
-		ItemStack resultItem = RecipeUtil.getResultItem(recipe);
-
-		int width = getWidth(recipeHolder);
-		int height = getHeight(recipeHolder);
-		craftingGridHelper.createAndSetOutputs(builder, List.of(resultItem));
-		craftingGridHelper.createAndSetIngredients(builder, recipe.getIngredients(), width, height);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public Optional<ResourceLocation> getRegistryName(RecipeHolder<CraftingRecipe> recipeHolder) {
-		return Optional.of(recipeHolder.id());
-	}
-
 	@Override
 	public int getWidth(RecipeHolder<CraftingRecipe> recipeHolder) {
 		CraftingRecipe recipe = recipeHolder.value();
@@ -59,6 +39,31 @@ public class CraftingCategoryExtension implements ICraftingCategoryExtension<Cra
 	@Override
 	public boolean isHandled(RecipeHolder<CraftingRecipe> recipeHolder) {
 		CraftingRecipe recipe = recipeHolder.value();
-		return !recipe.isSpecial();
+		if (recipe.isSpecial()) {
+			return false;
+		}
+		List<RecipeDisplay> displays = recipe.display();
+		if (displays.isEmpty()) {
+			return false;
+		}
+		RecipeDisplay display = displays.getFirst();
+		return display instanceof ShapelessCraftingRecipeDisplay ||
+			display instanceof ShapedCraftingRecipeDisplay;
+	}
+
+	@Override
+	public List<SlotDisplay> getIngredients(RecipeHolder<CraftingRecipe> recipeHolder) {
+		List<RecipeDisplay> displays = recipeHolder.value().display();
+		if (displays.isEmpty()) {
+			return List.of();
+		}
+		RecipeDisplay display = displays.getFirst();
+		if (display instanceof ShapedCraftingRecipeDisplay shapedCraftingRecipeDisplay) {
+			return shapedCraftingRecipeDisplay.ingredients();
+		} else if (display instanceof ShapelessCraftingRecipeDisplay shapelessCraftingRecipeDisplay) {
+			return shapelessCraftingRecipeDisplay.ingredients();
+		} else {
+			return List.of();
+		}
 	}
 }

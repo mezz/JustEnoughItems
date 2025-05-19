@@ -27,7 +27,7 @@ public class RegistryUtil {
 
 	private static Registry<?> getRegistryUncached(ResourceKey<? extends Registry<?>> key) {
 		RegistryAccess registryAccess = getRegistryAccess();
-		return registryAccess.registryOrThrow(key);
+		return registryAccess.lookupOrThrow(key);
 	}
 
 	public static RegistryAccess getRegistryAccess() {

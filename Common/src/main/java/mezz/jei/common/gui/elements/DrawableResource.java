@@ -1,16 +1,15 @@
 package mezz.jei.common.gui.elements;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import net.minecraft.client.gui.GuiGraphics;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
-
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.CoreShaders;
+import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
 
 public class DrawableResource implements IDrawableStatic {
@@ -61,7 +60,7 @@ public class DrawableResource implements IDrawableStatic {
 
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(CoreShaders.POSITION_TEX);
 		RenderSystem.setShaderTexture(0, this.resourceLocation);
 
 		int x = xOffset + this.paddingLeft + maskLeft;

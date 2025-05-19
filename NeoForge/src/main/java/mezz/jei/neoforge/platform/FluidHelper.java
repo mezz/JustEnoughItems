@@ -12,6 +12,7 @@ import mezz.jei.library.render.FluidTankRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -21,7 +22,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -100,10 +100,13 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 		Fluid fluid = fluidStack.getFluid();
 		IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
 		ResourceLocation fluidStill = renderProperties.getStillTexture(fluidStack);
-		//noinspection OptionalOfNullableMisuse
+		Minecraft minecraft = Minecraft.getInstance();
+		@SuppressWarnings("deprecation")
+		ResourceLocation atlasLocation = TextureAtlas.LOCATION_BLOCKS;
+		// noinspection OptionalOfNullableMisuse
 		return Optional.ofNullable(fluidStill)
-			.map(f -> Minecraft.getInstance()
-				.getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+			.map(f -> minecraft
+				.getTextureAtlas(atlasLocation)
 				.apply(f)
 			)
 			.filter(s -> s.atlasLocation() != MissingTextureAtlasSprite.getLocation());
@@ -154,9 +157,6 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 
 	@Override
 	public Codec<FluidStack> getCodec() {
-		return Codec.withAlternative(
-			FluidStack.fixedAmountCodec(FluidType.BUCKET_VOLUME),
-			FluidStack.CODEC // TODO: remove this fallback codec in the next major version of JEI
-		);
+		return FluidStack.fixedAmountCodec(FluidType.BUCKET_VOLUME);
 	}
 }

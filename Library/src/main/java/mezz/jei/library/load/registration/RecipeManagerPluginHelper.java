@@ -1,8 +1,8 @@
 package mezz.jei.library.load.registration;
 
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPluginHelper;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.library.recipes.RecipeManagerInternal;
 
 public class RecipeManagerPluginHelper implements IRecipeManagerPluginHelper {
@@ -13,7 +13,7 @@ public class RecipeManagerPluginHelper implements IRecipeManagerPluginHelper {
 	}
 
 	@Override
-	public boolean isRecipeCatalyst(RecipeType<?> recipeType, IFocus<?> focus) {
-		return recipeManager.isRecipeCatalyst(recipeType, focus);
+	public boolean isCraftingStation(IRecipeType<?> recipeType, IFocus<?> focus) {
+		return recipeManager.isCraftingStation(recipeType, focus);
 	}
 }

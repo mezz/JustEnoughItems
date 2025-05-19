@@ -1,5 +1,6 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -34,21 +35,21 @@ public class SmithingTrimCategoryExtension extends SmithingCategoryExtension<Smi
 
 			SmithingRecipeInput recipeInput = new SmithingRecipeInput(template, base, addition);
 			ItemStack output = RecipeUtil.assembleResultItem(recipeInput, recipe);
-			outputSlot.createDisplayOverrides()
-				.addItemStack(output);
+			IIngredientAcceptor<?> iIngredientAcceptor = outputSlot.createDisplayOverrides();
+			iIngredientAcceptor.add(output);
 		} else {
 			ItemStack output = outputSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
 			ItemStack base = new ItemStack(output.getItem());
 			ItemStack template = templateSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
 			ItemStack addition = additionSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
 
-			baseSlot.createDisplayOverrides()
-				.addItemStack(base);
+			IIngredientAcceptor<?> iIngredientAcceptor1 = baseSlot.createDisplayOverrides();
+			iIngredientAcceptor1.add(base);
 
 			SmithingRecipeInput recipeInput = new SmithingRecipeInput(template, base, addition);
 			output = RecipeUtil.assembleResultItem(recipeInput, recipe);
-			outputSlot.createDisplayOverrides()
-				.addItemStack(output);
+			IIngredientAcceptor<?> iIngredientAcceptor = outputSlot.createDisplayOverrides();
+			iIngredientAcceptor.add(output);
 		}
 	}
 }

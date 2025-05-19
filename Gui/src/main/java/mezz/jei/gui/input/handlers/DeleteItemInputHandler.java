@@ -15,6 +15,7 @@ import mezz.jei.gui.overlay.IIngredientGrid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -67,8 +68,10 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 		}
 		if (!userInput.isSimulate()) {
 			player.containerMenu.setCarried(ItemStack.EMPTY);
-			var packet = new PacketDeletePlayerItem(itemStack);
-			serverConnection.sendPacketToServer(packet);
+			if (!(player.containerMenu instanceof CreativeModeInventoryScreen.ItemPickerMenu)) {
+				var packet = new PacketDeletePlayerItem(itemStack);
+				serverConnection.sendPacketToServer(packet);
+			}
 		}
 		return Optional.of(this);
 	}

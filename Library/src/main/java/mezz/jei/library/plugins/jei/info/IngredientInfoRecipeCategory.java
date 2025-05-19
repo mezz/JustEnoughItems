@@ -39,8 +39,8 @@ public class IngredientInfoRecipeCategory extends AbstractRecipeCategory<IJeiIng
 		IIngredientAcceptor<?> outputSlotBuilder = builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT);
 
 		for (ITypedIngredient<?> typedIngredient : recipe.getIngredients()) {
-			inputSlotBuilder.addTypedIngredient(typedIngredient);
-			outputSlotBuilder.addTypedIngredient(typedIngredient);
+			inputSlotBuilder.add(typedIngredient);
+			outputSlotBuilder.add(typedIngredient);
 		}
 	}
 

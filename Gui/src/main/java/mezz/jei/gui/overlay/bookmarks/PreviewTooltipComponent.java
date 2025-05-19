@@ -30,7 +30,7 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 	}
 
 	@Override
-	public int getHeight() {
+	public int getHeight(Font font) {
 		return drawable.getRect().getHeight() + 10;
 	}
 
@@ -40,7 +40,7 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 	}
 
 	@Override
-	public void renderImage(Font font, int x, int y, GuiGraphics guiGraphics) {
+	public void renderImage(Font font, int x, int y, int p_368529_, int p_368584_, GuiGraphics guiGraphics) {
 		PoseStack pose = guiGraphics.pose();
 		pose.pushPose();
 		{

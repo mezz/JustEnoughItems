@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class RecipeTransferErrorTooltip implements IRecipeTransferError {
@@ -22,12 +21,6 @@ public class RecipeTransferErrorTooltip implements IRecipeTransferError {
 	@Override
 	public Type getType() {
 		return Type.USER_FACING;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public List<Component> getTooltip() {
-		return Collections.unmodifiableList(message);
 	}
 
 	@Override

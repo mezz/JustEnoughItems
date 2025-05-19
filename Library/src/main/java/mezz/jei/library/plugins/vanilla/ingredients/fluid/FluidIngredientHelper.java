@@ -56,36 +56,9 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 		return displayName.getString();
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public String getUniqueId(T ingredient, UidContext context) {
-		Fluid fluid = fluidType.getBase(ingredient);
-		ResourceLocation registryName = getRegistryName(ingredient, fluid);
-
-		StringBuilder result = new StringBuilder()
-			.append("fluid:")
-			.append(registryName);
-
-		String subtypeInfo = subtypeManager.getSubtypeInfo(fluidType, ingredient, context);
-		if (!subtypeInfo.isEmpty()) {
-			result.append(":");
-			result.append(subtypeInfo);
-		}
-
-		return result.toString();
-	}
-
 	@Override
 	public Object getGroupingUid(T ingredient) {
 		return fluidType.getBase(ingredient);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public String getWildcardId(T ingredient) {
-		Fluid fluid = fluidType.getBase(ingredient);
-		ResourceLocation registryName = getRegistryName(ingredient, fluid);
-		return "fluid:" + registryName;
 	}
 
 	@Override
@@ -154,20 +127,16 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	public Stream<ResourceLocation> getTagStream(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
 
-		return registry.getResourceKey(fluid)
-			.flatMap(registry::getHolder)
-			.map(Holder::tags)
-			.orElse(Stream.of())
+		return registry.wrapAsHolder(fluid)
+			.tags()
 			.map(TagKey::location);
 	}
 
 	@Override
 	public boolean isHiddenFromRecipeViewersByTags(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
-		return registry.getResourceKey(fluid)
-			.flatMap(registry::getHolder)
-			.map(holder -> holder.is(hiddenFromRecipeViewers))
-			.orElse(false);
+		Holder<Fluid> fluidHolder = registry.wrapAsHolder(fluid);
+		return fluidHolder.is(hiddenFromRecipeViewers);
 	}
 
 	@SuppressWarnings("ConstantConditions")

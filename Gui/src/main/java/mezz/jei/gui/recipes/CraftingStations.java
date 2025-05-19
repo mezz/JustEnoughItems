@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 /**
  * The area drawn on left side of the {@link RecipesGui} that shows which items can craft the current recipe category.
  */
-public class RecipeCatalysts implements IRecipeFocusSource {
+public class CraftingStations implements IRecipeFocusSource {
 	private static final int ingredientSize = 16;
 	private static final int ingredientBorderSize = 1;
 	private static final int borderSize = 5;
@@ -44,7 +44,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	private int width = 0;
 	private int height = 0;
 
-	public RecipeCatalysts(IRecipeManager recipeManager) {
+	public CraftingStations(IRecipeManager recipeManager) {
 		this.recipeManager = recipeManager;
 		recipeSlots = new ArrayList<>();
 		Textures textures = Internal.getTextures();
@@ -88,7 +88,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 		int column = index / maxIngredientsPerColumn;
 		int row = index % maxIngredientsPerColumn;
 		IRecipeSlotDrawable recipeSlotDrawable = recipeManager.createRecipeSlotDrawable(
-			RecipeIngredientRole.CATALYST,
+			RecipeIngredientRole.CRAFTING_STATION,
 			List.of(Optional.of(typedIngredient)),
 			IntSet.of(0),
 			0

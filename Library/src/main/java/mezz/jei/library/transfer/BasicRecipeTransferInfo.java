@@ -1,7 +1,7 @@
 package mezz.jei.library.transfer;
 
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
@@ -15,7 +15,7 @@ public class BasicRecipeTransferInfo<C extends AbstractContainerMenu, R> impleme
 	private final Class<? extends C> containerClass;
 	@Nullable
 	private final MenuType<C> menuType;
-	private final RecipeType<R> recipeType;
+	private final IRecipeType<R> recipeType;
 	private final int recipeSlotStart;
 	private final int recipeSlotCount;
 	private final int inventorySlotStart;
@@ -24,7 +24,7 @@ public class BasicRecipeTransferInfo<C extends AbstractContainerMenu, R> impleme
 	public BasicRecipeTransferInfo(
 		Class<? extends C> containerClass,
 		@Nullable MenuType<C> menuType,
-		RecipeType<R> recipeType,
+		IRecipeType<R> recipeType,
 		int recipeSlotStart,
 		int recipeSlotCount,
 		int inventorySlotStart,
@@ -50,7 +50,7 @@ public class BasicRecipeTransferInfo<C extends AbstractContainerMenu, R> impleme
 	}
 
 	@Override
-	public RecipeType<R> getRecipeType() {
+	public IRecipeType<R> getRecipeType() {
 		return recipeType;
 	}
 

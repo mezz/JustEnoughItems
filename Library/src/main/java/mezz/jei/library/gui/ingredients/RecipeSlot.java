@@ -1,7 +1,7 @@
 package mezz.jei.library.gui.ingredients;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import mezz.jei.api.gui.builder.IIngredientConsumer;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
@@ -356,7 +356,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	@Override
-	public IIngredientConsumer createDisplayOverrides() {
+	public IIngredientAcceptor<?> createDisplayOverrides() {
 		if (displayOverrides == null) {
 			IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 			displayOverrides = new DisplayIngredientAcceptor(ingredientManager);

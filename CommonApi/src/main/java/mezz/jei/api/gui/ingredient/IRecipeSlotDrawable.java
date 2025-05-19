@@ -1,6 +1,6 @@
 package mezz.jei.api.gui.ingredient;
 
-import mezz.jei.api.gui.builder.IIngredientConsumer;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
@@ -78,7 +78,7 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 *
 	 * @since 19.8.3
 	 */
-	IIngredientConsumer createDisplayOverrides();
+	IIngredientAcceptor<?> createDisplayOverrides();
 
 	/**
 	 * Removes any display overrides that were set with {@link #createDisplayOverrides()}.

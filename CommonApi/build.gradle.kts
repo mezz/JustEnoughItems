@@ -8,7 +8,7 @@ plugins {
 
 // gradle.properties
 val minecraftVersion: String by extra
-val neoformTimestamp: String by extra
+val neoformVersionAndTimestamp: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 
@@ -18,7 +18,7 @@ base {
 }
 
 neoForge {
-    neoFormVersion = "$minecraftVersion-$neoformTimestamp"
+    neoFormVersion = neoformVersionAndTimestamp
 }
 
 sourceSets {

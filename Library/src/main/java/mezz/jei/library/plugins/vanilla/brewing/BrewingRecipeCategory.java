@@ -84,7 +84,7 @@ public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRec
 			.addItemStacks(recipe.getIngredients());
 
 		builder.addOutputSlot(81, 3)
-			.addItemStack(recipe.getPotionOutput())
+			.add(recipe.getPotionOutput())
 			.setStandardSlotBackground();
 	}
 

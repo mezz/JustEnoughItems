@@ -27,6 +27,10 @@ import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RendererOverrides;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,8 +49,6 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private @Nullable OffsetDrawable background;
 	private @Nullable IDrawable overlay;
 	private @Nullable String slotName;
-	@SuppressWarnings("removal")
-	private @Nullable mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> assignedWidgetFactory;
 
 	public RecipeSlotBuilder(IIngredientManager ingredientManager, int slotIndex, RecipeIngredientRole role) {
 		this.ingredients = new DisplayIngredientAcceptor(ingredientManager);
@@ -56,32 +58,62 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	}
 
 	@Override
+	public IRecipeSlotBuilder add(SlotDisplay slotDisplay) {
+		this.ingredients.add(slotDisplay);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder add(ItemStack itemStack) {
+		this.ingredients.add(itemStack);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder add(ItemLike itemLike) {
+		this.ingredients.add(itemLike);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder add(Fluid fluid) {
+		this.ingredients.add(fluid);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder add(Fluid fluid, long amount) {
+		this.ingredients.add(fluid, amount);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder add(Fluid fluid, long amount, DataComponentPatch component) {
+		this.ingredients.add(fluid, amount, component);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder add(Ingredient ingredient) {
+		this.ingredients.add(ingredient);
+		return this;
+	}
+
+	@Override
+	public <I> IRecipeSlotBuilder add(ITypedIngredient<I> typedIngredient) {
+		this.ingredients.add(typedIngredient);
+		return this;
+	}
+
+	@Override
+	public <I> IRecipeSlotBuilder add(IIngredientType<I> ingredientType, I ingredient) {
+		this.ingredients.add(ingredientType, ingredient);
+		return this;
+	}
+
+	@Override
 	public <I> IRecipeSlotBuilder addIngredients(IIngredientType<I> ingredientType, List<@Nullable I> ingredients) {
 		this.ingredients.addIngredients(ingredientType, ingredients);
-		return this;
-	}
-
-	@Override
-	public <I> IRecipeSlotBuilder addIngredient(IIngredientType<I> ingredientType, I ingredient) {
-		this.ingredients.addIngredient(ingredientType, ingredient);
-		return this;
-	}
-
-	@Override
-	public IRecipeSlotBuilder addFluidStack(Fluid fluid) {
-		this.ingredients.addFluidStack(fluid);
-		return this;
-	}
-
-	@Override
-	public IRecipeSlotBuilder addFluidStack(Fluid fluid, long amount) {
-		this.ingredients.addFluidStack(fluid, amount);
-		return this;
-	}
-
-	@Override
-	public IRecipeSlotBuilder addFluidStack(Fluid fluid, long amount, DataComponentPatch componentPatch) {
-		this.ingredients.addFluidStack(fluid, amount, componentPatch);
 		return this;
 	}
 
@@ -100,6 +132,12 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	@Override
 	public IRecipeSlotBuilder addOptionalTypedIngredients(List<Optional<ITypedIngredient<?>>> ingredients) {
 		this.ingredients.addOptionalTypedIngredients(ingredients);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder addItemStacks(List<ItemStack> itemStacks) {
+		this.ingredients.addItemStacks(itemStacks);
 		return this;
 	}
 
@@ -201,20 +239,6 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	public IRecipeSlotBuilder setPosition(int xPos, int yPos) {
 		this.rect = this.rect.setPosition(xPos, yPos);
 		return this;
-	}
-
-	@SuppressWarnings("removal")
-	public RecipeSlotBuilder assignToWidgetFactory(mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> widgetFactory) {
-		ErrorUtil.checkNotNull(widgetFactory, "widgetFactory");
-
-		this.assignedWidgetFactory = widgetFactory;
-		return this;
-	}
-
-	@SuppressWarnings("removal")
-	@Nullable
-	public mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> getAssignedWidget() {
-		return assignedWidgetFactory;
 	}
 
 	public Pair<Integer, IRecipeSlotDrawable> build(IFocusGroup focusGroup, ICycler cycler) {

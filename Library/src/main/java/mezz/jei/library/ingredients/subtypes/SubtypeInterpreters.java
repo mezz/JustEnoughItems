@@ -27,20 +27,6 @@ public class SubtypeInterpreters {
 		return true;
 	}
 
-	@SuppressWarnings("removal")
-	public <B, I> boolean addInterpreter(IIngredientTypeWithSubtypes<B, I> type, B base, mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter<I> interpreter) {
-		if (!type.getIngredientBaseClass().isInstance(base)) {
-			throw new IllegalArgumentException(
-				String.format("base must be instance of %s but got %s instead", type.getIngredientBaseClass(), base.getClass())
-			);
-		}
-		if (map.containsKey(base)) {
-			return false;
-		}
-		map.put(base, new LegacyInterpreterAdapter<>(interpreter));
-		return true;
-	}
-
 	@Nullable
 	public <B, I> ISubtypeInterpreter<I> get(IIngredientTypeWithSubtypes<B, I> type, I ingredient) {
 		B base = type.getBase(ingredient);

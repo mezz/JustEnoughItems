@@ -5,11 +5,11 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketRecipeTransfer;
 import mezz.jei.common.transfer.RecipeTransferOperationsResult;
@@ -64,7 +64,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 	}
 
 	@Override
-	public RecipeType<R> getRecipeType() {
+	public IRecipeType<R> getRecipeType() {
 		return transferInfo.getRecipeType();
 	}
 

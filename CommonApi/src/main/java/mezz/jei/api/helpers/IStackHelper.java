@@ -34,14 +34,4 @@ public interface IStackHelper {
 	 * @since 7.3.0
 	 */
 	boolean isEquivalent(@Nullable ItemStack lhs, @Nullable ItemStack rhs, UidContext context);
-
-	/**
-	 * Gets the unique identifier for a stack, ignoring NBT on items without subtypes, and uses the {@link ISubtypeManager}.
-	 * If two unique identifiers are equal, then the items can be considered equivalent.
-	 * @since 7.6.1
-	 *
-	 * @deprecated use {@link #getUidForStack(ItemStack, UidContext)}
-	 */
-	@Deprecated(since = "19.9.0", forRemoval = true)
-	String getUniqueIdentifierForStack(ItemStack stack, UidContext context);
 }

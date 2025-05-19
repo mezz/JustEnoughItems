@@ -217,7 +217,6 @@ public final class ItemStackListFactory {
 	) {
 		{
 			List<ItemStack> itemStacks = RegistryUtil.getRegistry(Registries.ITEM)
-				.asLookup()
 				.filterFeatures(features)
 				.listElements()
 				.map(ItemStack::new)
@@ -242,7 +241,6 @@ public final class ItemStackListFactory {
 
 		{
 			List<ItemStack> itemStacks = RegistryUtil.getRegistry(Registries.BLOCK)
-				.asLookup()
 				.filterFeatures(features)
 				.listElements()
 				.map(Holder.Reference::value)

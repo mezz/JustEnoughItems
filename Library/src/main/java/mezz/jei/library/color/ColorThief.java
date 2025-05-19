@@ -18,6 +18,7 @@ package mezz.jei.library.color;
  * available at http://lokeshdhakar.com/projects/color-thief/
  */
 
+import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
@@ -97,11 +98,11 @@ public class ColorThief {
 		while (i < pixelCount) {
 			int x = i % width;
 			int y = i / width;
-			int rgba = sourceImage.getPixelRGBA(x, y);
-			int a = rgba >> 24 & 255;
-			int b = rgba >> 16 & 255;
-			int g = rgba >> 8 & 255;
-			int r = rgba & 255;
+			int pixel = sourceImage.getPixel(x, y);
+			int a = ARGB.alpha(pixel);
+			int b = ARGB.blue(pixel);
+			int g = ARGB.green(pixel);
+			int r = ARGB.red(pixel);
 			// If pixel is mostly opaque and not white
 			if (a >= 125 && !(ignoreWhite && r > 250 && g > 250 && b > 250)) {
 				pixelArray[numUsedPixels] = new int[]{r, g, b};

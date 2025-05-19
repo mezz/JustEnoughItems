@@ -4,6 +4,7 @@ import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 
 /**
  * Builds a serializable ShapedRecipe that isn't registered with the vanilla game.
@@ -20,6 +21,14 @@ public interface IJeiShapedRecipeBuilder {
 	 * @since 19.15.0
 	 */
 	IJeiShapedRecipeBuilder define(Character character, Ingredient ingredient);
+
+	/**
+	 * Indicate which ingredient should be used for the given character in the recipe pattern.
+	 *
+	 * @see ShapedRecipeBuilder#define
+	 * @since 20.0.0
+	 */
+	IJeiShapedRecipeBuilder define(Character character, Ingredient ingredient, SlotDisplay display);
 
 	/**
 	 * Set a row of the pattern for this recipe.

@@ -141,10 +141,6 @@ public class GuiIconButton extends Button {
 			if (!this.button.isValidClickButton(input.getKey().getValue())) {
 				return Optional.empty();
 			}
-			boolean flag = this.button.clicked(mouseX, mouseY);
-			if (!flag) {
-				return Optional.empty();
-			}
 			if (!input.isSimulate()) {
 				this.button.playDownSound(Minecraft.getInstance().getSoundManager());
 				this.button.onClick(mouseX, mouseY);

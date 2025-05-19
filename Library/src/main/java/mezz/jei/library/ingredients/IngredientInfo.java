@@ -7,13 +7,10 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.core.collect.ListMultiMap;
-import mezz.jei.library.load.registration.LegacyUidCodec;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 public class IngredientInfo<T> {
 	private final IIngredientType<T> ingredientType;
@@ -28,13 +25,8 @@ public class IngredientInfo<T> {
 		Collection<T> ingredients,
 		IIngredientHelper<T> ingredientHelper,
 		IIngredientRenderer<T> ingredientRenderer,
-		@Nullable Codec<T> ingredientCodec
+		Codec<T> ingredientCodec
 	) {
-		if (ingredientCodec == null) {
-			//noinspection deprecation
-			ingredientCodec = LegacyUidCodec.create(this);
-		}
-
 		this.ingredientType = ingredientType;
 		this.ingredientHelper = ingredientHelper;
 		this.ingredientRenderer = ingredientRenderer;
@@ -73,12 +65,6 @@ public class IngredientInfo<T> {
 
 	public void removeIngredients(Collection<T> ingredients) {
 		this.ingredientSet.removeAll(ingredients);
-	}
-
-	@SuppressWarnings({"removal"})
-	@Deprecated(forRemoval = true)
-	public Optional<T> getIngredientByLegacyUid(String uid) {
-		return ingredientSet.getByLegacyUid(uid);
 	}
 
 	@Unmodifiable

@@ -4,16 +4,22 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IngredientSortStage;
+import mezz.jei.common.platform.IPlatformItemStackHelper;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
 import net.minecraft.core.HolderSet.ListBacked;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.equipment.Equippable;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -105,14 +111,11 @@ public class IngredientSorterComparators {
 			Comparator.comparing(o -> getArmorSlotIndex(getItemStack(o)));
 		Comparator<IListElementInfo<?>> armorDamage =
 			Comparator.comparing(o -> getArmorDamageReduce(getItemStack(o)));
-		Comparator<IListElementInfo<?>> armorToughness =
-			Comparator.comparing(o -> getArmorToughness(getItemStack(o)));
 		Comparator<IListElementInfo<?>> maxDamage =
 			Comparator.comparing(o -> getArmorDurability(getItemStack(o)));
 		return isArmorComp.reversed()
 			.thenComparing(armorSlot.reversed())
 			.thenComparing(armorDamage.reversed())
-			.thenComparing(armorToughness.reversed())
 			.thenComparing(maxDamage.reversed());
 	}
 
@@ -123,26 +126,17 @@ public class IngredientSorterComparators {
 
 	private static int getArmorSlotIndex(ItemStack itemStack) {
 		Item item = itemStack.getItem();
-		if (item instanceof ArmorItem armorItem) {
-			return armorItem.getEquipmentSlot().getFilterFlag();
+		Equippable equippable = item.components().get(DataComponents.EQUIPPABLE);
+		if (equippable != null) {
+			return equippable.slot().getIndex();
 		}
 		return 0;
 	}
 
-	private static int getArmorDamageReduce(ItemStack itemStack) {
-		Item item = itemStack.getItem();
-		if (item instanceof ArmorItem armorItem) {
-			return armorItem.getDefense();
-		}
-		return 0;
-	}
-
-	private static float getArmorToughness(ItemStack itemStack) {
-		Item item = itemStack.getItem();
-		if (item instanceof ArmorItem armorItem) {
-			return armorItem.getToughness();
-		}
-		return 0;
+	private static double getArmorDamageReduce(ItemStack itemStack) {
+		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
+		ItemAttributeModifiers itemAttributeModifiers = itemStackHelper.getItemAttributeModifiers(itemStack);
+		return itemAttributeModifiers.compute(1.0, EquipmentSlot.CHEST);
 	}
 
 	private static int getArmorDurability(ItemStack itemStack) {
@@ -167,7 +161,7 @@ public class IngredientSorterComparators {
 		}
 		TagKey<Item> tagKey = TagKey.create(Registries.ITEM, tagId);
 		return RegistryUtil.getRegistry(Registries.ITEM)
-			.getTag(tagKey)
+			.get(tagKey)
 			.map(ListBacked::size)
 			.orElse(0);
 	}

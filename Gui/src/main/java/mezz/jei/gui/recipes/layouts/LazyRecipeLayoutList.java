@@ -3,9 +3,9 @@ package mezz.jei.gui.recipes.layouts;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
@@ -73,7 +73,7 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 
 		if (matchingBookmarks) {
 			// if bookmarks go first, start by grabbing all the bookmarked elements, it's relatively cheap
-			RecipeType<T> recipeType = recipeCategory.getRecipeType();
+			IRecipeType<T> recipeType = recipeCategory.getRecipeType();
 
 			recipes = new ArrayList<>(recipes);
 			Iterator<T> iterator = recipes.iterator();

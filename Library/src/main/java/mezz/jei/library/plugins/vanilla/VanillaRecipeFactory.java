@@ -15,6 +15,7 @@ import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 
 import java.util.List;
 
@@ -37,15 +38,6 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	}
 
 	@Override
-	public AnvilRecipe createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs) {
-		ErrorUtil.checkNotEmpty(leftInput, "leftInput");
-		ErrorUtil.checkNotNull(rightInputs, "rightInputs");
-		ErrorUtil.checkNotEmpty(outputs, "outputs");
-
-		return new AnvilRecipe(List.of(leftInput), List.copyOf(rightInputs), List.copyOf(outputs), null);
-	}
-
-	@Override
 	public AnvilRecipe createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs, ResourceLocation uid) {
 		ErrorUtil.checkNotEmpty(leftInputs, "leftInput");
 		ErrorUtil.checkNotNull(rightInputs, "rightInputs");
@@ -53,15 +45,6 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotNull(uid, "uid");
 
 		return new AnvilRecipe(List.copyOf(leftInputs), List.copyOf(rightInputs), List.copyOf(outputs), uid);
-	}
-
-	@Override
-	public AnvilRecipe createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs) {
-		ErrorUtil.checkNotEmpty(leftInputs, "leftInput");
-		ErrorUtil.checkNotNull(rightInputs, "rightInputs");
-		ErrorUtil.checkNotEmpty(outputs, "outputs");
-
-		return new AnvilRecipe(List.copyOf(leftInputs), List.copyOf(rightInputs), List.copyOf(outputs), null);
 	}
 
 	@Override
@@ -76,16 +59,6 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	}
 
 	@Override
-	public IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput) {
-		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
-		ErrorUtil.checkNotEmpty(potionInput, "potionInput");
-		ErrorUtil.checkNotEmpty(potionOutput, "potionOutput");
-
-		List<ItemStack> potionInputs = List.of(potionInput);
-		return new JeiBrewingRecipe(ingredients, potionInputs, potionOutput, null, brewingRecipeUtil);
-	}
-
-	@Override
 	public IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, List<ItemStack> potionInputs, ItemStack potionOutput, ResourceLocation uid) {
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 		ErrorUtil.checkNotEmpty(potionInputs, "potionInputs");
@@ -96,16 +69,7 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	}
 
 	@Override
-	public IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, List<ItemStack> potionInputs, ItemStack potionOutput) {
-		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
-		ErrorUtil.checkNotEmpty(potionInputs, "potionInputs");
-		ErrorUtil.checkNotEmpty(potionOutput, "potionOutput");
-
-		return new JeiBrewingRecipe(ingredients, potionInputs, potionOutput, null, brewingRecipeUtil);
-	}
-
-	@Override
-	public IJeiShapedRecipeBuilder createShapedRecipeBuilder(CraftingBookCategory category, List<ItemStack> results) {
+	public IJeiShapedRecipeBuilder createShapedRecipeBuilder(CraftingBookCategory category, SlotDisplay results) {
 		return new JeiShapedRecipeBuilder(category, results);
 	}
 }

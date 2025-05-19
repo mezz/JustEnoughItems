@@ -5,13 +5,17 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.advanced.ISimpleRecipeManagerPlugin;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 
 import java.util.List;
 
@@ -50,13 +54,14 @@ public class DebugSimpleRecipeManagerPlugin implements ISimpleRecipeManagerPlugi
 	}
 
 	private RecipeHolder<CraftingRecipe> generateRecipe() {
-		CraftingRecipe recipe = vanillaRecipeFactory.createShapedRecipeBuilder(CraftingBookCategory.MISC, List.of(new ItemStack(Items.DARK_PRISMARINE_SLAB)))
+		CraftingRecipe recipe = vanillaRecipeFactory.createShapedRecipeBuilder(CraftingBookCategory.MISC, new SlotDisplay.ItemSlotDisplay(Items.DARK_PRISMARINE_SLAB))
 			.pattern("lll")
 			.pattern("lll")
 			.pattern("lll")
 			.define('l', Ingredient.of(Items.LIGHT))
 			.build();
 		ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "debug_simple_recipe");
-		return new RecipeHolder<>(resourceLocation, recipe);
+		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, resourceLocation);
+		return new RecipeHolder<>(resourceKey, recipe);
 	}
 }

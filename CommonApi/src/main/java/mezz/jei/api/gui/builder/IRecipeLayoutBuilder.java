@@ -1,7 +1,6 @@
 package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.gui.placement.IPlaceable;
-import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -91,19 +90,6 @@ public interface IRecipeLayoutBuilder {
 	 * @since 19.19.1
 	 */
 	IRecipeSlotBuilder addSlot(RecipeIngredientRole role);
-
-	/**
-	 * Assign this slot to a {@link mezz.jei.api.gui.widgets.ISlottedWidgetFactory},
-	 * so that the widget can manage this slot instead the recipe category.
-	 *
-	 * @param widgetFactory the {@link mezz.jei.api.gui.widgets.ISlottedWidgetFactory} to assign this slot to.
-	 *
-	 * @since 19.7.0
-	 * @deprecated there are easier ways to create slotted widgets now. Use {@link IRecipeExtrasBuilder#addSlottedWidget}.
-	 */
-	@Deprecated(since = "19.19.3", forRemoval = true)
-	@SuppressWarnings("removal")
-	IRecipeSlotBuilder addSlotToWidget(RecipeIngredientRole role, mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> widgetFactory);
 
 	/**
 	 * Add ingredients that are important for recipe lookup, but are not displayed on the recipe layout.

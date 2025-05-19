@@ -1,23 +1,22 @@
 package mezz.jei.library.load.registration;
 
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPluginHelper;
 import mezz.jei.api.recipe.advanced.ISimpleRecipeManagerPlugin;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 
 import java.util.List;
 import java.util.stream.Stream;
 
-public class TypedRecipeManagerPluginAdapter<T> implements IRecipeManagerPlugin {
+public class SingleTypeRecipeManagerPluginAdapter<T> implements IRecipeManagerPlugin {
 	private final IRecipeManagerPluginHelper helper;
-	private final RecipeType<T> recipeType;
+	private final IRecipeType<T> recipeType;
 	private final ISimpleRecipeManagerPlugin<T> plugin;
 
-	public TypedRecipeManagerPluginAdapter(
+	public SingleTypeRecipeManagerPluginAdapter(
 		IRecipeManagerPluginHelper helper,
-		RecipeType<T> recipeType,
+		IRecipeType<T> recipeType,
 		ISimpleRecipeManagerPlugin<T> plugin
 	) {
 		this.helper = helper;
@@ -26,7 +25,7 @@ public class TypedRecipeManagerPluginAdapter<T> implements IRecipeManagerPlugin 
 	}
 
 	@Override
-	public <V> List<RecipeType<?>> getRecipeTypes(IFocus<V> focus) {
+	public <V> List<IRecipeType<?>> getRecipeTypes(IFocus<V> focus) {
 		if (isHandled(focus)) {
 			return List.of(recipeType);
 		}
@@ -34,7 +33,7 @@ public class TypedRecipeManagerPluginAdapter<T> implements IRecipeManagerPlugin 
 	}
 
 	private boolean isHandled(IFocus<?> focus) {
-		if (helper.isRecipeCatalyst(recipeType, focus)) {
+		if (helper.isCraftingStation(recipeType, focus)) {
 			return true;
 		}
 
@@ -49,8 +48,8 @@ public class TypedRecipeManagerPluginAdapter<T> implements IRecipeManagerPlugin 
 					return true;
 				}
 			}
-			case CATALYST -> {
-				if (helper.isRecipeCatalyst(recipeType, focus)) {
+			case CRAFTING_STATION -> {
+				if (helper.isCraftingStation(recipeType, focus)) {
 					return true;
 				}
 			}
@@ -60,8 +59,8 @@ public class TypedRecipeManagerPluginAdapter<T> implements IRecipeManagerPlugin 
 	}
 
 	@Override
-	public <T2, V> List<T2> getRecipes(IRecipeCategory<T2> recipeCategory, IFocus<V> focus) {
-		if (recipeCategory.getRecipeType().equals(recipeType) &&
+	public <T2, V> List<T2> getRecipes(IRecipeType<T2> recipeType, IFocus<V> focus) {
+		if (recipeType.equals(this.recipeType) &&
 			isHandled(focus)
 		) {
 			List<T> recipes = getRecipes(focus);
@@ -79,7 +78,7 @@ public class TypedRecipeManagerPluginAdapter<T> implements IRecipeManagerPlugin 
 		switch (focus.getRole()) {
 			case INPUT -> {
 				List<T> recipesForInput = plugin.getRecipesForInput(focus.getTypedValue());
-				if (helper.isRecipeCatalyst(recipeType, focus)) {
+				if (helper.isCraftingStation(recipeType, focus)) {
 					return Stream.concat(recipesForInput.stream(), plugin.getAllRecipes().stream())
 						.distinct()
 						.toList();
@@ -88,15 +87,15 @@ public class TypedRecipeManagerPluginAdapter<T> implements IRecipeManagerPlugin 
 			}
 			case OUTPUT -> {
 				List<T> recipesForOutput = plugin.getRecipesForOutput(focus.getTypedValue());
-				if (helper.isRecipeCatalyst(recipeType, focus)) {
+				if (helper.isCraftingStation(recipeType, focus)) {
 					return Stream.concat(recipesForOutput.stream(), plugin.getAllRecipes().stream())
 						.distinct()
 						.toList();
 				}
 				return recipesForOutput;
 			}
-			case CATALYST -> {
-				if (helper.isRecipeCatalyst(recipeType, focus)) {
+			case CRAFTING_STATION -> {
+				if (helper.isCraftingStation(recipeType, focus)) {
 					return plugin.getAllRecipes();
 				}
 				return List.of();
@@ -106,8 +105,8 @@ public class TypedRecipeManagerPluginAdapter<T> implements IRecipeManagerPlugin 
 	}
 
 	@Override
-	public <T2> List<T2> getRecipes(IRecipeCategory<T2> recipeCategory) {
-		if (recipeCategory.getRecipeType().equals(recipeType)) {
+	public <T2> List<T2> getRecipes(IRecipeType<T2> recipeType) {
+		if (recipeType.equals(this.recipeType)) {
 			List<T> recipes = plugin.getAllRecipes();
 			@SuppressWarnings("unchecked")
 			List<T2> castRecipes = (List<T2>) recipes;

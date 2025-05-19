@@ -14,11 +14,11 @@ import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -104,7 +104,9 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	}
 
 	private static void drawTiledSprite(GuiGraphics guiGraphics, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite, int posX, int posY) {
-		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
+		RenderSystem.setShader(CoreShaders.POSITION_TEX);
+		//noinspection deprecation
+		RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 		setGLColorFromInt(color);
 
@@ -147,8 +149,6 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		float vMax = textureSprite.getV1();
 		uMax = uMax - (maskRight / 16F * (uMax - uMin));
 		vMax = vMax - (maskTop / 16F * (vMax - vMin));
-
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
 		Tesselator tesselator = Tesselator.getInstance();
 		BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);

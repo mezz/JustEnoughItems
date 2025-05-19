@@ -2,18 +2,18 @@ package mezz.jei.library.recipes;
 
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.library.recipes.collect.RecipeMap;
+import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.library.recipes.collect.RecipeIngredientRoleMap;
 
 import java.util.List;
 
-public class RecipeCatalystBuilder {
+public class CraftingStationBuilder {
 	private final ImmutableListMultimap.Builder<IRecipeCategory<?>, ITypedIngredient<?>> recipeCategoryCatalystsBuilder = ImmutableListMultimap.builder();
-	private final RecipeMap recipeCatalystMap;
+	private final RecipeIngredientRoleMap craftingStationMap;
 
-	public RecipeCatalystBuilder(RecipeMap recipeCatalystMap) {
-		this.recipeCatalystMap = recipeCatalystMap;
+	public CraftingStationBuilder(RecipeIngredientRoleMap craftingStationMap) {
+		this.craftingStationMap = craftingStationMap;
 	}
 
 	public void addCategoryCatalysts(IRecipeCategory<?> recipeCategory, List<ITypedIngredient<?>> categoryCatalystIngredients) {
@@ -24,11 +24,11 @@ public class RecipeCatalystBuilder {
 	}
 
 	private <T> void addCategoryCatalyst(ITypedIngredient<T> catalystIngredient, IRecipeCategory<?> recipeCategory) {
-		RecipeType<?> recipeType = recipeCategory.getRecipeType();
-		recipeCatalystMap.addCatalystForCategory(recipeType, catalystIngredient);
+		IRecipeType<?> recipeType = recipeCategory.getRecipeType();
+		craftingStationMap.addCraftingStationForCategory(recipeType, catalystIngredient);
 	}
 
-	public ImmutableListMultimap<IRecipeCategory<?>, ITypedIngredient<?>> buildRecipeCategoryCatalysts() {
+	public ImmutableListMultimap<IRecipeCategory<?>, ITypedIngredient<?>> build() {
 		return recipeCategoryCatalystsBuilder.build();
 	}
 }

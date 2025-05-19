@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @since 19.9.0
  */
+@FunctionalInterface
 public interface ISubtypeInterpreter<T> {
 	/**
 	 * Get the data from an ingredient that is relevant to telling subtypes of a given ingredient apart.
@@ -30,16 +31,4 @@ public interface ISubtypeInterpreter<T> {
 	 */
 	@Nullable
 	Object getSubtypeData(T ingredient, UidContext context);
-
-	/**
-	 * Provide a legacy string uid like from {@link IIngredientSubtypeInterpreter#apply},
-	 * used for loading old config files that used string UIDs for serialization.
-	 *
-	 * Return an empty string if there is no data used for subtypes or if you have no legacy data to support.
-	 *
-	 * @since 19.9.0
-	 */
-	@SuppressWarnings({"removal"})
-	@Deprecated(since = "19.9.0")
-	String getLegacyStringSubtypeInfo(T ingredient, UidContext context);
 }

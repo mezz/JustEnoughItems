@@ -49,6 +49,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -225,9 +226,14 @@ public class JeiDebugPlugin implements IModPlugin {
 				new DebugRecipe()
 			));
 
+			ResourceLocation testRecipeWithoutTemplateId = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "test_recipe_without_template");
 			RecipeHolder<SmithingRecipe> testRecipeWithoutTemplate = new RecipeHolder<>(
-				ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "test_recipe_without_template"),
-				new SmithingTrimRecipe(Ingredient.EMPTY, Ingredient.of(new ItemStack(Items.APPLE)), Ingredient.of(new ItemStack(Items.BAKED_POTATO)))
+				ResourceKey.create(Registries.RECIPE, testRecipeWithoutTemplateId),
+				new SmithingTrimRecipe(
+					Optional.empty(),
+					Optional.of(Ingredient.of(Items.APPLE)),
+					Optional.of(Ingredient.of(Items.BAKED_POTATO))
+				)
 			);
 			registration.addRecipes(RecipeTypes.SMITHING, List.of(
 				testRecipeWithoutTemplate
@@ -328,9 +334,9 @@ public class JeiDebugPlugin implements IModPlugin {
 	private <T> void registerRecipeCatalysts(IRecipeCatalystRegistration registration, IPlatformFluidHelper<T> fluidHelper) {
 		long bucketVolume = fluidHelper.bucketVolume();
 
-		registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
-		registration.addRecipeCatalyst(fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume), DebugRecipeCategory.TYPE);
-		registration.addRecipeCatalyst(Items.STICK, DebugRecipeCategory.TYPE);
+		registration.addCraftingStation(DebugRecipeCategory.TYPE, DebugIngredient.TYPE, new DebugIngredient(7));
+		registration.addCraftingStation(DebugRecipeCategory.TYPE, fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume));
+		registration.addCraftingStation(DebugRecipeCategory.TYPE, Items.STICK);
 
 		RegistryUtil.getRegistry(Registries.ITEM)
 			.stream()
@@ -338,7 +344,7 @@ public class JeiDebugPlugin implements IModPlugin {
 			.forEach(item -> {
 				ItemStack catalystIngredient = new ItemStack(item);
 				if (!catalystIngredient.isEmpty()) {
-					registration.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.TYPE);
+					registration.addCraftingStation(DebugRecipeCategory.TYPE, catalystIngredient);
 				}
 			});
 	}
@@ -353,7 +359,7 @@ public class JeiDebugPlugin implements IModPlugin {
 				.filter(r -> r.getUid().getNamespace().equals(ModIds.JEI_ID))
 				.forEach(r -> registration.addRecipeCategoryDecorator(r, DebugCategoryDecorator.getInstance()));
 
-			registration.addTypedRecipeManagerPlugin(RecipeTypes.CRAFTING, new DebugSimpleRecipeManagerPlugin(jeiHelpers));
+			registration.addSimpleRecipeManagerPlugin(RecipeTypes.CRAFTING, new DebugSimpleRecipeManagerPlugin(jeiHelpers));
 		}
 	}
 
@@ -362,8 +368,8 @@ public class JeiDebugPlugin implements IModPlugin {
 		if (DebugConfig.isDebugModeEnabled()) {
 			ErrorUtil.assertMainThread();
 			Registry<Enchantment> registry = RegistryUtil.getRegistry(Registries.ENCHANTMENT);
-			Enchantment enchantment = registry.get(Enchantments.FIRE_ASPECT);
-			assert enchantment != null;
+			Optional<Holder.Reference<Enchantment>> enchantment = registry.get(Enchantments.FIRE_ASPECT);
+			assert enchantment.isPresent();
 			if (debugRecipeCategory != null) {
 				debugRecipeCategory.setRuntime(jeiRuntime);
 			}

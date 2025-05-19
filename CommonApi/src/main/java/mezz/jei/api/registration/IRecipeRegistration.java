@@ -3,7 +3,7 @@ package mezz.jei.api.registration;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
@@ -46,7 +46,7 @@ public interface IRecipeRegistration {
 	 *
 	 * @since 9.5.0
 	 */
-	<T> void addRecipes(RecipeType<T> recipeType, List<T> recipes);
+	<T> void addRecipes(IRecipeType<T> recipeType, List<T> recipes);
 
 	/**
 	 * Add an info page for an ingredient.
@@ -120,5 +120,4 @@ public interface IRecipeRegistration {
 	default void addItemStackInfo(List<ItemStack> ingredients, Component... descriptionComponents) {
 		addIngredientInfo(ingredients, VanillaTypes.ITEM_STACK, descriptionComponents);
 	}
-
 }

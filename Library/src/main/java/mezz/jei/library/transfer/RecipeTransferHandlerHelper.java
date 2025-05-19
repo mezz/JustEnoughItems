@@ -3,11 +3,11 @@ package mezz.jei.library.transfer;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.Internal;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
@@ -19,8 +19,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -52,7 +52,7 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	public <C extends AbstractContainerMenu, R> IRecipeTransferInfo<C, R> createBasicRecipeTransferInfo(
 		Class<? extends C> containerClass,
 		@Nullable MenuType<C> menuType,
-		RecipeType<R> recipeType,
+		IRecipeType<R> recipeType,
 		int recipeSlotStart,
 		int recipeSlotCount,
 		int inventorySlotStart,
@@ -91,8 +91,12 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	}
 
 	@Override
-	public Map<Integer, Ingredient> getGuiSlotIndexToIngredientMap(RecipeHolder<CraftingRecipe> recipeHolder) {
+	public Map<Integer, SlotDisplay> getGuiSlotIndexToIngredientMap(RecipeHolder<CraftingRecipe> recipeHolder) {
+		if (!craftingRecipeCategory.isHandled(recipeHolder)) {
+			return Map.of();
+		}
+		var ingredients = craftingRecipeCategory.getIngredients(recipeHolder);
 		ImmutableSize2i recipeSize = craftingRecipeCategory.getRecipeSize(recipeHolder);
-		return CraftingGridHelper.getGuiSlotToIngredientMap(recipeHolder, recipeSize.width(), recipeSize.height());
+		return CraftingGridHelper.getGuiSlotToIngredientMap(ingredients, recipeSize.width(), recipeSize.height());
 	}
 }

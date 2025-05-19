@@ -1,11 +1,13 @@
 package mezz.jei.api.recipe;
 
+import mezz.jei.api.recipe.types.IRecipeType;
+
 import java.util.Collection;
 import java.util.stream.Stream;
 
 /**
  * This is a helper class for looking up recipes.
- * Create one with {@link IRecipeManager#createRecipeLookup(RecipeType)},
+ * Create one with {@link IRecipeManager#createRecipeLookup(IRecipeType)},
  * then set its properties and call {@link #get()} to get the results.
  *
  * @since 9.5.0

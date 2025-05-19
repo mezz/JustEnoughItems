@@ -14,13 +14,13 @@ import java.util.Set;
 
 public class RecipeTypeData<T> {
 	private final IRecipeCategory<T> recipeCategory;
-	private final List<ITypedIngredient<?>> recipeCategoryCatalysts;
+	private final List<ITypedIngredient<?>> craftingStations;
 	private final List<T> recipes = new ArrayList<>();
 	private final Set<T> hiddenRecipes = Collections.newSetFromMap(new IdentityHashMap<>());
 
-	public RecipeTypeData(IRecipeCategory<T> recipeCategory, List<ITypedIngredient<?>> recipeCategoryCatalysts) {
+	public RecipeTypeData(IRecipeCategory<T> recipeCategory, List<ITypedIngredient<?>> craftingStations) {
 		this.recipeCategory = recipeCategory;
-		this.recipeCategoryCatalysts = List.copyOf(recipeCategoryCatalysts);
+		this.craftingStations = List.copyOf(craftingStations);
 	}
 
 	public IRecipeCategory<T> getRecipeCategory() {
@@ -28,8 +28,8 @@ public class RecipeTypeData<T> {
 	}
 
 	@Unmodifiable
-	public List<ITypedIngredient<?>> getRecipeCategoryCatalysts() {
-		return recipeCategoryCatalysts;
+	public List<ITypedIngredient<?>> getCraftingStations() {
+		return craftingStations;
 	}
 
 	@UnmodifiableView

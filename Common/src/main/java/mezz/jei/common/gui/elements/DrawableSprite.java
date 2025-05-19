@@ -8,7 +8,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
 import mezz.jei.common.Constants;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.resources.ResourceLocation;
@@ -63,7 +63,7 @@ public class DrawableSprite implements IDrawableStatic {
 		int textureWidth = this.width;
 		int textureHeight = this.height;
 
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(CoreShaders.POSITION_TEX);
 		RenderSystem.setShaderTexture(0, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
 
 		maskTop += trimTop;

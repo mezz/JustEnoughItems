@@ -2,11 +2,17 @@ package mezz.jei.neoforge.platform;
 
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.util.ErrorUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.entity.FuelValues;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.apache.logging.log4j.LogManager;
@@ -21,9 +27,9 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Override
-	public int getBurnTime(ItemStack itemStack) {
+	public int getBurnTime(ItemStack itemStack, RecipeType<?> recipeType, FuelValues fuelValues) {
 		try {
-			return itemStack.getBurnTime(null);
+			return itemStack.getBurnTime(recipeType, fuelValues);
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
 			LOGGER.error("Failed to check if item is fuel {}.", itemStackInfo, e);
@@ -39,8 +45,12 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 
 	@Override
 	public Optional<String> getCreatorModId(ItemStack stack) {
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientLevel level = minecraft.level;
+		assert level != null;
+		RegistryAccess registryAccess = level.registryAccess();
 		Item item = stack.getItem();
-		String creatorModId = item.getCreatorModId(stack);
+		String creatorModId = item.getCreatorModId(registryAccess, stack);
 		return Optional.ofNullable(creatorModId);
 	}
 
@@ -55,5 +65,10 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 			LOGGER.error("Error while Testing for mod name formatting", e);
 		}
 		return List.of();
+	}
+
+	@Override
+	public ItemAttributeModifiers getItemAttributeModifiers(ItemStack stack) {
+		return stack.getAttributeModifiers();
 	}
 }

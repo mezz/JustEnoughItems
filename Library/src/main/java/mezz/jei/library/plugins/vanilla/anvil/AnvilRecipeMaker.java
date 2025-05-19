@@ -19,14 +19,17 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.item.ArmorMaterials;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -34,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -48,7 +52,7 @@ public final class AnvilRecipeMaker {
 		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 		return Stream.concat(
 				getRepairRecipes(vanillaRecipeFactory, ingredientHelper),
-				getBookEnchantmentRecipes(vanillaRecipeFactory, ingredientManager)
+				getBookEnchantmentRecipes(ingredientManager)
 			)
 			.toList();
 	}
@@ -95,22 +99,20 @@ public final class AnvilRecipeMaker {
 	}
 
 	private static Stream<IJeiAnvilRecipe> getBookEnchantmentRecipes(
-		IVanillaRecipeFactory vanillaRecipeFactory,
 		IIngredientManager ingredientManager
 	) {
 		Registry<Enchantment> registry = RegistryUtil.getRegistry(Registries.ENCHANTMENT);
-		List<EnchantmentData> enchantmentDatas = registry.holders()
+		List<EnchantmentData> enchantmentDatas = registry.listElements()
 			.map(EnchantmentData::new)
 			.toList();
 
 		return ingredientManager.getAllItemStacks()
 			.stream()
 			.filter(ItemStack::isEnchantable)
-			.flatMap(ingredient -> getBookEnchantmentRecipes(vanillaRecipeFactory, enchantmentDatas, ingredient));
+			.flatMap(ingredient -> getBookEnchantmentRecipes(enchantmentDatas, ingredient));
 	}
 
 	private static Stream<IJeiAnvilRecipe> getBookEnchantmentRecipes(
-		IVanillaRecipeFactory vanillaRecipeFactory,
 		List<EnchantmentData> enchantmentDatas,
 		ItemStack ingredient
 	) {
@@ -143,15 +145,20 @@ public final class AnvilRecipeMaker {
 	}
 
 	private static class RepairData {
-		private final Ingredient repairIngredient;
+		private final SlotDisplay repairIngredient;
 		private final List<ItemStack> repairables;
 
-		public RepairData(Ingredient repairIngredient, ItemStack... repairables) {
+		public RepairData(TagKey<Item> repairTag, ItemStack... repairables) {
+			this.repairIngredient = new SlotDisplay.TagSlotDisplay(repairTag);
+			this.repairables = List.of(repairables);
+		}
+
+		public RepairData(SlotDisplay repairIngredient, ItemStack... repairables) {
 			this.repairIngredient = repairIngredient;
 			this.repairables = List.of(repairables);
 		}
 
-		public Ingredient getRepairIngredient() {
+		public SlotDisplay getRepairIngredient() {
 			return repairIngredient;
 		}
 
@@ -162,91 +169,91 @@ public final class AnvilRecipeMaker {
 
 	private static Stream<RepairData> getRepairData() {
 		return Stream.of(
-			new RepairData(Tiers.WOOD.getRepairIngredient(),
+			new RepairData(ItemTags.WOODEN_TOOL_MATERIALS,
 				new ItemStack(Items.WOODEN_SWORD),
 				new ItemStack(Items.WOODEN_PICKAXE),
 				new ItemStack(Items.WOODEN_AXE),
 				new ItemStack(Items.WOODEN_SHOVEL),
 				new ItemStack(Items.WOODEN_HOE)
 			),
-			new RepairData(Ingredient.of(ItemTags.PLANKS),
+			new RepairData(ItemTags.PLANKS,
 				new ItemStack(Items.SHIELD)
 			),
-			new RepairData(Tiers.STONE.getRepairIngredient(),
+			new RepairData(ItemTags.STONE_TOOL_MATERIALS,
 				new ItemStack(Items.STONE_SWORD),
 				new ItemStack(Items.STONE_PICKAXE),
 				new ItemStack(Items.STONE_AXE),
 				new ItemStack(Items.STONE_SHOVEL),
 				new ItemStack(Items.STONE_HOE)
 			),
-			new RepairData(ArmorMaterials.LEATHER.value().repairIngredient().get(),
+			new RepairData(ItemTags.REPAIRS_LEATHER_ARMOR,
 				new ItemStack(Items.LEATHER_HELMET),
 				new ItemStack(Items.LEATHER_CHESTPLATE),
 				new ItemStack(Items.LEATHER_LEGGINGS),
 				new ItemStack(Items.LEATHER_BOOTS)
 			),
-			new RepairData(Tiers.IRON.getRepairIngredient(),
+			new RepairData(ItemTags.IRON_TOOL_MATERIALS,
 				new ItemStack(Items.IRON_SWORD),
 				new ItemStack(Items.IRON_PICKAXE),
 				new ItemStack(Items.IRON_AXE),
 				new ItemStack(Items.IRON_SHOVEL),
 				new ItemStack(Items.IRON_HOE)
 			),
-			new RepairData(ArmorMaterials.IRON.value().repairIngredient().get(),
+			new RepairData(ItemTags.REPAIRS_IRON_ARMOR,
 				new ItemStack(Items.IRON_HELMET),
 				new ItemStack(Items.IRON_CHESTPLATE),
 				new ItemStack(Items.IRON_LEGGINGS),
 				new ItemStack(Items.IRON_BOOTS)
 			),
-			new RepairData(ArmorMaterials.CHAIN.value().repairIngredient().get(),
+			new RepairData(ItemTags.REPAIRS_CHAIN_ARMOR,
 				new ItemStack(Items.CHAINMAIL_HELMET),
 				new ItemStack(Items.CHAINMAIL_CHESTPLATE),
 				new ItemStack(Items.CHAINMAIL_LEGGINGS),
 				new ItemStack(Items.CHAINMAIL_BOOTS)
 			),
-			new RepairData(Tiers.GOLD.getRepairIngredient(),
+			new RepairData(ItemTags.GOLD_TOOL_MATERIALS,
 				new ItemStack(Items.GOLDEN_SWORD),
 				new ItemStack(Items.GOLDEN_PICKAXE),
 				new ItemStack(Items.GOLDEN_AXE),
 				new ItemStack(Items.GOLDEN_SHOVEL),
 				new ItemStack(Items.GOLDEN_HOE)
 			),
-			new RepairData(ArmorMaterials.GOLD.value().repairIngredient().get(),
+			new RepairData(ItemTags.REPAIRS_GOLD_ARMOR,
 				new ItemStack(Items.GOLDEN_HELMET),
 				new ItemStack(Items.GOLDEN_CHESTPLATE),
 				new ItemStack(Items.GOLDEN_LEGGINGS),
 				new ItemStack(Items.GOLDEN_BOOTS)
 			),
-			new RepairData(Tiers.DIAMOND.getRepairIngredient(),
+			new RepairData(ItemTags.DIAMOND_TOOL_MATERIALS,
 				new ItemStack(Items.DIAMOND_SWORD),
 				new ItemStack(Items.DIAMOND_PICKAXE),
 				new ItemStack(Items.DIAMOND_AXE),
 				new ItemStack(Items.DIAMOND_SHOVEL),
 				new ItemStack(Items.DIAMOND_HOE)
 			),
-			new RepairData(ArmorMaterials.DIAMOND.value().repairIngredient().get(),
+			new RepairData(ItemTags.REPAIRS_DIAMOND_ARMOR,
 				new ItemStack(Items.DIAMOND_HELMET),
 				new ItemStack(Items.DIAMOND_CHESTPLATE),
 				new ItemStack(Items.DIAMOND_LEGGINGS),
 				new ItemStack(Items.DIAMOND_BOOTS)
 			),
-			new RepairData(Tiers.NETHERITE.getRepairIngredient(),
+			new RepairData(ItemTags.NETHERITE_TOOL_MATERIALS,
 				new ItemStack(Items.NETHERITE_SWORD),
 				new ItemStack(Items.NETHERITE_AXE),
 				new ItemStack(Items.NETHERITE_HOE),
 				new ItemStack(Items.NETHERITE_SHOVEL),
 				new ItemStack(Items.NETHERITE_PICKAXE)
 			),
-			new RepairData(ArmorMaterials.NETHERITE.value().repairIngredient().get(),
+			new RepairData(ItemTags.REPAIRS_NETHERITE_ARMOR,
 				new ItemStack(Items.NETHERITE_BOOTS),
 				new ItemStack(Items.NETHERITE_HELMET),
 				new ItemStack(Items.NETHERITE_LEGGINGS),
 				new ItemStack(Items.NETHERITE_CHESTPLATE)
 			),
-			new RepairData(Ingredient.of(Items.PHANTOM_MEMBRANE),
+			new RepairData(Ingredient.of(Items.PHANTOM_MEMBRANE).display(),
 				new ItemStack(Items.ELYTRA)
 			),
-			new RepairData(ArmorMaterials.TURTLE.value().repairIngredient().get(),
+			new RepairData(ItemTags.REPAIRS_TURTLE_HELMET,
 				new ItemStack(Items.TURTLE_HELMET)
 			)
 		);
@@ -265,10 +272,12 @@ public final class AnvilRecipeMaker {
 		IVanillaRecipeFactory vanillaRecipeFactory,
 		IIngredientHelper<ItemStack> ingredientHelper
 	) {
-		Ingredient repairIngredient = repairData.getRepairIngredient();
+		SlotDisplay repairIngredient = repairData.getRepairIngredient();
 		List<ItemStack> repairables = repairData.getRepairables();
 
-		List<ItemStack> repairMaterials = List.of(repairIngredient.getItems());
+		Minecraft minecraft = Minecraft.getInstance();
+		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
+		List<ItemStack> repairMaterials = repairIngredient.resolveForStacks(contextmap);
 
 		return repairables.stream()
 			.mapMulti((itemStack, consumer) -> {

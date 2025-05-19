@@ -1,6 +1,7 @@
 package mezz.jei.api.recipe;
 
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -18,7 +19,7 @@ public interface IRecipeCategoriesLookup {
 	 *
 	 * @since 9.5.0
 	 */
-	IRecipeCategoriesLookup limitTypes(Collection<RecipeType<?>> recipeTypes);
+	IRecipeCategoriesLookup limitTypes(Collection<IRecipeType<?>> recipeTypes);
 
 	/**
 	 * Limit the results to only recipe categories matching the given focuses.

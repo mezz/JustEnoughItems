@@ -10,7 +10,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -22,48 +22,48 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 /**
- * A RecipeMap efficiently links recipes, IRecipeCategory, and Ingredients.
+ * A {@link RecipeIngredientRoleMap} contains recipes, IRecipeCategory, and Ingredients for one {@link RecipeIngredientRole}.
  */
-public class RecipeMap {
+public class RecipeIngredientRoleMap {
 	private final RecipeIngredientTable recipeTable = new RecipeIngredientTable();
-	private final Multimap<Object, RecipeType<?>> ingredientUidToCategoryMap = Multimaps.newSetMultimap(new Object2ObjectOpenHashMap<>(), () -> new ObjectOpenHashSet<>(2));
-	private final Multimap<Object, RecipeType<?>> categoryCatalystUidToRecipeCategoryMap = Multimaps.newSetMultimap(new Object2ObjectOpenHashMap<>(), ObjectOpenHashSet::new);
-	private final Comparator<RecipeType<?>> recipeTypeComparator;
+	private final Multimap<Object, IRecipeType<?>> ingredientUidToCategoryMap = Multimaps.newSetMultimap(new Object2ObjectOpenHashMap<>(), () -> new ObjectOpenHashSet<>(2));
+	private final Multimap<Object, IRecipeType<?>> craftingStationUidToRecipeCategoryMap = Multimaps.newSetMultimap(new Object2ObjectOpenHashMap<>(), ObjectOpenHashSet::new);
+	private final Comparator<IRecipeType<?>> recipeTypeComparator;
 	private final IIngredientManager ingredientManager;
 	private final RecipeIngredientRole role;
 
-	public RecipeMap(Comparator<RecipeType<?>> recipeTypeComparator, IIngredientManager ingredientManager, RecipeIngredientRole role) {
+	public RecipeIngredientRoleMap(Comparator<IRecipeType<?>> recipeTypeComparator, IIngredientManager ingredientManager, RecipeIngredientRole role) {
 		this.recipeTypeComparator = recipeTypeComparator;
 		this.ingredientManager = ingredientManager;
 		this.role = role;
 	}
 
-	public <T> Stream<RecipeType<?>> getRecipeTypes(ITypedIngredient<T> ingredient) {
+	public <T> Stream<IRecipeType<?>> getRecipeTypes(ITypedIngredient<T> ingredient) {
 		Object ingredientUid = getIngredientUid(ingredient);
-		Collection<RecipeType<?>> recipeCategoryUids = ingredientUidToCategoryMap.get(ingredientUid);
-		Collection<RecipeType<?>> catalystRecipeCategoryUids = categoryCatalystUidToRecipeCategoryMap.get(ingredientUid);
+		Collection<IRecipeType<?>> recipeCategoryUids = ingredientUidToCategoryMap.get(ingredientUid);
+		Collection<IRecipeType<?>> catalystRecipeCategoryUids = craftingStationUidToRecipeCategoryMap.get(ingredientUid);
 		return Stream.concat(recipeCategoryUids.stream(), catalystRecipeCategoryUids.stream())
 			.sorted(recipeTypeComparator);
 	}
 
-	public <T> void addCatalystForCategory(RecipeType<?> recipeType, ITypedIngredient<T> ingredient) {
+	public <T> void addCraftingStationForCategory(IRecipeType<?> recipeType, ITypedIngredient<T> ingredient) {
 		Object ingredientUid = getIngredientUid(ingredient);
-		categoryCatalystUidToRecipeCategoryMap.put(ingredientUid, recipeType);
+		craftingStationUidToRecipeCategoryMap.put(ingredientUid, recipeType);
 	}
 
 	@UnmodifiableView
-	public <T> List<T> getRecipes(RecipeType<T> recipeType, ITypedIngredient<?> ingredient) {
+	public <T> List<T> getRecipes(IRecipeType<T> recipeType, ITypedIngredient<?> ingredient) {
 		Object ingredientUid = getIngredientUid(ingredient);
 		return recipeTable.get(recipeType, ingredientUid);
 	}
 
-	public <T> boolean isCatalystForRecipeCategory(RecipeType<T> recipeType, ITypedIngredient<?> ingredient) {
+	public <T> boolean isCraftingStationForRecipeCategory(IRecipeType<T> recipeType, ITypedIngredient<?> ingredient) {
 		Object ingredientUid = getIngredientUid(ingredient);
-		Collection<RecipeType<?>> catalystCategories = categoryCatalystUidToRecipeCategoryMap.get(ingredientUid);
-		return catalystCategories.contains(recipeType);
+		Collection<IRecipeType<?>> craftingStationTypes = craftingStationUidToRecipeCategoryMap.get(ingredientUid);
+		return craftingStationTypes.contains(recipeType);
 	}
 
-	public <T> void addRecipe(RecipeType<T> recipeType, T recipe, IIngredientSupplier ingredientSupplier) {
+	public <T> void addRecipe(IRecipeType<T> recipeType, T recipe, IIngredientSupplier ingredientSupplier) {
 		Set<Object> ingredientUids = new HashSet<>();
 		Collection<ITypedIngredient<?>> ingredients = ingredientSupplier.getIngredients(this.role);
 		for (ITypedIngredient<?> ingredient : ingredients) {

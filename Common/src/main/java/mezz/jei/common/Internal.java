@@ -11,6 +11,7 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.world.item.crafting.RecipeMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -31,6 +32,7 @@ public final class Internal {
 	private static IJeiClientConfigs jeiClientConfigs;
 	@Nullable
 	private static IJeiRuntime jeiRuntime;
+	private static RecipeMap clientSyncedRecipes = RecipeMap.EMPTY;
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
 
 	private Internal() {
@@ -97,5 +99,13 @@ public final class Internal {
 		Preconditions.checkState(jeiRuntime != null, "Jei Client Configs have not been created yet.");
 
 		return jeiRuntime;
+	}
+
+	public static void setClientSyncedRecipes(RecipeMap clientSyncedRecipes) {
+		Internal.clientSyncedRecipes = clientSyncedRecipes;
+	}
+
+	public static RecipeMap getClientSyncedRecipes() {
+		return clientSyncedRecipes;
 	}
 }

@@ -6,7 +6,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.level.material.Fluid;
 
 /**
- * Helper for mods that want to handle Fluid ingredients across multiple platforms (Forge and Fabric).
+ * Helper for mods that want to handle Fluid ingredients across multiple mod loader platforms.
  * @param <T> the type of Fluid ingredient for the current platform.
  * @since 10.1.0
  */

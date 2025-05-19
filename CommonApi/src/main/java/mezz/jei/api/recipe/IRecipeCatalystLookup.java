@@ -3,17 +3,21 @@ package mezz.jei.api.recipe;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.stream.Stream;
 
 /**
  * This is a helper class for looking up recipe catalysts.
- * Create one with {@link IRecipeManager#createRecipeCatalystLookup(RecipeType)},
+ * Create one with {@link IRecipeManager#createRecipeCatalystLookup(IRecipeType)},
  * then set its properties and call {@link #get()} to get the results.
  *
  * @since 9.5.0
+ * @deprecated use {@link ICraftingStationLookup}
  */
+@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
+@Deprecated(forRemoval = true, since = "20.0.0")
 public interface IRecipeCatalystLookup {
 	/**
 	 * By default, hidden results are not returned.

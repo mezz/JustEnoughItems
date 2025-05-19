@@ -1,7 +1,7 @@
 package mezz.jei.api.registration;
 
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import mezz.jei.api.IModPlugin;
@@ -37,7 +37,7 @@ public interface IRecipeTransferRegistration {
 	 *
 	 * @since 11.0.0
 	 */
-	<C extends AbstractContainerMenu, R> void addRecipeTransferHandler(Class<? extends C> containerClass, @Nullable MenuType<C> menuType, RecipeType<R> recipeType, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount);
+	<C extends AbstractContainerMenu, R> void addRecipeTransferHandler(Class<? extends C> containerClass, @Nullable MenuType<C> menuType, IRecipeType<R> recipeType, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount);
 
 	/**
 	 * Advanced method for adding a recipe transfer handler.
@@ -52,7 +52,7 @@ public interface IRecipeTransferRegistration {
 	 *
 	 * @since 9.5.0
 	 */
-	<C extends AbstractContainerMenu, R> void addRecipeTransferHandler(IRecipeTransferHandler<C, R> recipeTransferHandler, RecipeType<R> recipeType);
+	<C extends AbstractContainerMenu, R> void addRecipeTransferHandler(IRecipeTransferHandler<C, R> recipeTransferHandler, IRecipeType<R> recipeType);
 
 	/**
 	 * Add a universal handler that can handle any category of recipe.

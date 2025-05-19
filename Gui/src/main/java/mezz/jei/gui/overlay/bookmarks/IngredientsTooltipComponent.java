@@ -76,7 +76,7 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 	}
 
 	@Override
-	public int getHeight() {
+	public int getHeight(Font font) {
 		// Add 4 extra height so that there is some extra room below the rendered items.
 		// They look too cramped if there is text right below them without some extra room.
 		return 4 + INGREDIENT_SIZE * MathUtil.divideCeil(ingredients.size(), MAX_INGREDIENTS_PER_ROW);
@@ -88,7 +88,7 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 	}
 
 	@Override
-	public void renderImage(Font font, int x, int y, GuiGraphics guiGraphics) {
+	public void renderImage(Font font, int x, int y, int p_368529_, int p_368584_, GuiGraphics guiGraphics) {
 		for (int i = 0; i < ingredients.size(); i++) {
 			int elementX = INGREDIENT_PADDING + x + ((i % MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);
 			int elementY = INGREDIENT_PADDING + y + ((i / MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);

@@ -3,9 +3,8 @@ package mezz.jei.library.recipes;
 import com.google.common.base.Stopwatch;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.library.recipes.collect.RecipeTypeData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,11 +26,9 @@ public class PluginManager {
 		this.plugins.add(internalRecipeManagerPlugin);
 	}
 
-	public <T> Stream<T> getRecipes(RecipeTypeData<T> recipeTypeData, IFocusGroup focusGroup, boolean includeHidden) {
-		IRecipeCategory<T> recipeCategory = recipeTypeData.getRecipeCategory();
-
+	public <T> Stream<T> getRecipes(IRecipeType<T> recipeType, RecipeTypeData<T> recipeTypeData, IFocusGroup focusGroup, boolean includeHidden) {
 		Stream<T> recipes = this.plugins.stream()
-			.flatMap(p -> getPluginRecipeStream(p, recipeCategory, focusGroup))
+			.flatMap(p -> getPluginRecipeStream(p, recipeType, focusGroup))
 			.distinct();
 
 		if (!includeHidden) {
@@ -43,28 +40,28 @@ public class PluginManager {
 		return recipes;
 	}
 
-	public Stream<RecipeType<?>> getRecipeTypes(IFocusGroup focusGroup) {
+	public Stream<IRecipeType<?>> getRecipeTypes(IFocusGroup focusGroup) {
 		return this.plugins.stream()
 			.flatMap(p -> getPluginRecipeTypeStream(p, focusGroup))
 			.distinct();
 	}
 
-	private Stream<RecipeType<?>> getPluginRecipeTypeStream(IRecipeManagerPlugin plugin, IFocusGroup focuses) {
+	private Stream<IRecipeType<?>> getPluginRecipeTypeStream(IRecipeManagerPlugin plugin, IFocusGroup focuses) {
 		List<IFocus<?>> allFocuses = focuses.getAllFocuses();
 		return allFocuses.stream()
 			.flatMap(focus -> getRecipeTypes(plugin, focus));
 	}
 
-	private <T> Stream<T> getPluginRecipeStream(IRecipeManagerPlugin plugin, IRecipeCategory<T> recipeCategory, IFocusGroup focuses) {
+	private <T> Stream<T> getPluginRecipeStream(IRecipeManagerPlugin plugin, IRecipeType<T> recipeType, IFocusGroup focuses) {
 		if (!focuses.isEmpty()) {
 			List<IFocus<?>> allFocuses = focuses.getAllFocuses();
 			return allFocuses.stream()
-				.flatMap(focus -> getRecipes(plugin, recipeCategory, focus));
+				.flatMap(focus -> getRecipes(plugin, recipeType, focus));
 		}
-		return getRecipes(plugin, recipeCategory);
+		return getRecipes(plugin, recipeType);
 	}
 
-	private Stream<RecipeType<?>> getRecipeTypes(IRecipeManagerPlugin plugin, IFocus<?> focus) {
+	private Stream<IRecipeType<?>> getRecipeTypes(IRecipeManagerPlugin plugin, IFocus<?> focus) {
 		return safeCallPlugin(
 			plugin,
 			() -> plugin.getRecipeTypes(focus).stream(),
@@ -72,18 +69,18 @@ public class PluginManager {
 		);
 	}
 
-	private <T> Stream<T> getRecipes(IRecipeManagerPlugin plugin, IRecipeCategory<T> recipeCategory) {
+	private <T> Stream<T> getRecipes(IRecipeManagerPlugin plugin, IRecipeType<T> recipeType) {
 		return safeCallPlugin(
 			plugin,
-			() -> plugin.getRecipes(recipeCategory).stream(),
+			() -> plugin.getRecipes(recipeType).stream(),
 			Stream.of()
 		);
 	}
 
-	private <T> Stream<T> getRecipes(IRecipeManagerPlugin plugin, IRecipeCategory<T> recipeCategory, IFocus<?> focus) {
+	private <T> Stream<T> getRecipes(IRecipeManagerPlugin plugin, IRecipeType<T> recipeType, IFocus<?> focus) {
 		return safeCallPlugin(
 			plugin,
-			() -> plugin.getRecipes(recipeCategory, focus).stream(),
+			() -> plugin.getRecipes(recipeType, focus).stream(),
 			Stream.of()
 		);
 	}

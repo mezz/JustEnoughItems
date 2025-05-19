@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
@@ -60,7 +60,7 @@ public interface IGuiHandlerRegistration {
 	 *
 	 * @since 9.5.0
 	 */
-	default <T extends AbstractContainerScreen<?>> void addRecipeClickArea(Class<? extends T> containerScreenClass, int xPos, int yPos, int width, int height, RecipeType<?>... recipeTypes) {
+	default <T extends AbstractContainerScreen<?>> void addRecipeClickArea(Class<? extends T> containerScreenClass, int xPos, int yPos, int width, int height, IRecipeType<?>... recipeTypes) {
 		this.addGuiContainerHandler(containerScreenClass, new IGuiContainerHandler<T>() {
 			@Override
 			public Collection<IGuiClickableArea> getGuiClickableAreas(T containerScreen, double mouseX, double mouseY) {

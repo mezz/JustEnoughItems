@@ -47,23 +47,4 @@ public interface IModIngredientRegistration {
 		IIngredientRenderer<V> ingredientRenderer,
 		Codec<V> ingredientCodec
 	);
-
-	/**
-	 * Register a new type of ingredient.
-	 *
-	 * @param ingredientType     The type of the ingredient.
-	 * @param allIngredients     A collection of every to be displayed in the ingredient list.
-	 * @param ingredientHelper   The ingredient helper to allows JEI to get information about ingredients for searching and other purposes.
-	 * @param ingredientRenderer The ingredient render to allow JEI to render these ingredients in the ingredient list.
-	 *                           This ingredient renderer must be configured to draw in a 16 by 16 pixel space.
-	 *
-	 * @deprecated use {@link #register(IIngredientType, Collection, IIngredientHelper, IIngredientRenderer, Codec)}
-	 */
-	@Deprecated(since = "19.9.0", forRemoval = true)
-	<V> void register(
-		IIngredientType<V> ingredientType,
-		Collection<V> allIngredients,
-		IIngredientHelper<V> ingredientHelper,
-		IIngredientRenderer<V> ingredientRenderer
-	);
 }

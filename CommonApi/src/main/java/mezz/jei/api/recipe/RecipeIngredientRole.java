@@ -15,11 +15,13 @@ public enum RecipeIngredientRole {
 	 */
 	OUTPUT,
 	/**
-	 * Catalysts are ingredients that are necessary for crafting, but are not consumed.
+	 * Crafting stations are ingredients that are necessary for crafting, and are not consumed.
 	 * These are treated similarly to {@link #INPUT}.
 	 * Examples may be a crafting table, a furnace, or an ingredient that sits in the crafting grid but is not used up.
+	 *
+	 * @apiNote Renamed in 20.0.0 from CATALYST to CRAFTING_STATION to match the vanilla name.
 	 */
-	CATALYST,
+	CRAFTING_STATION,
 	/**
 	 * Render-only ingredients should be drawn, and can be navigated on,
 	 * but are ignored when looking up the recipe.

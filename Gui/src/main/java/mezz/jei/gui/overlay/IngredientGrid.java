@@ -168,8 +168,9 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		}
 	}
 
+	// TODO also draw slot highlight back
 	/**
-	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlight(GuiGraphics, int, int, int)}
+	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlightFront(GuiGraphics)}
 	 * but with a custom area width and height
 	 */
 	public static void drawHighlight(GuiGraphics guiGraphics, ImmutableRect2i area) {

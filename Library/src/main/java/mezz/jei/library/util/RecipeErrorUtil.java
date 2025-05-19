@@ -38,8 +38,8 @@ public final class RecipeErrorUtil {
 		recipeInfoBuilder.append("\n  Inputs:");
 		appendRoleData(ingredientSupplier, RecipeIngredientRole.INPUT, recipeInfoBuilder, ingredientManager);
 
-		recipeInfoBuilder.append("\n  Catalysts:");
-		appendRoleData(ingredientSupplier, RecipeIngredientRole.CATALYST, recipeInfoBuilder, ingredientManager);
+		recipeInfoBuilder.append("\n  Crafting Stations:");
+		appendRoleData(ingredientSupplier, RecipeIngredientRole.CRAFTING_STATION, recipeInfoBuilder, ingredientManager);
 
 		recipeInfoBuilder.append("\n}");
 
@@ -86,7 +86,7 @@ public final class RecipeErrorUtil {
 			.map(RecipeHolder::id)
 			.map(registryName -> {
 				IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
-				String modId = registryName.getNamespace();
+				String modId = registryName.location().getNamespace();
 				String modName = modHelper.getModNameForModId(modId);
 				return modName + " " + registryName + " " + recipe.getClass();
 			})

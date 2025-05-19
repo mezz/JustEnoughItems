@@ -2,8 +2,8 @@ package mezz.jei.gui.recipes;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -49,7 +49,7 @@ public interface IRecipeGuiLogic {
 
 	boolean showAllRecipes();
 
-	boolean showCategories(List<RecipeType<?>> recipeTypes);
+	boolean showCategories(List<IRecipeType<?>> recipeTypes);
 
 	IRecipeCategory<?> getSelectedRecipeCategory();
 

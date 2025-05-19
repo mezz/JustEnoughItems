@@ -10,11 +10,8 @@ import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableWrappedText;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.FormattedText;
-import org.joml.Matrix4f;
 
 import java.util.List;
 
@@ -60,15 +57,12 @@ public class ScrollBoxRecipeWidget extends AbstractScrollWidget implements IScro
 	@Override
 	protected void drawContents(GuiGraphics guiGraphics, double mouseX, double mouseY, float scrollOffsetY) {
 		PoseStack poseStack = guiGraphics.pose();
-		PoseStack.Pose last = poseStack.last();
-		Matrix4f pose = last.pose();
 
-		ScreenRectangle scissorArea = MathUtil.transform(contentsArea, pose);
 		guiGraphics.enableScissor(
-			scissorArea.left(),
-			scissorArea.top(),
-			scissorArea.right(),
-			scissorArea.bottom()
+			contentsArea.x(),
+			contentsArea.y(),
+			contentsArea.width(),
+			contentsArea.height()
 		);
 		poseStack.pushPose();
 		float scrollAmount = getHiddenAmount() * scrollOffsetY;

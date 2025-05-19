@@ -26,10 +26,6 @@ public class IngredientListSlot {
 		return Optional.ofNullable(element);
 	}
 
-	public @Nullable IElement<?> getElement() {
-		return element;
-	}
-
 	public Optional<IClickableIngredientInternal<?>> getClickableIngredient() {
 		return Optional.ofNullable(element)
 			.map(element -> new ClickableIngredientInternal<>(element, this::isMouseOver, true, true));

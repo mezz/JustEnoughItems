@@ -3,7 +3,7 @@ package mezz.jei.api.registration;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -31,12 +31,12 @@ public interface IRecipeCatalystRegistration {
 	 * @param recipeType the types of recipe that the ingredient is a catalyst for
 	 * @param ingredients the {@link ItemLike}s that can craft recipes (like a furnace or crafting table)
 	 *
-	 * @see #addRecipeCatalysts(RecipeType, ItemStack...) to add {@link ItemStack} catalysts.
-	 * @see #addRecipeCatalysts(RecipeType, IIngredientType, List) to add non-{@link ItemLike} catalysts.
+	 * @see #addCraftingStation(IRecipeType, ItemStack...) to add {@link ItemStack} catalysts.
+	 * @see #addCraftingStations(IRecipeType, IIngredientType, List) to add non-{@link ItemLike} catalysts.
 	 *
-	 * @since 19.19.2
+	 * @since 20.0.0
 	 */
-	void addRecipeCatalysts(RecipeType<?> recipeType, ItemLike... ingredients);
+	void addCraftingStation(IRecipeType<?> recipeType, ItemLike... ingredients);
 
 	/**
 	 * Add an association between an {@link ItemStack} and what it can craft.
@@ -46,12 +46,71 @@ public interface IRecipeCatalystRegistration {
 	 * @param ingredients the {@link ItemStack}s that can craft recipes (like a furnace or crafting table)
 	 * @param recipeType  the type of recipe that the ingredients are a catalyst for
 	 *
-	 * @see #addRecipeCatalysts(RecipeType, IIngredientType, List) to add non-{@link ItemStack} catalysts.
+	 * @see #addRecipeCatalysts(IRecipeType, IIngredientType, List) to add non-{@link ItemStack} catalysts.
+	 *
+	 * @since 20.0.0
+	 */
+	default void addCraftingStation(IRecipeType<?> recipeType, ItemStack... ingredients) {
+		addCraftingStations(recipeType, VanillaTypes.ITEM_STACK, List.of(ingredients));
+	}
+
+	/**
+	 * Add an association between ingredients and what it can craft. (i.e. Furnace ItemStack -> Smelting and Fuel Recipes)
+	 * Allows players to see what ingredients they need to craft in order to make recipes from a recipe category.
+	 *
+	 * @param recipeType     the type of recipe that the ingredients are a catalyst for
+	 * @param ingredientType the type of the ingredient
+	 * @param ingredient     the ingredient that can craft recipes (like a furnace or crafting table)
+	 * @since 20.0.0
+	 */
+	<T> void addCraftingStation(IRecipeType<?> recipeType, IIngredientType<T> ingredientType, T ingredient);
+
+	/**
+	 * Add an association between ingredients and what it can craft. (i.e. Furnace ItemStack -> Smelting and Fuel Recipes)
+	 * Allows players to see what ingredients they need to craft in order to make recipes from a recipe category.
+	 *
+	 * @param recipeType     the type of recipe that the ingredients are a catalyst for
+	 * @param ingredientType the type of the ingredient
+	 * @param ingredients    the ingredients that can craft recipes (like a furnace or crafting table)
+	 * @since 20.0.0
+	 */
+	<T> void addCraftingStations(IRecipeType<?> recipeType, IIngredientType<T> ingredientType, List<T> ingredients);
+
+	/**
+	 * Add an association between {@link ItemLike}s and what it can craft.
+	 * (i.e. Furnace Item can craft Smelting and Fuel Recipes)
+	 * Allows players to see what ingredient they need to craft in order to make recipes from a recipe category.
+	 *
+	 * @param recipeType the types of recipe that the ingredient is a catalyst for
+	 * @param ingredients the {@link ItemLike}s that can craft recipes (like a furnace or crafting table)
+	 *
+	 * @see #addRecipeCatalysts(IRecipeType, ItemStack...) to add {@link ItemStack} catalysts.
+	 * @see #addRecipeCatalysts(IRecipeType, IIngredientType, List) to add non-{@link ItemLike} catalysts.
 	 *
 	 * @since 19.19.2
+	 * @deprecated use {@link #addCraftingStation(IRecipeType, ItemLike...)}
 	 */
-	default void addRecipeCatalysts(RecipeType<?> recipeType, ItemStack... ingredients) {
-		addRecipeCatalysts(recipeType, VanillaTypes.ITEM_STACK, List.of(ingredients));
+	@Deprecated(forRemoval = true, since = "20.0.0")
+	default void addRecipeCatalysts(IRecipeType<?> recipeType, ItemLike... ingredients) {
+		addCraftingStation(recipeType, ingredients);
+	}
+
+	/**
+	 * Add an association between an {@link ItemStack} and what it can craft.
+	 * (i.e. Furnace ItemStack can craft Smelting and Fuel Recipes)
+	 * Allows players to see what ingredient they need to craft in order to make recipes from a recipe category.
+	 *
+	 * @param ingredients the {@link ItemStack}s that can craft recipes (like a furnace or crafting table)
+	 * @param recipeType  the type of recipe that the ingredients are a catalyst for
+	 *
+	 * @see #addRecipeCatalysts(IRecipeType, IIngredientType, List) to add non-{@link ItemStack} catalysts.
+	 *
+	 * @since 19.19.2
+	 * @deprecated use {@link #addCraftingStation(IRecipeType, ItemStack...)}
+	 */
+	@Deprecated(forRemoval = true, since = "20.0.0")
+	default void addRecipeCatalysts(IRecipeType<?> recipeType, ItemStack... ingredients) {
+		addCraftingStation(recipeType, ingredients);
 	}
 
 	/**
@@ -62,8 +121,12 @@ public interface IRecipeCatalystRegistration {
 	 * @param ingredientType the type of the ingredient
 	 * @param ingredients    the ingredients that can craft recipes (like a furnace or crafting table)
 	 * @since 19.19.2
+	 * @deprecated use {@link #addCraftingStations(IRecipeType, IIngredientType, List)}
 	 */
-	<T> void addRecipeCatalysts(RecipeType<?> recipeType, IIngredientType<T> ingredientType, List<T> ingredients);
+	@Deprecated(forRemoval = true, since = "20.0.0")
+	default <T> void addRecipeCatalysts(IRecipeType<?> recipeType, IIngredientType<T> ingredientType, List<T> ingredients) {
+		addCraftingStations(recipeType, ingredientType, ingredients);
+	}
 
 	/**
 	 * Add an association between an {@link ItemStack} and what it can craft.
@@ -73,12 +136,14 @@ public interface IRecipeCatalystRegistration {
 	 * @param itemLike    the {@link ItemLike} that can craft recipes (like a furnace or crafting table)
 	 * @param recipeTypes the types of recipe that the ingredient is a catalyst for
 	 *
-	 * @see #addRecipeCatalyst(ItemStack, RecipeType...) to add {@link ItemStack} catalysts.
-	 * @see #addRecipeCatalyst(IIngredientType, Object, RecipeType...) to add non-{@link ItemLike} catalysts.
+	 * @see #addRecipeCatalyst(ItemStack, IRecipeType...) to add {@link ItemStack} catalysts.
+	 * @see #addRecipeCatalyst(IIngredientType, Object, IRecipeType...) to add non-{@link ItemLike} catalysts.
 	 *
 	 * @since 19.18.2
+	 * @deprecated use {@link #addCraftingStation(IRecipeType, ItemLike...)}
 	 */
-	default void addRecipeCatalyst(ItemLike itemLike, RecipeType<?>... recipeTypes) {
+	@Deprecated(forRemoval = true, since = "20.0.0")
+	default void addRecipeCatalyst(ItemLike itemLike, IRecipeType<?>... recipeTypes) {
 		addRecipeCatalyst(VanillaTypes.ITEM_STACK, itemLike.asItem().getDefaultInstance(), recipeTypes);
 	}
 
@@ -89,11 +154,14 @@ public interface IRecipeCatalystRegistration {
 	 *
 	 * @param ingredient  the {@link ItemStack} that can craft recipes (like a furnace or crafting table)
 	 * @param recipeTypes the types of recipe that the ingredient is a catalyst for
-	 * @see #addRecipeCatalyst(IIngredientType, Object, RecipeType...) to add non-{@link ItemStack} catalysts.
+	 * @see #addRecipeCatalyst(IIngredientType, Object, IRecipeType...) to add non-{@link ItemStack} catalysts.
 	 *
 	 * @since 9.5.0
+	 * @deprecated use {@link #addCraftingStation(IRecipeType, ItemStack...)}
 	 */
-	default void addRecipeCatalyst(ItemStack ingredient, RecipeType<?>... recipeTypes) {
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(forRemoval = true, since = "20.0.0")
+	default void addRecipeCatalyst(ItemStack ingredient, IRecipeType<?>... recipeTypes) {
 		addRecipeCatalyst(VanillaTypes.ITEM_STACK, ingredient, recipeTypes);
 	}
 
@@ -105,6 +173,8 @@ public interface IRecipeCatalystRegistration {
 	 * @param ingredient     the ingredient that can craft recipes (like a furnace or crafting table)
 	 * @param recipeTypes    the types of recipe that the ingredient is a catalyst for
 	 * @since 9.5.0
+	 * @deprecated use {@link #addCraftingStation(IRecipeType, IIngredientType, T)}
 	 */
-	<T> void addRecipeCatalyst(IIngredientType<T> ingredientType, T ingredient, RecipeType<?>... recipeTypes);
+	@Deprecated(forRemoval = true, since = "20.0.0")
+	<T> void addRecipeCatalyst(IIngredientType<T> ingredientType, T ingredient, IRecipeType<?>... recipeTypes);
 }

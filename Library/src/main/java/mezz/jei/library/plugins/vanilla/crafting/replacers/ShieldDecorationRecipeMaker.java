@@ -3,13 +3,12 @@ package mezz.jei.library.plugins.vanilla.crafting.replacers;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.core.Holder;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.BannerItem;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -17,9 +16,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -43,25 +42,26 @@ public final class ShieldDecorationRecipeMaker {
 	}
 
 	private static RecipeHolder<CraftingRecipe> createRecipe(BannerItem banner) {
-		NonNullList<Ingredient> inputs = NonNullList.of(
-			Ingredient.EMPTY,
-			Ingredient.of(Items.SHIELD),
-			Ingredient.of(banner)
-		);
-
 		ItemStack output = createOutput(banner);
 
-		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.shield.decoration." + output.getDescriptionId());
-		CraftingRecipe recipe = new ShapelessRecipe("jei.shield.decoration", CraftingBookCategory.MISC, output, inputs);
-		return new RecipeHolder<>(id, recipe);
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.shield.decoration." + banner.getDescriptionId());
+		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
+		CraftingRecipe recipe = new ShapelessRecipe(
+			"jei.shield.decoration",
+			CraftingBookCategory.MISC,
+			output,
+			List.of(
+				Ingredient.of(Items.SHIELD),
+				Ingredient.of(banner)
+			)
+		);
+		return new RecipeHolder<>(resourceKey, recipe);
 	}
 
 	private static ItemStack createOutput(BannerItem banner) {
 		DyeColor color = banner.getColor();
 		ItemStack output = new ItemStack(Items.SHIELD);
-		CompoundTag tag = new CompoundTag();
-		tag.putInt("Base", color.getId());
-		BlockItem.setBlockEntityData(output, BlockEntityType.BANNER, tag);
+		output.set(DataComponents.BASE_COLOR, color);
 		return output;
 	}
 

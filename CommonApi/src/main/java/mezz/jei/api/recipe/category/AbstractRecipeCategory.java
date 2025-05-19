@@ -1,7 +1,7 @@
 package mezz.jei.api.recipe.category;
 
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
  * @since 19.19.0
  */
 public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
-	private final RecipeType<T> recipeType;
+	private final IRecipeType<T> recipeType;
 	private final Component title;
 	private final IDrawable icon;
 	private final int width;
@@ -18,7 +18,7 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 	/**
 	 * @since 19.19.0
 	 */
-	public AbstractRecipeCategory(RecipeType<T> recipeType, Component title, IDrawable icon, int width, int height) {
+	public AbstractRecipeCategory(IRecipeType<T> recipeType, Component title, IDrawable icon, int width, int height) {
 		this.recipeType = recipeType;
 		this.title = title;
 		this.icon = icon;
@@ -27,7 +27,7 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 	}
 
 	@Override
-	public final RecipeType<T> getRecipeType() {
+	public final IRecipeType<T> getRecipeType() {
 		return recipeType;
 	}
 

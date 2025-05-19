@@ -7,6 +7,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
 
@@ -28,7 +29,7 @@ public interface IRecipeManager {
 	 *
 	 * @since 9.5.0
 	 */
-	<R> IRecipeLookup<R> createRecipeLookup(RecipeType<R> recipeType);
+	<R> IRecipeLookup<R> createRecipeLookup(IRecipeType<R> recipeType);
 
 	/**
 	 * Create a recipe category lookup for the given recipe type.
@@ -47,17 +48,30 @@ public interface IRecipeManager {
 	 *
 	 * @since 19.1.0
 	 */
-	<T> IRecipeCategory<T> getRecipeCategory(RecipeType<T> recipeType);
+	<T> IRecipeCategory<T> getRecipeCategory(IRecipeType<T> recipeType);
 
 	/**
 	 * Create a recipe catalyst lookup for the given recipe type.
 	 *
-	 * {@link IRecipeCatalystLookup} is a helper class that lets you choose
+	 * {@link mezz.jei.api.recipe.IRecipeCatalystLookup} is a helper class that lets you choose
 	 * the results you want, and then get them.
 	 *
 	 * @since 9.5.0
+	 * @deprecated use {@link #createCraftingStationLookup(IRecipeType)}
 	 */
-	IRecipeCatalystLookup createRecipeCatalystLookup(RecipeType<?> recipeType);
+	@SuppressWarnings("removal")
+	@Deprecated(forRemoval = true, since = "20.0.0")
+	mezz.jei.api.recipe.IRecipeCatalystLookup createRecipeCatalystLookup(IRecipeType<?> recipeType);
+
+	/**
+	 * Create a crafting station lookup for the given recipe type.
+	 *
+	 * {@link ICraftingStationLookup} is a helper class that lets you choose
+	 * the results you want, and then get them.
+	 *
+	 * @since 20.0.0
+	 */
+	ICraftingStationLookup createCraftingStationLookup(IRecipeType<?> recipeType);
 
 	/**
 	 * Hides recipes so that they will not be displayed.
@@ -66,26 +80,26 @@ public interface IRecipeManager {
 	 * @param recipeType the recipe type for this recipe.
 	 * @param recipes    the recipes to hide.
 	 *
-	 * @see #unhideRecipes(RecipeType, Collection)
+	 * @see #unhideRecipes(IRecipeType, Collection)
 	 * @see RecipeTypes for all the built-in recipe types that are added by JEI.
 	 *
 	 * @since 9.5.0
 	 */
-	<T> void hideRecipes(RecipeType<T> recipeType, Collection<T> recipes);
+	<T> void hideRecipes(IRecipeType<T> recipeType, Collection<T> recipes);
 
 	/**
-	 * Unhides recipes that were hidden by {@link #hideRecipes(RecipeType, Collection)}
+	 * Unhides recipes that were hidden by {@link #hideRecipes(IRecipeType, Collection)}
 	 * This can be used by mods that create recipe progression.
 	 *
 	 * @param recipeType the recipe type for this recipe.
 	 * @param recipes    the recipes to unhide.
 	 *
-	 * @see #hideRecipes(RecipeType, Collection)
+	 * @see #hideRecipes(IRecipeType, Collection)
 	 * @see RecipeTypes for all the built-in recipe types that are added by JEI.
 	 *
 	 * @since 9.5.0
 	 */
-	<T> void unhideRecipes(RecipeType<T> recipeType, Collection<T> recipes);
+	<T> void unhideRecipes(IRecipeType<T> recipeType, Collection<T> recipes);
 
 	/**
 	 * Add new recipes while the game is running.
@@ -94,29 +108,29 @@ public interface IRecipeManager {
 	 *
 	 * @since 9.5.0
 	 */
-	<T> void addRecipes(RecipeType<T> recipeType, List<T> recipes);
+	<T> void addRecipes(IRecipeType<T> recipeType, List<T> recipes);
 
 	/**
 	 * Hide an entire recipe category of recipes from JEI.
 	 * This can be used by mods that create recipe progression.
 	 *
 	 * @param recipeType the unique ID for the recipe category
-	 * @see #unhideRecipeCategory(RecipeType)
+	 * @see #unhideRecipeCategory(IRecipeType)
 	 *
 	 * @since 9.5.0
 	 */
-	void hideRecipeCategory(RecipeType<?> recipeType);
+	void hideRecipeCategory(IRecipeType<?> recipeType);
 
 	/**
-	 * Unhides a recipe category that was hidden by {@link #hideRecipeCategory(RecipeType)}.
+	 * Unhides a recipe category that was hidden by {@link #hideRecipeCategory(IRecipeType)}.
 	 * This can be used by mods that create recipe progression.
 	 *
 	 * @param recipeType the unique ID for the recipe category
-	 * @see #hideRecipeCategory(RecipeType)
+	 * @see #hideRecipeCategory(IRecipeType)
 	 *
 	 * @since 9.5.0
 	 */
-	void unhideRecipeCategory(RecipeType<?> recipeType);
+	void unhideRecipeCategory(IRecipeType<?> recipeType);
 
 	/**
 	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
@@ -223,10 +237,10 @@ public interface IRecipeManager {
 	 * This is useful for integrating with other mods that do not share their
 	 * recipe types directly from their API.
 	 *
-	 * @see RecipeType#getUid()
+	 * @see IRecipeType#getUid()
 	 * @since 19.11.0
 	 */
-	<T> Optional<RecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass);
+	<T> Optional<IRecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass);
 
 	/**
 	 * Get the registered recipe type for the given unique id.
@@ -234,8 +248,8 @@ public interface IRecipeManager {
 	 * This is useful for integrating with other mods that do not share their
 	 * recipe types directly from their API.
 	 *
-	 * @see RecipeType#getUid()
+	 * @see IRecipeType#getUid()
 	 * @since 11.2.3
 	 */
-	Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid);
+	Optional<IRecipeType<?>> getRecipeType(ResourceLocation recipeUid);
 }

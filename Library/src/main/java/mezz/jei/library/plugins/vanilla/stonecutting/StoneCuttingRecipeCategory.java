@@ -9,11 +9,12 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.StonecutterRecipeDisplay;
 import net.minecraft.world.level.block.Blocks;
 
 public class StoneCuttingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<StonecutterRecipe>> {
@@ -25,22 +26,24 @@ public class StoneCuttingRecipeCategory extends AbstractRecipeCategory<RecipeHol
 			RecipeTypes.STONECUTTING,
 			Component.translatable("gui.jei.category.stoneCutter"),
 			guiHelper.createDrawableItemLike(Blocks.STONECUTTER),
-			82,
-			34
+			width,
+			height
 		);
 	}
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<StonecutterRecipe> recipeHolder, IFocusGroup focuses) {
 		StonecutterRecipe recipe = recipeHolder.value();
+		RecipeDisplay display = recipe.display().getFirst();
+		if (display instanceof StonecutterRecipeDisplay stonecutterRecipeDisplay) {
+			builder.addInputSlot(1, 9)
+				.setStandardSlotBackground()
+				.add(stonecutterRecipeDisplay.input());
 
-		builder.addInputSlot(1, 9)
-			.setStandardSlotBackground()
-			.addIngredients(recipe.getIngredients().getFirst());
-
-		builder.addOutputSlot(61,  9)
-			.setOutputSlotBackground()
-			.addItemStack(RecipeUtil.getResultItem(recipe));
+			builder.addOutputSlot(61,  9)
+				.setOutputSlotBackground()
+				.add(stonecutterRecipeDisplay.result());
+		}
 	}
 
 	@Override
@@ -56,7 +59,7 @@ public class StoneCuttingRecipeCategory extends AbstractRecipeCategory<RecipeHol
 
 	@Override
 	public ResourceLocation getRegistryName(RecipeHolder<StonecutterRecipe> recipe) {
-		return recipe.id();
+		return recipe.id().location();
 	}
 
 	@Override

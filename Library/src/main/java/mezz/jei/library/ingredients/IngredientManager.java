@@ -223,28 +223,6 @@ public class IngredientManager implements IIngredientManager {
 		return Optional.of(clickableIngredient);
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated
-	public <V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
-		return registeredIngredients
-			.getIngredientInfo(ingredientType)
-			.getIngredientByLegacyUid(ingredientUuid);
-	}
-
-	@SuppressWarnings({"removal"})
-	@Override
-	@Deprecated
-	public <V> Optional<ITypedIngredient<V>> getTypedIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
-		return registeredIngredients
-			.getIngredientInfo(ingredientType)
-			.getIngredientByLegacyUid(ingredientUuid)
-			.flatMap(i -> {
-				ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(this, ingredientType, i, true);
-				return Optional.ofNullable(typedIngredient);
-			});
-	}
-
 	@Override
 	public <V> Codec<V> getIngredientCodec(IIngredientType<V> ingredientType) {
 		return registeredIngredients

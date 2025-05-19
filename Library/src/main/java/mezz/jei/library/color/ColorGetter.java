@@ -6,11 +6,8 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.color.item.ItemColors;
-import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -49,29 +46,14 @@ public final class ColorGetter {
 
 	private List<Integer> unsafeGetColors(ItemStack itemStack, int colorCount) {
 		final Item item = itemStack.getItem();
-		if (itemStack.isEmpty()) {
-			return Collections.emptyList();
-		} else if (item instanceof final BlockItem itemBlock) {
+		if (!itemStack.isEmpty() && item instanceof final BlockItem itemBlock) {
 			final Block block = itemBlock.getBlock();
 			//noinspection ConstantConditions
-			if (block == null) {
-				return Collections.emptyList();
+			if (block != null) {
+				return getBlockColors(block, colorCount);
 			}
-			return getBlockColors(block, colorCount);
-		} else {
-			return getItemColors(itemStack, colorCount);
 		}
-	}
-
-	private List<Integer> getItemColors(ItemStack itemStack, int colorCount) {
-		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-		final ItemColors itemColors = renderHelper.getItemColors();
-		final int renderColor = itemColors.getColor(itemStack, 0);
-		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(itemStack);
-		if (textureAtlasSprite == null) {
-			return Collections.emptyList();
-		}
-		return getColors(textureAtlasSprite, renderColor, colorCount);
+		return Collections.emptyList();
 	}
 
 	private List<Integer> getBlockColors(Block block, int colorCount) {
@@ -112,6 +94,7 @@ public final class ColorGetter {
 	}
 
 	private static Optional<NativeImage> getNativeImage(TextureAtlasSprite textureAtlasSprite) {
+		@SuppressWarnings("resource")
 		SpriteContents contents = textureAtlasSprite.contents();
 		int iconWidth = contents.width();
 		int iconHeight = contents.height();
@@ -135,18 +118,5 @@ public final class ColorGetter {
 			return null;
 		}
 		return textureAtlasSprite;
-	}
-
-	@Nullable
-	private static TextureAtlasSprite getTextureAtlasSprite(ItemStack itemStack) {
-		ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-		ItemModelShaper itemModelMesher = itemRenderer.getItemModelShaper();
-		BakedModel itemModel = itemModelMesher.getItemModel(itemStack);
-		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-		TextureAtlasSprite particleTexture = renderHelper.getParticleIcon(itemModel);
-		if (particleTexture.atlasLocation().equals(MissingTextureAtlasSprite.getLocation())) {
-			return null;
-		}
-		return particleTexture;
 	}
 }

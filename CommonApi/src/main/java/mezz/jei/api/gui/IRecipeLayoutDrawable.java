@@ -78,7 +78,7 @@ public interface IRecipeLayoutDrawable<R> {
 	 *
 	 * @deprecated use {@link #getSlotUnderMouse(double, double)}
 	 */
-	@Deprecated
+	@Deprecated(since = "19.6.0", forRemoval = true)
 	Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY);
 
 	/**

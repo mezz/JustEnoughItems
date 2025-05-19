@@ -3,8 +3,8 @@ package mezz.jei.library.recipes;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeCategoriesLookup;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.focus.FocusGroup;
@@ -18,7 +18,7 @@ public class RecipeCategoriesLookup implements IRecipeCategoriesLookup {
 	private final IIngredientManager ingredientManager;
 
 	private boolean includeHidden = false;
-	private Collection<RecipeType<?>> recipeTypes = List.of();
+	private Collection<IRecipeType<?>> recipeTypes = List.of();
 	private IFocusGroup focusGroup = FocusGroup.EMPTY;
 
 	public RecipeCategoriesLookup(RecipeManagerInternal recipeManager, IIngredientManager ingredientManager) {
@@ -27,7 +27,7 @@ public class RecipeCategoriesLookup implements IRecipeCategoriesLookup {
 	}
 
 	@Override
-	public IRecipeCategoriesLookup limitTypes(Collection<RecipeType<?>> recipeTypes) {
+	public IRecipeCategoriesLookup limitTypes(Collection<IRecipeType<?>> recipeTypes) {
 		ErrorUtil.checkNotNull(recipeTypes, "recipeTypes");
 		this.recipeTypes = recipeTypes;
 		return this;

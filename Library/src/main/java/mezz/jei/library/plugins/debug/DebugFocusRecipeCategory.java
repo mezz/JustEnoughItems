@@ -7,8 +7,8 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +18,7 @@ import net.minecraft.world.level.material.Fluids;
 import java.util.List;
 
 public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
-	public static final RecipeType<DebugRecipe> TYPE = RecipeType.create(ModIds.JEI_ID, "debug_focus", DebugRecipe.class);
+	public static final IRecipeType<DebugRecipe> TYPE = IRecipeType.create(ModIds.JEI_ID, "debug_focus", DebugRecipe.class);
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
 	private final IPlatformFluidHelper<F> platformFluidHelper;
@@ -30,7 +30,7 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 	}
 
 	@Override
-	public RecipeType<DebugRecipe> getRecipeType() {
+	public IRecipeType<DebugRecipe> getRecipeType() {
 		return TYPE;
 	}
 
@@ -71,7 +71,7 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 
 		long bucketVolume = platformFluidHelper.bucketVolume();
 		IRecipeSlotBuilder outputSlot = builder.addOutputSlot(20, 0)
-			.addItemStack(ItemStack.EMPTY)
+			.add(ItemStack.EMPTY)
 			.addIngredients(platformFluidHelper.getFluidIngredientType(), List.of(
 				platformFluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume),
 				platformFluidHelper.create(Fluids.LAVA.defaultFluidState().holder(), bucketVolume)

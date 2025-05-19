@@ -145,11 +145,16 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 *
 	 * To completely customize rendering, see {@link #setCustomRenderer(IIngredientType, IIngredientRenderer)}
 	 *
-	 * @see #addFluidStack(Fluid, long, DataComponentPatch) to add a Fluid with a {@link DataComponentPatch}.
+	 * @see #add(Fluid, long, DataComponentPatch) to add a Fluid with a {@link DataComponentPatch}.
 	 * @since 11.1.0
+	 * @deprecated use {@link #add(Fluid, long)}
 	 */
+	@SuppressWarnings("removal")
+	@Deprecated(since = "20.0.0", forRemoval = true)
 	@Override
-	IRecipeSlotBuilder addFluidStack(Fluid fluid, long amount);
+	default IRecipeSlotBuilder addFluidStack(Fluid fluid, long amount) {
+		return add(fluid, amount);
+	}
 
 	/**
 	 * Convenience helper to add one Fluid ingredient with a {@link DataComponentPatch}.
@@ -165,9 +170,14 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 *
 	 * To completely customize rendering, see {@link #setCustomRenderer(IIngredientType, IIngredientRenderer)}
 	 *
-	 * @see #addFluidStack(Fluid, long) to add a Fluid without a {@link DataComponentPatch}.
+	 * @see #add(Fluid, long) to add a Fluid without a {@link DataComponentPatch}.
 	 * @since 18.0.0
+	 * @deprecated use {@link #add(Fluid, long, DataComponentPatch)}
 	 */
+	@SuppressWarnings("removal")
+	@Deprecated(since = "20.0.0", forRemoval = true)
 	@Override
-	IRecipeSlotBuilder addFluidStack(Fluid fluid, long amount, DataComponentPatch component);
+	default IRecipeSlotBuilder addFluidStack(Fluid fluid, long amount, DataComponentPatch component) {
+		return add(fluid, amount, component);
+	}
 }

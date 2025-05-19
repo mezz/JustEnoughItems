@@ -1,8 +1,10 @@
 package mezz.jei.neoforge.platform;
 
+import com.google.common.collect.Streams;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
@@ -12,34 +14,33 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.ComposterBlock;
 
 import java.util.List;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class IngredientHelper implements IPlatformIngredientHelper {
 	@Override
 	public Ingredient createShulkerDyeIngredient(DyeColor color) {
 		DyeItem dye = DyeItem.byColor(color);
 		TagKey<Item> colorTag = color.getTag();
-		Ingredient.Value colorList = new Ingredient.TagValue(colorTag);
 		Registry<Item> itemRegistry = RegistryUtil.getRegistry(Registries.ITEM);
-		Iterable<Holder<Item>> coloredItems = itemRegistry.getTagOrEmpty(colorTag);
-		boolean contains = StreamSupport.stream(coloredItems.spliterator(), false)
-			.anyMatch(h -> h.value() == dye);
-		Stream<Ingredient.Value> colorIngredientStream;
+
+		HolderSet<Item> coloredItems = itemRegistry.get(colorTag)
+			.map(i -> (HolderSet<Item>) i)
+			.orElseGet(HolderSet::empty);
+
+		boolean contains = coloredItems.stream().anyMatch(h -> h.value() == dye);
+
+		Stream<? extends ItemLike> colorIngredientStream = coloredItems.stream().map(Holder::value);
 		if (!contains) {
-			ItemStack dyeStack = new ItemStack(dye);
-			Ingredient.Value dyeList = new Ingredient.ItemValue(dyeStack);
-			colorIngredientStream = Stream.of(dyeList, colorList);
-		} else {
-			colorIngredientStream = Stream.of(colorList);
+			colorIngredientStream = Streams.concat(Stream.of(dye), colorIngredientStream);
 		}
 		// Shulker box special recipe allows the matching dye item or any item in the tag.
 		// we need to specify both in case someone removes the dye item from the dye tag
 		// as the item will still be valid for this recipe.
-		return Ingredient.fromValues(colorIngredientStream);
+		return Ingredient.of(colorIngredientStream);
 	}
 
 	@Override

@@ -8,8 +8,8 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.IFocusFactory;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
@@ -94,22 +94,18 @@ public class JeiHelpers implements IJeiHelpers {
 	}
 
 	@Override
-	public <T> Optional<RecipeType<T>> getRecipeType(ResourceLocation uid, Class<? extends T> recipeClass) {
-		return Optional.ofNullable(this.recipeCategories)
-			.flatMap(r -> r.stream()
-				.map(IRecipeCategory::getRecipeType)
-				.filter(t -> t.getUid().equals(uid) && t.getRecipeClass().equals(recipeClass))
-				.map(t -> {
-					@SuppressWarnings("unchecked")
-					RecipeType<T> cast = (RecipeType<T>) t;
-					return cast;
-				})
-				.findFirst()
-			);
+	public <T> Optional<IRecipeType<T>> getRecipeType(ResourceLocation uid, Class<? extends T> recipeClass) {
+		return getRecipeType(uid)
+			.filter(t -> t.getRecipeClass().equals(recipeClass))
+			.map(t -> {
+				@SuppressWarnings("unchecked")
+				IRecipeType<T> cast = (IRecipeType<T>) t;
+				return cast;
+			});
 	}
 
 	@Override
-	public Optional<RecipeType<?>> getRecipeType(ResourceLocation uid) {
+	public Optional<IRecipeType<?>> getRecipeType(ResourceLocation uid) {
 		return Optional.ofNullable(this.recipeCategories)
 			.flatMap(r -> r.stream()
 				.map(IRecipeCategory::getRecipeType)
@@ -119,7 +115,7 @@ public class JeiHelpers implements IJeiHelpers {
 	}
 
 	@Override
-	public Stream<RecipeType<?>> getAllRecipeTypes() {
+	public Stream<IRecipeType<?>> getAllRecipeTypes() {
 		if (this.recipeCategories == null) {
 			return Stream.of();
 		}

@@ -1,10 +1,10 @@
 package mezz.jei.library.recipes;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.Constants;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -30,10 +30,11 @@ public class UniversalRecipeTransferHandlerAdapter<C extends AbstractContainerMe
 		return universalRecipeTransferHandler.getMenuType();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public RecipeType<R> getRecipeType() {
-		return (RecipeType<R>) Constants.UNIVERSAL_RECIPE_TRANSFER_TYPE;
+	public IRecipeType<R> getRecipeType() {
+		@SuppressWarnings("unchecked")
+		IRecipeType<R> cast = (IRecipeType<R>) Constants.UNIVERSAL_RECIPE_TRANSFER_TYPE;
+		return cast;
 	}
 
 	@Override

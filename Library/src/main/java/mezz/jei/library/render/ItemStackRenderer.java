@@ -6,7 +6,8 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.library.render.batch.ItemStackBatchRendererCache;
+import mezz.jei.library.render.batch.IItemStackBatchRenderer;
+import mezz.jei.library.render.batch.SimpleItemStackBatchRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
-	private final ItemStackBatchRendererCache batchRenderer = new ItemStackBatchRendererCache();
+	private final IItemStackBatchRenderer batchRenderer = new SimpleItemStackBatchRenderer();
 
 	@Override
 	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient) {

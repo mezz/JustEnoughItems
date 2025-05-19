@@ -3,14 +3,12 @@ package mezz.jei.api.runtime;
 import com.mojang.serialization.Codec;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import net.minecraft.client.renderer.Rect2i;
@@ -204,28 +202,6 @@ public interface IIngredientManager {
 		return getIngredientTypeChecked(ingredient)
 			.flatMap(type -> createClickableIngredient(type, ingredient, area, normalize));
 	}
-
-	/**
-	 * Get an ingredient by the given unique id.
-	 * This uses the uids from {@link IIngredientHelper#getUniqueId(Object, UidContext)}
-	 *
-	 * @since 11.5.0
-	 * @deprecated Use ingredient serialization from {@link ICodecHelper#getTypedIngredientCodec()} instead of this method.
-	 */
-	@SuppressWarnings("removal")
-	@Deprecated(since = "19.1.0", forRemoval = true)
-	<V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid);
-
-	/**
-	 * Get an ingredient by the given type and unique id.
-	 * This uses the uids from {@link IIngredientHelper#getUniqueId(Object, UidContext)}
-	 *
-	 * @since 19.1.0
-	 * @deprecated use ingredient serialization from {@link ICodecHelper#getTypedIngredientCodec()} instead of this method.
-	 */
-	@SuppressWarnings("removal")
-	@Deprecated(since = "19.9.0", forRemoval = true)
-	<V> Optional<ITypedIngredient<V>> getTypedIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid);
 
 	/**
 	 * Get localized search aliases for ingredients.

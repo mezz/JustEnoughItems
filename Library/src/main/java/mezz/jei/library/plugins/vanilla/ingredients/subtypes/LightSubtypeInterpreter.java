@@ -23,17 +23,4 @@ public class LightSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
 		}
 		return properties.get(LightBlock.LEVEL);
 	}
-
-	@Override
-	public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
-		BlockItemStateProperties properties = ingredient.get(DataComponents.BLOCK_STATE);
-		if (properties == null) {
-			return "";
-		}
-		Integer level = properties.get(LightBlock.LEVEL);
-		if (level == null) {
-			return "";
-		}
-		return level.toString();
-	}
 }

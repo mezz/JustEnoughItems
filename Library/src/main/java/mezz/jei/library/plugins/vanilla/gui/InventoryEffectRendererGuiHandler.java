@@ -6,25 +6,27 @@ import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public final class InventoryEffectRendererGuiHandler<T extends AbstractContainerMenu> implements IGuiContainerHandler<EffectRenderingInventoryScreen<T>> {
+public final class InventoryEffectRendererGuiHandler implements IGuiContainerHandler<AbstractContainerScreen<?>> {
 	/**
 	 * Modeled after {@link DisplayEffectsScreen#drawActivePotionEffects()}
 	 */
 	@SuppressWarnings("JavadocReference")
 	@Override
-	public List<Rect2i> getGuiExtraAreas(EffectRenderingInventoryScreen<T> containerScreen) {
+	public List<Rect2i> getGuiExtraAreas(AbstractContainerScreen<?> containerScreen) {
 		if (!Internal.getJeiFeatures().getInventoryEffectRendererGuiHandlerEnabled()) {
+			return List.of();
+		}
+		if (!containerScreen.showsActiveEffects()) {
 			return List.of();
 		}
 		Minecraft minecraft = Minecraft.getInstance();

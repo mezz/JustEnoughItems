@@ -180,7 +180,7 @@ public class RecipeGuiLayouts {
 		IRecipeLayoutDrawable<?> hoveredLayout = null;
 
 		Minecraft minecraft = Minecraft.getInstance();
-		DeltaTracker deltaTracker = minecraft.getTimer();
+		DeltaTracker deltaTracker = minecraft.getDeltaTracker();
 		float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
 
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {

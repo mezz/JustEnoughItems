@@ -6,11 +6,10 @@ plugins {
     id("com.dorongold.task-tree") version("4.0.0")
 
     // https://projects.neoforged.net/neoforged/moddevgradle
-    id("net.neoforged.moddev") version("2.0.26-beta") apply(false)
+    id("net.neoforged.moddev") version("2.0.88") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
-    id("me.modmuss50.mod-publish-plugin") version("0.7.3") apply(false)
-
+    id("me.modmuss50.mod-publish-plugin") version("0.8.4") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")

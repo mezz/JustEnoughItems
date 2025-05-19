@@ -6,12 +6,14 @@ import com.mojang.datafixers.util.Pair;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -19,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
  * This places smaller recipes in the grid in a consistent way.
  *
  * This is passed to plugins that implement
- * {@link ICraftingCategoryExtension#setRecipe(RecipeHolder, IRecipeLayoutBuilder, ICraftingGridHelper, IFocusGroup)}
+ * {@link ICraftingCategoryExtension#createRecipeExtras(Object, IRecipeExtrasBuilder, ICraftingGridHelper, IFocusGroup)}
  * to help them override the default behavior.
  */
 public interface ICraftingGridHelper {
@@ -38,6 +40,14 @@ public interface ICraftingGridHelper {
 	 * @since 19.16.2
 	 */
 	void createAndSetIngredients(IRecipeLayoutBuilder builder, List<Ingredient> ingredients, int width, int height);
+
+	/**
+	 * Create and place input ingredients onto the crafting grid in a consistent way.
+	 * For shapeless recipes, use a width and height of 0.
+	 *
+	 * @since 20.0.0
+	 */
+	void createAndSetIngredientsFromDisplays(IRecipeLayoutBuilder builder, List<SlotDisplay> displays, int width, int height);
 
 	/**
 	 * Create and place input ingredients onto the crafting grid in a consistent way.
@@ -93,6 +103,14 @@ public interface ICraftingGridHelper {
 	default IRecipeSlotBuilder createAndSetOutputs(IRecipeLayoutBuilder builder, @Nullable List<@Nullable ItemStack> outputs) {
 		return createAndSetOutputs(builder, VanillaTypes.ITEM_STACK, outputs);
 	}
+
+	/**
+	 * Place output SlotDisplay at the right location.
+	 *
+	 * @see #createAndSetOutputs(IRecipeLayoutBuilder, IIngredientType, List) to set other ingredient types.
+	 * @since 20.0.0
+	 */
+	IRecipeSlotBuilder createAndSetOutputs(IRecipeLayoutBuilder builder, SlotDisplay outputs);
 
 	/**
 	 * Place output ingredients at the right location.

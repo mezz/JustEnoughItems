@@ -39,12 +39,6 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 		return slot;
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public IRecipeSlotBuilder addSlotToWidget(RecipeIngredientRole role, mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> widgetFactory) {
-		return addSlot(role);
-	}
-
 	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
 		return addSlot(role);

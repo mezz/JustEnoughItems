@@ -47,14 +47,14 @@ import mezz.jei.library.plugins.vanilla.cooking.BlastingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.CampfireCookingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceSmeltingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.SmokingCategory;
+import mezz.jei.library.plugins.vanilla.cooking.fuel.BlastingFuelCategory;
 import mezz.jei.library.plugins.vanilla.cooking.fuel.FuelRecipeMaker;
-import mezz.jei.library.plugins.vanilla.cooking.fuel.FurnaceFuelCategory;
+import mezz.jei.library.plugins.vanilla.cooking.fuel.SmeltingFuelCategory;
+import mezz.jei.library.plugins.vanilla.cooking.fuel.SmokingFuelCategory;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.crafting.VanillaRecipes;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.ShieldDecorationRecipeMaker;
-import mezz.jei.library.plugins.vanilla.crafting.replacers.ShulkerBoxColoringRecipeMaker;
-import mezz.jei.library.plugins.vanilla.crafting.replacers.SuspiciousStewRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
 import mezz.jei.library.plugins.vanilla.gui.InventoryEffectRendererGuiHandler;
 import mezz.jei.library.plugins.vanilla.gui.RecipeBookGuiHandler;
@@ -64,31 +64,28 @@ import mezz.jei.library.plugins.vanilla.ingredients.ItemStackListFactory;
 import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidStackListFactory;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.EnchantedBookSubtypeInterpreter;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.FireworkRocketSubtypeInterpreter;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.InstrumentSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.LightSubtypeInterpreter;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.OminousBottleSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PaintingSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterpreter;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.SuspiciousStewSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.library.render.ItemStackRenderer;
 import mezz.jei.library.transfer.PlayerRecipeTransferHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.gui.screens.inventory.CrafterScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.FurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -107,14 +104,14 @@ import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeMap;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
-import net.minecraft.world.item.crafting.ShulkerBoxColoring;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
-import net.minecraft.world.item.crafting.SuspiciousStewRecipe;
 import net.minecraft.world.item.crafting.TippedArrowRecipe;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
@@ -163,10 +160,13 @@ public class VanillaPlugin implements IModPlugin {
 		registration.registerSubtypeInterpreter(Items.ENCHANTED_BOOK, EnchantedBookSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.LIGHT, LightSubtypeInterpreter.INSTANCE);
 		registration.registerSubtypeInterpreter(Items.PAINTING, PaintingSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.GOAT_HORN, InstrumentSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.FIREWORK_ROCKET, FireworkRocketSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.SUSPICIOUS_STEW, SuspiciousStewSubtypeInterpreter.INSTANCE);
-		registration.registerSubtypeInterpreter(Items.OMINOUS_BOTTLE, OminousBottleSubtypeInterpreter.INSTANCE);
+		registration.registerFromDataComponentTypes(Items.GOAT_HORN, DataComponents.INSTRUMENT);
+		registration.registerFromDataComponentTypes(Items.FIREWORK_ROCKET, DataComponents.FIREWORKS);
+		registration.registerFromDataComponentTypes(Items.FIREWORK_STAR, DataComponents.FIREWORK_EXPLOSION);
+		registration.registerFromDataComponentTypes(Items.SUSPICIOUS_STEW, DataComponents.SUSPICIOUS_STEW_EFFECTS);
+		registration.registerFromDataComponentTypes(Items.OMINOUS_BOTTLE, DataComponents.OMINOUS_BOTTLE_AMPLIFIER);
+		registration.registerFromDataComponentTypes(Items.SHIELD, DataComponents.BASE_COLOR, DataComponents.BANNER_PATTERNS);
+		registration.registerFromDataComponentTypes(Items.DECORATED_POT, DataComponents.POT_DECORATIONS);
 	}
 
 	@Override
@@ -222,7 +222,9 @@ public class VanillaPlugin implements IModPlugin {
 			campfireCategory = new CampfireCookingCategory(guiHelper),
 			smithingCategory = new SmithingRecipeCategory(guiHelper),
 			new CompostableRecipeCategory(guiHelper),
-			new FurnaceFuelCategory(textures),
+			new SmeltingFuelCategory(guiHelper, textures),
+			new SmokingFuelCategory(guiHelper, textures),
+			new BlastingFuelCategory(guiHelper, textures),
 			new BrewingRecipeCategory(guiHelper),
 			new AnvilRecipeCategory(guiHelper)
 		);
@@ -252,11 +254,13 @@ public class VanillaPlugin implements IModPlugin {
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-		VanillaRecipes vanillaRecipes = new VanillaRecipes(ingredientManager);
+
+		RecipeMap clientSyncedRecipes = Internal.getClientSyncedRecipes();
+		VanillaRecipes vanillaRecipes = new VanillaRecipes(clientSyncedRecipes);
 
 		var craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
-		var handledCraftingRecipes = craftingRecipes.get(true);
-		var unhandledCraftingRecipes = craftingRecipes.get(false);
+		var handledCraftingRecipes = craftingRecipes.getHandled();
+		var unhandledCraftingRecipes = craftingRecipes.getUnhandled();
 		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, jeiHelpers);
 
 		registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);
@@ -267,7 +271,9 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(RecipeTypes.SMOKING, vanillaRecipes.getSmokingRecipes(smokingCategory));
 		registration.addRecipes(RecipeTypes.BLASTING, vanillaRecipes.getBlastingRecipes(blastingCategory));
 		registration.addRecipes(RecipeTypes.CAMPFIRE_COOKING, vanillaRecipes.getCampfireCookingRecipes(campfireCategory));
-		registration.addRecipes(RecipeTypes.FUELING, FuelRecipeMaker.getFuelRecipes(ingredientManager));
+		registration.addRecipes(RecipeTypes.SMELTING_FUEL, FuelRecipeMaker.getFuelRecipes(ingredientManager, RecipeType.SMELTING));
+		registration.addRecipes(RecipeTypes.SMOKING_FUEL, FuelRecipeMaker.getFuelRecipes(ingredientManager, RecipeType.SMOKING));
+		registration.addRecipes(RecipeTypes.BLASTING_FUEL, FuelRecipeMaker.getFuelRecipes(ingredientManager, RecipeType.BLASTING));
 		registration.addRecipes(RecipeTypes.ANVIL, AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager));
 		registration.addRecipes(RecipeTypes.SMITHING, vanillaRecipes.getSmithingRecipes(smithingCategory));
 		registration.addRecipes(RecipeTypes.COMPOSTING, CompostingRecipeMaker.getRecipes(ingredientManager));
@@ -288,13 +294,13 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeClickArea(CrafterScreen.class, 88, 32, 28, 23, RecipeTypes.CRAFTING);
 		registration.addRecipeClickArea(InventoryScreen.class, 137, 29, 10, 13, RecipeTypes.CRAFTING);
 		registration.addRecipeClickArea(BrewingStandScreen.class, 97, 16, 14, 30, RecipeTypes.BREWING);
-		registration.addRecipeClickArea(FurnaceScreen.class, 78, 32, 28, 23, RecipeTypes.SMELTING, RecipeTypes.FUELING);
-		registration.addRecipeClickArea(SmokerScreen.class, 78, 32, 28, 23, RecipeTypes.SMOKING, RecipeTypes.FUELING);
-		registration.addRecipeClickArea(BlastFurnaceScreen.class, 78, 32, 28, 23, RecipeTypes.BLASTING, RecipeTypes.FUELING);
+		registration.addRecipeClickArea(FurnaceScreen.class, 78, 32, 28, 23, RecipeTypes.SMELTING, RecipeTypes.SMELTING_FUEL);
+		registration.addRecipeClickArea(SmokerScreen.class, 78, 32, 28, 23, RecipeTypes.SMOKING, RecipeTypes.SMOKING_FUEL);
+		registration.addRecipeClickArea(BlastFurnaceScreen.class, 78, 32, 28, 23, RecipeTypes.BLASTING, RecipeTypes.BLASTING_FUEL);
 		registration.addRecipeClickArea(AnvilScreen.class, 102, 48, 22, 15, RecipeTypes.ANVIL);
 		registration.addRecipeClickArea(SmithingScreen.class, 68, 49, 22, 15, RecipeTypes.SMITHING);
 
-		registration.addGenericGuiContainerHandler(EffectRenderingInventoryScreen.class, new InventoryEffectRendererGuiHandler<>());
+		registration.addGenericGuiContainerHandler(AbstractContainerScreen.class, new InventoryEffectRendererGuiHandler());
 		registration.addGuiContainerHandler(CraftingScreen.class, new RecipeBookGuiHandler<>());
 		registration.addGuiContainerHandler(InventoryScreen.class, new RecipeBookGuiHandler<>());
 		registration.addGuiContainerHandler(AbstractFurnaceScreen.class, new RecipeBookGuiHandler<>());
@@ -306,11 +312,11 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeTransferHandler(CraftingMenu.class, MenuType.CRAFTING, RecipeTypes.CRAFTING, 1, 9, 10, 36);
 		registration.addRecipeTransferHandler(CrafterMenu.class, MenuType.CRAFTER_3x3, RecipeTypes.CRAFTING, 0, 9, 9, 36);
 		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, 0, 1, 3, 36);
-		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.FUELING, 1, 1, 3, 36);
+		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING_FUEL, 1, 1, 3, 36);
 		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.SMOKING, 0, 1, 3, 36);
-		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.FUELING, 1, 1, 3, 36);
+		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.SMOKING_FUEL, 1, 1, 3, 36);
 		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, MenuType.BLAST_FURNACE, RecipeTypes.BLASTING, 0, 1, 3, 36);
-		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, MenuType.BLAST_FURNACE, RecipeTypes.FUELING, 1, 1, 3, 36);
+		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, MenuType.BLAST_FURNACE, RecipeTypes.BLASTING_FUEL, 1, 1, 3, 36);
 		registration.addRecipeTransferHandler(BrewingStandMenu.class, MenuType.BREWING_STAND, RecipeTypes.BREWING, 0, 4, 5, 36);
 		registration.addRecipeTransferHandler(AnvilMenu.class, MenuType.ANVIL, RecipeTypes.ANVIL, 0, 2, 3, 36);
 		registration.addRecipeTransferHandler(SmithingMenu.class, MenuType.SMITHING, RecipeTypes.SMITHING, 0, 3, 3, 36);
@@ -322,27 +328,25 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-		registration.addRecipeCatalysts(RecipeTypes.CRAFTING,
+		registration.addCraftingStation(RecipeTypes.CRAFTING,
 			Blocks.CRAFTING_TABLE,
 			Blocks.CRAFTER
 		);
-		registration.addRecipeCatalysts(RecipeTypes.FUELING,
-			Blocks.FURNACE,
-			Blocks.SMOKER,
-			Blocks.BLAST_FURNACE
-		);
-		registration.addRecipeCatalysts(RecipeTypes.CAMPFIRE_COOKING,
+		registration.addCraftingStation(RecipeTypes.CAMPFIRE_COOKING,
 			Blocks.CAMPFIRE,
 			Blocks.SOUL_CAMPFIRE
 		);
-		registration.addRecipeCatalyst(Blocks.STONECUTTER, RecipeTypes.STONECUTTING);
-		registration.addRecipeCatalyst(Blocks.FURNACE, RecipeTypes.SMELTING);
-		registration.addRecipeCatalyst(Blocks.SMOKER, RecipeTypes.SMOKING);
-		registration.addRecipeCatalyst(Blocks.BLAST_FURNACE, RecipeTypes.BLASTING);
-		registration.addRecipeCatalyst(Blocks.BREWING_STAND, RecipeTypes.BREWING);
-		registration.addRecipeCatalyst(Blocks.ANVIL, RecipeTypes.ANVIL);
-		registration.addRecipeCatalyst(Blocks.SMITHING_TABLE, RecipeTypes.SMITHING);
-		registration.addRecipeCatalyst(Blocks.COMPOSTER, RecipeTypes.COMPOSTING);
+		registration.addCraftingStation(RecipeTypes.STONECUTTING, Blocks.STONECUTTER);
+		registration.addCraftingStation(RecipeTypes.SMELTING, Blocks.FURNACE);
+		registration.addCraftingStation(RecipeTypes.SMOKING, Blocks.SMOKER);
+		registration.addCraftingStation(RecipeTypes.BLASTING, Blocks.BLAST_FURNACE);
+		registration.addCraftingStation(RecipeTypes.SMELTING_FUEL, Blocks.FURNACE);
+		registration.addCraftingStation(RecipeTypes.SMOKING_FUEL, Blocks.SMOKER);
+		registration.addCraftingStation(RecipeTypes.BLASTING_FUEL, Blocks.BLAST_FURNACE);
+		registration.addCraftingStation(RecipeTypes.BREWING, Blocks.BREWING_STAND);
+		registration.addCraftingStation(RecipeTypes.ANVIL, Blocks.ANVIL);
+		registration.addCraftingStation(RecipeTypes.SMITHING, Blocks.SMITHING_TABLE);
+		registration.addCraftingStation(RecipeTypes.COMPOSTING, Blocks.COMPOSTER);
 	}
 
 	public Optional<CraftingRecipeCategory> getCraftingCategory() {
@@ -363,15 +367,13 @@ public class VanillaPlugin implements IModPlugin {
 	private static List<RecipeHolder<CraftingRecipe>> replaceSpecialCraftingRecipes(List<RecipeHolder<CraftingRecipe>> unhandledCraftingRecipes, IJeiHelpers jeiHelpers) {
 		Map<Class<? extends CraftingRecipe>, Supplier<List<RecipeHolder<CraftingRecipe>>>> replacers = new IdentityHashMap<>();
 		replacers.put(TippedArrowRecipe.class, () -> TippedArrowRecipeMaker.createRecipes(jeiHelpers));
-		replacers.put(ShulkerBoxColoring.class, ShulkerBoxColoringRecipeMaker::createRecipes);
-		replacers.put(SuspiciousStewRecipe.class, SuspiciousStewRecipeMaker::createRecipes);
 		replacers.put(ShieldDecorationRecipe.class, ShieldDecorationRecipeMaker::createRecipes);
 
 		return unhandledCraftingRecipes.stream()
 			.map(RecipeHolder::value)
 			.map(CraftingRecipe::getClass)
-			.distinct()
 			.filter(replacers::containsKey)
+			.distinct()
 			// distinct + this limit will ensure we stop iterating early if we find all the recipes we're looking for.
 			.limit(replacers.size())
 			.flatMap(recipeClass -> {

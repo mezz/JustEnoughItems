@@ -2,11 +2,11 @@ package mezz.jei.library.load.registration;
 
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPluginHelper;
 import mezz.jei.api.recipe.advanced.ISimpleRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.common.util.ErrorUtil;
@@ -22,7 +22,7 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final List<IRecipeManagerPlugin> recipeManagerPlugins = new ArrayList<>();
-	private final ListMultiMap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators = new ListMultiMap<>();
+	private final ListMultiMap<IRecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators = new ListMultiMap<>();
 	private final IJeiHelpers jeiHelpers;
 	private final IJeiFeatures jeiFeatures;
 	private final IRecipeManagerPluginHelper pluginHelper;
@@ -42,17 +42,17 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	}
 
 	@Override
-	public <T> void addTypedRecipeManagerPlugin(RecipeType<T> recipeType, ISimpleRecipeManagerPlugin<T> recipeManagerPlugin) {
+	public <T> void addSimpleRecipeManagerPlugin(IRecipeType<T> recipeType, ISimpleRecipeManagerPlugin<T> recipeManagerPlugin) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(recipeManagerPlugin, "recipeManagerPlugin");
 
-		TypedRecipeManagerPluginAdapter<T> adapter = new TypedRecipeManagerPluginAdapter<>(pluginHelper, recipeType, recipeManagerPlugin);
+		SingleTypeRecipeManagerPluginAdapter<T> adapter = new SingleTypeRecipeManagerPluginAdapter<>(pluginHelper, recipeType, recipeManagerPlugin);
 		LOGGER.info("Added typed recipe manager plugin: {}", recipeManagerPlugin.getClass());
 		recipeManagerPlugins.add(adapter);
 	}
 
 	@Override
-	public <T> void addRecipeCategoryDecorator(RecipeType<T> recipeType, IRecipeCategoryDecorator<T> decorator) {
+	public <T> void addRecipeCategoryDecorator(IRecipeType<T> recipeType, IRecipeCategoryDecorator<T> decorator) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(decorator, "decorator");
 
@@ -81,7 +81,7 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	}
 
 	@Unmodifiable
-	public ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> getRecipeCategoryDecorators() {
+	public ImmutableListMultimap<IRecipeType<?>, IRecipeCategoryDecorator<?>> getRecipeCategoryDecorators() {
 		return recipeCategoryDecorators.toImmutable();
 	}
 }

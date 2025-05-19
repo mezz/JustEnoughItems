@@ -3,7 +3,7 @@ package mezz.jei.library.load.registration;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IRecipeRegistration;
@@ -46,7 +46,7 @@ public class RecipeRegistration implements IRecipeRegistration {
 	}
 
 	@Override
-	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
+	public <T> void addRecipes(IRecipeType<T> recipeType, List<T> recipes) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(recipes, "recipes");
 		this.recipeManager.addRecipes(recipeType, recipes);

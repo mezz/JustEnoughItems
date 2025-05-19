@@ -5,7 +5,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.config.IBookmarkConfig;
@@ -153,7 +153,7 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	@Nullable
-	public <R> RecipeBookmark<R,?> getMatchingBookmark(RecipeType<R> recipeType, R recipe) {
+	public <R> RecipeBookmark<R,?> getMatchingBookmark(IRecipeType<R> recipeType, R recipe) {
 		for (IBookmark bookmark : bookmarksList) {
 			if (bookmark instanceof RecipeBookmark<?,?> recipeBookmark) {
 				if (recipeBookmark.isRecipe(recipeType, recipe)) {

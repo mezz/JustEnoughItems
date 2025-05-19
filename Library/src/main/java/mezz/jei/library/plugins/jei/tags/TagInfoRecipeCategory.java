@@ -11,8 +11,8 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.util.ResourceLocationUtil;
@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeType<R>> extends AbstractRecipeCategory<R> {
+public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends IRecipeType<R>> extends AbstractRecipeCategory<R> {
 	private static final int WIDTH = 142;
 	private static final int HEIGHT = 110;
 
@@ -61,7 +61,7 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 
 		for (ITypedIngredient<?> stack : recipe.getTypedIngredients()) {
 			builder.addOutputSlot()
-				.addTypedIngredient(stack);
+				.add(stack);
 		}
 	}
 

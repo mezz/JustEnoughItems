@@ -91,7 +91,7 @@ public class GuiEventHandler {
 			.updateExclusionAreas(guiExclusionAreas)
 			.update();
 
-		DeltaTracker deltaTracker = minecraft.getTimer();
+		DeltaTracker deltaTracker = minecraft.getDeltaTracker();
 		float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
 		ingredientListOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		bookmarkOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, partialTicks);

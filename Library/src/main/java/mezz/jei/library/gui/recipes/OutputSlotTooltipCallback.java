@@ -8,7 +8,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ErrorUtil;
@@ -30,7 +30,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotRichTooltipCallback
 	private final ResourceLocation recipeName;
 	private final boolean recipeFromSameModAsCategory;
 
-	public OutputSlotTooltipCallback(ResourceLocation recipeName, RecipeType<?> recipeType) {
+	public OutputSlotTooltipCallback(ResourceLocation recipeName, IRecipeType<?> recipeType) {
 		this.recipeName = recipeName;
 		this.recipeFromSameModAsCategory = recipeName.getNamespace().equals(recipeType.getUid().getNamespace());
 	}

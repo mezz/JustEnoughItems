@@ -24,18 +24,6 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 		return ingredient.number();
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public String getUniqueId(TestIngredient ingredient, UidContext context) {
-		return "Test Ingredient Unique Id " + ingredient;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public String getWildcardId(TestIngredient ingredient) {
-		return "Test Ingredient Unique Id";
-	}
-
 	@Override
 	public Object getGroupingUid(TestIngredient ingredient) {
 		return TestIngredient.class;

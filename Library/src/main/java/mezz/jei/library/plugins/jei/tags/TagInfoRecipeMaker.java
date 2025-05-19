@@ -3,7 +3,7 @@ package mezz.jei.library.plugins.jei.tags;
 import mezz.jei.api.constants.Tags;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRenderHelper;
@@ -11,6 +11,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.ingredients.TypedIngredient;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -24,7 +25,7 @@ import java.util.function.Function;
 
 public record TagInfoRecipeMaker<B, I>(
 	IIngredientType<I> ingredientType,
-	RecipeType<ITagInfoRecipe> recipeType,
+	IRecipeType<ITagInfoRecipe> recipeType,
 	Function<B, I> baseToIngredient,
 	ResourceKey<? extends Registry<B>> registryKey
 ) {
@@ -39,7 +40,8 @@ public record TagInfoRecipeMaker<B, I>(
 	private static <B, I> List<ITagInfoRecipe> createTagInfoRecipes(IIngredientType<I> ingredientType, ResourceKey<? extends Registry<B>> registryKey, Function<B, I> baseToIngredient, IIngredientManager ingredientManager) {
 		Registry<B> registry = RegistryUtil.getRegistry(registryKey);
 		return registry
-			.getTagNames()
+			.getTags()
+			.map(HolderSet.Named::key)
 			.<ITagInfoRecipe>mapMulti((tagKey, acceptor) -> {
 				if (tagKey.location().getPath().equals(Tags.HIDDEN_FROM_RECIPE_VIEWERS.getPath())) {
 					return;

@@ -43,32 +43,6 @@ public interface ISubtypeManager {
 	<B, T> Object getSubtypeData(IIngredientTypeWithSubtypes<B, T> ingredientType, ITypedIngredient<T> typedIngredient, UidContext context);
 
 	/**
-	 * Get the data from an ItemStack that is relevant to comparing and telling subtypes apart.
-	 * Returns {@link IIngredientSubtypeInterpreter#NONE} if the ItemStack has no information used for subtypes.
-	 *
-	 * @since 11.1.1
-	 *
-	 * @deprecated use {@link #getSubtypeData(ItemStack, UidContext)}
-	 */
-	@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
-	@Deprecated(since = "19.9.0", forRemoval = true)
-	default String getSubtypeInfo(ItemStack ingredient, UidContext context) {
-		return getSubtypeInfo(VanillaTypes.ITEM_STACK, ingredient, context);
-	}
-
-	/**
-	 * Get the data from an ingredient that is relevant to comparing and telling subtypes apart.
-	 * Returns {@link IIngredientSubtypeInterpreter#NONE} if the ingredient has no information used for subtypes.
-	 *
-	 * @since 9.7.0
-	 *
-	 * @deprecated use {@link #getSubtypeData(IIngredientTypeWithSubtypes, Object, UidContext)}
-	 */
-	@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
-	@Deprecated(since = "19.9.0", forRemoval = true)
-	<T> String getSubtypeInfo(IIngredientTypeWithSubtypes<?, T> ingredientType, T ingredient, UidContext context);
-
-	/**
 	 * Return true if the given ingredient can have subtypes.
 	 * For example in the vanilla game an enchanted book may have subtypes, but an apple does not.
 	 *

@@ -14,6 +14,6 @@ public final class ChatUtil {
 	public static void writeChatMessage(Player player, String translationKey, ChatFormatting color) {
 		Component component = Component.translatable(translationKey);
 		component.getStyle().applyFormat(color);
-		player.sendSystemMessage(component);
+		player.displayClientMessage(component, false);
 	}
 }

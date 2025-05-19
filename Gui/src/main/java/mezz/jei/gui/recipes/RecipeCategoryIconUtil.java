@@ -4,8 +4,8 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.gui.elements.DrawableText;
 import net.minecraft.network.chat.Component;
 
@@ -21,8 +21,8 @@ public class RecipeCategoryIconUtil {
 		if (icon != null) {
 			return icon;
 		}
-		RecipeType<T> recipeType = recipeCategory.getRecipeType();
-		Optional<ITypedIngredient<?>> firstCatalyst = recipeManager.createRecipeCatalystLookup(recipeType)
+		IRecipeType<T> recipeType = recipeCategory.getRecipeType();
+		Optional<ITypedIngredient<?>> firstCatalyst = recipeManager.createCraftingStationLookup(recipeType)
 			.get()
 			.findFirst();
 

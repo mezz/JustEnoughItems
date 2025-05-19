@@ -36,8 +36,7 @@ public interface ITooltipBuilder {
 	 * to add images and other rich content.
 	 *
 	 * @implNote Make sure that {@link ClientTooltipComponent#create(TooltipComponent)}
-	 * works for your {@link TooltipComponent} on your platform (NeoForge, Fabric, Forge)
-	 * or else it will crash.
+	 * works for your {@link TooltipComponent} on your mod loader platform or else it will crash.
 	 *
 	 * @since 19.5.4
 	 */

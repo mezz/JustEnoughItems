@@ -4,13 +4,17 @@ import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.ISmithingCategoryExtension;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.library.util.RecipeUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingRecipeInput;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public abstract class SmithingCategoryExtension<R extends SmithingRecipe> implements ISmithingCategoryExtension<R> {
 	private final IPlatformRecipeHelper recipeHelper;
@@ -21,49 +25,48 @@ public abstract class SmithingCategoryExtension<R extends SmithingRecipe> implem
 
 	@Override
 	public <T extends IIngredientAcceptor<T>> void setTemplate(R recipe, T ingredientAcceptor) {
-		Ingredient ingredient = recipeHelper.getTemplate(recipe);
-		ingredientAcceptor.addIngredients(ingredient);
+		recipeHelper.getTemplate(recipe)
+			.ifPresent(ingredientAcceptor::add);
 	}
 
 	@Override
 	public <T extends IIngredientAcceptor<T>> void setBase(R recipe, T ingredientAcceptor) {
-		Ingredient ingredient = recipeHelper.getBase(recipe);
-		ingredientAcceptor.addIngredients(ingredient);
+		recipeHelper.getBase(recipe)
+			.ifPresent(ingredientAcceptor::add);
 	}
 
 	@Override
 	public <T extends IIngredientAcceptor<T>> void setAddition(R recipe, T ingredientAcceptor) {
-		Ingredient ingredient = recipeHelper.getAddition(recipe);
-		ingredientAcceptor.addIngredients(ingredient);
+		recipeHelper.getAddition(recipe)
+			.ifPresent(ingredientAcceptor::add);
 	}
 
 	@Override
 	public <T extends IIngredientAcceptor<T>> void setOutput(R recipe, T ingredientAcceptor) {
-		Ingredient templateIngredient = recipeHelper.getTemplate(recipe);
-		Ingredient baseIngredient = recipeHelper.getBase(recipe);
-		Ingredient additionIngredient = recipeHelper.getAddition(recipe);
+		Optional<Ingredient> templateIngredient = recipeHelper.getTemplate(recipe);
+		Optional<Ingredient> baseIngredient = recipeHelper.getBase(recipe);
+		Optional<Ingredient> additionIngredient = recipeHelper.getAddition(recipe);
 
-		List<ItemStack> templateStacks = Arrays.asList(templateIngredient.getItems());
+		Minecraft minecraft = Minecraft.getInstance();
+		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
+
+		List<ItemStack> templateStacks = templateIngredient.map(i -> i.display().resolveForStacks(contextmap)).orElse(List.of(ItemStack.EMPTY));
 		if (templateStacks.isEmpty()) {
 			templateStacks = List.of(ItemStack.EMPTY);
 		}
 
-		List<ItemStack> baseStacks = Arrays.asList(baseIngredient.getItems());
+		List<ItemStack> baseStacks = baseIngredient.map(i -> i.display().resolveForStacks(contextmap)).orElse(List.of(ItemStack.EMPTY));
 		if (baseStacks.isEmpty()) {
 			baseStacks = List.of(ItemStack.EMPTY);
 		}
 
-		ItemStack addition = ItemStack.EMPTY;
-		ItemStack[] additions = additionIngredient.getItems();
-		if (additions.length > 0) {
-			addition = additions[0];
-		}
+		ItemStack addition = additionIngredient.map(i -> i.display().resolveForFirstStack(contextmap)).orElse(ItemStack.EMPTY);
 
 		for (ItemStack template : templateStacks) {
 			for (ItemStack base : baseStacks) {
 				SmithingRecipeInput recipeInput = new SmithingRecipeInput(template, base, addition);
 				ItemStack output = RecipeUtil.assembleResultItem(recipeInput, recipe);
-				ingredientAcceptor.addItemStack(output);
+				ingredientAcceptor.add(output);
 			}
 		}
 	}

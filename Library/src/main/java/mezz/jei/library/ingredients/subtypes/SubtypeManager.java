@@ -44,20 +44,6 @@ public class SubtypeManager implements ISubtypeManager {
 		return interpreter.getSubtypeData(ingredient, context);
 	}
 
-	@SuppressWarnings({"removal", "deprecation"})
-	@Override
-	public <T> String getSubtypeInfo(IIngredientTypeWithSubtypes<?, T> ingredientType, T ingredient, UidContext context) {
-		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
-		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		ErrorUtil.checkNotNull(context, "context");
-
-		ISubtypeInterpreter<T> interpreter = interpreters.get(ingredientType, ingredient);
-		if (interpreter == null) {
-			return mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter.NONE;
-		}
-		return interpreter.getLegacyStringSubtypeInfo(ingredient, context);
-	}
-
 	@Override
 	public <T, B> boolean hasSubtypes(IIngredientTypeWithSubtypes<B, T> ingredientType, T ingredient) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");

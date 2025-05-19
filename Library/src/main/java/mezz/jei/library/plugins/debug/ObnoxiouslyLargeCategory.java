@@ -2,12 +2,14 @@ package mezz.jei.library.plugins.debug;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.network.chat.Component;
@@ -18,7 +20,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 public class ObnoxiouslyLargeCategory extends AbstractRecipeCategory<ObnoxiouslyLargeRecipe> {
-	public static final RecipeType<ObnoxiouslyLargeRecipe> TYPE = RecipeType.create(ModIds.JEI_ID, "obnoxiously_large_recipe", ObnoxiouslyLargeRecipe.class);
+	public static final IRecipeType<ObnoxiouslyLargeRecipe> TYPE = IRecipeType.create(ModIds.JEI_ID, "obnoxiously_large_recipe", ObnoxiouslyLargeRecipe.class);
 	private static final int GRID_WIDTH = 300;
 	private static final int GRID_HEIGHT = 300;
 
@@ -54,15 +56,15 @@ public class ObnoxiouslyLargeCategory extends AbstractRecipeCategory<Obnoxiously
 				int xPos = xOffset + (x * slotWidth);
 				int yPos = yOffset + (y * slotHeight);
 				ItemStack stack = iterator.next();
-				builder.addInputSlot(xPos + 1, yPos + 1)
-					.setStandardSlotBackground()
-					.addItemStack(stack);
+				IIngredientAcceptor<IRecipeSlotBuilder> iRecipeSlotBuilderIIngredientAcceptor = builder.addInputSlot(xPos + 1, yPos + 1)
+					.setStandardSlotBackground();
+				iRecipeSlotBuilderIIngredientAcceptor.add(stack);
 			}
 		}
 
-		builder.addOutputSlot(GRID_WIDTH + slotWidth, GRID_HEIGHT / 2)
-			.setStandardSlotBackground()
-			.addItemStack(iterator.next());
+		IIngredientAcceptor<IRecipeSlotBuilder> iRecipeSlotBuilderIIngredientAcceptor = builder.addOutputSlot(GRID_WIDTH + slotWidth, GRID_HEIGHT / 2)
+			.setStandardSlotBackground();
+		iRecipeSlotBuilderIIngredientAcceptor.add(iterator.next());
 	}
 
 	@Override

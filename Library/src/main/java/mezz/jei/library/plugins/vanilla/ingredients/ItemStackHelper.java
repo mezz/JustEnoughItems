@@ -61,13 +61,6 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		return displayName;
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public String getUniqueId(ItemStack ingredient, UidContext context) {
-		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		return stackHelper.getUniqueIdentifierForStack(ingredient, context);
-	}
-
 	@Override
 	public Object getUid(ItemStack ingredient, UidContext context) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
@@ -96,13 +89,6 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	public boolean hasSubtypes(ItemStack ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		return stackHelper.hasSubtypes(ingredient);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public String getWildcardId(ItemStack ingredient) {
-		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		return StackHelper.getRegistryNameForStack(ingredient);
 	}
 
 	@Override

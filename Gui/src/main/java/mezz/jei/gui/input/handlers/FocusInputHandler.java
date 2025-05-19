@@ -77,7 +77,7 @@ public class FocusInputHandler implements IUserInputHandler {
 		}
 
 		if (input.is(keyBindings.getShowUses())) {
-			return handleShow(input, List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CATALYST), keyBindings);
+			return handleShow(input, List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CRAFTING_STATION), keyBindings);
 		}
 
 		return Optional.empty();

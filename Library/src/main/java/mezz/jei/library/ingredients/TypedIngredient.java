@@ -8,13 +8,18 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	private static <T> void checkParameters(IIngredientType<T> ingredientType, T ingredient) {
@@ -120,10 +125,17 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	}
 
 	public static List<@Nullable ITypedIngredient<ItemStack>> createAndFilterInvalidList(IIngredientManager ingredientManager, Ingredient ingredient, boolean normalize) {
-		ItemStack[] itemStacks = ingredient.getItems();
+		SlotDisplay display = ingredient.display();
+		return createAndFilterInvalidList(ingredientManager, display, normalize);
+	}
+
+	public static List<@Nullable ITypedIngredient<ItemStack>> createAndFilterInvalidList(IIngredientManager ingredientManager, SlotDisplay slotDisplay, boolean normalize) {
+		Minecraft minecraft = Minecraft.getInstance();
+		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
+		List<ItemStack> itemStacks = slotDisplay.resolveForStacks(contextmap);
 		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 
-		List<@Nullable ITypedIngredient<ItemStack>> results = new ArrayList<>(itemStacks.length);
+		List<@Nullable ITypedIngredient<ItemStack>> results = new ArrayList<>(itemStacks.size());
 		for (ItemStack itemStack : itemStacks) {
 			ITypedIngredient<ItemStack> result = createAndFilterInvalid(ingredientHelper, VanillaTypes.ITEM_STACK, itemStack, normalize);
 			results.add(result);

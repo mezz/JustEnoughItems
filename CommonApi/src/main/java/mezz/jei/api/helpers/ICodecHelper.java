@@ -5,8 +5,8 @@ import com.mojang.serialization.MapCodec;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
 /**
@@ -23,11 +23,11 @@ public interface ICodecHelper {
 	Codec<IIngredientType<?>> getIngredientTypeCodec();
 
 	/**
-	 * @return a codec for {@link RecipeType}.
+	 * @return a codec for {@link IRecipeType}.
 	 *
 	 * @since 19.9.0
 	 */
-	Codec<RecipeType<?>> getRecipeTypeCodec(IRecipeManager recipeManager);
+	Codec<IRecipeType<?>> getRecipeTypeCodec(IRecipeManager recipeManager);
 
 	/**
 	 * @return a codec for any {@link ITypedIngredient}.

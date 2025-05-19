@@ -11,7 +11,7 @@ import mezz.jei.common.Constants;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
@@ -56,7 +56,7 @@ public class DrawableNineSliceTexture implements IScalableDrawable {
 		int textureWidth = this.width;
 		int textureHeight = this.height;
 
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(CoreShaders.POSITION_TEX);
 		RenderSystem.setShaderTexture(0, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
 
 		float uMin = sprite.getU0();

@@ -11,6 +11,9 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -64,7 +67,21 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 	}
 
 	@Override
-	public <T> SimpleIngredientAcceptor addIngredient(IIngredientType<T> ingredientType, T ingredient) {
+	public SimpleIngredientAcceptor add(SlotDisplay slotDisplay) {
+		ErrorUtil.checkNotNull(slotDisplay, "slotDisplay");
+
+		List<@Nullable ITypedIngredient<ItemStack>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, slotDisplay, false);
+		for (@Nullable ITypedIngredient<ItemStack> typedIngredient : typedIngredients) {
+			if (typedIngredient != null) {
+				this.add(typedIngredient);
+			}
+		}
+
+		return this;
+	}
+
+	@Override
+	public <T> SimpleIngredientAcceptor add(IIngredientType<T> ingredientType, T ingredient) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
@@ -73,7 +90,7 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 	}
 
 	@Override
-	public <I> SimpleIngredientAcceptor addTypedIngredient(ITypedIngredient<I> typedIngredient) {
+	public <I> SimpleIngredientAcceptor add(ITypedIngredient<I> typedIngredient) {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
 		@Nullable ITypedIngredient<I> copy = TypedIngredient.defensivelyCopyTypedIngredientFromApi(ingredientManager, typedIngredient);
@@ -86,23 +103,38 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public SimpleIngredientAcceptor addFluidStack(Fluid fluid) {
+	public SimpleIngredientAcceptor add(Fluid fluid) {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		return addFluidInternal(fluidHelper, fluid.builtInRegistryHolder(), fluidHelper.bucketVolume(), DataComponentPatch.EMPTY);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public SimpleIngredientAcceptor addFluidStack(Fluid fluid, long amount) {
+	public SimpleIngredientAcceptor add(Fluid fluid, long amount) {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		return addFluidInternal(fluidHelper, fluid.builtInRegistryHolder(), amount, DataComponentPatch.EMPTY);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public SimpleIngredientAcceptor addFluidStack(Fluid fluid, long amount, DataComponentPatch component) {
+	public SimpleIngredientAcceptor add(Fluid fluid, long amount, DataComponentPatch component) {
 		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 		return addFluidInternal(fluidHelper, fluid.builtInRegistryHolder(), amount, component);
+	}
+
+	@Override
+	public SimpleIngredientAcceptor add(Ingredient ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+
+		List<@Nullable ITypedIngredient<ItemStack>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredient, false);
+
+		for (@Nullable ITypedIngredient<ItemStack> typedIngredientOptional : typedIngredients) {
+			if (typedIngredientOptional != null) {
+				this.ingredients.add(typedIngredientOptional);
+			}
+		}
+
+		return this;
 	}
 
 	private <T> SimpleIngredientAcceptor addFluidInternal(IPlatformFluidHelperInternal<T> fluidHelper, Holder<Fluid> fluidHolder, long amount, DataComponentPatch component) {
@@ -117,7 +149,7 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		ErrorUtil.checkNotNull(ingredients, "ingredients");
 
 		for (ITypedIngredient<?> typedIngredient : ingredients) {
-			this.addTypedIngredient(typedIngredient);
+			this.add(typedIngredient);
 		}
 		return this;
 	}

@@ -7,7 +7,7 @@ import com.mojang.serialization.JsonOps;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.Services;
@@ -151,7 +151,7 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static <T> void validateRecipes(RecipeType<T> recipeType, Iterable<? extends T> recipes) {
+	public static <T> void validateRecipes(IRecipeType<T> recipeType, Iterable<? extends T> recipes) {
 		Class<?> recipeClass = recipeType.getRecipeClass();
 		for (T recipe : recipes) {
 			if (!recipeClass.isInstance(recipe)) {

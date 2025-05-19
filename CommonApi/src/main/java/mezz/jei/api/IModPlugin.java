@@ -1,26 +1,26 @@
 package mezz.jei.api;
 
 import mezz.jei.api.helpers.IPlatformFluidHelper;
-import mezz.jei.api.registration.IIngredientAliasRegistration;
-import mezz.jei.api.registration.IModInfoRegistration;
-import mezz.jei.api.registration.IRuntimeRegistration;
-import mezz.jei.api.runtime.config.IJeiConfigManager;
-import net.minecraft.resources.ResourceLocation;
-
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IIngredientAliasRegistration;
+import mezz.jei.api.registration.IModInfoRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
+import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.api.runtime.config.IJeiConfigManager;
+import net.minecraft.resources.ResourceLocation;
 
 /**
- * The main class to implement to create a JEI plugin. Everything communicated between a mod and JEI is through this class.
+ * The main class to implement to create a JEI plugin.
+ * Everything communicated between a mod and JEI is through this class.
  * IModPlugins must have the {@link JeiPlugin} annotation to get loaded by JEI.
  */
 public interface IModPlugin {
@@ -86,8 +86,8 @@ public interface IModPlugin {
 	}
 
 	/**
-	 * Register the categories handled by this plugin.
-	 * These are registered before recipes so they can be checked for validity.
+	 * Register the recipe categories handled by this plugin.
+	 * These are registered before recipes so that they can be checked for validity.
 	 */
 	default void registerCategories(IRecipeCategoryRegistration registration) {
 

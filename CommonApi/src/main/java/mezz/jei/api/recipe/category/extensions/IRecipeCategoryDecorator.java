@@ -4,8 +4,8 @@ import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -16,7 +16,7 @@ import java.util.List;
  * The {@link IRecipeCategoryDecorator} allows further customization of recipe categories.
  * It can be used to draw additional elements or tooltips on recipes, even of other mods.
  * <p>
- * Register it with {@link IAdvancedRegistration#addRecipeCategoryDecorator(RecipeType, IRecipeCategoryDecorator)}.
+ * Register it with {@link IAdvancedRegistration#addRecipeCategoryDecorator(IRecipeType, IRecipeCategoryDecorator)}.
  *
  * @since 15.1.0
  */

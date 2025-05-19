@@ -32,36 +32,20 @@ public interface IIngredientHelper<V> {
 	String getDisplayName(V ingredient);
 
 	/**
-	 * Unique ID for use in comparing, blacklisting, and looking up ingredients.
-	 * @since 7.3.0
-	 *
-	 * @deprecated use {@link #getUid(Object, UidContext)} instead
-	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
-	@Deprecated(since = "19.9.0", forRemoval = true)
-	String getUniqueId(V ingredient, UidContext context);
-
-	/**
 	 * Unique ID for use in comparing and looking up ingredients.
 	 *
 	 * Returns an {@link Object} so that UID creation can be optimized.
 	 * Make sure the returned value implements {@link Object#equals} and {@link Object#hashCode}.
-	 *
-	 * Replaces {@link #getUniqueId(Object, UidContext)}.
 	 *
 	 * @since 19.9.0
 	 */
-	default Object getUid(V ingredient, UidContext context) {
-		return getUniqueId(ingredient, context);
-	}
+	Object getUid(V ingredient, UidContext context);
 
 	/**
 	 * Unique ID for use in comparing and looking up ingredients.
 	 *
 	 * Returns an {@link Object} so that UID creation can be optimized.
 	 * Make sure the returned value implements {@link Object#equals} and {@link Object#hashCode}.
-	 *
-	 * Replaces {@link #getUniqueId(Object, UidContext)}.
 	 *
 	 * @since 19.19.4
 	 */
@@ -76,7 +60,7 @@ public interface IIngredientHelper<V> {
 	 * @since 19.13.0
 	 */
 	default Object getGroupingUid(V ingredient) {
-		return getWildcardId(ingredient);
+		return getUid(ingredient, UidContext.Ingredient);
 	}
 
 	/**
@@ -99,19 +83,6 @@ public interface IIngredientHelper<V> {
 	 */
 	default boolean hasSubtypes(V ingredient) {
 		return getIngredientType() instanceof IIngredientTypeWithSubtypes<?,?>;
-	}
-
-	/**
-	 * Wildcard ID for use in comparing, blacklisting, and looking up ingredients.
-	 * For an example, ItemStack's wildcardId does not include NBT.
-	 * For ingredients which do not have a wildcardId, just return the uniqueId here.
-	 *
-	 * @deprecated use {@link #getGroupingUid} instead
-	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
-	@Deprecated(since = "19.13.0", forRemoval = true)
-	default String getWildcardId(V ingredient) {
-		return getUniqueId(ingredient, UidContext.Ingredient);
 	}
 
 	/**

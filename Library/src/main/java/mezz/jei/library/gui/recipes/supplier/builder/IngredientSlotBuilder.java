@@ -12,6 +12,10 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import mezz.jei.library.ingredients.SimpleIngredientAcceptor;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,32 +34,69 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 	}
 
 	@Override
+	public IRecipeSlotBuilder add(SlotDisplay slotDisplay) {
+		this.ingredients.add(slotDisplay);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder add(ItemStack itemStack) {
+		this.ingredients.add(itemStack);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder add(ItemLike itemLike) {
+		this.ingredients.add(itemLike);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder add(Fluid fluid) {
+		this.ingredients.add(fluid);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder add(Fluid fluid, long amount) {
+		this.ingredients.add(fluid, amount);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder add(Fluid fluid, long amount, DataComponentPatch component) {
+		this.ingredients.add(fluid, amount, component);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder add(Ingredient ingredient) {
+		this.ingredients.add(ingredient);
+		return this;
+	}
+
+	@Override
+	public <I> IRecipeSlotBuilder add(ITypedIngredient<I> typedIngredient) {
+		this.ingredients.add(typedIngredient);
+		return this;
+	}
+
+	@Override
+	public <I> IRecipeSlotBuilder add(IIngredientType<I> ingredientType, I ingredient) {
+		this.ingredients.add(ingredientType, ingredient);
+		return this;
+	}
+
+	@Override
 	public <I> IRecipeSlotBuilder addIngredients(IIngredientType<I> ingredientType, List<@Nullable I> ingredients) {
 		this.ingredients.addIngredients(ingredientType, ingredients);
 		return this;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public <I> IRecipeSlotBuilder addIngredient(IIngredientType<I> ingredientType, I ingredient) {
-		this.ingredients.addIngredient(ingredientType, ingredient);
-		return this;
-	}
-
-	@Override
-	public IRecipeSlotBuilder addFluidStack(Fluid fluid) {
-		this.ingredients.addFluidStack(fluid);
-		return this;
-	}
-
-	@Override
-	public IRecipeSlotBuilder addFluidStack(Fluid fluid, long amount) {
-		this.ingredients.addFluidStack(fluid, amount);
-		return this;
-	}
-
-	@Override
-	public IRecipeSlotBuilder addFluidStack(Fluid fluid, long amount, DataComponentPatch componentPatch) {
-		this.ingredients.addFluidStack(fluid, amount, componentPatch);
+		this.ingredients.add(ingredientType, ingredient);
 		return this;
 	}
 
@@ -75,6 +116,11 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 	public IRecipeSlotBuilder addOptionalTypedIngredients(List<Optional<ITypedIngredient<?>>> ingredients) {
 		this.ingredients.addOptionalTypedIngredients(ingredients);
 		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder addItemStacks(List<ItemStack> itemStacks) {
+		return IRecipeSlotBuilder.super.addItemStacks(itemStacks);
 	}
 
 	@Override

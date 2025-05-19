@@ -7,11 +7,13 @@ import mezz.jei.common.util.Translator;
 import mezz.jei.neoforge.config.ServerConfig;
 import mezz.jei.neoforge.events.PermanentEventSubscriptions;
 import mezz.jei.neoforge.network.NetworkHandler;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 
 @Mod(ModIds.JEI_ID)
 public class JustEnoughItems {
@@ -26,6 +28,16 @@ public class JustEnoughItems {
 
 		NetworkHandler networkHandler = new NetworkHandler("3", serverConfig);
 		networkHandler.registerPacketHandlers(subscriptions);
+
+		eventBus.addListener(false, OnDatapackSyncEvent.class, e -> e.sendRecipes(
+			RecipeType.CRAFTING,
+			RecipeType.STONECUTTING,
+			RecipeType.SMELTING,
+			RecipeType.SMOKING,
+			RecipeType.BLASTING,
+			RecipeType.CAMPFIRE_COOKING,
+			RecipeType.SMITHING
+		));
 
 		JustEnoughItemsClientSafeRunner clientSafeRunner = new JustEnoughItemsClientSafeRunner(networkHandler, subscriptions);
 		if (dist.isClient()) {

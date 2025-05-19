@@ -25,6 +25,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.List;
@@ -52,7 +54,17 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<CraftingRecipe> recipeHolder, IFocusGroup focuses) {
 		var recipeExtension = this.extendableHelper.getRecipeExtension(recipeHolder);
-		recipeExtension.setRecipe(recipeHolder, builder, craftingGridHelper, focuses);
+
+		CraftingRecipe recipe = recipeHolder.value();
+		RecipeDisplay display = recipe.display().getFirst();
+		SlotDisplay resultItem = display.result();
+
+		int width = recipeExtension.getWidth(recipeHolder);
+		int height = recipeExtension.getHeight(recipeHolder);
+		craftingGridHelper.createAndSetOutputs(builder, resultItem);
+
+		List<SlotDisplay> ingredients = recipeExtension.getIngredients(recipeHolder);
+		craftingGridHelper.createAndSetIngredientsFromDisplays(builder, ingredients, width, height);
 	}
 
 	@Override
@@ -111,13 +123,10 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 		extendableHelper.addRecipeExtension(recipeClass, extension);
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public ResourceLocation getRegistryName(RecipeHolder<CraftingRecipe> recipeHolder) {
 		ErrorUtil.checkNotNull(recipeHolder, "recipeHolder");
-		return this.extendableHelper.getOptionalRecipeExtension(recipeHolder)
-			.flatMap(extension -> extension.getRegistryName(recipeHolder))
-			.orElseGet(recipeHolder::id);
+		return recipeHolder.id().location();
 	}
 
 	@Override
@@ -134,5 +143,12 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 				return new ImmutableSize2i(width, height);
 			})
 			.orElse(ImmutableSize2i.EMPTY);
+	}
+
+	public List<SlotDisplay> getIngredients(RecipeHolder<CraftingRecipe> recipeHolder) {
+		ErrorUtil.checkNotNull(recipeHolder, "recipeHolder");
+		return this.extendableHelper.getOptionalRecipeExtension(recipeHolder)
+			.map(extension -> extension.getIngredients(recipeHolder))
+			.orElse(List.of());
 	}
 }

@@ -6,8 +6,6 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
-import mezz.jei.api.gui.widgets.IRecipeWidget;
-import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -22,10 +20,6 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.TickTimer;
 import mezz.jei.library.gui.elements.DrawableBuilder;
-import mezz.jei.library.gui.widgets.AbstractScrollWidget;
-import mezz.jei.library.gui.widgets.DrawableWidget;
-import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
-import mezz.jei.library.gui.widgets.ScrollGridWidgetFactory;
 import net.minecraft.resources.ResourceLocation;
 
 public class GuiHelper implements IGuiHelper {
@@ -110,11 +104,6 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
-	public IRecipeWidget createWidgetFromDrawable(IDrawable drawable, int xPos, int yPos) {
-		return new DrawableWidget(drawable, xPos, yPos);
-	}
-
-	@Override
 	public IDrawableStatic createBlankDrawable(int width, int height) {
 		return new DrawableBlank(width, height);
 	}
@@ -143,31 +132,6 @@ public class GuiHelper implements IGuiHelper {
 	@Override
 	public ICraftingGridHelper createCraftingGridHelper() {
 		return CraftingGridHelper.INSTANCE;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public mezz.jei.api.gui.widgets.IScrollGridWidgetFactory<?> createScrollGridFactory(int columns, int visibleRows) {
-		return new ScrollGridWidgetFactory<>(columns, visibleRows);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public IScrollBoxWidget createScrollBoxWidget(IDrawable contents, int visibleHeight, int xPos, int yPos) {
-		ScrollBoxRecipeWidget widget = new ScrollBoxRecipeWidget(contents.getWidth() + getScrollBoxScrollbarExtraWidth(), visibleHeight, xPos, yPos);
-		widget.setContents(contents);
-		return widget;
-	}
-
-	@Override
-	public IScrollBoxWidget createScrollBoxWidget(int width, int height, int xPos, int yPos) {
-		return new ScrollBoxRecipeWidget(width, height, xPos, yPos);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public int getScrollBoxScrollbarExtraWidth() {
-		return AbstractScrollWidget.getScrollBoxScrollbarExtraWidth();
 	}
 
 	@Override

@@ -64,7 +64,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	/**
 	 * Slots handled by the recipe category directly.
 	 */
-	private final List<IRecipeSlotDrawable> recipeCategorySlots;
+	private final List<IRecipeSlotDrawable> slots;
 	/**
 	 * All slots, including slots handled by the recipe category and widgets.
 	 */
@@ -117,8 +117,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		int recipeBorderPadding,
 		@Nullable ShapelessIcon shapelessIcon,
 		ImmutablePoint2i recipeTransferButtonPos,
-		List<IRecipeSlotDrawable> recipeCategorySlots,
-		List<IRecipeSlotDrawable> allSlots,
+		List<IRecipeSlotDrawable> slots,
 		CycleTicker cycleTicker,
 		IFocusGroup focuses
 	) {
@@ -131,8 +130,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		this.focuses = focuses;
 		this.inputHandler = new RecipeLayoutInputHandler<>(this);
 
-		this.recipeCategorySlots = recipeCategorySlots;
-		this.recipeSlotsView = new RecipeSlotsView(Collections.unmodifiableList(allSlots));
+		this.slots = slots;
+		this.recipeSlotsView = new RecipeSlotsView(List.copyOf(slots));
 		this.recipeBorderPadding = recipeBorderPadding;
 		this.area = new ImmutableRect2i(
 			0,
@@ -152,7 +151,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		this.recipeBackground = recipeBackground;
 		this.shapelessIcon = shapelessIcon;
 
-		recipeCategory.onDisplayedIngredientsUpdate(recipe, Collections.unmodifiableList(recipeCategorySlots), focuses);
+		recipeCategory.onDisplayedIngredientsUpdate(recipe, Collections.unmodifiableList(this.slots), focuses);
 	}
 
 	public void ensureRecipeExtrasAreCreated() {
@@ -179,7 +178,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		final double recipeMouseX = mouseX - area.getX();
 		final double recipeMouseY = mouseY - area.getY();
 
-		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(recipeCategorySlots);
+		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(slots);
 
 		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
@@ -193,7 +192,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 			poseStack.pushPose();
 			{
 				recipeCategory.draw(recipe, recipeCategorySlotsView, guiGraphics, recipeMouseX, recipeMouseY);
-				for (IRecipeSlotDrawable slot : recipeCategorySlots) {
+				for (IRecipeSlotDrawable slot : slots) {
 					slot.draw(guiGraphics);
 				}
 				for (IRecipeWidget widget : allWidgets) {
@@ -254,7 +253,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 
 		RenderSystem.disableBlend();
 
-		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(recipeCategorySlots);
+		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(slots);
 		RecipeSlotUnderMouse hoveredSlotResult = getSlotUnderMouse(mouseX, mouseY).orElse(null);
 
 		var poseStack = guiGraphics.pose();
@@ -315,7 +314,9 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 			.flatMap(slot -> slot.getDisplayedIngredient(ingredientType));
 	}
 
+	@SuppressWarnings("removal")
 	@Override
+	@Deprecated
 	public Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY) {
 		return getSlotUnderMouse(mouseX, mouseY)
 			.map(RecipeSlotUnderMouse::slot);
@@ -337,7 +338,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 					.map(slot -> slot.addOffset(area.x(), area.y()));
 			}
 		}
-		for (IRecipeSlotDrawable slot : recipeCategorySlots) {
+		for (IRecipeSlotDrawable slot : slots) {
 			if (slot.isMouseOver(recipeMouseX, recipeMouseY)) {
 				return Optional.of(new RecipeSlotUnderMouse(slot, area.getScreenPosition()));
 			}
@@ -370,7 +371,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	@Override
 	public IRecipeSlotDrawablesView getRecipeSlots() {
 		ensureRecipeExtrasAreCreated();
-		return () -> Collections.unmodifiableList(recipeCategorySlots);
+		return () -> Collections.unmodifiableList(slots);
 	}
 
 	@Override
@@ -390,10 +391,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 			widget.tick();
 		}
 		if (cycleTicker.tick()) {
-			for (IRecipeSlotDrawable slot : recipeCategorySlots) {
+			for (IRecipeSlotDrawable slot : slots) {
 				slot.clearDisplayOverrides();
 			}
-			recipeCategory.onDisplayedIngredientsUpdate(recipe, recipeCategorySlots, focuses);
+			recipeCategory.onDisplayedIngredientsUpdate(recipe, slots, focuses);
 		}
 	}
 
@@ -421,7 +422,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	public void addSlottedWidget(ISlottedRecipeWidget widget, List<IRecipeSlotDrawable> slots) {
 		this.allWidgets.add(widget);
 		this.slottedWidgets.add(widget);
-		this.recipeCategorySlots.removeAll(slots);
+		this.slots.removeAll(slots);
 	}
 
 	@Override
@@ -494,10 +495,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		return textWidget;
 	}
 
-	private record RecipeSlotsView(@Unmodifiable List<IRecipeSlotView> allSlots) implements IRecipeSlotsView {
+	private record RecipeSlotsView(@Unmodifiable List<IRecipeSlotView> slots) implements IRecipeSlotsView {
 		@Override
 		public @Unmodifiable List<IRecipeSlotView> getSlotViews() {
-			return allSlots;
+			return slots;
 		}
 	}
 }

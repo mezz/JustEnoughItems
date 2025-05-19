@@ -2,7 +2,7 @@ package mezz.jei.api.gui.handlers;
 
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.recipe.IFocusFactory;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -67,9 +67,9 @@ public interface IGuiClickableArea {
 	 *
 	 * @since 9.5.0
 	 */
-	static IGuiClickableArea createBasic(int xPos, int yPos, int width, int height, RecipeType<?>... recipeTypes) {
+	static IGuiClickableArea createBasic(int xPos, int yPos, int width, int height, IRecipeType<?>... recipeTypes) {
 		Rect2i area = new Rect2i(xPos, yPos, width, height);
-		List<RecipeType<?>> recipeTypesList = Arrays.asList(recipeTypes);
+		List<IRecipeType<?>> recipeTypesList = Arrays.asList(recipeTypes);
 		return new IGuiClickableArea() {
 			@Override
 			public Rect2i getArea() {

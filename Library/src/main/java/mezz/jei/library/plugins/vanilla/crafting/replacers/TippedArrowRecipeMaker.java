@@ -6,6 +6,7 @@ import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -14,7 +15,9 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 
 import java.util.List;
 
@@ -24,27 +27,29 @@ public final class TippedArrowRecipeMaker {
 		IVanillaRecipeFactory vanillaRecipeFactory = jeiHelpers.getVanillaRecipeFactory();
 
 		String group = "jei.tipped.arrow";
-		ItemStack arrowStack = new ItemStack(Items.ARROW);
-		Ingredient arrowIngredient = Ingredient.of(arrowStack);
+		Ingredient arrowIngredient = Ingredient.of(Items.ARROW);
 
 		Registry<Potion> potionRegistry = RegistryUtil.getRegistry(Registries.POTION);
-		return potionRegistry.holders()
+		return potionRegistry.listElements()
 			.map(potion -> {
 				ItemStack input = PotionContents.createItemStack(Items.LINGERING_POTION, potion);
 				ItemStack output = PotionContents.createItemStack(Items.TIPPED_ARROW, potion);
 				output.setCount(8);
 
-				Ingredient potionIngredient = Ingredient.of(input);
-				ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + output.getDescriptionId());
-				CraftingRecipe recipe = vanillaRecipeFactory.createShapedRecipeBuilder(CraftingBookCategory.MISC, List.of(output))
+				Ingredient potionIngredient = Ingredient.of(input.getItem());
+				ResourceLocation potionLocation = potion.key().location();
+				ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + potionLocation.getNamespace() + "." + potionLocation.getPath());
+				ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
+				SlotDisplay slotDisplay = new SlotDisplay.ItemStackSlotDisplay(output);
+				CraftingRecipe recipe = vanillaRecipeFactory.createShapedRecipeBuilder(CraftingBookCategory.MISC, slotDisplay)
 					.group(group)
 					.define('a', arrowIngredient)
-					.define('p', potionIngredient)
+					.define('p', potionIngredient, new SlotDisplay.ItemStackSlotDisplay(input))
 					.pattern("aaa")
 					.pattern("apa")
 					.pattern("aaa")
 					.build();
-				return new RecipeHolder<>(id, recipe);
+				return new RecipeHolder<>(resourceKey, recipe);
 			})
 			.toList();
 	}

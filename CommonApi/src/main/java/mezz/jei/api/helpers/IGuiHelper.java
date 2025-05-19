@@ -2,18 +2,13 @@ package mezz.jei.api.helpers;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ITickTimer;
-import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
-import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
-import mezz.jei.api.gui.widgets.IRecipeWidget;
-import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -169,55 +164,6 @@ public interface IGuiHelper {
 	 * Helps set crafting-grid-style GuiItemStackGroup.
 	 */
 	ICraftingGridHelper createCraftingGridHelper();
-
-	/**
-	 * Create a scroll grid widget factory.
-	 * Handles displaying a grid of ingredient slots in a scrolling area.
-	 *
-	 * Add ingredients to it using {@link IRecipeLayoutBuilder#addSlotToWidget(RecipeIngredientRole, mezz.jei.api.gui.widgets.ISlottedWidgetFactory)}
-	 *
-	 * @since 19.7.0
-	 * @deprecated use {@link IRecipeExtrasBuilder#addScrollGridWidget} instead, it's much simpler
-	 */
-	@SuppressWarnings("removal")
-	@Deprecated(since = "19.19.3", forRemoval = true)
-	mezz.jei.api.gui.widgets.IScrollGridWidgetFactory<?> createScrollGridFactory(int columns, int visibleRows);
-
-	/**
-	 * Create a scroll box widget.
-	 * Handles displaying drawable contents in a scrolling area.
-	 *
-	 * @since 19.8.0
-	 *
-	 * @deprecated use {@link IRecipeExtrasBuilder#addScrollBoxWidget}
-	 */
-	@Deprecated(since = "19.18.9", forRemoval = true)
-	IScrollBoxWidget createScrollBoxWidget(IDrawable contents, int visibleHeight, int xPos, int yPos);
-
-	/**
-	 * Create a scroll box widget.
-	 * Handles displaying drawable contents in a scrolling area.
-	 *
-	 * @since 19.18.10
-	 */
-	IScrollBoxWidget createScrollBoxWidget(int width, int height, int xPos, int yPos);
-
-	/**
-	 * The amount of extra horizontal space that a {@link IScrollBoxWidget} takes up with its scroll bar.
-	 *
-	 * @since 19.8.0
-	 *
-	 * @deprecated use {@link IRecipeExtrasBuilder#addScrollBoxWidget}
-	 */
-	@Deprecated(since = "19.18.9", forRemoval = true)
-	int getScrollBoxScrollbarExtraWidth();
-
-	/**
-	 * Create a simple widget from an {@link IDrawable}
-	 *
-	 * @since 19.18.8
-	 */
-	IRecipeWidget createWidgetFromDrawable(IDrawable drawable, int xPos, int yPos);
 
 	/**
 	 * Create a timer to help with rendering things that normally depend on ticks.
