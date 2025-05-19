@@ -1,12 +1,12 @@
 package mezz.jei.gui.input.handlers;
 
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
-import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;

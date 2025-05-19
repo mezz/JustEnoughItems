@@ -2,8 +2,8 @@ package mezz.jei.neoforge.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.keys.AbstractJeiKeyMappingBuilder;
-import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.IJeiKeyMappingBuilder;
+import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 import net.minecraft.client.KeyMapping;

@@ -1,8 +1,8 @@
 package mezz.jei.api.recipe.transfer;
 
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 

@@ -1,7 +1,5 @@
 package mezz.jei.gui.config;
 
-import java.util.function.Consumer;
-
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
@@ -13,6 +11,8 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.Translator;
 import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.function.Consumer;
 
 public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping toggleOverlay;

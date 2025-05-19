@@ -1,12 +1,12 @@
 package mezz.jei.neoforge.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import java.util.function.Consumer;
-
 import mezz.jei.common.input.KeyNameUtil;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
+
+import java.util.function.Consumer;
 
 public class NeoForgeJeiKeyMapping implements IJeiKeyMappingInternal {
 	private final KeyMapping keyMapping;

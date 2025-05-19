@@ -1,10 +1,10 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
-import java.util.List;
-
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 public record AnvilRecipe(
 	List<ItemStack> leftInputs,

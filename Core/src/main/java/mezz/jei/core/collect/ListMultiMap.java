@@ -1,12 +1,12 @@
 package mezz.jei.core.collect;
 
+import com.google.common.collect.ImmutableListMultimap;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-
-import com.google.common.collect.ImmutableListMultimap;
 
 public class ListMultiMap<K, V> extends MultiMap<K, V, List<V>> {
 	public ListMultiMap() {

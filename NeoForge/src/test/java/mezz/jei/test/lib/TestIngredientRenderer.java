@@ -1,8 +1,8 @@
 package mezz.jei.test.lib;
 
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
 

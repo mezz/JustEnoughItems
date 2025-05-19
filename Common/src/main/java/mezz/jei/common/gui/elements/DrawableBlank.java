@@ -1,9 +1,9 @@
 package mezz.jei.common.gui.elements;
 
-import mezz.jei.api.gui.drawable.IScalableDrawable;
-import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
+import net.minecraft.client.gui.GuiGraphics;
 
 public record DrawableBlank(int width, int height) implements IDrawableStatic, IDrawableAnimated, IScalableDrawable {
 	public static final DrawableBlank EMPTY = new DrawableBlank(0, 0);

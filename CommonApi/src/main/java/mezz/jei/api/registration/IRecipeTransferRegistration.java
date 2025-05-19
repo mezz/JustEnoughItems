@@ -1,14 +1,13 @@
 package mezz.jei.api.registration;
 
-import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
-import mezz.jei.api.recipe.types.IRecipeType;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
+import mezz.jei.api.recipe.types.IRecipeType;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;
 

@@ -2,8 +2,8 @@ package mezz.jei.common.network.packets;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.config.GiveMode;
-import mezz.jei.common.network.codecs.EnumStreamCodec;
 import mezz.jei.common.network.ServerPacketContext;
+import mezz.jei.common.network.codecs.EnumStreamCodec;
 import mezz.jei.common.util.ServerCommandUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;

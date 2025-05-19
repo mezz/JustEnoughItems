@@ -1,10 +1,10 @@
 package mezz.jei.gui.input.handlers;
 
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.UserInput;
 import mezz.jei.core.util.TextHistory;
 import mezz.jei.gui.input.GuiTextFieldFilter;
+import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;

@@ -1,18 +1,17 @@
 package mezz.jei.api.registration;
 
-import java.util.Collection;
-import java.util.List;
-
-import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.recipe.types.IRecipeType;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IScreenHandler;
+import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.recipe.types.IRecipeType;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+
+import java.util.Collection;
+import java.util.List;
 
 public interface IGuiHandlerRegistration {
 	/**

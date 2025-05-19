@@ -1,5 +1,9 @@
 package mezz.jei.core.util;
 
+import mezz.jei.core.collect.Table;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
 import java.util.ArrayList;
@@ -7,10 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
-import mezz.jei.core.collect.Table;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public final class ReflectionUtil {
 	private static final Logger LOGGER = LogManager.getLogger();

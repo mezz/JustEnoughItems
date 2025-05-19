@@ -1,9 +1,9 @@
 package mezz.jei.gui.input;
 
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.core.util.ReflectionUtil;
 import mezz.jei.gui.input.handlers.DragRouter;
 import mezz.jei.gui.input.handlers.UserInputRouter;
-import mezz.jei.core.util.ReflectionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;

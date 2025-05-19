@@ -1,11 +1,11 @@
 package mezz.jei.neoforge.startup;
 
-import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
-import mezz.jei.neoforge.input.ForgeUserInput;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
+import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
+import mezz.jei.neoforge.input.ForgeUserInput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.neoforged.neoforge.client.event.ContainerScreenEvent;

@@ -1,11 +1,11 @@
 package mezz.jei.library.config;
 
-import mezz.jei.library.color.ColorName;
-import mezz.jei.library.color.ColorUtil;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
-import mezz.jei.library.config.serializers.ColorNameSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
+import mezz.jei.library.color.ColorName;
+import mezz.jei.library.color.ColorUtil;
+import mezz.jei.library.config.serializers.ColorNameSerializer;
 
 import java.util.Comparator;
 import java.util.List;

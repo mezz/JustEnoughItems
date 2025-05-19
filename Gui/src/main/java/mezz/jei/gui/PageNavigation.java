@@ -1,16 +1,16 @@
 package mezz.jei.gui;
 
 import mezz.jei.common.Internal;
-import net.minecraft.client.gui.GuiGraphics;
-import mezz.jei.gui.elements.GuiIconButton;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
+import mezz.jei.gui.elements.GuiIconButton;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
-import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 
 public class PageNavigation {

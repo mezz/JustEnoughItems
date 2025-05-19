@@ -1,9 +1,8 @@
 package mezz.jei.api.runtime;
 
-import org.jetbrains.annotations.Nullable;
-
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;

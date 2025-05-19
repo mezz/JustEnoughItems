@@ -2,9 +2,9 @@ package mezz.jei.neoforge.config;
 
 import mezz.jei.common.config.IServerConfig;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.function.Supplier;
 

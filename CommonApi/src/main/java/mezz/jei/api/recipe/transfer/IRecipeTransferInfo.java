@@ -1,16 +1,14 @@
 package mezz.jei.api.recipe.transfer;
 
-import java.util.List;
-import java.util.Optional;
-
 import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
-
-import mezz.jei.api.registration.IRecipeTransferRegistration;
-
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Gives JEI the information it needs to transfer recipes from a slotted inventory into the crafting area.

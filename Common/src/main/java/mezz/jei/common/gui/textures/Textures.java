@@ -1,12 +1,11 @@
 package mezz.jei.common.gui.textures;
 
-import mezz.jei.common.gui.elements.HighResolutionDrawable;
-import net.minecraft.resources.ResourceLocation;
-
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.elements.DrawableSprite;
+import mezz.jei.common.gui.elements.HighResolutionDrawable;
+import net.minecraft.resources.ResourceLocation;
 
 public class Textures {
 	private final JeiSpriteUploader spriteUploader;

@@ -1,13 +1,13 @@
 package mezz.jei.core.collect;
 
+import com.google.common.collect.ImmutableTable;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import com.google.common.collect.ImmutableTable;
 
 public class Table<R, C, V> {
 	public static <R, C, V> Table<R, C, V> hashBasedTable() {

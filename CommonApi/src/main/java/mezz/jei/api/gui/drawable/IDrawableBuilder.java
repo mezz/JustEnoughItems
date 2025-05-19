@@ -1,9 +1,8 @@
 package mezz.jei.api.gui.drawable;
 
-import net.minecraft.resources.ResourceLocation;
-
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.helpers.IGuiHelper;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Builder for creating drawables from a resource location.

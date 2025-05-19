@@ -2,9 +2,9 @@ package mezz.jei.common;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.common.config.IJeiClientConfigs;
-import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.ClientToggleState;
+import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;

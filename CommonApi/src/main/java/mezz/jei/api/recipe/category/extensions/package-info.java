@@ -2,6 +2,6 @@
 @MethodsReturnNonnullByDefault
 package mezz.jei.api.recipe.category.extensions;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import net.minecraft.MethodsReturnNonnullByDefault;
+
+import javax.annotation.ParametersAreNonnullByDefault;

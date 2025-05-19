@@ -1,8 +1,8 @@
 package mezz.jei.common.config.file;
 
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
-import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.BooleanSerializer;
+import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.IntegerSerializer;
 
 import java.util.ArrayList;

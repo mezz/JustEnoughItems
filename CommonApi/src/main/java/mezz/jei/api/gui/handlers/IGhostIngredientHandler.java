@@ -1,12 +1,12 @@
 package mezz.jei.api.gui.handlers;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Lets mods accept ghost ingredients from JEI.

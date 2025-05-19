@@ -1,11 +1,11 @@
 package mezz.jei.api.gui.handlers;
 
-import org.jetbrains.annotations.Nullable;
-import java.util.function.Function;
-
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Function;
 
 /**
  * Creates {@link IGuiProperties} from a {@link Screen} so JEI can draw next to it.

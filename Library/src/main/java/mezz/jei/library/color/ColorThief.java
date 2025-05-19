@@ -18,11 +18,11 @@ package mezz.jei.library.color;
  * available at http://lokeshdhakar.com/projects/color-thief/
  */
 
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.Nullable;
-import java.util.Arrays;
 
-import com.mojang.blaze3d.platform.NativeImage;
+import java.util.Arrays;
 
 public class ColorThief {
 	/**

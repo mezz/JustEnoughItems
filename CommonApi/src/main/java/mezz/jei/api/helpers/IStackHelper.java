@@ -1,12 +1,10 @@
 package mezz.jei.api.helpers;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
-import org.jetbrains.annotations.Nullable;
-
+import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.world.item.ItemStack;
-
-import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Helps get ItemStacks from common formats used in recipes.
