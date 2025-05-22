@@ -219,8 +219,6 @@ publishMods {
 			end = minecraftVersion
 		}
 	}
-
-	dryRun = true
 }
 
 tasks.withType<PublishModTask> {
