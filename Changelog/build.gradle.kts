@@ -9,7 +9,7 @@ plugins {
 val specificationVersion: String by extra
 val changelogUntaggedName = "Current release $specificationVersion"
 
-tasks.register<GitChangelogTask>("makeChangelog") {
+val makeHtmlChangelog = tasks.register<GitChangelogTask>("makeHtmlChangelog") {
 	val output = layout.buildDirectory.file("changelog.html")
 
 	fromRepo.set(project.rootProject.rootDir.absolutePath)
@@ -23,7 +23,7 @@ tasks.register<GitChangelogTask>("makeChangelog") {
 	outputs.file(output)
 }
 
-tasks.register<GitChangelogTask>("makeMarkdownChangelog") {
+val makeMarkdownChangelog = tasks.register<GitChangelogTask>("makeMarkdownChangelog") {
 	val output = layout.buildDirectory.file("changelog.md")
 
 	fromRepo.set(project.rootProject.rootDir.absolutePath)
@@ -39,4 +39,28 @@ tasks.register<GitChangelogTask>("makeMarkdownChangelog") {
 
 tasks.withType<GitChangelogTask> {
 	outputs.upToDateWhen { false } // Always run
+}
+
+val changelogHtml = configurations.create("changelogHtml") {
+	isCanBeConsumed = true
+	isCanBeResolved = false
+	isVisible = false
+	attributes {
+		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogHtml"))
+	}
+	outgoing.artifact(makeHtmlChangelog.map { it.outputs.files.singleFile }) {
+		type = "html"
+	}
+}
+
+val changelogMarkdown = configurations.create("changelogMarkdown") {
+	isCanBeConsumed = true
+	isCanBeResolved = false
+	isVisible = false
+	attributes {
+		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogMarkdown"))
+	}
+	outgoing.artifact(makeMarkdownChangelog.map { it.outputs.files.singleFile }) {
+		type = "markdown"
+	}
 }

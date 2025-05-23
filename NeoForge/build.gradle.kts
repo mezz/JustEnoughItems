@@ -1,5 +1,3 @@
-import me.modmuss50.mpp.PublishModTask
-import me.modmuss50.mpp.platforms.curseforge.Curseforge
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.slf4j.event.Level
@@ -56,7 +54,6 @@ val dependencyProjects: List<Project> = listOf(
 dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
-project.evaluationDependsOn(":Changelog")
 
 tasks.withType<JavaCompile>().configureEach {
     dependencyProjects.forEach {
@@ -77,6 +74,31 @@ java {
 	withSourcesJar()
 }
 
+val changelogHtml = configurations.create("changelogHtml") {
+	isCanBeConsumed = false
+	isCanBeResolved = true
+	isVisible = false
+	attributes {
+		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogHtml"))
+	}
+}
+
+val changelogMarkdown = configurations.create("changelogMarkdown") {
+	isCanBeConsumed = false
+	isCanBeResolved = true
+	isVisible = false
+	attributes {
+		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogMarkdown"))
+	}
+}
+
+fun Configuration.singleFileContents(): Provider<String> =
+	incoming
+		.files
+		.elements
+		.map { elements -> elements.single() }
+		.map { it.asFile.readText() }
+
 dependencies {
 	dependencyProjects.forEach {
 		implementation(it)
@@ -91,6 +113,8 @@ dependencies {
 		name = "junit-jupiter-engine",
 		version = jUnitVersion
 	)
+	changelogHtml(project(":Changelog"))
+	changelogMarkdown(project(":Changelog"))
 }
 
 neoForge {
@@ -150,47 +174,6 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	archiveClassifier.set("sources")
 }
 
-
-abstract class ReadChangelog : DefaultTask() {
-	@get:InputFile
-	abstract val inputFile: RegularFileProperty
-
-	@get:OutputFile
-	abstract val outputFile: RegularFileProperty
-
-	@TaskAction
-	fun read() {
-		val text = inputFile.get().asFile.readText()
-		outputFile.get().asFile.writeText(text)
-	}
-}
-
-val changelogHtmlFile: Provider<RegularFile> =
-	project(":Changelog").layout.buildDirectory.file("changelog.html")
-
-val changelogHtmlTask = tasks.register<ReadChangelog>("readChangelogHtml") {
-	dependsOn(":Changelog:makeChangelog")
-	inputFile.set(changelogHtmlFile)
-	outputFile.set(layout.buildDirectory.file("intermediates/changelog.html"))
-}
-
-val changelogHtmlContent: Provider<String> = changelogHtmlTask.flatMap {
-	it.outputFile.map { f -> f.asFile.readText() }
-}
-
-val changelogMdFile: Provider<RegularFile> =
-	project(":Changelog").layout.buildDirectory.file("changelog.md")
-
-val changelogMdTask = tasks.register<ReadChangelog>("readChangelogMd") {
-	dependsOn(":Changelog:makeMarkdownChangelog")
-	inputFile.set(changelogMdFile)
-	outputFile.set(layout.buildDirectory.file("intermediates/changelog.md"))
-}
-
-val changelogMdContent: Provider<String> = changelogMdTask.flatMap {
-	it.outputFile.map { f -> f.asFile.readText() }
-}
-
 publishMods {
 	file.set(tasks.jar.get().archiveFile)
 	type = BETA
@@ -201,7 +184,7 @@ publishMods {
 	curseforge {
 		projectId = curseProjectId
 		accessToken.set(curseforgeApikey ?: "0")
-		changelog.set(changelogHtmlContent)
+		changelog.set(changelogHtml.singleFileContents())
 		changelogType = "html"
 		minecraftVersionRange {
 			start = minecraftVersionRangeStart
@@ -213,16 +196,12 @@ publishMods {
 	modrinth {
 		projectId = modrinthId
 		accessToken = modrinthToken
-		changelog.set(changelogMdContent)
+		changelog.set(changelogMarkdown.singleFileContents())
 		minecraftVersionRange {
 			start = minecraftVersionRangeStart
 			end = minecraftVersion
 		}
 	}
-}
-
-tasks.withType<PublishModTask> {
-	dependsOn(tasks.jar, changelogHtmlTask, changelogMdTask)
 }
 
 tasks.named<Test>("test") {
