@@ -1,6 +1,5 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -117,21 +116,14 @@ public class RecipeGuiTabs implements IPaged {
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		IRecipeCategory<?> selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
 		RecipeGuiTab hovered = null;
-
-		RenderSystem.disableDepthTest();
-		{
-			for (RecipeGuiTab tab : tabs) {
-				boolean selected = tab.isSelected(selectedCategory);
-				tab.draw(selected, guiGraphics, mouseX, mouseY);
-				if (tab.isMouseOver(mouseX, mouseY)) {
-					hovered = tab;
-				}
+		for (RecipeGuiTab tab : tabs) {
+			boolean selected = tab.isSelected(selectedCategory);
+			tab.draw(selected, guiGraphics, mouseX, mouseY);
+			if (tab.isMouseOver(mouseX, mouseY)) {
+				hovered = tab;
 			}
 		}
-		RenderSystem.enableDepthTest();
 
 		pageNavigation.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 

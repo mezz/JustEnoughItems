@@ -7,7 +7,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.tags.TagKey;
@@ -23,15 +22,11 @@ public interface IPlatformRenderHelper {
 
 	boolean shouldRender(MobEffectInstance potionEffect);
 
-	TextureAtlasSprite getParticleIcon(BakedModel bakedModel);
-
 	Optional<NativeImage> getMainImage(TextureAtlasSprite sprite);
 
 	void renderTooltip(GuiGraphics guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack);
 
 	Component getName(TagKey<?> tagKey);
-
-	BakedModel createLimitedQuadItemModel(BakedModel bakedModel);
 
 	MultiBufferSource getBufferSource(GuiGraphics guiGraphics);
 }

@@ -1,6 +1,5 @@
 package mezz.jei.gui.overlay;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -153,8 +152,6 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		RenderSystem.disableBlend();
-
 		ingredientListRenderer.render(guiGraphics);
 
 		if (isMouseOver(mouseX, mouseY)) {

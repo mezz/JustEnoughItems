@@ -1,6 +1,5 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -103,16 +102,10 @@ public class CraftingStations implements IRecipeFocusSource {
 	public Optional<IRecipeSlotDrawable> draw(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		int ingredientCount = recipeSlots.size();
 		if (ingredientCount > 0) {
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-			RenderSystem.disableDepthTest();
-			{
-				int slotWidth = width - (2 * borderSize);
-				int slotHeight = height - (2 * borderSize);
-				backgroundTab.draw(guiGraphics, this.left, this.top, width, height);
-				slotBackground.draw(guiGraphics, this.left + borderSize, this.top + borderSize, slotWidth, slotHeight);
-			}
-			RenderSystem.enableDepthTest();
+			int slotWidth = width - (2 * borderSize);
+			int slotHeight = height - (2 * borderSize);
+			backgroundTab.draw(guiGraphics, this.left, this.top, width, height);
+			slotBackground.draw(guiGraphics, this.left + borderSize, this.top + borderSize, slotWidth, slotHeight);
 
 			IRecipeSlotDrawable hovered = null;
 			for (IRecipeSlotDrawable recipeSlot : this.recipeSlots) {

@@ -16,14 +16,14 @@ import java.util.Optional;
 
 public class RecipeHelper implements IPlatformRecipeHelper {
 	@Override
-	public Optional<Ingredient> getBase(SmithingRecipe recipe) {
+	public Ingredient getBase(SmithingRecipe recipe) {
 		if (recipe instanceof SmithingTransformRecipe transformRecipe) {
 			return transformRecipe.base;
 		}
 		if (recipe instanceof SmithingTrimRecipe trimRecipe) {
 			return trimRecipe.base;
 		}
-		return Optional.empty();
+		throw new IllegalArgumentException("Unknown recipe type: " + recipe.getClass());
 	}
 
 	@Override
@@ -32,9 +32,9 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 			return transformRecipe.addition;
 		}
 		if (recipe instanceof SmithingTrimRecipe trimRecipe) {
-			return trimRecipe.addition;
+			return Optional.of(trimRecipe.addition);
 		}
-		return Optional.empty();
+		throw new IllegalArgumentException("Unknown recipe type: " + recipe.getClass());
 	}
 
 	@Override
@@ -43,9 +43,9 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 			return transformRecipe.template;
 		}
 		if (recipe instanceof SmithingTrimRecipe trimRecipe) {
-			return trimRecipe.template;
+			return Optional.of(trimRecipe.template);
 		}
-		return Optional.empty();
+		throw new IllegalArgumentException("Unknown recipe type: " + recipe.getClass());
 	}
 
 	@Override

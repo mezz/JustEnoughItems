@@ -1,6 +1,5 @@
 package mezz.jei.library.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
@@ -31,13 +30,10 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	@Override
 	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient, int posX, int posY) {
 		if (ingredient != null) {
-			RenderSystem.enableDepthTest();
-
 			Minecraft minecraft = Minecraft.getInstance();
 			Font font = getFontRenderer(minecraft, ingredient);
 			guiGraphics.renderFakeItem(ingredient, posX, posY);
 			guiGraphics.renderItemDecorations(font, ingredient, posX, posY);
-			RenderSystem.disableBlend();
 		}
 	}
 

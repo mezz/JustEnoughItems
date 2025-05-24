@@ -8,10 +8,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -111,9 +111,8 @@ public final class ColorGetter {
 		Minecraft minecraft = Minecraft.getInstance();
 		BlockRenderDispatcher blockRendererDispatcher = minecraft.getBlockRenderer();
 		BlockModelShaper blockModelShapes = blockRendererDispatcher.getBlockModelShaper();
-		BakedModel blockModel = blockModelShapes.getBlockModel(blockState);
-		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-		TextureAtlasSprite textureAtlasSprite = renderHelper.getParticleIcon(blockModel);
+		BlockStateModel blockModel = blockModelShapes.getBlockModel(blockState);
+		TextureAtlasSprite textureAtlasSprite = blockModel.particleIcon();
 		if (textureAtlasSprite.atlasLocation().equals(MissingTextureAtlasSprite.getLocation())) {
 			return null;
 		}

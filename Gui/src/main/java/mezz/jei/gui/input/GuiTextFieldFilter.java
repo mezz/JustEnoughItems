@@ -1,6 +1,5 @@
 package mezz.jei.gui.input;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
@@ -113,7 +112,6 @@ public class GuiTextFieldFilter extends EditBox {
 	@Override
 	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (this.isVisible()) {
-			RenderSystem.setShaderColor(1, 1, 1, 1);
 			background.draw(guiGraphics, this.backgroundBounds);
 		}
 		super.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);

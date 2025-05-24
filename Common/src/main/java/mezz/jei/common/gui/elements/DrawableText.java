@@ -1,6 +1,5 @@
 package mezz.jei.common.gui.elements;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.drawable.IDrawable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -37,6 +36,5 @@ public class DrawableText implements IDrawable {
 		int textCenterY = yOffset + (height / 2) - 3;
 		int stringCenter = fontRenderer.width(text) / 2;
 		guiGraphics.drawString(fontRenderer, text, textCenterX - stringCenter, textCenterY, color);
-		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 }

@@ -1,20 +1,16 @@
 package mezz.jei.library.render;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.CoreShaders;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
@@ -70,27 +66,17 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, T ingredient, int posX, int posY) {
-		RenderSystem.enableBlend();
-
-		drawFluid(guiGraphics, width, height, ingredient, posX, posY);
-
-		RenderSystem.setShaderColor(1, 1, 1, 1);
-
-		RenderSystem.disableBlend();
-	}
-
-	private void drawFluid(GuiGraphics guiGraphics, final int width, final int height, T fluidStack, int posX, int posY) {
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
-		Fluid fluid = type.getBase(fluidStack);
+		Fluid fluid = type.getBase(ingredient);
 		if (fluid.isSame(Fluids.EMPTY)) {
 			return;
 		}
 
-		fluidHelper.getStillFluidSprite(fluidStack)
+		fluidHelper.getStillFluidSprite(ingredient)
 			.ifPresent(fluidStillSprite -> {
-				int fluidColor = fluidHelper.getColorTint(fluidStack);
+				int fluidColor = fluidHelper.getColorTint(ingredient);
 
-				long amount = fluidHelper.getAmount(fluidStack);
+				long amount = fluidHelper.getAmount(ingredient);
 				long scaledAmount = (amount * height) / capacity;
 				if (amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
 					scaledAmount = MIN_FLUID_HEIGHT;
@@ -104,11 +90,11 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	}
 
 	private static void drawTiledSprite(GuiGraphics guiGraphics, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite, int posX, int posY) {
-		RenderSystem.setShader(CoreShaders.POSITION_TEX);
-		//noinspection deprecation
-		RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
+		@SuppressWarnings("deprecation")
+		RenderType rendertype = RenderType.guiTextured(TextureAtlas.LOCATION_BLOCKS);
+		VertexConsumer bufferBuilder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(rendertype);
+
 		Matrix4f matrix = guiGraphics.pose().last().pose();
-		setGLColorFromInt(color);
 
 		final int xTileCount = tiledWidth / TEXTURE_SIZE;
 		final int xRemainder = tiledWidth - (xTileCount * TEXTURE_SIZE);
@@ -127,22 +113,13 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 					long maskTop = TEXTURE_SIZE - height;
 					int maskRight = TEXTURE_SIZE - width;
 
-					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 100);
+					drawTextureWithMasking(bufferBuilder, matrix, x, y, sprite, color, maskTop, maskRight, 100);
 				}
 			}
 		}
 	}
 
-	private static void setGLColorFromInt(int color) {
-		float red = (color >> 16 & 0xFF) / 255.0F;
-		float green = (color >> 8 & 0xFF) / 255.0F;
-		float blue = (color & 0xFF) / 255.0F;
-		float alpha = ((color >> 24) & 0xFF) / 255F;
-
-		RenderSystem.setShaderColor(red, green, blue, alpha);
-	}
-
-	private static void drawTextureWithMasking(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, long maskTop, long maskRight, float zLevel) {
+	private static void drawTextureWithMasking(VertexConsumer bufferBuilder, Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, int color, long maskTop, long maskRight, float zLevel) {
 		float uMin = textureSprite.getU0();
 		float uMax = textureSprite.getU1();
 		float vMin = textureSprite.getV0();
@@ -150,13 +127,18 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		uMax = uMax - (maskRight / 16F * (uMax - uMin));
 		vMax = vMax - (maskTop / 16F * (vMax - vMin));
 
-		Tesselator tesselator = Tesselator.getInstance();
-		BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		bufferBuilder.addVertex(matrix, xCoord, yCoord + 16, zLevel).setUv(uMin, vMax);
-		bufferBuilder.addVertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).setUv(uMax, vMax);
-		bufferBuilder.addVertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).setUv(uMax, vMin);
-		bufferBuilder.addVertex(matrix, xCoord, yCoord + maskTop, zLevel).setUv(uMin, vMin);
-		BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+		bufferBuilder.addVertex(matrix, xCoord, yCoord + 16, zLevel)
+			.setColor(color)
+			.setUv(uMin, vMax);
+		bufferBuilder.addVertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel)
+			.setColor(color)
+			.setUv(uMax, vMax);
+		bufferBuilder.addVertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel)
+			.setColor(color)
+			.setUv(uMax, vMin);
+		bufferBuilder.addVertex(matrix, xCoord, yCoord + maskTop, zLevel)
+			.setColor(color)
+			.setUv(uMin, vMin);
 	}
 
 	@SuppressWarnings("removal")

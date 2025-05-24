@@ -1,16 +1,12 @@
 package mezz.jei.common.gui.elements;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.common.Constants;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.CoreShaders;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
@@ -61,8 +57,8 @@ public class DrawableSprite implements IDrawableStatic {
 		int textureWidth = this.width;
 		int textureHeight = this.height;
 
-		RenderSystem.setShader(CoreShaders.POSITION_TEX);
-		RenderSystem.setShaderTexture(0, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
+		RenderType rendertype = RenderType.guiTextured(Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
+		VertexConsumer bufferBuilder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(rendertype);
 
 		maskTop += trimTop;
 		maskBottom += trimBottom;
@@ -81,18 +77,18 @@ public class DrawableSprite implements IDrawableStatic {
 		float maxU = sprite.getU1() - uSize * (maskRight / (float) textureWidth);
 		float maxV = sprite.getV1() - vSize * (maskBottom / (float) textureHeight);
 
-		Tesselator tesselator = Tesselator.getInstance();
-		BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 		bufferBuilder.addVertex(matrix, x, y + height, 0)
+			.setColor(255, 255, 255, 255)
 			.setUv(minU, maxV);
 		bufferBuilder.addVertex(matrix, x + width, y + height, 0)
+			.setColor(255, 255, 255, 255)
 			.setUv(maxU, maxV);
 		bufferBuilder.addVertex(matrix, x + width, y, 0)
+			.setColor(255, 255, 255, 255)
 			.setUv(maxU, minV);
 		bufferBuilder.addVertex(matrix, x, y, 0)
+			.setColor(255, 255, 255, 255)
 			.setUv(minU, minV);
-
-		BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
 	}
 }

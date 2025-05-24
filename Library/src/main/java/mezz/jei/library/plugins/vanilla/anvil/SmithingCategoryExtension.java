@@ -31,8 +31,8 @@ public abstract class SmithingCategoryExtension<R extends SmithingRecipe> implem
 
 	@Override
 	public <T extends IIngredientAcceptor<T>> void setBase(R recipe, T ingredientAcceptor) {
-		recipeHelper.getBase(recipe)
-			.ifPresent(ingredientAcceptor::add);
+		Ingredient base = recipeHelper.getBase(recipe);
+		ingredientAcceptor.add(base);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public abstract class SmithingCategoryExtension<R extends SmithingRecipe> implem
 	@Override
 	public <T extends IIngredientAcceptor<T>> void setOutput(R recipe, T ingredientAcceptor) {
 		Optional<Ingredient> templateIngredient = recipeHelper.getTemplate(recipe);
-		Optional<Ingredient> baseIngredient = recipeHelper.getBase(recipe);
+		Ingredient baseIngredient = recipeHelper.getBase(recipe);
 		Optional<Ingredient> additionIngredient = recipeHelper.getAddition(recipe);
 
 		Minecraft minecraft = Minecraft.getInstance();
@@ -55,7 +55,7 @@ public abstract class SmithingCategoryExtension<R extends SmithingRecipe> implem
 			templateStacks = List.of(ItemStack.EMPTY);
 		}
 
-		List<ItemStack> baseStacks = baseIngredient.map(i -> i.display().resolveForStacks(contextmap)).orElse(List.of(ItemStack.EMPTY));
+		List<ItemStack> baseStacks = baseIngredient.display().resolveForStacks(contextmap);
 		if (baseStacks.isEmpty()) {
 			baseStacks = List.of(ItemStack.EMPTY);
 		}

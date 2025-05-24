@@ -1,6 +1,5 @@
 package mezz.jei.gui.overlay;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -137,8 +136,6 @@ public class IngredientListRenderer {
 					renderEditMode(guiGraphics, slot.getArea(), slot.getPadding(), element.getTypedIngredient(), editModeConfig);
 				});
 		}
-
-		RenderSystem.enableBlend();
 	}
 
 	private static <T> void renderEditMode(GuiGraphics guiGraphics, ImmutableRect2i area, int padding, ITypedIngredient<T> typedIngredient, IEditModeConfig config) {
@@ -182,7 +179,6 @@ public class IngredientListRenderer {
 					BLACKLIST_COLOR
 				);
 			}
-			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 		}
 	}
 }

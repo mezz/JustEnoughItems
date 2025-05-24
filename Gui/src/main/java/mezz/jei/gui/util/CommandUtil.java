@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -79,9 +80,10 @@ public final class CommandUtil {
 	}
 
 	private static void sendCreativeInventoryActions(LocalPlayer sender, ItemStack stack, int amount) {
-		int i = 0; // starting in the inventory, not armour or crafting slots
-		while (i < sender.getInventory().items.size() && amount > 0) {
-			ItemStack currentStack = sender.getInventory().items.get(i);
+		int i = 0;
+		NonNullList<ItemStack> nonEquipmentItems = sender.getInventory().getNonEquipmentItems();
+		while (i < nonEquipmentItems.size() && amount > 0) {
+			ItemStack currentStack = nonEquipmentItems.get(i);
 			if (currentStack.isEmpty()) {
 				ItemStack sendAllRemaining = copyWithSize(stack, amount);
 				sendSlotPacket(sendAllRemaining, i);

@@ -17,11 +17,6 @@ public class Textures {
 	private final DrawableNineSliceTexture bookmarkListSlotBackground;
 	private final IDrawableStatic tabSelected;
 	private final IDrawableStatic tabUnselected;
-	private final DrawableNineSliceTexture buttonDisabled;
-	private final DrawableNineSliceTexture buttonEnabled;
-	private final DrawableNineSliceTexture buttonHighlight;
-	private final DrawableNineSliceTexture buttonPressed;
-	private final DrawableNineSliceTexture buttonPressedHighlight;
 	private final DrawableNineSliceTexture recipeGuiBackground;
 	private final DrawableNineSliceTexture ingredientListBackground;
 	private final DrawableNineSliceTexture bookmarkListBackground;
@@ -66,11 +61,6 @@ public class Textures {
 		this.bookmarkListSlotBackground = createNineSliceGuiSprite("bookmark_list_slot_background", 18, 18, 4, 4, 4, 4);
 		this.tabSelected = createGuiSprite("tab_selected", 24, 24);
 		this.tabUnselected = createGuiSprite("tab_unselected", 24, 24);
-		this.buttonDisabled = createNineSliceGuiSprite("button_disabled", 20, 20, 6, 6, 6, 6);
-		this.buttonEnabled = createNineSliceGuiSprite("button_enabled", 20, 20, 6, 6, 6, 6);
-		this.buttonHighlight = createNineSliceGuiSprite("button_highlight", 20, 20, 6, 6, 6, 6);
-		this.buttonPressed = createNineSliceGuiSprite("button_pressed", 20, 20, 6, 6, 6, 6);
-		this.buttonPressedHighlight = createNineSliceGuiSprite("button_pressed_highlight", 20, 20, 6, 6, 6, 6);
 		this.recipeGuiBackground = createNineSliceGuiSprite("gui_background", 64, 64, 16, 16, 16, 16);
 		this.ingredientListBackground = createNineSliceGuiSprite("ingredient_list_background", 64, 64, 16, 16, 16, 16);
 		this.bookmarkListBackground = createNineSliceGuiSprite("bookmark_list_background", 64, 64, 16, 16, 16, 16);
@@ -183,18 +173,6 @@ public class Textures {
 
 	public IDrawableStatic getBookmarkButtonEnabledIcon() {
 		return bookmarkButtonEnabledIcon;
-	}
-
-	public DrawableNineSliceTexture getButtonForState(boolean pressed, boolean enabled, boolean hovered) {
-		if (!enabled) {
-			return buttonDisabled;
-		}
-
-		if (hovered) {
-			return pressed ? buttonPressedHighlight : buttonHighlight;
-		} else {
-			return pressed ? buttonPressed : buttonEnabled;
-		}
 	}
 
 	public DrawableNineSliceTexture getRecipeGuiBackground() {

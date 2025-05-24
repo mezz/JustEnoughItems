@@ -1,6 +1,5 @@
 package mezz.jei.gui.ghost;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -90,7 +89,6 @@ public class GhostIngredientDrag<T> {
 	}
 
 	public static void drawTargets(GuiGraphics guiGraphics, int mouseX, int mouseY, List<Rect2i> targetAreas) {
-		RenderSystem.disableDepthTest();
 		for (Rect2i area : targetAreas) {
 			int color;
 			if (MathUtil.contains(area, mouseX, mouseY)) {
@@ -107,7 +105,6 @@ public class GhostIngredientDrag<T> {
 				color
 			);
 		}
-		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 
 	public boolean onClick(UserInput input) {

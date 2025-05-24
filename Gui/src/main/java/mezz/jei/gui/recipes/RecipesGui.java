@@ -1,7 +1,6 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.handlers.IGuiProperties;
@@ -226,8 +225,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		guiGraphics.flush();
 		this.background.draw(guiGraphics, area);
 
-		RenderSystem.disableBlend();
-
 		guiGraphics.fill(
 			RenderType.gui(),
 			previousRecipeCategory.getX() + previousRecipeCategory.getWidth(),
@@ -244,8 +241,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			nextPage.getY() + nextPage.getHeight(),
 			0x30000000
 		);
-
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
 		this.recipeCategoryTitle.draw(guiGraphics, font);
 
@@ -266,7 +261,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.layouts.drawTooltips(guiGraphics, mouseX, mouseY);
 
 		optionButtons.drawTooltips(guiGraphics, mouseX, mouseY);
-		RenderSystem.disableBlend();
 
 		hoveredRecipeLayout.ifPresent(l -> l.drawOverlays(guiGraphics, mouseX, mouseY));
 		hoveredRecipeCatalyst.ifPresent(h -> h.drawHoverOverlays(guiGraphics));
@@ -276,7 +270,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			h.getTooltip(tooltip);
 			tooltip.draw(guiGraphics, mouseX, mouseY);
 		});
-		RenderSystem.enableDepthTest();
 
 		if (recipeCategoryTitle.isMouseOver(mouseX, mouseY)) {
 			JeiTooltip tooltip = new JeiTooltip();

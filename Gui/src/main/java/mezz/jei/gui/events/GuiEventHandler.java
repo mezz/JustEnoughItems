@@ -1,6 +1,5 @@
 package mezz.jei.gui.events;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.DebugConfig;
@@ -133,8 +132,6 @@ public class GuiEventHandler {
 				Set<Rect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
 					.collect(Collectors.toUnmodifiableSet());
 
-				RenderSystem.disableDepthTest();
-
 				// draw the gui exclusion areas
 				for (Rect2i area : guiExclusionAreas) {
 					guiGraphics.fill(
@@ -156,8 +153,6 @@ public class GuiEventHandler {
 					guiProperties.guiTop() + guiProperties.guiYSize(),
 					0x22CCCC00
 				);
-
-				RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 			});
 	}
 }

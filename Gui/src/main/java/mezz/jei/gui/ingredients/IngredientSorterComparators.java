@@ -15,7 +15,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -120,8 +119,7 @@ public class IngredientSorterComparators {
 	}
 
 	private static boolean isArmor(ItemStack itemStack) {
-		Item item = itemStack.getItem();
-		return item instanceof ArmorItem;
+		return itemStack.has(DataComponents.EQUIPPABLE);
 	}
 
 	private static int getArmorSlotIndex(ItemStack itemStack) {

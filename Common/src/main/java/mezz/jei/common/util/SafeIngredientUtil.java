@@ -1,6 +1,5 @@
 package mezz.jei.common.util;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -164,7 +163,6 @@ public final class SafeIngredientUtil {
 		Font font = minecraft.font;
 		guiGraphics.drawString(font, "ERR", 0, 0, 0xFFFF0000, false);
 		guiGraphics.drawString(font, "OR", 0, 8, 0xFFFF0000, false);
-		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 
 }

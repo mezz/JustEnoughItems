@@ -1,11 +1,6 @@
 package mezz.jei.gui.elements;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.common.Internal;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -13,9 +8,13 @@ import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 
 import java.util.Optional;
 
@@ -23,6 +22,8 @@ import java.util.Optional;
  * A gui button that has an {@link IDrawable} instead of a string label.
  */
 public class GuiIconButton extends Button {
+	private static final WidgetSprites SPRITES = new WidgetSprites(ResourceLocation.withDefaultNamespace("widget/button"), ResourceLocation.withDefaultNamespace("widget/button_disabled"), ResourceLocation.withDefaultNamespace("widget/button_highlighted"));
+
 	private IDrawable icon;
 	private boolean pressed = false;
 	private boolean forcePressed = false;
@@ -58,41 +59,11 @@ public class GuiIconButton extends Button {
 
 	@Override
 	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		boolean hovered =
-				mouseX >= this.getX() &&
-						mouseY >= this.getY() &&
-						mouseX < this.getX() + this.width &&
-						mouseY < this.getY() + this.height;
-		RenderSystem.enableBlend();
-		RenderSystem.blendFuncSeparate(
-				GlStateManager.SourceFactor.SRC_ALPHA,
-				GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-				GlStateManager.SourceFactor.ONE,
-				GlStateManager.DestFactor.ZERO
-		);
-		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		Textures textures = Internal.getTextures();
-		boolean isPressed = this.pressed || this.forcePressed;
-		DrawableNineSliceTexture texture = textures.getButtonForState(isPressed, this.active, hovered);
-		texture.draw(guiGraphics, this.getX(), this.getY(), this.width, this.height);
-
-		int color = 0xFFE0E0E0;
-		if (!this.active) {
-			color = 0xFFA0A0A0;
-		} else if (hovered) {
-			color = 0xFFFFFFFF;
-		}
-
-		float red = (color >> 16 & 255) / 255.0F;
-		float blue = (color >> 8 & 255) / 255.0F;
-		float green = (color & 255) / 255.0F;
-		float alpha = (color >> 24 & 255) / 255.0F;
-		RenderSystem.setShaderColor(red, blue, green, alpha);
+		guiGraphics.blitSprite(RenderType::guiTextured, SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
 
 		double xOffset = getX() + (width - icon.getWidth()) / 2.0;
 		double yOffset = getY() + (height - icon.getHeight()) / 2.0;
-		if (isPressed) {
+		if (this.pressed || this.forcePressed) {
 			xOffset += 0.5;
 			yOffset += 0.5;
 		}
@@ -103,7 +74,6 @@ public class GuiIconButton extends Button {
 			icon.draw(guiGraphics);
 		}
 		poseStack.popPose();
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	public IUserInputHandler createInputHandler() {

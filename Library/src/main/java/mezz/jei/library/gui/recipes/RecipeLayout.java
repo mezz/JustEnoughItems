@@ -1,6 +1,5 @@
 package mezz.jei.library.gui.recipes;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -172,7 +171,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		@SuppressWarnings("removal")
 		IDrawable background = recipeCategory.getBackground();
 
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		recipeBackground.draw(guiGraphics, getRectWithBorder());
 
 		final double recipeMouseX = mouseX - area.getX();
@@ -204,9 +202,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 					}
 					poseStack.popPose();
 				}
-
-				// drawExtras and drawInfo often render text which messes with the color, this clears it
-				RenderSystem.setShaderColor(1, 1, 1, 1);
 			}
 			poseStack.popPose();
 
@@ -215,9 +210,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 				poseStack.pushPose();
 				{
 					drawable.draw(guiGraphics);
-
-					// rendered text often messes with the color, this clears it
-					RenderSystem.setShaderColor(1, 1, 1, 1);
 				}
 				poseStack.popPose();
 			}
@@ -227,9 +219,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 				poseStack.pushPose();
 				{
 					decorator.draw(recipe, recipeCategory, recipeCategorySlotsView, guiGraphics, recipeMouseX, recipeMouseY);
-
-					// rendered text often messes with the color, this clears it
-					RenderSystem.setShaderColor(1, 1, 1, 1);
 				}
 				poseStack.popPose();
 			}
@@ -239,19 +228,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 			}
 		}
 		poseStack.popPose();
-
-		RenderSystem.disableBlend();
 	}
 
 	@Override
 	public void drawOverlays(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		ensureRecipeExtrasAreCreated();
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
 		final int recipeMouseX = mouseX - area.getX();
 		final int recipeMouseY = mouseY - area.getY();
-
-		RenderSystem.disableBlend();
 
 		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(slots);
 		RecipeSlotUnderMouse hoveredSlotResult = getSlotUnderMouse(mouseX, mouseY).orElse(null);

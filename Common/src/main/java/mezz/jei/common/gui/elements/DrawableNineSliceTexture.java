@@ -1,17 +1,13 @@
 package mezz.jei.common.gui.elements;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.common.Constants;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.util.ImmutableRect2i;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.CoreShaders;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
@@ -56,8 +52,8 @@ public class DrawableNineSliceTexture implements IScalableDrawable {
 		int textureWidth = this.width;
 		int textureHeight = this.height;
 
-		RenderSystem.setShader(CoreShaders.POSITION_TEX);
-		RenderSystem.setShaderTexture(0, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
+		RenderType rendertype = RenderType.guiTextured(Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
+		VertexConsumer bufferBuilder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(rendertype);
 
 		float uMin = sprite.getU0();
 		float uMax = sprite.getU1();
@@ -71,8 +67,6 @@ public class DrawableNineSliceTexture implements IScalableDrawable {
 		float vTop = vMin + vSize * (topHeight / (float) textureHeight);
 		float vBottom = vMax - vSize * (bottomHeight / (float) textureHeight);
 
-		Tesselator tesselator = Tesselator.getInstance();
-		BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 
 		// TODO Investigate GuiGraphics helper for the same thing (nineSliced)
@@ -106,11 +100,9 @@ public class DrawableNineSliceTexture implements IScalableDrawable {
 			// middle area
 			drawTiled(bufferBuilder, matrix, uLeft, vTop, uRight, vBottom, xOffset + leftWidth, yOffset + topHeight, tiledMiddleWidth, tiledMiddleHeight, middleWidth, middleHeight);
 		}
-
-		BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
 	}
 
-	private static void drawTiled(BufferBuilder bufferBuilder, Matrix4f matrix, float uMin, float vMin, float uMax, float vMax, int xOffset, int yOffset, int tiledWidth, int tiledHeight, int width, int height) {
+	private static void drawTiled(VertexConsumer bufferBuilder, Matrix4f matrix, float uMin, float vMin, float uMax, float vMax, int xOffset, int yOffset, int tiledWidth, int tiledHeight, int width, int height) {
 		int xTileCount = tiledWidth / width;
 		int xRemainder = tiledWidth - (xTileCount * width);
 		int yTileCount = tiledHeight / height;
@@ -139,14 +131,18 @@ public class DrawableNineSliceTexture implements IScalableDrawable {
 		}
 	}
 
-	private static void draw(BufferBuilder bufferBuilder, Matrix4f matrix, float minU, double minV, float maxU, float maxV, int xOffset, int yOffset, int width, int height) {
+	private static void draw(VertexConsumer bufferBuilder, Matrix4f matrix, float minU, double minV, float maxU, float maxV, int xOffset, int yOffset, int width, int height) {
 		bufferBuilder.addVertex(matrix, xOffset, yOffset + height, 0)
+			.setColor(255, 255, 255, 255)
 			.setUv(minU, maxV);
 		bufferBuilder.addVertex(matrix, xOffset + width, yOffset + height, 0)
+			.setColor(255, 255, 255, 255)
 			.setUv(maxU, maxV);
 		bufferBuilder.addVertex(matrix, xOffset + width, yOffset, 0)
+			.setColor(255, 255, 255, 255)
 			.setUv(maxU, (float) minV);
 		bufferBuilder.addVertex(matrix, xOffset, yOffset, 0)
+			.setColor(255, 255, 255, 255)
 			.setUv(minU, (float) minV);
 	}
 }

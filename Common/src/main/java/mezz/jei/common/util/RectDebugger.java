@@ -1,6 +1,5 @@
 package mezz.jei.common.util;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 
@@ -25,8 +24,6 @@ public final class RectDebugger {
 	}
 
 	public void draw(GuiGraphics guiGraphics) {
-		RenderSystem.disableDepthTest();
-
 		for (Rect rect : rects.values()) {
 			ImmutableRect2i rect1 = rect.rect;
 			guiGraphics.fill(
@@ -38,6 +35,5 @@ public final class RectDebugger {
 				rect.color
 			);
 		}
-		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 }

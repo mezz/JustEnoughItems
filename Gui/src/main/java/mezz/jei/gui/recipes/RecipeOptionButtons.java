@@ -1,6 +1,5 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
@@ -81,13 +80,7 @@ public class RecipeOptionButtons {
 	}
 
 	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-		RenderSystem.disableDepthTest();
-		{
-			backgroundTab.draw(guiGraphics, this.area);
-		}
-		RenderSystem.enableDepthTest();
+		backgroundTab.draw(guiGraphics, this.area);
 
 		for (GuiIconToggleButton button : buttons) {
 			button.draw(guiGraphics, mouseX, mouseY, partialTicks);

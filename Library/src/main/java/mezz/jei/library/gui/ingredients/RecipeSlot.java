@@ -1,6 +1,5 @@
 package mezz.jei.library.gui.ingredients;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -293,14 +292,10 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			background.draw(guiGraphics, x, y);
 		}
 
-		RenderSystem.enableBlend();
-
 		getDisplayedIngredient()
 			.ifPresent(ingredient -> drawIngredient(guiGraphics, ingredient, x, y));
 
 		if (overlay != null) {
-			RenderSystem.enableBlend();
-
 			var poseStack = guiGraphics.pose();
 			poseStack.pushPose();
 			{
@@ -309,8 +304,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			}
 			poseStack.popPose();
 		}
-
-		RenderSystem.disableBlend();
 	}
 
 	private <T> void drawIngredient(GuiGraphics guiGraphics, ITypedIngredient<T> typedIngredient, int xPos, int yPos) {

@@ -1,7 +1,6 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
@@ -196,7 +195,6 @@ public class RecipeGuiLayouts {
 			RecipeBookmarkButton bookmarkButton = recipeLayoutWithButtons.bookmarkButton();
 			bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		}
-		RenderSystem.disableBlend();
 		return Optional.ofNullable(hoveredLayout);
 	}
 

@@ -1,6 +1,5 @@
 package mezz.jei.library.plugins.debug.ingredients;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -28,7 +27,6 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 		Font font = getFontRenderer(minecraft, ingredient);
 		guiGraphics.drawString(font, "JEI", 0, 0, 0xFFFF0000, false);
 		guiGraphics.drawString(font, "#" + ingredient.number(), 0, 8, 0xFFFF0000, false);
-		RenderSystem.setShaderColor(1, 1, 1, 1);
 	}
 
 	@SuppressWarnings("removal")

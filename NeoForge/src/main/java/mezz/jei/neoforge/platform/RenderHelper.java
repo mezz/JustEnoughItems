@@ -9,7 +9,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.tags.TagKey;
@@ -18,7 +17,6 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
-import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.Tags;
 
 import java.util.List;
@@ -42,11 +40,6 @@ public class RenderHelper implements IPlatformRenderHelper {
 	}
 
 	@Override
-	public TextureAtlasSprite getParticleIcon(BakedModel bakedModel) {
-		return bakedModel.getParticleIcon(ModelData.EMPTY);
-	}
-
-	@Override
 	public Optional<NativeImage> getMainImage(TextureAtlasSprite sprite) {
 		@SuppressWarnings("resource")
 		SpriteContents contents = sprite.contents();
@@ -67,11 +60,6 @@ public class RenderHelper implements IPlatformRenderHelper {
 	public Component getName(TagKey<?> tagKey) {
 		String tagTranslationKey = Tags.getTagTranslationKey(tagKey);
 		return Component.translatableWithFallback(tagTranslationKey, "#" + tagKey.location());
-	}
-
-	@Override
-	public BakedModel createLimitedQuadItemModel(BakedModel bakedModel) {
-		return NeoForgeLimitedQuadItemModel.wrap(bakedModel);
 	}
 
 	@Override
