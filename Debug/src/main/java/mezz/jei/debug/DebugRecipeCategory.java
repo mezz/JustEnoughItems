@@ -8,7 +8,6 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
-import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -217,14 +216,6 @@ public class DebugRecipeCategory<F> implements RecipeCategoryWithType<DebugRecip
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, DebugRecipe recipe, IFocusGroup focuses) {
 		builder.addInputHandler(new JeiInputHandler(recipe, new Rect2i(0, 0, RECIPE_WIDTH, RECIPE_HEIGHT)));
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public List<Component> getTooltipStrings(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		JeiTooltip tooltip = new JeiTooltip();
-		getTooltip(tooltip, recipe, recipeSlotsView, mouseX, mouseY);
-		return tooltip.toLegacyToComponents();
 	}
 
 	@Override

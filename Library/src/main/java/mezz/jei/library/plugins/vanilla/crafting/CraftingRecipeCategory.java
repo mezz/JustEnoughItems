@@ -21,7 +21,6 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.deprecated.ingredients.Ingredients;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import mezz.jei.library.recipes.ExtendableRecipeCategoryHelper;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -115,14 +114,7 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<CraftingRecip
 		extension.getTooltip(tooltip, mouseX, mouseY);
 	}
 
-	@SuppressWarnings({"removal"})
-	@Override
-	public List<Component> getTooltipStrings(CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(this, recipe);
-		return extension.getTooltipStrings(mouseX, mouseY);
-	}
-
-	@SuppressWarnings({"removal"})
+	@SuppressWarnings("removal")
 	@Override
 	public boolean handleInput(CraftingRecipe recipe, double mouseX, double mouseY, InputConstants.Key input) {
 		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(this, recipe);

@@ -145,7 +145,7 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 
 			tooltip.add(new TextComponent(""));
 
-			SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
+			SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
 		}
 	}
 

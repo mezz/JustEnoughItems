@@ -2,6 +2,7 @@ package mezz.jei.forge;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.IngredientTooltipComponent;
 import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
@@ -109,6 +110,7 @@ public class JustEnoughItemsClient {
 	}
 
 	private static void registerTooltipComponents() {
+		MinecraftForgeClient.registerTooltipComponentFactory(IngredientTooltipComponent.class, Function.identity());
 		MinecraftForgeClient.registerTooltipComponentFactory(IngredientsTooltipComponent.class, Function.identity());
 		MinecraftForgeClient.registerTooltipComponentFactory(PreviewTooltipComponent.class, Function.identity());
 		MinecraftForgeClient.registerTooltipComponentFactory(TagContentTooltipComponent.class, Function.identity());
