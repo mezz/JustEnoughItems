@@ -109,7 +109,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		}
 		if (currentConnection == null) {
 			// No connection => Disregard, this probably an event being fired on the integrated server thread
-			LOGGER.info("JEI StartEventObserver received {} too early, ignoring", event.getClass());
+			LOGGER.debug("JEI StartEventObserver received {} too early, ignoring", event.getClass());
 			return;
 		}
 		logReceivedEvent(event);
@@ -151,6 +151,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 
 	@Override
 	public void onResourceManagerReload(ResourceManager pResourceManager) {
+		LOGGER.debug("JEI StartEventObserver detected resource manager reload.");
 		restart();
 	}
 
@@ -163,7 +164,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	}
 
 	private void transitionState(State newState) {
-		LOGGER.info("JEI StartEventObserver transitioning state from {} to {}", this.state, newState);
+		LOGGER.debug("JEI StartEventObserver transitioning state from {} to {}", this.state, newState);
 
 		switch (newState) {
 			case LISTENING -> {
