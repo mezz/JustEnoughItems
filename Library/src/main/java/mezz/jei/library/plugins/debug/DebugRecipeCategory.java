@@ -25,7 +25,6 @@ import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredient;
 import net.minecraft.ChatFormatting;
@@ -190,14 +189,6 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, DebugRecipe recipe, IFocusGroup focuses) {
 		builder.addInputHandler(new JeiInputHandler(recipe, new ScreenRectangle(0, 0, RECIPE_WIDTH, RECIPE_HEIGHT)));
-	}
-
-	@SuppressWarnings({"removal"})
-	@Override
-	public List<Component> getTooltipStrings(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		JeiTooltip tooltip = new JeiTooltip();
-		getTooltip(tooltip, recipe, recipeSlotsView, mouseX, mouseY);
-		return tooltip.toLegacyToComponents();
 	}
 
 	@Override

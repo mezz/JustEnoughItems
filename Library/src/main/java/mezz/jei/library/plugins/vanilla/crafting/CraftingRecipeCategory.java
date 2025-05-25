@@ -84,13 +84,6 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 		extension.getTooltip(tooltip, recipeHolder, mouseX, mouseY);
 	}
 
-	@SuppressWarnings({"removal"})
-	@Override
-	public List<Component> getTooltipStrings(RecipeHolder<CraftingRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		var extension = this.extendableHelper.getRecipeExtension(recipeHolder);
-		return extension.getTooltipStrings(recipeHolder, mouseX, mouseY);
-	}
-
 	@SuppressWarnings("removal")
 	@Override
 	public boolean handleInput(RecipeHolder<CraftingRecipe> recipeHolder, double mouseX, double mouseY, InputConstants.Key input) {

@@ -1,7 +1,6 @@
 package mezz.jei.neoforge.platform;
 
 import com.mojang.serialization.Codec;
-import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -31,6 +30,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
+import java.util.List;
 import java.util.Optional;
 
 public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
@@ -70,7 +70,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	}
 
 	@Override
-	public void getTooltip(ITooltipBuilder tooltip, FluidStack ingredient, TooltipFlag tooltipFlag) {
+	public void getTooltip(List<Component> tooltip, FluidStack ingredient, TooltipFlag tooltipFlag) {
 		Fluid fluid = ingredient.getFluid();
 		if (fluid.isSame(Fluids.EMPTY)) {
 			return;
