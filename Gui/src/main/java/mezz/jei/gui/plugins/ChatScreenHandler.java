@@ -1,23 +1,23 @@
 package mezz.jei.gui.plugins;
 
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
+import mezz.jei.api.gui.builder.IClickableIngredientFactory;
+import mezz.jei.api.gui.handlers.IGuiProperties;
+import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.chat.JeiChatItemLinkHover;
 import mezz.jei.common.chat.JeiChatItemLinks;
-import mezz.jei.common.input.ClickableIngredient;
-import mezz.jei.common.util.ImmutableRect2i;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class ChatScreenHandler implements IGlobalGuiHandler {
+public class ChatScreenHandler implements IScreenHandler<ChatScreen> {
 	private final IIngredientManager ingredientManager;
 
 	public ChatScreenHandler(IIngredientManager ingredientManager) {
@@ -25,17 +25,24 @@ public class ChatScreenHandler implements IGlobalGuiHandler {
 	}
 
 	@Override
-	public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(double mouseX, double mouseY) {
-		Minecraft minecraft = Minecraft.getInstance();
-		if (!(minecraft.screen instanceof ChatScreen chatScreen)) {
-			return Optional.empty();
-		}
+	@Nullable
+	public IGuiProperties apply(ChatScreen chatScreen) {
+		return null;
+	}
+
+	@Override
+	public Optional<? extends IClickableIngredient<?>> getClickableIngredientUnderMouse(
+		IClickableIngredientFactory factory,
+		ChatScreen chatScreen,
+		double mouseX,
+		double mouseY
+	) {
 		return JeiChatItemLinkHover.getHoveredText(chatScreen, mouseX, mouseY)
-			.flatMap(hoveredText -> getIngredient(hoveredText.style())
-				.map(typedIngredient -> new ClickableIngredient<>(
-					typedIngredient,
-					new ImmutableRect2i(hoveredText.area())
-				)));
+			.flatMap(hoveredText ->
+				getIngredient(hoveredText.style())
+					.flatMap(typedIngredient -> factory.createBuilder(typedIngredient)
+						.buildWithArea(hoveredText.area()))
+			);
 	}
 
 	private Optional<ITypedIngredient<?>> getIngredient(Style style) {
@@ -60,7 +67,8 @@ public class ChatScreenHandler implements IGlobalGuiHandler {
 		ItemStack itemStack = itemStackInfo.getItemStack();
 		return ingredientManager.createTypedIngredient(
 			VanillaTypes.ITEM_STACK,
-			itemStack
+			itemStack,
+			false
 		);
 	}
 

@@ -5,13 +5,12 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
-import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
@@ -81,13 +80,11 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void registerIngredientAliases(IIngredientAliasRegistration registration) {
 		registration.addAlias(
-			VanillaTypes.ITEM_STACK,
 			new ItemStack(Items.PANDA_SPAWN_EGG),
 			"jei.alias.panda.spawn.egg"
 		);
 
 		registration.addAlias(
-			VanillaTypes.ITEM_STACK,
 			new ItemStack(Items.VILLAGER_SPAWN_EGG),
 			"jei.alias.villager.spawn.egg"
 		);
@@ -244,11 +241,11 @@ public class JeiDebugPlugin implements IModPlugin {
 			}
 
 			@Override
-			public Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(BrewingStandScreen containerScreen, double mouseX, double mouseY) {
+			public Optional<? extends IClickableIngredient<?>> getClickableIngredientUnderMouse(IClickableIngredientFactory factory, BrewingStandScreen containerScreen, double mouseX, double mouseY) {
 				Rect2i area = new Rect2i(0, 0, 10, 10);
 				if (MathUtil.contains(area, mouseX, mouseY)) {
-					return ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.BOW))
-						.map(item -> new DebugClickableIngredient<>(item, area));
+					return factory.createBuilder(new ItemStack(Items.BOW))
+						.buildWithArea(area);
 				}
 				return Optional.empty();
 			}
@@ -257,38 +254,6 @@ public class JeiDebugPlugin implements IModPlugin {
 		registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager));
 		registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandlerTwo<>(ingredientManager));
 	}
-
-	private static class DebugClickableIngredient<T> implements IClickableIngredient<T> {
-		private final ITypedIngredient<T> typedIngredient;
-		private final Rect2i area;
-
-		public DebugClickableIngredient(ITypedIngredient<T> typedIngredient, Rect2i area) {
-			this.typedIngredient = typedIngredient;
-			this.area = area;
-		}
-
-		@SuppressWarnings("removal")
-		@Override
-		public ITypedIngredient<T> getTypedIngredient() {
-			return typedIngredient;
-		}
-
-		@Override
-		public IIngredientType<T> getIngredientType() {
-			return typedIngredient.getType();
-		}
-
-		@Override
-		public T getIngredient() {
-			return typedIngredient.getIngredient();
-		}
-
-		@Override
-		public Rect2i getArea() {
-			return area;
-		}
-	}
-
 	@Override
 	public <T> void registerFluidSubtypes(ISubtypeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
 		Fluid water = Fluids.WATER;

@@ -1,18 +1,18 @@
 package mezz.jei.api.gui.handlers;
 
+import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.runtime.IClickableIngredient;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.Rect2i;
-
-import mezz.jei.api.registration.IGuiHandlerRegistration;
-import mezz.jei.api.registration.IModIngredientRegistration;
 
 /**
  * Allows plugins to change how JEI is displayed next to their mod's guis.
@@ -49,6 +49,29 @@ public interface IGuiContainerHandler<T extends AbstractContainerScreen<?>> {
 				.map(IClickableIngredient::getTypedIngredient)
 				.map(ITypedIngredient::getIngredient)
 				.orElse(null);
+	}
+
+	/**
+	 * Return a clickable ingredient under the mouse that JEI could not normally detect, used for JEI recipe lookups.
+	 *
+	 * This is useful for guis that don't have normal slots (which is how JEI normally detects items under the mouse).
+	 *
+	 * This can also be used to let JEI look up liquids in tanks directly, by returning a FluidStack.
+	 * Works with any ingredient type that has been registered with {@link IModIngredientRegistration}.
+	 *
+	 * @param factory a builder to help with the creation of clickable ingredients.
+	 * @param mouseX the current X position of the mouse in screen coordinates.
+	 * @param mouseY the current Y position of the mouse in screen coordinates.
+	 *
+	 * @since 11.44.0
+	 */
+	default Optional<? extends IClickableIngredient<?>> getClickableIngredientUnderMouse(
+		IClickableIngredientFactory factory,
+		T containerScreen,
+		double mouseX,
+		double mouseY
+	) {
+		return getClickableIngredientUnderMouse(containerScreen, mouseX, mouseY);
 	}
 
 	/**

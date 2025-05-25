@@ -2,6 +2,7 @@ package mezz.jei.api.runtime;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -154,9 +155,49 @@ public interface IIngredientManager {
 	 * cannot be used in {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
 	 * This helps turn all special cases like {@link ItemStack#EMPTY} into {@link Optional#empty()} instead.
 	 *
+	 * @param ingredientType the type of the ingredient
+	 * @param ingredient the ingredient
+	 * @param normalize set true to normalize the ingredient (see {@link IIngredientHelper#normalizeIngredient}
+	 *
+	 * @since 11.44.0
+	 */
+	default <V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient, boolean normalize) {
+		Optional<ITypedIngredient<V>> typedIngredient = createTypedIngredient(ingredientType, ingredient);
+		if (normalize) {
+			return typedIngredient.map(this::normalizeTypedIngredient);
+		}
+		return typedIngredient;
+	}
+
+	/**
+	 * Create a typed ingredient, if the given ingredient is valid.
+	 *
+	 * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient})
+	 * cannot be used in {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
+	 * This helps turn all special cases like {@link ItemStack#EMPTY} into {@link Optional#empty()} instead.
+	 *
 	 * @since 11.5.0
 	 */
 	<V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient);
+
+	/**
+	 * Create a typed ingredient, if the given ingredient is valid and has a known type.
+	 *
+	 * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient}
+	 * cannot be created into {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
+	 * This helps turn all special cases like {@link ItemStack#EMPTY} into {@link Optional#empty()} instead.
+	 *
+	 * @param ingredient the ingredient
+	 * @param normalize set true to normalize the ingredient (see {@link IIngredientHelper#normalizeIngredient}
+	 *
+	 * @return {@link Optional#empty()} if there is no known type for the given ingredient or the ingredient is invalid.
+	 *
+	 * @since 11.44.0
+	 */
+	default <V> Optional<ITypedIngredient<V>> createTypedIngredient(V ingredient, boolean normalize) {
+		return getIngredientTypeChecked(ingredient)
+			.flatMap(ingredientType -> createTypedIngredient(ingredientType, ingredient, normalize));
+	}
 
 	/**
 	 * Create a typed ingredient, if the given ingredient is valid and has a known type.
@@ -170,11 +211,39 @@ public interface IIngredientManager {
 	 * @since 11.24.0
 	 */
 	default <V> Optional<ITypedIngredient<V>> createTypedIngredient(V ingredient) {
-		IIngredientType<V> ingredientType = getIngredientTypeOrNull(ingredient);
-		if (ingredientType == null) {
-			return Optional.empty();
-		}
-		return createTypedIngredient(ingredientType, ingredient);
+		return createTypedIngredient(ingredient, false);
+	}
+
+	/**
+	 * Get the factory for creating clickable ingredients.
+	 *
+	 * @see IClickableIngredient
+	 *
+	 * @since 11.44.0
+	 */
+	default IClickableIngredientFactory getClickableIngredientFactory() {
+		return new IClickableIngredientFactory() {
+			@Override
+			public <T> IBuilder<T> createBuilder(ITypedIngredient<T> value) {
+				return createBuilder(value.getType(), value.getIngredient());
+			}
+
+			@Override
+			public <T> IBuilder<T> createBuilder(IIngredientType<T> ingredientType, T ingredient) {
+				return new IBuilder<>() {
+					@Override
+					public Optional<IClickableIngredient<T>> buildWithArea(int x, int y, int width, int height) {
+						Rect2i area = new Rect2i(x, y, width, height);
+						return buildWithArea(area);
+					}
+
+					@Override
+					public Optional<IClickableIngredient<T>> buildWithArea(Rect2i area) {
+						return IIngredientManager.this.createClickableIngredient(ingredientType, ingredient, area, false);
+					}
+				};
+			}
+		};
 	}
 
 	/**
