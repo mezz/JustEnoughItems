@@ -54,15 +54,26 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 * Get the plain tooltip for this recipe slot.
 	 *
 	 * @since 11.5.0
+	 * @deprecated use {@link #drawTooltip(PoseStack, int, int)}
 	 */
+	@Deprecated(since = "11.46.0", forRemoval = true)
 	List<Component> getTooltip();
 
 	/**
 	 * Get the rich tooltip for this recipe slot.
 	 *
 	 * @since 11.30.1
+	 * @deprecated use {@link #drawTooltip(PoseStack, int, int)}
 	 */
+	@Deprecated(since = "11.46.0", forRemoval = true)
 	void getTooltip(ITooltipBuilder tooltipBuilder);
+
+	/**
+	 * Draw the tooltip for this recipe slot at the given mouse position.
+	 *
+	 * @since 11.46.0
+	 */
+	void drawTooltip(PoseStack poseStack, int mouseX, int mouseY);
 
 	/**
 	 * Return true if the mouse is over the slot.

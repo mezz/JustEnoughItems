@@ -7,7 +7,10 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.util.SafeIngredientUtil;
+import mezz.jei.common.util.StringUtil;
 import mezz.jei.common.util.Translator;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.TooltipFlag;
 import org.apache.logging.log4j.LogManager;
@@ -118,9 +121,8 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(value.getType());
 		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
 
-		ListElementInfoTooltip tooltip = new ListElementInfoTooltip();
-		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, value, tooltipFlag);
-		Set<String> strings = tooltip.getStrings();
+		List<Component> tooltip = SafeIngredientUtil.getPlainTooltipForSearch(ingredientManager, ingredientRenderer, value, tooltipFlag);
+		Set<String> strings = getStrings(tooltip);
 
 		strings.remove(this.names.get(0));
 		strings.remove(this.modNames.get(0).toLowerCase(Locale.ENGLISH));
@@ -128,6 +130,20 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		strings.remove(resourceLocation.getPath());
 
 		return strings;
+	}
+
+	public static Set<String> getStrings(@Unmodifiable List<Component> tooltip) {
+		Set<String> result = new HashSet<>();
+		for (FormattedText component : tooltip) {
+			String string = component.getString();
+			string = StringUtil.removeChatFormatting(string);
+			string = Translator.toLowercaseWithLocale(string);
+			// Split tooltip strings into words to keep them from being too long.
+			// Longer strings are more expensive for the suffix tree to handle.
+			String[] strings = string.split(" ");
+			Collections.addAll(result, strings);
+		}
+		return result;
 	}
 
 	@Override

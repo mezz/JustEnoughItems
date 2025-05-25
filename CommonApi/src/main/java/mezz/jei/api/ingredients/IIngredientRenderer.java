@@ -62,15 +62,12 @@ public interface IIngredientRenderer<T> {
 	}
 
 	/**
-	 * Get the tooltip text for this ingredient. JEI renders the tooltip based on this.
+	 * Get the tooltip text for this ingredient. JEI searches tooltips based on this.
 	 *
 	 * @param ingredient  The ingredient to get the tooltip for.
 	 * @param tooltipFlag Whether to show advanced information on item tooltips, toggled by F3+H
 	 * @return The tooltip text for the ingredient.
-	 *
-	 * @deprecated use {@link #getTooltip(ITooltipBuilder, Object, TooltipFlag)}
 	 */
-	@Deprecated(since = "11.30.1", forRemoval = true)
 	List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag);
 
 	/**

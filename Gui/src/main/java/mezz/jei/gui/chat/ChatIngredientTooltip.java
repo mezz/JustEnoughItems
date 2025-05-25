@@ -9,6 +9,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.chat.JeiChatItemLinkHover;
 import mezz.jei.common.chat.JeiChatItemLinks;
 import mezz.jei.common.chat.JeiChatItemLinks.IngredientLink;
+import mezz.jei.common.gui.IngredientTooltipComponent;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.util.SafeIngredientUtil;
 import net.minecraft.client.gui.screens.Screen;
@@ -90,7 +91,8 @@ public final class ChatIngredientTooltip {
 	) {
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(typedIngredient.getType());
 		JeiTooltip tooltip = new JeiTooltip();
-		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
+		tooltip.add(new IngredientTooltipComponent<>(typedIngredient, ingredientRenderer));
+		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 		return new IngredientTooltipData<>(typedIngredient, ingredientRenderer, ingredientManager, tooltip);
 	}
 }

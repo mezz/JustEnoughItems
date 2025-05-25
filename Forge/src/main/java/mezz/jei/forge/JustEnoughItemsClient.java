@@ -2,6 +2,7 @@ package mezz.jei.forge;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.IngredientTooltipComponent;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
@@ -113,6 +114,7 @@ public class JustEnoughItemsClient {
 	}
 
 	private void onRegisterClientTooltipEvent(RegisterClientTooltipComponentFactoriesEvent event) {
+		event.register(IngredientTooltipComponent.class, Function.identity());
 		event.register(IngredientsTooltipComponent.class, Function.identity());
 		event.register(PreviewTooltipComponent.class, Function.identity());
 		event.register(TagContentTooltipComponent.class, Function.identity());

@@ -13,7 +13,6 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.util.IngredientTooltipHelper;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.core.search.SearchMode;
@@ -60,10 +59,7 @@ public final class IngredientGridTooltipHelper {
 
 	public <T> void getTooltip(JeiTooltip tooltip, ITypedIngredient<T> typedIngredient, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
 		T ingredient = typedIngredient.getIngredient();
-		IngredientTooltipHelper.getIngredientTooltipSafe(tooltip, ingredient, ingredientRenderer);
-		IModIdHelper modIdHelper = Internal.getJeiRuntime().getJeiHelpers().getModIdHelper();
-		modIdHelper.getModNameForTooltip(typedIngredient)
-				.ifPresent(tooltip::add);
+		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 
 		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
 			addColorSearchInfoToTooltip(tooltip, ingredient, ingredientHelper);
@@ -131,7 +127,7 @@ public final class IngredientGridTooltipHelper {
 		IIngredientRenderer<T> ingredientRenderer,
 		IIngredientHelper<T> ingredientHelper
 	) {
-		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
+		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 
 		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
 			addColorSearchInfoToTooltip(tooltip, typedIngredient.getIngredient(), ingredientHelper);
@@ -172,7 +168,7 @@ public final class IngredientGridTooltipHelper {
 		}
 
 		tooltip.add(Component.empty());
-		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
+		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
 		modIdHelper.getModNameForTooltip(recipeOutput)
 			.ifPresent(tooltip::add);
 	}

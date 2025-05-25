@@ -120,7 +120,17 @@ public class JeiTooltip implements ITooltipBuilder {
 	public void clear() {
 		this.lines.clear();
 		this.elements.clear();
+		clearIngredient();
+	}
+
+	@Override
+	public void clearIngredient() {
 		this.typedIngredient = null;
+	}
+
+	@Override
+	public List<Either<FormattedText, TooltipComponent>> getLines() {
+		return elements;
 	}
 
 	public void addAll(JeiTooltip tooltip) {
@@ -144,6 +154,7 @@ public class JeiTooltip implements ITooltipBuilder {
 
 	@SuppressWarnings("removal")
 	@Override
+	@Deprecated
 	public void removeAll(List<Component> components) {
 		for (Component component : components) {
 			lines.remove(component);
@@ -261,7 +272,6 @@ public class JeiTooltip implements ITooltipBuilder {
 		);
 		add(Component.empty());
 	}
-
 	@Override
 	public List<Component> getLegacyComponents() {
 		return lines;
