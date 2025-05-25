@@ -14,6 +14,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
@@ -104,7 +105,8 @@ public final class ItemStackListFactory {
 			}
 
 			if (displayItems.isEmpty() && searchTabDisplayItems.isEmpty()) {
-				LOGGER.warn(
+				Level logLevel = isKnownEmptyTab(tab) ? Level.DEBUG : Level.WARN;
+				LOGGER.log(logLevel,
 					"Item Group has no display items and no search tab display items. " +
 					"Items from this group will be missing from the JEI ingredient list. {}",
 					tab.getDisplayName().getString()
@@ -139,6 +141,11 @@ public final class ItemStackListFactory {
 		}
 
 		return itemList;
+	}
+
+	private static boolean isKnownEmptyTab(CreativeModeTab tab) {
+		return tab.getDisplayName().getContents() instanceof TranslatableContents translatableContents &&
+			translatableContents.getKey().equals("itemGroup.op");
 	}
 
 	private static void addFromTab(
