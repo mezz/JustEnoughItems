@@ -6,6 +6,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.core.util.TimeUtil;
 import mezz.jei.library.recipes.collect.RecipeTypeData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -89,12 +90,12 @@ public class PluginManager {
 	}
 
 	private <T> T safeCallPlugin(IRecipeManagerPlugin plugin, Supplier<T> supplier, T defaultValue) {
-		Stopwatch stopWatch = Stopwatch.createStarted();
+		Stopwatch stopwatch = Stopwatch.createStarted();
 		try {
 			T result = supplier.get();
-			stopWatch.stop();
-			if (stopWatch.elapsed(TimeUnit.MILLISECONDS) > 10) {
-				LOGGER.warn("Recipe registry plugin is slow, took {}. {}", stopWatch, plugin.getClass());
+			stopwatch.stop();
+			if (stopwatch.elapsed(TimeUnit.MILLISECONDS) > 10) {
+				LOGGER.warn("Recipe registry plugin is slow, took {}. {}", TimeUtil.toHumanString(stopwatch.elapsed()), plugin.getClass());
 			}
 			return result;
 		} catch (RuntimeException | LinkageError e) {
