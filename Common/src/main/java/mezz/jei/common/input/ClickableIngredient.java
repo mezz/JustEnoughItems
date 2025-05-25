@@ -17,17 +17,18 @@ public class ClickableIngredient<V> implements IClickableIngredient<V> {
 		this.area = area;
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public ITypedIngredient<V> getTypedIngredient() {
 		return value;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public IIngredientType<V> getIngredientType() {
 		return value.getType();
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public V getIngredient() {
 		return value.getIngredient();

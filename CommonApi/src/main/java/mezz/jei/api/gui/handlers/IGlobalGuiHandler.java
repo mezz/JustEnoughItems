@@ -45,7 +45,7 @@ public interface IGlobalGuiHandler {
 	 *
 	 * @since 21.2.0
 	 */
-	default Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(IClickableIngredientFactory builder, double mouseX, double mouseY) {
+	default Optional<? extends IClickableIngredient<?>> getClickableIngredientUnderMouse(IClickableIngredientFactory builder, double mouseX, double mouseY) {
 		return getClickableIngredientUnderMouse(mouseX, mouseY);
 	}
 
