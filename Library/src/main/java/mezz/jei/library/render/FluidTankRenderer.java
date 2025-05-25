@@ -2,10 +2,8 @@ package mezz.jei.library.render;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
-import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -21,6 +19,7 @@ import net.minecraft.world.level.material.Fluids;
 import org.joml.Matrix4f;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
@@ -141,20 +140,14 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 			.setUv(uMin, vMin);
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public List<Component> getTooltip(T fluidStack, TooltipFlag tooltipFlag) {
-		JeiTooltip jeiTooltip = new JeiTooltip();
-		getTooltip(jeiTooltip, fluidStack, tooltipFlag);
-		return jeiTooltip.toLegacyToComponents();
-	}
+		List<Component> tooltip = new ArrayList<>();
 
-	@Override
-	public void getTooltip(ITooltipBuilder tooltip, T fluidStack, TooltipFlag tooltipFlag) {
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluidType = type.getBase(fluidStack);
 		if (fluidType.isSame(Fluids.EMPTY)) {
-			return;
+			return tooltip;
 		}
 
 		fluidHelper.getTooltip(tooltip, fluidStack, tooltipFlag);
@@ -169,6 +162,8 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 			MutableComponent amountString = Component.translatable("jei.tooltip.liquid.amount", nf.format(milliBuckets));
 			tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
 		}
+
+		return tooltip;
 	}
 
 	@Override

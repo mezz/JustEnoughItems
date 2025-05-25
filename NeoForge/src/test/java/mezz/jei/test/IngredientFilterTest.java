@@ -14,7 +14,7 @@ import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.ingredients.IListElementInfo;
 import mezz.jei.gui.ingredients.IngredientFilter;
 import mezz.jei.gui.ingredients.IngredientListElementFactory;
-import mezz.jei.gui.ingredients.ListElementInfoTooltip;
+import mezz.jei.gui.ingredients.ListElementInfo;
 import mezz.jei.library.config.EditModeConfig;
 import mezz.jei.library.ingredients.IngredientBlacklistInternal;
 import mezz.jei.library.ingredients.IngredientVisibility;
@@ -29,6 +29,7 @@ import mezz.jei.test.lib.TestIngredientFilterConfig;
 import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
@@ -180,9 +181,8 @@ public class IngredientFilterTest {
 	}
 
 	public static Set<String> getTooltipStrings(IIngredientRenderer<TestIngredient> ingredientRenderer, TestIngredient testIngredient) {
-		ListElementInfoTooltip tooltip = new ListElementInfoTooltip();
-		ingredientRenderer.getTooltip(tooltip, testIngredient, TooltipFlag.Default.NORMAL);
-		return tooltip.getStrings();
+		List<Component> components = ingredientRenderer.getTooltip(testIngredient, TooltipFlag.Default.NORMAL);
+		return ListElementInfo.getStrings(components);
 	}
 
 	public static List<TestIngredient> createIngredients() {

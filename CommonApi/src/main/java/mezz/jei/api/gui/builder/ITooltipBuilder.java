@@ -1,5 +1,6 @@
 package mezz.jei.api.gui.builder;
 
+import com.mojang.datafixers.util.Either;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
@@ -56,7 +57,27 @@ public interface ITooltipBuilder {
 	 *
 	 * @since 19.16.4
 	 */
-	void clear();
+	default void clear() {
+		clearIngredient();
+		getLines().clear();
+	}
+
+	/**
+	 * Remove the ingredient from this tooltip.
+	 *
+	 * @see #setIngredient(ITypedIngredient)
+	 *
+	 * @since 21.1.0
+	 */
+	void clearIngredient();
+
+	/**
+	 * Get the lines stored by this tooltip builder.
+	 * These lines are directly modifiable.
+	 *
+	 * @since 21.1.0
+	 */
+	List<Either<FormattedText, TooltipComponent>> getLines();
 
 	/**
 	 * @deprecated this is only for legacy tooltip support and will be removed

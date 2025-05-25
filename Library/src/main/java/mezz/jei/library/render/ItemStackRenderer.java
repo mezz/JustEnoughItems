@@ -42,22 +42,12 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		batchRenderer.renderBatch(guiGraphics, this, batchRenderElements);
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	public List<Component> getTooltip(ItemStack ingredient, TooltipFlag tooltipFlag) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Player player = minecraft.player;
 		Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
 		return ingredient.getTooltipLines(tooltipContext, player, tooltipFlag);
-	}
-
-	@Override
-	public void getTooltip(ITooltipBuilder tooltip, ItemStack ingredient, TooltipFlag tooltipFlag) {
-		Minecraft minecraft = Minecraft.getInstance();
-		Player player = minecraft.player;
-		Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
-		List<Component> tooltipLines = ingredient.getTooltipLines(tooltipContext, player, tooltipFlag);
-		tooltip.addAll(tooltipLines);
 	}
 
 	@Override

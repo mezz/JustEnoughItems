@@ -252,9 +252,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 			}
 			poseStack.popPose();
 
-			JeiTooltip tooltip = new JeiTooltip();
-			hoveredSlot.getTooltip(tooltip);
-			tooltip.draw(guiGraphics, mouseX, mouseY);
+			hoveredSlot.drawTooltip(guiGraphics, mouseX, mouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
 			JeiTooltip tooltip = new JeiTooltip();
 			recipeCategory.getTooltip(tooltip, recipe, recipeCategorySlotsView, recipeMouseX, recipeMouseY);

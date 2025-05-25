@@ -266,9 +266,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		hoveredRecipeCatalyst.ifPresent(h -> h.drawHoverOverlays(guiGraphics));
 
 		hoveredRecipeCatalyst.ifPresent(h -> {
-			JeiTooltip tooltip = new JeiTooltip();
-			h.getTooltip(tooltip);
-			tooltip.draw(guiGraphics, mouseX, mouseY);
+			h.drawTooltip(guiGraphics, mouseX, mouseY);
 		});
 
 		if (recipeCategoryTitle.isMouseOver(mouseX, mouseY)) {

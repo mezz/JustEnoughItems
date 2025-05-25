@@ -29,7 +29,7 @@ public interface IRecipeCategoryExtension<T> {
 	/**
 	 * Draw additional info about the recipe.
 	 * Use the mouse position for things like button highlights.
-	 * Tooltips are handled by {@link #getTooltipStrings(Object, double, double)}
+	 * Tooltips are handled by {@link #getTooltip(ITooltipBuilder, Object, double, double)}
 	 *
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.

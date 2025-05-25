@@ -4,6 +4,7 @@ import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public class CycleTicker implements ICycler {
 	private static final int MAX_INDEX = 100_000;
@@ -22,13 +23,13 @@ public class CycleTicker implements ICycler {
 	}
 
 	@Override
-	@Nullable
-	public <T> T getCycled(List<@Nullable T> list) {
+	public <T> Optional<T> getCycled(List<@Nullable T> list) {
 		if (list.isEmpty()) {
-			return null;
+			return Optional.empty();
 		}
 		int index = this.index % list.size();
-		return list.get(index);
+		T value = list.get(index);
+		return Optional.ofNullable(value);
 	}
 
 	public boolean tick() {
