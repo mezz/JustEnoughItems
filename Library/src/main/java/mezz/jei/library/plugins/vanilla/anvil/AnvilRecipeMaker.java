@@ -1,7 +1,6 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
 import com.google.common.collect.Lists;
-import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
@@ -124,13 +123,9 @@ public final class AnvilRecipeMaker {
 			.filter(enchantedBooks -> !enchantedBooks.isEmpty())
 			.map(enchantedBooks -> {
 				List<ItemStack> outputs = getEnchantedIngredients(ingredient, enchantedBooks);
-				String ingredientId = EnchantedBookSubtypeInterpreter.INSTANCE.getStringName(ingredient);
-				String ingredientIdPath = ResourceLocationUtil.sanitizePath(ingredientId);
-				String id = "enchantment." + ingredientIdPath;
-				ResourceLocation uid = ResourceLocation.fromNamespaceAndPath(ModIds.MINECRAFT_ID, id);
 				// All lists given here are immutable, and we want to keep the transforming list from outputs,
 				// so we call the AnvilRecipe constructor directly
-				return new AnvilRecipe(ingredientSingletonList, enchantedBooks, outputs, uid);
+				return new AnvilRecipe(ingredientSingletonList, enchantedBooks, outputs, null);
 			});
 	}
 

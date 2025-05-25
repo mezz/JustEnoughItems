@@ -3,6 +3,7 @@ package mezz.jei.library.plugins.vanilla.anvil;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ public record AnvilRecipe(
 	List<ItemStack> leftInputs,
 	List<ItemStack> rightInputs,
 	List<ItemStack> outputs,
-	ResourceLocation uid
+	@Nullable ResourceLocation uid
 ) implements IJeiAnvilRecipe {
 
 	@Override
@@ -29,6 +30,7 @@ public record AnvilRecipe(
 	}
 
 	@Override
+	@Nullable
 	public ResourceLocation getUid() {
 		return uid;
 	}
