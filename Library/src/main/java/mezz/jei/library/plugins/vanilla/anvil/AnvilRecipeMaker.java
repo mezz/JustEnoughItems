@@ -1,6 +1,5 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
-import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
@@ -135,14 +134,9 @@ public final class AnvilRecipeMaker {
 				if (outputs.isEmpty()) {
 					return Stream.empty();
 				}
-				String ingredientId = ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
-				String ingredientIdPath = ResourceLocationUtil.sanitizePath(ingredientId);
-				String id = "enchantment." + ingredientIdPath;
-
-				ResourceLocation uid = new ResourceLocation(ModIds.MINECRAFT_ID, id);
 				// All lists given here are immutable, so call the AnvilRecipe constructor directly
 				// to avoid copying them again.
-				IJeiAnvilRecipe recipe = new AnvilRecipe(ingredientSingletonList, enchantedBooks, outputs, uid);
+				IJeiAnvilRecipe recipe = new AnvilRecipe(ingredientSingletonList, enchantedBooks, outputs, null);
 				return Stream.of(recipe);
 			});
 	}
