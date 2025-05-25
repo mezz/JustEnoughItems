@@ -57,7 +57,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 
 		subscriptions.register(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
 			if (event.getPlayer() != null) {
-				LOGGER.info("JEI StartEventObserver received {}", event.getClass());
+				logReceivedEvent(event);
 				transitionState(State.LISTENING);
 			}
 		});
@@ -79,7 +79,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 
 					LOGGER.error("""
 							A Screen is opening but JEI hasn't started yet.
-							Normally, JEI is started after {}.
+							Normally, JEI is started after these event have fired: {}.
 							Something has caused one or more of these events to fail, so JEI is starting very late.
 							Missing events: {}""",
 						requiredEventsString,
@@ -108,7 +108,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 			LOGGER.debug("JEI StartEventObserver received {} too early, ignoring", event.getClass());
 			return;
 		}
-		LOGGER.info("JEI StartEventObserver received {}", event.getClass());
+		logReceivedEvent(event);
 		Class<? extends Event> eventClass = event.getClass();
 		if (requiredEvents.contains(eventClass) &&
 			observedEvents.add(eventClass) &&
@@ -120,6 +120,10 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 				transitionState(State.JEI_STARTED);
 			}
 		}
+	}
+
+	private static <T extends Event> void logReceivedEvent(T event) {
+		LOGGER.debug("JEI StartEventObserver received event: {}", event.getClass());
 	}
 
 	@Nullable
