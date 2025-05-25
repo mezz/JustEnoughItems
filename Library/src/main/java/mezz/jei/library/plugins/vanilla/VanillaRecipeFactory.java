@@ -29,11 +29,10 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	}
 
 	@Override
-	public IJeiAnvilRecipe createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs, ResourceLocation uid) {
+	public IJeiAnvilRecipe createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs, @Nullable ResourceLocation uid) {
 		ErrorUtil.checkNotEmpty(leftInput, "leftInput");
 		ErrorUtil.checkNotNull(rightInputs, "rightInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
-		ErrorUtil.checkNotNull(uid, "uid");
 
 		return new AnvilRecipe(List.of(leftInput), List.copyOf(rightInputs), List.copyOf(outputs), uid);
 	}
