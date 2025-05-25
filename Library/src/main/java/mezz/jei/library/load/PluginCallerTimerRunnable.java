@@ -1,14 +1,11 @@
 package mezz.jei.library.load;
 
+import mezz.jei.core.util.TimeUtil;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import static java.util.concurrent.TimeUnit.*;
 
 public class PluginCallerTimerRunnable {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -33,7 +30,7 @@ public class PluginCallerTimerRunnable {
 		Duration elapsed = Duration.ofNanos(System.nanoTime() - this.startTime);
 		long elapsedMs = elapsed.toMillis();
 		if (elapsedMs > nextLongReportDurationMs) {
-			LOGGER.error("{}: {} is running and has taken {} so far", title, pluginUid, toHumanString(elapsed));
+			LOGGER.error("{}: {} is running and has taken {} so far", title, pluginUid, TimeUtil.toHumanString(elapsed));
 			nextLongReportDurationMs += longReportDurationInterval;
 		}
 	}
@@ -41,40 +38,8 @@ public class PluginCallerTimerRunnable {
 	public void stop() {
 		Duration elapsed = Duration.ofNanos(System.nanoTime() - this.startTime);
 		if (elapsed.toMillis() > startReportDurationMs) {
-			LOGGER.info("{}: {} took {}", title, pluginUid, toHumanString(elapsed));
+			LOGGER.info("{}: {} took {}", title, pluginUid, TimeUtil.toHumanString(elapsed));
 		}
 	}
 
-	private static String toHumanString(Duration duration) {
-		TimeUnit unit = getSmallestUnit(duration);
-		long nanos = duration.toNanos();
-		double value = (double) nanos / NANOSECONDS.convert(1, unit);
-		return String.format(Locale.ROOT, "%.4g %s", value, unitToString(unit));
-	}
-
-	private static TimeUnit getSmallestUnit(Duration duration) {
-		if (duration.toDays() > 0) {
-			return DAYS;
-		}
-		if (duration.toHours() > 0) {
-			return HOURS;
-		}
-		if (duration.toMinutes() > 0) {
-			return MINUTES;
-		}
-		if (duration.toSeconds() > 0) {
-			return SECONDS;
-		}
-		if (duration.toMillis() > 0) {
-			return MILLISECONDS;
-		}
-		if (duration.toNanos() > 1000) {
-			return MICROSECONDS;
-		}
-		return NANOSECONDS;
-	}
-
-	private static String unitToString(TimeUnit unit) {
-		return unit.name().toLowerCase(Locale.ROOT);
-	}
 }
