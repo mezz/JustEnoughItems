@@ -9,6 +9,7 @@ import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.ingredients.ITypedIngredientFactory;
 import mezz.jei.common.input.ClickableIngredientFactory;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
@@ -22,8 +23,10 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -42,7 +45,39 @@ public class ScreenHelper implements IScreenHelper {
 		ListMultiMap<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers,
 		Map<Class<?>, IScreenHandler<?>> guiScreenHandlers
 	) {
-		this.clickableIngredientFactory = new ClickableIngredientFactory(ingredientManager);
+		this(
+			new ClickableIngredientFactory(ingredientManager),
+			globalGuiHandlers,
+			guiContainerHandlers,
+			ghostIngredientHandlers,
+			guiScreenHandlers
+		);
+	}
+
+	public ScreenHelper(
+		ITypedIngredientFactory typedIngredientFactory,
+		List<IGlobalGuiHandler> globalGuiHandlers,
+		GuiContainerHandlers guiContainerHandlers,
+		ListMultiMap<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers,
+		Map<Class<?>, IScreenHandler<?>> guiScreenHandlers
+	) {
+		this(
+			new ClickableIngredientFactory(typedIngredientFactory),
+			globalGuiHandlers,
+			guiContainerHandlers,
+			ghostIngredientHandlers,
+			guiScreenHandlers
+		);
+	}
+
+	private ScreenHelper(
+		IClickableIngredientFactory clickableIngredientFactory,
+		List<IGlobalGuiHandler> globalGuiHandlers,
+		GuiContainerHandlers guiContainerHandlers,
+		ListMultiMap<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers,
+		Map<Class<?>, IScreenHandler<?>> guiScreenHandlers
+	) {
+		this.clickableIngredientFactory = clickableIngredientFactory;
 		this.globalGuiHandlers = globalGuiHandlers;
 		this.guiContainerHandlers = guiContainerHandlers;
 		this.ghostIngredientHandlers = ghostIngredientHandlers;
@@ -52,26 +87,10 @@ public class ScreenHelper implements IScreenHelper {
 
 	@Override
 	public <T extends Screen> Optional<IGuiProperties> getGuiProperties(T screen) {
-		{
-			@SuppressWarnings("unchecked")
-			IScreenHandler<T> handler = (IScreenHandler<T>) guiScreenHandlers.get(screen.getClass());
-			if (handler != null) {
-				IGuiProperties properties = handler.apply(screen);
-				return Optional.ofNullable(properties);
-			}
-		}
-		for (Map.Entry<Class<?>, IScreenHandler<?>> entry : guiScreenHandlers.entrySet()) {
-			Class<?> guiScreenClass = entry.getKey();
-			if (guiScreenClass.isInstance(screen)) {
-				@SuppressWarnings("unchecked")
-				IScreenHandler<T> handler = (IScreenHandler<T>) entry.getValue();
-				if (handler != null) {
-					IGuiProperties properties = handler.apply(screen);
-					return Optional.ofNullable(properties);
-				}
-			}
-		}
-		return Optional.empty();
+		return getActiveScreenHandlerStream(screen)
+			.map(handler -> handler.apply(screen))
+			.filter(Objects::nonNull)
+			.findFirst();
 	}
 
 	@Override
@@ -106,21 +125,22 @@ public class ScreenHelper implements IScreenHelper {
 	}
 
 	private Stream<IClickableIngredient<?>> getPluginsIngredientUnderMouse(IClickableIngredientFactory factory, Screen guiScreen, double mouseX, double mouseY) {
+		Stream<IClickableIngredient<?>> screenIngredients = getScreenHandlerIngredients(factory, guiScreen, mouseX, mouseY);
 		Stream<IClickableIngredient<?>> globalIngredients = this.globalGuiHandlers.stream()
-			.map(a -> castClickableIngredient(a.getClickableIngredientUnderMouse(factory, mouseX, mouseY)))
+			.map(a -> a.getClickableIngredientUnderMouse(factory, mouseX, mouseY))
 			.flatMap(Optional::stream);
 
 		if (guiScreen instanceof AbstractContainerScreen<?> guiContainer) {
 			Stream<IClickableIngredient<?>> containerIngredients = getGuiContainerHandlerIngredients(factory, guiContainer, mouseX, mouseY);
 			return Stream.concat(
 				containerIngredients,
-				globalIngredients
+				Stream.concat(screenIngredients, globalIngredients)
 			);
 		}
-		return globalIngredients;
+		return Stream.concat(screenIngredients, globalIngredients);
 	}
 
-	private Optional<IClickableIngredient<?>> getClickedIngredient(IClickableIngredientFactory factory, Slot slot, AbstractContainerScreen<?> guiContainer) {
+	private Optional<IClickableIngredient<ItemStack>> getClickedIngredient(IClickableIngredientFactory factory, Slot slot, AbstractContainerScreen<?> guiContainer) {
 		ItemStack stack = slot.getItem();
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 		return factory.createBuilder(stack)
@@ -129,18 +149,45 @@ public class ScreenHelper implements IScreenHelper {
 				screenHelper.getGuiTop(guiContainer) + slot.y,
 				16,
 				16
-			)
-			.map(i -> (IClickableIngredient<?>) i);
+			);
 	}
 
 	private <T extends AbstractContainerScreen<?>> Stream<IClickableIngredient<?>> getGuiContainerHandlerIngredients(IClickableIngredientFactory factory, T guiContainer, double mouseX, double mouseY) {
 		return this.guiContainerHandlers.getActiveGuiHandlerStream(guiContainer)
-			.map(a -> castClickableIngredient(a.getClickableIngredientUnderMouse(factory, guiContainer, mouseX, mouseY)))
+			.map(a -> a.getClickableIngredientUnderMouse(factory, guiContainer, mouseX, mouseY))
 			.flatMap(Optional::stream);
 	}
 
-	private static Optional<IClickableIngredient<?>> castClickableIngredient(Optional<? extends IClickableIngredient<?>> clickedIngredient) {
-		return clickedIngredient.map(i -> (IClickableIngredient<?>) i);
+	private <T extends Screen> Stream<IClickableIngredient<?>> getScreenHandlerIngredients(IClickableIngredientFactory factory, T guiScreen, double mouseX, double mouseY) {
+		return getActiveScreenHandlerStream(guiScreen)
+			.map(handler -> handler.getClickableIngredientUnderMouse(factory, guiScreen, mouseX, mouseY))
+			.flatMap(Optional::stream);
+	}
+
+	private <T extends Screen> Stream<IScreenHandler<T>> getActiveScreenHandlerStream(T guiScreen) {
+		Class<? extends Screen> guiScreenClass = guiScreen.getClass();
+		return guiScreenHandlers.entrySet()
+			.stream()
+			.filter(entry -> entry.getKey().isInstance(guiScreen))
+			.sorted(Comparator.comparingInt(entry -> getClassDistance(guiScreenClass, entry.getKey())))
+			.map(Map.Entry::getValue)
+			.map(ScreenHelper::castScreenHandler);
+	}
+
+	private static int getClassDistance(Class<?> childClass, Class<?> parentClass) {
+		int distance = 0;
+		for (Class<?> currentClass = childClass; currentClass != null; currentClass = currentClass.getSuperclass()) {
+			if (currentClass == parentClass) {
+				return distance;
+			}
+			distance++;
+		}
+		return Integer.MAX_VALUE;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Screen> IScreenHandler<T> castScreenHandler(IScreenHandler<?> handler) {
+		return (IScreenHandler<T>) handler;
 	}
 
 	@Override

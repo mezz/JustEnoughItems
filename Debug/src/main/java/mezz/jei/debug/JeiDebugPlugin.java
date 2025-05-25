@@ -80,13 +80,11 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void registerIngredientAliases(IIngredientAliasRegistration registration) {
 		registration.addAlias(
-			VanillaTypes.ITEM_STACK,
 			new ItemStack(Items.PANDA_SPAWN_EGG),
 			"jei.alias.panda.spawn.egg"
 		);
 
 		registration.addAlias(
-			VanillaTypes.ITEM_STACK,
 			new ItemStack(Items.VILLAGER_SPAWN_EGG),
 			"jei.alias.villager.spawn.egg"
 		);

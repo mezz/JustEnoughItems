@@ -11,30 +11,35 @@ import net.minecraft.client.renderer.Rect2i;
  * This can be an ingredient drawn in a GUI container slot, a fluid tank,
  * or anything else that holds ingredients.
  *
- * Create one with {@link IIngredientManager#createClickableIngredient} or {@link IClickableIngredientFactory}.
+ * Create one with {@link IIngredientManager#getClickableIngredientFactory()}.
+ *
+ * @see IClickableIngredientFactory
  *
  * @since 10.3.0
  */
 public interface IClickableIngredient<T> {
 	/**
 	 * Get the typed ingredient that can be looked up by JEI for recipes.
-	 *
 	 * @since 10.3.0
-	 * @deprecated use {@link #getIngredient()} and {@link #getIngredientType()} instead.
 	 */
-	@Deprecated(since = "10.5.0", forRemoval = true)
 	ITypedIngredient<T> getTypedIngredient();
 
 	/**
 	 * @since 10.5.0
+	 *
+	 * @deprecated use {@link #getTypedIngredient()} instead.
 	 */
+	@Deprecated(since = "10.60.0", forRemoval = true)
 	default IIngredientType<T> getIngredientType() {
 		return getTypedIngredient().getType();
 	}
 
 	/**
 	 * @since 10.5.0
+	 *
+	 * @deprecated use {@link #getTypedIngredient()} instead.
 	 */
+	@Deprecated(since = "10.60.0", forRemoval = true)
 	default T getIngredient() {
 		ITypedIngredient<T> typedIngredient = getTypedIngredient();
 		return typedIngredient.getIngredient();

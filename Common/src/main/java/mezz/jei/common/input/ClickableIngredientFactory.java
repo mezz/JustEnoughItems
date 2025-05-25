@@ -5,17 +5,32 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.ingredients.ITypedIngredientFactory;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.renderer.Rect2i;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Function;
 import java.util.Optional;
 
 public class ClickableIngredientFactory implements IClickableIngredientFactory {
-	private final IIngredientManager ingredientManager;
+	private final ITypedIngredientFactory typedIngredientFactory;
+	private final Function<Object, Optional<? extends ITypedIngredient<?>>> legacyTypedIngredientFactory;
+
+	public ClickableIngredientFactory(ITypedIngredientFactory typedIngredientFactory) {
+		this(typedIngredientFactory, ingredient -> Optional.empty());
+	}
 
 	public ClickableIngredientFactory(IIngredientManager ingredientManager) {
-		this.ingredientManager = ingredientManager;
+		this(ingredientManager::createTypedIngredient, ingredientManager::createTypedIngredient);
+	}
+
+	private ClickableIngredientFactory(
+		ITypedIngredientFactory typedIngredientFactory,
+		Function<Object, Optional<? extends ITypedIngredient<?>>> legacyTypedIngredientFactory
+	) {
+		this.typedIngredientFactory = typedIngredientFactory;
+		this.legacyTypedIngredientFactory = legacyTypedIngredientFactory;
 	}
 
 	@Override
@@ -28,18 +43,14 @@ public class ClickableIngredientFactory implements IClickableIngredientFactory {
 		if (ingredient == null) {
 			return WithoutIngredient.getInstance();
 		}
-		return createBuilderForLegacyIngredient(ingredient);
-	}
-
-	private <T> IBuilder<?> createBuilderForLegacyIngredient(T ingredient) {
-		return ingredientManager.getIngredientTypeChecked(ingredient)
-			.<IBuilder<?>>map(ingredientType -> createBuilder(ingredientType, ingredient))
+		return legacyTypedIngredientFactory.apply(ingredient)
+			.<IBuilder<?>>map(this::createBuilder)
 			.orElse(WithoutIngredient.getInstance());
 	}
 
 	@Override
 	public <T> IBuilder<T> createBuilder(IIngredientType<T> ingredientType, T ingredient) {
-		return ingredientManager.createTypedIngredient(ingredientType, ingredient)
+		return typedIngredientFactory.createTypedIngredient(ingredientType, ingredient, false)
 			.<IBuilder<T>>map(WithIngredient::new)
 			.orElse(WithoutIngredient.getInstance());
 	}
@@ -67,7 +78,7 @@ public class ClickableIngredientFactory implements IClickableIngredientFactory {
 	}
 
 	private static class WithoutIngredient<T> implements IBuilder<T> {
-		private static final WithoutIngredient<?> INSTANCE = new WithoutIngredient<>();
+		public static final WithoutIngredient<?> INSTANCE = new WithoutIngredient<>();
 
 		public static <T> IBuilder<T> getInstance() {
 			@SuppressWarnings("unchecked")
@@ -75,7 +86,8 @@ public class ClickableIngredientFactory implements IClickableIngredientFactory {
 			return cast;
 		}
 
-		private WithoutIngredient() {}
+		private WithoutIngredient() {
+		}
 
 		@Override
 		public Optional<IClickableIngredient<T>> buildWithArea(int x, int y, int width, int height) {

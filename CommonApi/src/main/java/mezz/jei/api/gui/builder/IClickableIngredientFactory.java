@@ -2,9 +2,12 @@ package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickableIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +20,10 @@ import java.util.Optional;
  * Helper factory for creating {@link IClickableIngredient}.
  *
  * Passed to mods in methods that need to create clickable ingredients, like
- * {@link IGuiContainerHandler#getClickableIngredientUnderMouse(IClickableIngredientFactory, AbstractContainerScreen, double, double)}.
+ * {@link IGuiContainerHandler#getClickableIngredientUnderMouse(IClickableIngredientFactory, AbstractContainerScreen, double, double)}
+ * and {@link IScreenHandler#getClickableIngredientUnderMouse(IClickableIngredientFactory, Screen, double, double)}.
+ *
+ * An instance is also available from {@link IIngredientManager#getClickableIngredientFactory()}.
  *
  * @since 10.3.0
  */
