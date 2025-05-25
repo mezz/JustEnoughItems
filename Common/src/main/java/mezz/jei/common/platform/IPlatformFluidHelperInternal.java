@@ -1,6 +1,5 @@
 package mezz.jei.common.platform;
 
-import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
@@ -9,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T> {
@@ -25,7 +25,7 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
 
 	Optional<CompoundTag> getTag(T ingredient);
 
-	void getTooltip(ITooltipBuilder tooltip, T ingredient, TooltipFlag tooltipFlag);
+	void getTooltip(List<Component> tooltip, T ingredient, TooltipFlag tooltipFlag);
 
 	T copy(T ingredient);
 

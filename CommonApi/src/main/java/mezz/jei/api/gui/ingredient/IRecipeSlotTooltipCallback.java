@@ -24,7 +24,7 @@ public interface IRecipeSlotTooltipCallback {
 	 * Change the tooltip for an ingredient.
 	 *
 	 * @since 9.3.0
-	 * @deprecated in favor of {@link IRecipeSlotRichTooltipCallback}
+	 * @deprecated use {@link IRecipeSlotRichTooltipCallback} instead
 	 */
 	@Deprecated(since = "15.8.4", forRemoval = true)
 	void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip);
@@ -33,7 +33,7 @@ public interface IRecipeSlotTooltipCallback {
 	 * Add to the tooltip for an ingredient.
 	 *
 	 * @since 15.8.4
-	 * @deprecated in favor of {@link IRecipeSlotRichTooltipCallback}
+	 * @deprecated use {@link IRecipeSlotRichTooltipCallback} instead
 	 */
 	@Deprecated(since = "15.12.3", forRemoval = true)
 	@SuppressWarnings("removal")

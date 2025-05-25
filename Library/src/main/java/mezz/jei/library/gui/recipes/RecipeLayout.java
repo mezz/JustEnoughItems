@@ -264,13 +264,20 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 
 		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(recipeCategorySlots);
 		RecipeSlotUnderMouse hoveredSlotResult = getSlotUnderMouse(mouseX, mouseY).orElse(null);
+		var poseStack = guiGraphics.pose();
 
 		if (hoveredSlotResult != null) {
 			IRecipeSlotDrawable hoveredSlot = hoveredSlotResult.slot();
 
-			JeiTooltip tooltip = new JeiTooltip();
-			hoveredSlot.getTooltip(tooltip);
-			tooltip.draw(guiGraphics, mouseX, mouseY);
+			poseStack.pushPose();
+			{
+				ScreenPosition offset = hoveredSlotResult.offset();
+				poseStack.translate(offset.x(), offset.y(), 0);
+				hoveredSlot.drawHoverOverlays(guiGraphics);
+			}
+			poseStack.popPose();
+
+			hoveredSlot.drawTooltip(guiGraphics, mouseX, mouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
 			JeiTooltip tooltip = new JeiTooltip();
 			try {

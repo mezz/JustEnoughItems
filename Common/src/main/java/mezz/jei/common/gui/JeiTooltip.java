@@ -86,8 +86,18 @@ public class JeiTooltip implements ITooltipBuilder {
 
 	@Override
 	public void clear() {
-		this.lines.clear();
+		clearIngredient();
+		lines.clear();
+	}
+
+	@Override
+	public void clearIngredient() {
 		this.typedIngredient = null;
+	}
+
+	@Override
+	public List<Either<FormattedText, TooltipComponent>> getLines() {
+		return lines;
 	}
 
 	public void addAll(JeiTooltip tooltip) {
@@ -98,9 +108,8 @@ public class JeiTooltip implements ITooltipBuilder {
 		return lines.isEmpty() && typedIngredient == null;
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public List<Component> toLegacyToComponents() {
+	@Deprecated
+	public List<Component> getLegacyComponents() {
 		return lines.stream()
 			.<Component>mapMulti((e, consumer) -> {
 				e.left().ifPresent(f -> {
@@ -114,6 +123,14 @@ public class JeiTooltip implements ITooltipBuilder {
 
 	@SuppressWarnings("removal")
 	@Override
+	@Deprecated
+	public List<Component> toLegacyToComponents() {
+		return getLegacyComponents();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	@Deprecated
 	public void removeAll(List<Component> components) {
 		for (Component component : components) {
 			lines.remove(Either.left(component));
@@ -227,9 +244,5 @@ public class JeiTooltip implements ITooltipBuilder {
 				.withStyle(ChatFormatting.DARK_GRAY)
 		);
 		add(Component.empty());
-	}
-
-	public List<Either<FormattedText, TooltipComponent>> getLines() {
-		return new ArrayList<>(lines);
 	}
 }

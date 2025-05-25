@@ -88,7 +88,7 @@ public final class ChatIngredientTooltip {
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(typedIngredient.getType());
 		JeiTooltip tooltip = new JeiTooltip();
 		tooltip.add(new IngredientTooltipComponent<>(typedIngredient, ingredientRenderer));
-		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
+		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 		return new IngredientTooltipData<>(typedIngredient, ingredientRenderer, ingredientManager, tooltip);
 	}
 }
