@@ -1,5 +1,6 @@
 package mezz.jei.api.runtime;
 
+import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
@@ -10,7 +11,8 @@ import net.minecraft.client.renderer.Rect2i;
  * This can be an ingredient drawn in a GUI container slot, a fluid tank,
  * or anything else that holds ingredients.
  *
- * Create one with {@link IIngredientManager#createClickableIngredient}.
+ * Create one with {@link IIngredientManager#getClickableIngredientFactory()}
+ * @see IClickableIngredientFactory
  *
  * @since 11.5.0
  */
@@ -19,21 +21,25 @@ public interface IClickableIngredient<T> {
 	 * Get the typed ingredient that can be looked up by JEI for recipes.
 	 *
 	 * @since 11.5.0
-	 * @deprecated use {@link #getIngredient()} and {@link #getIngredientType()} instead.
 	 */
-	@Deprecated(since = "19.12.0", forRemoval = true)
 	ITypedIngredient<T> getTypedIngredient();
 
 	/**
 	 * @since 19.12.0
+	 *
+	 * @deprecated use {@link #getTypedIngredient()}
 	 */
+	@Deprecated(since = "21.2.0", forRemoval = true)
 	default IIngredientType<T> getIngredientType() {
 		return getTypedIngredient().getType();
 	}
 
 	/**
 	 * @since 19.12.0
+	 *
+	 * @deprecated use {@link #getTypedIngredient()}
 	 */
+	@Deprecated(since = "21.2.0", forRemoval = true)
 	default T getIngredient() {
 		ITypedIngredient<T> typedIngredient = getTypedIngredient();
 		return typedIngredient.getIngredient();

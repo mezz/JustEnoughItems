@@ -1,5 +1,6 @@
 package mezz.jei.api.gui.handlers;
 
+import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.runtime.IClickableIngredient;
@@ -38,11 +39,32 @@ public interface IGlobalGuiHandler {
 	 * This can also be used to let JEI look up liquids in tanks directly, by returning a FluidStack.
 	 * Works with any ingredient type that has been registered with {@link IModIngredientRegistration}.
 	 *
+	 * @param builder a builder to help with the creation of clickable ingredients.
+	 * @param mouseX the current X position of the mouse in screen coordinates.
+	 * @param mouseY the current Y position of the mouse in screen coordinates.
+	 *
+	 * @since 21.2.0
+	 */
+	default Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(IClickableIngredientFactory builder, double mouseX, double mouseY) {
+		return getClickableIngredientUnderMouse(mouseX, mouseY);
+	}
+
+	/**
+	 * Return a clickable ingredient under the mouse that JEI could not normally detect, used for JEI recipe lookups.
+	 * <p>
+	 * This is useful for guis that don't have normal slots (which is how JEI normally detects items under the mouse).
+	 * <p>
+	 * This can also be used to let JEI look up liquids in tanks directly, by returning a FluidStack.
+	 * Works with any ingredient type that has been registered with {@link IModIngredientRegistration}.
+	 *
 	 * @param mouseX the current X position of the mouse in screen coordinates.
 	 * @param mouseY the current Y position of the mouse in screen coordinates.
 	 *
 	 * @since 11.5.0
+	 * @deprecated use {@link #getClickableIngredientUnderMouse(IClickableIngredientFactory, double, double)}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(forRemoval = true, since = "21.2.0")
 	default Optional<IClickableIngredient<?>> getClickableIngredientUnderMouse(double mouseX, double mouseY) {
 		return Optional.empty();
 	}

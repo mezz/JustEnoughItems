@@ -1,6 +1,5 @@
 package mezz.jei.library.plugins.debug;
 
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -36,7 +35,7 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 			LOGGER.info("1: Ghost Ingredient Handling Starting with {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
 			targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(20, 20, 20, 20), ingredientManager));
 		}
-		typedIngredient.getIngredient(VanillaTypes.ITEM_STACK)
+		typedIngredient.getItemStack()
 			.ifPresent(itemStack -> {
 				boolean even = true;
 				int count = 0;

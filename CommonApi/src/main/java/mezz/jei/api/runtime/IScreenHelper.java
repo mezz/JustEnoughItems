@@ -10,6 +10,7 @@ import mezz.jei.api.registration.IGuiHandlerRegistration;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import java.util.stream.Stream;
  *
  * @since 11.5.0
  */
+@ApiStatus.NonExtendable
 public interface IScreenHelper {
 	/**
 	 * Get the ingredient under the mouse for the given screen.

@@ -1,7 +1,6 @@
 package mezz.jei.common.platform;
 
 import com.mojang.serialization.Codec;
-import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;

@@ -3,7 +3,6 @@ package mezz.jei.common.transfer;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -296,7 +295,7 @@ public final class RecipeTransferUtil {
 			if (typedIngredient == null) {
 				continue;
 			}
-			ITypedIngredient<ItemStack> typedItemStack = typedIngredient.cast(VanillaTypes.ITEM_STACK);
+			ITypedIngredient<ItemStack> typedItemStack = typedIngredient.castToItemStackType();
 			if (typedItemStack != null) {
 				Object uid = stackhelper.getUidForStack(typedItemStack, UidContext.Ingredient);
 				uids.add(uid);

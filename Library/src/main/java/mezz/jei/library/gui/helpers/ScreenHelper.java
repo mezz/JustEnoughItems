@@ -1,28 +1,24 @@
 package mezz.jei.library.gui.helpers;
 
-import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.input.ClickableIngredient;
+import mezz.jei.common.input.ClickableIngredientFactory;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.collect.ListMultiMap;
 import mezz.jei.library.gui.GuiContainerHandlers;
-import mezz.jei.library.ingredients.TypedIngredient;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -94,28 +90,29 @@ public class ScreenHelper implements IScreenHelper {
 
 	@Override
 	public Stream<IClickableIngredient<?>> getClickableIngredientUnderMouse(Screen screen, double mouseX, double mouseY) {
+		ClickableIngredientFactory factory = new ClickableIngredientFactory(ingredientManager);
 		return Stream.concat(
-			getPluginsIngredientUnderMouse(screen, mouseX, mouseY),
-			getSlotIngredientUnderMouse(screen).stream()
+			getPluginsIngredientUnderMouse(factory, screen, mouseX, mouseY),
+			getSlotIngredientUnderMouse(factory, screen).stream()
 		);
 	}
 
-	private Optional<IClickableIngredient<?>> getSlotIngredientUnderMouse(Screen guiScreen) {
+	private Optional<IClickableIngredient<?>> getSlotIngredientUnderMouse(ClickableIngredientFactory factory, Screen guiScreen) {
 		if (!(guiScreen instanceof AbstractContainerScreen<?> guiContainer)) {
 			return Optional.empty();
 		}
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 		return screenHelper.getSlotUnderMouse(guiContainer)
-			.flatMap(slot -> getClickedIngredient(slot, guiContainer));
+			.flatMap(slot -> getClickedIngredient(factory, slot, guiContainer));
 	}
 
-	private Stream<IClickableIngredient<?>> getPluginsIngredientUnderMouse(Screen guiScreen, double mouseX, double mouseY) {
+	private Stream<IClickableIngredient<?>> getPluginsIngredientUnderMouse(ClickableIngredientFactory factory, Screen guiScreen, double mouseX, double mouseY) {
 		Stream<IClickableIngredient<?>> globalIngredients = this.globalGuiHandlers.stream()
-			.map(a -> a.getClickableIngredientUnderMouse(mouseX, mouseY))
+			.map(a -> a.getClickableIngredientUnderMouse(factory, mouseX, mouseY))
 			.flatMap(Optional::stream);
 
 		if (guiScreen instanceof AbstractContainerScreen<?> guiContainer) {
-			Stream<IClickableIngredient<?>> containerIngredients = getGuiContainerHandlerIngredients(guiContainer, mouseX, mouseY);
+			Stream<IClickableIngredient<?>> containerIngredients = getGuiContainerHandlerIngredients(factory, guiContainer, mouseX, mouseY);
 			return Stream.concat(
 				containerIngredients,
 				globalIngredients
@@ -124,28 +121,21 @@ public class ScreenHelper implements IScreenHelper {
 		return globalIngredients;
 	}
 
-	private Optional<IClickableIngredient<?>> getClickedIngredient(Slot slot, AbstractContainerScreen<?> guiContainer) {
+	private Optional<IClickableIngredient<ItemStack>> getClickedIngredient(ClickableIngredientFactory factory, Slot slot, AbstractContainerScreen<?> guiContainer) {
 		ItemStack stack = slot.getItem();
-		@Nullable ITypedIngredient<ItemStack> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, VanillaTypes.ITEM_STACK, stack, false);
-		if (typedIngredient == null) {
-			return Optional.empty();
-		}
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-		ImmutableRect2i slotArea = new ImmutableRect2i(
-			screenHelper.getGuiLeft(guiContainer) + slot.x,
-			screenHelper.getGuiTop(guiContainer) + slot.y,
-			16,
-			16
-		);
-		ClickableIngredient<ItemStack> clickableIngredient = new ClickableIngredient<>(typedIngredient, slotArea);
-		return Optional.of(clickableIngredient);
+		return factory.createBuilder(stack)
+			.buildWithArea(
+				screenHelper.getGuiLeft(guiContainer) + slot.x,
+				screenHelper.getGuiTop(guiContainer) + slot.y,
+				16,
+				16
+			);
 	}
 
-	private <T extends AbstractContainerScreen<?>> Stream<IClickableIngredient<?>> getGuiContainerHandlerIngredients(T guiContainer, double mouseX, double mouseY) {
+	private <T extends AbstractContainerScreen<?>> Stream<IClickableIngredient<?>> getGuiContainerHandlerIngredients(IClickableIngredientFactory factory, T guiContainer, double mouseX, double mouseY) {
 		return this.guiContainerHandlers.getActiveGuiHandlerStream(guiContainer)
-			.map(a ->
-				a.getClickableIngredientUnderMouse(guiContainer, mouseX, mouseY)
-			)
+			.map(a -> a.getClickableIngredientUnderMouse(factory, guiContainer, mouseX, mouseY))
 			.flatMap(Optional::stream);
 	}
 

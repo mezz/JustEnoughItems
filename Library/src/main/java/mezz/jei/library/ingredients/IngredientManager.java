@@ -1,6 +1,7 @@
 package mezz.jei.library.ingredients;
 
 import com.mojang.serialization.Codec;
+import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -9,6 +10,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.input.ClickableIngredient;
+import mezz.jei.common.input.ClickableIngredientFactory;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.Translator;
@@ -196,8 +198,13 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	@Override
-	public <V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient) {
-		ITypedIngredient<V> result = TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, false);
+	public IClickableIngredientFactory getClickableIngredientFactory() {
+		return new ClickableIngredientFactory(this);
+	}
+
+	@Override
+	public <V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient, boolean normalize) {
+		ITypedIngredient<V> result = TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, normalize);
 		return Optional.ofNullable(result);
 	}
 
@@ -209,7 +216,9 @@ public class IngredientManager implements IIngredientManager {
 		return TypedIngredient.normalize(typedIngredient, ingredientHelper);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
+	@Deprecated
 	public <V> Optional<IClickableIngredient<V>> createClickableIngredient(IIngredientType<V> ingredientType, V ingredient, Rect2i area, boolean normalize) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");

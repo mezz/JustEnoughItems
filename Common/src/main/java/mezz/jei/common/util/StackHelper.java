@@ -60,6 +60,6 @@ public class StackHelper implements IStackHelper {
 	}
 
 	public boolean hasSubtypes(ItemStack stack) {
-		return subtypeManager.hasSubtypes(VanillaTypes.ITEM_STACK, stack);
+		return subtypeManager.hasSubtypes(stack);
 	}
 }
