@@ -2,6 +2,7 @@ package mezz.jei.library.load;
 
 import com.google.common.base.Stopwatch;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.core.util.TimeUtil;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +36,6 @@ public class PluginCaller {
 			}
 		}
 
-		LOGGER.info("{} took {}", title, stopwatch);
+		LOGGER.info("{} took {}", title, TimeUtil.toHumanString(stopwatch.elapsed()));
 	}
 }

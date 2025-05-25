@@ -18,6 +18,6 @@ public final class LoggedTimer {
 
 	public void stop() {
 		stopWatch.stop();
-		LOGGER.info("{} took {}", message, stopWatch);
+		LOGGER.info("{} took {}", message, TimeUtil.toHumanString(stopWatch.elapsed()));
 	}
 }
