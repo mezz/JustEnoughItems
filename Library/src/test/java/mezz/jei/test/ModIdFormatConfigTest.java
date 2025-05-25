@@ -5,10 +5,12 @@ import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.library.config.ModIdFormatConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -248,6 +250,11 @@ public class ModIdFormatConfigTest {
 		@Override
 		public List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
 			return tooltip;
+		}
+
+		@Override
+		public boolean canEnchant(Holder<Enchantment> enchantment, ItemStack ingredient) {
+			return false;
 		}
 	}
 }

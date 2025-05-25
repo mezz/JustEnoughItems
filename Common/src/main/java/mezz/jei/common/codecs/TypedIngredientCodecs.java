@@ -62,7 +62,7 @@ public class TypedIngredientCodecs {
 			ingredient -> {
 				Optional<IIngredientType<T>> type = ingredientManager.getIngredientTypeChecked(ingredient);
 				return type.map(ingredientType ->
-						ingredientManager.createTypedIngredient(ingredientType, ingredient)
+						ingredientManager.createTypedIngredient(ingredientType, ingredient, false)
 						.map(DataResult::success)
 						.orElseGet(() -> {
 							return DataResult.error(() -> {

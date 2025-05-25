@@ -12,6 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.ComposterBlock;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -53,5 +54,12 @@ public class IngredientHelper implements IPlatformIngredientHelper {
 	@Override
 	public List<Ingredient> getPotionContainers(PotionBrewing potionBrewing) {
 		return potionBrewing.containers;
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public float getCompostValue(ItemStack itemStack) {
+		Item item = itemStack.getItem();
+		return ComposterBlock.COMPOSTABLES.getOrDefault(item, 0f);
 	}
 }

@@ -2,11 +2,13 @@ package mezz.jei.fabric.platform;
 
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.enchantment.Enchantment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -41,5 +43,11 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 			LOGGER.error("Error while Testing for mod name formatting", e);
 		}
 		return List.of();
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public boolean canEnchant(Holder<Enchantment> enchantment, ItemStack ingredient) {
+		return enchantment.value().canEnchant(ingredient);
 	}
 }

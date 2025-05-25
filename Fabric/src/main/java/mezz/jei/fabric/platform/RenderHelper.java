@@ -9,6 +9,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
@@ -18,6 +21,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +39,20 @@ public class RenderHelper implements IPlatformRenderHelper {
 	@Override
 	public boolean shouldRender(MobEffectInstance potionEffect) {
 		return true;
+	}
+
+	@Nullable
+	@Override
+	public TextureAtlasSprite getTextureAtlasSprite(BlockState blockState) {
+		Minecraft minecraft = Minecraft.getInstance();
+		BlockRenderDispatcher blockRendererDispatcher = minecraft.getBlockRenderer();
+		BlockModelShaper blockModelShapes = blockRendererDispatcher.getBlockModelShaper();
+		BakedModel blockModel = blockModelShapes.getBlockModel(blockState);
+		TextureAtlasSprite textureAtlasSprite = getParticleIcon(blockModel);
+		if (textureAtlasSprite.atlasLocation().equals(MissingTextureAtlasSprite.getLocation())) {
+			return null;
+		}
+		return textureAtlasSprite;
 	}
 
 	@Override

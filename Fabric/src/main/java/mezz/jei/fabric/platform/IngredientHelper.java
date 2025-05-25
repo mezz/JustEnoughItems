@@ -3,8 +3,11 @@ package mezz.jei.fabric.platform;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.ComposterBlock;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -28,5 +31,12 @@ public class IngredientHelper implements IPlatformIngredientHelper {
 			potionBrewing.containerMixes.stream()
 		)
 			.map(PotionBrewing.Mix::ingredient);
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public float getCompostValue(ItemStack itemStack) {
+		Item item = itemStack.getItem();
+		return ComposterBlock.COMPOSTABLES.getOrDefault(item, 0f);
 	}
 }
