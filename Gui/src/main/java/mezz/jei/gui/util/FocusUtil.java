@@ -48,7 +48,7 @@ public class FocusUtil {
 		return fluidHelper.getContainedFluid(ingredient)
 			.flatMap(fluid -> {
 				IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
-				return ingredientManager.createTypedIngredient(type, fluid);
+				return ingredientManager.createTypedIngredient(type, fluid, false);
 			});
 	}
 }

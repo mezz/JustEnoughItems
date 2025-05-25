@@ -113,7 +113,7 @@ public class GuiHelper implements IGuiHelper {
 		ErrorUtil.checkNotNull(type, "type");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
-		ITypedIngredient<V> typedIngredient = ingredientManager.createTypedIngredient(type, ingredient)
+		ITypedIngredient<V> typedIngredient = ingredientManager.createTypedIngredient(type, ingredient, false)
 			.orElseThrow(() -> {
 				String info = ErrorUtil.getIngredientInfo(ingredient, type, ingredientManager);
 				return new IllegalArgumentException(String.format("Ingredient is invalid and cannot be used as a drawable ingredient: %s", info));
