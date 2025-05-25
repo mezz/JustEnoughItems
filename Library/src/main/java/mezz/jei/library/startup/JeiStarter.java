@@ -192,7 +192,6 @@ public final class JeiStarter {
 		List<IModPlugin> plugins = data.plugins();
 		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
 		Internal.setRuntime(null);
-		Internal.setClientSyncedRecipes(RecipeMap.EMPTY);
 		RegistryUtil.setRegistryAccess(null);
 	}
 }

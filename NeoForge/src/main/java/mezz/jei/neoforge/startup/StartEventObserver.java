@@ -1,5 +1,6 @@
 package mezz.jei.neoforge.startup;
 
+import mezz.jei.common.Internal;
 import mezz.jei.neoforge.events.PermanentEventSubscriptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConnectScreen;
@@ -9,6 +10,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.item.crafting.RecipeMap;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -59,6 +61,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		subscriptions.register(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
 			if (event.getPlayer() != null) {
 				logReceivedEvent(event);
+				Internal.setClientSyncedRecipes(RecipeMap.EMPTY);
 				transitionState(State.LISTENING);
 			}
 		});
