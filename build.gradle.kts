@@ -41,7 +41,7 @@ spotless {
 		endWithNewline()
 		trimTrailingWhitespace()
 		removeUnusedImports()
-        indentWithTabs(4)
+        leadingSpacesToTabs(4)
         replaceRegex("class-level javadoc indentation fix", "^\\*", " *")
         replaceRegex("method-level javadoc indentation fix", "\t\\*", "\t *")
 	}
