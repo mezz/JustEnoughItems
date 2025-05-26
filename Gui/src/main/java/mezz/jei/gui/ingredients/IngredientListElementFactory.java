@@ -31,7 +31,7 @@ public final class IngredientListElementFactory {
 
 	public static <V> List<IListElementInfo<V>> createTestList(IIngredientManager ingredientManager, IIngredientType<V> ingredientType, Collection<V> ingredients, IModIdHelper modIdHelper) {
 		return ingredients.stream()
-			.map(i -> ingredientManager.createTypedIngredient(ingredientType, i))
+			.map(i -> ingredientManager.createTypedIngredient(ingredientType, i, false))
 			.flatMap(Optional::stream)
 			.map(i -> ListElementInfo.create(i, ingredientManager, modIdHelper))
 			.filter(Objects::nonNull)
@@ -55,7 +55,7 @@ public final class IngredientListElementFactory {
 		Collection<V> ingredients = ingredientManager.getAllIngredients(ingredientType);
 		LOGGER.debug("Registering ingredients: {}", ingredientType.getIngredientClass().getSimpleName());
 		for (V ingredient : ingredients) {
-			Optional<ITypedIngredient<V>> typedIngredient = ingredientManager.createTypedIngredient(ingredientType, ingredient);
+			Optional<ITypedIngredient<V>> typedIngredient = ingredientManager.createTypedIngredient(ingredientType, ingredient, false);
 			if (typedIngredient.isPresent()) {
 				IListElementInfo<V> orderedElement = ListElementInfo.create(typedIngredient.get(), ingredientManager, modIdHelper);
 				if (orderedElement != null) {
