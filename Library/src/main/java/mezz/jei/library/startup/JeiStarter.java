@@ -167,7 +167,7 @@ public final class JeiStarter {
 		JeiRuntime jeiRuntime = new JeiRuntime(
 			recipeManager,
 			ingredientManager,
-			data.keyBindings(),
+			Internal.getKeyMappings(),
 			jeiHelpers,
 			screenHelper,
 			recipeTransferManager,
