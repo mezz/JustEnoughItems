@@ -106,13 +106,12 @@ dependencies {
 	}
 	testImplementation(
 		group = "org.junit.jupiter",
-		name = "junit-jupiter-api",
+		name = "junit-jupiter",
 		version = jUnitVersion
 	)
 	testRuntimeOnly(
-		group = "org.junit.jupiter",
-		name = "junit-jupiter-engine",
-		version = jUnitVersion
+		group = "org.junit.platform",
+		name = "junit-platform-launcher"
 	)
 
 	// Hack fix for now, force jopt-simple to be exactly 5.0.4 because Mojang ships that version, but some transitive dependencies request 6.0+
@@ -228,7 +227,7 @@ publishMods {
 	}
 }
 
-tasks.named<Test>("test") {
+tasks.test {
 	useJUnitPlatform()
 	include("mezz/jei/test/**")
 	exclude("mezz/jei/test/lib/**")
