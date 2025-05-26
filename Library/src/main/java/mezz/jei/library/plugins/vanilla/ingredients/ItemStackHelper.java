@@ -42,10 +42,8 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	public ItemStackHelper(StackHelper stackHelper, IColorHelper colorHelper) {
 		this.stackHelper = stackHelper;
 		this.colorHelper = colorHelper;
-		//noinspection deprecation
-		this.itemHiddenFromRecipeViewers = new TagKey<>(Registries.ITEM, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
-		//noinspection deprecation
-		this.blockHiddenFromRecipeViewers = new TagKey<>(Registries.BLOCK, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
+		this.itemHiddenFromRecipeViewers = TagKey.create(Registries.ITEM, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
+		this.blockHiddenFromRecipeViewers = TagKey.create(Registries.BLOCK, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
 	}
 
 	@Override

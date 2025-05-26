@@ -4,6 +4,7 @@ import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -12,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.entity.FuelValues;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
@@ -70,5 +72,10 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 	@Override
 	public ItemAttributeModifiers getItemAttributeModifiers(ItemStack stack) {
 		return stack.getAttributeModifiers();
+	}
+
+	@Override
+	public boolean canEnchant(Holder<Enchantment> enchantment, ItemStack ingredient) {
+		return ingredient.supportsEnchantment(enchantment);
 	}
 }

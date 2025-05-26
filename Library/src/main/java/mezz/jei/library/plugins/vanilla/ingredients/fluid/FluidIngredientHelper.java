@@ -41,8 +41,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 		this.platformFluidHelper = platformFluidHelper;
 		this.registry = RegistryUtil.getRegistry(Registries.FLUID);
 		this.fluidType = platformFluidHelper.getFluidIngredientType();
-		//noinspection deprecation
-		this.hiddenFromRecipeViewers = new TagKey<>(Registries.FLUID, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
+		this.hiddenFromRecipeViewers = TagKey.create(Registries.FLUID, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
 	}
 
 	@Override

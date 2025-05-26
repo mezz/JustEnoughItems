@@ -1,11 +1,13 @@
 package mezz.jei.common.platform;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.entity.FuelValues;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,4 +26,6 @@ public interface IPlatformItemStackHelper {
 	default ItemAttributeModifiers getItemAttributeModifiers(ItemStack stack) {
 		return stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
 	}
+
+	boolean canEnchant(Holder<Enchantment> enchantment, ItemStack ingredient);
 }

@@ -65,12 +65,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(extraIngredients, "extraIngredients");
 
-		IngredientInfo<?> ingredientInfo = ingredientInfos.get(ingredientType);
-		if (ingredientInfo == null) {
-			throw new IllegalArgumentException("Ingredient type has not been registered: " + ingredientType.getUid());
-		}
-		@SuppressWarnings("unchecked")
-		IngredientInfo<V> castIngredientInfo = (IngredientInfo<V>) ingredientInfo;
+		IngredientInfo<V> castIngredientInfo = getIngredientInfo(ingredientType);
 		castIngredientInfo.addIngredients(extraIngredients);
 	}
 
@@ -80,8 +75,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		ErrorUtil.checkNotNull(alias, "alias");
 
-		@SuppressWarnings("unchecked")
-		IngredientInfo<I> ingredientInfo = (IngredientInfo<I>) ingredientInfos.get(type);
+		IngredientInfo<I> ingredientInfo = getIngredientInfo(type);
 		ingredientInfo.addIngredientAlias(ingredient, alias);
 	}
 
@@ -90,8 +84,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 		ErrorUtil.checkNotNull(alias, "alias");
 
-		@SuppressWarnings("unchecked")
-		IngredientInfo<I> ingredientInfo = (IngredientInfo<I>) ingredientInfos.get(typedIngredient.getType());
+		IngredientInfo<I> ingredientInfo = getIngredientInfo(typedIngredient.getType());
 		ingredientInfo.addIngredientAlias(typedIngredient, alias);
 	}
 
@@ -101,8 +94,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		ErrorUtil.checkNotNull(aliases, "aliases");
 
-		@SuppressWarnings("unchecked")
-		IngredientInfo<I> ingredientInfo = (IngredientInfo<I>) ingredientInfos.get(type);
+		IngredientInfo<I> ingredientInfo = getIngredientInfo(type);
 		ingredientInfo.addIngredientAliases(ingredient, aliases);
 	}
 
@@ -111,8 +103,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 		ErrorUtil.checkNotNull(aliases, "aliases");
 
-		@SuppressWarnings("unchecked")
-		IngredientInfo<I> ingredientInfo = (IngredientInfo<I>) ingredientInfos.get(typedIngredient.getType());
+		IngredientInfo<I> ingredientInfo = getIngredientInfo(typedIngredient.getType());
 		ingredientInfo.addIngredientAliases(typedIngredient, aliases);
 	}
 
@@ -122,8 +113,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(ingredients, "ingredients");
 		ErrorUtil.checkNotNull(alias, "alias");
 
-		@SuppressWarnings("unchecked")
-		IngredientInfo<I> ingredientInfo = (IngredientInfo<I>) ingredientInfos.get(type);
+		IngredientInfo<I> ingredientInfo = getIngredientInfo(type);
 		for (I ingredient : ingredients) {
 			ingredientInfo.addIngredientAlias(ingredient, alias);
 		}
@@ -138,8 +128,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		for (ITypedIngredient<I> typedIngredient : typedIngredients) {
 			IIngredientType<I> ingredientType = typedIngredient.getType();
 			if (ingredientInfo == null) {
-				//noinspection unchecked
-				ingredientInfo = (IngredientInfo<I>) ingredientInfos.get(ingredientType);
+				ingredientInfo = getIngredientInfo(ingredientType);
 			}
 			ingredientInfo.addIngredientAlias(typedIngredient, alias);
 		}
@@ -151,8 +140,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(ingredients, "ingredients");
 		ErrorUtil.checkNotNull(aliases, "aliases");
 
-		@SuppressWarnings("unchecked")
-		IngredientInfo<I> ingredientInfo = (IngredientInfo<I>) ingredientInfos.get(type);
+		IngredientInfo<I> ingredientInfo = getIngredientInfo(type);
 		for (I ingredient : ingredients) {
 			ingredientInfo.addIngredientAliases(ingredient, aliases);
 		}
@@ -167,11 +155,20 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		for (ITypedIngredient<I> typedIngredient : typedIngredients) {
 			IIngredientType<I> ingredientType = typedIngredient.getType();
 			if (ingredientInfo == null) {
-				//noinspection unchecked
-				ingredientInfo = (IngredientInfo<I>) ingredientInfos.get(ingredientType);
+				ingredientInfo = getIngredientInfo(ingredientType);
 			}
 			ingredientInfo.addIngredientAliases(typedIngredient, aliases);
 		}
+	}
+
+	private <T> IngredientInfo<T> getIngredientInfo(IIngredientType<T> ingredientType) {
+		IngredientInfo<?> ingredientInfo = ingredientInfos.get(ingredientType);
+		if (ingredientInfo == null) {
+			throw new IllegalArgumentException("Ingredient type has not been registered: " + ingredientType.getUid());
+		}
+		@SuppressWarnings("unchecked")
+		IngredientInfo<T> cast = (IngredientInfo<T>) ingredientInfo;
+		return cast;
 	}
 
 	@Override

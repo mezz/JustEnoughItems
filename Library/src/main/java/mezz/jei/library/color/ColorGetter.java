@@ -6,10 +6,6 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.renderer.block.BlockModelShaper;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
@@ -20,7 +16,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,7 +55,9 @@ public final class ColorGetter {
 		BlockState blockState = block.defaultBlockState();
 		final BlockColors blockColors = Minecraft.getInstance().getBlockColors();
 		final int renderColor = blockColors.getColor(blockState, null, null, 0);
-		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(blockState);
+
+		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+		final TextureAtlasSprite textureAtlasSprite = renderHelper.getTextureAtlasSprite(blockState);
 		if (textureAtlasSprite == null) {
 			return Collections.emptyList();
 		}
@@ -104,18 +101,5 @@ public final class ColorGetter {
 
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		return renderHelper.getMainImage(textureAtlasSprite);
-	}
-
-	@Nullable
-	private static TextureAtlasSprite getTextureAtlasSprite(BlockState blockState) {
-		Minecraft minecraft = Minecraft.getInstance();
-		BlockRenderDispatcher blockRendererDispatcher = minecraft.getBlockRenderer();
-		BlockModelShaper blockModelShapes = blockRendererDispatcher.getBlockModelShaper();
-		BlockStateModel blockModel = blockModelShapes.getBlockModel(blockState);
-		TextureAtlasSprite textureAtlasSprite = blockModel.particleIcon();
-		if (textureAtlasSprite.atlasLocation().equals(MissingTextureAtlasSprite.getLocation())) {
-			return null;
-		}
-		return textureAtlasSprite;
 	}
 }

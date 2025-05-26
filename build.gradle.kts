@@ -110,3 +110,10 @@ subprojects {
         isReproducibleFileOrder = true
     }
 }
+
+subprojects {
+    tasks.withType<JavaCompile> {
+        options.isDeprecation = true
+        options.compilerArgs.add("-Xlint:unchecked")
+    }
+}

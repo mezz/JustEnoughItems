@@ -7,17 +7,24 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.EmptyBlockAndTintGetter;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.common.Tags;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -65,5 +72,18 @@ public class RenderHelper implements IPlatformRenderHelper {
 	@Override
 	public MultiBufferSource getBufferSource(GuiGraphics guiGraphics) {
 		return guiGraphics.bufferSource;
+	}
+
+	@Nullable
+	@Override
+	public TextureAtlasSprite getTextureAtlasSprite(BlockState blockState) {
+		Minecraft minecraft = Minecraft.getInstance();
+		BlockRenderDispatcher blockRendererDispatcher = minecraft.getBlockRenderer();
+		BlockModelShaper blockModelShapes = blockRendererDispatcher.getBlockModelShaper();
+		TextureAtlasSprite textureAtlasSprite = blockModelShapes.getParticleIcon(blockState, EmptyBlockAndTintGetter.INSTANCE, BlockPos.ZERO);
+		if (textureAtlasSprite.atlasLocation().equals(MissingTextureAtlasSprite.getLocation())) {
+			return null;
+		}
+		return textureAtlasSprite;
 	}
 }

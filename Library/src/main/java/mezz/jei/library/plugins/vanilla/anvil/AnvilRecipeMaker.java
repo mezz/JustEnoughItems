@@ -75,9 +75,9 @@ public final class AnvilRecipeMaker {
 			return list.size() == enchantedBooks.size() ? enchantedBooks : list;
 		}
 
-		private boolean canEnchant(ItemStack ingredient) {
+		private boolean canEnchant(IPlatformItemStackHelper itemStackHelper, ItemStack ingredient) {
 			try {
-				return enchantment.value().canEnchant(ingredient);
+				return itemStackHelper.canEnchant(enchantment, ingredient);
 			} catch (RuntimeException e) {
 				String stackInfo = ErrorUtil.getItemStackInfo(ingredient);
 				LOGGER.error("Failed to check if ingredient can be enchanted: {}", stackInfo, e);
@@ -116,9 +116,10 @@ public final class AnvilRecipeMaker {
 		List<EnchantmentData> enchantmentDatas,
 		ItemStack ingredient
 	) {
+		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
 		var ingredientSingletonList = List.of(ingredient);
 		return enchantmentDatas.stream()
-			.filter(data -> data.canEnchant(ingredient))
+			.filter(data -> data.canEnchant(itemStackHelper, ingredient))
 			.map(data -> data.getEnchantedBooks(ingredient))
 			.filter(enchantedBooks -> !enchantedBooks.isEmpty())
 			.map(enchantedBooks -> {

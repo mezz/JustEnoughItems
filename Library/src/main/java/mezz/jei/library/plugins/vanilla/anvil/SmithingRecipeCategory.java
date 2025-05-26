@@ -110,14 +110,16 @@ public class SmithingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 		{
 			ISmithingCategoryExtension<?> extension = extensions.get(recipe.getClass());
 			if (extension != null) {
-				//noinspection unchecked
-				return (ISmithingCategoryExtension<? super R>) extension;
+				@SuppressWarnings("unchecked")
+				ISmithingCategoryExtension<? super R> cast = (ISmithingCategoryExtension<? super R>) extension;
+				return cast;
 			}
 		}
 		for (Map.Entry<Class<? extends SmithingRecipe>, ISmithingCategoryExtension<?>> e : extensions.entrySet()) {
 			if (e.getKey().isInstance(recipe)) {
-				//noinspection unchecked
-				return (ISmithingCategoryExtension<? super R>) e.getValue();
+				@SuppressWarnings("unchecked")
+				ISmithingCategoryExtension<? super R> cast = (ISmithingCategoryExtension<? super R>) e.getValue();
+				return cast;
 			}
 		}
 		return null;

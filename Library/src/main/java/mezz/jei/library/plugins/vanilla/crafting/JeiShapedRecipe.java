@@ -123,10 +123,13 @@ public class JeiShapedRecipe implements CraftingRecipe {
 		public Serializer() {
 		}
 
+		@Override
 		public MapCodec<JeiShapedRecipe> codec() {
 			return CODEC;
 		}
 
+		@Override
+		@Deprecated
 		public StreamCodec<RegistryFriendlyByteBuf, JeiShapedRecipe> streamCodec() {
 			return STREAM_CODEC;
 		}

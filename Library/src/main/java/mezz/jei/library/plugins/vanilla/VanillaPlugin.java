@@ -302,7 +302,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addGenericGuiContainerHandler(AbstractContainerScreen.class, new InventoryEffectRendererGuiHandler());
 		registration.addGuiContainerHandler(CraftingScreen.class, new RecipeBookGuiHandler<>());
 		registration.addGuiContainerHandler(InventoryScreen.class, new RecipeBookGuiHandler<>());
-		registration.addGuiContainerHandler(AbstractFurnaceScreen.class, new RecipeBookGuiHandler<>());
+		registration.addGenericGuiContainerHandler(AbstractFurnaceScreen.class, new RecipeBookGuiHandler<>());
 		registration.addGlobalGuiHandler(new ToastGuiHandler());
 	}
 

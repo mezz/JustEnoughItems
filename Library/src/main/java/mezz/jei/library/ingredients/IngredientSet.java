@@ -50,8 +50,9 @@ public class IngredientSet<V> extends AbstractSet<V> {
 
 	@Override
 	public boolean remove(Object value) {
-		//noinspection unchecked
-		Object uid = getUid((V) value);
+		@SuppressWarnings("unchecked")
+		V cast = (V) value;
+		Object uid = getUid(cast);
 		return uid != null && ingredients.remove(uid) != null;
 	}
 
