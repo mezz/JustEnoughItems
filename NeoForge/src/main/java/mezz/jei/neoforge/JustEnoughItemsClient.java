@@ -18,7 +18,6 @@ import mezz.jei.neoforge.network.NetworkHandler;
 import mezz.jei.neoforge.plugins.neoforge.NeoForgeGuiPlugin;
 import mezz.jei.neoforge.startup.ForgePluginFinder;
 import mezz.jei.neoforge.startup.StartEventObserver;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -29,9 +28,7 @@ import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactori
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -44,16 +41,12 @@ public class JustEnoughItemsClient {
 	) {
 		this.subscriptions = subscriptions;
 
-		InternalKeyMappings keyMappings = createKeyMappings(subscriptions);
-		Internal.setKeyMappings(keyMappings);
-
 		IConnectionToServer serverConnection = networkHandler.getConnectionToServer();
 
 		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
 		StartData startData = new StartData(
 			plugins,
-			serverConnection,
-			keyMappings
+			serverConnection
 		);
 
 		JeiStarter jeiStarter = new JeiStarter(startData);
@@ -65,6 +58,10 @@ public class JustEnoughItemsClient {
 	public void register() {
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
+		subscriptions.register(RegisterKeyMappingsEvent.class, e -> {
+			InternalKeyMappings keyMappings = new InternalKeyMappings(e::register);
+			Internal.setKeyMappings(keyMappings);
+		});
 
 		IEventBus modEventBus = subscriptions.getModEventBus();
 		DeferredRegister<RecipeSerializer<?>> deferredRegister = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, ModIds.JEI_ID);
@@ -93,9 +90,4 @@ public class JustEnoughItemsClient {
 		};
 	}
 
-	private static InternalKeyMappings createKeyMappings(PermanentEventSubscriptions subscriptions) {
-		Set<KeyMapping> keysToRegister = new HashSet<>();
-		subscriptions.register(RegisterKeyMappingsEvent.class, e -> keysToRegister.forEach(e::register));
-		return new InternalKeyMappings(keysToRegister::add);
-	}
 }
