@@ -25,7 +25,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.block.Blocks;
 
@@ -54,17 +53,7 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<CraftingRecipe> recipeHolder, IFocusGroup focuses) {
 		var recipeExtension = this.extendableHelper.getRecipeExtension(recipeHolder);
-
-		CraftingRecipe recipe = recipeHolder.value();
-		RecipeDisplay display = recipe.display().getFirst();
-		SlotDisplay resultItem = display.result();
-
-		int width = recipeExtension.getWidth(recipeHolder);
-		int height = recipeExtension.getHeight(recipeHolder);
-		craftingGridHelper.createAndSetOutputs(builder, resultItem);
-
-		List<SlotDisplay> ingredients = recipeExtension.getIngredients(recipeHolder);
-		craftingGridHelper.createAndSetIngredientsFromDisplays(builder, ingredients, width, height);
+		recipeExtension.setRecipe(recipeHolder, builder, craftingGridHelper, focuses);
 	}
 
 	@Override

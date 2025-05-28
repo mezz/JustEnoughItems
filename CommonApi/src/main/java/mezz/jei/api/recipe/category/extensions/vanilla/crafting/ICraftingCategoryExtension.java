@@ -1,6 +1,8 @@
 package mezz.jei.api.recipe.category.extensions.vanilla.crafting;
 
 import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -8,6 +10,7 @@ import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 
 import java.util.List;
@@ -46,6 +49,25 @@ public interface ICraftingCategoryExtension<R extends CraftingRecipe> extends IR
 	 */
 	default int getHeight(RecipeHolder<R> recipeHolder) {
 		return 0;
+	}
+
+	/**
+	 * Override the default {@link IRecipeCategory} behavior.
+	 *
+	 * @see IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)
+	 *
+	 * @since 21.3.0
+	 */
+	default void setRecipe(RecipeHolder<R> recipeHolder, IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
+		R recipe = recipeHolder.value();
+		RecipeDisplay display = recipe.display().getFirst();
+		SlotDisplay resultItem = display.result();
+		craftingGridHelper.createAndSetOutputs(builder, resultItem);
+
+		List<SlotDisplay> ingredients = getIngredients(recipeHolder);
+		int width = getWidth(recipeHolder);
+		int height = getHeight(recipeHolder);
+		craftingGridHelper.createAndSetIngredientsFromDisplays(builder, ingredients, width, height);
 	}
 
 	/**
