@@ -9,6 +9,8 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.platform.IPlatformInputHelper;
+import mezz.jei.common.platform.Services;
 import net.minecraft.ChatFormatting;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
@@ -47,7 +49,7 @@ public final class SafeIngredientUtil {
 		IIngredientManager ingredientManager,
 		IIngredientRenderer<T> ingredientRenderer,
 		ITypedIngredient<T> typedIngredient,
-		TooltipFlag.Default tooltipFlag
+		TooltipFlag tooltipFlag
 	) {
 		T ingredient = typedIngredient.getIngredient();
 
@@ -55,6 +57,9 @@ public final class SafeIngredientUtil {
 			getTooltipErrorTooltip(tooltip);
 			return;
 		}
+
+		IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
+		tooltipFlag = inputHelper.getClientTooltipFlag(tooltipFlag);
 
 		tooltip.setIngredient(typedIngredient);
 		try {
