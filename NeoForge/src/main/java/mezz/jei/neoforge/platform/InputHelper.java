@@ -5,6 +5,7 @@ import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.neoforge.input.ForgeJeiKeyMappingCategoryBuilder;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.client.ClientTooltipFlag;
 
@@ -21,7 +22,8 @@ public class InputHelper implements IPlatformInputHelper {
 
 	@Override
 	public TooltipFlag getClientTooltipFlag(TooltipFlag tooltipFlag) {
-		if (tooltipFlag instanceof ClientTooltipFlag) {
+		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft == null || tooltipFlag instanceof ClientTooltipFlag) {
 			return tooltipFlag;
 		}
 		return ClientTooltipFlag.of(tooltipFlag);
