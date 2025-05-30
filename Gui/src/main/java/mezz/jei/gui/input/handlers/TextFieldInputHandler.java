@@ -1,11 +1,15 @@
 package mezz.jei.gui.input.handlers;
 
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.core.util.ReflectionUtil;
 import mezz.jei.core.util.TextHistory;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 
 import java.util.Optional;
 
@@ -65,6 +69,7 @@ public class TextFieldInputHandler implements IUserInputHandler {
 		if (textFieldFilter.isFocused() != focused) {
 			if (!input.isSimulate()) {
 				textFieldFilter.setFocused(focused);
+				handleVanillaSearchBox(!focused);
 			}
 			return true;
 		}
@@ -75,6 +80,7 @@ public class TextFieldInputHandler implements IUserInputHandler {
 		if (!input.isSimulate()) {
 			textFieldFilter.setValue("");
 			textFieldFilter.setFocused(true);
+			handleVanillaSearchBox(false);
 		}
 		return true;
 	}
@@ -97,5 +103,19 @@ public class TextFieldInputHandler implements IUserInputHandler {
 	@Override
 	public void unfocus() {
 		textFieldFilter.setFocused(false);
+		handleVanillaSearchBox(true);
+	}
+
+	private void handleVanillaSearchBox(boolean focused) {
+		if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen screen) {
+			ReflectionUtil reflectionUtil = new ReflectionUtil();
+			Optional<EditBox> field = reflectionUtil.getFieldWithClass(screen, EditBox.class).findFirst();
+			field.ifPresent(searchBox -> {
+				if (searchBox.isVisible()) {
+					searchBox.setCanLoseFocus(!focused);
+					searchBox.setFocused(focused);
+				}
+			});
+		}
 	}
 }
