@@ -242,6 +242,11 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipes(IRecipeRegistration registration) {
+		RecipeMap clientSyncedRecipes = Internal.getClientSyncedRecipes();
+		if (clientSyncedRecipes.values().isEmpty()) {
+			return;
+		}
+
 		ErrorUtil.checkNotNull(craftingCategory, "craftingCategory");
 		ErrorUtil.checkNotNull(stonecuttingCategory, "stonecuttingCategory");
 		ErrorUtil.checkNotNull(furnaceCategory, "furnaceCategory");
@@ -254,7 +259,6 @@ public class VanillaPlugin implements IModPlugin {
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 
-		RecipeMap clientSyncedRecipes = Internal.getClientSyncedRecipes();
 		VanillaRecipes vanillaRecipes = new VanillaRecipes(clientSyncedRecipes);
 
 		var craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);

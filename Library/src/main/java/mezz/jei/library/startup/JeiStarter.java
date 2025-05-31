@@ -15,8 +15,10 @@ import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.ChatUtil;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
+import mezz.jei.common.util.Translator;
 import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.library.color.ColorHelper;
 import mezz.jei.library.config.ColorNameConfig;
@@ -35,8 +37,11 @@ import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import mezz.jei.library.recipes.RecipeManager;
 import mezz.jei.library.runtime.JeiHelpers;
 import mezz.jei.library.runtime.JeiRuntime;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.item.crafting.RecipeMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -184,6 +189,16 @@ public final class JeiStarter {
 		Internal.setRuntime(jeiRuntime);
 
 		totalTime.stop();
+
+		RecipeMap clientSyncedRecipes = Internal.getClientSyncedRecipes();
+		if (clientSyncedRecipes.values().isEmpty()) {
+			String message = Translator.translateToLocal("jei.message.missing.recipes.from.server");
+			LocalPlayer player = minecraft.player;
+			if (player != null) {
+				ChatUtil.writeChatMessage(player, message, ChatFormatting.RED);
+			}
+			LOGGER.error(message);
+		}
 	}
 
 	public void stop() {

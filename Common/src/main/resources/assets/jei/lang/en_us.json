@@ -311,6 +311,7 @@
   "jei.message.config.folder": "Or click here to open the JEI config folder instead",
   "jei.message.copy.recipe.id.success": "The following recipe ID was copied to the clipboard: %s",
   "jei.message.copy.recipe.id.failure": "Failed to copy the recipe ID to the clipboard because the ID is unknown",
+  "jei.message.missing.recipes.from.server": "JEI is missing recipes. Please install JEI on the server to sync recipes to the client.\nSince Minecraft 1.21.2, recipes are stored on the server and not the client.",
 
   "_comment": "Key Names",
   "jei.key.combo.shift": "SHIFT + %s",
