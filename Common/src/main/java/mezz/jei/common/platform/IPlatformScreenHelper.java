@@ -2,6 +2,8 @@ package mezz.jei.common.platform;
 
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
@@ -31,5 +33,5 @@ public interface IPlatformScreenHelper {
 
 	<T extends RecipeBookMenu> RecipeBookComponent<?> getRecipeBookComponent(AbstractRecipeBookScreen<T> screen);
 
-	void setFocused(AbstractWidget widget, boolean value);
+	boolean canLoseFocus(EditBox editBox);
 }

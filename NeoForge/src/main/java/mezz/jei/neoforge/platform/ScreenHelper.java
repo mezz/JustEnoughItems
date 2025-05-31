@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.Window;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -86,7 +86,7 @@ public class ScreenHelper implements IPlatformScreenHelper {
 	}
 
 	@Override
-	public void setFocused(AbstractWidget widget, boolean value) {
-		widget.setFocused(value);
+	public boolean canLoseFocus(EditBox editBox) {
+		return editBox.canLoseFocus;
 	}
 }
