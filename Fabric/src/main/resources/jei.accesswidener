@@ -1,7 +1,5 @@
 accessWidener v1 named
 
-accessible method net/minecraft/client/gui/components/AbstractWidget setFocused (Z)V
-
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen hoveredSlot Lnet/minecraft/world/inventory/Slot;
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen leftPos I
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I
@@ -33,3 +31,5 @@ accessible method net/minecraft/client/gui/GuiGraphics renderTooltipInternal (Ln
 
 accessible field net/minecraft/client/gui/components/toasts/ToastComponent visible Ljava/util/List;
 accessible class net/minecraft/client/gui/components/toasts/ToastComponent$ToastInstance
+
+accessible field net/minecraft/client/gui/components/EditBox canLoseFocus Z
