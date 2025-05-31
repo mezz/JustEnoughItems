@@ -2,6 +2,8 @@ package mezz.jei.common.util;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.player.Player;
 
 /**
@@ -12,8 +14,9 @@ public final class ChatUtil {
 	}
 
 	public static void writeChatMessage(Player player, String translationKey, ChatFormatting color) {
-		Component component = Component.translatable(translationKey);
-		component.getStyle().applyFormat(color);
+		MutableComponent component = Component.translatable(translationKey);
+		Style redStyle = component.getStyle().applyFormat(color);
+		component.setStyle(redStyle);
 		player.displayClientMessage(component, false);
 	}
 }
