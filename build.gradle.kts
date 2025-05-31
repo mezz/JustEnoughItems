@@ -5,6 +5,9 @@ plugins {
     // https://plugins.gradle.org/plugin/com.dorongold.task-tree
     id("com.dorongold.task-tree") version("4.0.0")
 
+    // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
+    id("fabric-loom") version("1.11.0-alpha.26") apply(false)
+
     // https://projects.neoforged.net/neoforged/moddevgradle
     id("net.neoforged.moddev") version("2.0.88") apply(false)
 
@@ -22,8 +25,6 @@ repositories {
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
 val githubUrl: String by extra
-val neoforgeVersionRange: String by extra
-val neoforgeLoaderVersionRange: String by extra
 val minecraftVersion: String by extra
 val minecraftVersionRange: String by extra
 val modAuthor: String by extra
@@ -33,6 +34,14 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val modName: String by extra
 val specificationVersion: String by extra
+
+val neoforgeLoaderVersionRange: String by extra
+val neoforgeVersionRange: String by extra
+
+val fabricApiVersion: String by extra
+val fabricApiVersionRange: String by extra
+val fabricLoaderVersion: String by extra
+val fabricLoaderVersionRange: String by extra
 
 spotless {
 	java {
@@ -85,6 +94,10 @@ subprojects {
     tasks.withType<ProcessResources> {
         val properties = mapOf(
             "curseHomepageUrl" to curseHomepageUrl,
+            "fabricApiVersion" to fabricApiVersion,
+            "fabricApiVersionRange" to fabricApiVersionRange,
+            "fabricLoaderVersion" to fabricLoaderVersion,
+            "fabricLoaderVersionRange" to fabricLoaderVersionRange,
             "githubUrl" to githubUrl,
             "neoforgeVersionRange" to neoforgeVersionRange,
             "neoforgeLoaderVersionRange" to neoforgeLoaderVersionRange,
@@ -98,7 +111,7 @@ subprojects {
             "version" to version,
         )
         inputs.properties(properties)
-        filesMatching(listOf("META-INF/neoforge.mods.toml", "pack.mcmeta")) {
+        filesMatching(listOf("META-INF/neoforge.mods.toml", "pack.mcmeta", "fabric.mod.json")) {
             expand(properties)
         }
     }

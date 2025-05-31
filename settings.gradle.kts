@@ -8,6 +8,10 @@ pluginManagement {
 		exclusiveMaven("https://maven.parchmentmc.org") {
 			includeGroupByRegex("org\\.parchmentmc.*")
 		}
+		exclusiveMaven("https://maven.fabricmc.net/") {
+			includeGroup("net.fabricmc")
+			includeGroup("fabric-loom")
+		}
 		exclusiveMaven("https://maven.neoforged.net/releases") {
 			includeGroupByRegex("net\\.neoforged.*")
 			includeGroup("codechicken")
@@ -37,6 +41,7 @@ include(
 	"Core",
 	"Changelog",
 	"Common", "CommonApi",
+	"Fabric", "FabricApi",
 	"NeoForge", "NeoForgeApi",
 	"Library",
 	"Gui"

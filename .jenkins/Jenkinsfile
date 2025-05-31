@@ -21,9 +21,11 @@ pipeline {
         stage('Build') {
             steps {
                 sh "./gradlew :Core:build"
+                sh "./gradlew :Fabric:build"
                 sh "./gradlew :NeoForge:build"
                 sh "./gradlew :Common:build"
                 sh "./gradlew :CommonApi:build"
+                sh "./gradlew :FabricApi:build"
                 sh "./gradlew :NeoForgeApi:build"
             }
         }
@@ -33,21 +35,25 @@ pipeline {
                 sh "./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                sh "./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :NeoForge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Common:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :CommonApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                sh "./gradlew :FabricApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :NeoForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
             }
         }
 
         stage('Publish CurseForge') {
             steps {
+//                 sh "./gradlew :Fabric:publishCurseforge"
                 sh "./gradlew :NeoForge:publishCurseforge"
             }
         }
 
         stage('Publish Modrinth') {
             steps {
+//                 sh "./gradlew :Fabric:publishModrinth"
                 sh "./gradlew :NeoForge:publishModrinth"
             }
         }

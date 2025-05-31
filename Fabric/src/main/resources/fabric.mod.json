@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "${modId}",
+  "version": "${version}",
+
+  "name": "${modName}",
+  "description": "${modDescription}",
+  "authors": [
+    "${modAuthor}"
+  ],
+  "contact": {
+    "homepage": "${curseHomepageUrl}",
+    "sources": "${githubUrl}"
+  },
+
+  "license": "The MIT License (MIT)",
+  "icon": "jei-icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "mezz.jei.fabric.JustEnoughItems"
+    ],
+    "client": [
+      "mezz.jei.fabric.JustEnoughItemsClient"
+    ],
+    "jei_mod_plugin": [
+      "mezz.jei.library.plugins.vanilla.VanillaPlugin",
+      "mezz.jei.library.plugins.jei.JeiInternalPlugin",
+      "mezz.jei.library.plugins.debug.JeiDebugPlugin",
+      "mezz.jei.fabric.plugins.fabric.FabricGuiPlugin",
+      "mezz.jei.gui.plugins.JeiGuiPlugin"
+    ]
+  },
+  "mixins": [
+    "jei.mixins.json"
+  ],
+  "accessWidener" : "jei.accesswidener",
+
+  "depends": {
+    "fabricloader": "${fabricLoaderVersionRange}",
+    "fabric-api": "${fabricApiVersionRange}",
+    "java": ">=${modJavaVersion}"
+  }
+}
