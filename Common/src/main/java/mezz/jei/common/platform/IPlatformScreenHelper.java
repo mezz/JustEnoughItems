@@ -1,7 +1,6 @@
 package mezz.jei.common.platform;
 
 import mezz.jei.common.util.ImmutableRect2i;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
