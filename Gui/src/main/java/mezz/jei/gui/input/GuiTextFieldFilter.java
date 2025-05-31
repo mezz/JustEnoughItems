@@ -5,13 +5,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.platform.IPlatformScreenHelper;
-import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.util.TextHistory;
+import mezz.jei.gui.input.focus.ScreenFocusHandler;
 import mezz.jei.gui.input.handlers.TextFieldInputHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -29,7 +27,7 @@ public class GuiTextFieldFilter extends EditBox {
 	private final DrawableNineSliceTexture background;
 	private ImmutableRect2i backgroundBounds;
 
-	private @Nullable AbstractWidget previouslyFocusedWidget;
+	private @Nullable ScreenFocusHandler screenUnfocusHandler;
 
 	public GuiTextFieldFilter(BooleanSupplier filterEmpty) {
 		super(Minecraft.getInstance().font, 0, 0, 0, 0, Component.translatable("gui.jei.search"));
@@ -89,22 +87,15 @@ public class GuiTextFieldFilter extends EditBox {
 			if (keyboardFocus) {
 				Screen screen = minecraft.screen;
 				if (screen != null) {
-					if (screen.getFocused() instanceof AbstractWidget widget) {
-						IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-						screenHelper.setFocused(widget, false);
-						previouslyFocusedWidget = widget;
+					screenUnfocusHandler = ScreenFocusHandler.create(screen);
+					if (screenUnfocusHandler != null) {
+						screenUnfocusHandler.unFocus();
 					}
-					screen.setFocused(null);
 				}
 			} else {
-				if (previouslyFocusedWidget != null) {
-					Screen screen = minecraft.screen;
-					if (screen != null) {
-						IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-						screenHelper.setFocused(previouslyFocusedWidget, true);
-						screen.setFocused(previouslyFocusedWidget);
-					}
-					previouslyFocusedWidget = null;
+				if (screenUnfocusHandler != null) {
+					screenUnfocusHandler.focus();
+					screenUnfocusHandler = null;
 				}
 			}
 
