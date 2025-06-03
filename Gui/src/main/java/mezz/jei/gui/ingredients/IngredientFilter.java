@@ -5,7 +5,6 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.DebugConfig;
@@ -33,7 +32,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -94,7 +92,7 @@ public class IngredientFilter implements
 		}
 
 		this.filterTextSource.addListener(filterText -> {
-			ingredientListCached = null;
+			invalidateCache();
 			notifyListenersOfChange();
 		});
 
@@ -113,7 +111,7 @@ public class IngredientFilter implements
 		IListElement<V> element = info.getElement();
 		updateHiddenState(element);
 
-		this.elementSearch.add(info);
+		this.elementSearch.add(info, ingredientManager);
 
 		invalidateCache();
 	}
@@ -127,25 +125,7 @@ public class IngredientFilter implements
 		Collection<IListElement<?>> ingredients = this.elementSearch.getAllIngredients();
 		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser);
 		List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, modIdHelper);
-		this.elementSearch.addAll(elementInfos);
-	}
-
-	public <V> Optional<IListElement<V>> searchForMatchingElement(
-		IIngredientHelper<V> ingredientHelper,
-		ITypedIngredient<V> typedIngredient
-	) {
-		V ingredient = typedIngredient.getIngredient();
-		IIngredientType<V> type = typedIngredient.getType();
-		Function<ITypedIngredient<V>, Object> uidFunction = (i) -> ingredientHelper.getUid(i, UidContext.Ingredient);
-		Object ingredientUid = uidFunction.apply(typedIngredient);
-		String lowercaseDisplayName = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
-
-		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, ElementPrefixParser.NO_PREFIX);
-		return this.elementSearch.getSearchResults(tokenInfo)
-			.stream()
-			.map(elementInfo -> checkForMatch(elementInfo, type, ingredientUid, uidFunction))
-			.flatMap(Optional::stream)
-			.findFirst();
+		this.elementSearch.addAll(elementInfos, ingredientManager);
 	}
 
 	@Override
@@ -159,12 +139,12 @@ public class IngredientFilter implements
 			changed |= updateHiddenState(element);
 		}
 		if (changed) {
-			ingredientListCached = null;
+			invalidateCache();
 			notifyListenersOfChange();
 		}
 	}
 
-	public <V> boolean updateHiddenState(IListElement<V> element) {
+	private <V> boolean updateHiddenState(IListElement<V> element) {
 		ITypedIngredient<V> typedIngredient = element.getTypedIngredient();
 		boolean visible = this.ingredientVisibility.isIngredientVisible(typedIngredient);
 		if (element.isVisible() != visible) {
@@ -178,13 +158,12 @@ public class IngredientFilter implements
 	public <V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible) {
 		IIngredientType<V> ingredientType = ingredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		searchForMatchingElement(ingredientHelper, ingredient)
-			.ifPresent(element -> {
-				if (element.isVisible() != visible) {
-					element.setVisible(visible);
-					notifyListenersOfChange();
-				}
-			});
+		IListElement<V> match = this.elementSearch.findElement(ingredient, ingredientHelper);
+		if (match != null && match.isVisible() != visible) {
+			match.setVisible(visible);
+			invalidateCache();
+			notifyListenersOfChange();
+		}
 	}
 
 	@Override
@@ -232,31 +211,11 @@ public class IngredientFilter implements
 			.map(IListElement::getTypedIngredient);
 	}
 
-	private static <T> Optional<IListElement<T>> checkForMatch(IListElement<?> element, IIngredientType<T> ingredientType, Object uid, Function<ITypedIngredient<T>, Object> uidFunction) {
-		return optionalCast(element, ingredientType)
-			.filter(cast -> {
-				ITypedIngredient<T> typedIngredient = cast.getTypedIngredient();
-				Object elementUid = uidFunction.apply(typedIngredient);
-				return uid.equals(elementUid);
-			});
-	}
-
-	private static <T> Optional<IListElement<T>> optionalCast(IListElement<?> element, IIngredientType<T> ingredientType) {
-		ITypedIngredient<?> typedIngredient = element.getTypedIngredient();
-		if (typedIngredient.getType() == ingredientType) {
-			@SuppressWarnings("unchecked")
-			IListElement<T> cast = (IListElement<T>) element;
-			return Optional.of(cast);
-		}
-		return Optional.empty();
-	}
-
 	@Override
 	public <V> void onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
 		for (ITypedIngredient<V> value : ingredients) {
-			Optional<IListElement<V>> matchingElementOptional = searchForMatchingElement(ingredientHelper, value);
-			if (matchingElementOptional.isPresent()) {
-				IListElement<V> matchingElement = matchingElementOptional.get();
+			IListElement<V> matchingElement = this.elementSearch.findElement(value, ingredientHelper);
+			if (matchingElement != null) {
 				updateHiddenState(matchingElement);
 				if (DebugConfig.isDebugModeEnabled()) {
 					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
@@ -276,21 +235,7 @@ public class IngredientFilter implements
 
 	@Override
 	public <V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
-		for (ITypedIngredient<V> typedIngredient : ingredients) {
-			Optional<IListElement<V>> matchingElementOptional = searchForMatchingElement(ingredientHelper, typedIngredient);
-			if (matchingElementOptional.isEmpty()) {
-				String errorInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
-				LOGGER.error("Could not find a matching ingredient to remove: {}", errorInfo);
-			} else {
-				if (DebugConfig.isDebugModeEnabled()) {
-					LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
-				}
-				IListElement<V> matchingElement = matchingElementOptional.get();
-				matchingElement.setVisible(false);
-			}
-		}
-
-		invalidateCache();
+		// ignore this, it's handled by onIngredientVisibilityChanged
 	}
 
 	private record SearchTokens(List<ElementPrefixParser.TokenInfo> toSearch, List<ElementPrefixParser.TokenInfo> toRemove) {
