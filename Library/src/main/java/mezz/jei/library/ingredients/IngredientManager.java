@@ -179,7 +179,7 @@ public class IngredientManager implements IIngredientManager {
 			String ingredientStrings = ingredients.stream()
 				.map(ingredientHelper::getResourceLocation)
 				.map(ResourceLocation::toString)
-				.collect(Collectors.joining("\n", "[","]"));
+				.collect(Collectors.joining(", ", "[","]"));
 			LOGGER.debug("Ingredients removed at runtime: {}", ingredientStrings);
 		}
 
